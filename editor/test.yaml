@@ -1,0 +1,16 @@
+# Size of the universe
+universeSize:
+  maxGalaxies: 1
+  maxSystems: 3
+  maxPlanets: 3
+
+# Starter planet settings
+starterPlanet:
+  # Starting resources
+  resources:
+    crystal: 200
+    gas: 100
+    energy: 800
+
+# Round time in seconds
+roundTime: 5
