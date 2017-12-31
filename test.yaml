@@ -6,6 +6,8 @@ entries:
 - provider: "CURSE"
 # TODO: set addonID
   name: RFTools
+  feature:
+    selected: true
 - provider: "CURSE"
 # TODO: set fileID
   name: NoNausea

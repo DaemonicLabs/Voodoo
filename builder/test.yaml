@@ -2,14 +2,19 @@
 name: Test pack
 entries:
 - provider: "CURSE"
-  name: "test"
-- provider: "DIRECT"
-  id: 2
+  name: "Drawers & Bits"
+- provider: "CURSE"
+# TODO: set addonID
+  name: RFTools
+  feature:
+    selected: true
+- provider: "CURSE"
+# TODO: set fileID
+  name: NoNausea
 - provider: "DIRECT"
   dependencies:
     optional:
     - "test"
     required: []
   path: "somwhere"
-forge: ""
-mcVersion: ""
+forge: "recommended"
