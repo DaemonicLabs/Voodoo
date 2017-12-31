@@ -36,6 +36,7 @@ fun loadFromFile(path: Path): Modpack {
     val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
     mapper.registerModule(KotlinModule()) // Enable Kotlin support
 
+    println(path)
     return Files.newBufferedReader(path).use {
         mapper.readValue(it, Modpack::class.java)
     }
@@ -69,9 +70,9 @@ fun process(modpack: Modpack) {
 
     println("prepareDependencies")
     for (entry in modpack.entries) {
-        entry.parent = modpack
+//        entry.parent = modpack
         val thingy = entry.provider.thingy(entry)
-        thingy.prepareDependencies()
+        thingy.prepareDependencies(modpack)
     }
     println(modpack.toYAMLString())
 
@@ -90,14 +91,14 @@ fun process(modpack: Modpack) {
     println("resolveDependencies")
     for (entry in modpack.entries) {
         val thingy = entry.provider.thingy(entry)
-        thingy.resolveDependencies()
+        thingy.resolveDependencies(modpack)
     }
     println(modpack.toYAMLString())
 
     println("resolveFeatureDependencies")
     for (entry in modpack.entries) {
         val thingy = entry.provider.thingy(entry)
-        thingy.resolveFeatureDependencies()
+        thingy.resolveFeatureDependencies(modpack)
     }
     println(modpack.toYAMLString())
 }

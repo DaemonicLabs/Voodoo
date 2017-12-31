@@ -11,7 +11,7 @@ import khttp.get
  * @author Nikky
  * @version 1.0
  */
-class CurseProviderThingy(val entry: Entry) : ProviderThingy(entry) {
+class CurseProviderThingy(override val entry: Entry) : ProviderThingy(entry) {
     companion object {
         val mapper = jacksonObjectMapper() // Enable YAML parsing
                 .registerModule(KotlinModule()) // Enable Kotlin support
@@ -37,8 +37,8 @@ class CurseProviderThingy(val entry: Entry) : ProviderThingy(entry) {
         return entry.fileId > 0 && entry.id > 0
     }
 
-    override fun prepareDependencies() {
-        val (addonId, fileId, fileName) = findFile(entry)
+    override fun prepareDependencies(modpack: Modpack) {
+        val (addonId, fileId, fileName) = findFile(entry, modpack)
         entry.id = addonId
         entry.fileId = fileId
         if (entry.fileName.isBlank()) {
@@ -46,18 +46,15 @@ class CurseProviderThingy(val entry: Entry) : ProviderThingy(entry) {
         }
     }
 
-    override fun resolveDependencies() {
+    override fun resolveDependencies(modpack: Modpack) {
         val addonId = entry.id
         val fileId = entry.fileId
         val addon = getAddon(addonId)!!
         val addonFile = getAddonFile(addonId, fileId)!!
 
-        for (dependency in addonFile.dependencies) {
-            val depType = dependency.type
+        for ((addOnId, depType) in addonFile.dependencies) {
 
-            val depAddon = getAddon(dependency.addOnId)
-            if (depAddon == null)
-                continue
+            val depAddon = getAddon(addOnId) ?: continue
 
 //            val depends = entry.dependencies
             var dependsList = entry.dependencies.getOrDefault(depType, emptyList())
@@ -65,18 +62,18 @@ class CurseProviderThingy(val entry: Entry) : ProviderThingy(entry) {
             entry.dependencies[depType] = dependsList
 
             // find duplicate entry
-            var depEntry = entry.parent.entries.filter { e ->
+            var depEntry = modpack.entries.filter { e ->
                 e.provider == Provider.CURSE &&
                         (e.id == depAddon.id || e.name == depAddon.name)
             }.firstOrNull()
             if (depEntry == null) {
-                if (depType == DependencyType.required || (entry.parent.doOptionals && depType == DependencyType.optional)) {
+                if (depType == DependencyType.required || (modpack.doOptionals && depType == DependencyType.optional)) {
                     //TODO: WORKAROUND, add this as a normal entry to be processed later
                     val (depAddonId, depFileId, fileName) = findFile(Entry(
                             provider = Provider.CURSE,
-                            id = dependency.addOnId,
+                            id = addOnId,
                             curseFileNameRegex = entry.curseFileNameRegex
-                    ))
+                    ), modpack)
                     if (depAddonId < 0 || depFileId < 0)
                         throw Exception("dependency resolution error for $depType dependency ${depAddon.name} " +
                                 "${depAddon.id} of ${addon.name} ${addon.id}")
@@ -87,7 +84,7 @@ class CurseProviderThingy(val entry: Entry) : ProviderThingy(entry) {
                             fileId = depFileId,
                             name = depAddon.name
                     )
-                    entry.parent.entries += depEntry
+                    modpack.entries += depEntry
                     println("added $depType dependency $fileName of ${addon.name}")
                 }
             } else {
@@ -105,8 +102,8 @@ class CurseProviderThingy(val entry: Entry) : ProviderThingy(entry) {
         }
     }
 
-    private fun findFile(entry: Entry): Triple<Int, Int, String> {
-        val mcVersion = entry.parent.mcVersion
+    private fun findFile(entry: Entry, modpack: Modpack): Triple<Int, Int, String> {
+        val mcVersion = modpack.mcVersion
         val name = entry.name
         val version = entry.version
         var releaseTypes = entry.releaseTypes

@@ -6,7 +6,7 @@ package moe.nikky.builder
  * @version 1.0
  */
 
-class DirectProviderThing(val entry: Entry) : ProviderThingy(entry) {
+class DirectProviderThing(override val entry: Entry) : ProviderThingy(entry) {
     override fun validate(): Boolean {
         return entry.url.isNotBlank()
     }

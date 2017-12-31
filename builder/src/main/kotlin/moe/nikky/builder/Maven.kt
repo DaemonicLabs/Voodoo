@@ -9,14 +9,14 @@ import moe.nikky.util.XMLParser
  * @version 1.0
  */
 
-class MavenProviderThing(val entry: Entry) : ProviderThingy(entry) {
+class MavenProviderThing(override val entry: Entry) : ProviderThingy(entry) {
     override fun validate(): Boolean {
         return listOf(entry.remoteRepository, entry.group, entry.artifact, entry.version).all {
             it -> it.isNotBlank()
         }
     }
 
-    override fun prepareDependencies() {
+    override fun prepareDependencies(modpack: Modpack) {
         var remoteRepository = entry.remoteRepository
         if(!(remoteRepository.endsWith('/'))) {
             remoteRepository += '/'

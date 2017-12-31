@@ -2,6 +2,8 @@
 
 ## Builder
 
+* fix run and runShadow
+
 * Memoization
 
 * use property wrappers Prop<T>(var enabled: boolean, var value: T)

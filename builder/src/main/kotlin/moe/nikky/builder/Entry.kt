@@ -20,13 +20,14 @@ data class Modpack(
         var entries: List<Entry> = emptyList(),
         var forge: String = "recommended",
         var sponge: String = "",
+        var features: List<Feature> = emptyList(),
         var mcVersion: List<String> = listOf("1.12.2")) {
     companion object {
         val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
                 .registerModule(KotlinModule()) // Enable Kotlin support
     }
 
-    fun toYAMLString() : String {
+    fun toYAMLString(): String {
         return mapper.writeValueAsString(this)
     }
 }
@@ -41,61 +42,105 @@ enum class Side(val flag: Int) {
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class Entry(
-    //TODO: Property wrapper Property<T>(value: T, enabled: Boolean)
+        //TODO: Property wrapper Property<T>(value: T, enabled: Boolean)
         @JsonInclude(JsonInclude.Include.ALWAYS)
-    var provider: Provider = Provider.CURSE,
+        var provider: Provider = Provider.CURSE,
         var name: String = "",
         var comment: String = "",
         var description: String = "",
-        var feature: Feature? = null,
+        var feature: EntryFeature? = null,
         var side: Side = Side.BOTH,
         var recommendation: Recommendation = Recommendation.NONE,
-    //TODO: figure out how to reference other entries.. by name ?
+        //TODO: figure out how to reference other entries.. by name ?
         var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         var path: String = "",
-//        var packageType: String = "mod",
-    // INTERNAL
+        //        var packageType: String = "mod",
+        // INTERNAL
         @JsonIgnore
-    var cachePath: String = "",
-        @JsonIgnore
-    var parent: Modpack = Modpack("placeholder"),
-    // CURSE
+        var cachePath: String = "",
+//        @JsonIgnore
+//        var parent: Modpack = Modpack("placeholder"),
+        // CURSE
         var id: Int = -1,
         var fileId: Int = -1,
         var releaseTypes: Set<ReleaseType> = setOf(ReleaseType.release, ReleaseType.beta),
         var curseFileNameRegex: String = ".*(?<!-deobf\\.jar)\$",
-    // DIRECT
+        // DIRECT
         var url: String = "",
         var fileName: String = "",
-    //MAVEN
+        //MAVEN
         var remoteRepository: String = "",
         var group: String = "",
         var artifact: String = "",
         var version: String = "",
-    //JENKINS
+        //JENKINS
         var jeninsUrl: String = "",
         var job: String = "",
         var jenkinsFileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)$",
-    // LOCAL
+        // LOCAL
         var file: String = ""
 
 )
 
 
-
-abstract class ProviderThingy(entry: Entry) {
+abstract class ProviderThingy(open val entry: Entry) {
     open val name = "abstract Provider"
     abstract fun validate(): Boolean
-    open fun prepareDependencies() {
+    open fun prepareDependencies(modpack: Modpack) {
         println("prepareDependencies not overridden in '$name'")
     }
 
-    open fun resolveDependencies() {
+    open fun resolveDependencies(modpack: Modpack) {
         println("resolveDependencies not overridden in '$name'")
     }
 
-    open fun resolveFeatureDependencies() {
+    open fun resolveFeatureDependencies(modpack: Modpack) {
+        var featureName = entry.feature?.name ?: return
+        if (featureName.isBlank())
+            featureName = entry.name
+        // find feature with matching name
+        var feature = modpack.features.find { f -> f.name == featureName }
 
+        if (feature == null) {
+            println(entry)
+            feature = Feature(
+                    name = featureName,
+                    names = listOf(featureName),
+                    entries = listOf(entry.name),
+                    processedEntries = emptyList()
+            )
+            processFeature(feature, modpack)
+            modpack.features += feature
+        }
+    }
+
+    private fun processFeature(feature: Feature, parent: Modpack) {
+        val features = parent.features
+        println("processing $feature")
+        val processableEntries = feature.entries.filter { f -> !feature.processedEntries.contains(f) }
+        for (entry_name in processableEntries) {
+            println("searching $entry_name")
+            val entry = parent.entries.find { e ->
+                e.name == entry_name
+            }
+            if (entry == null) {
+                println("$entry_name not in entries")
+                feature.processedEntries += entry_name
+                continue
+            }
+            var depNames = entry.dependencies.values.flatten()
+            print(depNames)
+            depNames = depNames.filter { d ->
+                parent.entries.any { e -> e.name == d }
+            }
+            println("filtered dependency names: $depNames")
+            for (dep in depNames) {
+                if (!(feature.entries.contains(dep))) {
+                    feature.entries += dep
+                }
+            }
+            feature.processedEntries += entry_name
+        }
     }
 }
 
@@ -109,6 +154,14 @@ enum class Provider(val thingy: (Entry) -> ProviderThingy) {
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class Feature(
         var name: String,
+        var names: List<String>,
+        var entries: List<String>,
+        var processedEntries: List<String>
+)
+
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+data class EntryFeature(
+        var name: String = "",
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var selected: Boolean = true,
         var description: String = "",
