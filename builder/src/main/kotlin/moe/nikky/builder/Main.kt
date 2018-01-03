@@ -130,12 +130,27 @@ fun process(modpack: Modpack) {
 //            ('file_name', 'file'), [e for e in entries if e['type'] == 'local'])
 
     val srcPath = outputPath.resolve("src")
-
+    srcPath.mkdirs()
 
     println("resolvePath")
     for (entry in modpack.entries) {
         val thingy = entry.provider.thingy(entry)
         thingy.resolvePath()
+    }
+    println(modpack.toYAMLString())
+
+    //TODO: delete old mod path
+    val modPath = srcPath.resolve("mods")
+    if (! modPath.deleteRecursively()) {
+        println("might have failed deleting $modPath")
+    }
+    modPath.mkdirs()
+
+
+    println("writeUrlTxt")
+    for (entry in modpack.entries) {
+        val thingy = entry.provider.thingy(entry)
+        thingy.writeUrlTxt(srcPath)
     }
     println(modpack.toYAMLString())
 }
