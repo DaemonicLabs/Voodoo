@@ -1,7 +1,11 @@
-package moe.nikky.builder
+package moe.nikky.builder.provider
 
 import khttp.get
+import moe.nikky.builder.Entry
+import moe.nikky.builder.Modpack
+import moe.nikky.builder.ProviderThingy
 import moe.nikky.util.XMLParser
+import java.io.File
 
 /**
  * Created by nikky on 30/12/17.
@@ -49,8 +53,13 @@ class MavenProviderThing(override val entry: Entry) : ProviderThingy(entry) {
         println("$artifact version is $version")
     }
 
+    override fun prepareDownload(cacheBase: File) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+
+    }
+
     override val name = "Maven provider"
-    fun doDirectThingy() {
+    fun doMavenThingy() {
         println("doMavenThingy not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }
