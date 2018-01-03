@@ -8,6 +8,8 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.sun.xml.internal.bind.v2.runtime.reflect.Lister
 import moe.nikky.builder.provider.*
 import java.io.File
+import java.net.URL
+import java.net.URLDecoder
 
 
 /**
@@ -176,6 +178,14 @@ abstract class ProviderThingy(open val entry: Entry) {
         }
         entry.path = path
         entry.filePath = "${entry.path}/${entry.fileName}"
+    }
+
+    fun writeUrlTxt(srcPath: File) {
+        if(entry.url.isBlank()) throw Exception("entry $entry misses url")
+        if(entry.filePath.isBlank()) throw Exception("entry $entry misses filePath")
+        val urlPath = File(srcPath, entry.filePath + ".url.txt")
+        File(urlPath.parent).mkdirs()
+        urlPath.writeText(URLDecoder.decode(entry.url, "UTF-8"))
     }
 }
 

@@ -185,16 +185,21 @@ class CurseProviderThingy(override val entry: Entry) : ProviderThingy(entry) {
                 return Triple(addonId, file.id, file.fileNameOnDisk)
         }
 
-        val files = getAllAddonFiles(addonId)
-        // print(files)
+        var files = getAllAddonFiles(addonId)
+//        println("mc version: $mcVersion")
+//        files.forEach{f -> println("${f.fileName} ${f.fileNameOnDisk} ${f.gameVersion}")}
 
-        files.filter { f ->
+        files = files.filter { f ->
             ((version.isNotBlank()
                     && f.fileName.contains(version, true) || version.isBlank()) &&
                     mcVersion.any { v -> f.gameVersion.contains(v) } &&
                     releaseTypes.contains(f.releaseType) &&
                     re.matches(f.fileName))
         }.sortedWith(compareByDescending { it.fileDate })
+
+//        println("filtered")
+//        files.forEach{f -> println("filtered ${f.fileName} ${f.fileNameOnDisk} ${f.gameVersion}")}
+
         val file = files.firstOrNull()
         if (file != null)
             return Triple(addonId, file.id, file.fileNameOnDisk)
