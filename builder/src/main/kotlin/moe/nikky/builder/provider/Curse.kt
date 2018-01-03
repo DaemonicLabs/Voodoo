@@ -1,10 +1,12 @@
-package moe.nikky.builder
+package moe.nikky.builder.provider
 
 import aballano.kotlinmemoization.memoize
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import khttp.get
+import moe.nikky.builder.*
+import java.io.File
 
 /**
  * Created by nikky on 30/12/17.
@@ -20,7 +22,7 @@ class CurseProviderThingy(override val entry: Entry) : ProviderThingy(entry) {
 
         private fun getAddonData(): List<Addon> {
 //            val url = "$META_URL/api/addon/?mods=1&texturepacks=1&worlds=1&property=id,name,summary,websiteURL,packageType,categorySection"
-            val url = "$META_URL/api/addon/?mods=1&texturepacks=1&worlds=1"
+            val url = "${META_URL}/api/addon/?mods=1&texturepacks=1&worlds=1"
 
             println(url)
             val r = get(url)
@@ -92,14 +94,68 @@ class CurseProviderThingy(override val entry: Entry) : ProviderThingy(entry) {
                 val side = Side.values().find { s -> s.flag == otherSide.flag or entry.side.flag }
                 if (side == null) throw Exception("invalid side")
 
-                //TODO: translate and add a reverse mapping for provide information if necessary
-//                provides = dep_entry.get('provides', {})
-//                provide_list = dep_entry.get(str(dep_type), [])
-//                provide_list.append(addon['name'])
-//                provides[str(dep_type)] = provide_list
-//                dep_entry['provides'] = provides
+                var provideList = depEntry.provides[depType] ?: emptyList()
+                provideList += addon.name
+                depEntry.provides[depType] = provideList
             }
         }
+    }
+
+    override fun fillInformation() {
+        println(entry)
+        var addon = getAddon(entry.id) ?: throw Exception("id ${entry.id} is invalid")
+        var addonFile = getAddonFile(entry.id, entry.fileId) ?: throw Exception("id:fileId ${entry.id} : ${entry.fileId} is invalid")
+        if (entry.name.isBlank()) {
+            entry.name = addon.name
+        }
+        if (entry.description.isBlank()) {
+            entry.name = addon.summary
+        }
+        if (entry.fileName.isBlank()) {
+            entry.fileName = addonFile.fileNameOnDisk
+        }
+        if (entry.url.isBlank()) {
+            entry.url = addonFile.downloadURL
+        }
+        if (entry.websiteUrl.isBlank()) {
+            entry.websiteUrl = addon.webSiteURL
+        }
+        if (entry.packageType == PackageType.none) {
+            entry.packageType = addon.packageType
+        }
+        if (entry.path.isBlank()) {
+            entry.path = addon.categorySection.path
+        }
+
+//        for ((depType, list) in entry.provides) {
+//            var newList = emptyList<String>()
+//            for (provided in list) {
+//
+//            }
+//        }
+//        provides = entry.get('provides', {})
+//        for release_type in provides.keys():
+//            provide_list = provides[release_type]
+//            new_list = []
+//            for provider in provide_list:
+//                if isinstance(provider, int):
+//                    provide_addon = self.get_add_on(provider)
+//                    new_list.append(provide_addon['name'])
+//            provides[str(release_type)] = new_list
+//        entry['provides'] = provides
+
+        super.fillInformation()
+    }
+
+    override fun prepareDownload(cacheBase: File) {
+        entry.provider = Provider.DIRECT
+        if (entry.cacheBase.isBlank()) {
+            entry.cacheBase = cacheBase.absolutePath
+        }
+        if (entry.cachePath.isBlank()) {
+            entry.cachePath = "${entry.cacheBase}/${entry.id}/${entry.fileId}"
+        }
+
     }
 
     private fun findFile(entry: Entry, modpack: Modpack): Triple<Int, Int, String> {
@@ -154,7 +210,7 @@ class CurseProviderThingy(override val entry: Entry) : ProviderThingy(entry) {
     }
 
     private fun getAddonFileCall(addonId: Int, fileId: Int): AddonFile? {
-        val url = "$META_URL/api/addon/$addonId/files/$fileId"
+        val url = "${META_URL}/api/addon/$addonId/files/$fileId"
 
         println(url)
         val r = get(url)
@@ -167,7 +223,7 @@ class CurseProviderThingy(override val entry: Entry) : ProviderThingy(entry) {
     val getAddonFile = this::getAddonFileCall.memoize()
 
     private fun getAllAddonFilesCall(addonId: Int): List<AddonFile> {
-        val url = "$META_URL/api/addon/$addonId/files"
+        val url = "${META_URL}/api/addon/$addonId/files"
 
         println(url)
         val r = get(url)
@@ -180,7 +236,7 @@ class CurseProviderThingy(override val entry: Entry) : ProviderThingy(entry) {
     val getAllAddonFiles = this::getAllAddonFilesCall.memoize()
 
     private fun getAddonCall(addonId: Int): Addon? {
-        val url = "$META_URL/api/addon/$addonId"
+        val url = "${META_URL}/api/addon/$addonId"
 
         println(url)
         val r = get(url)
@@ -260,7 +316,7 @@ enum class DependencyType {
 }
 
 enum class PackageType {
-    mod, folder, file, singleFile
+    none, mod, folder, file, singleFile
 }
 
 enum class CurseStage {

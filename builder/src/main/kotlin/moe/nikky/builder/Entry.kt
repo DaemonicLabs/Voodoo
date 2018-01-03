@@ -5,6 +5,9 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.sun.xml.internal.bind.v2.runtime.reflect.Lister
+import moe.nikky.builder.provider.*
+import java.io.File
 
 
 /**
@@ -50,14 +53,18 @@ data class Entry(
         var description: String = "",
         var feature: EntryFeature? = null,
         var side: Side = Side.BOTH,
-        var recommendation: Recommendation = Recommendation.NONE,
+        var websiteUrl: String = "",
         //TODO: figure out how to reference other entries.. by name ?
         var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+        var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         var path: String = "",
-        //        var packageType: String = "mod",
+        var filePath: String = "",
+        var packageType: PackageType = PackageType.none,
         // INTERNAL
         @JsonIgnore
         var cachePath: String = "",
+        @JsonIgnore
+        var cacheBase: String = "",
 //        @JsonIgnore
 //        var parent: Modpack = Modpack("placeholder"),
         // CURSE
@@ -141,6 +148,34 @@ abstract class ProviderThingy(open val entry: Entry) {
             }
             feature.processedEntries += entry_name
         }
+    }
+
+    open fun fillInformation() {
+        if (entry.feature != null) {
+            if (entry.feature!!.name.isBlank()) {
+                entry.feature!!.name = entry.name
+            }
+        }
+    }
+
+    abstract fun prepareDownload(cacheBase: File)
+
+    fun resolvePath() {
+
+        var path = entry.path
+        // side
+        if(path.startsWith("mods")) {
+            val side = when(entry.side) {
+                Side.CLIENT -> "_CLIENT"
+                Side.SERVER -> "_SERVER"
+                Side.BOTH -> ""
+            }
+            if(side.isNotBlank()) {
+                path = "$side/$path"
+            }
+        }
+        entry.path = path
+        entry.filePath = "${entry.path}/${entry.fileName}"
     }
 }
 
