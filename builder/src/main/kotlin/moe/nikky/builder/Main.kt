@@ -57,90 +57,24 @@ fun process(modpack: Modpack) {
         throw IllegalArgumentException("no sponge or forge version define")
 
     val outputPath = File("out/modpacks/${modpack.name}")
-
-    //TODO: check here or later whether providers have
-    // all required values in entries
-
-    val spongeEntry: Entry?
-    if (!modpack.sponge.isBlank()) {
-        println("sponge")
-        spongeEntry = Forge.getSponge(modpack.sponge)
-        modpack.entries += spongeEntry
-        println(modpack.toYAMLString())
-    } else {
-        spongeEntry = null
-    }
-
-    println("prepareDependencies")
-    for (entry in modpack.entries) {
-//        entry.parent = modpack
-        val thingy = entry.provider.thingy(entry)
-        thingy.prepareDependencies(modpack)
-    }
-    println(modpack.toYAMLString())
-
-    println("forge")
-    val forgeEntry = Forge.getForge(modpack.forge, modpack.mcVersion, spongeEntry)
-    //TODO clean old forge entry path -> parent
-    modpack.entries += forgeEntry
-    println(modpack.toYAMLString())
-
-    println("validate")
-    // filter out unvalidated entries
-    modpack.entries = modpack.entries.filter { entry -> entry.provider.thingy(entry).validate() }
-
-    println(modpack.toYAMLString())
-
-    println("resolveDependencies")
-    for (entry in modpack.entries) {
-        val thingy = entry.provider.thingy(entry)
-        thingy.resolveDependencies(modpack)
-    }
-    println(modpack.toYAMLString())
-
-    println("fillInformation")
-    for (entry in modpack.entries) {
-        val thingy = entry.provider.thingy(entry)
-        thingy.fillInformation()
-    }
-    println(modpack.toYAMLString())
-
-    println("resolveFeatureDependencies")
-    for (entry in modpack.entries) {
-        val thingy = entry.provider.thingy(entry)
-        thingy.resolveFeatureDependencies(modpack)
-    }
-    println(modpack.toYAMLString())
-
-
-    //TODO: generate graph
-
-
-    println("prepareDownload")
-    for (entry in modpack.entries) {
-        val thingy = entry.provider.thingy(entry)
-        thingy.prepareDownload(File("out/cache").resolve(entry.provider.toString()))
-    }
-    println(modpack.toYAMLString())
-
-    //TODO check that all fields are set for different types
-    //TODO: convert into thingy calls
-//    assert_dict('prepare_download',
-//            ('url', 'file_name', 'cache_path'), [e for e in entries if e['type'] != 'local'])
-//    assert_dict('prepare_download',
-//            ('file_name', 'file'), [e for e in entries if e['type'] == 'local'])
-
     val srcPath = outputPath.resolve("src")
     srcPath.mkdirs()
 
-    println("resolvePath")
-    for (entry in modpack.entries) {
-        val thingy = entry.provider.thingy(entry)
-        thingy.resolvePath()
-    }
-    println(modpack.toYAMLString())
+    modpack.outputPath = outputPath.path
+    modpack.cacheBase = "out/cache"
+    //TODO: check here or later whether providers have
+    // all required values in entries
 
-    //TODO: delete old mod path
+//    val spongeEntry: Entry?
+//    if (!modpack.sponge.isBlank()) {
+//        println("sponge")
+//        spongeEntry = Forge.getSponge(modpack.sponge)
+//        modpack.entries += spongeEntry
+//        println(modpack.toYAMLString())
+//    } else {
+//        spongeEntry = null
+//    }
+
     val modPath = srcPath.resolve("mods")
     if (!modPath.deleteRecursively()) {
         println("might have failed deleting $modPath")
@@ -153,18 +87,124 @@ fun process(modpack: Modpack) {
     }
     loaderPath.mkdirs()
 
-    println("writeUrlTxt")
-    for (entry in modpack.entries) {
-        val thingy = entry.provider.thingy(entry)
-        thingy.writeUrlTxt(outputPath)
-    }
+    println("forge")
+    val forgeEntry = Forge.getForge(modpack.forge, modpack.mcVersion/*, spongeEntry*/)
+    modpack.entries += forgeEntry
     println(modpack.toYAMLString())
 
-    println("download")
-    for (entry in modpack.entries) {
-        val thingy = entry.provider.thingy(entry)
-        thingy.download(outputPath)
+    var invalidEntries = listOf<Entry>()
+    var counter = 0
+    while(!modpack.entries.all{ it.done }){
+        counter++
+        println("test processing: $counter")
+        for (entry in modpack.entries.filter { !it.done }) {
+            println("processing $entry")
+            val thingy = entry.provider.thingy
+            if(!thingy.process(entry, modpack)) {
+                invalidEntries += entry
+                entry.done = true
+                println("failed $entry")
+                continue
+            }
+        }
+//        println(modpack.toYAMLString())
     }
-    println(modpack.toYAMLString())
+    println("failed entries: $invalidEntries")
+
+    return
+
+//    println("prepareDependencies")
+//    for (entry in modpack.entries) {
+////        entry.parent = modpack
+//        val thingy = entry.provider.thingy(entry)
+//        thingy.prepareDependencies(modpack)
+//    }
+//    println(modpack.toYAMLString())
+//
+//    println("forge")
+//    val forgeEntry = Forge.getForge(modpack.forge, modpack.mcVersion/*, spongeEntry*/)
+//    //TODO clean old forge entry path -> parent
+//    modpack.entries += forgeEntry
+//    println(modpack.toYAMLString())
+//
+//    println("validate")
+//    // filter out unvalidated entries
+//    modpack.entries = modpack.entries.filter { entry -> entry.provider.thingy(entry).validate() }
+//
+//    println(modpack.toYAMLString())
+//
+//    println("resolveDependencies")
+//    for (entry in modpack.entries) {
+//        val thingy = entry.provider.thingy(entry)
+//        thingy.resolveDependencies(modpack)
+//    }
+//    println(modpack.toYAMLString())
+//
+//    println("fillInformation")
+//    for (entry in modpack.entries) {
+//        val thingy = entry.provider.thingy(entry)
+//        thingy.fillInformation()
+//    }
+//    println(modpack.toYAMLString())
+//
+//    println("resolveFeatureDependencies")
+//    for (entry in modpack.entries) {
+//        val thingy = entry.provider.thingy(entry)
+//        thingy.resolveFeatureDependencies(modpack)
+//    }
+//    println(modpack.toYAMLString())
+//
+//
+//    //TODO: generate graph
+//
+//
+//    println("prepareDownload")
+//    for (entry in modpack.entries) {
+//        val thingy = entry.provider.thingy(entry)
+//        thingy.prepareDownload(File("out/cache").resolve(entry.provider.toString()))
+//    }
+//    println(modpack.toYAMLString())
+//
+//    //TODO check that all fields are set for different types
+//    //TODO: convert into thingy calls
+////    assert_dict('prepare_download',
+////            ('url', 'file_name', 'cache_path'), [e for e in entries if e['type'] != 'local'])
+////    assert_dict('prepare_download',
+////            ('file_name', 'file'), [e for e in entries if e['type'] == 'local'])
+//
+//
+//    println("resolvePath")
+//    for (entry in modpack.entries) {
+//        val thingy = entry.provider.thingy(entry)
+//        thingy.resolvePath()
+//    }
+//    println(modpack.toYAMLString())
+//
+//    //TODO: delete old mod path
+//    val modPath = srcPath.resolve("mods")
+//    if (!modPath.deleteRecursively()) {
+//        println("might have failed deleting $modPath")
+//    }
+//    modPath.mkdirs()
+//
+//    val loaderPath = outputPath.resolve("loaders")
+//    if (!loaderPath.deleteRecursively()) {
+//        println("might have failed deleting $modPath")
+//    }
+//    loaderPath.mkdirs()
+//
+//    println("writeUrlTxt")
+//    for (entry in modpack.entries) {
+//        val thingy = entry.provider.thingy(entry)
+//        thingy.writeUrlTxt(outputPath)
+//    }
+//    println(modpack.toYAMLString())
+//
+//    println("download")
+//    for (entry in modpack.entries) {
+//        val thingy = entry.provider.thingy(entry)
+//        thingy.download(outputPath)
+//    }
+//    println(modpack.toYAMLString())
 }
 

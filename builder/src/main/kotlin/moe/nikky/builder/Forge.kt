@@ -14,37 +14,37 @@ class Forge {
     companion object {
         var data: ForgeData = getForgeData()
 
-        fun getSponge(spongeVersion: String): Entry {
-            val entry = Entry(
-                    provider = Provider.MAVEN,
-                    name = "Sponge Forge",
-                    remoteRepository = "https://repo.spongepowered.org/maven/",
-                    group = "org.spongepowered",
-                    artifact = "spongeforge",
-                    version = spongeVersion,
-                    //packageType = PackageType.MOD,
-                    path = "mods",
-                    side = Side.SERVER)
-            return entry
-        }
+//        fun getSponge(spongeVersion: String): Entry {
+//            val entry = Entry(
+//                    provider = Provider.MAVEN,
+//                    name = "Sponge Forge",
+//                    remoteRepository = "https://repo.spongepowered.org/maven/",
+//                    group = "org.spongepowered",
+//                    artifact = "spongeforge",
+//                    version = spongeVersion,
+//                    //packageType = PackageType.MOD,
+//                    path = "mods",
+//                    side = Side.SERVER)
+//            return entry
+//        }
 
-        fun getForge(forgeVersion: String, mcVersion: List<String>, spongeEntry: Entry?): Entry {
-            var version = forgeVersion
-            if (spongeEntry != null) {
-                val spongeVersion = spongeEntry.version
-                println(spongeVersion)
-                version = spongeVersion.split("-")[1]
-            }
-            val (url, filename, longVersion) = getForgeUrl(version, mcVersion)
+        fun getForge(forgeVersion: String, mcVersion: List<String>/*, spongeEntry: Entry?*/): Entry {
+            //    if (spongeEntry != null) {
+            //      val spongeVersion = spongeEntry.version
+            //      println(spongeVersion)
+            //      version = spongeVersion.split("-")[1]
+            //    }
+            val (url, filename, longVersion) = getForgeUrl(forgeVersion, mcVersion)
             //TODO CACHE DIR
-            val cacheDir = "~/.cache/voodoo/forge"
             val entry = Entry(
                     provider = Provider.DIRECT,
                     name = "Minecraft Forge",
                     url = url,
                     fileName = filename,
 //                    packageType = PackageType.LOADER,
-                    basePath = "loaders"
+                    basePath = "loaders",
+                    path = ".",
+                    cacheRelpath = "FORGE/$longVersion"
             )
             return entry
         }
@@ -54,18 +54,17 @@ class Forge {
             var versionStr = ""
             if (version.equals("recommended", true) || version.equals("latest", true)) {
                 val promoVersion = "$mcVersion-${version.toLowerCase()}"
-                versionStr = data.promos.getOrDefault(promoVersion, null)?.toString() ?: ""
+                versionStr = data.promos[promoVersion]?.toString() ?: ""
             } else {
-                versionStr = data.promos.getOrDefault(version, null)?.toString() ?: ""
+                versionStr = data.promos[version]?.toString() ?: ""
                 if (versionStr.isBlank()) {
-                    var versionList: List<Int> = emptyList()
-                    versionList = data.branches.getOrDefault(version, null) ?: emptyList()
+                    var versionList= data.branches.getOrDefault(version, emptyList())
                     if (versionList.isEmpty()) {
-                        versionList = data.mcversion.getOrDefault(version, null) ?: emptyList()
+                        versionList = data.mcversion.getOrDefault(version, emptyList())
                     }
 
                     if (versionList.isNotEmpty()) {
-                        versionList = versionList.filter { i -> data.number.get(i.toString())?.mcversion == mcVersion }
+                        versionList = versionList.filter { i -> data.number[i.toString()]?.mcversion == mcVersion }
                     }
                     if (versionList.isEmpty()) {
                         throw IllegalArgumentException("forge value is invalid")

@@ -1,14 +1,11 @@
 package moe.nikky.builder
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.sun.xml.internal.bind.v2.runtime.reflect.Lister
 import moe.nikky.builder.provider.*
 import java.io.File
-import java.net.URL
 import java.net.URLDecoder
 
 
@@ -26,7 +23,9 @@ data class Modpack(
         var forge: String = "recommended",
         var sponge: String = "",
         var features: List<Feature> = emptyList(),
-        var mcVersion: List<String> = listOf("1.12.2")) {
+        var mcVersion: List<String> = listOf("1.12.2"),
+        var outputPath: String = "",
+        var cacheBase: String = "") {
     companion object {
         val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
                 .registerModule(KotlinModule()) // Enable Kotlin support
@@ -67,9 +66,11 @@ data class Entry(
 //        @JsonIgnore
         var cachePath: String = "",
 //        @JsonIgnore
-        var cacheBase: String = "",
+        var cacheRelpath: String = "",
 //        @JsonIgnore
-//        var parent: Modpack = Modpack("placeholder"),
+        var done: Boolean = false,
+//        @JsonIgnore
+        var urlTxtDone: Boolean = false,
         // CURSE
         var id: Int = -1,
         var fileId: Int = -1,
@@ -84,120 +85,13 @@ data class Entry(
         var artifact: String = "",
         var version: String = "",
         //JENKINS
-        var jeninsUrl: String = "",
+        var jenkinsUrl: String = "",
         var job: String = "",
         var jenkinsFileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)$",
         // LOCAL
         var fileSrc: String = ""
 
 )
-
-
-abstract class ProviderThingy(open val entry: Entry) {
-    open val name = "abstract Provider"
-    abstract fun validate(): Boolean
-    open fun prepareDependencies(modpack: Modpack) {
-        println("prepareDependencies not overridden in '$name'")
-    }
-
-    open fun resolveDependencies(modpack: Modpack) {
-        println("resolveDependencies not overridden in '$name'")
-    }
-
-    open fun resolveFeatureDependencies(modpack: Modpack) {
-        var featureName = entry.feature?.name ?: return
-        if (featureName.isBlank())
-            featureName = entry.name
-        // find feature with matching name
-        var feature = modpack.features.find { f -> f.name == featureName }
-
-        if (feature == null) {
-            println(entry)
-            feature = Feature(
-                    name = featureName,
-                    names = listOf(featureName),
-                    entries = listOf(entry.name),
-                    processedEntries = emptyList()
-            )
-            processFeature(feature, modpack)
-            modpack.features += feature
-        }
-    }
-
-    private fun processFeature(feature: Feature, parent: Modpack) {
-        val features = parent.features
-        println("processing $feature")
-        val processableEntries = feature.entries.filter { f -> !feature.processedEntries.contains(f) }
-        for (entry_name in processableEntries) {
-            println("searching $entry_name")
-            val entry = parent.entries.find { e ->
-                e.name == entry_name
-            }
-            if (entry == null) {
-                println("$entry_name not in entries")
-                feature.processedEntries += entry_name
-                continue
-            }
-            var depNames = entry.dependencies.values.flatten()
-            print(depNames)
-            depNames = depNames.filter { d ->
-                parent.entries.any { e -> e.name == d }
-            }
-            println("filtered dependency names: $depNames")
-            for (dep in depNames) {
-                if (!(feature.entries.contains(dep))) {
-                    feature.entries += dep
-                }
-            }
-            feature.processedEntries += entry_name
-        }
-    }
-
-    open fun fillInformation() {
-        if (entry.feature != null) {
-            if (entry.feature!!.name.isBlank()) {
-                entry.feature!!.name = entry.name
-            }
-        }
-    }
-
-    abstract fun prepareDownload(cacheBase: File)
-
-    fun resolvePath() {
-
-        var path = entry.path
-        // side
-        if(path.startsWith("mods")) {
-            val side = when(entry.side) {
-                Side.CLIENT -> "_CLIENT"
-                Side.SERVER -> "_SERVER"
-                Side.BOTH -> ""
-            }
-            if(side.isNotBlank()) {
-                path = "$side/$path"
-            }
-        }
-        entry.path = path
-        entry.filePath = File(entry.basePath, entry.path).resolve(entry.fileName).path
-    }
-
-    fun writeUrlTxt(outputPath: File) {
-        if(entry.url.isBlank()) throw Exception("entry $entry misses url")
-        if(entry.filePath.isBlank()) throw Exception("entry $entry misses filePath")
-        val urlPath = File(outputPath, entry.filePath + ".url.txt")
-        File(urlPath.parent).mkdirs()
-        urlPath.writeText(URLDecoder.decode(entry.url, "UTF-8"))
-    }
-
-    abstract fun download(outputPath: File)
-}
-
-
-enum class Provider(val thingy: (Entry) -> ProviderThingy) {
-    CURSE(::CurseProviderThingy),
-    DIRECT(::DirectProviderThing),
-    MAVEN(::MavenProviderThing)
-}
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class Feature(
