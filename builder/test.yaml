@@ -11,6 +11,7 @@ entries:
   name: "Preston"
 - provider: "CURSE"
   name: "YNot"
+- name: Tails
 - provider: "CURSE"
   # name: RFTools
   id: 224641
