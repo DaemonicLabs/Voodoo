@@ -2,19 +2,23 @@
 name: Test pack
 entries:
 - provider: "CURSE"
-  name: "Drawers & Bits"
+  name: "Unlimited Chisel Works"
 - provider: "CURSE"
-# TODO: set addonID
-  name: RFTools
+  name: "Charset Storage - Barrels"
+- provider: "CURSE"
+  name: "Charset Storage - Tanks"
+- provider: "CURSE"
+  name: "Preston"
+- provider: "CURSE"
+  name: "YNot"
+- provider: "CURSE"
+  # name: RFTools
+  id: 224641
   feature:
     selected: true
 - provider: "CURSE"
 # TODO: set fileID
   name: NoNausea
 - provider: "DIRECT"
-  dependencies:
-    optional:
-    - "test"
-    required: []
-  path: "somwhere"
+  url: https://unascribed.com/foamfix/FoamFix-1.12.2-0.8.3-Anarchy.jar
 forge: "recommended"

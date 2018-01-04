@@ -109,7 +109,7 @@ class CurseProviderThingy(override val entry: Entry) : ProviderThingy(entry) {
             entry.name = addon.name
         }
         if (entry.description.isBlank()) {
-            entry.name = addon.summary
+            entry.description = addon.summary
         }
         if (entry.fileName.isBlank()) {
             entry.fileName = addonFile.fileNameOnDisk
@@ -158,6 +158,11 @@ class CurseProviderThingy(override val entry: Entry) : ProviderThingy(entry) {
 
     }
 
+    override fun download(outputPath: File) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+
     private fun findFile(entry: Entry, modpack: Modpack): Triple<Int, Int, String> {
         val mcVersion = modpack.mcVersion
         val name = entry.name
@@ -169,6 +174,8 @@ class CurseProviderThingy(override val entry: Entry) : ProviderThingy(entry) {
         var addonId = entry.id
         var fileId = entry.fileId
         val fileNameRegex = entry.curseFileNameRegex
+
+//        data.forEach { addon -> println("${addon.id} ${addon.name}")}
 
         val addon = data.find { addon ->
             (name.isNotBlank() && name.equals(addon.name, true))
@@ -203,7 +210,7 @@ class CurseProviderThingy(override val entry: Entry) : ProviderThingy(entry) {
         val file = files.firstOrNull()
         if (file != null)
             return Triple(addonId, file.id, file.fileNameOnDisk)
-        println(addon)
+        println(addon) //TODO: turn into error dump to disk and just print filepath
         println("no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
                 "mc version: $mcVersion version: $version")
 //        // TEST
@@ -211,7 +218,8 @@ class CurseProviderThingy(override val entry: Entry) : ProviderThingy(entry) {
 //            getAllAddonFiles(addon1.id)
 //        }
 
-        return Triple(0, 0, "")
+        println("no file matching the parameters found for ${addon.name}")
+        return Triple(addonId, -1, "")
     }
 
     private fun getAddonFileCall(addonId: Int, fileId: Int): AddonFile? {

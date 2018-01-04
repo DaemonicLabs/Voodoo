@@ -44,7 +44,7 @@ class Forge {
                     url = url,
                     fileName = filename,
 //                    packageType = PackageType.LOADER,
-                    path = "loaders"
+                    basePath = "loaders"
             )
             return entry
         }

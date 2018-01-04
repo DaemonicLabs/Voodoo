@@ -98,13 +98,6 @@ fun process(modpack: Modpack) {
     }
     println(modpack.toYAMLString())
 
-    println("resolveFeatureDependencies")
-    for (entry in modpack.entries) {
-        val thingy = entry.provider.thingy(entry)
-        thingy.resolveFeatureDependencies(modpack)
-    }
-    println(modpack.toYAMLString())
-
     println("fillInformation")
     for (entry in modpack.entries) {
         val thingy = entry.provider.thingy(entry)
@@ -112,13 +105,21 @@ fun process(modpack: Modpack) {
     }
     println(modpack.toYAMLString())
 
+    println("resolveFeatureDependencies")
+    for (entry in modpack.entries) {
+        val thingy = entry.provider.thingy(entry)
+        thingy.resolveFeatureDependencies(modpack)
+    }
+    println(modpack.toYAMLString())
+
+
     //TODO: generate graph
 
 
     println("prepareDownload")
     for (entry in modpack.entries) {
         val thingy = entry.provider.thingy(entry)
-        thingy.prepareDownload(File("~/.cache").resolve(entry.provider.toString()))
+        thingy.prepareDownload(File("out/cache").resolve(entry.provider.toString()))
     }
     println(modpack.toYAMLString())
 
@@ -141,16 +142,28 @@ fun process(modpack: Modpack) {
 
     //TODO: delete old mod path
     val modPath = srcPath.resolve("mods")
-    if (! modPath.deleteRecursively()) {
+    if (!modPath.deleteRecursively()) {
         println("might have failed deleting $modPath")
     }
     modPath.mkdirs()
 
+    val loaderPath = outputPath.resolve("loaders")
+    if (!loaderPath.deleteRecursively()) {
+        println("might have failed deleting $modPath")
+    }
+    loaderPath.mkdirs()
 
     println("writeUrlTxt")
     for (entry in modpack.entries) {
         val thingy = entry.provider.thingy(entry)
-        thingy.writeUrlTxt(srcPath)
+        thingy.writeUrlTxt(outputPath)
+    }
+    println(modpack.toYAMLString())
+
+    println("download")
+    for (entry in modpack.entries) {
+        val thingy = entry.provider.thingy(entry)
+        thingy.download(outputPath)
     }
     println(modpack.toYAMLString())
 }
