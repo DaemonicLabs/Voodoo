@@ -88,10 +88,10 @@ class CurseProviderThingy : ProviderThingy() {
                     e.packageType = getAddon(e.id)!!.packageType
                 }
         )
-        register("setPath",
-                { it.id > 0 && it.path.isBlank() },
+        register("setTargetPath",
+                { it.id > 0 && it.targetPath.isBlank() },
                 { e, _ ->
-                    e.path = getAddon(e.id)!!.categorySection.path
+                    e.targetPath = getAddon(e.id)!!.categorySection.path
                 }
         )
         register("cacheRelpath",
@@ -166,7 +166,7 @@ class CurseProviderThingy : ProviderThingy() {
     }
 
     private fun findFile(entry: Entry, modpack: Modpack): Triple<Int, Int, String> {
-        val mcVersion = modpack.mcVersion
+        val mcVersions = listOf(modpack.mcVersion) + modpack.validMcVersions
         val name = entry.name
         val version = entry.version
         var releaseTypes = entry.releaseTypes
@@ -201,7 +201,7 @@ class CurseProviderThingy : ProviderThingy() {
         files = files.filter { f ->
             ((version.isNotBlank()
                     && f.fileName.contains(version, true) || version.isBlank()) &&
-                    mcVersion.any { v -> f.gameVersion.contains(v) } &&
+                    mcVersions.any { v -> f.gameVersion.contains(v) } &&
                     releaseTypes.contains(f.releaseType) &&
                     re.matches(f.fileName))
         }.sortedWith(compareByDescending { it.fileDate })
@@ -214,7 +214,7 @@ class CurseProviderThingy : ProviderThingy() {
             return Triple(addonId, file.id, file.fileNameOnDisk)
         println(addon) //TODO: turn into error dump to disk and just print filepath
         println("no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
-                "mc version: $mcVersion version: $version")
+                "mc version: $mcVersions version: $version")
 //        // TEST
 //        for (addon1 in data.sortedBy { a -> Math.round(Math.random()-0.5) }) {
 //            getAllAddonFiles(addon1.id)

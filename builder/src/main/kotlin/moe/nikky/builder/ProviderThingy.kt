@@ -46,9 +46,9 @@ abstract class ProviderThingy {
         )
 
         register("resolvePath",
-                { it.path.isNotBlank() /*|| it.basePath == "loaders"*/ },
+                { it.filePath.isBlank() && it.targetPath.isNotBlank() && it.fileName.isNotBlank() },
                 { e, _ ->
-                    var path = e.path
+                    var path = e.targetPath
                     // side
                     if (path.startsWith("mods")) {
                         val side = when (e.side) {
@@ -62,6 +62,12 @@ abstract class ProviderThingy {
                     }
                     e.path = path
                     e.filePath = File(e.basePath, e.path).resolve(e.fileName).path
+                }
+        )
+        register("resolveTargetFilePath",
+                { it.targetFilePath.isBlank() && it.targetPath.isNotBlank() && it.fileName.isNotBlank() },
+                { e, _ ->
+                    e.targetFilePath = File(e.targetPath).resolve(e.fileName).path
                 }
         )
     }
@@ -92,19 +98,26 @@ abstract class ProviderThingy {
     }
 
     fun resolveFeatureDependencies(entry: Entry, modpack: Modpack) {
-        var featureName = entry.feature?.name ?: return
+        val entryFeature = entry.feature ?: return
+        var featureName = entryFeature.name
         if (featureName.isBlank())
             featureName = entry.name
         // find feature with matching name
-        var feature = modpack.features.find { f -> f.name == featureName }
+        var feature = modpack.features.find { f -> f.properties.name == featureName }
 
         if (feature == null) {
             println(entry)
             feature = Feature(
-                    name = featureName,
                     names = listOf(featureName),
                     entries = listOf(entry.name),
-                    processedEntries = emptyList()
+                    processedEntries = emptyList(),
+                    files = entryFeature.files,
+                    properties = SKFeatureProperties(
+                            name = featureName,
+                            selected = entryFeature.selected,
+                            description = entryFeature.description,
+                            recommendation = entryFeature.recommendation
+                    )
             )
             processFeature(feature, modpack)
             modpack.features += feature

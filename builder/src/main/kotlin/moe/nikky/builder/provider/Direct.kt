@@ -32,10 +32,10 @@ class DirectProviderThing : ProviderThingy() {
                     e.name = e.fileName.substringBeforeLast('.')
                 }
         )
-        register("setPath",
-                { it.path.isBlank()/* && it.basePath == "src"*/ },
+        register("setTargetPath",
+                { it.targetPath.isBlank() },
                 { e, _ ->
-                    e.path = "mods"
+                    e.targetPath = "mods"
                 }
         )
         register("cacheRelpath",

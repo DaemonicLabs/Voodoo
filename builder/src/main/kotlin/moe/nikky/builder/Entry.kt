@@ -4,9 +4,9 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import moe.nikky.builder.provider.*
-import java.io.File
-import java.net.URLDecoder
+import moe.nikky.builder.provider.DependencyType
+import moe.nikky.builder.provider.PackageType
+import moe.nikky.builder.provider.ReleaseType
 
 
 /**
@@ -14,18 +14,21 @@ import java.net.URLDecoder
  * @author Nikky
  * @version 1.0
  */
-@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+//@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class Modpack(
         var name: String,
         var urls: Boolean = true,
         var doOptionals: Boolean = false,
         var entries: List<Entry> = emptyList(),
         var forge: String = "recommended",
-        var sponge: String = "",
         var features: List<Feature> = emptyList(),
-        var mcVersion: List<String> = listOf("1.12.2"),
-        var outputPath: String = "",
-        var cacheBase: String = "") {
+        var mcVersion: String = "1.12.2",
+        var validMcVersions: List<String> = emptyList(),
+        var outputPath: String = "", //TODO: move into runtime config data class
+        var userFiles: UserFiles = UserFiles(),
+        var launch: Launch = Launch(),
+        var cacheBase: String = ""
+) {
     companion object {
         val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
                 .registerModule(KotlinModule()) // Enable Kotlin support
@@ -37,7 +40,7 @@ data class Modpack(
 }
 
 enum class Recommendation {
-    NONE, STARRED, AVOID
+    starred, avoid
 }
 
 enum class Side(val flag: Int) {
@@ -59,6 +62,8 @@ data class Entry(
         var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         var basePath: String = "src",
+        var targetPath: String = "",
+        var targetFilePath: String = "",
         var path: String = "",
         var filePath: String = "",
         var packageType: PackageType = PackageType.none,
@@ -95,10 +100,11 @@ data class Entry(
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class Feature(
-        var name: String,
         var names: List<String>,
         var entries: List<String>,
-        var processedEntries: List<String>
+        var processedEntries: List<String>,
+        var files: SKFeatureFiles = SKFeatureFiles(),
+        var properties: SKFeatureProperties = SKFeatureProperties()
 )
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -107,5 +113,44 @@ data class EntryFeature(
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var selected: Boolean = true,
         var description: String = "",
-        var recommendation: Recommendation = Recommendation.NONE
+        var recommendation: Recommendation? = null,
+        var files: SKFeatureFiles = SKFeatureFiles()
+)
+
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+data class UserFiles(
+        var include: List<String> = listOf("options.txt", "optionsshaders.txt"),
+        var exclude: List<String> = emptyList()
+)
+
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+data class Launch(
+        var flags: List<String> = listOf("-Dfml.ignoreInvalidMinecraftCertificates=true")
+)
+
+data class SKFeature(
+        var properties: SKFeatureProperties = SKFeatureProperties(),
+        var files: SKFeatureFiles = SKFeatureFiles()
+)
+
+data class SKFeatureProperties(
+        var name: String = "",
+        var selected: Boolean = true,
+        var description: String = "",
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        var recommendation: Recommendation? = null
+)
+
+data class SKFeatureFiles(
+        var include: List<String> = emptyList(),
+        var exclude: List<String> = emptyList()
+)
+
+data class SKModpack(
+        var name: String,
+        var title: String = "",
+        var gameVersion: String,
+        var features: List<SKFeature> = emptyList(),
+        var userFiles: UserFiles = UserFiles(),
+        var launch: Launch = Launch()
 )
