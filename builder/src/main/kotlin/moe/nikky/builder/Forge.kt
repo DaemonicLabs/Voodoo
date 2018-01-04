@@ -28,7 +28,7 @@ class Forge {
 //            return entry
 //        }
 
-        fun getForge(forgeVersion: String, mcVersion: List<String>/*, spongeEntry: Entry?*/): Entry {
+        fun getForge(forgeVersion: String, mcVersion: String/*, spongeEntry: Entry?*/): Entry {
             //    if (spongeEntry != null) {
             //      val spongeVersion = spongeEntry.version
             //      println(spongeVersion)
@@ -49,8 +49,7 @@ class Forge {
             return entry
         }
 
-        fun getForgeUrl(version: String, mcVersionList: List<String>): Triple<String, String, String> {
-            val mcVersion = mcVersionList.first()
+        fun getForgeUrl(version: String, mcVersion: String): Triple<String, String, String> {
             var versionStr = ""
             if (version.equals("recommended", true) || version.equals("latest", true)) {
                 val promoVersion = "$mcVersion-${version.toLowerCase()}"

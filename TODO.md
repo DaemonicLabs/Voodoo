@@ -2,7 +2,10 @@
 
 ## Builder
 
-* fix run and runShadow
+* separate mcVersions into
+    mcVersion and validVerisons
+
+* fix cursedata parsing slowdown
 
 * Memoization
 

@@ -1,25 +1,38 @@
----
 name: Test pack
+mcVersion: 1.12.2
+validMcVersions:
+  - 1.12.1
+  - 1.12
+forge: "recommended"
 entries:
 - provider: "CURSE"
   name: "Unlimited Chisel Works"
 - provider: "CURSE"
   name: "Charset Storage - Barrels"
+  feature:
+    selected: true
 - provider: "CURSE"
   name: "Charset Storage - Tanks"
 - provider: "CURSE"
   name: "Preston"
 - provider: "CURSE"
-  name: "YNot"
-- name: Tails
-- provider: "CURSE"
-  # name: RFTools
-  id: 224641
+  name: "Chisels & Bits"
   feature:
     selected: true
 - provider: "CURSE"
-# TODO: set fileID
+  name: "YNot"
+- name: Tails
+- name: Magic Feather
+- provider: "CURSE"
+  name: RFTools
+#  id: 224641
+  feature:
+    selected: true
+- provider: "CURSE"
   name: NoNausea
+  feature:
+    selected: true
 - provider: "DIRECT"
   url: https://unascribed.com/foamfix/FoamFix-1.12.2-0.8.3-Anarchy.jar
-forge: "recommended"
+  feature:
+    selected: true

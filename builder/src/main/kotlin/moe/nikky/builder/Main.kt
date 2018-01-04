@@ -8,10 +8,11 @@ package moe.nikky.builder
 
 
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import java.io.File
-import java.lang.IllegalArgumentException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -21,7 +22,7 @@ fun main(args: Array<String>) {
     val path = System.getProperty("user.dir")
 
     val modpack = loadFromFile(Paths.get("$path/test.yaml"))
-    process(modpack)
+    process(modpack, File("out/modpacks"))
 }
 
 fun test() {
@@ -52,16 +53,16 @@ fun writeToFile(path: Path, config: Modpack) {
     }
 }
 
-fun process(modpack: Modpack) {
-    if (modpack.forge.isBlank() && modpack.sponge.isBlank())
-        throw IllegalArgumentException("no sponge or forge version define")
+fun process(modpack: Modpack, path: File) {
+//    if (modpack.forge.isBlank()/* && modpack.sponge.isBlank()*/)
+//        throw IllegalArgumentException("no forge version define")
 
-    val outputPath = File("out/modpacks/${modpack.name}")
+    val outputPath = path.resolve(modpack.name)
     val srcPath = outputPath.resolve("src")
     srcPath.mkdirs()
 
     modpack.outputPath = outputPath.path
-    modpack.cacheBase = "out/cache"
+    modpack.cacheBase = path.resolve("cache").path
     //TODO: check here or later whether providers have
     // all required values in entries
 
@@ -94,13 +95,13 @@ fun process(modpack: Modpack) {
 
     var invalidEntries = listOf<Entry>()
     var counter = 0
-    while(!modpack.entries.all{ it.done }){
+    while (!modpack.entries.all { it.done }) {
         counter++
         println("test processing: $counter")
         for (entry in modpack.entries.filter { !it.done }) {
             println("processing $entry")
             val thingy = entry.provider.thingy
-            if(!thingy.process(entry, modpack)) {
+            if (!thingy.process(entry, modpack)) {
                 invalidEntries += entry
                 entry.done = true
                 println("failed $entry")
@@ -110,6 +111,36 @@ fun process(modpack: Modpack) {
 //        println(modpack.toYAMLString())
     }
     println("failed entries: $invalidEntries")
+
+    var features = emptyList<SKFeature>()
+
+    for (feature in modpack.features) {
+        for ( name in feature.entries) {
+            val entry = modpack.entries.find{it.name == name} ?: throw Exception("unknown entry name $name")
+            feature.files.include += entry.targetFilePath
+        }
+        features += SKFeature(
+                properties = feature.properties,
+                files = feature.files
+        )
+        println("processing feature $feature")
+    }
+
+    val skmodpack = SKModpack(
+            name = modpack.name,
+            gameVersion = modpack.mcVersion,
+            userFiles = modpack.userFiles,
+            launch = modpack.launch,
+            features = features
+    )
+    val mapper = jacksonObjectMapper() // Enable YAML parsing
+    mapper.registerModule(KotlinModule()) // Enable Kotlin support
+    mapper.enable(SerializationFeature.INDENT_OUTPUT)
+
+    val modpackPath = outputPath.resolve("modpack.json")
+    modpackPath.bufferedWriter().use {
+        mapper.writeValue(it, skmodpack)
+    }
 
     return
 
