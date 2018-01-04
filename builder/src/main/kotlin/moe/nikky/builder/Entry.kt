@@ -59,13 +59,14 @@ data class Entry(
         //TODO: figure out how to reference other entries.. by name ?
         var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+        var basePath: String = "src",
         var path: String = "",
         var filePath: String = "",
         var packageType: PackageType = PackageType.none,
         // INTERNAL
-        @JsonIgnore
+//        @JsonIgnore
         var cachePath: String = "",
-        @JsonIgnore
+//        @JsonIgnore
         var cacheBase: String = "",
 //        @JsonIgnore
 //        var parent: Modpack = Modpack("placeholder"),
@@ -87,7 +88,7 @@ data class Entry(
         var job: String = "",
         var jenkinsFileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)$",
         // LOCAL
-        var file: String = ""
+        var fileSrc: String = ""
 
 )
 
@@ -177,16 +178,18 @@ abstract class ProviderThingy(open val entry: Entry) {
             }
         }
         entry.path = path
-        entry.filePath = "${entry.path}/${entry.fileName}"
+        entry.filePath = File(entry.basePath, entry.path).resolve(entry.fileName).path
     }
 
-    fun writeUrlTxt(srcPath: File) {
+    fun writeUrlTxt(outputPath: File) {
         if(entry.url.isBlank()) throw Exception("entry $entry misses url")
         if(entry.filePath.isBlank()) throw Exception("entry $entry misses filePath")
-        val urlPath = File(srcPath, entry.filePath + ".url.txt")
+        val urlPath = File(outputPath, entry.filePath + ".url.txt")
         File(urlPath.parent).mkdirs()
         urlPath.writeText(URLDecoder.decode(entry.url, "UTF-8"))
     }
+
+    abstract fun download(outputPath: File)
 }
 
 

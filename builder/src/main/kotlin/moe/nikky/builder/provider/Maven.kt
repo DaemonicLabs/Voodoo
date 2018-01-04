@@ -58,6 +58,10 @@ class MavenProviderThing(override val entry: Entry) : ProviderThingy(entry) {
 
     }
 
+    override fun download(outputPath: File) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override val name = "Maven provider"
     fun doMavenThingy() {
         println("doMavenThingy not implemented") //To change body of created functions use File | Settings | File Templates.
