@@ -1,6 +1,8 @@
 package moe.nikky.builder
 
+import aballano.kotlinmemoization.tuples.Quintuple
 import moe.nikky.builder.provider.CurseProviderThingy
+import moe.nikky.builder.provider.DependencyType
 import moe.nikky.builder.provider.DirectProviderThing
 import java.io.File
 
@@ -17,7 +19,7 @@ enum class Provider(val thingy: ProviderThingy) {
 
 abstract class ProviderThingy {
     open val name = "abstract Provider"
-    private var functions = listOf<Triple<String, (Entry) -> Boolean, (Entry, Modpack) -> Unit>>()
+    private var functions = listOf<Quintuple<String, (Entry) -> Boolean, (Entry, Modpack) -> Unit, Boolean, String>>()
     //    private var functions = mutableMapOf<Provider, List<Triple<String, (Entry) -> Boolean, (Entry, Modpack) -> Unit>>>()
     private val processedFunctions = mutableMapOf<Entry, List<String>>()
     private var processedFeatures = listOf<String>()
@@ -34,12 +36,47 @@ abstract class ProviderThingy {
                 }
         )
         register("resolveFeatureDependencies",
-                { it.name.isNotBlank() && it.feature != null && !processedFeatures.contains(it.name) },
+                { it.name.isNotBlank() && !processedFeatures.contains(it.name) },
                 ::resolveFeatureDependencies
+        )
+//        register("cleanDependneciy",
+//                { it.dependenciesDirty },
+//                { e, m ->
+//                    val required = e.dependencies[DependencyType.required] ?: emptyList()
+//                    for (name in required) {
+//                        val depEntry = m.entries.firstOrNull { it.name == name }!!
+//                        depEntry.optional = e.optional && depEntry.optional
+//                        depEntry.dependenciesDirty = true
+//                    }
+//                    e.dependenciesDirty = false
+//                },
+//                true
+//        )
+//        register("checkCleanDependency",
+//                { !it.resolvedOptionals && !it.dependenciesDirty },
+//                { e, m ->
+//                    val required = e.dependencies[DependencyType.required] ?: emptyList()
+//                    for (name in required) {
+//                        val depEntry = m.entries.firstOrNull { it.name == name }!!
+//                        depEntry.optional = e.optional && depEntry.optional
+//                        depEntry.dependenciesDirty = true
+//                    }
+//                    e.resolvedOptionals = true
+//                },
+//                true
+//        )
+        register("resolveOptional",
+                { !it.resolvedOptionals },
+                { e, m ->
+                    e.optional = isOptional(e, m)
+                    e.resolvedOptionals = true
+                },
+                true,
+                "resolveFeatureDependencies"
         )
 
         register("setCachePath",
-                { it.cachePath.isBlank() && it.cacheRelpath.isNotBlank()},
+                { it.cachePath.isBlank() && it.cacheRelpath.isNotBlank() },
                 { e, m ->
                     e.cachePath = File(m.cacheBase).resolve(e.cacheRelpath).path
                 }
@@ -72,29 +109,72 @@ abstract class ProviderThingy {
         )
     }
 
-    fun register(label: String, condition: (Entry) -> Boolean, execute: (Entry, Modpack) -> Unit) {
+    fun register(label: String, condition: (Entry) -> Boolean, execute: (Entry, Modpack) -> Unit, repeatable: Boolean = false, requires: String = "") {
         if (functions.find { it.first == label } != null) {
             println("cannot register duplicate $label")
             return
         }
         println("registering ${this} $label")
-        functions += Triple(label, condition, execute)
+        functions += Quintuple(label, condition, execute, repeatable, requires)
     }
 
     fun process(entry: Entry, modpack: Modpack): Boolean {
-        val processed = processedFunctions.getOrDefault(entry, emptyList())
-        for ((label, condition, execute) in functions) {
-            if (processed.contains(label)) continue
+        var processed = processedFunctions.getOrDefault(entry, emptyList())
+        for ((label, condition, execute, repeatable, requirement) in functions) {
+            if (!repeatable && processed.contains(label)) continue
+            if (requirement.isNotBlank()) {
+                val fulfilled = modpack.entries.all {
+                    processedFunctions.getOrDefault(it, emptyList()).contains(requirement)
+                }
+                if (!fulfilled) {
+                    val missing = modpack.entries.filter {
+                        processedFunctions.getOrDefault(it, emptyList()).contains(requirement)
+                    }.map { it.name }
+                    println("requirement $requirement is not fulfilled by all entries, missing: $missing")
+                    continue
+                }
+            }
             if (condition(entry)) {
                 println("executing $label")
                 //TODO: check if process failed (no change to entry or modpack)
                 execute(entry, modpack)
-                processedFunctions[entry] = processed + label
+                processed += label
+                processedFunctions[entry] = processed
                 return true
             }
         }
         println("no action matched for entry $entry")
-        return false
+        //TODO: keep count if times a entry has fallen through consecutively, kill it after > X time
+        return true
+    }
+
+    private fun isOptional(entry: Entry, modpack: Modpack): Boolean {
+        var result = entry.transient || entry.optional
+        for ((depType, entryList) in entry.provides) {
+            if (depType != DependencyType.required) continue
+            for (entryName in entryList) {
+                println(entryName)
+                val proviverEntry = modpack.entries.firstOrNull { it.name == entryName }!!
+                result = result && isOptional(proviverEntry, modpack)
+                if (!result) return result
+            }
+        }
+        return result
+    }
+
+//    val isOptional = ::isOptionalCall.memoize()
+
+    fun checkCleanDependency(entry: Entry, modpack: Modpack): Boolean {
+        if (entry.dependenciesDirty) return false
+        for ((depType, depList) in entry.dependencies) {
+            for (depNames in depList) {
+                val depEntry = modpack.entries.firstOrNull { it.name == name }!!
+                if (!checkCleanDependency(depEntry, modpack)) {
+                    return false
+                }
+            }
+        }
+        return true
     }
 
     fun resolveFeatureDependencies(entry: Entry, modpack: Modpack) {
@@ -121,35 +201,41 @@ abstract class ProviderThingy {
             )
             processFeature(feature, modpack)
             modpack.features += feature
+            entry.optional = true
+            entry.dependenciesDirty = true
         }
         processedFeatures += entry.name
     }
 
     private fun processFeature(feature: Feature, parent: Modpack) {
         println("processing $feature")
-        val processableEntries = feature.entries.filter { f -> !feature.processedEntries.contains(f) }
-        for (entry_name in processableEntries) {
-            println("searching $entry_name")
-            val entry = parent.entries.find { e ->
-                e.name == entry_name
-            }
-            if (entry == null) {
-                println("$entry_name not in entries")
-                feature.processedEntries += entry_name
-                continue
-            }
-            var depNames = entry.dependencies.values.flatten()
-            print(depNames)
-            depNames = depNames.filter { d ->
-                parent.entries.any { e -> e.name == d }
-            }
-            println("filtered dependency names: $depNames")
-            for (dep in depNames) {
-                if (!(feature.entries.contains(dep))) {
-                    feature.entries += dep
+        var processedEntries = emptyList<String>()
+        var processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
+        while (processableEntries.isNotEmpty()) {
+            processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
+            for (entry_name in processableEntries) {
+                println("searching $entry_name")
+                val entry = parent.entries.find { e ->
+                    e.name == entry_name
                 }
+                if (entry == null) {
+                    println("$entry_name not in entries")
+                    processedEntries += entry_name
+                    continue
+                }
+                var depNames = entry.dependencies.values.flatten()
+                print(depNames)
+                depNames = depNames.filter { d ->
+                    parent.entries.any { e -> e.name == d }
+                }
+                println("filtered dependency names: $depNames")
+                for (dep in depNames) {
+                    if (!(feature.entries.contains(dep))) {
+                        feature.entries += dep
+                    }
+                }
+                processedEntries += entry_name
             }
-            feature.processedEntries += entry_name
         }
     }
 

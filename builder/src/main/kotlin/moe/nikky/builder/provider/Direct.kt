@@ -63,7 +63,9 @@ class DirectProviderThing : ProviderThingy() {
         register("download",
                 {
                     with(it) {
-                        listOf(url, name, fileName, filePath, cachePath).all { it.isNotBlank() } && urlTxtDone
+                        listOf(url, name, fileName, filePath, cachePath).all { it.isNotBlank() }
+                                && urlTxtDone
+                                && resolvedOptionals
                     }
                 },
                 { entry, m ->

@@ -134,34 +134,30 @@ class CurseProviderThingy : ProviderThingy() {
             }
             if (depEntry == null) {
                 if (depType == DependencyType.required || (modpack.doOptionals && depType == DependencyType.optional)) {
-                    //TODO: WORKAROUND, add this as a normal entry to be processed later
-//                        val (depAddonId, depFileId, fileName) = findFile(Entry(
-//                                provider = Provider.CURSE,
-//                                id = addOnId,
-//                                curseFileNameRegex = entry.curseFileNameRegex
-//                        ), modpack)
-//                        if (depAddonId < 0 || depFileId < 0)
-//                            throw Exception("dependency resolution error for $depType dependency ${depAddon.name} " +
-//                                    "${depAddon.id} of ${addon.name} ${addon.id}")
-//                        // depAddon = getAddon(depAddonId)
                     depEntry = Entry(
                             provider = Provider.CURSE,
                             id = depAddon.id,
-                            name = depAddon.name
+                            name = depAddon.name,
+                            side = entry.side,
+                            transient = true
                     )
                     println(depEntry)
                     modpack.entries += depEntry
                     println("added $depType dependency ${depAddon.name} of ${addon.name}")
+                } else {
+                    return
                 }
             } else {
                 val otherSide = depEntry.side
-                val side = Side.values().find { s -> s.flag == otherSide.flag or entry.side.flag }
-                if (side == null) throw Exception("invalid side")
+                val side = Side.values().find { s -> s.flag == otherSide.flag or entry.side.flag } ?: throw Exception("invalid side")
 
-                var provideList = depEntry.provides[depType] ?: emptyList()
-                provideList += addon.name
-                depEntry.provides[depType] = provideList
+                depEntry.side = side
             }
+
+            var provideList = depEntry.provides[depType] ?: emptyList()
+            provideList += addon.name
+            depEntry.provides[depType] = provideList
+
         }
     }
 
