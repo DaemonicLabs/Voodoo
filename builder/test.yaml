@@ -22,6 +22,8 @@ entries:
 - provider: "CURSE"
   name: "YNot"
 - name: Tails
+  feature:
+    selected: true
 - name: Magic Feather
 - provider: "CURSE"
   name: RFTools

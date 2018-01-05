@@ -59,8 +59,12 @@ data class Entry(
         var side: Side = Side.BOTH,
         var websiteUrl: String = "",
         //TODO: figure out how to reference other entries.. by name ?
-        var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+        var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+        var dependenciesDirty: Boolean = true,
+        var resolvedOptionals: Boolean = false,
+        var optional: Boolean = false,
+        var transient: Boolean = false,
         var basePath: String = "src",
         var targetPath: String = "",
         var targetFilePath: String = "",

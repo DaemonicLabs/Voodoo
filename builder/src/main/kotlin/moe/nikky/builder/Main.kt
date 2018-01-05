@@ -16,6 +16,9 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import com.fasterxml.jackson.dataformat.xml.XmlMapper
+
+
 
 
 fun main(args: Array<String>) {
@@ -49,6 +52,15 @@ fun writeToFile(path: Path, config: Modpack) {
     mapper.registerModule(KotlinModule()) // Enable Kotlin support
 
     return Files.newBufferedWriter(path).use {
+        mapper.writeValue(it, config)
+    }
+}
+
+fun writeToFile(file: File, config: Modpack) {
+    val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
+    mapper.registerModule(KotlinModule()) // Enable Kotlin support
+
+    file.bufferedWriter().use {
         mapper.writeValue(it, config)
     }
 }
@@ -126,6 +138,8 @@ fun process(modpack: Modpack, path: File) {
         println("processing feature $feature")
     }
 
+    writeToFile(outputPath.resolve("modpack.yaml"), modpack)
+
     val skmodpack = SKModpack(
             name = modpack.name,
             gameVersion = modpack.mcVersion,
@@ -140,6 +154,15 @@ fun process(modpack: Modpack, path: File) {
     val modpackPath = outputPath.resolve("modpack.json")
     modpackPath.bufferedWriter().use {
         mapper.writeValue(it, skmodpack)
+    }
+
+    val xmlmapper = XmlMapper() // Enable XML parsing
+    xmlmapper.registerModule(KotlinModule()) // Enable Kotlin support
+    xmlmapper.enable(SerializationFeature.INDENT_OUTPUT)
+
+    val modpackPathXml = outputPath.resolve("modpack.xml")
+    modpackPathXml.bufferedWriter().use {
+        xmlmapper.writeValue(it, skmodpack)
     }
 
     return
