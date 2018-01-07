@@ -90,57 +90,6 @@ class DirectProviderThing : ProviderThingy() {
         )
     }
 
-//    override fun fillInformation() {
-//        val u = URL(entry.url)
-//        if(entry.fileName.isBlank()) {
-//            entry.fileName = u.file.substringAfterLast('/')
-//        }
-//        if(entry.fileName.isBlank()) {
-//            throw Exception("fileName is blank for url $u")
-//        }
-//        if(entry.name.isBlank()) {
-//            entry.name = entry.fileName.substringBeforeLast('.')
-//        }
-//        if(entry.path.isBlank() && entry.basePath == "src") {
-//            entry.path = "mods"
-//        }
-//        super.fillInformation()
-//    }
-//
-//    override fun prepareDownload(cacheBase: File) {
-//        val u = URL(entry.url)
-//        if(entry.fileName.isBlank()) {
-//            entry.fileName = u.file.substringAfterLast('/')
-//        }
-//        if (entry.cacheBase.isBlank()) {
-//            entry.cacheBase = cacheBase.canonicalPath
-//        }
-//        if (entry.cachePath.isBlank()) {
-//            entry.cachePath = File(entry.cacheBase).resolve(u.path.substringAfterLast('/')).canonicalPath
-//        }
-//    }
-//
-//    override fun download(outputPath: File) {
-//        val u = URL(entry.url)
-//        val cacheDir = File(entry.cachePath)
-//        if(!cacheDir.isDirectory) {
-//            cacheDir.mkdirs()
-//        }
-//
-//        val cacheFile = cacheDir.resolve(entry.fileName)
-//        if (!cacheFile.exists() || !cacheFile.isFile) {
-//            println("downloading ${entry.name} to $cacheFile")
-//            val r = get(entry.url, allowRedirects = true, stream = true)
-//            cacheFile.writeBytes(r.content)
-//        } else {
-//            println("skipping downloading ${entry.name} (is cached)")
-//        }
-//        val destination = outputPath.resolve(entry.filePath)
-//        println("copying $cacheFile -> $destination")
-//        cacheFile.copyTo(destination, overwrite = true)
-//
-//    }
-
     fun doDirectThingy() {
         println("doDirectThingy not implemented") //To change body of created functions use File | Settings | File Templates.
     }
