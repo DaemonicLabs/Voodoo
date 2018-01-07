@@ -2,21 +2,15 @@
 
 ## Builder
 
-* add local test
-
-* make sure local is reading fro ma reasonable default directory
-
 * re-add a validate step
 
 * fix cursedata parsing slowdown
 
 * Memoization
 
-* figure out how `depends` is supposed to work
+* clean up unneeded duplication between features classes
 
 **TEST** manual dependencies with optionals
-
-* rethink and fix FEATURES
 
 * use property wrappers Prop<T>(var enabled: boolean, var value: T)
   * required for planned adanced gui features

@@ -7,6 +7,7 @@ package moe.nikky.builder
  */
 
 
+import aballano.kotlinmemoization.memoize
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
@@ -14,9 +15,9 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.xenomachina.argparser.ArgParser
-import com.xenomachina.argparser.InvalidArgumentException
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import moe.nikky.builder.provider.DependencyType
 import mu.KotlinLogging
 import java.io.File
 import java.nio.file.Files
@@ -221,8 +222,13 @@ fun process(modpack: Modpack, path: File, outPath: File) {
 
     for (feature in modpack.features) {
         for (name in feature.entries) {
-            val entry = modpack.entries.find { it.name == name } ?: throw Exception("unknown entry name $name")
-            feature.files.include += entry.targetFilePath
+            val dependencies = getDependencies(name, modpack)
+            dependencies
+                    .filter { println(it)
+                        it.optional }
+                    .forEach {
+                        feature.files.include += it.targetFilePath
+                    }
         }
         features += SKFeature(
                 properties = feature.properties,
@@ -261,3 +267,16 @@ fun process(modpack: Modpack, path: File, outPath: File) {
     return
 }
 
+fun getDependenciesCall(entryName: String, modpack: Modpack): List<Entry> {
+    val entry = modpack.entries.find { it.name == entryName } ?: return emptyList()
+    var result = listOf( entry )
+    for ((depType, entryList) in entry.dependencies) {
+        if (depType == DependencyType.embedded) continue
+        for (depName in entryList) {
+            result += getDependencies(depName, modpack)
+        }
+    }
+    return result
+}
+
+val getDependencies = ::getDependenciesCall.memoize()
