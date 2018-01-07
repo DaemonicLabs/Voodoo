@@ -5,6 +5,8 @@ import aballano.kotlinmemoization.tuples.Quintuple
 import moe.nikky.builder.provider.CurseProviderThingy
 import moe.nikky.builder.provider.DependencyType
 import moe.nikky.builder.provider.DirectProviderThing
+import moe.nikky.builder.provider.LocalProviderThing
+import mu.KLogging
 import java.io.File
 
 /**
@@ -15,19 +17,19 @@ import java.io.File
 
 enum class Provider(val thingy: ProviderThingy) {
     CURSE(CurseProviderThingy()),
-    DIRECT(DirectProviderThing())
+    DIRECT(DirectProviderThing()),
+    LOCAL(LocalProviderThing())
 }
+
+private var processedFeatures = listOf<String>() //TODO: move into modpack-shared object
+private val processedFunctions = mutableMapOf<Entry, List<String>>() //TODO: move insto modpack-shared object
 
 abstract class ProviderThingy {
     open val name = "abstract Provider"
     private var functions = listOf<Quintuple<String, (Entry) -> Boolean, (Entry, Modpack) -> Unit, Boolean, String>>()
     //    private var functions = mutableMapOf<Provider, List<Triple<String, (Entry) -> Boolean, (Entry, Modpack) -> Unit>>>()
-    private val processedFunctions = mutableMapOf<Entry, List<String>>()
-    private var processedFeatures = listOf<String>()
 
-    companion object {
-//        private var functions = listOf<Triple<String, (Entry) -> Boolean, (Entry, Modpack) -> Unit>>()
-    }
+    companion object: KLogging()
 
     init {
         register("setFeatureName",
@@ -112,17 +114,19 @@ abstract class ProviderThingy {
 
     fun register(label: String, condition: (Entry) -> Boolean, execute: (Entry, Modpack) -> Unit, repeatable: Boolean = false, requires: String = "") {
         if (functions.find { it.first == label } != null) {
-            println("cannot register duplicate $label")
+            logger.warn("cannot register duplicate $label")
             return
         }
-        println("registering ${this} $label")
+        logger.info("registering $label to $this")
         functions += Quintuple(label, condition, execute, repeatable, requires)
     }
 
     fun process(entry: Entry, modpack: Modpack): Boolean {
         var processed = processedFunctions.getOrDefault(entry, emptyList())
         for ((label, condition, execute, repeatable, requirement) in functions) {
-            if (!repeatable && processed.contains(label)) continue
+            if (!repeatable && processed.contains(label)) {
+                continue
+            }
             if (requirement.isNotBlank()) {
                 val fulfilled = modpack.entries.all {
                     processedFunctions.getOrDefault(it, emptyList()).contains(requirement)
@@ -131,12 +135,12 @@ abstract class ProviderThingy {
                     val missing = modpack.entries.filter {
                         processedFunctions.getOrDefault(it, emptyList()).contains(requirement)
                     }.map { it.name }
-                    println("requirement $requirement is not fulfilled by all entries, missing: $missing")
+                    logger.warn("requirement $requirement is not fulfilled by all entries, missing: $missing")
                     continue
                 }
             }
             if (condition(entry)) {
-                println("executing $label")
+                logger.debug("executing $label")
                 //TODO: check if process failed (no change to entry or modpack)
                 execute(entry, modpack)
                 processed += label
@@ -144,7 +148,7 @@ abstract class ProviderThingy {
                 return true
             }
         }
-        println("no action matched for entry $entry")
+        logger.warn("no action matched for entry $entry")
         //TODO: keep count if times a entry has fallen through consecutively, kill it after > X time
         return true
     }
@@ -154,7 +158,6 @@ abstract class ProviderThingy {
         for ((depType, entryList) in entry.provides) {
             if (depType != DependencyType.required) continue
             for (entryName in entryList) {
-                println(entryName)
                 val providerEntry = modpack.entries.firstOrNull { it.name == entryName }!!
                 result = result && isOptional(providerEntry, modpack)
                 if (!result) return result
@@ -187,7 +190,6 @@ abstract class ProviderThingy {
         var feature = modpack.features.find { f -> f.properties.name == featureName }
 
         if (feature == null) {
-            println(entry)
             feature = Feature(
                     names = listOf(featureName),
                     entries = listOf(entry.name),
@@ -206,30 +208,31 @@ abstract class ProviderThingy {
 //            entry.dependenciesDirty = true
         }
         processedFeatures += entry.name
+        logger.debug("processed ${entry.name} -> $processedFeatures")
     }
 
     private fun processFeature(feature: Feature, parent: Modpack) {
-        println("processing $feature")
+        logger.info("processing feature: $feature")
         var processedEntries = emptyList<String>()
         var processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
         while (processableEntries.isNotEmpty()) {
             processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
             for (entry_name in processableEntries) {
-                println("searching $entry_name")
+                logger.info("searching $entry_name")
                 val entry = parent.entries.find { e ->
                     e.name == entry_name
                 }
                 if (entry == null) {
-                    println("$entry_name not in entries")
+                    logger.warn("$entry_name not in entries")
                     processedEntries += entry_name
                     continue
                 }
                 var depNames = entry.dependencies.values.flatten()
-                print(depNames)
+                logger.info("depNames: $depNames")
                 depNames = depNames.filter { d ->
                     parent.entries.any { e -> e.name == d }
                 }
-                println("filtered dependency names: $depNames")
+                logger.debug("filtered dependency names: $depNames")
                 for (dep in depNames) {
                     if (!(feature.entries.contains(dep))) {
                         feature.entries += dep
@@ -239,101 +242,4 @@ abstract class ProviderThingy {
             }
         }
     }
-
-
-//    abstract fun validate(): Boolean
-//    open fun prepareDependencies(modpack: Modpack) {
-//        println("prepareDependencies not overridden in '$name'")
-//    }
-//
-//    open fun resolveDependencies(modpack: Modpack) {
-//        println("resolveDependencies not overridden in '$name'")
-//    }
-//
-//    open fun resolveFeatureDependencies(modpack: Modpack) {
-//        var featureName = entry.feature?.name ?: return
-//        if (featureName.isBlank())
-//            featureName = entry.name
-//        // find feature with matching name
-//        var feature = modpack.features.find { f -> f.name == featureName }
-//
-//        if (feature == null) {
-//            println(entry)
-//            feature = Feature(
-//                    name = featureName,
-//                    names = listOf(featureName),
-//                    entries = listOf(entry.name),
-//                    processedEntries = emptyList()
-//            )
-//            processFeature(feature, modpack)
-//            modpack.features += feature
-//        }
-//    }
-//
-//    private fun processFeature(feature: Feature, parent: Modpack) {
-//        val features = parent.features
-//        println("processing $feature")
-//        val processableEntries = feature.entries.filter { f -> !feature.processedEntries.contains(f) }
-//        for (entry_name in processableEntries) {
-//            println("searching $entry_name")
-//            val entry = parent.entries.find { e ->
-//                e.name == entry_name
-//            }
-//            if (entry == null) {
-//                println("$entry_name not in entries")
-//                feature.processedEntries += entry_name
-//                continue
-//            }
-//            var depNames = entry.dependencies.values.flatten()
-//            print(depNames)
-//            depNames = depNames.filter { d ->
-//                parent.entries.any { e -> e.name == d }
-//            }
-//            println("filtered dependency names: $depNames")
-//            for (dep in depNames) {
-//                if (!(feature.entries.contains(dep))) {
-//                    feature.entries += dep
-//                }
-//            }
-//            feature.processedEntries += entry_name
-//        }
-//    }
-//
-//    open fun fillInformation() {
-//        if (entry.feature != null) {
-//            if (entry.feature!!.name.isBlank()) {
-//                entry.feature!!.name = entry.name
-//            }
-//        }
-//    }
-//
-//    abstract fun prepareDownload(cacheBase: File)
-//
-//    fun resolvePath() {
-//
-//        var path = entry.path
-//        // side
-//        if(path.startsWith("mods")) {
-//            val side = when(entry.side) {
-//                Side.CLIENT -> "_CLIENT"
-//                Side.SERVER -> "_SERVER"
-//                Side.BOTH -> ""
-//            }
-//            if(side.isNotBlank()) {
-//                path = "$side/$path"
-//            }
-//        }
-//        entry.path = path
-//        entry.filePath = File(entry.basePath, entry.path).resolve(entry.fileName).path
-//    }
-
-//    fun writeUrlTxt(outputPath: File) {
-//        if(entry.url.isBlank()) throw Exception("entry $entry misses url")
-//        if(entry.filePath.isBlank()) throw Exception("entry $entry misses filePath")
-//        val urlPath = File(outputPath, entry.filePath + ".url.txt")
-//        File(urlPath.parent).mkdirs()
-//        urlPath.writeText(URLDecoder.decode(entry.url, "UTF-8"))
-//    }
-
-//    abstract fun download(outputPath: File)
 }

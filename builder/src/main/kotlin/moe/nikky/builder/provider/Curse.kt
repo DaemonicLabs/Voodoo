@@ -6,6 +6,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import khttp.get
 import moe.nikky.builder.*
+import mu.KLogging
 import java.io.File
 
 /**
@@ -14,7 +15,7 @@ import java.io.File
  * @version 1.0
  */
 class CurseProviderThingy : ProviderThingy() {
-    companion object {
+    companion object: KLogging() {
         val mapper = jacksonObjectMapper() // Enable YAML parsing
                 .registerModule(KotlinModule())!! // Enable Kotlin support
         private val META_URL = "https://cursemeta.nikky.moe"
@@ -24,11 +25,13 @@ class CurseProviderThingy : ProviderThingy() {
 //            val url = "$META_URL/api/addon/?mods=1&texturepacks=1&worlds=1&property=id,name,summary,websiteURL,packageType,categorySection"
             val url = "$META_URL/api/addon/?mods=1&texturepacks=1&worlds=1"
 
-            println(url)
+            logger.trace("get $url")
             val r = get(url)
             if (r.statusCode == 200) {
                 return mapper.readValue(r.text)
             }
+
+            logger.error("failed getting cursemeta data")
             throw Exception("failed getting cursemeta data")
         }
     }
@@ -125,8 +128,10 @@ class CurseProviderThingy : ProviderThingy() {
 
 //            val depends = entry.dependencies
             var dependsList = entry.dependencies.getOrDefault(depType, emptyList())
+            logger.info("get dependency $depType = $dependsList")
             dependsList += depAddon.name
             entry.dependencies[depType] = dependsList
+            logger.info("set dependency $depType = $dependsList")
 
             // find duplicate entry
             var depEntry = modpack.entries.firstOrNull { e ->
@@ -142,9 +147,8 @@ class CurseProviderThingy : ProviderThingy() {
                             side = entry.side,
                             transient = true
                     )
-                    println(depEntry)
                     modpack.entries += depEntry
-                    println("added $depType dependency ${depAddon.name} of ${addon.name}")
+                    logger.info("added $depType dependency ${depAddon.name} of ${addon.name}")
                 } else {
                     return
                 }
@@ -174,8 +178,6 @@ class CurseProviderThingy : ProviderThingy() {
         var fileId = entry.fileId
         val fileNameRegex = entry.curseFileNameRegex
 
-//        data.forEach { addon -> println("${addon.id} ${addon.name}")}
-
         val addon = data.find { addon ->
             (name.isNotBlank() && name.equals(addon.name, true))
                     || (addonId > 0 && addonId == addon.id)
@@ -192,8 +194,6 @@ class CurseProviderThingy : ProviderThingy() {
         }
 
         var files = getAllAddonFiles(addonId)
-//        println("mc version: $mcVersion")
-//        files.forEach{f -> println("${f.fileName} ${f.fileNameOnDisk} ${f.gameVersion}")}
 
         files = files.filter { f ->
             ((version.isNotBlank()
@@ -203,28 +203,21 @@ class CurseProviderThingy : ProviderThingy() {
                     re.matches(f.fileName))
         }.sortedWith(compareByDescending { it.fileDate })
 
-//        println("filtered")
-//        files.forEach{f -> println("filtered ${f.fileName} ${f.fileNameOnDisk} ${f.gameVersion}")}
-
         val file = files.firstOrNull()
-        if (file != null)
-            return Triple(addonId, file.id, file.fileNameOnDisk)
-        println(addon) //TODO: turn into error dump to disk and just print filepath
-        println("no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
-                "mc version: $mcVersions version: $version")
-//        // TEST
-//        for (addon1 in data.sortedBy { a -> Math.round(Math.random()-0.5) }) {
-//            getAllAddonFiles(addon1.id)
-//        }
-
-        println("no file matching the parameters found for ${addon.name}")
-        return Triple(addonId, -1, "")
+        if (file == null) {
+            logger.error("no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
+                    "mc version: $mcVersions version: $version \n" +
+                    "$addon")
+            logger.error("no file matching the parameters found for ${addon.name}")
+            return Triple(addonId, -1, "")
+        }
+        return Triple(addonId, file.id, file.fileNameOnDisk)
     }
 
     private fun getAddonFileCall(addonId: Int, fileId: Int): AddonFile? {
         val url = "${META_URL}/api/addon/$addonId/files/$fileId"
 
-        println(url)
+        logger.debug("get $url")
         val r = get(url)
         if (r.statusCode == 200) {
             return mapper.readValue(r.text)
@@ -235,9 +228,9 @@ class CurseProviderThingy : ProviderThingy() {
     val getAddonFile = ::getAddonFileCall.memoize()
 
     private fun getAllAddonFilesCall(addonId: Int): List<AddonFile> {
-        val url = "${META_URL}/api/addon/$addonId/files"
+        val url = "$META_URL/api/addon/$addonId/files"
 
-        println(url)
+        logger.debug("get $url")
         val r = get(url)
         if (r.statusCode == 200) {
             return mapper.readValue(r.text)
@@ -248,9 +241,9 @@ class CurseProviderThingy : ProviderThingy() {
     val getAllAddonFiles = ::getAllAddonFilesCall.memoize()
 
     private fun getAddonCall(addonId: Int): Addon? {
-        val url = "${META_URL}/api/addon/$addonId"
+        val url = "$META_URL/api/addon/$addonId"
 
-        println(url)
+        logger.debug("get $url")
         val r = get(url)
         if (r.statusCode == 200) {
             return mapper.readValue(r.text)
