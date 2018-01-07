@@ -2,6 +2,7 @@ package moe.nikky.builder.provider
 
 import khttp.get
 import moe.nikky.builder.ProviderThingy
+import mu.KLogging
 import java.io.File
 import java.net.URL
 import java.net.URLDecoder
@@ -14,6 +15,8 @@ import java.net.URLDecoder
 
 class DirectProviderThing : ProviderThingy() {
     override val name = "Direct provider"
+
+    companion object: KLogging()
 
     //    override fun validate(): Boolean {
 //        return entry.url.isNotBlank()
@@ -76,14 +79,14 @@ class DirectProviderThing : ProviderThingy() {
 
                     val cacheFile = cacheDir.resolve(entry.fileName)
                     if (!cacheFile.exists() || !cacheFile.isFile) {
-                        println("downloading ${entry.name} to $cacheFile")
+                        logger.info("downloading ${entry.name} to $cacheFile")
                         val r = get(entry.url, allowRedirects = true, stream = true)
                         cacheFile.writeBytes(r.content)
                     } else {
-                        println("skipping downloading ${entry.name} (is cached)")
+                        logger.info("skipping downloading ${entry.name} (is cached)")
                     }
                     val destination = File(m.outputPath).resolve(entry.filePath)
-                    println("copying $cacheFile -> $destination")
+                    logger.info("copying $cacheFile -> $destination")
                     cacheFile.copyTo(destination, overwrite = true)
                     entry.done = true
                 }
@@ -91,6 +94,6 @@ class DirectProviderThing : ProviderThingy() {
     }
 
     fun doDirectThingy() {
-        println("doDirectThingy not implemented") //To change body of created functions use File | Settings | File Templates.
+        logger.warn("doDirectThingy not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

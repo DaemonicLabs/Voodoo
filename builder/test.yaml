@@ -21,9 +21,11 @@ entries:
     selected: true
 - provider: "CURSE"
   name: "YNot"
-- name: Tails
+- name: "Tails"
+  provider: "LOCAL"
   feature:
     selected: true
+  fileSrc: "Tails-1.12-1.10.0.jar"
 - name: Magic Feather
 - provider: "CURSE"
   name: RFTools

@@ -2,8 +2,11 @@
 
 ## Builder
 
-* separate mcVersions into
-    mcVersion and validVerisons
+* add local test
+
+* make sure local is reading fro ma reasonable default directory
+
+* re-add a validate step
 
 * fix cursedata parsing slowdown
 

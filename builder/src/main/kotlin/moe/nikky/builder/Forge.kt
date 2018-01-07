@@ -4,6 +4,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import khttp.get
+import mu.KLogging
 
 /**
  * Created by nikky on 30/12/17.
@@ -11,7 +12,7 @@ import khttp.get
  * @version 1.0
  */
 class Forge {
-    companion object {
+    companion object: KLogging() {
         var data: ForgeData = getForgeData()
 
 //        fun getSponge(spongeVersion: String): Entry {
@@ -35,7 +36,7 @@ class Forge {
             //      version = spongeVersion.split("-")[1]
             //    }
             val (url, filename, longVersion) = getForgeUrl(forgeVersion, mcVersion)
-            
+
             val entry = Entry(
                     provider = Provider.DIRECT,
                     name = "Minecraft Forge",
