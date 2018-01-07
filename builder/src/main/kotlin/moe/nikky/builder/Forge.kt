@@ -35,7 +35,7 @@ class Forge {
             //      version = spongeVersion.split("-")[1]
             //    }
             val (url, filename, longVersion) = getForgeUrl(forgeVersion, mcVersion)
-            //TODO CACHE DIR
+            
             val entry = Entry(
                     provider = Provider.DIRECT,
                     name = "Minecraft Forge",
