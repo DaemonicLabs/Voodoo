@@ -12,6 +12,7 @@ dependencies {
     compile group: 'com.github.aballano', name: 'MnemoniK', version: '+'
     compile group:  'io.github.microutils', name: 'kotlin-logging', version: '+'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
+    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
 //    compile group: 'org.funktionale', name: 'funktionale-memoization', version: '+'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

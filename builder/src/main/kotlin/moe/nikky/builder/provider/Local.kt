@@ -79,7 +79,7 @@ class LocalProviderThing : ProviderThingy() {
 //                    }
                     var file = File(entry.fileSrc)
                     if(!file.isAbsolute) {
-                        file = File(m.outputPath).parentFile.resolve("local").resolve(entry.fileSrc)
+                        file = File(m.pathBase).resolve("local").resolve(entry.fileSrc)
                     }
                     val destination = File(m.outputPath).resolve(entry.filePath)
                     if(!file.exists()) {

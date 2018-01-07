@@ -13,36 +13,125 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.xenomachina.argparser.ArgParser
+import com.xenomachina.argparser.InvalidArgumentException
+import com.xenomachina.argparser.default
+import com.xenomachina.argparser.mainBody
 import mu.KotlinLogging
 import java.io.File
 import java.nio.file.Files
+import java.nio.file.InvalidPathException
 import java.nio.file.Path
-import java.nio.file.Paths
 
 private val logger = KotlinLogging.logger {}
 
-fun main(args: Array<String>) {
-    val path = System.getProperty("user.dir")
-
-    val modpack = loadFromFile(Paths.get("$path/test.yaml"))
-    process(modpack, File("out/modpacks"))
+data class BuilderConfig(
+        var workingDirectory: File = File(System.getProperty("user.dir")),
+        var output: File = File("modpacks"),
+        var somethingElse: String = ""
+) {
+    fun getOutputDirectory(): File {
+        if (!output.isAbsolute) {
+            output = workingDirectory.canonicalFile.resolve(output.path)
+        }
+        if (!output.exists()) {
+            output.mkdirs()
+        }
+        if (!output.isDirectory) {
+            throw InvalidPathException(output.canonicalPath, "path is not a directory ${output.path}")
+        }
+        return output
+    }
 }
 
-fun test() {
-    val path = System.getProperty("user.dir")
+class Arguments(parser: ArgParser) {
+    val configPath by parser.storing("-c", "--config",
+            help = "Config Path") { File(this) }.default(File(System.getProperty("user.dir")))
 
-    logger.info("Working Directory = $path")
-    val config = loadFromFile(Paths.get("$path/test.yaml"))
-    logger.info("config: $config")
-    writeToFile(Paths.get("$path/test.out.yaml"), config)
+//    val verbose by parser.flagging("-v", "--verbose",
+//            help = "enable verbose mode")
+
+    val packs by parser.positionalList("PACK",
+            help = "Modpacks definition file(s)") { File(this) }
+//            .addValidator {
+//                for(path in value) {
+//                    if(path.isAbsolute && !path.exists()) {
+//                        throw InvalidArgumentException("$path does not exist")
+//                    }
+//                }
+//            }
+
+//    val workingDirectory by parser.storing("-d", "--directory",
+//            help = "Working Directory") { File(this) }.default(null)
+//            .addValidator {
+//                if (value != null) {
+//                    if (!value!!.exists() || !value!!.isDirectory) {
+//                        throw InvalidArgumentException("$value does not exist")
+//                    }
+//                }
+//            }
 }
 
-fun loadFromFile(path: Path): Modpack {
+fun main(args: Array<String>) = mainBody("voodoo-builder") {
+    Arguments(ArgParser(args)).run {
+        // val workingDirectory = File(System.getProperty("user.dir"))
+        // logger.info("working directory: ${workingDirectory.canonicalPath}")
+        logger.info("packs: $packs")
+        val config = loadConfig(configPath)
+//        if (workingDirectory != null)
+//            config.workingDirectory = workingDirectory!!
+
+
+        logger.info("config: $config")
+        val outputDirectory = config.getOutputDirectory()
+        logger.info("outputDirectory: $outputDirectory")
+
+        var paths = packs.map {
+            if (it.isAbsolute) {
+                return@map it
+            }
+            config.workingDirectory.resolve(it.path)
+        }
+
+        paths = paths.filter {
+            val exists = it.exists()
+            if (!exists) {
+                logger.error("dropping $it , does not exist,")
+            }
+            return@filter exists
+        }
+
+        for (path in paths) {
+            val modpack = loadFromFile(path)
+            process(modpack, config.workingDirectory, config.getOutputDirectory())
+        }
+    }
+}
+
+
+fun loadConfig(path: File): BuilderConfig {
+    val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
+    mapper.registerModule(KotlinModule()) // Enable Kotlin support
+    var file = path
+    if (!file.isFile) {
+        file = file.resolve("config.yaml")
+    }
+    if (!file.exists()) {
+        logger.error("$file does not exist")
+        return BuilderConfig()
+    }
+    logger.info("path: $path")
+    return file.bufferedReader().use {
+        mapper.readValue(it, BuilderConfig::class.java)
+    }
+}
+
+fun loadFromFile(path: File): Modpack {
     val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
     mapper.registerModule(KotlinModule()) // Enable Kotlin support
 
     logger.info("path: $path")
-    return Files.newBufferedReader(path).use {
+    return path.bufferedReader().use {
         mapper.readValue(it, Modpack::class.java)
     }
 }
@@ -65,15 +154,16 @@ fun writeToFile(file: File, config: Modpack) {
     }
 }
 
-fun process(modpack: Modpack, path: File) {
+fun process(modpack: Modpack, path: File, outPath: File) {
 //    if (modpack.forge.isBlank()/* && modpack.sponge.isBlank()*/)
 //        throw IllegalArgumentException("no forge version define")
 
-    val outputPath = path.resolve(modpack.name)
-    val srcPath = outputPath.resolve("src")
+    val packPath = outPath.resolve(modpack.name)
+    val srcPath = packPath.resolve("src")
     srcPath.mkdirs()
 
-    modpack.outputPath = outputPath.path
+    modpack.outputPath = packPath.path
+    modpack.pathBase = path.path
     modpack.cacheBase = path.resolve("cache").path
     //TODO: check here or later whether providers have
     // all required values in entries
@@ -94,7 +184,7 @@ fun process(modpack: Modpack, path: File) {
     }
     modPath.mkdirs()
 
-    val loaderPath = outputPath.resolve("loaders")
+    val loaderPath = packPath.resolve("loaders")
     if (!loaderPath.deleteRecursively()) {
         logger.warn("might have failed deleting $modPath")
     }
@@ -141,7 +231,7 @@ fun process(modpack: Modpack, path: File) {
         logger.info("processing feature $feature")
     }
 
-    writeToFile(outputPath.resolve("modpack.yaml"), modpack)
+    writeToFile(packPath.resolve("modpack.yaml"), modpack)
 
     val skmodpack = SKModpack(
             name = modpack.name,
@@ -154,7 +244,7 @@ fun process(modpack: Modpack, path: File) {
     mapper.registerModule(KotlinModule()) // Enable Kotlin support
     mapper.enable(SerializationFeature.INDENT_OUTPUT)
 
-    val modpackPath = outputPath.resolve("modpack.json")
+    val modpackPath = packPath.resolve("modpack.json")
     modpackPath.bufferedWriter().use {
         mapper.writeValue(it, skmodpack)
     }
@@ -163,7 +253,7 @@ fun process(modpack: Modpack, path: File) {
     xmlmapper.registerModule(KotlinModule()) // Enable Kotlin support
     xmlmapper.enable(SerializationFeature.INDENT_OUTPUT)
 
-    val modpackPathXml = outputPath.resolve("modpack.xml")
+    val modpackPathXml = packPath.resolve("modpack.xml")
     modpackPathXml.bufferedWriter().use {
         xmlmapper.writeValue(it, skmodpack)
     }
