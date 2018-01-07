@@ -1,5 +1,6 @@
 package moe.nikky.builder
 
+import aballano.kotlinmemoization.memoize
 import aballano.kotlinmemoization.tuples.Quintuple
 import moe.nikky.builder.provider.CurseProviderThingy
 import moe.nikky.builder.provider.DependencyType
@@ -148,24 +149,24 @@ abstract class ProviderThingy {
         return true
     }
 
-    private fun isOptional(entry: Entry, modpack: Modpack): Boolean {
+    private fun isOptionalCall(entry: Entry, modpack: Modpack): Boolean {
         var result = entry.transient || entry.optional
         for ((depType, entryList) in entry.provides) {
             if (depType != DependencyType.required) continue
             for (entryName in entryList) {
                 println(entryName)
-                val proviverEntry = modpack.entries.firstOrNull { it.name == entryName }!!
-                result = result && isOptional(proviverEntry, modpack)
+                val providerEntry = modpack.entries.firstOrNull { it.name == entryName }!!
+                result = result && isOptional(providerEntry, modpack)
                 if (!result) return result
             }
         }
         return result
     }
 
-//    val isOptional = ::isOptionalCall.memoize()
+    val isOptional = ::isOptionalCall.memoize()
 
     fun checkCleanDependency(entry: Entry, modpack: Modpack): Boolean {
-        if (entry.dependenciesDirty) return false
+        if (!entry.resolvedOptionals) return false
         for ((depType, depList) in entry.dependencies) {
             for (depNames in depList) {
                 val depEntry = modpack.entries.firstOrNull { it.name == name }!!
@@ -202,7 +203,7 @@ abstract class ProviderThingy {
             processFeature(feature, modpack)
             modpack.features += feature
             entry.optional = true
-            entry.dependenciesDirty = true
+//            entry.dependenciesDirty = true
         }
         processedFeatures += entry.name
     }
