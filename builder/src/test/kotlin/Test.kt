@@ -3,6 +3,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import moe.nikky.builder.*
 import moe.nikky.builder.provider.CurseProviderThingy
+import moe.nikky.builder.provider.DependencyType
 import moe.nikky.builder.provider.DirectProviderThing
 import org.junit.Test
 
@@ -25,11 +26,11 @@ class EntryTest {
     @Test
     fun conversionTest() {
         val entry = Entry(name = "test", comment = "lets convert some stuff", provider = Provider.CURSE)
-        var thingy = entry.provider.thingy(entry) //TODO: simply this call ?
+        var thingy = entry.provider.thingy
         println(thingy.name)
 
         entry.provider = Provider.DIRECT
-        thingy = entry.provider.thingy(entry) //TODO: simply this call ?
+        thingy = entry.provider.thingy
         println(thingy.name)
 //        var data = entry.providerData
 //        (entry.providerData as ProviderData.CurseEntry).id = 12345
@@ -47,7 +48,7 @@ class EntryTest {
 
     @Test
     fun seralizeTest() {
-        var pack = Modpack()
+        var pack = Modpack("pack name")
         pack.entries += Entry(
                 name = "test"
         )
@@ -58,8 +59,7 @@ class EntryTest {
         pack.entries += Entry(
                 path = "somwhere",
                 provider = Provider.DIRECT,
-                dependencies = Dependency(
-                        optional = listOf(pack.entries.first().name)
+                dependencies = mutableMapOf(Pair(DependencyType.optional, listOf(pack.entries.first().name))
                 )
         )
 
@@ -71,11 +71,11 @@ class EntryTest {
         val pack2 = loadFromFile(Paths.get("$path/test.yaml"))
         println(pack2)
         for (entry: Entry in pack2.entries) {
-            val thingy = entry.provider.thingy(entry) //TODO: simply this call ?
+            val thingy = entry.provider.thingy
             println(thingy.name)
             when(thingy) {
                 is CurseProviderThingy -> {
-                    thingy.doCurseThingy()
+
                 }
                 is DirectProviderThing -> {
                     thingy.doDirectThingy()

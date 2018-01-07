@@ -27,7 +27,8 @@ data class Modpack(
         var outputPath: String = "", //TODO: move into runtime config data class
         var userFiles: UserFiles = UserFiles(),
         var launch: Launch = Launch(),
-        var cacheBase: String = ""
+        var cacheBase: String = "",
+        var pathBase: String = ""
 ) {
     companion object {
         val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
