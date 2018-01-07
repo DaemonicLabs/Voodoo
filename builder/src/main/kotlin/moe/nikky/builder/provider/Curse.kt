@@ -67,7 +67,7 @@ class CurseProviderThingy : ProviderThingy() {
         register("setWebsiteUrl",
                 { it.id > 0 && it.websiteUrl.isBlank() },
                 { e, _ ->
-                    e.url = getAddon(e.id)!!.webSiteURL
+                    e.websiteUrl = getAddon(e.id)!!.webSiteURL
                 }
         )
         register("setUrl",
