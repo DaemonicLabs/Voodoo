@@ -8,6 +8,7 @@ package moe.nikky.builder
 
 
 import aballano.kotlinmemoization.memoize
+import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.dataformat.xml.XmlMapper
@@ -29,6 +30,8 @@ private val logger = KotlinLogging.logger {}
 data class BuilderConfig(
         var workingDirectory: File = File(System.getProperty("user.dir")),
         var output: File = File("modpacks"),
+        var instances: File = File("instances"),
+        var instance: File? = null,
         var somethingElse: String = ""
 ) {
     fun getOutputDirectory(): File {
@@ -46,22 +49,44 @@ data class BuilderConfig(
 }
 
 class Arguments(parser: ArgParser) {
+    //    val packs by parser.positionalList("PACK",
+//            help = "Modpacks definition file(s)") { File(this) }
+    val pack by parser.positional("PACK",
+            help = "Modpack definition file") { File(this) }
+
     val configPath by parser.storing("-c", "--config",
-            help = "Config Path") { File(this) }.default(File(System.getProperty("user.dir")))
+            help = "Config Path") { File(this) }
+            .default(File(System.getProperty("user.dir")))
+
+    val workingDirArg by parser.storing("-d", "--directory",
+            help = "working directory")
+            .default(null)
+
+    val outputArg by parser.storing("-o", "--output",
+            help = "output directory")
+            .default(null)
+
+    val instanceArg by parser.storing("-i", "--instance",
+            help = "instance directory")
+            .default(null)
+    val instanceDirArg by parser.storing("-I", "--instances",
+            help = "multimc instances directory")
+            .default(null)
+
+    val multimcArg by parser.flagging("--mmc", "--multimc",
+            help = "enable multimc export")
+
 
 //    val verbose by parser.flagging("-v", "--verbose",
 //            help = "enable verbose mode")
 
-    val packs by parser.positionalList("PACK",
-            help = "Modpacks definition file(s)") { File(this) }
-//            .addValidator {
+    //            .addValidator {
 //                for(path in value) {
 //                    if(path.isAbsolute && !path.exists()) {
 //                        throw InvalidArgumentException("$path does not exist")
 //                    }
 //                }
 //            }
-
 //    val workingDirectory by parser.storing("-d", "--directory",
 //            help = "Working Directory") { File(this) }.default(null)
 //            .addValidator {
@@ -77,35 +102,51 @@ fun main(args: Array<String>) = mainBody("voodoo-builder") {
     Arguments(ArgParser(args)).run {
         // val workingDirectory = File(System.getProperty("user.dir"))
         // logger.info("working directory: ${workingDirectory.canonicalPath}")
-        logger.info("packs: $packs")
         val config = loadConfig(configPath)
-//        if (workingDirectory != null)
-//            config.workingDirectory = workingDirectory!!
+        logger.info("pack: $pack")
 
+        if (workingDirArg != null)
+            config.workingDirectory = File(workingDirArg)
+
+        if (outputArg != null)
+            config.output = File(outputArg)
+
+        if (instanceDirArg != null)
+            config.instances = File(instanceDirArg)
+
+        if (instanceArg != null)
+            config.instance = File(instanceArg)
+
+        config.getOutputDirectory()
+
+        val output = config.output
 
         logger.info("config: $config")
-        val outputDirectory = config.getOutputDirectory()
-        logger.info("outputDirectory: $outputDirectory")
+        logger.info("output: ${config.output.canonicalPath}")
+        logger.info("working directory: ${config.workingDirectory.canonicalPath}")
 
-        var paths = packs.map {
-            if (it.isAbsolute) {
-                return@map it
+        val path = if (!pack.isAbsolute) {
+            config.workingDirectory.resolve(pack.path)
+        } else pack
+
+        if (!path.exists()) {
+            logger.error("path: $path does not exist,")
+        }
+
+        val modpack = loadFromFile(path)
+
+        val instance = config.instance
+        val instancePath = if (instance != null) {
+            if (instance.isAbsolute) {
+                instance
+            } else {
+                config.instances.resolve(instance)
             }
-            config.workingDirectory.resolve(it.path)
+        } else {
+            config.instances.resolve(modpack.name)
         }
 
-        paths = paths.filter {
-            val exists = it.exists()
-            if (!exists) {
-                logger.error("dropping $it , does not exist,")
-            }
-            return@filter exists
-        }
-
-        for (path in paths) {
-            val modpack = loadFromFile(path)
-            process(modpack, config.workingDirectory, config.getOutputDirectory())
-        }
+        process(modpack, config.workingDirectory, config.output, multimcArg, instancePath)
     }
 }
 
@@ -155,7 +196,7 @@ fun writeToFile(file: File, config: Modpack) {
     }
 }
 
-fun process(modpack: Modpack, path: File, outPath: File) {
+fun process(modpack: Modpack, path: File, outPath: File, multimcExport: Boolean, instancePath: File) {
 //    if (modpack.forge.isBlank()/* && modpack.sponge.isBlank()*/)
 //        throw IllegalArgumentException("no forge version define")
 
@@ -192,7 +233,7 @@ fun process(modpack: Modpack, path: File, outPath: File) {
     loaderPath.mkdirs()
 
     logger.info("forge")
-    val forgeEntry = Forge.getForge(modpack.forge, modpack.mcVersion/*, spongeEntry*/)
+    val (forgeEntry, forgeVersion) = Forge.getForge(modpack.forge, modpack.mcVersion/*, spongeEntry*/)
     modpack.entries += forgeEntry
     logger.info(modpack.toYAMLString())
 
@@ -218,14 +259,69 @@ fun process(modpack: Modpack, path: File, outPath: File) {
         logger.info("all entries processed")
     }
 
+    val mapper = jacksonObjectMapper() // Enable JSON parsing
+    mapper.registerModule(KotlinModule()) // Enable Kotlin support
+    mapper.enable(SerializationFeature.INDENT_OUTPUT)
+
+    if (multimcExport) {
+        val cfgPath = instancePath.resolve("instance.cfg")
+        cfgPath.createNewFile()
+        cfgPath.appendText("\nname=${modpack.name}")
+        cfgPath.appendText("\nIntendedVersion=${modpack.mcVersion}")
+//        cfgPath.appendText("\nForgeVersion=$forgeBuild")
+
+        val mmcPackPath = instancePath.resolve("mmc-pack.json")
+        var pack = MumtilMCPack()
+        if (mmcPackPath.exists()) {
+            pack = mapper.readValue(mmcPackPath, MumtilMCPack::class.java)
+        }
+        pack.components = listOf(
+                PackComponent(
+                        uid = "net.minecraft",
+                        version = modpack.mcVersion,
+                        important = true
+                ),
+                PackComponent(
+                        uid = "net.minecraftforge",
+                        version = forgeVersion,
+                        important = true
+                )
+        ) + pack.components
+
+        mapper.writeValue(mmcPackPath, pack)
+
+        val mmcMcPath = instancePath.resolve(".minecraft")
+        srcPath.copyRecursively(mmcMcPath, true)
+        val mmcModsPath = mmcMcPath.resolve("mods")
+        val mmcClientPath = mmcModsPath.resolve("_CLIENT")
+        if (mmcClientPath.exists()) {
+            mmcClientPath.walk().forEach {
+                val target = mmcModsPath.resolve(it.name)
+                if (it.isFile && !target.exists()) {
+                    it.copyTo(mmcModsPath.resolve(it.name))
+                }
+            }
+        }
+        /*
+
+        {
+            "important": true,
+            "uid": "net.minecraft",
+            "version": "1.12.2"
+        },
+         */
+    }
+
     var features = emptyList<SKFeature>()
 
     for (feature in modpack.features) {
         for (name in feature.entries) {
             val dependencies = getDependencies(name, modpack)
             dependencies
-                    .filter { println(it)
-                        it.optional }
+                    .filter {
+                        println(it)
+                        it.optional
+                    }
                     .forEach {
                         feature.files.include += it.targetFilePath
                     }
@@ -246,9 +342,7 @@ fun process(modpack: Modpack, path: File, outPath: File) {
             launch = modpack.launch,
             features = features
     )
-    val mapper = jacksonObjectMapper() // Enable YAML parsing
-    mapper.registerModule(KotlinModule()) // Enable Kotlin support
-    mapper.enable(SerializationFeature.INDENT_OUTPUT)
+
 
     val modpackPath = packPath.resolve("modpack.json")
     modpackPath.bufferedWriter().use {
@@ -269,7 +363,7 @@ fun process(modpack: Modpack, path: File, outPath: File) {
 
 fun getDependenciesCall(entryName: String, modpack: Modpack): List<Entry> {
     val entry = modpack.entries.find { it.name == entryName } ?: return emptyList()
-    var result = listOf( entry )
+    var result = listOf(entry)
     for ((depType, entryList) in entry.dependencies) {
         if (depType == DependencyType.embedded) continue
         for (depName in entryList) {
@@ -280,3 +374,20 @@ fun getDependenciesCall(entryName: String, modpack: Modpack): List<Entry> {
 }
 
 val getDependencies = ::getDependenciesCall.memoize()
+
+data class MumtilMCPack(
+        var components: List<PackComponent> = emptyList(),
+        var formatVersion: Int = 1
+)
+
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+data class PackComponent(
+        var uid: String = "",
+        var version: String = "",
+        var cachedName: String = "",
+        var cachedRequires: Any? = null,
+        var cachedVersion: String = "",
+        var important: Boolean = false,
+        var cachedVolatile: Boolean = false,
+        var dependencyOnly: Boolean = false
+)
