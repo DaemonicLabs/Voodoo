@@ -22,7 +22,7 @@ enum class Provider(val thingy: ProviderThingy) {
 }
 
 private var processedFeatures = listOf<String>() //TODO: move into modpack-shared object
-private val processedFunctions = mutableMapOf<Entry, List<String>>() //TODO: move insto modpack-shared object
+private val processedFunctions = mutableMapOf<String, List<String>>() //TODO: move insto modpack-shared object
 
 abstract class ProviderThingy {
     open val name = "abstract Provider"
@@ -40,7 +40,7 @@ abstract class ProviderThingy {
         )
         register("resolveFeatureDependencies",
                 { it.name.isNotBlank() && !processedFeatures.contains(it.name) },
-                ::resolveFeatureDependencies
+                ::resolveFeatureDependencies, true
         )
 //        register("cleanDependneciy",
 //                { it.dependenciesDirty },
@@ -97,7 +97,7 @@ abstract class ProviderThingy {
                             Side.BOTH -> ""
                         }
                         if (side.isNotBlank()) {
-                            path = "$side/$path"
+                            path = "$path/$side"
                         }
                     }
                     e.path = path
@@ -122,18 +122,19 @@ abstract class ProviderThingy {
     }
 
     fun process(entry: Entry, modpack: Modpack): Boolean {
-        var processed = processedFunctions.getOrDefault(entry, emptyList())
+        var processed = processedFunctions.getOrDefault(entry.name, emptyList())
         for ((label, condition, execute, repeatable, requirement) in functions) {
             if (!repeatable && processed.contains(label)) {
                 continue
             }
             if (requirement.isNotBlank()) {
                 val fulfilled = modpack.entries.all {
-                    processedFunctions.getOrDefault(it, emptyList()).contains(requirement)
+                    processedFunctions.getOrDefault(it.name, emptyList()).contains(requirement)
                 }
                 if (!fulfilled) {
+                    logger.debug("processed map: $processedFunctions")
                     val missing = modpack.entries.filter {
-                        processedFunctions.getOrDefault(it, emptyList()).contains(requirement)
+                        processedFunctions.getOrDefault(it.name, emptyList()).contains(requirement)
                     }.map { it.name }
                     logger.warn("requirement $requirement is not fulfilled by all entries, missing: $missing")
                     continue
@@ -144,7 +145,7 @@ abstract class ProviderThingy {
                 //TODO: check if process failed (no change to entry or modpack)
                 execute(entry, modpack)
                 processed += label
-                processedFunctions[entry] = processed
+                processedFunctions[entry.name] = processed
                 return true
             }
         }
@@ -182,6 +183,10 @@ abstract class ProviderThingy {
     }
 
     fun resolveFeatureDependencies(entry: Entry, modpack: Modpack) {
+        if(entry.feature == null) {
+            processedFeatures += entry.name
+            return
+        }
         val entryFeature = entry.feature ?: return
         var featureName = entryFeature.name
         if (featureName.isBlank())
