@@ -14,7 +14,7 @@ import java.io.File
  * @author Nikky
  * @version 1.0
  */
-class CurseProviderThingy : ProviderThingy() {
+class CurseProviderThing : ProviderThingy() {
     companion object: KLogging() {
         val mapper = jacksonObjectMapper() // Enable Json parsing
                 .registerModule(KotlinModule())!! // Enable Kotlin support

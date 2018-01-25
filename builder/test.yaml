@@ -1,0 +1,22 @@
+---
+name: "pack name"
+urls: true
+doOptionals: false
+entries:
+- name: "test"
+- provider: "DIRECT"
+  id: 2
+- provider: "DIRECT"
+  dependencies:
+    optional:
+    - "test"
+  path: "somwhere"
+forge: "recommended"
+features: []
+mcVersion: "1.12.2"
+validMcVersions: []
+outputPath: ""
+userFiles: {}
+launch: {}
+cacheBase: ""
+pathBase: ""
