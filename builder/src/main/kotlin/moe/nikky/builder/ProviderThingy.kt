@@ -13,9 +13,10 @@ import java.io.File
  */
 
 enum class Provider(val thingy: ProviderThingy) {
-    CURSE(CurseProviderThingy()),
+    CURSE(CurseProviderThing()),
     DIRECT(DirectProviderThing()),
     LOCAL(LocalProviderThing()),
+    JENKINS(JenkinsProviderThing()),
     DUMMY(DummyProviderThing())
 }
 

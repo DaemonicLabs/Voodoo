@@ -106,6 +106,7 @@ data class Entry(
         //JENKINS
         var jenkinsUrl: String = "",
         var job: String = "",
+        var buildNumber: Int = -1,
         var jenkinsFileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)$",
         // LOCAL
         var fileSrc: String = ""

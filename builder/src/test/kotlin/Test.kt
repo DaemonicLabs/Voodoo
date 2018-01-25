@@ -2,7 +2,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import moe.nikky.builder.*
-import moe.nikky.builder.provider.CurseProviderThingy
+import moe.nikky.builder.provider.CurseProviderThing
 import moe.nikky.builder.provider.DependencyType
 import moe.nikky.builder.provider.DirectProviderThing
 import org.junit.Test
@@ -74,7 +74,7 @@ class EntryTest {
             val thingy = entry.provider.thingy
             println(thingy.name)
             when(thingy) {
-                is CurseProviderThingy -> {
+                is CurseProviderThing -> {
 
                 }
                 is DirectProviderThing -> {
