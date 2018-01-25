@@ -13,7 +13,6 @@ dependencies {
     compile group:  'io.github.microutils', name: 'kotlin-logging', version: '+'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
-//    compile group: 'org.funktionale', name: 'funktionale-memoization', version: '+'
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
@@ -21,7 +20,7 @@ mainClassName = "moe.nikky.builder.MainKt"
 
 shadowJar {
     // baseName = 'voodoo-builder'
-    // classifier = null
+    classifier = null
     // version = null
 }
 

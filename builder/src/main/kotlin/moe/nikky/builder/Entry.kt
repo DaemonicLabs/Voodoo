@@ -1,5 +1,6 @@
 package moe.nikky.builder
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
@@ -7,6 +8,15 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import moe.nikky.builder.provider.DependencyType
 import moe.nikky.builder.provider.PackageType
 import moe.nikky.builder.provider.ReleaseType
+import com.fasterxml.jackson.databind.node.TextNode
+import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.core.JsonProcessingException
+import java.io.IOException
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
+
+
 
 
 /**
@@ -50,7 +60,6 @@ enum class Side(val flag: Int) {
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class Entry(
-        //TODO: Property wrapper Property<T>(value: T, enabled: Boolean)
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var provider: Provider = Provider.CURSE,
         var name: String = "",
@@ -62,7 +71,9 @@ data class Entry(
         var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         var resolvedOptionals: Boolean = false,
-        var optional: Boolean = false,
+        var resolvedDependencies: Boolean = false,
+        @JsonInclude(JsonInclude.Include.ALWAYS)
+        var optional: Boolean = feature != null,
         var transient: Boolean = false,
         var basePath: String = "src",
         var targetPath: String = "",
@@ -98,8 +109,14 @@ data class Entry(
         var jenkinsFileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)$",
         // LOCAL
         var fileSrc: String = ""
-
-)
+) {
+    companion object {
+        @JvmStatic @JsonCreator
+        fun fromString(stringValue: String): Entry {
+            return Entry(name = stringValue)
+        }
+    }
+}
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class Feature(

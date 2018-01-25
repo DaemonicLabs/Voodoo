@@ -16,7 +16,7 @@ import java.io.File
  */
 class CurseProviderThingy : ProviderThingy() {
     companion object: KLogging() {
-        val mapper = jacksonObjectMapper() // Enable YAML parsing
+        val mapper = jacksonObjectMapper() // Enable Json parsing
                 .registerModule(KotlinModule())!! // Enable Kotlin support
         private val META_URL = "https://cursemeta.nikky.moe"
         val data: List<Addon> = getAddonData()
@@ -54,7 +54,8 @@ class CurseProviderThingy : ProviderThingy() {
         )
         register("resolveDependencies",
                 { it.id > 0 && it.fileId > 0 },
-                ::resolveDependencies
+                ::resolveDependencies,
+                force = true
         )
         register("setName",
                 { it.id > 0 && it.name.isBlank() },
@@ -159,11 +160,12 @@ class CurseProviderThingy : ProviderThingy() {
                 depEntry.side = side
             }
 
-            var provideList = depEntry.provides[depType] ?: emptyList()
-            provideList += addon.name
-            depEntry.provides[depType] = provideList
-
+            // moved to ProviderThing as postResolveDependencies
+//            var provideList = depEntry.provides[depType] ?: emptyList()
+//            provideList += addon.name
+//            depEntry.provides[depType] = provideList
         }
+        entry.resolvedDependencies = true
     }
 
     private fun findFile(entry: Entry, modpack: Modpack): Triple<Int, Int, String> {
