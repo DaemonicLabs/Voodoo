@@ -10,16 +10,18 @@
 
 * clean up unneeded duplication between features classes
 
+* entry deduplication (2 entries with the same name cause it to loop forever)
+
 **TEST** manual dependencies with optionals
 
+
+
+
+
 * use property wrappers Prop<T>(var enabled: boolean, var value: T)
-  * required for planned adanced gui features
-
-
-* put processed enum on entries ?
-  * process all entries in a loop until all done
+  * required for planned advanced gui features
 
 
 * allow nested lists of entries
-  * compile nested list into flat list
+  * flatten tree into list
   + requires processing entries without modification in-place

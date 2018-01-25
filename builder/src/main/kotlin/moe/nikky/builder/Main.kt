@@ -31,8 +31,7 @@ data class BuilderConfig(
         var workingDirectory: File = File(System.getProperty("user.dir")),
         var output: File = File("modpacks"),
         var instances: File = File("instances"),
-        var instance: File? = null,
-        var somethingElse: String = ""
+        var instance: File? = null
 ) {
     fun getOutputDirectory(): File {
         if (!output.isAbsolute) {
@@ -60,22 +59,22 @@ class Arguments(parser: ArgParser) {
 
     val workingDirArg by parser.storing("-d", "--directory",
             help = "working directory")
-            .default(null)
+            .default("")
 
     val outputArg by parser.storing("-o", "--output",
             help = "output directory")
-            .default(null)
-
-    val instanceArg by parser.storing("-i", "--instance",
-            help = "instance directory")
-            .default(null)
-    val instanceDirArg by parser.storing("-I", "--instances",
-            help = "multimc instances directory")
-            .default(null)
+            .default("")
 
     val multimcArg by parser.flagging("--mmc", "--multimc",
             help = "enable multimc export")
 
+    val instanceArg by parser.storing("-i", "--instance",
+            help = "instance directory")
+            .default("")
+
+    val instanceDirArg by parser.storing("-I", "--instances",
+            help = "multimc instances directory")
+            .default("")
 
 //    val verbose by parser.flagging("-v", "--verbose",
 //            help = "enable verbose mode")
@@ -105,21 +104,19 @@ fun main(args: Array<String>) = mainBody("voodoo-builder") {
         val config = loadConfig(configPath)
         logger.info("pack: $pack")
 
-        if (workingDirArg != null)
+        if (workingDirArg.isNotEmpty())
             config.workingDirectory = File(workingDirArg)
 
-        if (outputArg != null)
+        if (outputArg.isNotEmpty())
             config.output = File(outputArg)
 
-        if (instanceDirArg != null)
+        if (instanceDirArg.isNotEmpty())
             config.instances = File(instanceDirArg)
 
-        if (instanceArg != null)
+        if (instanceArg.isNotEmpty())
             config.instance = File(instanceArg)
 
         config.getOutputDirectory()
-
-        val output = config.output
 
         logger.info("config: $config")
         logger.info("output: ${config.output.canonicalPath}")
@@ -130,7 +127,7 @@ fun main(args: Array<String>) = mainBody("voodoo-builder") {
         } else pack
 
         if (!path.exists()) {
-            logger.error("path: $path does not exist,")
+            logger.error("path: $path does not exist")
         }
 
         val modpack = loadFromFile(path)
@@ -149,7 +146,6 @@ fun main(args: Array<String>) = mainBody("voodoo-builder") {
         process(modpack, config.workingDirectory, config.output, multimcArg, instancePath)
     }
 }
-
 
 fun loadConfig(path: File): BuilderConfig {
     val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
@@ -196,7 +192,7 @@ fun writeToFile(file: File, config: Modpack) {
     }
 }
 
-fun process(modpack: Modpack, path: File, outPath: File, multimcExport: Boolean, instancePath: File) {
+fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExport: Boolean, instancePath: File) {
 //    if (modpack.forge.isBlank()/* && modpack.sponge.isBlank()*/)
 //        throw IllegalArgumentException("no forge version define")
 
@@ -205,20 +201,11 @@ fun process(modpack: Modpack, path: File, outPath: File, multimcExport: Boolean,
     srcPath.mkdirs()
 
     modpack.outputPath = packPath.path
-    modpack.pathBase = path.path
-    modpack.cacheBase = path.resolve("cache").path
+    modpack.pathBase = workingDirectory.path
+    modpack.cacheBase = workingDirectory.resolve("cache").path
+
     //TODO: check here or later whether providers have
     // all required values in entries
-
-//    val spongeEntry: Entry?
-//    if (!modpack.sponge.isBlank()) {
-//        println("sponge")
-//        spongeEntry = Forge.getSponge(modpack.sponge)
-//        modpack.entries += spongeEntry
-//        println(modpack.toYAMLString())
-//    } else {
-//        spongeEntry = null
-//    }
 
     val modPath = srcPath.resolve("mods")
     if (!modPath.deleteRecursively()) {
@@ -233,7 +220,7 @@ fun process(modpack: Modpack, path: File, outPath: File, multimcExport: Boolean,
     loaderPath.mkdirs()
 
     logger.info("forge")
-    val (forgeEntry, forgeVersion) = Forge.getForge(modpack.forge, modpack.mcVersion/*, spongeEntry*/)
+    val (forgeEntry, forgeVersion) = Forge.getForge(modpack.forge, modpack.mcVersion)
     modpack.entries += forgeEntry
     logger.info(modpack.toYAMLString())
 
@@ -302,35 +289,30 @@ fun process(modpack: Modpack, path: File, outPath: File, multimcExport: Boolean,
                 }
             }
         }
-        /*
-
-        {
-            "important": true,
-            "uid": "net.minecraft",
-            "version": "1.12.2"
-        },
-         */
     }
 
     var features = emptyList<SKFeature>()
 
     for (feature in modpack.features) {
+        logger.info("processed feature ${feature.properties.name}")
         for (name in feature.entries) {
+            logger.info("processing feature entry $name")
             val dependencies = getDependencies(name, modpack)
             dependencies
                     .filter {
-                        println(it)
-                        it.optional
+                        logger.info("testing ${it.name}")
+                        it.optional && !feature.files.include.contains(it.targetFilePath) && it.targetFilePath.isNotBlank()
                     }
                     .forEach {
                         feature.files.include += it.targetFilePath
+                        logger.info("includes =  ${feature.files.include}")
                     }
         }
         features += SKFeature(
                 properties = feature.properties,
                 files = feature.files
         )
-        logger.info("processing feature $feature")
+        logger.info("processed feature $feature")
     }
 
     writeToFile(packPath.resolve("modpack.yaml"), modpack)
