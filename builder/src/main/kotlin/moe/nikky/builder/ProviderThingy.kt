@@ -28,7 +28,7 @@ abstract class ProviderThingy {
     private var functions = listOf<Quintuple<String, (Entry) -> Boolean, (Entry, Modpack) -> Unit, Boolean, String>>()
     //    private var functions = mutableMapOf<Provider, List<Triple<String, (Entry) -> Boolean, (Entry, Modpack) -> Unit>>>()
 
-    companion object: KLogging()
+    companion object : KLogging()
 
     init {
         register("setFeatureName",
@@ -41,23 +41,27 @@ abstract class ProviderThingy {
         register("postResolveDependencies",
                 { it.name.isNotBlank() && ((it.provider == Provider.CURSE) == it.resolvedDependencies) },
                 { e, m ->
-                    logger.info("run after resolveDependencies")
+                    logger.info("run after resolveDependencies ${e.name}")
                 }
         )
 
         register("resolveProvides",
                 { it.name.isNotBlank() },
                 { e, m ->
-                    m.entries.forEach { entry ->
+                    logger.info("provides starting: $e")
+                    m.mods.entries.forEach { entry ->
                         entry.dependencies.forEach { type, dependencies ->
                             var provides = e.provides[type] ?: listOf()
                             dependencies.forEach { dependency ->
-                                if(e.name == dependency && !provides.contains(entry.name))
+                                if (e.name == dependency && !provides.contains(entry.name)) {
+                                    logger.info("${e.name} provides $type ${entry.name}")
                                     provides += entry.name
+                                }
                             }
                             e.provides[type] = provides
                         }
                     }
+                    logger.info("provides finished: $e")
                 },
                 requires = "postResolveDependencies"
         )
@@ -140,7 +144,7 @@ abstract class ProviderThingy {
     fun register(label: String, condition: (Entry) -> Boolean, execute: (Entry, Modpack) -> Unit, repeatable: Boolean = false, requires: String = "", force: Boolean = false) {
         val duplicate = functions.find { it.first == label }
         if (duplicate != null) {
-            if(force) {
+            if (force) {
                 functions -= duplicate
             } else {
                 logger.warn("cannot register duplicate $label")
@@ -158,14 +162,16 @@ abstract class ProviderThingy {
                 continue
             }
             if (requirement.isNotBlank()) {
-                val fulfilled = modpack.entries.all {
+//                var temp = processedFunctions[entry.name] ?: listOf()
+//                println("processed functions of ${entry.name} $temp")
+                val fulfilled = modpack.mods.entries.all {
                     processedFunctions.getOrDefault(it.name, emptyList()).contains(requirement)
                 }
                 if (!fulfilled) {
                     logger.debug("processed map: $processedFunctions")
-                    val missing = modpack.entries.filter {
-                        processedFunctions.getOrDefault(it.name, emptyList()).contains(requirement)
-                    }.map { it.name }
+                    val missing = modpack.mods.entries.filter {
+                        !processedFunctions.getOrDefault(it.name, emptyList()).contains(requirement)
+                    }.map { if (it.name.isNotBlank()) it.name else it.toString() }
                     logger.warn("requirement $requirement is not fulfilled by all entries, missing: $missing")
                     continue
                 }
@@ -181,17 +187,20 @@ abstract class ProviderThingy {
         }
         logger.warn("no action matched for entry $entry")
         //TODO: keep count if times a entry has fallen through consecutively, kill it after > X time
-        return true
+        return false
     }
 
     private fun isOptionalCall(entry: Entry, modpack: Modpack): Boolean {
+        logger.info("test optional of ${entry.name}")
+//        logger.info(entry.toString())
         var result = entry.transient || entry.optional
-        if(result) return result
+        if (result) return result
         for ((depType, entryList) in entry.provides) {
             if (depType != DependencyType.required) continue
-            if(entryList.isEmpty()) return false
+            if (entryList.isEmpty()) return false
+            logger.info("type: $depType list: $entryList")
             for (entryName in entryList) {
-                val providerEntry = modpack.entries.firstOrNull { it.name == entryName }!!
+                val providerEntry = modpack.mods.entries.firstOrNull { it.name == entryName }!!
                 val tmpResult = isOptional(providerEntry, modpack)
                 if (!tmpResult) return false
             }
@@ -204,7 +213,7 @@ abstract class ProviderThingy {
         for ((depType, entryList) in entry.provides) {
             if (depType != DependencyType.required) continue
             for (entryName in entryList) {
-                val providerEntry = modpack.entries.firstOrNull { it.name == entryName }!!
+                val providerEntry = modpack.mods.entries.firstOrNull { it.name == entryName }!!
                 result = result && isOptional(providerEntry, modpack)
                 if (!result) return result
             }
@@ -218,7 +227,7 @@ abstract class ProviderThingy {
         if (!entry.resolvedOptionals) return false
         for ((depType, depList) in entry.dependencies) {
             for (depNames in depList) {
-                val depEntry = modpack.entries.firstOrNull { it.name == name }!!
+                val depEntry = modpack.mods.entries.firstOrNull { it.name == name }!!
                 if (!checkCleanDependency(depEntry, modpack)) {
                     return false
                 }
@@ -228,7 +237,7 @@ abstract class ProviderThingy {
     }
 
     fun resolveFeatureDependencies(entry: Entry, modpack: Modpack) {
-        if(entry.feature == null) {
+        if (entry.feature == null) {
             processedFeatures += entry.name
             return
         }
@@ -269,7 +278,7 @@ abstract class ProviderThingy {
             processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
             for (entry_name in processableEntries) {
                 logger.info("searching $entry_name")
-                val entry = modpack.entries.find { e ->
+                val entry = modpack.mods.entries.find { e ->
                     e.name == entry_name
                 }
                 if (entry == null) {
@@ -280,7 +289,7 @@ abstract class ProviderThingy {
                 var depNames = entry.dependencies.values.flatten()
                 logger.info("depNames: $depNames")
                 depNames = depNames.filter { d ->
-                    modpack.entries.any { e -> e.name == d }
+                    modpack.mods.entries.any { e -> e.name == d }
                 }
                 logger.info("filtered dependency names: $depNames")
                 for (dep in depNames) {

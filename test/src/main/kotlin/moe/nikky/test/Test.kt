@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
-import java.io.File
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 
@@ -15,7 +14,7 @@ import kotlin.reflect.full.memberProperties
  * @version 1.0
  */
 val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
-    .registerModule(KotlinModule()) // Enable Kotlin support
+        .registerModule(KotlinModule()) // Enable Kotlin support
 
 val yamlInput = """---
 
@@ -75,21 +74,23 @@ data class Test(
     companion object {
         private val default = Test()
     }
+
     fun flatten(indent: String = "") {
-        for (entry in entries) {
+        entries.forEach { entry ->
             println("flatten ${yaml(this)}".prependIndent(indent))
 
             for (prop in Test::class.memberProperties) {
-                val mutProp = prop as KMutableProperty<Test>
-                val otherValue = prop.get(entry)
-                val thisValue = prop.get(this)
-                val defaultValue = prop.get(default)
-                if(otherValue == defaultValue) {
-                    if(prop.name == "entries") {
+                if (prop is KMutableProperty<*>) {
+                    val otherValue = prop.get(entry)
+                    val thisValue = prop.get(this)
+                    val defaultValue = prop.get(default)
+                    if (otherValue == defaultValue) {
+                        if (prop.name == "entries") {
 //                        subEntry.flatten()
-                    } else {
-                        println("setting ${mutProp.name} == $thisValue".prependIndent(indent))
-                        mutProp.setter.call(entry, thisValue)
+                        } else {
+                            println("setting ${prop.name} == $thisValue".prependIndent(indent))
+                            prop.setter.call(entry, thisValue)
+                        }
                     }
                 }
             }

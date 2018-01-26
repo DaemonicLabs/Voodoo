@@ -15,7 +15,7 @@ import java.io.File
  * @version 1.0
  */
 class CurseProviderThing : ProviderThingy() {
-    companion object: KLogging() {
+    companion object : KLogging() {
         val mapper = jacksonObjectMapper() // Enable Json parsing
                 .registerModule(KotlinModule())!! // Enable Kotlin support
         private val META_URL = "https://cursemeta.nikky.moe"
@@ -54,8 +54,7 @@ class CurseProviderThing : ProviderThingy() {
         )
         register("resolveDependencies",
                 { it.id > 0 && it.fileId > 0 },
-                ::resolveDependencies,
-                force = true
+                ::resolveDependencies
         )
         register("setName",
                 { it.id > 0 && it.name.isBlank() },
@@ -122,20 +121,24 @@ class CurseProviderThing : ProviderThingy() {
         val fileId = entry.fileId
         val addon = getAddon(addonId)!!
         val addonFile = getAddonFile(addonId, fileId)!!
-
+        logger.info("dependencies of ${entry.name} ${addonFile.dependencies}")
+        logger.info(entry.toString())
         for ((depAddonId, depType) in addonFile.dependencies) {
 
             val depAddon = getAddon(depAddonId) ?: continue
 
 //            val depends = entry.dependencies
-            var dependsList = entry.dependencies.getOrDefault(depType, emptyList())
-            logger.info("get dependency $depType = $dependsList")
-            dependsList += depAddon.name
+            var dependsList = entry.dependencies[depType] ?: listOf()
+            logger.info("get dependency $depType = $dependsList + ${depAddon.name}")
+            if (!dependsList.contains(depAddon.name)) {
+                logger.info("${entry.name} adding dependency ${depAddon.name}")
+                dependsList += depAddon.name
+            }
             entry.dependencies[depType] = dependsList
             logger.info("set dependency $depType = $dependsList")
 
             // find duplicate entry
-            var depEntry = modpack.entries.firstOrNull { e ->
+            var depEntry = modpack.mods.entries.firstOrNull { e ->
                 e.provider == Provider.CURSE &&
                         (e.id == depAddon.id || e.name == depAddon.name)
             }
@@ -148,7 +151,7 @@ class CurseProviderThing : ProviderThingy() {
                             side = entry.side,
                             transient = true
                     )
-                    modpack.entries += depEntry
+                    modpack.mods.entries += depEntry
                     logger.info("added $depType dependency ${depAddon.name} of ${addon.name}")
                 } else {
                     return

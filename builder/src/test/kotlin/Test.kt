@@ -49,17 +49,17 @@ class EntryTest {
     @Test
     fun seralizeTest() {
         var pack = Modpack("pack name")
-        pack.entries += Entry(
+        pack.mods.entries += Entry(
                 name = "test"
         )
-        pack.entries += Entry(
+        pack.mods.entries += Entry(
                 id = 2,
                 provider = Provider.DIRECT
         )
-        pack.entries += Entry(
+        pack.mods.entries += Entry(
                 path = "somwhere",
                 provider = Provider.DIRECT,
-                dependencies = mutableMapOf(Pair(DependencyType.optional, listOf(pack.entries.first().name))
+                dependencies = mutableMapOf(Pair(DependencyType.optional, listOf(pack.mods.entries.first().name))
                 )
         )
 
@@ -70,7 +70,7 @@ class EntryTest {
         writeToFile(Paths.get("$path/test.yaml"), pack)
         val pack2 = loadFromFile(Paths.get("$path/test.yaml"))
         println(pack2)
-        for (entry: Entry in pack2.entries) {
+        for (entry: Entry in pack2.mods.entries) {
             val thingy = entry.provider.thingy
             println(thingy.name)
             when(thingy) {
