@@ -195,10 +195,14 @@ fun writeToFile(file: File, config: Modpack) {
 fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExport: Boolean, instancePath: File) {
 //    if (modpack.forge.isBlank()/* && modpack.sponge.isBlank()*/)
 //        throw IllegalArgumentException("no forge version define")
+    modpack.flatten()
+//    exit(0)
 
     val packPath = outPath.resolve(modpack.name)
     val srcPath = packPath.resolve("src")
     srcPath.mkdirs()
+
+    writeToFile(packPath.resolve("flat.yaml"), modpack)
 
     modpack.outputPath = packPath.path
     modpack.pathBase = workingDirectory.path
@@ -221,36 +225,44 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
 
     logger.info("forge")
     val (forgeEntry, forgeVersion) = Forge.getForge(modpack.forge, modpack.mcVersion)
-    modpack.entries += forgeEntry
+    modpack.mods.entries += forgeEntry
     logger.info(modpack.toYAMLString())
 
-    var invalidEntries = listOf<Entry>()
     var counter = 0
-    while (!modpack.entries.all { it.done }) {
+    while (!modpack.mods.entries.all { it.done }) {
+        var invalidEntries = listOf<Entry>()
+        var anyMatched = false
         counter++
         logger.info("processing entries run: $counter")
-        for (entry in modpack.entries.filter { !it.done }) {
-            logger.info("processing $entry")
+        for (entry in modpack.mods.entries.filter { !it.done }) {
+            logger.debug("processing $entry")
             val thingy = entry.provider.thingy
-            if (!thingy.process(entry, modpack)) {
+            if (thingy.process(entry, modpack)) {
+                anyMatched = true
+            } else {
                 invalidEntries += entry
-                entry.done = true
                 logger.error("failed $entry")
-                continue
             }
         }
+        if (!anyMatched) {
+            logger.error("no entry matched")
+            writeToFile(packPath.resolve(modpack.name + "_errored.yaml"), modpack)
+            System.exit(-1)
+        }
+        if (invalidEntries.isNotEmpty()) {
+            logger.error("failed entries: $invalidEntries")
+        }
     }
-    if (invalidEntries.isNotEmpty()) {
-        logger.error("failed entries: $invalidEntries")
-    } else {
-        logger.info("all entries processed")
-    }
+    logger.info("\nall entries processed\n")
+
 
     val mapper = jacksonObjectMapper() // Enable JSON parsing
     mapper.registerModule(KotlinModule()) // Enable Kotlin support
     mapper.enable(SerializationFeature.INDENT_OUTPUT)
 
     if (multimcExport) {
+
+        logger.info("\nMultiMC 6 export\n")
         val cfgPath = instancePath.resolve("instance.cfg")
         cfgPath.createNewFile()
         cfgPath.appendText("\nname=${modpack.name}")
@@ -291,6 +303,7 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
         }
     }
 
+    logger.info("\nprocessing Features\n")
     var features = emptyList<SKFeature>()
 
     for (feature in modpack.features) {
@@ -344,7 +357,7 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
 }
 
 fun getDependenciesCall(entryName: String, modpack: Modpack): List<Entry> {
-    val entry = modpack.entries.find { it.name == entryName } ?: return emptyList()
+    val entry = modpack.mods.entries.find { it.name == entryName } ?: return emptyList()
     var result = listOf(entry)
     for ((depType, entryList) in entry.dependencies) {
         if (depType == DependencyType.embedded) continue
