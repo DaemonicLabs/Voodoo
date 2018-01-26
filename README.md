@@ -15,6 +15,19 @@ windows: `./gradlew.bat :builder:build`
 
 sample: [sample.yaml](/sample.yaml)
 
+## config file
+
+every value in the configuration file can be overridden with commandline options
+
+```yaml
+workingDirectory: '.'
+output: modpacks
+instances: instances
+instance: = null
+```
+
+the config file is expected to be either `config.yaml` or to be set with the `--config` commandline option
+
 ## MultiMC integration
 
 to have voodoo build the pack and automatically copy it into a multimc instance
@@ -24,4 +37,4 @@ set the following as pre-launch command
 
 example
 
-`java -jar $HOME/dev/voodoo/builder/build/libs/builder-1.0-SNAPSHOT-all.jar test.yaml -d $HOME/dev/voodoo/builder/run/ -i $INST_DIR/.. --mmc`
+`java -jar $HOME/dev/voodoo/builder/build/libs/builder-1.0.jar test.yaml -d $HOME/dev/voodoo/builder/run/ -i $INST_DIR/.. --mmc`

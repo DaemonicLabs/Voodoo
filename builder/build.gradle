@@ -26,14 +26,4 @@ shadowJar {
     // version = null
 }
 
-// pass ` -Pmodpack=packname.yaml `  to gradle
-
-runShadow {
-    args modpack
-}
-
-run {
-    args modpack
-}
-
 build.dependsOn(shadowJar)

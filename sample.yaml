@@ -1,47 +1,175 @@
----
-name: "Test Pack"
-mcVersion: "1.12.2"
+name: openpack
+title: Open Source Adventure
+forge: latest
+mcVersion: 1.12.2
 validMcVersions:
-- "1.12.1"
-- "1.12"
-forge: "latest"
-entries:
-- provider: "CURSE"
-  name: "XNet"
-- provider: "CURSE"
-  name: "Unlimited Chisel Works"
-- provider: "CURSE"
-  name: "Charset Storage - Barrels"
-  feature:
-    selected: true
-- provider: "CURSE"
-  name: "Charset Storage - Tanks"
-- provider: "CURSE"
-  name: "Preston"
-- provider: "CURSE"
-  name: "Chisels & Bits"
-  feature:
-    selected: true
-- provider: "CURSE"
-  name: "YNot"
-- provider: "LOCAL"
-  name: "Tails"
-  feature:
-    selected: true
-  fileSrc: "Tails-1.12-1.10.0.jar"
-- provider: "CURSE"
-  name: "Magic Feather"
-- provider: "CURSE"
-  name: "RFTools"
-  feature:
-    selected: true
-- provider: "CURSE"
-  name: "NoNausea"
-  side: "CLIENT"
-  feature:
-    selected: true
-- provider: "DIRECT"
-  feature:
-    selected: true
-  resolvedOptionals: true
-  url: "https://unascribed.com/foamfix/FoamFix-1.12.2-0.8.3-Anarchy.jar"
+- 1.12.1
+- '1.12'
+doOptionals: false # NYI / WIP
+mods:
+  entries:
+  - Quark
+  - Lingering Loot
+  - Hwyla
+  - Structured Crafting
+  - Integrated Dynamics
+  - Integrated Tunnels
+  - Tails
+  - OpenComputers
+  - TIS-3D
+  - Bedrock Ores
+  - Architect
+  - Chisels & Bits
+  - Ambidextrous
+  - Roguelike Dungeons
+  - Doomlike Dungeons
+  - Armor Sound Tweak
+  - Persistent Cake
+  - Just Enough Torches (JET)
+  - TorchMaster
+  - Melon Golem
+  - VanillaAutomation
+  - IIDY
+  - Wearable Backpacks
+  - Extra Bit Manipulation
+  - Automated Redstone
+  - Inductive Logistics
+  - BetterFps
+  - Just Enough Items (JEI)
+  - Cooking for Blockheads
+  - KleeSlabs
+  - GravelMiner
+  - CraftingCraft
+  - Crafting Tweaks
+  - Refined Relocation 2
+  - Simple Gravel Ores
+  - Antique Atlas
+  - Felling
+  - Earthworks
+  - Rustic
+  - Adventurer's Toolbox
+  - Nether Chest
+  - Passable Leaves
+  - Cosmetic Armor Reworked
+  - Passthrough Signs
+  - Edible Bugs
+  - Ceramics
+  - Open Glider
+  - Tumbleweed
+  - Waddles
+  - Reliquary v1.3
+  - 'stimmedcow : NoMoreRecipeConflict'
+  - Nature's Compass
+
+  - InventoryNeko
+  - The Twilight Forest
+  - Large Veins
+  - Extra Rails
+  - Redstone Remote
+  - Waypoint Compass
+  - Underwater Utilities
+
+  - jenkinsUrl: https://ci.elytradev.com
+    provider: JENKINS
+    entries:
+    - job: CharsetMC/Charset/1.12
+      name: Charset
+
+    - job: elytra/ProbeDataProvider/1.12
+      name: ProbeDataProvider
+
+    - job: elytra/FruitPhone/1.12
+      name: FruitPhone
+      dependencies:
+        required:
+        - ProbeDataProvider
+
+  - provider: DIRECT
+    entries:
+    - name: Nutrition
+      url: https://github.com/WesCook/Nutrition/releases/download/v2.6.0/Nutrition-1.12.2-2.6.0.jar
+
+    - name: foamfix
+      url: https://asie.pl/files/mods/FoamFix/foamfix-0.8.2-1.12.2-anarchy.jar
+
+    - name: Thermionics
+      url: https://github.com/elytra/Thermionics/releases/download/MC1.12.2_v1.1.2/Thermionics-MC1.12_ver1.1.2.jar
+
+    - name: Oops
+      url: https://ci.elytradev.com/job/elytra/job/Oops/job/1.12/15/artifact/build/libs/oops-1.12-5.15.jar
+
+  - side: SERVER
+    entries:
+    - Biome Bundle
+    - BTFU continuous rsync incremental backup
+    - WorldEdit
+    - In Control!
+
+    - name: Thump
+      provider: CURSE
+      releaseTypes:
+      - release
+      - beta
+
+    - name: NuclearOption
+      url: https://ci.elytradev.com/job/elytra/job/NuclearOption/job/master/8/artifact/build/libs/NuclearOption-1.12-2.5.jar
+      provider: DIRECT
+
+  - side: CLIENT
+    provider: CURSE
+    entries:
+    - Default Options
+    - name: Ding
+      description: NON-FREE.  Plays a ding when the pack is finished loading.
+    - name: ReAuth
+      description: NON-FREE.  Allows re-authenticating to mojang without restarting the
+        game.
+    - name: More Overlays
+      provider: CURSE
+    - Waila Harvestability
+    - AppleSkin
+    - Client Tweaks
+    - Chat Tweaks
+    - InfoTooltip
+    - Mod Name Tooltip
+    - MineMenu
+    - Better Foliage
+    - Notes
+    - Placement Preview
+
+    - name: Squeedometer
+      feature:
+        selected: true
+
+    - name: NoNausea
+      feature:
+        selected: true
+
+    - name: IKWID (I Know What I'm Doing)
+      feature:
+        selected: true
+      description: Skips the new early game crafting tutorials.
+
+    - name: MiniHUD
+      feature:
+        selected: true
+
+    - name: Item Scroller
+      feature:
+        selected: true
+      releaseTypes:
+      - release
+      - beta
+
+    - name: NonFree
+      description: NON-FREE.
+      provider: DUMMY
+      feature:
+        selected: true
+      dependencies:
+        required:
+        - ReAuth
+        - Ding
+
+  - Squake
+  - Storage Drawers
