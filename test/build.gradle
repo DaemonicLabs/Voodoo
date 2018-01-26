@@ -1,0 +1,29 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
+    id 'application'
+}
+
+dependencies {
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '+'
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '+'
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '+'
+//    compile group: 'com.offbytwo.jenkins', name: 'jenkins-client', version: '+'
+    compile group: 'com.github.jenkinsci', name: 'java-client-api', version: 'master-SNAPSHOT'
+    compile group: 'com.github.jkcclemens', name: 'khttp', version: 'master-SNAPSHOT'
+    compile group: 'com.github.aballano', name: 'MnemoniK', version: '+'
+    compile group:  'io.github.microutils', name: 'kotlin-logging', version: '+'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
+    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+mainClassName = "moe.nikky.builder.MainKt"
+
+shadowJar {
+    // baseName = 'voodoo-builder'
+    classifier = null
+    // version = null
+}
+
+build.dependsOn(shadowJar)
