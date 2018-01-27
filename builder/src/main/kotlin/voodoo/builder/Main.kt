@@ -20,6 +20,7 @@ import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import voodoo.builder.provider.DependencyType
 import mu.KotlinLogging
+import voodoo.util.Directories
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.InvalidPathException
@@ -196,7 +197,8 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
 //    if (modpack.forge.isBlank()/* && modpack.sponge.isBlank()*/)
 //        throw IllegalArgumentException("no forge version define")
     modpack.flatten()
-//    exit(0)
+
+    val directories = Directories.get(moduleNam = "builder")
 
     val packPath = outPath.resolve(modpack.name)
     val srcPath = packPath.resolve("src")
@@ -204,9 +206,10 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
 
     writeToFile(packPath.resolve("flat.yaml"), modpack)
 
+
     modpack.outputPath = packPath.path
     modpack.pathBase = workingDirectory.path
-    modpack.cacheBase = workingDirectory.resolve("cache").path
+    modpack.cacheBase = directories.cacheHome.path
 
     //TODO: check here or later whether providers have
     // all required values in entries

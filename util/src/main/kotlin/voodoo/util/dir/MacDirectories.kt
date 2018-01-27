@@ -2,6 +2,7 @@ package voodoo.util.dir
 
 
 import voodoo.util.Directories
+import voodoo.util.Directories.Companion.deleteDirectoryOnExit
 import java.io.File
 
 /**
@@ -10,7 +11,7 @@ import java.io.File
 class MacDirectories(private val appName: String) : Directories {
 
     override val runtimeDir: File by lazy {
-        createTempDir().apply { deleteOnExit() }
+        createTempDir().apply { deleteDirectoryOnExit() }
     }
 
     override val dataHome: File by lazy {

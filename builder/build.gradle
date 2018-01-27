@@ -4,6 +4,7 @@ plugins {
 }
 
 dependencies {
+    compile project(':util')
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '+'
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '+'

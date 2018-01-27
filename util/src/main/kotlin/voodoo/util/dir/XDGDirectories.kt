@@ -90,10 +90,6 @@ class XDGDirectories(private val appName: String) : Directories {
     }
 
     private fun getBaseDir(env: String): File? {
-        var home: String? = System.getenv("HOME")
-        if (home == null || home.trim().isEmpty()) {
-            home = System.getProperty("user.home")
-        }
         val dir: String? = System.getenv(env)
         if (dir == null || dir.trim().isEmpty()) {
             return null
