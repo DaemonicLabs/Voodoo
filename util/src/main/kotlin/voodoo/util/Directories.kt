@@ -7,6 +7,12 @@ import voodoo.util.dir.MacDirectories
 import voodoo.util.dir.WindowsDirectories
 import voodoo.util.dir.XDGDirectories
 import java.io.File
+import java.io.IOException
+import java.nio.file.FileVisitResult
+import java.nio.file.Files
+import java.nio.file.Path
+import java.nio.file.SimpleFileVisitor
+import java.nio.file.attribute.BasicFileAttributes
 import java.util.*
 
 
@@ -44,30 +50,34 @@ interface Directories {
 
     companion object : KLogging() {
 
-        //        fun deleteOnExit(dir: File) {
-//            Runtime.getRuntime().addShutdownHook(Thread({
-//                try {
-//                    Files.walkFileTree(dir.toPath(), object : SimpleFileVisitor<Path>() {
-//                        @Throws(IOException::class)
-//                        override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
-//                            Files.delete(file)
-//                            return FileVisitResult.CONTINUE
-//                        }
-//
-//                        @Throws(IOException::class)
-//                        override fun postVisitDirectory(dir: Path, exc: IOException?): FileVisitResult {
-//                            Files.delete(dir)
-//                            return FileVisitResult.CONTINUE
-//                        }
-//                    })
-//                } catch (e: IOException) {
-//                    logger.warn("Failed to delete {}", dir, e)
-//                }
-//            }, "Runtime directory cleanup thread"))
-//        }
-        fun get(appName: String = "voodoo", useBareDirectories: Boolean = false): Directories {
-            val cleanAppName = appName.toLowerCase(Locale.ROOT).replace(Regex("[^a-z0-9]"), "-")
+        fun File.deleteDirectoryOnExit() {
+            Runtime.getRuntime().addShutdownHook(Thread({
+                try {
+                    Files.walkFileTree(toPath(), object : SimpleFileVisitor<Path>() {
+                        @Throws(IOException::class)
+                        override fun visitFile(file: Path, attrs: BasicFileAttributes): FileVisitResult {
+                            Files.delete(file)
+                            return FileVisitResult.CONTINUE
+                        }
 
+                        @Throws(IOException::class)
+                        override fun postVisitDirectory(dir: Path, exc: IOException?): FileVisitResult {
+                            Files.delete(dir)
+                            return FileVisitResult.CONTINUE
+                        }
+                    })
+                } catch (e: IOException) {
+                    logger.warn("Failed to delete {}", this, e)
+                }
+            }, "Runtime directory cleanup thread"))
+        }
+
+        fun get(appName: String = "voodoo", moduleNam: String? = null, useBareDirectories: Boolean = false): Directories {
+            var cleanAppName = appName.toLowerCase(Locale.ROOT).replace(Regex("[^a-z0-9]"), "-")
+            if(moduleNam != null) {
+                val cleanModuleName = moduleNam.toLowerCase(Locale.ROOT).replace(Regex("[^a-z0-9]"), "-")
+                cleanAppName += "/" + cleanModuleName
+            }
             val directories: Directories
 
             directories = when {
@@ -91,7 +101,7 @@ interface Directories {
                     logger.info("Using bare directories")
                     BareDirectories(cleanAppName)
                 }
-                
+
             }
             return directories
         }

@@ -1,6 +1,7 @@
 package voodoo.util.dir
 
 import voodoo.util.Directories
+import voodoo.util.Directories.Companion.deleteDirectoryOnExit
 import java.io.File
 
 class BareDirectories(private val appName: String) : Directories {
@@ -32,7 +33,7 @@ class BareDirectories(private val appName: String) : Directories {
                     if (!hasUsedRuntimeDir) {
                         hasUsedRuntimeDir = true
 //                        Directories.deleteOnExit(f)
-                        deleteOnExit()
+                        deleteDirectoryOnExit()
                     }
                     mkdirs()
                 }

@@ -3,6 +3,7 @@ package voodoo.util.dir
 import com.sun.jna.platform.win32.KnownFolders
 import com.sun.jna.platform.win32.Shell32Util
 import voodoo.util.Directories
+import voodoo.util.Directories.Companion.deleteDirectoryOnExit
 
 import java.io.File
 
@@ -35,7 +36,7 @@ class WindowsDirectories(private val appName: String) : Directories {
                     if (!hasUsedRuntimeDir) {
                         hasUsedRuntimeDir = true
 //                        Directories.deleteOnExit(f)
-                        deleteOnExit()
+                        deleteDirectoryOnExit()
                     }
                     mkdirs()
                 }
