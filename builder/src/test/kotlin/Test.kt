@@ -2,10 +2,13 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import moe.nikky.builder.*
-import moe.nikky.builder.provider.CurseProviderThing
-import moe.nikky.builder.provider.DependencyType
-import moe.nikky.builder.provider.DirectProviderThing
+import voodoo.builder.provider.CurseProviderThing
+import voodoo.builder.provider.DependencyType
+import voodoo.builder.provider.DirectProviderThing
 import org.junit.Test
+import voodoo.builder.Entry
+import voodoo.builder.Modpack
+import voodoo.builder.Provider
 
 import java.nio.file.Files
 import java.nio.file.Path

@@ -4,3 +4,7 @@ build/
 out/
 run/
 *.iml
+
+/editor/
+/test/
+/bootstrap/
