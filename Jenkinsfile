@@ -1,5 +1,5 @@
 node {
 	checkout scm
 	sh './gradlew clean build'
-	archive '**/build/libs/*jar'
+	archive 'builder/build/libs/*jar'
 }
