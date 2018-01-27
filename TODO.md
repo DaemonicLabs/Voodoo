@@ -1,5 +1,11 @@
 # TODO
 
+## Bootstrap
+
+* replace properties with json
+
+* add Jenkins check / download
+
 ## Builder
 
 * re-add a validate step
