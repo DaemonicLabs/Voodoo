@@ -15,26 +15,7 @@ import mu.KLogging
 object Forge : KLogging() {
     var data: ForgeData = getForgeData()
 
-//        fun getSponge(spongeVersion: String): Entry {
-//            val entry = Entry(
-//                    provider = Provider.MAVEN,
-//                    name = "Sponge Forge",
-//                    remoteRepository = "https://repo.spongepowered.org/maven/",
-//                    group = "org.spongepowered",
-//                    artifact = "spongeforge",
-//                    version = spongeVersion,
-//                    //packageType = PackageType.MOD,
-//                    path = "mods",
-//                    side = Side.SERVER)
-//            return entry
-//        }
-
     fun getForge(forgeVersion: String, mcVersion: String/*, spongeEntry: Entry?*/): Pair<Entry, String> {
-        //    if (spongeEntry != null) {
-        //      val spongeVersion = spongeEntry.version
-        //      println(spongeVersion)
-        //      version = spongeVersion.split("-")[1]
-        //    }
         val (url, filename, longVersion, version) = getForgeUrl(forgeVersion, mcVersion)
 
         val entry = Entry(

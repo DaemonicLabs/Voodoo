@@ -20,6 +20,16 @@ dependencies {
 
 mainClassName = "voodoo.builder.MainKt"
 
+def arguments = ["-d", project.file("../run").path, project.file("../samples/openpack.yaml").path]
+
+run {
+    args = arguments
+}
+
+runShadow {
+    args = arguments
+}
+
 shadowJar {
     classifier = null
 }
