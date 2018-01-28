@@ -13,7 +13,7 @@ import java.net.URI
  */
 object Downloader : KLogging() {
     private const val url = "https://ci.elytradev.com"
-    private const val jobName = "elytra/voodoo/master"
+    private const val jobName = "elytra/Voodoo/master"
     private const val fileNameRegex = "builder.*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)$"
 
     fun download(cache: File): File {
