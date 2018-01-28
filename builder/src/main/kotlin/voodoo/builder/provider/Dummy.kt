@@ -20,10 +20,10 @@ class DummyProviderThing : ProviderThingy() {
     init {
         register("finalze", //download
                 {
-                    it.resolvedOptionals
+                    it.internal.resolvedOptionals
                 },
-                { entry, m ->
-                    entry.done = true
+                { entry, _ ->
+                    entry.internal.done = true
                 }
         )
     }

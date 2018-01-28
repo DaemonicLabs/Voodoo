@@ -65,8 +65,8 @@ abstract class ProviderThingy {
         )
 
         register("postResolveDependencies",
-                { it.name.isNotBlank() && ((it.provider == Provider.CURSE) == it.resolvedDependencies) },
-                { e, m ->
+                { it.name.isNotBlank() && ((it.provider == Provider.CURSE) == it.internal.resolvedDependencies) },
+                { e, _ ->
                     logger.info("run after resolveDependencies ${e.name}")
                 }
         )
@@ -100,26 +100,26 @@ abstract class ProviderThingy {
         )
 
         register("resolveOptional",
-                { !it.resolvedOptionals },
+                { !it.internal.resolvedOptionals },
                 { e, m ->
                     e.optional = isOptional(e, m)
-                    e.resolvedOptionals = true
+                    e.internal.resolvedOptionals = true
                 },
                 repeatable = true,
                 requires = "resolveFeatureDependencies"
         )
 
         register("setCachePath",
-                { it.cachePath.isBlank() && it.cacheRelpath.isNotBlank() },
+                { it.internal.cachePath.isBlank() && it.internal.cacheRelpath.isNotBlank() },
                 { e, m ->
-                    e.cachePath = File(m.cacheBase).resolve(e.cacheRelpath).path
+                    e.internal.cachePath = File(m.internal.cacheBase).resolve(e.internal.cacheRelpath).path
                 }
         )
 
         register("resolvePath",
-                { it.filePath.isBlank() && it.targetPath.isNotBlank() && it.fileName.isNotBlank() },
+                { it.internal.filePath.isBlank() && it.internal.targetPath.isNotBlank() && it.fileName.isNotBlank() },
                 { e, _ ->
-                    var path = e.targetPath
+                    var path = e.internal.targetPath
                     // side
                     if (path.startsWith("mods")) {
                         val side = when (e.side) {
@@ -131,15 +131,15 @@ abstract class ProviderThingy {
                             path = "$path/$side"
                         }
                     }
-                    e.path = path
-                    e.filePath = File(e.basePath, e.path).resolve(e.fileName).path
+                    e.internal.path = path
+                    e.internal.filePath = File(e.internal.basePath, e.internal.path).resolve(e.fileName).path
                 }
         )
 
         register("resolveTargetFilePath",
-                { it.targetFilePath.isBlank() && it.targetPath.isNotBlank() && it.fileName.isNotBlank() },
+                { it.internal.targetFilePath.isBlank() && it.internal.targetPath.isNotBlank() && it.fileName.isNotBlank() },
                 { e, _ ->
-                    e.targetFilePath = File(e.targetPath).resolve(e.fileName).path
+                    e.internal.targetFilePath = File(e.internal.targetPath).resolve(e.fileName).path
                 }
         )
     }
@@ -213,33 +213,7 @@ abstract class ProviderThingy {
         return true
     }
 
-    private fun isOptionalCallBackup(entry: Entry, modpack: Modpack): Boolean {
-        var result = entry.transient || entry.optional
-        for ((depType, entryList) in entry.provides) {
-            if (depType != DependencyType.required) continue
-            for (entryName in entryList) {
-                val providerEntry = modpack.mods.entries.firstOrNull { it.name == entryName }!!
-                result = result && isOptional(providerEntry, modpack)
-                if (!result) return result
-            }
-        }
-        return result
-    }
-
     val isOptional = ::isOptionalCall.memoize()
-
-    fun checkCleanDependency(entry: Entry, modpack: Modpack): Boolean {
-        if (!entry.resolvedOptionals) return false
-        for ((depType, depList) in entry.dependencies) {
-            for (depNames in depList) {
-                val depEntry = modpack.mods.entries.firstOrNull { it.name == name }!!
-                if (!checkCleanDependency(depEntry, modpack)) {
-                    return false
-                }
-            }
-        }
-        return true
-    }
 
     fun resolveFeatureDependencies(entry: Entry, modpack: Modpack) {
         if (entry.feature == null) {
@@ -255,7 +229,6 @@ abstract class ProviderThingy {
 
         if (feature == null) {
             feature = Feature(
-                    names = listOf(featureName),
                     entries = listOf(entry.name),
                     processedEntries = emptyList(),
                     files = entryFeature.files,

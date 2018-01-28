@@ -38,65 +38,29 @@ class LocalProviderThing : ProviderThingy() {
                 }
         )
         register("setTargetPath",
-                { it.targetPath.isBlank() },
+                { it.internal.targetPath.isBlank() },
                 { e, _ ->
-                    e.targetPath = "mods"
+                    e.internal.targetPath = "mods"
                 }
         )
-//        register("cacheRelpath",
-//                { it.cacheRelpath.isBlank() && it.url.isNotBlank()},
-//                { e, _ ->
-//                    val u = URL(e.url)
-//                    e.cacheRelpath = File(e.provider.toString()).resolve(u.path.substringAfterLast('/')).path
-//                }
-//        )
-//        register("writeUrlTxt",
-//                {
-//                    with(it) {
-//                        listOf(url, filePath).all { it.isNotBlank() } && !urlTxtDone
-//                    }
-//                },
-//                { e, m ->
-//                    if(m.urls) {
-//                        val urlPath = File(m.outputPath, e.filePath + ".url.txt")
-//                        File(urlPath.parent).mkdirs()
-//                        urlPath.writeText(URLDecoder.decode(e.url, "UTF-8"))
-//                    }
-//                    e.urlTxtDone = true
-//                }
-//        )
         register("download",
                 {
                     with(it) {
-                        listOf(fileSrc, name, fileName, filePath).all { it.isNotBlank() }
-                                && resolvedOptionals
+                        listOf(fileSrc, name, fileName, internal.filePath).all { it.isNotBlank() }
+                                && internal.resolvedOptionals
                     }
                 },
                 { entry, m ->
-//                    val cacheDir = File(entry.cachePath)
-//                    if (!cacheDir.isDirectory) {
-//                        cacheDir.mkdirs()
-//                    }
                     var file = File(entry.fileSrc)
                     if(!file.isAbsolute) {
-                        file = File(m.pathBase).resolve("local").resolve(entry.fileSrc)
+                        file = File(m.internal.pathBase).resolve("local").resolve(entry.fileSrc)
                     }
-                    val destination = File(m.outputPath).resolve(entry.filePath)
+                    val destination = File(m.internal.outputPath).resolve(entry.internal.filePath)
                     if(!file.exists()) {
                         logger.error { "$file does not exist" }
                     }
                     file.copyTo(destination, overwrite = true)
-//                    val cacheFile = cacheDir.resolve(entry.fileName)
-//                    if (!cacheFile.exists() || !cacheFile.isFile) {
-//                        println("downloading ${entry.name} to $cacheFile")
-//                        val r = get(entry.url, allowRedirects = true, stream = true)
-//                        cacheFile.writeBytes(r.content)
-//                    } else {
-//                        println("skipping downloading ${entry.name} (is cached)")
-//                    }
-//                    println("copying $cacheFile -> $destination")
-//                    cacheFile.copyTo(destination, overwrite = true)
-                    entry.done = true
+                    entry.internal.done = true
                 }
         )
     }

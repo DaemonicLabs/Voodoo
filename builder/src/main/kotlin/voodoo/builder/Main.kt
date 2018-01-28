@@ -11,10 +11,10 @@ import aballano.kotlinmemoization.memoize
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import mu.KotlinLogging
@@ -193,12 +193,13 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
     val srcPath = packPath.resolve("src")
     srcPath.mkdirs()
 
-    writeToFile(packPath.resolve("flat.yaml"), modpack)
+    val dataPath = packPath.resolve("data")
+    writeToFile(dataPath.resolve("flat.yaml"), modpack)
 
 
-    modpack.outputPath = packPath.path
-    modpack.pathBase = workingDirectory.path
-    modpack.cacheBase = directories.cacheHome.path
+    modpack.internal.outputPath = packPath.path
+    modpack.internal.pathBase = workingDirectory.path
+    modpack.internal.cacheBase = directories.cacheHome.path
 
     //TODO: check here or later whether providers have
     // all required values in entries
@@ -221,14 +222,14 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
     logger.info(modpack.toYAMLString())
 
     var counter = 0
-    while (!modpack.mods.entries.all { it.done }) {
+    while (!modpack.mods.entries.all { it.internal.done }) {
         var invalidEntries = listOf<Entry>()
         var anyMatched = false
         counter++
         logger.info("processing entries run: $counter")
         ProviderThingy.resetWarnings()
 
-        modpack.mods.entries.filter { !it.done }.forEachIndexed { index, entry ->
+        modpack.mods.entries.filter { !it.internal.done }.forEachIndexed { index, entry ->
             logger.debug("processing [$index] $entry")
             val thingy = entry.provider.thingy
             if (thingy.process(entry, modpack)) {
@@ -300,7 +301,6 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
     }
 
     logger.info("\nprocessing Features\n")
-    var features = emptyList<SKFeature>()
 
     for (feature in modpack.features) {
         logger.info("processed feature ${feature.properties.name}")
@@ -310,46 +310,54 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
             dependencies
                     .filter {
                         logger.info("testing ${it.name}")
-                        it.optional && !feature.files.include.contains(it.targetFilePath) && it.targetFilePath.isNotBlank()
+                        it.optional && !feature.files.include.contains(it.internal.targetFilePath) && it.internal.targetFilePath.isNotBlank()
                     }
                     .forEach {
-                        feature.files.include += it.targetFilePath
-                        logger.info("includes =  ${feature.files.include}")
+                        feature.files.include += it.internal.targetFilePath
+                        logger.info("includes = ${feature.files.include}")
                     }
         }
-        features += SKFeature(
-                properties = feature.properties,
-                files = feature.files
-        )
+//        features += feature
         logger.info("processed feature $feature")
     }
-
-    writeToFile(packPath.resolve("modpack.yaml"), modpack)
 
     val skmodpack = SKModpack(
             name = modpack.name,
             gameVersion = modpack.mcVersion,
             userFiles = modpack.userFiles,
             launch = modpack.launch,
-            features = features
+            features = modpack.features
     )
-
 
     val modpackPath = packPath.resolve("modpack.json")
     modpackPath.bufferedWriter().use {
         mapper.writeValue(it, skmodpack)
     }
 
-    val xmlmapper = XmlMapper() // Enable XML parsing
-    xmlmapper.registerModule(KotlinModule()) // Enable Kotlin support
-    xmlmapper.enable(SerializationFeature.INDENT_OUTPUT)
+    logger.info("adding {} to workpace.json", modpack.name)
+    val worspaceFolder = outPath.resolve(".modpacks")
+    worspaceFolder.mkdirs()
+    val workspacePath = worspaceFolder.resolve("workspace.json")
+    val workspace = if (workspacePath.exists()) {
+        workspacePath.bufferedReader().use {
+            mapper.readValue<SKWorkspace>(it)
+        }
+    } else {
+        SKWorkspace()
+    }
+    workspace.packs += Location(modpack.name)
 
-    val modpackPathXml = packPath.resolve("modpack.xml")
-    modpackPathXml.bufferedWriter().use {
-        xmlmapper.writeValue(it, skmodpack)
+    workspacePath.bufferedWriter().use {
+        mapper.writeValue(it, workspace)
     }
 
-    return
+    //TODO: add to workspace.json
+
+    val historyPath = dataPath.resolve("history")
+    historyPath.mkdirs()
+    logger.info("adding modpack to history")
+    writeToFile(historyPath.resolve(modpack.version + ".yaml"), modpack)
+
 }
 
 fun getDependenciesCall(entryName: String, modpack: Modpack): List<Entry> {
