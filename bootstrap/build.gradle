@@ -10,10 +10,10 @@ dependencies {
 }
 
 mainClassName = "voodoo.bootstrap.BootstrapKt"
+version = '0.1'
 
 shadowJar {
     classifier = null
-    version = null
 }
 
 build.dependsOn(shadowJar)
