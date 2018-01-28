@@ -44,6 +44,7 @@ object Forge : KLogging() {
                 fileName = filename,
 //                    packageType = PackageType.LOADER,
                 basePath = "loaders",
+                targetPath = ".",
                 path = ".",
                 cacheRelpath = "FORGE/$longVersion"
         )
