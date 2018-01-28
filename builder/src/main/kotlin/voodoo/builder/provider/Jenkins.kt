@@ -112,15 +112,15 @@ class JenkinsProviderThing : ProviderThingy() {
 //                }
 //        )
         register("cacheRelpath",
-                { it.cacheRelpath.isBlank() },
+                { it.internal.cacheRelpath.isBlank() },
                 { e, _ ->
-                    e.cacheRelpath = File(e.provider.toString()).resolve(e.job).path
+                    e.internal.cacheRelpath = File(e.provider.toString()).resolve(e.job).path
                 }
         )
         register("prepareDownload",
                 {
                     with(it) {
-                        listOf(url, name, fileName, cachePath).all { it.isNotBlank() }
+                        listOf(url, name, fileName, internal.cachePath).all { it.isNotBlank() }
                     }
                 },
                 { e, _ ->

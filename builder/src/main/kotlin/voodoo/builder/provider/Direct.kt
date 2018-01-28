@@ -36,43 +36,43 @@ class DirectProviderThing : ProviderThingy() {
                 }
         )
         register("setTargetPath",
-                { it.targetPath.isBlank() },
+                { it.internal.targetPath.isBlank() },
                 { e, _ ->
-                    e.targetPath = "mods"
+                    e.internal.targetPath = "mods"
                 }
         )
         register("cacheRelpath",
-                { it.cacheRelpath.isBlank() && it.url.isNotBlank()},
+                { it.internal.cacheRelpath.isBlank() && it.url.isNotBlank()},
                 { e, _ ->
                     val u = URL(e.url)
-                    e.cacheRelpath = File(e.provider.toString()).resolve(u.path.substringAfterLast('/')).path
+                    e.internal.cacheRelpath = File(e.provider.toString()).resolve(u.path.substringAfterLast('/')).path
                 }
         )
         register("writeUrlTxt",
                 {
                     with(it) {
-                        listOf(url, filePath).all { it.isNotBlank() } && !urlTxtDone
+                        listOf(url, internal.filePath).all { it.isNotBlank() } && !internal.urlTxtDone
                     }
                 },
                 { e, m ->
                     if(e.urlTxt) {
-                        val urlPath = File(m.outputPath, e.filePath + ".url.txt")
+                        val urlPath = File(m.internal.outputPath, e.internal.filePath + ".url.txt")
                         File(urlPath.parent).mkdirs()
                         urlPath.writeText(URLDecoder.decode(e.url, "UTF-8"))
                     }
-                    e.urlTxtDone = true
+                    e.internal.urlTxtDone = true
                 }
         )
         register("download",
                 {
                     with(it) {
-                        listOf(url, name, fileName, filePath, cachePath).all { it.isNotBlank() }
-                                && urlTxtDone
-                                && resolvedOptionals
+                        listOf(url, name, fileName, internal.filePath, internal.cachePath).all { it.isNotBlank() }
+                                && internal.urlTxtDone
+                                && internal.resolvedOptionals
                     }
                 },
                 { entry, m ->
-                    val cacheDir = File(entry.cachePath)
+                    val cacheDir = File(entry.internal.cachePath)
                     if (!cacheDir.isDirectory) {
                         cacheDir.mkdirs()
                     }
@@ -85,15 +85,11 @@ class DirectProviderThing : ProviderThingy() {
                     } else {
                         logger.info("skipping downloading ${entry.name} (is cached)")
                     }
-                    val destination = File(m.outputPath).resolve(entry.filePath)
+                    val destination = File(m.internal.outputPath).resolve(entry.internal.filePath)
                     logger.info("copying $cacheFile -> $destination")
                     cacheFile.copyTo(destination, overwrite = true)
-                    entry.done = true
+                    entry.internal.done = true
                 }
         )
-    }
-
-    fun doDirectThingy() {
-        logger.warn("doDirectThingy not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

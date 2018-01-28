@@ -24,16 +24,18 @@ object Forge : KLogging() {
                 url = url,
                 fileName = filename,
 //                    packageType = PackageType.LOADER,
-                basePath = "loaders",
-                targetPath = ".",
-                path = ".",
-                cacheRelpath = "FORGE/$longVersion"
+                internal = EntryInternal(
+                        basePath = "loaders",
+                        targetPath = ".",
+                        path = ".",
+                        cacheRelpath = "FORGE/$longVersion"
+                )
         )
         return Pair(entry, version)
     }
 
     fun getForgeUrl(version: String, mcVersion: String): Quadruple<String, String, String, String> {
-        var versionStr = ""
+        var versionStr: String
         if (version.equals("recommended", true) || version.equals("latest", true)) {
             val promoVersion = "$mcVersion-${version.toLowerCase()}"
             versionStr = data.promos[promoVersion]?.toString() ?: ""
@@ -60,7 +62,7 @@ object Forge : KLogging() {
         }
         val webpath = data.webpath
         val artifact = data.number.get(versionStr)!!
-        val mcversion = artifact.mcversion
+//        val mcversion = artifact.mcversion
         val forgeVersion = artifact.version
         val branch = artifact.branch
         var longVersion = "$mcVersion-$forgeVersion"

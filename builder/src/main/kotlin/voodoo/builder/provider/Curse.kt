@@ -93,21 +93,21 @@ class CurseProviderThing : ProviderThingy() {
                 }
         )
         register("setTargetPath",
-                { it.id > 0 && it.targetPath.isBlank() },
+                { it.id > 0 && it.internal.targetPath.isBlank() },
                 { e, _ ->
-                    e.targetPath = getAddon(e.id)!!.categorySection.path
+                    e.internal.targetPath = getAddon(e.id)!!.categorySection.path
                 }
         )
         register("cacheRelpath",
-                { it.cacheRelpath.isBlank() },
+                { it.internal.cacheRelpath.isBlank() },
                 { e, _ ->
-                    e.cacheRelpath = File(e.provider.toString()).resolve(e.id.toString()).resolve(e.fileId.toString()).path
+                    e.internal.cacheRelpath = File(e.provider.toString()).resolve(e.id.toString()).resolve(e.fileId.toString()).path
                 }
         )
         register("prepareDownload",
                 {
                     with(it) {
-                        listOf(url, name, fileName, cachePath).all { it.isNotBlank() }
+                        listOf(url, name, fileName, internal.cachePath).all { it.isNotBlank() }
                     }
                 },
                 { e, _ ->
@@ -169,7 +169,7 @@ class CurseProviderThing : ProviderThingy() {
 //            provideList += addon.name
 //            depEntry.provides[depType] = provideList
         }
-        entry.resolvedDependencies = true
+        entry.internal.resolvedDependencies = true
     }
 
     private fun findFile(entry: Entry, modpack: Modpack): Triple<Int, Int, String> {
@@ -221,7 +221,7 @@ class CurseProviderThing : ProviderThingy() {
     }
 
     private fun getAddonFileCall(addonId: Int, fileId: Int): AddonFile? {
-        val url = "${META_URL}/api/addon/$addonId/files/$fileId"
+        val url = "$META_URL/api/addon/$addonId/files/$fileId"
 
         logger.debug("get $url")
         val r = get(url)
@@ -234,7 +234,7 @@ class CurseProviderThing : ProviderThingy() {
     val getAddonFile = ::getAddonFileCall.memoize()
 
     private fun getAllAddonFilesCall(addonId: Int): List<AddonFile> {
-        val url = "${META_URL}/api/addon/$addonId/files"
+        val url = "$META_URL/api/addon/$addonId/files"
 
         logger.debug("get $url")
         val r = get(url)
@@ -247,7 +247,7 @@ class CurseProviderThing : ProviderThingy() {
     val getAllAddonFiles = ::getAllAddonFilesCall.memoize()
 
     private fun getAddonCall(addonId: Int): Addon? {
-        val url = "${META_URL}/api/addon/$addonId"
+        val url = "$META_URL/api/addon/$addonId"
 
         logger.debug("get $url")
         val r = get(url)

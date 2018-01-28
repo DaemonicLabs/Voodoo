@@ -1,14 +1,15 @@
 package voodoo.builder
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import mu.KLogging
 import voodoo.builder.provider.DependencyType
 import voodoo.builder.provider.PackageType
 import voodoo.builder.provider.ReleaseType
-import mu.KLogging
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 
@@ -18,19 +19,25 @@ import kotlin.reflect.full.memberProperties
  * @author Nikky
  * @version 1.0
  */
+data class ModpackInternal(
+        var outputPath: String = "",
+        var cacheBase: String = "",
+        var pathBase: String = ""
+)
+
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class Modpack(
         var name: String,
         var title: String = "",
+        var version: String = "1.0",
         var forge: String = "recommended",
-        var features: List<Feature> = emptyList(),
+        var features: List<Feature> = mutableListOf(),
         var mcVersion: String = "1.12.2",
         var validMcVersions: List<String> = emptyList(),
-        var outputPath: String = "", //TODO: move into runtime config data class
         var userFiles: UserFiles = UserFiles(),
         var launch: Launch = Launch(),
-        var cacheBase: String = "", //TODO: move into runtime config data class
-        var pathBase: String = "",
+        @JsonIgnore
+        val internal: ModpackInternal = ModpackInternal(),
         var mods: Entry = Entry()
 ) {
     companion object : KLogging() {
@@ -56,6 +63,20 @@ enum class Side(val flag: Int) {
     CLIENT(1), SERVER(2), BOTH(3)
 }
 
+data class EntryInternal(
+        var cachePath: String = "",
+        var cacheRelpath: String = "",
+        var done: Boolean = false,
+        var urlTxtDone: Boolean = false,
+        var basePath: String = "src",
+        var targetPath: String = "",
+        var targetFilePath: String = "",
+        var path: String = "",
+        var filePath: String = "",
+        var resolvedOptionals: Boolean = false,
+        var resolvedDependencies: Boolean = false
+)
+
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class Entry(
         @JsonInclude(JsonInclude.Include.ALWAYS)
@@ -68,22 +89,13 @@ data class Entry(
         var websiteUrl: String = "",
         var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
-        var resolvedOptionals: Boolean = false,
-        var resolvedDependencies: Boolean = false,
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var optional: Boolean = feature != null,
-        var basePath: String = "src",
-        var targetPath: String = "",
-        var targetFilePath: String = "",
-        var path: String = "",
-        var filePath: String = "",
         var packageType: PackageType = PackageType.none,
         // INTERNAL //TODO: move into internal object or runtime data objects
+        @JsonIgnore
+        val internal: EntryInternal = EntryInternal(),
         var transient: Boolean = false, // this entry got added as dependency for something else
-        var cachePath: String = "",
-        var cacheRelpath: String = "",
-        var done: Boolean = false,
-        var urlTxtDone: Boolean = false,
         // CURSE
         var id: Int = -1,
         var fileId: Int = -1,
@@ -159,11 +171,12 @@ data class Entry(
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class Feature(
-        var names: List<String>,
+        @JsonIgnore
         var entries: List<String>,
+        @JsonIgnore
         var processedEntries: List<String>,
-        var files: SKFeatureFiles = SKFeatureFiles(),
-        var properties: SKFeatureProperties = SKFeatureProperties()
+        var properties: SKFeatureProperties = SKFeatureProperties(),
+        var files: SKFeatureFiles = SKFeatureFiles()
 )
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -187,11 +200,6 @@ data class Launch(
         var flags: List<String> = listOf("-Dfml.ignoreInvalidMinecraftCertificates=true")
 )
 
-data class SKFeature(
-        var properties: SKFeatureProperties = SKFeatureProperties(),
-        var files: SKFeatureFiles = SKFeatureFiles()
-)
-
 data class SKFeatureProperties(
         var name: String = "",
         var selected: Boolean = true,
@@ -201,15 +209,32 @@ data class SKFeatureProperties(
 )
 
 data class SKFeatureFiles(
-        var include: List<String> = emptyList(),
-        var exclude: List<String> = emptyList()
+        val include: MutableList<String> = mutableListOf(),
+        val exclude: MutableList<String> = mutableListOf()
 )
 
 data class SKModpack(
         var name: String,
         var title: String = "",
         var gameVersion: String,
-        var features: List<SKFeature> = emptyList(),
+        var features: List<Feature> = emptyList(),
         var userFiles: UserFiles = UserFiles(),
         var launch: Launch = Launch()
 )
+
+data class SKWorkspace(
+        val packs: MutableSet<Location> = mutableSetOf(),
+        var packageListingEntries: List<Any> = listOf(),
+        var packageListingType: String = "STATIC"
+)
+
+data class Location(
+        var location: String
+) {
+    override fun equals(other: Any?): Boolean{
+        if (this === other) return true
+        if (other !is Location) return false
+
+        return location == other.location
+    }
+}
