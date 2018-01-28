@@ -85,7 +85,7 @@ constructor(private val originalArgs: Array<String>) {
 
     @Throws(Exception::class)
     fun download() {
-        logger.info("Downloading the launcher...")
+        logger.info("Downloading the voodoo binary...")
         val file = Downloader.download(directories.cacheHome)
 
         logger.info("Downloaded " + file.absolutePath + "...")
@@ -111,7 +111,7 @@ constructor(private val originalArgs: Array<String>) {
                 testFile = binary.executableJar
                 logger.info("Trying " + testFile.getAbsolutePath() + "...")
                 clazz = load(testFile)
-                logger.info("Launcher loaded successfully.")
+                logger.info("Voodoo loaded successfully.")
                 working = binary
                 break
             } catch (t: Throwable) {
