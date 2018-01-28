@@ -55,7 +55,7 @@ class DirectProviderThing : ProviderThingy() {
                     }
                 },
                 { e, m ->
-                    if(e.direct && m.urls) {
+                    if(e.urlTxt) {
                         val urlPath = File(m.outputPath, e.filePath + ".url.txt")
                         File(urlPath.parent).mkdirs()
                         urlPath.writeText(URLDecoder.decode(e.url, "UTF-8"))

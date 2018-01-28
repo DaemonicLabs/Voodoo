@@ -143,13 +143,14 @@ class CurseProviderThing : ProviderThingy() {
                         (e.id == depAddon.id || e.name == depAddon.name)
             }
             if (depEntry == null) {
-                if (depType == DependencyType.required || (modpack.doOptionals && depType == DependencyType.optional)) {
+                if (depType == DependencyType.required || (entry.doOptionals && depType == DependencyType.optional)) {
                     depEntry = Entry(
                             provider = Provider.CURSE,
                             id = depAddon.id,
                             name = depAddon.name,
                             side = entry.side,
-                            transient = true
+                            transient = true,
+                            doOptionals = entry.doOptionals
                     )
                     modpack.mods.entries += depEntry
                     logger.info("added $depType dependency ${depAddon.name} of ${addon.name}")

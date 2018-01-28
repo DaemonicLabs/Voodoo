@@ -5,12 +5,13 @@ mcVersion: 1.12.2
 validMcVersions:
 - 1.12.1
 - '1.12'
-doOptionals: false # NYI / WIP
 mods:
 #===========#
 # Core Pack #
 #===========#
+  urlTxt: true
   provider: CURSE
+  doOptionals: false # NYI / WIP
   jenkinsUrl: https://ci.elytradev.com
   entries:
   # Vazkii
@@ -36,7 +37,7 @@ mods:
   - TIS-3D
 
   - name: Bedrock Ores
-    direct: false
+    urlTxt: false
   - Architect
 
   # AlgorithmX2
@@ -194,7 +195,7 @@ mods:
   # team_otg
   - Biome Bundle
   - name: Open Terrain Generator (OTG)
-    direct: false
+    urlTxt: false
   #================#
   # Server Tooling #
   #================#

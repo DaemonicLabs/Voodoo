@@ -22,8 +22,6 @@ import kotlin.reflect.full.memberProperties
 data class Modpack(
         var name: String,
         var title: String = "",
-        var urls: Boolean = true,
-        var doOptionals: Boolean = false,
         var forge: String = "recommended",
         var features: List<Feature> = emptyList(),
         var mcVersion: String = "1.12.2",
@@ -31,7 +29,7 @@ data class Modpack(
         var outputPath: String = "", //TODO: move into runtime config data class
         var userFiles: UserFiles = UserFiles(),
         var launch: Launch = Launch(),
-        var cacheBase: String = "",
+        var cacheBase: String = "", //TODO: move into runtime config data class
         var pathBase: String = "",
         var mods: Entry = Entry()
 ) {
@@ -74,21 +72,17 @@ data class Entry(
         var resolvedDependencies: Boolean = false,
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var optional: Boolean = feature != null,
-        var transient: Boolean = false,
         var basePath: String = "src",
         var targetPath: String = "",
         var targetFilePath: String = "",
         var path: String = "",
         var filePath: String = "",
         var packageType: PackageType = PackageType.none,
-        // INTERNAL
-//        @JsonIgnore
+        // INTERNAL //TODO: move into internal object or runtime data objects
+        var transient: Boolean = false, // this entry got added as dependency for something else
         var cachePath: String = "",
-//        @JsonIgnore
         var cacheRelpath: String = "",
-//        @JsonIgnore
         var done: Boolean = false,
-//        @JsonIgnore
         var urlTxtDone: Boolean = false,
         // CURSE
         var id: Int = -1,
@@ -96,14 +90,11 @@ data class Entry(
         var releaseTypes: Set<ReleaseType> = setOf(ReleaseType.release, ReleaseType.beta),
         var curseFileNameRegex: String = ".*(?<!-deobf\\.jar)\$",
         var version: String = "", //TODO: use regex only ?
+        var doOptionals: Boolean = false,
         // DIRECT
         var url: String = "",
-        var direct: Boolean = true,
+        var urlTxt: Boolean = true,
         var fileName: String = "",
-//        //MAVEN
-//        var remoteRepository: String = "",
-//        var group: String = "",
-//        var artifact: String = "",
         //JENKINS
         var jenkinsUrl: String = "",
         var job: String = "",
