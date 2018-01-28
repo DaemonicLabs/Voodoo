@@ -1,22 +1,14 @@
 # TODO
 
-## Bootstrap
-
-* replace properties with json
-
-* add Jenkins check / download
-
 ## Builder
 
 * re-add a validate step
 
 * fix cursedata parsing slowdown
 
-* Memoization
-
 * clean up unneeded duplication between features classes
 
-* entry deduplication (2 entries with the same name cause it to loop forever)
+* entry deduplication (2 entries with the same name cause endless looping)
 
 **TEST** manual dependencies with optionals
 
