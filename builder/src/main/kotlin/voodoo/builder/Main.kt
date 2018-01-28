@@ -21,9 +21,7 @@ import mu.KotlinLogging
 import voodoo.builder.provider.DependencyType
 import voodoo.util.Directories
 import java.io.File
-import java.nio.file.Files
 import java.nio.file.InvalidPathException
-import java.nio.file.Path
 
 private val logger = KotlinLogging.logger {}
 
@@ -175,15 +173,6 @@ fun loadFromFile(path: File): Modpack {
     }
 }
 
-fun writeToFile(path: Path, config: Modpack) {
-    val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
-    mapper.registerModule(KotlinModule()) // Enable Kotlin support
-
-    return Files.newBufferedWriter(path).use {
-        mapper.writeValue(it, config)
-    }
-}
-
 fun writeToFile(file: File, config: Modpack) {
     val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
     mapper.registerModule(KotlinModule()) // Enable Kotlin support
@@ -237,8 +226,10 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
         var anyMatched = false
         counter++
         logger.info("processing entries run: $counter")
-        for (entry in modpack.mods.entries.filter { !it.done }) {
-            logger.debug("processing $entry")
+        ProviderThingy.resetWarnings()
+
+        modpack.mods.entries.filter { !it.done }.forEachIndexed { index, entry ->
+            logger.debug("processing [$index] $entry")
             val thingy = entry.provider.thingy
             if (thingy.process(entry, modpack)) {
                 anyMatched = true
@@ -247,6 +238,7 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
                 logger.error("failed $entry")
             }
         }
+
         if (!anyMatched) {
             logger.error("no entry matched")
             writeToFile(packPath.resolve(modpack.name + "_errored.yaml"), modpack)
@@ -255,6 +247,7 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
         if (invalidEntries.isNotEmpty()) {
             logger.error("failed entries: $invalidEntries")
         }
+
     }
     logger.info("\nall entries processed\n")
 
