@@ -17,6 +17,7 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
+import com.xenomachina.argparser.mainBody
 import mu.KotlinLogging
 import voodoo.builder.provider.DependencyType
 import voodoo.util.Directories
@@ -95,8 +96,9 @@ class Arguments(parser: ArgParser) {
 //            }
 }
 
-fun main(args: Array<String>) {
-    Arguments(ArgParser(args)).run {
+fun main(args: Array<String>) = mainBody {
+    val arguments = ArgParser(args).parseInto(::Arguments)
+    arguments.run {
         // val workingDirectory = File(System.getProperty("user.dir"))
         // logger.info("working directory: ${workingDirectory.canonicalPath}")
         val config = loadConfig(configPath)
@@ -144,7 +146,6 @@ fun main(args: Array<String>) {
         process(modpack, config.workingDirectory, config.output, multimcArg, instancePath)
     }
 }
-
 
 fun loadConfig(path: File): BuilderConfig {
     val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
