@@ -324,6 +324,7 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
 
     val skmodpack = SKModpack(
             name = modpack.name,
+            title = modpack.title,
             gameVersion = modpack.mcVersion,
             userFiles = modpack.userFiles,
             launch = modpack.launch,
