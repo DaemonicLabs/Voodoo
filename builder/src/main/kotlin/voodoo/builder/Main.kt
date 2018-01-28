@@ -156,7 +156,7 @@ fun loadConfig(path: File): BuilderConfig {
         file = file.resolve("config.yaml")
     }
     if (!file.exists()) {
-        logger.error("$file does not exist")
+        logger.warn("$file does not exist")
         return BuilderConfig()
     }
     logger.info("path: $path")

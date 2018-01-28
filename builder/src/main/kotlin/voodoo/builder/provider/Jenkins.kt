@@ -16,7 +16,7 @@ import java.net.URI
  */
 
 class JenkinsProviderThing : ProviderThingy() {
-    companion object : KLogging() {}
+    companion object : KLogging()
 
     override val name = "Jenkins Provider"
 
