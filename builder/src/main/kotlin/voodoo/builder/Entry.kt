@@ -19,6 +19,7 @@ import kotlin.reflect.full.memberProperties
  * @author Nikky
  * @version 1.0
  */
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class ModpackInternal(
         var outputPath: String = "",
         var cacheBase: String = "",
@@ -63,6 +64,7 @@ enum class Side(val flag: Int) {
     CLIENT(1), SERVER(2), BOTH(3)
 }
 
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class EntryInternal(
         var cachePath: String = "",
         var cacheRelpath: String = "",
@@ -189,13 +191,11 @@ data class EntryFeature(
         var files: SKFeatureFiles = SKFeatureFiles()
 )
 
-@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class UserFiles(
         var include: List<String> = listOf("options.txt", "optionsshaders.txt"),
         var exclude: List<String> = emptyList()
 )
 
-@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class Launch(
         var flags: List<String> = listOf("-Dfml.ignoreInvalidMinecraftCertificates=true")
 )
