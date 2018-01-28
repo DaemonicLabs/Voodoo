@@ -1,0 +1,19 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
+    id 'application'
+}
+
+dependencies {
+    compile project(':util')
+    compile group: 'com.github.jenkinsci', name: 'java-client-api', version: 'master-SNAPSHOT'
+    compile group: 'com.github.jkcclemens', name: 'khttp', version: 'master-SNAPSHOT'
+}
+
+mainClassName = "voodoo.bootstrap.BootstrapKt"
+
+shadowJar {
+    classifier = null
+    version = null
+}
+
+build.dependsOn(shadowJar)

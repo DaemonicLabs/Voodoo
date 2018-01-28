@@ -13,17 +13,15 @@ dependencies {
     compile group: 'com.github.jenkinsci', name: 'java-client-api', version: 'master-SNAPSHOT'
     compile group: 'com.github.jkcclemens', name: 'khttp', version: 'master-SNAPSHOT'
     compile group: 'com.github.aballano', name: 'MnemoniK', version: '+'
-    compile group:  'io.github.microutils', name: 'kotlin-logging', version: '+'
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
+//    compile group:  'io.github.microutils', name: 'kotlin-logging', version: '+'
+//    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
 }
 
 mainClassName = "voodoo.builder.MainKt"
 
 shadowJar {
-    // baseName = 'voodoo-builder'
     classifier = null
-    // version = null
 }
 
 build.dependsOn(shadowJar)
