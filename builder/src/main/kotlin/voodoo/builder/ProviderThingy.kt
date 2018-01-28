@@ -2,8 +2,8 @@ package voodoo.builder
 
 import aballano.kotlinmemoization.memoize
 import aballano.kotlinmemoization.tuples.Quintuple
-import voodoo.builder.provider.*
 import mu.KLogging
+import voodoo.builder.provider.*
 import java.io.File
 
 /**
@@ -28,14 +28,40 @@ abstract class ProviderThingy {
     private var functions = listOf<Quintuple<String, (Entry) -> Boolean, (Entry, Modpack) -> Unit, Boolean, String>>()
     //    private var functions = mutableMapOf<Provider, List<Triple<String, (Entry) -> Boolean, (Entry, Modpack) -> Unit>>>()
 
-    companion object : KLogging()
+    companion object : KLogging() {
+        private val requirmentWarning = mutableMapOf<String, Boolean>()
+
+        fun resetWarnings() {
+            requirmentWarning.clear()
+        }
+    }
 
     init {
         register("setFeatureName",
-                { !it.feature?.name.isNullOrBlank() },
+                { it.feature != null && it.feature!!.name.isBlank() },
                 { e, _ ->
                     e.feature!!.name = e.name
                 }
+        )
+
+        register("postSetName",
+                { it.name.isNotBlank() },
+                { e, _ ->
+                    logger.info("run after name is set ${e.name}")
+                }
+        )
+
+        register("checkDuplicate",
+                { it.name.isNotBlank() },
+                { e, m ->
+                    val duplicates = m.mods.entries.filter { it != e && it.name == e.name }
+                    if (duplicates.isNotEmpty()) {
+                        println()
+                        logger.error("duplicates: {}", duplicates)
+                        System.exit(2)
+                    }
+                },
+                requires = "postSetName"
         )
 
         register("postResolveDependencies",
@@ -65,38 +91,14 @@ abstract class ProviderThingy {
                 },
                 requires = "postResolveDependencies"
         )
+
         register("resolveFeatureDependencies",
                 { it.name.isNotBlank() && !processedFeatures.contains(it.name) },
                 ::resolveFeatureDependencies,
                 repeatable = true,
                 requires = "resolveProvides"
         )
-//        register("cleanDependneciy",
-//                { it.dependenciesDirty },
-//                { e, m ->
-//                    val required = e.dependencies[DependencyType.required] ?: emptyList()
-//                    for (name in required) {
-//                        val depEntry = m.entries.firstOrNull { it.name == name }!!
-//                        depEntry.optional = e.optional && depEntry.optional
-//                        depEntry.dependenciesDirty = true
-//                    }
-//                    e.dependenciesDirty = false
-//                },
-//                true
-//        )
-//        register("checkCleanDependency",
-//                { !it.resolvedOptionals && !it.dependenciesDirty },
-//                { e, m ->
-//                    val required = e.dependencies[DependencyType.required] ?: emptyList()
-//                    for (name in required) {
-//                        val depEntry = m.entries.firstOrNull { it.name == name }!!
-//                        depEntry.optional = e.optional && depEntry.optional
-//                        depEntry.dependenciesDirty = true
-//                    }
-//                    e.resolvedOptionals = true
-//                },
-//                true
-//        )
+
         register("resolveOptional",
                 { !it.resolvedOptionals },
                 { e, m ->
@@ -133,6 +135,7 @@ abstract class ProviderThingy {
                     e.filePath = File(e.basePath, e.path).resolve(e.fileName).path
                 }
         )
+
         register("resolveTargetFilePath",
                 { it.targetFilePath.isBlank() && it.targetPath.isNotBlank() && it.fileName.isNotBlank() },
                 { e, _ ->
@@ -162,8 +165,6 @@ abstract class ProviderThingy {
                 continue
             }
             if (requirement.isNotBlank()) {
-//                var temp = processedFunctions[entry.name] ?: listOf()
-//                println("processed functions of ${entry.name} $temp")
                 val fulfilled = modpack.mods.entries.all {
                     processedFunctions.getOrDefault(it.name, emptyList()).contains(requirement)
                 }
@@ -172,7 +173,11 @@ abstract class ProviderThingy {
                     val missing = modpack.mods.entries.filter {
                         !processedFunctions.getOrDefault(it.name, emptyList()).contains(requirement)
                     }.map { if (it.name.isNotBlank()) it.name else it.toString() }
-                    logger.warn("requirement $requirement is not fulfilled by all entries, missing: $missing")
+                    if(requirmentWarning[requirement] != true)
+                    {
+                        logger.warn("requirement $requirement is not fulfilled by all entries, missing: $missing")
+                        requirmentWarning[requirement] = true
+                    }
                     continue
                 }
             }
