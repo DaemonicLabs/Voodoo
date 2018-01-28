@@ -1,0 +1,329 @@
+name: openpack
+title: Open Source Adventure
+forge: 2601
+mcVersion: 1.12.2
+validMcVersions:
+- 1.12.1
+- '1.12'
+doOptionals: false # NYI / WIP
+mods:
+#===========#
+# Core Pack #
+#===========#
+  provider: CURSE
+  jenkinsUrl: https://ci.elytradev.com
+  entries:
+  # Vazkii
+  - Quark
+
+  # some nerd
+  - name: Lingering Loot
+    job: elytra/LingeringLoot/ruleengine
+    provider: JENKINS
+
+  # TehNut
+  - Hwyla
+  - SimpleHarvest
+
+  # kroeser
+  - Structured Crafting
+
+  # Kihira
+  - Tails
+
+  # Sangar
+  - OpenComputers
+  - TIS-3D
+
+  - name: Bedrock Ores
+    direct: false
+  - Architect
+
+  # AlgorithmX2
+  - Chisels & Bits
+  - Ambidextrous
+
+  # Greymark
+  - Roguelike Dungeons
+
+  # BlackJar72
+  - Doomlike Dungeons
+
+  # InsomniaKitten
+  - Armor Sound Tweak
+  - Persistent Cake
+
+  - name: Just Enough Torches (JET)
+    provider: DIRECT
+    url: https://github.com/InsomniaKitten/JustEnoughTorches/releases/download/v3.0.0/jetorches-1.12.2-3.0.0.jar
+
+  # xalcon
+  - TorchMaster
+
+  # Tamaized
+  - Melon Golem
+
+  # universal
+  - VanillaAutomation
+  - IIDY
+
+  # copygirl!
+  - Wearable Backpacks
+
+  # Phylogeny
+  - Extra Bit Manipulation
+
+  # CD4017BE
+  - Automated Redstone
+  - Inductive Logistics
+
+  # Guichaguri
+  - BetterFps
+
+  # mezz
+  - Just Enough Items (JEI)
+
+  # BlayTheNinth
+  - Cooking for Blockheads
+  - KleeSlabs
+  - GravelMiner
+  - CraftingCraft
+  - Refined Relocation 2
+
+  # elucent
+  - Simple Gravel Ores
+
+  # Hunternif
+  - Antique Atlas
+
+  # LalalaStab
+  - Felling
+
+  # Alsnder
+  - Earthworks
+
+  # mangoose3039
+  - Rustic
+  - Adventurer's Toolbox
+  - Nether Chest
+
+  # ZLainSama
+  - Cosmetic Armor Reworked
+
+  # dmillerw
+  - Passthrough Signs
+
+  # eractnodi
+  - Edible Bugs
+
+  # KnightMiner
+  - Ceramics
+
+  # konwboj
+  - Tumbleweed
+
+  # Girafi
+  - Waddles
+
+  # P3pp3rF1y
+  - Reliquary v1.3
+
+  # GotoLink
+  - "stimmedcow : NoMoreRecipeConflict"
+
+  # Chaosyr
+  - Nature's Compass
+
+  # asie
+  # - Charset
+
+  # jaredlll08
+  - Initial Inventory
+
+  # boq
+  - OpenBlocks
+
+  # desht
+  - "PneumaticCraft: Repressurized"
+
+  - name: The Twilight Forest
+    provider: LOCAL
+    fileSrc: twilightforest-1.12.2-3.6-universal.jar
+
+  # mods we wish were open source but they're not
+  # - Repose
+  # - Multi Mine
+  # - Pokecube
+
+  # shadowfacts
+  - Extra Rails
+  - Large Veins
+  - Redstone Remote
+  - Underwater Utilities
+
+  # WesCook
+  - name: "Nutrition"
+    provider: DIRECT
+    url: "https://github.com/WesCook/Nutrition/releases/download/v2.6.0/Nutrition-1.12.2-2.6.0.jar"
+
+  # asie
+  - name: Charset
+    job: CharsetMC/Charset/1.12
+    provider: JENKINS
+
+  - name: ProbeDataProvider
+    job: elytra/ProbeDataProvider/1.12
+    provider: JENKINS
+
+ # una
+  - name: FruitPhone
+    job: elytra/FruitPhone/1.12
+    provider: JENKINS
+    dependencies:
+      required:
+      - ProbeDataProvider
+
+  # asie
+  - name: foamfix
+    provider: DIRECT
+    url: https://unascribed.com/foamfix/FoamFix-1.12.2-0.8.4-Anarchy.jar
+
+  # TheRandomLabs
+  - RandomTweaks
+
+  # team_otg
+  - Biome Bundle
+  - name: Open Terrain Generator (OTG)
+    direct: false
+  #================#
+  # Server Tooling #
+  #================#
+  - side: SERVER
+    entries:
+    - name: Thump
+      provider: CURSE
+      releaseTypes:
+      - release
+      - beta
+
+    # some nerd
+    - name: BTFU
+      job: elytra/BTFU/master
+      provider: JENKINS
+
+    - WorldEdit
+
+    # McJty
+    - In Control!
+
+    # some nerd
+    - name: Death Location
+      job: elytra/DeathLocation/master
+      provider: JENKINS
+
+  #========================#
+  # Client Quality of Life #
+  #========================#
+  - side: CLIENT
+    entries:
+    # BlayTheNinth
+    - Default Options
+
+    # feldim2425
+    - More Overlays
+
+    # squeek502
+    - name: Squeedometer
+      feature:
+        selected: true
+    - Waila Harvestability
+    - AppleSkin
+
+    - name: NoNausea
+      feature:
+        selected: true
+
+    # InsomniaKitten
+    - name: IKWID (I Know What I'm Doing)
+      feature:
+        selected: true
+      description: Skips the new early game crafting tutorials.
+
+    # masa
+    - name: MiniHUD
+      feature:
+        selected: true
+    - Placement Preview
+    - name: Item Scroller
+      feature:
+        selected: true
+      releaseTypes:
+      - release
+      - beta
+
+    # BlayTheNinth
+    - Client Tweaks
+
+    # universal
+    - InfoTooltip
+
+    # mezz
+    - Mod Name Tooltip
+
+    # dmillerw
+    - MineMenu
+
+    # octarine_noise
+    - Better Foliage
+
+    # Chaosyr
+    - Notes
+
+    # jaredlll08
+    - TipTheScales
+
+    # unalkreon
+    - name: Mirage
+      job: elytra/Mirage/1.12
+      provider: JENKINS
+      description: "Experimental support for colored lighting."
+      feature:
+        selected: false
+
+#=============================#
+# Extra Stuff for Test Server #
+#=============================#
+
+  # Falkreon
+  - name: Thermionics
+    provider: DIRECT
+    url: https://github.com/elytra/Thermionics/releases/download/MC1.12.2_v1.1.2/Thermionics-MC1.12_ver1.1.2.jar
+
+  # unalkreon
+  - name: Smores
+    provider: DIRECT
+    url: https://ci.elytradev.com/job/elytra/job/Smores/job/1.12.2/4/artifact/build/libs/Smores-0.2.0.jar
+
+  # B0undarybreaker
+  - Better Boilers
+
+  # jaquadro
+  - Storage Drawers
+
+  # some nerd
+  - name: NuclearOption
+    url: https://ci.elytradev.com/job/elytra/job/NuclearOption/job/master/8/artifact/build/libs/NuclearOption-1.12-2.5.jar
+    provider: DIRECT
+    side: SERVER
+
+
+  # unascribed
+  - name: Iridescent
+    provider: DIRECT
+    url: https://ci.elytradev.com/job/elytra/job/Iridescent/job/1.12.2/5/artifact/build/libs/Iridescent-1.12.2-1.6.jar
+
+  - name: ReAuth
+    side: CLIENT
+    description: "NON-FREE.  Allows re-authenticating to mojang without restarting the game."
+    feature:
+      selected: false
