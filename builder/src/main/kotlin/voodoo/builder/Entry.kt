@@ -98,6 +98,7 @@ data class Entry(
         var version: String = "", //TODO: use regex only ?
         // DIRECT
         var url: String = "",
+        var direct: Boolean = true,
         var fileName: String = "",
 //        //MAVEN
 //        var remoteRepository: String = "",
@@ -107,7 +108,7 @@ data class Entry(
         var jenkinsUrl: String = "",
         var job: String = "",
         var buildNumber: Int = -1,
-        var jenkinsFileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)$",
+        var jenkinsFileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
         // LOCAL
         var fileSrc: String = "",
         var entries: List<Entry> = listOf()

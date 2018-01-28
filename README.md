@@ -17,7 +17,7 @@ windows: `./gradlew.bat :builder:build`
 
 `java -jar /path/to/builder.jar pack_definition.yaml`
 
-sample: [sample.yaml](/sample.yaml)
+samples: [sample](/samples)
 
 ## config file
 
