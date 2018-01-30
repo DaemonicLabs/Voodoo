@@ -110,25 +110,19 @@ object CurseUtil : KLogging() {
             files = files.filter { f ->
                 (f.fileName.contains(version, true) || f.fileName == version)
             }.sortedWith(compareByDescending { it.fileDate })
-
-            logger.info("filtered files: {}", files.map {it.fileName})
         }
-        var oldFiles = files
+
         files = files.filter { f ->
             mcVersions.any { v -> f.gameVersion.contains(v) }
         }.sortedWith(compareByDescending { it.fileDate })
 
-        if(files.isEmpty()) logger.info("filtered files: {}", oldFiles.map {it.fileName})
-
         files = files.filter { f ->
             releaseTypes.contains(f.releaseType)
         }.sortedWith(compareByDescending { it.fileDate })
-        logger.info("filtered files: {}", files.map {it.fileName})
 
         files = files.filter { f ->
             re.matches(f.fileName)
         }.sortedWith(compareByDescending { it.fileDate })
-        logger.info("filtered files: {}", files.map {it.fileName})
 
         val file = files.firstOrNull()
         if (file == null) {
