@@ -2,9 +2,6 @@ package voodoo.builder.provider
 
 import aballano.kotlinmemoization.memoize
 import com.offbytwo.jenkins.JenkinsServer
-import com.offbytwo.jenkins.model.FolderJob
-import voodoo.builder.Provider
-import voodoo.builder.ProviderThingy
 import mu.KLogging
 import java.io.File
 import java.net.URI

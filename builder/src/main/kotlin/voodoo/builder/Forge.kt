@@ -6,6 +6,9 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import khttp.get
 import mu.KLogging
+import voodoo.builder.data.Entry
+import voodoo.builder.data.EntryInternal
+import voodoo.builder.provider.Provider
 
 /**
  * Created by nikky on 30/12/17.
@@ -62,14 +65,14 @@ object Forge : KLogging() {
         }
         val webpath = data.webpath
         val artifact = data.number.get(versionStr)!!
-//        val mcversion = artifact.mcversion
+        val mcversion = artifact.mcversion
         val forgeVersion = artifact.version
         val branch = artifact.branch
-        var longVersion = "$mcVersion-$forgeVersion"
+        var longVersion = "$mcversion-$forgeVersion"
         if (branch != null) {
             longVersion += "-$branch"
         }
-        val fileName = "forge-$longVersion-installer.jar"
+        val fileName = "forge-$longVersion-installer.jar" // "forge-mcversion-$forgeVersion(-$branch)/installer.jar"
         val url = "$webpath/$longVersion/$fileName"
 
         return Quadruple(url, fileName, longVersion, forgeVersion)
@@ -105,7 +108,7 @@ data class ForgeData(
 data class Artifact(
         val branch: String?,
         val build: Int,
-        val files: List<Any>,
+        val files: List<List<String>>, //file, extension, checksum
         val mcversion: String,
         val modified: Long,
         val version: String

@@ -18,9 +18,21 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import khttp.get
 import mu.KotlinLogging
-import voodoo.builder.provider.DependencyType
+import voodoo.builder.curse.CurseManifest
+import voodoo.builder.curse.CurseUtil
+import voodoo.builder.curse.DependencyType
+import voodoo.builder.curse.Importer
+import voodoo.builder.data.Entry
+import voodoo.builder.data.Modpack
+import voodoo.builder.provider.ProviderThingy
+import voodoo.builder.data.Location
+import voodoo.builder.data.SKModpack
+import voodoo.builder.data.SKWorkspace
+import voodoo.builder.provider.Provider
 import voodoo.util.Directories
+import voodoo.util.UnzipUtility
 import java.io.File
 import java.nio.file.InvalidPathException
 
@@ -73,6 +85,10 @@ class Arguments(parser: ArgParser) {
 
     val instanceDirArg by parser.storing("-I", "--instances",
             help = "multimc instances directory")
+            .default("")
+
+    val importArg by parser.storing("--import",
+            help = "curse pack")
             .default("")
 
 //    val verbose by parser.flagging("-v", "--verbose",
@@ -130,22 +146,27 @@ fun main(args: Array<String>) = mainBody {
             logger.error("path: $path does not exist")
         }
 
-        val modpack = loadFromFile(path)
+        if (importArg.isBlank()) {
+            val modpack = loadFromFile(path)
 
-        val instance = config.instance
-        val instancePath = if (instance != null) {
-            if (instance.isAbsolute) {
-                instance
+            val instance = config.instance
+            val instancePath = if (instance != null) {
+                if (instance.isAbsolute) {
+                    instance
+                } else {
+                    config.instances.resolve(instance)
+                }
             } else {
-                config.instances.resolve(instance)
+                config.instances.resolve(modpack.name)
             }
+            process(modpack, config.workingDirectory, config.output, multimcArg, instancePath)
         } else {
-            config.instances.resolve(modpack.name)
+            Importer.import(path, importArg, config.workingDirectory, config.output)
         }
-
-        process(modpack, config.workingDirectory, config.output, multimcArg, instancePath)
     }
 }
+
+
 
 fun loadConfig(path: File): BuilderConfig {
     val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
@@ -195,6 +216,7 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
     srcPath.mkdirs()
 
     val dataPath = packPath.resolve("data")
+    dataPath.mkdirs()
     writeToFile(dataPath.resolve("flat.yaml"), modpack)
 
 

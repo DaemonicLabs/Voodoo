@@ -1,4 +1,4 @@
-package voodoo.builder
+package voodoo.builder.data
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIgnore
@@ -7,9 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import mu.KLogging
-import voodoo.builder.provider.DependencyType
-import voodoo.builder.provider.PackageType
-import voodoo.builder.provider.ReleaseType
+import voodoo.builder.curse.DependencyType
+import voodoo.builder.curse.PackageType
+import voodoo.builder.curse.ReleaseType
+import voodoo.builder.provider.Provider
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 
@@ -34,7 +35,6 @@ data class Modpack(
         var forge: String = "recommended",
         var features: List<Feature> = mutableListOf(),
         var mcVersion: String = "1.12.2",
-        var validMcVersions: List<String> = emptyList(),
         var userFiles: UserFiles = UserFiles(),
         var launch: Launch = Launch(),
         @JsonIgnore
@@ -54,10 +54,6 @@ data class Modpack(
         mods.flatten()
         logger.info(mapper.writeValueAsString(this))
     }
-}
-
-enum class Recommendation {
-    starred, avoid
 }
 
 enum class Side(val flag: Int) {
@@ -104,6 +100,7 @@ data class Entry(
         var releaseTypes: Set<ReleaseType> = setOf(ReleaseType.release, ReleaseType.beta),
         var curseFileNameRegex: String = ".*(?<!-deobf\\.jar)\$",
         var version: String = "", //TODO: use regex only ?
+        var validMcVersions: List<String> = emptyList(),
         var doOptionals: Boolean = false,
         // DIRECT
         var url: String = "",
@@ -116,6 +113,7 @@ data class Entry(
         var jenkinsFileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
         // LOCAL
         var fileSrc: String = "",
+        // NESTED
         var entries: List<Entry> = listOf()
 ) {
     companion object : KLogging() {
@@ -172,16 +170,6 @@ data class Entry(
 }
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-data class Feature(
-        @JsonIgnore
-        var entries: List<String>,
-        @JsonIgnore
-        var processedEntries: List<String>,
-        var properties: SKFeatureProperties = SKFeatureProperties(),
-        var files: SKFeatureFiles = SKFeatureFiles()
-)
-
-@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class EntryFeature(
         var name: String = "",
         @JsonInclude(JsonInclude.Include.ALWAYS)
@@ -190,51 +178,3 @@ data class EntryFeature(
         var recommendation: Recommendation? = null,
         var files: SKFeatureFiles = SKFeatureFiles()
 )
-
-data class UserFiles(
-        var include: List<String> = listOf("options.txt", "optionsshaders.txt"),
-        var exclude: List<String> = emptyList()
-)
-
-data class Launch(
-        var flags: List<String> = listOf("-Dfml.ignoreInvalidMinecraftCertificates=true")
-)
-
-data class SKFeatureProperties(
-        var name: String = "",
-        var selected: Boolean = true,
-        var description: String = "",
-        @JsonInclude(JsonInclude.Include.NON_NULL)
-        var recommendation: Recommendation? = null
-)
-
-data class SKFeatureFiles(
-        val include: MutableList<String> = mutableListOf(),
-        val exclude: MutableList<String> = mutableListOf()
-)
-
-data class SKModpack(
-        var name: String,
-        var title: String = "",
-        var gameVersion: String,
-        var features: List<Feature> = emptyList(),
-        var userFiles: UserFiles = UserFiles(),
-        var launch: Launch = Launch()
-)
-
-data class SKWorkspace(
-        val packs: MutableSet<Location> = mutableSetOf(),
-        var packageListingEntries: List<Any> = listOf(),
-        var packageListingType: String = "STATIC"
-)
-
-data class Location(
-        var location: String
-) {
-    override fun equals(other: Any?): Boolean{
-        if (this === other) return true
-        if (other !is Location) return false
-
-        return location == other.location
-    }
-}

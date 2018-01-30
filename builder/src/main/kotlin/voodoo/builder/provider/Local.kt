@@ -1,6 +1,5 @@
 package voodoo.builder.provider
 
-import voodoo.builder.ProviderThingy
 import mu.KLogging
 import java.io.File
 

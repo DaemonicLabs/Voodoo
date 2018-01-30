@@ -1,9 +1,14 @@
-package voodoo.builder
+package voodoo.builder.provider
 
 import aballano.kotlinmemoization.memoize
 import aballano.kotlinmemoization.tuples.Quintuple
 import mu.KLogging
-import voodoo.builder.provider.*
+import voodoo.builder.curse.DependencyType
+import voodoo.builder.data.Entry
+import voodoo.builder.data.Modpack
+import voodoo.builder.data.Side
+import voodoo.builder.data.Feature
+import voodoo.builder.data.SKFeatureProperties
 import java.io.File
 
 /**
