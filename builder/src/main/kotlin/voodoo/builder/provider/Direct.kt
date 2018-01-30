@@ -1,7 +1,6 @@
 package voodoo.builder.provider
 
 import khttp.get
-import voodoo.builder.ProviderThingy
 import mu.KLogging
 import java.io.File
 import java.net.URL

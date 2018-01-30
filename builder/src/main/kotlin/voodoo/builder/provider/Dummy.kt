@@ -1,8 +1,6 @@
 package voodoo.builder.provider
 
-import voodoo.builder.ProviderThingy
 import mu.KLogging
-import java.io.File
 
 /**
  * Created by nikky on 30/12/17.
