@@ -2,13 +2,13 @@ name: openpack
 title: Open Source Adventure
 forge: 2601
 mcVersion: 1.12.2
-validMcVersions:
-- 1.12.1
-- '1.12'
 mods:
 #===========#
 # Core Pack #
 #===========#
+  validMcVersions:
+  - 1.12.1
+  - '1.12'
   urlTxt: true
   provider: CURSE
   doOptionals: false # NYI / WIP
@@ -185,9 +185,14 @@ mods:
       - ProbeDataProvider
 
   # asie
-  - name: foamfix
-    provider: DIRECT
-    url: https://unascribed.com/foamfix/FoamFix-1.12.2-0.8.4-Anarchy.jar
+  - provider: JSON
+    updateJson: https://asie.pl/files/minecraft/update/foamfix.json # resolves `name = foamfix` too
+    updateChannel: latest # default == reommended
+    template: https://unascribed.com/foamfix/FoamFix-1.12.2-{version}-Anarchy.jar
+
+#  - name: foamfix
+#    provider: DIRECT
+#    url: https://unascribed.com/foamfix/FoamFix-1.12.2-0.8.4-Anarchy.jar
 
   # TheRandomLabs
   - RandomTweaks

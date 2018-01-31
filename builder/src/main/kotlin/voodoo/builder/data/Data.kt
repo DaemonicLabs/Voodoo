@@ -11,6 +11,7 @@ import voodoo.builder.curse.DependencyType
 import voodoo.builder.curse.PackageType
 import voodoo.builder.curse.ReleaseType
 import voodoo.builder.provider.Provider
+import voodoo.builder.provider.UpdateChannel
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 
@@ -113,6 +114,10 @@ data class Entry(
         var jenkinsFileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
         // LOCAL
         var fileSrc: String = "",
+        // UPDATE-JSON
+        var updateJson: String = "",
+        var updateChannel: UpdateChannel = UpdateChannel.recommended,
+        var template: String = "",
         // NESTED
         var entries: List<Entry> = listOf()
 ) {
