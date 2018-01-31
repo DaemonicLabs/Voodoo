@@ -22,7 +22,8 @@ enum class Provider(val thingy: ProviderThingy) {
     DIRECT(DirectProviderThing()),
     LOCAL(LocalProviderThing()),
     JENKINS(JenkinsProviderThing()),
-    DUMMY(DummyProviderThing())
+    DUMMY(DummyProviderThing()),
+    JSON(UpdateJsonProviderThing())
 }
 
 private var processedFeatures = listOf<String>() //TODO: move into modpack-shared object

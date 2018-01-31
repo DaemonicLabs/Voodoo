@@ -104,27 +104,52 @@ object CurseUtil : KLogging() {
                 return Triple(addonId, file.id, file.fileNameOnDisk)
         }
 
-        var files = getAllAddonFiles(addonId)
+        var files = getAllAddonFiles(addonId).sortedWith(compareByDescending { it.fileDate })
 
-        if(version.isNotBlank()){
+        var oldFiles = files
+
+        if (version.isNotBlank()) {
             files = files.filter { f ->
                 (f.fileName.contains(version, true) || f.fileName == version)
-            }.sortedWith(compareByDescending { it.fileDate })
+            }
+            if (files.isEmpty()) {
+                logger.error("filtered files did not match version {}", oldFiles)
+            }
+            oldFiles = files
         }
 
-        files = files.filter { f ->
-            mcVersions.any { v -> f.gameVersion.contains(v) }
-        }.sortedWith(compareByDescending { it.fileDate })
+        if (files.isNotEmpty()) {
+            files = files.filter { f ->
+                mcVersions.any { v -> f.gameVersion.contains(v) }
+            }
 
-        files = files.filter { f ->
-            releaseTypes.contains(f.releaseType)
-        }.sortedWith(compareByDescending { it.fileDate })
+            if (files.isEmpty()) {
+                logger.error("filtered files did not match mcVersion {}", oldFiles)
+            }
+            oldFiles = files
+        }
 
-        files = files.filter { f ->
-            re.matches(f.fileName)
-        }.sortedWith(compareByDescending { it.fileDate })
+        if (files.isNotEmpty()) {
+            files = files.filter { f ->
+                releaseTypes.contains(f.releaseType)
+            }
 
-        val file = files.firstOrNull()
+            if (files.isEmpty()) {
+                logger.error("filtered files did not match releaseType {}", oldFiles)
+            }
+            oldFiles = files
+        }
+
+        if (files.isNotEmpty()) {
+            files = files.filter { f ->
+                re.matches(f.fileName)
+            }
+            if (files.isEmpty()) {
+                logger.error("filtered files did not match regex {}", oldFiles)
+            }
+        }
+
+        val file = files.sortedWith(compareByDescending { it.fileDate }).firstOrNull()
         if (file == null) {
             val filesUrl = "$META_URL/api/addon/$addonId/files"
             CurseProviderThing.logger.error("no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
