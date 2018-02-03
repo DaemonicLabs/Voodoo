@@ -1,16 +1,22 @@
-package voodoo.builder.curse
+package voodoo.importer
 
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.xenomachina.argparser.ArgParser
+import com.xenomachina.argparser.default
+import com.xenomachina.argparser.mainBody
 import khttp.get
 import mu.KLogging
+import mu.KotlinLogging
+import voodoo.builder.curse.CurseManifest
+import voodoo.builder.curse.CurseUtil
 import voodoo.builder.data.Entry
 import voodoo.builder.data.Modpack
 import voodoo.builder.provider.Provider
-import voodoo.builder.writeToFile
 import voodoo.util.Directories
 import voodoo.util.UnzipUtility
+import voodoo.writeToFile
 import java.io.File
 
 /**
@@ -18,8 +24,53 @@ import java.io.File
  * @author Nikky
  * @version 1.0
  */
+
+private val logger = KotlinLogging.logger {}
+
+fun main(vararg args: String) = mainBody {
+
+    val arguments = Arguments(ArgParser(args))
+
+    arguments.run {
+        val output = workingDir.resolve(outputArg)
+        Importer.import(importArg, target, workingDir, output)
+    }
+
+}
+
+private class Arguments(parser: ArgParser) {
+    val importArg by parser.positional("PACK",
+            help = "curse pack file or url")
+
+    val target by parser.storing("--target",
+            help = "Modpack definition file")
+            .default("")
+
+    val workingDir by parser.storing("-d", "--directory",
+            help = "working directory") { File(this) }
+            .default(File(System.getProperty("user.dir")))
+
+    val outputArg by parser.storing("-o", "--output",
+            help = "output directory")
+            .default("modpacks")
+
+
+
+
+//    val verbose by parser.flagging("-v", "--verbose",
+//            help = "enable verbose mode")
+
+    //            .addValidator {
+//                for(path in value) {
+//                    if(path.isAbsolute && !path.exists()) {
+//                        throw InvalidArgumentException("$path does not exist")
+//                    }
+//                }
+//            }
+}
+
 object Importer : KLogging() {
-    fun import(packDefinition: File, import: String, workingDirectory: File, outPath: File) {
+    fun import(import: String, target: String, workingDirectory: File, outPath: File) {
         val directories = Directories.get(moduleNam = "importer")
         val packFile = with(File(import)) {
             if (isFile) {
@@ -52,9 +103,9 @@ object Importer : KLogging() {
             mapper.readValue<CurseManifest>(it)
         }
 
-        val packDef = if (packDefinition.path == workingDirectory.path) {
-            workingDirectory.resolve(manifest.name + ".yaml")
-        } else packDefinition
+        val packDef = if (target.isNotBlank()) {
+            File(target)
+        } else workingDirectory.resolve(manifest.name + ".yaml")
 
         val srcDir = outPath.resolve(manifest.name).resolve("src")
         if (srcDir.exists())
@@ -75,9 +126,13 @@ object Importer : KLogging() {
         }
 
         // add curse entries
-        manifest.files.forEach { curseFile ->
+        for(curseFile in manifest.files) {
             logger.info("processing file {}", curseFile)
-            val addon = CurseUtil.getAddon(curseFile.projectID)!!
+            val addon = CurseUtil.getAddon(curseFile.projectID)
+            if(addon == null) {
+                logger.error("cannot find addon ${curseFile.projectID}")
+                continue
+            }
             val file = CurseUtil.getAddonFile(curseFile.projectID, curseFile.fileID)!!
             val entry = Entry(name = addon.name, version = file.fileName, optional = !curseFile.required)
             Entry(name = addon.name, version = file.fileName, optional = !curseFile.required)
@@ -119,7 +174,7 @@ object Importer : KLogging() {
 
 
         logger.info("writing {}", packDef)
-        writeToFile(packDef, modpack)
+        modpack.writeToFile(packDef)
         logger.info("imported {} version: {}", modpack.name, modpack.version)
     }
 }

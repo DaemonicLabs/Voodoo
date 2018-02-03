@@ -5,12 +5,10 @@ plugins {
 
 dependencies {
     compile project(':util')
-    compile group: 'com.github.jenkinsci', name: 'java-client-api', version: 'master-SNAPSHOT'
-    compile group: 'com.github.jkcclemens', name: 'khttp', version: 'master-SNAPSHOT'
 }
 
-mainClassName = "voodoo.bootstrap.BootstrapKt"
-version = '0.1'
+mainClassName = "voodoo.BootstrapKt"
+version = '0.2'
 
 shadowJar {
     classifier = null

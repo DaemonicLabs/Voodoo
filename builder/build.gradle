@@ -9,15 +9,14 @@ dependencies {
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '+'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '+'
-    compile group: 'com.github.jenkinsci', name: 'java-client-api', version: 'master-SNAPSHOT'
     compile group: 'com.github.jkcclemens', name: 'khttp', version: 'master-SNAPSHOT'
     compile group: 'com.github.aballano', name: 'MnemoniK', version: '+'
-    compile group:  'io.github.microutils', name: 'kotlin-logging', version: '+'
+    compile group: 'io.github.microutils', name: 'kotlin-logging', version: '+'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
 }
 
-mainClassName = "voodoo.builder.MainKt"
+mainClassName = "voodoo.MainKt"
 
 def runDir = project.file("../run").path
 

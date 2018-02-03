@@ -1,8 +1,8 @@
 package voodoo.builder.provider
 
 import aballano.kotlinmemoization.memoize
-import com.offbytwo.jenkins.JenkinsServer
 import mu.KLogging
+import voodoo.util.jenkins.JenkinsServer
 import java.io.File
 import java.net.URI
 
@@ -26,8 +26,8 @@ class JenkinsProviderThing : ProviderThingy() {
                     }
                 },
                 { e, _ ->
-                    val job = job(e.job, e.jenkinsUrl)
-                    e.buildNumber = job.lastStableBuild.number
+                    val job = job(e.job, e.jenkinsUrl)!!
+                    e.buildNumber = job.lastSuccessfulBuild?.number ?: -1
                 }
         )
         register("setName",
@@ -137,18 +137,18 @@ class JenkinsProviderThing : ProviderThingy() {
 
     private val build = { jobName: String, url: String, buildNumber: Int ->
         logger.info("get build $buildNumber")
-        job(jobName, url).getBuildByNumber(buildNumber)!!.details()
+        job(jobName, url).getBuildByNumber(buildNumber)!!
     }.memoize()
 
     private val job = { jobName: String, url: String ->
         val server = server(url)
         logger.info("get jenkins job $jobName")
-        server.getJob(jobName).details()
+        server.getJob(jobName)!!
     }.memoize()
 
     private val server = { url: String ->
         logger.info("get jenkins server $url")
-        JenkinsServer(URI(url))
+        JenkinsServer(url)
     }.memoize()
 
 }
