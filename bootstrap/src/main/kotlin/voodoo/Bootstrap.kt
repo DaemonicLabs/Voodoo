@@ -25,8 +25,8 @@ fun main(args: Array<String>) {
 
 object Bootstrap : KLogging() {
 
-    val directories: Directories = Directories.get(moduleNam = "bootstrap")
-    val binariesDir: File = directories.cacheHome
+    private val directories: Directories = Directories.get(moduleNam = "bootstrap")
+    private val binariesDir: File = directories.cacheHome
 
     fun cleanup() {
         val files = binariesDir.listFiles { pathname -> pathname.name.endsWith(".tmp") }
@@ -42,7 +42,7 @@ object Bootstrap : KLogging() {
     private const val job = "elytra/Voodoo/master"
     private const val fileNameRegex = "builder.*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)$"
 
-    fun download(): File {
+    private fun download(): File {
         val server = JenkinsServer(jenkinsUrl)
         val job = server.getJob(job)!!
         val build = job.lastSuccessfulBuild?.details()!!
@@ -73,7 +73,7 @@ object Bootstrap : KLogging() {
         val workingDir = File(System.getProperty("user.dir"))
 
         val args = arrayOf(java, "-jar", file.path, *originalArgs)
-        logger.debug("running " + args.map { "\"$it\"" }.joinToString(" "))
+        logger.debug("running " + args.joinToString(" ") { "\"$it\"" })
         ProcessBuilder(*args)
                 .directory(workingDir)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)

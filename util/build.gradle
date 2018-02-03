@@ -3,7 +3,7 @@ dependencies {
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
     compile group: 'com.github.jkcclemens', name: 'khttp', version: 'master-SNAPSHOT'
 
-    compile group:  'io.github.microutils', name: 'kotlin-logging', version: '+'
+    compile group: 'io.github.microutils', name: 'kotlin-logging', version: '+'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
     compile group: 'net.java.dev.jna', name: 'jna', version: '+'
     compile group: 'net.java.dev.jna', name: 'jna-platform', version: '+'
