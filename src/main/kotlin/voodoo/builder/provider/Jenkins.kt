@@ -26,7 +26,7 @@ class JenkinsProviderThing : ProviderThingy() {
                     }
                 },
                 { e, _ ->
-                    val job = job(e.job, e.jenkinsUrl)!!
+                    val job = job(e.job, e.jenkinsUrl)
                     e.buildNumber = job.lastSuccessfulBuild?.number ?: -1
                 }
         )
