@@ -14,6 +14,8 @@ println """
 """
 
 mainClassName = "voodoo.MainKt"
+group = 'moe.nikky'
+version = '1.1'
 
 def runDir = project.file("../run").path
 
@@ -94,8 +96,8 @@ compileKotlin {
 
 subprojects {
     apply plugin: "kotlin"
-    group = 'moe.nikky'
-    version = '1.1'
+    group = group
+    version = version
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
