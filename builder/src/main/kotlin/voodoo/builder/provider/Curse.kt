@@ -1,7 +1,5 @@
 package voodoo.builder.provider
 
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import mu.KLogging
 import voodoo.builder.curse.CurseUtil.getAddon
 import voodoo.builder.curse.CurseUtil.getAddonFile

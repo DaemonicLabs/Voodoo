@@ -1,12 +1,5 @@
 package voodoo.builder
 
-/**
- * Created by nikky on 30/12/17.
- * @author Nikky
- * @version 1.0
- */
-
-
 import aballano.kotlinmemoization.memoize
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -18,63 +11,65 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
-import khttp.get
 import mu.KotlinLogging
-import voodoo.builder.curse.CurseManifest
-import voodoo.builder.curse.CurseUtil
 import voodoo.builder.curse.DependencyType
-import voodoo.builder.curse.Importer
-import voodoo.builder.data.Entry
-import voodoo.builder.data.Modpack
+import voodoo.builder.data.*
 import voodoo.builder.provider.ProviderThingy
-import voodoo.builder.data.Location
-import voodoo.builder.data.SKModpack
-import voodoo.builder.data.SKWorkspace
-import voodoo.builder.provider.Provider
 import voodoo.util.Directories
-import voodoo.util.UnzipUtility
+import voodoo.writeToFile
 import java.io.File
-import java.nio.file.InvalidPathException
+
+/**
+ * Created by nikky on 02/02/18.
+ * @author Nikky
+ * @version 1.0
+ */
 
 private val logger = KotlinLogging.logger {}
 
-data class BuilderConfig(
-        var workingDirectory: File = File(System.getProperty("user.dir")),
-        var output: File = File("modpacks"),
-        var instances: File = File("instances"),
-        var instance: File? = null
-) {
-    fun getOutputDirectory(): File {
-        if (!output.isAbsolute) {
-            output = workingDirectory.canonicalFile.resolve(output.path)
+fun main(vararg args: String) = mainBody {
+    val arguments = Arguments(ArgParser(args))
+
+    arguments.run {
+        val path = if (!pack.isAbsolute) {
+            workingDir.resolve(pack.path)
+        } else pack
+
+        if (!path.exists()) {
+            logger.error("path: $path does not exist")
         }
-        if (!output.exists()) {
-            output.mkdirs()
+
+        val output = workingDir.resolve(outputArg)
+
+        val modpack = loadFromFile(path)
+
+        val instances = File(instanceDirArg)
+        val instancePath = if (instanceArg.isNotBlank()) {
+            val instance = File(instanceArg)
+            if (instance.isAbsolute) {
+                instance
+            } else {
+                instances.resolve(instance)
+            }
+        } else {
+            instances.resolve(modpack.name)
         }
-        if (!output.isDirectory) {
-            throw InvalidPathException(output.canonicalPath, "path is not a directory ${output.path}")
-        }
-        return output
+        process(modpack, workingDir, output, multimcArg, instancePath)
+
     }
 }
 
-class Arguments(parser: ArgParser) {
-    //    val packs by parser.positionalList("PACK",
-//            help = "Modpacks definition file(s)") { File(this) }
+private class Arguments(parser: ArgParser) {
     val pack by parser.positional("PACK",
             help = "Modpack definition file") { File(this) }
 
-    val configPath by parser.storing("-c", "--config",
-            help = "Config Path") { File(this) }
+    val workingDir by parser.storing("-d", "--directory",
+            help = "working directory") { File(this) }
             .default(File(System.getProperty("user.dir")))
-
-    val workingDirArg by parser.storing("-d", "--directory",
-            help = "working directory")
-            .default("")
 
     val outputArg by parser.storing("-o", "--output",
             help = "output directory")
-            .default("")
+            .default("modpacks")
 
     val multimcArg by parser.flagging("--mmc", "--multimc",
             help = "enable multimc export")
@@ -87,9 +82,6 @@ class Arguments(parser: ArgParser) {
             help = "multimc instances directory")
             .default("")
 
-    val importArg by parser.storing("--import",
-            help = "curse pack")
-            .default("")
 
 //    val verbose by parser.flagging("-v", "--verbose",
 //            help = "enable verbose mode")
@@ -101,89 +93,8 @@ class Arguments(parser: ArgParser) {
 //                    }
 //                }
 //            }
-//    val workingDirectory by parser.storing("-d", "--directory",
-//            help = "Working Directory") { File(this) }.default(null)
-//            .addValidator {
-//                if (value != null) {
-//                    if (!value!!.exists() || !value!!.isDirectory) {
-//                        throw InvalidArgumentException("$value does not exist")
-//                    }
-//                }
-//            }
 }
 
-fun main(args: Array<String>) = mainBody {
-    val arguments = ArgParser(args).parseInto(::Arguments)
-    arguments.run {
-        // val workingDirectory = File(System.getProperty("user.dir"))
-        // logger.info("working directory: ${workingDirectory.canonicalPath}")
-        val config = loadConfig(configPath)
-        logger.info("pack: $pack")
-
-        if (workingDirArg.isNotEmpty())
-            config.workingDirectory = File(workingDirArg)
-
-        if (outputArg.isNotEmpty())
-            config.output = File(outputArg)
-
-        if (instanceDirArg.isNotEmpty())
-            config.instances = File(instanceDirArg)
-
-        if (instanceArg.isNotEmpty())
-            config.instance = File(instanceArg)
-
-        config.getOutputDirectory()
-
-        logger.info("config: $config")
-        logger.info("output: ${config.output.canonicalPath}")
-        logger.info("working directory: ${config.workingDirectory.canonicalPath}")
-
-        val path = if (!pack.isAbsolute) {
-            config.workingDirectory.resolve(pack.path)
-        } else pack
-
-        if (!path.exists()) {
-            logger.error("path: $path does not exist")
-        }
-
-        if (importArg.isBlank()) {
-            val modpack = loadFromFile(path)
-
-            val instance = config.instance
-            val instancePath = if (instance != null) {
-                if (instance.isAbsolute) {
-                    instance
-                } else {
-                    config.instances.resolve(instance)
-                }
-            } else {
-                config.instances.resolve(modpack.name)
-            }
-            process(modpack, config.workingDirectory, config.output, multimcArg, instancePath)
-        } else {
-            Importer.import(path, importArg, config.workingDirectory, config.output)
-        }
-    }
-}
-
-
-
-fun loadConfig(path: File): BuilderConfig {
-    val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
-    mapper.registerModule(KotlinModule()) // Enable Kotlin support
-    var file = path
-    if (!file.isFile) {
-        file = file.resolve("config.yaml")
-    }
-    if (!file.exists()) {
-        logger.warn("$file does not exist")
-        return BuilderConfig()
-    }
-    logger.info("path: $path")
-    return file.bufferedReader().use {
-        mapper.readValue(it, BuilderConfig::class.java)
-    }
-}
 
 fun loadFromFile(path: File): Modpack {
     val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
@@ -195,14 +106,6 @@ fun loadFromFile(path: File): Modpack {
     }
 }
 
-fun writeToFile(file: File, config: Modpack) {
-    val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
-    mapper.registerModule(KotlinModule()) // Enable Kotlin support
-
-    file.bufferedWriter().use {
-        mapper.writeValue(it, config)
-    }
-}
 
 fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExport: Boolean, instancePath: File) {
 //    if (modpack.forge.isBlank()/* && modpack.sponge.isBlank()*/)
@@ -217,7 +120,7 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
 
     val dataPath = packPath.resolve("data")
     dataPath.mkdirs()
-    writeToFile(dataPath.resolve("flat.yaml"), modpack)
+    modpack.writeToFile(dataPath.resolve("flat.yaml"))
 
 
     modpack.internal.outputPath = packPath.path
@@ -265,7 +168,7 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
 
         if (!anyMatched) {
             logger.error("no entry matched")
-            writeToFile(packPath.resolve(modpack.name + "_errored.yaml"), modpack)
+            modpack.writeToFile(packPath.resolve(modpack.name + "_errored.yaml"))
             System.exit(-1)
         }
         if (invalidEntries.isNotEmpty()) {
@@ -380,7 +283,7 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
     val historyPath = dataPath.resolve("history")
     historyPath.mkdirs()
     logger.info("adding modpack to history")
-    writeToFile(historyPath.resolve(modpack.version + ".yaml"), modpack)
+    modpack.writeToFile(historyPath.resolve(modpack.version + ".yaml"))
 
 }
 

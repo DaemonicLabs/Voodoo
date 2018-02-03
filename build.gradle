@@ -13,7 +13,7 @@ println """
 subprojects {
     apply plugin: "kotlin"
     group = 'moe.nikky'
-    version = '1.0'
+    version = '1.1'
 
     sourceCompatibility = 1.8
     targetCompatibility = 1.8

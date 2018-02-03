@@ -128,7 +128,8 @@ data class CurseManifest(
         val manifestType: String,
         val manifestVersion: Int = 1,
         val files: List<CurseFile> = emptyList(),
-        val overrides: String = "overrides"
+        val overrides: String = "overrides",
+        val projectID: Int = -1
 )
 
 data class CurseMinecraft(
