@@ -17,7 +17,7 @@ mainClassName = "voodoo.MainKt"
 group = 'moe.nikky'
 version = '1.1'
 
-def runDir = project.file("../run").path
+def runDir = project.file("run").path
 
 def packDef = file(".")
 if (project.hasProperty('ACK')) {
@@ -31,16 +31,19 @@ if (project.hasProperty('ACK')) {
     if(!packDef.exists()) {
         packDef = file("$ACK")
     }
+} else {
+    packDef = file("pack.yaml")
 }
 // pass -PACK=openpack to gradle
 
-run {
-    args = ["-d", runDir, packDef.path]
-}
+//run {
+//    args = ["build", "-d", runDir, packDef.path]
+//}
+//
+//runShadow {
+//    args = ["build", "-d", runDir, packDef.path]
+//}
 
-runShadow {
-    args = ["-d", runDir, packDef.path]
-}
 
 task buildSamples {
     description = 'Build all Samples'
@@ -50,10 +53,18 @@ task buildSamples {
             project.javaexec {
                 classpath sourceSets.main.runtimeClasspath
                 main = mainClassName
-                args = ["-d", runDir, file.path]
+                args = ["build", "-d", runDir, file.path]
             }
         }
     }
+}
+
+task buildSample(type: JavaExec) {
+    description = 'Build one pack'
+    // println "building $packDef"
+    classpath sourceSets.main.runtimeClasspath
+    main = mainClassName
+    args = ["build", "-d", runDir, packDef.path]
 }
 
 shadowJar {

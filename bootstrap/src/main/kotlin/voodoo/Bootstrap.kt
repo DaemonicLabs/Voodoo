@@ -40,7 +40,7 @@ object Bootstrap : KLogging() {
 
     private const val jenkinsUrl = "https://ci.elytradev.com"
     private const val job = "elytra/Voodoo/master"
-    private const val fileNameRegex = "builder.*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)$"
+    private const val fileNameRegex = "Voodoo.*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)$"
 
     private fun download(): File {
         val server = JenkinsServer(jenkinsUrl)
@@ -51,7 +51,11 @@ object Bootstrap : KLogging() {
         val re = Regex(fileNameRegex)
         val artifact = build.artifacts.find {
             re.matches(it.fileName)
-        }!!
+        }
+        if(artifact == null) {
+            logger.error("did not find {} in {}", fileNameRegex, build.artifacts)
+            throw Exception()
+        }
         val url = build.url + "artifact/" + artifact.relativePath
         val tmpFile = File(binariesDir, "$buildNumber.tmp")
         val targetFile = File(binariesDir, "$buildNumber.jar")
