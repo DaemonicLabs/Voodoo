@@ -20,6 +20,6 @@ data class Job(
         val lastStableBuild: Build?
 ) {
     fun getBuildByNumber(build: Int): BuildWithDetails? {
-        return builds[build].details()
+        return builds.find { it.number == build }?.details()
     }
 }
