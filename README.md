@@ -4,14 +4,13 @@ voodoo is a set of tools to quickly build and prepare modpacks for SKCraft launc
 
 at the moment only the commandline app is working and being worked on
 
-recently a bootstrap application was added, but it is NOT muh smaller and can due to bugs merely
-chain another call to the java runtime
+recently a bootstrap application was added, but it is slightly smaller and just downloads and calls the voodoo binary (from the buildserver4
 
 ## get it
 
 ### download
 
-please grab the latest binaries from the [buildserver](https://ci.elytradev.com/job/elytra/job/voodoo/job/master/)
+please grab the latest binaries from the [buildserver](https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/)
 
 ### build
 
@@ -20,26 +19,13 @@ windows: `./gradlew.bat :builder:build`
 
 ## usage
 
-`java -jar bootstrap.jar pack_definition.yaml`
+`java -jar bootstrap.jar build pack_definition.yaml`
 
 or
 
-`java -jar /path/to/builder.jar pack_definition.yaml`
+`java -jar /path/to/Voodoo.jar build pack_definition.yaml`
 
 samples: [samples](/samples)
-
-## config file
-
-every value in the configuration file can be overridden with commandline options
-
-```yaml
-workingDirectory: '.'
-output: modpacks
-instances: instances
-instance: = null
-```
-
-the config file is expected to be either `config.yaml` or to be set with the `--config` commandline option
 
 ## MultiMC integration
 
