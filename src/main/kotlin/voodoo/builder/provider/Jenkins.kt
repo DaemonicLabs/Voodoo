@@ -1,6 +1,7 @@
 package voodoo.builder.provider
 
 import aballano.kotlinmemoization.memoize
+import com.sun.javaws.exceptions.InvalidArgumentException
 import mu.KLogging
 import voodoo.util.jenkins.JenkinsServer
 import java.io.File
@@ -143,7 +144,7 @@ class JenkinsProviderThing : ProviderThingy() {
     private val job = { jobName: String, url: String ->
         val server = server(url)
         logger.info("get jenkins job $jobName")
-        server.getJob(jobName)!!
+        server.getJob(jobName) ?: throw Exception("no such job: '$jobName' on $url")
     }.memoize()
 
     private val server = { url: String ->
