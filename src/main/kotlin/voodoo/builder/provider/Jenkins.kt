@@ -1,11 +1,9 @@
 package voodoo.builder.provider
 
 import aballano.kotlinmemoization.memoize
-import com.sun.javaws.exceptions.InvalidArgumentException
 import mu.KLogging
 import voodoo.util.jenkins.JenkinsServer
 import java.io.File
-import java.net.URI
 
 /**
  * Created by nikky on 30/12/17.
