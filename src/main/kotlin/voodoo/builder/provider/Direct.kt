@@ -79,8 +79,22 @@ class DirectProviderThing : ProviderThingy() {
                     val cacheFile = cacheDir.resolve(entry.fileName)
                     if (!cacheFile.exists() || !cacheFile.isFile) {
                         logger.info("downloading ${entry.name} to $cacheFile")
-                        val r = get(entry.url, allowRedirects = true, stream = true)
-                        cacheFile.writeBytes(r.content)
+                        logger.info("downloading {}", entry.url)
+                        var r = get(entry.url, allowRedirects = false)
+                        while(r.statusCode == 302) {
+                            val url = URLDecoder.decode(r.headers["Location"]!!, "UTF-8")
+                            logger.info("following to {}", url)
+                            r = get(url, allowRedirects = false)
+                        }
+                        if(r.statusCode == 200)
+                        {
+                            cacheFile.writeBytes(r.content)
+                        } else {
+                            logger.error("invalid statusCode {} from {}", r.statusCode, entry.url)
+                            logger.error("connection url: {}",r.connection.url)
+                            logger.error("content: {}", r.text)
+                            throw Exception("broken download")
+                        }
                     } else {
                         logger.info("skipping downloading ${entry.name} (is cached)")
                     }

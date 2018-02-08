@@ -54,7 +54,8 @@ fun main(vararg args: String) = mainBody {
         } else {
             instances.resolve(modpack.name)
         }
-        process(modpack, workingDir, output, multimcArg, instancePath)
+
+        process(modpack, workingDir, output, multimcArg, instancePath, clean)
 
     }
 }
@@ -82,6 +83,9 @@ private class Arguments(parser: ArgParser) {
             help = "multimc instances directory")
             .default("")
 
+    val clean by parser.flagging("-c", "--clean",
+            help = "clean cache")
+
 
 //    val verbose by parser.flagging("-v", "--verbose",
 //            help = "enable verbose mode")
@@ -107,7 +111,7 @@ fun loadFromFile(path: File): Modpack {
 }
 
 
-fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExport: Boolean, instancePath: File) {
+fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExport: Boolean, instancePath: File, clean: Boolean) {
 //    if (modpack.forge.isBlank()/* && modpack.sponge.isBlank()*/)
 //        throw IllegalArgumentException("no forge version define")
     modpack.flatten()
@@ -126,6 +130,13 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
     modpack.internal.outputPath = packPath.path
     modpack.internal.pathBase = workingDirectory.path
     modpack.internal.cacheBase = directories.cacheHome.path
+
+    if(clean) {
+        logger.info("deleting cache: ${directories.cacheHome}")
+        val res = directories.cacheHome.deleteRecursively()
+        logger.info("result: {}", res)
+        directories.cacheHome.mkdirs()
+    }
 
     //TODO: check here or later whether providers have
     // all required values in entries
