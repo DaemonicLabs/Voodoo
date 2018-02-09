@@ -1,15 +1,14 @@
-//plugins {
-//    id 'application'
-//}
-apply plugin: 'application'
-apply plugin: 'com.github.johnrengelman.shadow'
-
-dependencies {
-    compile project(':util')
+plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
+    id 'application'
 }
 
 mainClassName = "voodoo.BootstrapKt"
 version = '0.2'
+
+dependencies {
+    compile project(':util')
+}
 
 shadowJar {
     classifier = null
