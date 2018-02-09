@@ -1,6 +1,6 @@
 node {
 	checkout scm
-	sh './gradlew clean :build :bootstrap:build'
-	archive 'build/libs/*jar'
+	sh './gradlew clean :voodoo:build :bootstrap:build'
+	archive 'voodoo/build/libs/*jar'
 	archive 'bootstrap/build/libs/*jar'
 }

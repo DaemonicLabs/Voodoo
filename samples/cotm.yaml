@@ -1,0 +1,329 @@
+name: Center of the Multiverse
+title: Center of the Multiverse
+version: 2.0.2.5
+mcVersion: 1.12.2
+forge: latest
+mods:
+#==========#
+# Defaults #
+#==========#
+  validMcVersions: [1.12.1, '1.12']
+  doOptionals: false
+  releaseTypes: [ alpha, beta, release ]
+  jenkinsUrl: https://ci.elytradev.com
+
+#===========#
+# Core Pack #
+#===========#
+  entries:
+
+  - Robotic Parts
+
+  # coolAlias
+  - Dynamic Sword Skills
+
+  # moddinglegacy
+  - Aether Legacy
+
+  # Vazkii
+  - Akashic Tome
+  - Botania
+
+  # Tamaized
+  - Angel of Vengeance
+
+  # Sangar
+  - Architect
+  - Bedrock Ores
+
+  # csb987
+  - Armor Stand Configurator
+  - Combined Potions
+
+  # HellFirePvP
+  - Astral Sorcery
+
+  # Azanor
+  - Baubles
+
+  # Way2muchnoise
+  - Better Advancements
+
+  # Portablejim
+  # - "Better Builder's Wands"
+
+  # Nuchaz
+  - BiblioCraft
+
+  # Binnie
+  - "Binnie's Mods"
+
+  # Glitchfiend, Forstride
+  - Bullseye
+
+  # chiselTeam
+  - Chisel
+
+  # AlgorithmX2
+  - Chisels & Bits
+
+  # clienthax, xalcon
+  - ChocoCraft
+
+  # jaredlll08
+  - Clumps
+
+  # TheIllusiveC4
+  - Colytra
+  - Comforts
+
+  # bdew
+  - Compacter
+
+  # BlayTheNinth
+  - Cooking for Blockheads
+  - Crafting Tweaks
+  - Waystones
+  - TrashSlot
+
+  # ZLainSama
+  - Cosmetic Armor Reworked
+
+  # jaredlll08
+  - CraftTweaker
+  - "Bailey's Dailies"
+  - Diamond Glass
+
+  #Dimensional Doors
+  - url: http://centerofthemultiverse.net/launcher/dist/Dimdoors-3.0.6-b.180.jar
+    name: Dimensional Doors
+    provider: DIRECT
+
+  - The Disenchanter Mod
+  - Doggy Talents
+  - Draconic Evolution
+  - Dynamic Surroundings
+  - Embers
+  - Enchiridion
+  - Ender Storage 1.8.+
+  - Environmental Tech
+  - ET Lunar [Environmental Tech Addon]
+  - EverlastingAbilities
+  - Exchangers
+  - Extra Alchemy
+  - Extra Bit Manipulation
+  - Extra Rails
+  - Extra Utilities
+  - Fairy Lights
+  - Farming for Blockheads
+  - Flux Networks
+  - Forestry
+  - FTB Utilities
+  - MrCrayfish's Furniture Mod
+  - Gendustry
+  - Grappling Hook Mod
+  - GraveStone Mod
+  - Hardcore Revival
+  - HelpFixer
+  - Hwyla
+  - Initial Inventory
+  - Inventory Tweaks
+  - Iron Chests
+
+  # copygirl
+  - Wearable Backpacks
+
+  # TheLMiffy1111
+  - JAOPCA
+  - Just Enough HarvestCraft (JEHC)
+
+  # mezz
+  - Just Enough Items (JEI)
+
+  - JEI Bees
+  - Just Enough Torches (JET)
+  - Just Enough Dimensions
+  - Just Enough Resources (JER)
+  - KleeSlabs
+  - Magic Bees
+  - MagicBooks2
+  - Magic Feather
+  - MalisisDoors
+
+  - Mob Grinding Utils
+  - ModTweaker
+  - More Bees
+  - More Shearables
+  - Natura
+  - Nature's Compass
+  - NetherEx
+  - NetherPortalFix
+  - 'stimmedcow : NoMoreRecipeConflict'
+  - NotEnoughIDs
+  - OpenComputers
+  - OpenBlocks
+
+  # keridos
+  - OpenModularTurrets
+
+  # team_otg
+  - Biome Bundle
+  - "OTG: Skylands"
+  - "OTG: The Void"
+
+  - Packing Tape
+  - Pam's HarvestCraft
+  - Passthrough Signs
+  - Platforms
+  - Psi
+  - Quark
+  - Random Things
+  - RandomTweaks
+  - Ranged Pumps
+  - Recurrent Complex
+  - Redstone Arsenal
+  - Redstone Flux
+  - Refined Storage
+  - Refined Storage Addons
+  - Reliquary v1.3
+  - RFTools
+  - Roguelike Dungeons
+  - Roots
+  - Rope Bridge
+  - Rustic
+  - Scannable
+  - Signals
+  - Simple Sponge
+  - Simple Teleporters
+  - Spartan Shields
+  - Storage Drawers
+  - Storage Drawers Extras
+  - Tails
+  - TamModized
+  - Terraqueous
+  - '[ANGRY PIXEL] The Betweenlands Mod'
+  - The One Wrench (All in One Edition)
+  - Thermal Cultivation
+
+  # Team CoFH
+  - Thermal Dynamics
+  - Thermal Expansion
+
+  - provider: JENKINS
+    jenkinsUrl: https://ci.elytradev.com
+    entries:
+    # Falkreon
+    - job: elytra/Thermionics/master
+      name: Thermionics
+
+    - job: elytra/ThermionicsWorld/master
+      name: ThermionicsWorld
+
+    - job: elytra/Engination/master
+      name: Engination
+
+    # unascribed
+    - job: elytra/GlassHearts/1.12
+      name: GlassHearts
+
+    - job: elytra/ProbeDataProvider/1.12
+      name: ProbeDataProvider
+
+    # Darkevilmac
+    - job: elytra/ArchitectureCraft/1.12
+      name: ArchitectureCraft
+
+    - job: elytra/Teckle/1.12
+      name: Teckle
+
+    # capitalthree
+    - job: elytra/LingeringLoot/master
+      name: LingeringLoot
+
+
+    - job: CharsetMC/Charset/1.12
+      name: Charset
+
+  # asie
+  - Unlimited Chisel Works
+  - provider: JSON
+    updateJson: https://asie.pl/files/minecraft/update/foamfix.json # resolves `name = foamfix` too
+    updateChannel: latest # default == reommended
+    template: https://unascribed.com/foamfix/FoamFix-1.12.2-{version}-Anarchy.jar
+
+    updateJson: https://asie.pl/files/minecraft/update/charsetpatches.json
+    name: CharsetPatches
+    template: https://asie.pl/files/mods/Charset/CharsetPatches-{version}.jar
+
+    # - job: capitalthree/TinkeredConstructer/master
+    #  name: "Tinkers Construct" # fake the name to satisfy dependencies
+
+  - Tinkers Construct
+
+  - The Spotlight Mod
+  - TickProfiler
+  - Tinkers' Tool Leveling
+  - Tool Belt
+  - TorchMaster
+  - Totemic
+
+  # Benimatic
+  - The Twilight Forest
+
+  # The_Wabbit
+  - Upsizer Mod
+
+  # Bartz24
+  - Useful Nullifiers
+
+  # Viesis
+  - "ViesCraft - Airships!"
+
+  # Face of Cat
+  - Villager Market
+
+  # gegy1000, JurassicAlien_KOC_owner
+  - Wearables
+
+  # CenturianFox13
+  - Wolf Armor and Storage
+
+  # Ipsis
+  - Woot
+
+  # TehNut
+  - Xtones
+
+  - url: http://centerofthemultiverse.net/launcher/dist/Nutrition-1.12.2-2.6.0.jar
+    name: Nutrition
+    provider: DIRECT
+
+  - "Level Up!"
+
+  - Fast Leaf Decay
+
+#============#
+# Clientside #
+#============#
+  - side: CLIENT
+    entries:
+      # dmillerw
+    - MineMenu
+    - JourneyMap
+    - AppleSkin
+    - BetterFps
+    - NoNausea
+    - Better Placement
+    - Client Tweaks
+    - Controlling
+    - Custom Main Menu
+    - Default Options
+    - Durability Show
+    - Fullscreen Windowed (Borderless) for Minecraft
+    - Item Scroller
+    - JEI Integration
+    - Keyboard Wizard
+    - Mod Name Tooltip
+    - Mouse Tweaks
+    - Neat
+    - ReAuth
