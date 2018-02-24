@@ -1,11 +1,11 @@
 name: Dep Test
-mcVersion: 1.12.2
+mcVersion: 1.7.10
 forge: latest
 mods:
-  validMcVersions: [1.12.1, '1.12']
+  validMcVersions: []
   doOptionals: false
   releaseTypes: [ alpha, beta, release ]
   jenkinsUrl: https://ci.elytradev.com
 
   entries:
-  - OpenModularTurrets
+  - AcademyCraft

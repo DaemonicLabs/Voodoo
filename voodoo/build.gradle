@@ -4,7 +4,7 @@ plugins {
 }
 
 mainClassName = "voodoo.MainKt"
-version = '1.1.1'
+version = project.version
 
 def runDir = project.file("run").path
 
@@ -32,7 +32,6 @@ run {
 runShadow {
     args = ["build", "-d", runDir, packDef.path]
 }
-
 
 task buildSamples {
     description = 'Build all Samples'
