@@ -12,7 +12,6 @@ println """
 """
 
 group = 'moe.nikky'
-version = '1.1'
 
 idea {
     module {
@@ -39,5 +38,12 @@ subprojects {
         maven { url "http://repo.maven.apache.org/maven2" }
         maven { url "https://jitpack.io" }
         maven { url "http://jcenter.bintray.com" }
+    }
+
+
+    idea {
+        module {
+            excludeDirs += [file("run")]
+        }
     }
 }

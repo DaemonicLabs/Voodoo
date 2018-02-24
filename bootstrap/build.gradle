@@ -4,7 +4,7 @@ plugins {
 }
 
 mainClassName = "voodoo.BootstrapKt"
-version = '0.2'
+version = project.version
 
 dependencies {
     compile project(':util')

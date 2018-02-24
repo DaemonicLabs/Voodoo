@@ -138,7 +138,7 @@ class CurseProviderThing : ProviderThingy() {
                     modpack.mods.entries += depEntry
                     logger.info("added $depType dependency ${depAddon.name} of ${addon.name}")
                 } else {
-                    return
+                    continue
                 }
             } else {
                 val otherSide = depEntry.side
