@@ -170,8 +170,6 @@ object Importer : KLogging() {
             }
         }
 
-        //TODO: forge
-
 
         logger.info("writing {}", packDef)
         modpack.writeToFile(packDef)

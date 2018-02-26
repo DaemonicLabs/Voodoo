@@ -147,9 +147,9 @@ mods:
   # desht
   - "PneumaticCraft: Repressurized"
 
-  - name: The Twilight Forest
-    provider: LOCAL
-    fileSrc: twilightforest-1.12.2-3.6-universal.jar
+#  - name: The Twilight Forest
+#    provider: LOCAL
+#    fileSrc: twilightforest-1.12.2-3.6-universal.jar
 
   # mods we wish were open source but they're not
   # - Repose
