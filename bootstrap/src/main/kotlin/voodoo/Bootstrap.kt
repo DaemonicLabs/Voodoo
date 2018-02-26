@@ -40,7 +40,7 @@ object Bootstrap : KLogging() {
 
     private const val jenkinsUrl = "https://ci.elytradev.com"
     private const val job = "elytra/Voodoo/master"
-    private const val fileNameRegex = "Voodoo.*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)$"
+    private const val fileNameRegex = "[Vv]oodoo.*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)$"
 
     private fun download(): File {
         val server = JenkinsServer(jenkinsUrl)
