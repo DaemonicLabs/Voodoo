@@ -1,7 +1,9 @@
 package voodoo.builder.curse
 
 import aballano.kotlinmemoization.memoize
+import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import khttp.get
@@ -20,24 +22,35 @@ object CurseUtil : KLogging() {
 
     val mapper = jacksonObjectMapper() // Enable Json parsing
             .registerModule(KotlinModule())!! // Enable Kotlin support
+            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
 
-    val data: List<Addon> = getAddonData()
+    val data: List<AddOn> = getAddonData()
 
-    private fun getAddonData(): List<Addon> {
+    private fun getAddonData(): List<AddOn> {
         // val url = "$META_URL/api/addon/?mods=1&texturepacks=1&worlds=1&property=id,name,summary,websiteURL,packageType,categorySection"
-        val url = "$META_URL/api/addon/?mods=1&texturepacks=1&worlds=1"
+        val url = "$META_URL/api/addon/"//?mods=1&texturepacks=1&worlds=1
 
-        CurseProviderThing.logger.trace("get $url")
+        CurseProviderThing.logger.debug("get $url")
         val r = get(url)
         if (r.statusCode == 200) {
-            return mapper.readValue(r.text)
+            return mapper.readValue<List<AddOn>>(r.text)
+                    .filter {
+                        when (it.categorySection.id) {
+                            6 -> true //mod
+                            12 -> true //texture packs
+                            17 -> false //worlds
+                            4471 -> false //modpacks
+                            else -> false
+                        }
+                    }
         }
 
         CurseProviderThing.logger.error("failed getting cursemeta data")
         throw Exception("failed getting cursemeta data")
     }
 
-    private fun getAddonFileCall(addonId: Int, fileId: Int): AddonFile? {
+    private fun getAddonFileCall(addonId: Int, fileId: Int): AddOnFile? {
         val url = "$META_URL/api/addon/$addonId/files/$fileId"
 
         CurseProviderThing.logger.debug("get $url")
@@ -50,7 +63,7 @@ object CurseUtil : KLogging() {
 
     val getAddonFile = ::getAddonFileCall.memoize()
 
-    private fun getAllAddonFilesCall(addonId: Int): List<AddonFile> {
+    private fun getAllAddonFilesCall(addonId: Int): List<AddOnFile> {
         val url = "$META_URL/api/addon/$addonId/files"
 
         CurseProviderThing.logger.debug("get $url")
@@ -63,13 +76,17 @@ object CurseUtil : KLogging() {
 
     val getAllAddonFiles = ::getAllAddonFilesCall.memoize()
 
-    private fun getAddonCall(addonId: Int): Addon? {
+    private fun getAddonCall(addonId: Int): AddOn? {
         val url = "$META_URL/api/addon/$addonId"
 
         CurseProviderThing.logger.debug("get $url")
         val r = get(url)
         if (r.statusCode == 200) {
-            return mapper.readValue(r.text)
+            try {
+                return mapper.readValue(r.text)
+            } catch (e: MissingKotlinParameterException) {
+                logger.error("$url $e cannot parse ${r.text}")
+            }
         }
         return null
     }
@@ -81,12 +98,12 @@ object CurseUtil : KLogging() {
         val mcVersions = listOf(modpack.mcVersion) + entry.validMcVersions
         val name = entry.name
         val version = entry.version
-        var releaseTypes = entry.releaseTypes
+        val releaseTypes = entry.releaseTypes
 //        if(releaseTypes.isEmpty()) {
 //            releaseTypes = setOf(ReleaseType.RELEASE, ReleaseType.BETA) //TODO: is this not already set because i enforce defaults ?
 //        }
         var addonId = entry.id
-        var fileId = entry.fileId
+        val fileId = entry.fileId
         val fileNameRegex = entry.curseFileNameRegex
 
         val addon = data.find { addon ->

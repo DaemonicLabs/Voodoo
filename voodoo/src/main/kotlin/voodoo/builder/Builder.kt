@@ -2,6 +2,7 @@ package voodoo.builder
 
 import aballano.kotlinmemoization.memoize
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
@@ -103,6 +104,8 @@ private class Arguments(parser: ArgParser) {
 fun loadFromFile(path: File): Modpack {
     val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
     mapper.registerModule(KotlinModule()) // Enable Kotlin support
+    mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+    mapper.configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
 
     logger.info("path: $path")
     return path.bufferedReader().use {
@@ -131,7 +134,7 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
     modpack.internal.pathBase = workingDirectory.path
     modpack.internal.cacheBase = directories.cacheHome.path
 
-    if(clean) {
+    if (clean) {
         logger.info("deleting cache: ${directories.cacheHome}")
         val res = directories.cacheHome.deleteRecursively()
         logger.info("result: {}", res)
@@ -302,7 +305,7 @@ fun getDependenciesCall(entryName: String, modpack: Modpack): List<Entry> {
     val entry = modpack.mods.entries.find { it.name == entryName } ?: return emptyList()
     var result = listOf(entry)
     for ((depType, entryList) in entry.dependencies) {
-        if (depType == DependencyType.embedded) continue
+        if (depType == DependencyType.EMBEDDED) continue
         for (depName in entryList) {
             result += getDependencies(depName, modpack)
         }

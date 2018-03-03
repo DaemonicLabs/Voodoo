@@ -47,6 +47,8 @@ task buildSamples {
     }
 }
 
+buildSamples.dependsOn build
+
 shadowJar {
     classifier = null
 }

@@ -8,8 +8,8 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import mu.KLogging
 import voodoo.builder.curse.DependencyType
+import voodoo.builder.curse.FileType
 import voodoo.builder.curse.PackageType
-import voodoo.builder.curse.ReleaseType
 import voodoo.builder.provider.Provider
 import voodoo.builder.provider.UpdateChannel
 import kotlin.reflect.KMutableProperty
@@ -90,7 +90,7 @@ data class Entry(
         var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var optional: Boolean = feature != null,
-        var packageType: PackageType = PackageType.none,
+        var packageType: PackageType = PackageType.NONE,
         // INTERNAL //TODO: move into internal object or runtime data objects
         @JsonIgnore
         val internal: EntryInternal = EntryInternal(),
@@ -98,7 +98,7 @@ data class Entry(
         // CURSE
         var id: Int = -1,
         var fileId: Int = -1,
-        var releaseTypes: Set<ReleaseType> = setOf(ReleaseType.release, ReleaseType.beta),
+        var releaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
         var curseFileNameRegex: String = ".*(?<!-deobf\\.jar)\$",
         var version: String = "", //TODO: use regex only ?
         var validMcVersions: List<String> = emptyList(),
