@@ -1,31 +1,31 @@
 package voodoo.builder.curse
 
+import com.fasterxml.jackson.annotation.JsonCreator
+
+
 /**
  * Created by nikky on 30/01/18.
  * @author Nikky
  * @version 1.0
  */
 
-enum class ReleaseType {
-    release, beta, alpha
-}
-
-data class Addon(
+data class AddOn(
         val attachments: List<Attachment> = emptyList(),
-        val authors: List<Author>,
-        val categories: List<Category>,
+        val authors: List<Author> = emptyList(),
+        val avatarUrl: String = "",
+        val categories: List<Category> = emptyList(),
         val categorySection: CategorySection,
         val commentCount: Int,
         val defaultFileId: Int,
         val downloadCount: Float,
         val gameId: Int,
         val gamePopularityRank: Int,
-        val gameVersionLatestFiles: List<GameVersionlatestFile>,
+        val gameVersionLatestFiles: List<GameVersionLatestFile>,
         val iconId: Int,
         val id: Int,
         val installCount: Int,
         val isFeatured: Int,
-        val latestFiles: List<AddonFile>,
+        val latestFiles: List<AddOnFile>,
         val likes: Int,
         val name: String,
         val packageType: PackageType,
@@ -35,16 +35,18 @@ data class Addon(
         val primaryCategoryId: Int?,
         val primaryCategoryName: String?,
         val rating: Int,
-        val stage: CurseStage,
-        val status: FileStatus,
+        val stage: ProjectStage,
+        val status: ProjectStatus,
         val summary: String,
-        val webSiteURL: String
+        val webSiteURL: String,
+        val donationUrl: String?,
+        val externalUrl: String?
 )
 
-data class AddonFile(
+data class AddOnFile(
         val id: Int,
         val alternateFileId: Int,
-        val dependencies: List<CurseDependency>,
+        val dependencies: List<AddOnFileDependency>,
         val downloadURL: String,
         val fileDate: String,
         val fileName: String,
@@ -54,39 +56,23 @@ data class AddonFile(
         val isAlternate: Boolean,
         val isAvailable: Boolean,
         val packageFingerprint: Long,
-        var releaseType: ReleaseType,
-        var modules: List<CurseModule>
+        var releaseType: FileType,
+        var modules: List<AddOnModule>
 )
 
-enum class FileStatus {
-    normal, semiNormal, deleted
-}
-
-enum class DependencyType {
-    required, optional, embedded
-}
-
-enum class PackageType {
-    none, mod, folder, file, singleFile
-}
-
-enum class CurseStage {
-    release, alpha, beta, inactive, deleted
-}
-
-data class GameVersionlatestFile(
-        val fileType: ReleaseType,
+data class GameVersionLatestFile(
+        val fileType: FileType,
         val gameVesion: String,
         val projectFileID: Int,
         val projectFileName: String
 )
 
-data class CurseModule(
+data class AddOnModule(
         val fingerprint: Long,
         val foldername: String
 )
 
-data class CurseDependency(
+data class AddOnFileDependency(
         val addOnId: Int,
         val type: DependencyType
 )
@@ -95,7 +81,7 @@ data class CategorySection(
         val gameID: Int,
         val id: Int,
         val extraIncludePattern: String = "",
-        val initialInclusionPattern: String,
+        val initialInclusionPattern: String = ".",
         val name: String,
         val packageType: PackageType,
         val path: String
@@ -147,3 +133,124 @@ data class CurseFile(
         val fileID: Int,
         val required: Boolean
 )
+
+enum class FileStatus {
+    NORMAL,
+    SEMINORMAL,
+    REPORTED,
+    MALFORMED,
+    LOCKED,
+    INVALIDLAYOUT,
+    HIDDEN,
+    NEEDSAPPROVAL,
+    DELETED,
+    UNDERREVIEW,
+    MALWAREDETECTED,
+    WAITINGONPROJECT,
+    CLIENTONLY;
+
+    companion object {
+        @JsonCreator
+        @JvmStatic
+        fun fromString(key: String?): FileStatus? {
+            return if (key == null)
+                null
+            else
+                FileStatus.valueOf(key.toUpperCase())
+        }
+    }
+}
+
+enum class FileType {
+    RELEASE,
+    BETA,
+    ALPHA;
+
+    companion object {
+        @JsonCreator
+        @JvmStatic
+        fun fromString(key: String?): FileType? {
+            return if (key == null)
+                null
+            else
+                FileType.valueOf(key.toUpperCase())
+        }
+    }
+}
+
+enum class DependencyType {
+    REQUIRED,
+    OPTIONAL,
+    EMBEDDED;
+
+    companion object {
+        @JsonCreator
+        @JvmStatic
+        fun fromString(key: String?): DependencyType? {
+            return if (key == null)
+                null
+            else
+                DependencyType.valueOf(key.toUpperCase())
+        }
+    }
+}
+
+enum class PackageType {
+    NONE,
+    FOLDER,
+    CTOP,
+    SINGLEFILE,
+    CMOD2,
+    MODPACK,
+    MOD;
+
+    companion object {
+        @JsonCreator
+        @JvmStatic
+        fun fromString(key: String?): PackageType? {
+            return if (key == null)
+                null
+            else
+                PackageType.valueOf(key.toUpperCase())
+        }
+    }
+}
+
+enum class ProjectStage {
+    ALPHA,
+    BETA,
+    DELETED,
+    INACTIVE,
+    MATURE,
+    PLANNING,
+    RELEASE,
+    ABANDONED;
+
+    companion object {
+        @JsonCreator
+        @JvmStatic
+        fun fromString(key: String?): ProjectStage? {
+            return if (key == null)
+                null
+            else
+                ProjectStage.valueOf(key.toUpperCase())
+        }
+    }
+}
+
+enum class ProjectStatus {
+    NORMAL,
+    HIDDEN,
+    DELETED;
+
+    companion object {
+        @JsonCreator
+        @JvmStatic
+        fun fromString(key: String?): ProjectStatus? {
+            return if (key == null)
+                null
+            else
+                ProjectStatus.valueOf(key.toUpperCase())
+        }
+    }
+}

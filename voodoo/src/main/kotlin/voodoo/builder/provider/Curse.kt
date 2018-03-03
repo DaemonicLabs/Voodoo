@@ -70,7 +70,7 @@ class CurseProviderThing : ProviderThingy() {
                 }
         )
         register("setPackageType",
-                { it.id > 0 && it.packageType == PackageType.none },
+                { it.id > 0 && it.packageType == PackageType.NONE },
                 { e, _ ->
                     e.packageType = getAddon(e.id)!!.packageType
                 }
@@ -126,7 +126,7 @@ class CurseProviderThing : ProviderThingy() {
                         (e.id == depAddon.id || e.name == depAddon.name)
             }
             if (depEntry == null) {
-                if (depType == DependencyType.required || (entry.doOptionals && depType == DependencyType.optional)) {
+                if (depType == DependencyType.REQUIRED || (entry.doOptionals && depType == DependencyType.OPTIONAL)) {
                     depEntry = Entry(
                             provider = Provider.CURSE,
                             id = depAddon.id,

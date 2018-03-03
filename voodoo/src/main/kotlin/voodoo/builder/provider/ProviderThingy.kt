@@ -207,7 +207,7 @@ abstract class ProviderThingy {
         var result = entry.transient || entry.optional
         if (result) return result
         for ((depType, entryList) in entry.provides) {
-            if (depType != DependencyType.required) continue
+            if (depType != DependencyType.REQUIRED) continue
             if (entryList.isEmpty()) return false
             logger.info("type: $depType list: $entryList")
             for (entryName in entryList) {
