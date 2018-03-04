@@ -186,7 +186,7 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
             System.exit(-1)
         }
         if (invalidEntries.isNotEmpty()) {
-            logger.error("failed entries: $invalidEntries")
+            logger.error("failed entries: ${invalidEntries.map { it.name }}")
         }
 
     }

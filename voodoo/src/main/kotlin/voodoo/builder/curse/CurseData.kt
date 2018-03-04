@@ -62,7 +62,7 @@ data class AddOnFile(
 
 data class GameVersionLatestFile(
         val fileType: FileType,
-        val gameVesion: String,
+        val gameVersion: String,
         val projectFileID: Int,
         val projectFileName: String
 )
