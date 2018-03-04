@@ -47,7 +47,7 @@ object CurseUtil : KLogging() {
         }
 
         CurseProviderThing.logger.error("failed getting cursemeta data")
-        throw Exception("failed getting cursemeta data")
+        throw Exception("failed getting CurseProxy data, code: ${r.statusCode}")
     }
 
     private fun getAddonFileCall(addonId: Int, fileId: Int): AddOnFile? {
@@ -106,11 +106,10 @@ object CurseUtil : KLogging() {
         val fileId = entry.fileId
         val fileNameRegex = entry.curseFileNameRegex
 
-        val find = data.find { addon ->
+        val addon = data.find { addon ->
             (name.isNotBlank() && name.equals(addon.name, true))
                     || (addonId > 0 && addonId == addon.id)
-        }
-        val addon = if (find != null) find else {
+        } ?: if(addonId > 0) getAddon(addonId)!! else {
             logger.error("no addon matching the parameters found for '$entry'")
             System.exit(-1)
             return Triple(-1, -1, "")
