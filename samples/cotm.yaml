@@ -115,7 +115,7 @@ mods:
   - Forestry
   - FTB Utilities
   - MrCrayfish's Furniture Mod
-  - "MrCrayfish's Device Mod"
+  - id: 283055 # "MrCrayfish's Device Mod"
   - Gendustry
   - Grappling Hook Mod
   - Hardcore Revival
