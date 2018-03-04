@@ -18,7 +18,7 @@ import voodoo.builder.provider.CurseProviderThing
  * @version 1.0
  */
 object CurseUtil : KLogging() {
-    private val META_URL = "https://cursemeta.nikky.moe" //TODO: move into Entry
+    private val META_URL = "https://curse.nikky.moe" //TODO: move into Entry
 
     val mapper = jacksonObjectMapper() // Enable Json parsing
             .registerModule(KotlinModule())!! // Enable Kotlin support
@@ -106,10 +106,15 @@ object CurseUtil : KLogging() {
         val fileId = entry.fileId
         val fileNameRegex = entry.curseFileNameRegex
 
-        val addon = data.find { addon ->
+        val find = data.find { addon ->
             (name.isNotBlank() && name.equals(addon.name, true))
                     || (addonId > 0 && addonId == addon.id)
-        } ?: return Triple(-1, -1, "")
+        }
+        val addon = if (find != null) find else {
+            logger.error("no addon matching the parameters found for '$entry'")
+            System.exit(-1)
+            return Triple(-1, -1, "")
+        }
 
         addonId = addon.id
 
@@ -169,10 +174,11 @@ object CurseUtil : KLogging() {
         val file = files.sortedWith(compareByDescending { it.fileDate }).firstOrNull()
         if (file == null) {
             val filesUrl = "$META_URL/api/addon/$addonId/files"
-            CurseProviderThing.logger.error("no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
+            logger.error("no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
                     "files: $filesUrl mc version: $mcVersions version: $version \n" +
                     "$addon")
-            CurseProviderThing.logger.error("no file matching the parameters found for ${addon.name}")
+            logger.error("no file matching the parameters found for ${addon.name}")
+            System.exit(-1)
             return Triple(addonId, -1, "")
         }
         return Triple(addonId, file.id, file.fileNameOnDisk)

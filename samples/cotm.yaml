@@ -1,8 +1,8 @@
 name: Center of the Multiverse
 title: Center of the Multiverse
-version: 2.0.2.5
+version: 2.0.3
 mcVersion: 1.12.2
-forge: latest
+forge: 2611
 mods:
 #==========#
 # Defaults #
@@ -17,13 +17,12 @@ mods:
 #===========#
   entries:
 
-  - Robotic Parts
-
   # coolAlias
   - Dynamic Sword Skills
 
   # moddinglegacy
   - Aether Legacy
+  - Glacidus
 
   # Vazkii
   - Akashic Tome
@@ -50,7 +49,7 @@ mods:
   - Better Advancements
 
   # Portablejim
-  # - "Better Builder's Wands"
+  - "Better Builder's Wands"
 
   # Nuchaz
   - BiblioCraft
@@ -84,14 +83,12 @@ mods:
   - Cooking for Blockheads
   - Crafting Tweaks
   - Waystones
-  - TrashSlot
 
   # ZLainSama
   - Cosmetic Armor Reworked
 
   # jaredlll08
   - CraftTweaker
-  - "Bailey's Dailies"
   - Diamond Glass
 
   #Dimensional Doors
@@ -100,15 +97,14 @@ mods:
     provider: DIRECT
 
   - The Disenchanter Mod
-  - Doggy Talents
   - Draconic Evolution
+  - Doggy Talents
   - Dynamic Surroundings
   - Embers
   - Enchiridion
   - Ender Storage 1.8.+
   - Environmental Tech
   - ET Lunar [Environmental Tech Addon]
-  - EverlastingAbilities
   - Exchangers
   - Extra Alchemy
   - Extra Bit Manipulation
@@ -116,19 +112,21 @@ mods:
   - Extra Utilities
   - Fairy Lights
   - Farming for Blockheads
-  - Flux Networks
   - Forestry
   - FTB Utilities
   - MrCrayfish's Furniture Mod
+  - "MrCrayfish's Device Mod"
   - Gendustry
   - Grappling Hook Mod
-  - GraveStone Mod
   - Hardcore Revival
   - HelpFixer
   - Hwyla
   - Initial Inventory
   - Inventory Tweaks
   - Iron Chests
+  - Redstone Paste
+  - MmmMmmMmmMmm
+  - Inventory Pets
 
   # copygirl
   - Wearable Backpacks
@@ -143,13 +141,11 @@ mods:
   - JEI Bees
   - Just Enough Torches (JET)
   - Just Enough Dimensions
-  - Just Enough Resources (JER)
   - KleeSlabs
   - Magic Bees
   - MagicBooks2
   - Magic Feather
   - MalisisDoors
-
   - Mob Grinding Utils
   - ModTweaker
   - More Bees
@@ -165,11 +161,10 @@ mods:
 
   # keridos
   - OpenModularTurrets
+  - OMLib
 
   # team_otg
   - Biome Bundle
-  - "OTG: Skylands"
-  - "OTG: The Void"
 
   - Packing Tape
   - Pam's HarvestCraft
@@ -200,10 +195,35 @@ mods:
   - Storage Drawers Extras
   - Tails
   - TamModized
-  - Terraqueous
-  - '[ANGRY PIXEL] The Betweenlands Mod'
+  - "[ANGRY PIXEL] The Betweenlands Mod"
   - The One Wrench (All in One Edition)
   - Thermal Cultivation
+  - Unlimited Chisel Works
+  - Tinkers Construct
+  - Tinkers' Tool Leveling
+  - The Spotlight Mod
+  - TickProfiler
+  - Good Ol' Currency
+  - Extreme Reactors
+  - ZeroCore
+  - Paintings ++
+  - Painting Selection Gui Revamped
+  - Tool Belt
+  - TorchMaster
+  - Totemic
+  - Robotic Parts
+  - ReWIRED
+  - Soulus
+  - Garbage Bins
+  - Land Manager
+  - Sit
+  - Fast Leaf Decay
+  - Unlimited Chisel Works - Botany
+  - "Blood Magic "
+  - Improvable Skills 3
+  - Unloader
+  - Animania
+  - ColorfulWater
 
   # Team CoFH
   - Thermal Dynamics
@@ -223,8 +243,11 @@ mods:
       name: Engination
 
     # unascribed
-    - job: elytra/GlassHearts/1.12
+    - job: elytra/GlassHearts/1.12.1
       name: GlassHearts
+
+    - job: elytra/FruitPhone/1.12.2
+      name: FruitPhone
 
     - job: elytra/ProbeDataProvider/1.12
       name: ProbeDataProvider
@@ -236,36 +259,19 @@ mods:
     - job: elytra/Teckle/1.12
       name: Teckle
 
-    # capitalthree
-    - job: elytra/LingeringLoot/master
-      name: LingeringLoot
-
-
+    # asie
     - job: CharsetMC/Charset/1.12
       name: Charset
 
-  # asie
-  - Unlimited Chisel Works
   - provider: JSON
     updateJson: https://asie.pl/files/minecraft/update/foamfix.json # resolves `name = foamfix` too
     updateChannel: latest # default == reommended
     template: https://unascribed.com/foamfix/FoamFix-1.12.2-{version}-Anarchy.jar
 
+  - provider: JSON
     updateJson: https://asie.pl/files/minecraft/update/charsetpatches.json
     name: CharsetPatches
     template: https://asie.pl/files/mods/Charset/CharsetPatches-{version}.jar
-
-    # - job: capitalthree/TinkeredConstructer/master
-    #  name: "Tinkers Construct" # fake the name to satisfy dependencies
-
-  - Tinkers Construct
-
-  - The Spotlight Mod
-  - TickProfiler
-  - Tinkers' Tool Leveling
-  - Tool Belt
-  - TorchMaster
-  - Totemic
 
   # Benimatic
   - The Twilight Forest
@@ -279,35 +285,22 @@ mods:
   # Viesis
   - "ViesCraft - Airships!"
 
-  # Face of Cat
-  - Villager Market
-
   # gegy1000, JurassicAlien_KOC_owner
   - Wearables
-
-  # CenturianFox13
-  - Wolf Armor and Storage
-
-  # Ipsis
-  - Woot
 
   # TehNut
   - Xtones
 
-  - url: http://centerofthemultiverse.net/launcher/dist/Nutrition-1.12.2-2.6.0.jar
+  - url: http://centerofthemultiverse.net/launcher/dist/Nutrition-1.12.2-2.8.0.jar
     name: Nutrition
     provider: DIRECT
-
-  - "Level Up!"
-
-  - Fast Leaf Decay
 
 #============#
 # Clientside #
 #============#
   - side: CLIENT
     entries:
-      # dmillerw
+    - Just Enough Resources (JER)
     - MineMenu
     - JourneyMap
     - AppleSkin
