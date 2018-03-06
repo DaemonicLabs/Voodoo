@@ -7,11 +7,22 @@ package voodoo
  */
 
 import mu.KotlinLogging
+import voodoo.gen.VERSION
+
 private val logger = KotlinLogging.logger {}
 
 fun main(vararg args: String) {
-    val command = args[0]
+    val command = args.getOrNull(0)
     val remainingArgs = args.drop(1).toTypedArray()
+
+    if(command == null) {
+        logger.warn("no command specified")
+        logger.warn("possible commands:")
+        logger.warn("> build")
+        logger.warn("> import")
+        logger.warn("> version")
+        return
+    }
 
     when(command.toLowerCase()) {
         "build" -> {
@@ -20,11 +31,15 @@ fun main(vararg args: String) {
         "import" -> {
             voodoo.importer.main(*remainingArgs)
         }
+        "version" -> {
+            println(VERSION)
+        }
         else -> {
             logger.warn("unknown command $command")
             logger.warn("possible commands:")
-            logger.warn(" - build")
-            logger.warn(" - import")
+            logger.warn("> build")
+            logger.warn("> import")
+            logger.warn("> version")
         }
     }
 

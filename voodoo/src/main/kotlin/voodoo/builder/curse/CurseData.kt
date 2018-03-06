@@ -10,9 +10,9 @@ import com.fasterxml.jackson.annotation.JsonCreator
  */
 
 data class AddOn(
-        val attachments: List<Attachment> = emptyList(),
+        val attachments: List<Attachment>? = emptyList(),
         val authors: List<Author> = emptyList(),
-        val avatarUrl: String = "",
+        val avatarUrl: String? = "",
         val categories: List<Category> = emptyList(),
         val categorySection: CategorySection,
         val commentCount: Int,
@@ -46,7 +46,7 @@ data class AddOn(
 data class AddOnFile(
         val id: Int,
         val alternateFileId: Int,
-        val dependencies: List<AddOnFileDependency>,
+        val dependencies: List<AddOnFileDependency>?,
         val downloadURL: String,
         val fileDate: String,
         val fileName: String,
@@ -57,12 +57,12 @@ data class AddOnFile(
         val isAvailable: Boolean,
         val packageFingerprint: Long,
         var releaseType: FileType,
-        var modules: List<AddOnModule>
+        var modules: List<AddOnModule>?
 )
 
 data class GameVersionLatestFile(
         val fileType: FileType,
-        val gameVersion: String,
+        val gameVesion: String,
         val projectFileID: Int,
         val projectFileName: String
 )
@@ -80,8 +80,8 @@ data class AddOnFileDependency(
 data class CategorySection(
         val gameID: Int,
         val id: Int,
-        val extraIncludePattern: String = "",
-        val initialInclusionPattern: String = ".",
+        val extraIncludePattern: String? = "",
+        val initialInclusionPattern: String? = ".",
         val name: String,
         val packageType: PackageType,
         val path: String
@@ -99,7 +99,7 @@ data class Author(
 )
 
 data class Attachment(
-        val description: String,
+        val description: String?,
         val isDefault: Boolean,
         val thumbnailUrl: String,
         val title: String,
@@ -134,6 +134,11 @@ data class CurseFile(
         val required: Boolean
 )
 
+data class CurseFeed(
+        val timestamp: Long,
+        val data: List<AddOn> = emptyList()
+)
+
 enum class FileStatus {
     NORMAL,
     SEMINORMAL,
@@ -155,8 +160,10 @@ enum class FileStatus {
         fun fromString(key: String?): FileStatus? {
             return if (key == null)
                 null
-            else
-                FileStatus.valueOf(key.toUpperCase())
+            else {
+                val index = key.toIntOrNull() ?: return valueOf(key.toUpperCase())
+                return values()[index-1]
+            }
         }
     }
 }
@@ -172,8 +179,10 @@ enum class FileType {
         fun fromString(key: String?): FileType? {
             return if (key == null)
                 null
-            else
-                FileType.valueOf(key.toUpperCase())
+            else {
+                val index = key.toIntOrNull() ?: return valueOf(key.toUpperCase())
+                return values()[index-1]
+            }
         }
     }
 }
@@ -189,8 +198,10 @@ enum class DependencyType {
         fun fromString(key: String?): DependencyType? {
             return if (key == null)
                 null
-            else
-                DependencyType.valueOf(key.toUpperCase())
+            else {
+                val index = key.toIntOrNull() ?: return valueOf(key.toUpperCase())
+                return values()[index-1]
+            }
         }
     }
 }
@@ -210,8 +221,10 @@ enum class PackageType {
         fun fromString(key: String?): PackageType? {
             return if (key == null)
                 null
-            else
-                PackageType.valueOf(key.toUpperCase())
+            else {
+                val index = key.toIntOrNull() ?: return valueOf(key.toUpperCase())
+                return values()[index-1]
+            }
         }
     }
 }
@@ -232,8 +245,10 @@ enum class ProjectStage {
         fun fromString(key: String?): ProjectStage? {
             return if (key == null)
                 null
-            else
-                ProjectStage.valueOf(key.toUpperCase())
+            else {
+                val index = key.toIntOrNull() ?: return valueOf(key.toUpperCase())
+                return values()[index-1]
+            }
         }
     }
 }
@@ -249,8 +264,10 @@ enum class ProjectStatus {
         fun fromString(key: String?): ProjectStatus? {
             return if (key == null)
                 null
-            else
-                ProjectStatus.valueOf(key.toUpperCase())
+            else {
+                val index = key.toIntOrNull() ?: return valueOf(key.toUpperCase())
+                return values()[index-1]
+            }
         }
     }
 }

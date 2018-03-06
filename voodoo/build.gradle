@@ -4,7 +4,10 @@ plugins {
 }
 
 mainClassName = "voodoo.MainKt"
-version = project.version
+major = project.major
+minor = project.minor
+patch = project.patch
+version = "$major.$minor.$patch"
 
 def runDir = project.file("run").path
 
@@ -55,6 +58,7 @@ shadowJar {
 
 dependencies {
     compile project(':util')
+    compile group: 'org.apache.commons', name: 'commons-compress', version: '+'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '+'
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '+'
@@ -67,3 +71,16 @@ dependencies {
 }
 
 build.dependsOn(shadowJar)
+
+compileKotlin.doFirst {
+    copy {
+        from("src/templates/kotlin/voodoo/Constants.kt")
+        into("src/main/kotlin/voodoo/gen")
+        filter { String line ->
+            line
+                    .replace('/* MAJOR_VERSION */', "${project.major} //")
+                    .replace('/* MINOR_VERSION */', "${project.minor} //")
+                    .replace('/* PATCH_VERSION */', "${project.patch} //")
+        }
+    }
+}
