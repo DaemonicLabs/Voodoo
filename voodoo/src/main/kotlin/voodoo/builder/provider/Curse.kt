@@ -106,6 +106,7 @@ class CurseProviderThing : ProviderThingy() {
         val addonFile = getAddonFile(addonId, fileId)!!
         logger.info("dependencies of ${entry.name} ${addonFile.dependencies}")
         logger.info(entry.toString())
+        if(addonFile.dependencies == null) return
         for ((depAddonId, depType) in addonFile.dependencies) {
             logger.info("resolve Dep $depAddonId")
             val depAddon = getAddon(depAddonId) ?: continue

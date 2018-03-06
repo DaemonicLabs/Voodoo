@@ -207,9 +207,9 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
 //        cfgPath.appendText("\nForgeVersion=$forgeBuild")
 
         val mmcPackPath = instancePath.resolve("mmc-pack.json")
-        var pack = MumtilMCPack()
+        var pack = MultiMCPack()
         if (mmcPackPath.exists()) {
-            pack = mapper.readValue(mmcPackPath, MumtilMCPack::class.java)
+            pack = mapper.readValue(mmcPackPath, MultiMCPack::class.java)
         }
         pack.components = listOf(
                 PackComponent(
@@ -315,7 +315,7 @@ fun getDependenciesCall(entryName: String, modpack: Modpack): List<Entry> {
 
 val getDependencies = ::getDependenciesCall.memoize()
 
-data class MumtilMCPack(
+data class MultiMCPack(
         var components: List<PackComponent> = emptyList(),
         var formatVersion: Int = 1
 )

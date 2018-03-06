@@ -11,6 +11,10 @@ import mu.KLogging
 import voodoo.builder.data.Entry
 import voodoo.builder.data.Modpack
 import voodoo.builder.provider.CurseProviderThing
+import org.apache.commons.compress.compressors.CompressorStreamFactory
+import voodoo.gen.VERSION
+import java.io.*
+
 
 /**
  * Created by nikky on 30/01/18.
@@ -18,43 +22,45 @@ import voodoo.builder.provider.CurseProviderThing
  * @version 1.0
  */
 object CurseUtil : KLogging() {
-    private val META_URL = "https://curse.nikky.moe" //TODO: move into Entry
+    private val META_URL = "https://cursemeta.dries007.net" //TODO: move into Entry
+    private val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10" //TODO: move into Entry ?
+    val useragent = "voodoo/$VERSION"
 
     val mapper = jacksonObjectMapper() // Enable Json parsing
-            .registerModule(KotlinModule())!! // Enable Kotlin support
+            .registerModule(KotlinModule()) // Enable Kotlin support
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
-            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
+//            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
 
-    val data: List<AddOn> = getAddonData()
+    val data: List<AddOn> = getFeed()
 
-    private fun getAddonData(): List<AddOn> {
-        // val url = "$META_URL/api/addon/?mods=1&texturepacks=1&worlds=1&property=id,name,summary,websiteURL,packageType,categorySection"
-        val url = "$META_URL/api/addon/"//?mods=1&texturepacks=1&worlds=1
+    fun getFeed(): List<AddOn> {
+        val r = get("$FEED_URL/complete.json.bz2", stream = true)
+        val bis = ByteArrayInputStream(r.content)
+        val input = CompressorStreamFactory().createCompressorInputStream(bis)
+        val buf = BufferedReader(InputStreamReader(input))
 
-        CurseProviderThing.logger.debug("get $url")
-        val r = get(url)
-        if (r.statusCode == 200) {
-            return mapper.readValue<List<AddOn>>(r.text)
-                    .filter {
-                        when (it.categorySection.id) {
-                            6 -> true //mod
-                            12 -> true //texture packs
-                            17 -> false //worlds
-                            4471 -> false //modpacks
-                            else -> false
-                        }
-                    }
+        val text = buf.use { it.readText() }
+
+        val feed = mapper.readValue<CurseFeed>(text)
+
+        return feed.data.filter {
+            when (it.categorySection.id) {
+                6 -> true //mod
+                12 -> true //texture packs
+                17 -> false //worlds
+                4471 -> false //modpacks
+                else -> false
+            }
         }
-
-        CurseProviderThing.logger.error("failed getting cursemeta data")
-        throw Exception("failed getting CurseProxy data, code: ${r.statusCode}")
+//        CurseProviderThing.logger.error("failed getting cursemeta data")
+//        throw Exception("failed getting cursemeta data, code: ${r.statusCode}")
     }
 
     private fun getAddonFileCall(addonId: Int, fileId: Int): AddOnFile? {
-        val url = "$META_URL/api/addon/$addonId/files/$fileId"
+        val url = "$META_URL/api/v2/direct/GetAddOnFile/$addonId/$fileId"
 
         CurseProviderThing.logger.debug("get $url")
-        val r = get(url)
+        val r = get(url, headers = mapOf("User-Agent" to useragent))
         if (r.statusCode == 200) {
             return mapper.readValue(r.text)
         }
@@ -63,24 +69,24 @@ object CurseUtil : KLogging() {
 
     val getAddonFile = ::getAddonFileCall.memoize()
 
-    private fun getAllAddonFilesCall(addonId: Int): List<AddOnFile> {
-        val url = "$META_URL/api/addon/$addonId/files"
+    private fun GetAllFilesForAddOnCall(addonId: Int): List<AddOnFile> {
+        val url = "$META_URL/api/v2/direct/GetAllFilesForAddOn/$addonId"
 
         CurseProviderThing.logger.debug("get $url")
-        val r = get(url)
+        val r = get(url, headers = mapOf("User-Agent" to useragent))
         if (r.statusCode == 200) {
             return mapper.readValue(r.text)
         }
         throw Exception("failed getting cursemeta data")
     }
 
-    val getAllAddonFiles = ::getAllAddonFilesCall.memoize()
+    val GetAllFilesForAddOn = ::GetAllFilesForAddOnCall.memoize()
 
     private fun getAddonCall(addonId: Int): AddOn? {
-        val url = "$META_URL/api/addon/$addonId"
+        val url = "$META_URL/api/v2/direct/GetAddOn/$addonId"
 
         CurseProviderThing.logger.debug("get $url")
-        val r = get(url)
+        val r = get(url, headers = mapOf("User-Agent" to useragent))
         if (r.statusCode == 200) {
             try {
                 return mapper.readValue(r.text)
@@ -125,7 +131,7 @@ object CurseUtil : KLogging() {
                 return Triple(addonId, file.id, file.fileNameOnDisk)
         }
 
-        var files = getAllAddonFiles(addonId).sortedWith(compareByDescending { it.fileDate })
+        var files = GetAllFilesForAddOn(addonId).sortedWith(compareByDescending { it.fileDate })
 
         var oldFiles = files
 
