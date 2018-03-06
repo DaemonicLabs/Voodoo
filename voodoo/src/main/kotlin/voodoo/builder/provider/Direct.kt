@@ -12,9 +12,7 @@ import java.net.URLDecoder
  * @version 1.0
  */
 
-class DirectProviderThing : ProviderThingy() {
-    override val name = "Direct provider"
-
+class DirectProviderThing : ProviderBase("Direct provider") {
     companion object: KLogging()
 
     //    override fun validate(): Boolean {

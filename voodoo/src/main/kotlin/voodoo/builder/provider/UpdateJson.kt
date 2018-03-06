@@ -12,7 +12,7 @@ import mu.KLogging
  * @author Nikky
  * @version 1.0
  */
-class UpdateJsonProviderThing : ProviderThingy() {
+class UpdateJsonProviderThing : ProviderBase("UpdateJson Provider") {
     companion object : KLogging() {
         val mapper = jacksonObjectMapper() // Enable YAML parsing
                 .registerModule(KotlinModule()) // Enable Kotlin support
@@ -26,8 +26,6 @@ class UpdateJsonProviderThing : ProviderThingy() {
             }
         }.memoize()
     }
-
-    override val name = "UpdateJson Provider"
 
     init {
         register("setName",

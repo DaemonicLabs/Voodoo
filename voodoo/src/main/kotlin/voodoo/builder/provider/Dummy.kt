@@ -8,9 +8,8 @@ import mu.KLogging
  * @version 1.0
  */
 
-class DummyProviderThing : ProviderThingy() {
+class DummyProviderThing : ProviderBase("Dummy provider") {
     companion object: KLogging()
-    override val name = "Dummy provider"
 
     //    override fun validate(): Boolean {
 //        return entry.url.isNotBlank()

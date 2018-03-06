@@ -34,6 +34,7 @@ object CurseUtil : KLogging() {
     val data: List<AddOn> = getFeed()
 
     fun getFeed(): List<AddOn> {
+        logger.info("downloading curse feed")
         val r = get("$FEED_URL/complete.json.bz2", stream = true)
         val bis = ByteArrayInputStream(r.content)
         val input = CompressorStreamFactory().createCompressorInputStream(bis)
@@ -59,7 +60,7 @@ object CurseUtil : KLogging() {
     private fun getAddonFileCall(addonId: Int, fileId: Int): AddOnFile? {
         val url = "$META_URL/api/v2/direct/GetAddOnFile/$addonId/$fileId"
 
-        CurseProviderThing.logger.debug("get $url")
+        logger.debug("get $url")
         val r = get(url, headers = mapOf("User-Agent" to useragent))
         if (r.statusCode == 200) {
             return mapper.readValue(r.text)
@@ -72,7 +73,7 @@ object CurseUtil : KLogging() {
     private fun GetAllFilesForAddOnCall(addonId: Int): List<AddOnFile> {
         val url = "$META_URL/api/v2/direct/GetAllFilesForAddOn/$addonId"
 
-        CurseProviderThing.logger.debug("get $url")
+        logger.debug("get $url")
         val r = get(url, headers = mapOf("User-Agent" to useragent))
         if (r.statusCode == 200) {
             return mapper.readValue(r.text)

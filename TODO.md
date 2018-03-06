@@ -1,3 +1,27 @@
+# Refactor
+
+requirements:
+
+- jobs have
+  - `ready` condition that usually tests if a entry has all the required fields set
+    could also make sure a job ran and assume the field is set ? likely going to lead to errors
+  - `label` for referencing
+  - `requirements` jobs that have to be run on the whole modpack before (multiple stages of execution)
+
+providers (curse, jenkin, etc) iterate through the entries in the modpack and
+- test if entry is marked as processed
+  - if true: continue
+- test if entry meets requirements
+  if false: continue
+- test if all requirements are marked as processed
+  if false: continue
+
+
+jobs are accumulated
+jobs contain the name of Entry and ready-condition ad well as execution instructions
+
+special names can reference multiple entry ? maybe `@all`, `@curse`, etc
+
 # TODO
 
 * diff 2 fully resolved modpacks

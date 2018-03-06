@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import mu.KLogging
+import voodoo.builder.JobTracker
 import voodoo.builder.curse.DependencyType
 import voodoo.builder.curse.FileType
 import voodoo.builder.curse.PackageType
@@ -46,6 +47,9 @@ data class Modpack(
         val mapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
                 .registerModule(KotlinModule()) // Enable Kotlin support
     }
+
+    @JsonIgnore
+    val tracker = JobTracker(this)
 
     fun toYAMLString(): String {
         return mapper.writeValueAsString(this)
@@ -90,7 +94,7 @@ data class Entry(
         var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var optional: Boolean = feature != null,
-        var packageType: PackageType = PackageType.NONE,
+        var packageType: PackageType = PackageType.MOD,
         // INTERNAL //TODO: move into internal object or runtime data objects
         @JsonIgnore
         val internal: EntryInternal = EntryInternal(),
