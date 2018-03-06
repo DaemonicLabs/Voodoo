@@ -9,9 +9,8 @@ import java.io.File
  * @version 1.0
  */
 
-class LocalProviderThing : ProviderThingy() {
+class LocalProviderThing : ProviderBase("Direct provider") {
     companion object: KLogging()
-    override val name = "Direct provider"
 
     //    override fun validate(): Boolean {
 //        return entry.url.isNotBlank()

@@ -1,6 +1,6 @@
 name: Center of the Multiverse
 title: Center of the Multiverse
-version: 2.0.3
+version: 2.0.4
 mcVersion: 1.12.2
 forge: 2611
 mods:
@@ -35,10 +35,6 @@ mods:
   - Architect
   - Bedrock Ores
 
-  # csb987
-  - Armor Stand Configurator
-  - Combined Potions
-
   # HellFirePvP
   - Astral Sorcery
 
@@ -47,9 +43,6 @@ mods:
 
   # Way2muchnoise
   - Better Advancements
-
-  # Portablejim
-  # - "Better Builder's Wands"
 
   # Nuchaz
   - BiblioCraft
@@ -91,10 +84,44 @@ mods:
   - CraftTweaker
   - Diamond Glass
 
-  #Dimensional Doors
-  - url: http://centerofthemultiverse.net/launcher/dist/Dimdoors-3.0.6-b.180.jar
-    name: Dimensional Doors
-    provider: DIRECT
+  # copygirl
+  - Wearable Backpacks
+
+  # TheLMiffy1111
+  - JAOPCA
+  - Just Enough HarvestCraft (JEHC)
+
+  # mezz
+  - Just Enough Items (JEI)
+
+  # keridos
+  - OpenModularTurrets
+  - OMLib
+
+  # team_otg
+  - Biome Bundle
+
+  # Benimatic
+  - The Twilight Forest
+
+  # The_Wabbit
+  - Upsizer Mod
+
+  # Bartz24
+  - Useful Nullifiers
+
+  # Viesis
+  - "ViesCraft - Airships!"
+
+  # gegy1000, JurassicAlien_KOC_owner
+  - Wearables
+
+  # TehNut
+  - Xtones
+
+  # Team CoFH
+  - Thermal Dynamics
+  - Thermal Expansion
 
   - The Disenchanter Mod
   - Draconic Evolution
@@ -115,7 +142,6 @@ mods:
   - Forestry
   - FTB Utilities
   - MrCrayfish's Furniture Mod
-  - id: 283055 # "MrCrayfish's Device Mod"
   - Gendustry
   - Grappling Hook Mod
   - Hardcore Revival
@@ -127,17 +153,6 @@ mods:
   - Redstone Paste
   - MmmMmmMmmMmm
   - Inventory Pets
-
-  # copygirl
-  - Wearable Backpacks
-
-  # TheLMiffy1111
-  - JAOPCA
-  - Just Enough HarvestCraft (JEHC)
-
-  # mezz
-  - Just Enough Items (JEI)
-
   - JEI Bees
   - Just Enough Torches (JET)
   - Just Enough Dimensions
@@ -158,14 +173,6 @@ mods:
   - NotEnoughIDs
   - OpenComputers
   - OpenBlocks
-
-  # keridos
-  - OpenModularTurrets
-  - OMLib
-
-  # team_otg
-  - Biome Bundle
-
   - Packing Tape
   - Pam's HarvestCraft
   - Passthrough Signs
@@ -220,18 +227,15 @@ mods:
   - Fast Leaf Decay
   - Unlimited Chisel Works - Botany
   - "Blood Magic "
-  - Improvable Skills 3
+  #- Improvable Skills 3 (issue submitted)
   - Unloader
   - Animania
   - ColorfulWater
 
-  # Team CoFH
-  - Thermal Dynamics
-  - Thermal Expansion
-
   - provider: JENKINS
     jenkinsUrl: https://ci.elytradev.com
     entries:
+
     # Falkreon
     - job: elytra/Thermionics/master
       name: Thermionics
@@ -273,26 +277,24 @@ mods:
     name: CharsetPatches
     template: https://asie.pl/files/mods/Charset/CharsetPatches-{version}.jar
 
-  # Benimatic
-  - The Twilight Forest
-
-  # The_Wabbit
-  - Upsizer Mod
-
-  # Bartz24
-  - Useful Nullifiers
-
-  # Viesis
-  - "ViesCraft - Airships!"
-
-  # gegy1000, JurassicAlien_KOC_owner
-  - Wearables
-
-  # TehNut
-  - Xtones
-
-  - url: http://centerofthemultiverse.net/launcher/dist/Nutrition-1.12.2-2.8.0.jar
+   #Nutrition
+  - url: http://centerofthemultiverse.net/launcher/dist/Nutrition-1.12.2-2.9.0.jar
     name: Nutrition
+    provider: DIRECT
+
+   #Dimensional Doors
+  - url: http://centerofthemultiverse.net/launcher/dist/Dimdoors-3.0.7-b-1.233.jar
+    name: Dimensional Doors
+    provider: DIRECT
+
+   #Better Builder's Wands
+  - url: http://centerofthemultiverse.net/launcher/dist/BetterBuildersWands.jar
+    name: Better Builder's Wands
+    provider: DIRECT
+
+   #MrCrayfish's Device Mod
+  - url: http://centerofthemultiverse.net/launcher/dist/device-mod-0.3.0-1.12.2.jar
+    name: MrCrayfish's Device Mod
     provider: DIRECT
 
 #============#

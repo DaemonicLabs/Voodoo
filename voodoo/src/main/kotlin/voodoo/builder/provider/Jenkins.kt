@@ -11,10 +11,8 @@ import java.io.File
  * @version 1.0
  */
 
-class JenkinsProviderThing : ProviderThingy() {
+class JenkinsProviderThing : ProviderBase("Jenkins Provider") {
     companion object : KLogging()
-
-    override val name = "Jenkins Provider"
 
     init {
         register("setBuildNumber",

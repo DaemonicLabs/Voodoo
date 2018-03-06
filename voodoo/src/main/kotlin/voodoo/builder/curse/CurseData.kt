@@ -207,13 +207,13 @@ enum class DependencyType {
 }
 
 enum class PackageType {
-    NONE,
     FOLDER,
     CTOP,
     SINGLEFILE,
     CMOD2,
     MODPACK,
-    MOD;
+    MOD,
+    ANY;
 
     companion object {
         @JsonCreator

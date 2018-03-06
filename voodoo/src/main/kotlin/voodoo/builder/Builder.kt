@@ -15,7 +15,6 @@ import com.xenomachina.argparser.mainBody
 import mu.KotlinLogging
 import voodoo.builder.curse.DependencyType
 import voodoo.builder.data.*
-import voodoo.builder.provider.ProviderThingy
 import voodoo.util.Directories
 import voodoo.writeToFile
 import java.io.File
@@ -167,12 +166,12 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
         var anyMatched = false
         counter++
         logger.info("processing entries run: $counter")
-        ProviderThingy.resetWarnings()
+        JobManager.resetWarnings()
 
         modpack.mods.entries.filter { !it.internal.done }.forEachIndexed { index, entry ->
             logger.debug("processing [$index] $entry")
-            val thingy = entry.provider.thingy
-            if (thingy.process(entry, modpack)) {
+            val base = entry.provider.base
+            if (base.process(entry, modpack)) {
                 anyMatched = true
             } else {
                 invalidEntries += entry

@@ -16,10 +16,8 @@ import java.io.File
  * @author Nikky
  * @version 1.0
  */
-class CurseProviderThing : ProviderThingy() {
+class CurseProviderThing : ProviderBase("Curse Provider") {
     companion object : KLogging()
-
-    override val name = "Curse Provider"
 
     init {
         register("prepareDependencies",
@@ -70,7 +68,7 @@ class CurseProviderThing : ProviderThingy() {
                 }
         )
         register("setPackageType",
-                { it.id > 0 && it.packageType == PackageType.NONE },
+                { it.id > 0 && it.packageType == PackageType.ANY },
                 { e, _ ->
                     e.packageType = getAddon(e.id)!!.packageType
                 }
@@ -104,9 +102,12 @@ class CurseProviderThing : ProviderThingy() {
         val fileId = entry.fileId
         val addon = getAddon(addonId)!!
         val addonFile = getAddonFile(addonId, fileId)!!
+        if(addonFile.dependencies == null) {
+            entry.internal.resolvedDependencies = true
+            return
+        }
         logger.info("dependencies of ${entry.name} ${addonFile.dependencies}")
         logger.info(entry.toString())
-        if(addonFile.dependencies == null) return
         for ((depAddonId, depType) in addonFile.dependencies) {
             logger.info("resolve Dep $depAddonId")
             val depAddon = getAddon(depAddonId) ?: continue
@@ -122,9 +123,11 @@ class CurseProviderThing : ProviderThingy() {
             logger.info("set dependency $depType = $dependsList")
 
             // find duplicate entry
+
+            logger.info("entries ")
             var depEntry = modpack.mods.entries.firstOrNull { e ->
-                e.provider == Provider.CURSE &&
-                        (e.id == depAddon.id || e.name == depAddon.name)
+                (e.provider == Provider.CURSE &&
+                        e.id == depAddon.id) || e.name == depAddon.name
             }
             if (depEntry == null) {
                 if (depType == DependencyType.REQUIRED || (entry.doOptionals && depType == DependencyType.OPTIONAL)) {
