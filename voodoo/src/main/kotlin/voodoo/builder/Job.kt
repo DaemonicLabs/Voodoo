@@ -28,6 +28,8 @@ class JobTracker(val modpack: Modpack) {
         logger.info("creating JobTracker for ${modpack.name}")
     }
 
+    fun isProcessed(entry: String, job: String) = processedFunctions.getOrDefault(entry, listOf()).contains(job)
+
     companion object : KLogging()/* {
         val instance = {modpack: Modpack -> JobTracker(modpack)}.memoize()
     }*/
@@ -60,12 +62,12 @@ class JobManager(val type: String) {
             }
             if (job.requires.isNotBlank()) {
                 val fulfilled = modpack.mods.entries.all {
-                    tracker.processedFunctions.getOrDefault(it.name, emptyList()).contains(job.requires)
+                    tracker.isProcessed(it.name, job.requires)
                 }
                 if (!fulfilled) {
                     logger.debug("processed map: ${tracker.processedFunctions}")
                     val missing = modpack.mods.entries.filter {
-                        !tracker.processedFunctions.getOrDefault(it.name, emptyList()).contains(job.requires)
+                        !tracker.isProcessed(it.name, job.requires)
                     }.map { if (it.name.isNotBlank()) it.name else it.toString() }
                     if (requirementWarning[job.requires] != true) {
                         logger.warn("requirement ${job.requires} is not fulfilled by all entries, missing: $missing")

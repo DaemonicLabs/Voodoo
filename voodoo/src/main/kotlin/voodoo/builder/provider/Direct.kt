@@ -48,7 +48,7 @@ class DirectProviderThing : ProviderBase("Direct provider") {
         register("writeUrlTxt",
                 {
                     with(it) {
-                        listOf(url, internal.filePath).all { it.isNotBlank() } && !internal.urlTxtDone
+                        listOf(url, internal.filePath).all { it.isNotBlank() }
                     }
                 },
                 { e, m ->
@@ -57,15 +57,14 @@ class DirectProviderThing : ProviderBase("Direct provider") {
                         File(urlPath.parent).mkdirs()
                         urlPath.writeText(URLDecoder.decode(e.url, "UTF-8"))
                     }
-                    e.internal.urlTxtDone = true
                 }
         )
-        register("download",
-                {
+        register2("download",
+                { it, m ->
                     with(it) {
                         listOf(url, name, fileName, internal.filePath, internal.cachePath).all { it.isNotBlank() }
-                                && internal.urlTxtDone
-                                && internal.resolvedOptionals
+                                && m.tracker.isProcessed(it.name, "writeUrlTxt")
+                                && m.tracker.isProcessed(it.name, "resolveOptional")
                     }
                 },
                 { entry, m ->

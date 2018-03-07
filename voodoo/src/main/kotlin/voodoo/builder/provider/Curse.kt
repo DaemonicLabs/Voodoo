@@ -97,15 +97,12 @@ class CurseProviderThing : ProviderBase("Curse Provider") {
         )
     }
 
-    fun resolveDependencies(entry: Entry, modpack: Modpack) {
+    private fun resolveDependencies(entry: Entry, modpack: Modpack) {
         val addonId = entry.id
         val fileId = entry.fileId
         val addon = getAddon(addonId)!!
         val addonFile = getAddonFile(addonId, fileId)!!
-        if(addonFile.dependencies == null) {
-            entry.internal.resolvedDependencies = true
-            return
-        }
+        if(addonFile.dependencies == null) return
         logger.info("dependencies of ${entry.name} ${addonFile.dependencies}")
         logger.info(entry.toString())
         for ((depAddonId, depType) in addonFile.dependencies) {
@@ -156,7 +153,6 @@ class CurseProviderThing : ProviderBase("Curse Provider") {
 //            provideList += addon.name
 //            depEntry.provides[depType] = provideList
         }
-        entry.internal.resolvedDependencies = true
     }
 
 

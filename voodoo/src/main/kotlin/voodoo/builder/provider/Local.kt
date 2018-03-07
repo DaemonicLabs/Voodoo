@@ -41,11 +41,11 @@ class LocalProviderThing : ProviderBase("Direct provider") {
                     e.internal.targetPath = "mods"
                 }
         )
-        register("download",
-                {
+        register2("download",
+                { it, m ->
                     with(it) {
                         listOf(fileSrc, name, fileName, internal.filePath).all { it.isNotBlank() }
-                                && internal.resolvedOptionals
+                                && m.tracker.isProcessed(it.name, "resolveOptional")
                     }
                 },
                 { entry, m ->

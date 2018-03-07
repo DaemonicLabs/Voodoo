@@ -15,9 +15,9 @@ class DummyProviderThing : ProviderBase("Dummy provider") {
 //        return entry.url.isNotBlank()
 //    }
     init {
-        register("finalze", //download
-                {
-                    it.internal.resolvedOptionals
+        register2("finalize", //download
+                { it, m ->
+                    m.tracker.isProcessed(it.name, "resolveOptional")
                 },
                 { entry, _ ->
                     entry.internal.done = true

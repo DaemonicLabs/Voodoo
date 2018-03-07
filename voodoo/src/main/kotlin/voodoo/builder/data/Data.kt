@@ -70,14 +70,11 @@ data class EntryInternal(
         var cachePath: String = "",
         var cacheRelpath: String = "",
         var done: Boolean = false,
-        var urlTxtDone: Boolean = false,
         var basePath: String = "src",
         var targetPath: String = "",
         var targetFilePath: String = "",
         var path: String = "",
-        var filePath: String = "",
-        var resolvedOptionals: Boolean = false,
-        var resolvedDependencies: Boolean = false
+        var filePath: String = ""
 )
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -166,7 +163,7 @@ data class Entry(
                 }
             }
 
-            entry.flatten(indent + "|  ")
+            entry.flatten("$indent|  ")
             if (entry.entries.isNotEmpty()) {
                 toDelete += entry
             }
