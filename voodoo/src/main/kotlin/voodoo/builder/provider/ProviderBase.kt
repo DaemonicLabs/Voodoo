@@ -72,8 +72,14 @@ abstract class ProviderBase(val name: String = "abstract Provider") {
                 requires = "postSetName"
         )
 
-        register("postResolveDependencies",
-                { it.name.isNotBlank() && ((it.provider == Provider.CURSE) == it.internal.resolvedDependencies) },
+        register2("postResolveDependencies",
+                //TODO: stages
+                //match all noncurse and all curse dependencies with dependencies resolved
+                check@{ e, m ->
+                    if(e.name.isBlank()) return@check false
+                    if(e.provider != Provider.CURSE) return@check true
+                    return@check m.tracker.isProcessed(e.name, "resolveDependencies")
+                },
                 { e, _ ->
                     logger.info("run after resolveDependencies ${e.name}")
                 }
@@ -103,18 +109,16 @@ abstract class ProviderBase(val name: String = "abstract Provider") {
         register2("resolveFeatureDependencies",
                 { e, m ->
                     e.name.isNotBlank() && !m.tracker.processedFeatures.contains(e.name) },
-                ::resolveFeatureDependencies,
+                jobManager::resolveFeatureDependencies,
                 repeatable = true,
                 requires = "resolveProvides"
         )
 
         register("resolveOptional",
-                { !it.internal.resolvedOptionals },
+                { true },
                 { e, m ->
                     e.optional = isOptional(e, m)
-                    e.internal.resolvedOptionals = true
                 },
-                repeatable = true,
                 requires = "resolveFeatureDependencies"
         )
 
@@ -172,55 +176,6 @@ abstract class ProviderBase(val name: String = "abstract Provider") {
         val job = Job(label, {entry: Entry, modpack: Modpack -> condition(entry)}, execute, repeatable, requires)
         logger.info("registering $label to $this")
         jobManager.register(label, job)
-//        val duplicate = functions.find { it.first == label }
-//        if (duplicate != null) {
-//            if (force) {
-//                functions -= duplicate
-//            } else {
-//                logger.warn("cannot register duplicate $label")
-//                return
-//            }
-//        }
-//        functions += Quintuple(label, condition, execute, repeatable, requires)
-    }
-
-    fun process(entry: Entry, modpack: Modpack): Boolean {
-
-        return jobManager.process(entry, modpack)
-
-//        var processed = processedFunctions.getOrDefault(entry.name, emptyList())
-//        for ((label, condition, execute, repeatable, requirement) in functions) {
-//            if (!repeatable && processed.contains(label)) {
-//                continue
-//            }
-//            if (requirement.isNotBlank()) {
-//                val fulfilled = modpack.mods.entries.all {
-//                    processedFunctions.getOrDefault(it.name, emptyList()).contains(requirement)
-//                }
-//                if (!fulfilled) {
-//                    logger.debug("processed map: ${processedFunctions}")
-//                    val missing = modpack.mods.entries.filter {
-//                        !processedFunctions.getOrDefault(it.name, emptyList()).contains(requirement)
-//                    }.map { if (it.name.isNotBlank()) it.name else it.toString() }
-//                    if (requirmentWarning[requirement] != true) {
-//                        logger.warn("requirement $requirement is not fulfilled by all entries, missing: $missing")
-//                        requirmentWarning[requirement] = true
-//                    }
-//                    continue
-//                }
-//            }
-//            if (condition(entry)) {
-//                logger.debug("executing $label")
-//                //TODO: check if process failed (no change to entry or modpack)
-//                execute(entry, modpack)
-//                processed += label
-//                processedFunctions[entry.name] = processed
-//                return true
-//            }
-//        }
-//        logger.warn("no action matched for entry $entry")
-//        //TODO: keep count if times a entry has fallen through consecutively, kill it after > X time
-//        return false
     }
 
     private fun isOptionalCall(entry: Entry, modpack: Modpack): Boolean {
@@ -242,70 +197,4 @@ abstract class ProviderBase(val name: String = "abstract Provider") {
     }
 
     val isOptional = ::isOptionalCall.memoize()
-
-    fun resolveFeatureDependencies(entry: Entry, modpack: Modpack) {
-        jobManager.resolveFeatureDependencies(entry, modpack)
-//        if (entry.feature == null) {
-//            processedFeatures += entry.name
-//            return
-//        }
-//        val entryFeature = entry.feature ?: return
-//        var featureName = entryFeature.name
-//        if (featureName.isBlank())
-//            featureName = entry.name
-//        // find feature with matching name
-//        var feature = modpack.features.find { f -> f.properties.name == featureName }
-//
-//        if (feature == null) {
-//            feature = Feature(
-//                    entries = listOf(entry.name),
-//                    processedEntries = emptyList(),
-//                    files = entryFeature.files,
-//                    properties = SKFeatureProperties(
-//                            name = featureName,
-//                            selected = entryFeature.selected,
-//                            description = entryFeature.description,
-//                            recommendation = entryFeature.recommendation
-//                    )
-//            )
-//            processFeature(feature, modpack)
-//            modpack.features += feature
-//            entry.optional = true
-////            entry.dependenciesDirty = true
-//        }
-//        processedFeatures += entry.name
-//        logger.debug("processed ${entry.name} -> ${processedFeatures}")
-    }
-
-//    private fun processFeature(feature: Feature, modpack: Modpack) {
-//        logger.info("processing feature: $feature")
-//        var processedEntries = emptyList<String>()
-//        var processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
-//        while (processableEntries.isNotEmpty()) {
-//            processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
-//            for (entry_name in processableEntries) {
-//                logger.info("searching $entry_name")
-//                val entry = modpack.mods.entries.find { e ->
-//                    e.name == entry_name
-//                }
-//                if (entry == null) {
-//                    logger.warn("$entry_name not in entries")
-//                    processedEntries += entry_name
-//                    continue
-//                }
-//                var depNames = entry.dependencies.values.flatten()
-//                logger.info("depNames: $depNames")
-//                depNames = depNames.filter { d ->
-//                    modpack.mods.entries.any { e -> e.name == d }
-//                }
-//                logger.info("filtered dependency names: $depNames")
-//                for (dep in depNames) {
-//                    if (!(feature.entries.contains(dep))) {
-//                        feature.entries += dep
-//                    }
-//                }
-//                processedEntries += entry_name
-//            }
-//        }
-//    }
 }

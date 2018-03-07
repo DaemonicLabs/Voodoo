@@ -171,7 +171,7 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
         modpack.mods.entries.filter { !it.internal.done }.forEachIndexed { index, entry ->
             logger.debug("processing [$index] $entry")
             val base = entry.provider.base
-            if (base.process(entry, modpack)) {
+            if (base.jobManager.process(entry, modpack)) {
                 anyMatched = true
             } else {
                 invalidEntries += entry
