@@ -3,14 +3,13 @@ package voodoo.builder.curse
 import aballano.kotlinmemoization.memoize
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import khttp.get
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
 import mu.KLogging
 import voodoo.builder.data.Entry
 import voodoo.builder.data.Modpack
-import voodoo.builder.provider.CurseProviderThing
 import org.apache.commons.compress.compressors.CompressorStreamFactory
 import voodoo.gen.VERSION
 import java.io.*
@@ -33,69 +32,88 @@ object CurseUtil : KLogging() {
 
     val data: List<AddOn> = getFeed()
 
-    fun getFeed(): List<AddOn> {
+    private fun getFeed(): List<AddOn> {
         logger.info("downloading curse feed")
-        val r = get("$FEED_URL/complete.json.bz2", stream = true)
-        val bis = ByteArrayInputStream(r.content)
-        val input = CompressorStreamFactory().createCompressorInputStream(bis)
-        val buf = BufferedReader(InputStreamReader(input))
+        val (request, response, result) = "$FEED_URL/complete.json.bz2".httpGet()
+                .header("User-Agent" to useragent)
+                .response()
+        when (result) {
+            is Result.Success -> {
+                val bis = ByteArrayInputStream(result.value)
+                val input = CompressorStreamFactory().createCompressorInputStream(bis)
+                val buf = BufferedReader(InputStreamReader(input))
 
-        val text = buf.use { it.readText() }
+                val text = buf.use { it.readText() }
 
-        val feed = mapper.readValue<CurseFeed>(text)
+                val feed = mapper.readValue<CurseFeed>(text)
 
-        return feed.data.filter {
-            when (it.categorySection.id) {
-                6 -> true //mod
-                12 -> true //texture packs
-                17 -> false //worlds
-                4471 -> false //modpacks
-                else -> false
+                return feed.data.filter {
+                    when (it.categorySection.id) {
+                        6 -> true //mod
+                        12 -> true //texture packs
+                        17 -> false //worlds
+                        4471 -> false //modpacks
+                        else -> false
+                    }
+                }
+            }
+            else -> {
+                logger.error("failed getting cursemeta data")
+                throw Exception("failed getting cursemeta data, code: ${response.statusCode}")
             }
         }
-//        CurseProviderThing.logger.error("failed getting cursemeta data")
-//        throw Exception("failed getting cursemeta data, code: ${r.statusCode}")
     }
 
     private fun getAddonFileCall(addonId: Int, fileId: Int): AddOnFile? {
         val url = "$META_URL/api/v2/direct/GetAddOnFile/$addonId/$fileId"
 
         logger.debug("get $url")
-        val r = get(url, headers = mapOf("User-Agent" to useragent))
-        if (r.statusCode == 200) {
-            return mapper.readValue(r.text)
+        val (request, response, result) = url.httpGet()
+                .header("User-Agent" to useragent)
+                .responseString()
+        return when (result) {
+            is Result.Success -> {
+                mapper.readValue(result.value)
+            }
+            else -> null
         }
-        return null
     }
 
     val getAddonFile = ::getAddonFileCall.memoize()
 
-    private fun GetAllFilesForAddOnCall(addonId: Int): List<AddOnFile> {
+    private fun getAllFilesForAddOnCall(addonId: Int): List<AddOnFile> {
         val url = "$META_URL/api/v2/direct/GetAllFilesForAddOn/$addonId"
 
         logger.debug("get $url")
-        val r = get(url, headers = mapOf("User-Agent" to useragent))
-        if (r.statusCode == 200) {
-            return mapper.readValue(r.text)
+        val (request, response, result) = url.httpGet()
+                .header("User-Agent" to useragent)
+                .responseString()
+        return when (result) {
+            is Result.Success -> {
+                mapper.readValue(result.value)
+            }
+            else -> throw Exception("failed getting cursemeta data")
         }
-        throw Exception("failed getting cursemeta data")
     }
 
-    val GetAllFilesForAddOn = ::GetAllFilesForAddOnCall.memoize()
+    val getAllFilesForAddOn = ::getAllFilesForAddOnCall.memoize()
 
     private fun getAddonCall(addonId: Int): AddOn? {
         val url = "$META_URL/api/v2/direct/GetAddOn/$addonId"
 
-        CurseProviderThing.logger.debug("get $url")
-        val r = get(url, headers = mapOf("User-Agent" to useragent))
-        if (r.statusCode == 200) {
-            try {
-                return mapper.readValue(r.text)
-            } catch (e: MissingKotlinParameterException) {
-                logger.error("$url $e cannot parse ${r.text}")
+        logger.debug("get $url")
+        val (request, response, result) = url.httpGet()
+                .header("User-Agent" to useragent)
+                .responseString()
+        return when (result) {
+            is Result.Success -> {
+                mapper.readValue(result.value)
+            }
+            is Result.Failure -> {
+                logger.error(result.error.toString())
+                null
             }
         }
-        return null
     }
 
     val getAddon = ::getAddonCall.memoize()
@@ -116,7 +134,7 @@ object CurseUtil : KLogging() {
         val addon = data.find { addon ->
             (name.isNotBlank() && name.equals(addon.name, true))
                     || (addonId > 0 && addonId == addon.id)
-        } ?: if(addonId > 0) getAddon(addonId)!! else {
+        } ?: if (addonId > 0) getAddon(addonId)!! else {
             logger.error("no addon matching the parameters found for '$entry'")
             System.exit(-1)
             return Triple(-1, -1, "")
@@ -132,7 +150,7 @@ object CurseUtil : KLogging() {
                 return Triple(addonId, file.id, file.fileNameOnDisk)
         }
 
-        var files = GetAllFilesForAddOn(addonId).sortedWith(compareByDescending { it.fileDate })
+        var files = getAllFilesForAddOn(addonId).sortedWith(compareByDescending { it.fileDate })
 
         var oldFiles = files
 

@@ -1,6 +1,7 @@
 package voodoo.builder.provider
 
-import khttp.get
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
 import mu.KLogging
 import java.io.File
 import java.net.URL
@@ -77,20 +78,18 @@ class DirectProviderThing : ProviderBase("Direct provider") {
                     if (!cacheFile.exists() || !cacheFile.isFile) {
                         logger.info("downloading ${entry.name} to $cacheFile")
                         logger.info("downloading {}", entry.url)
-                        var r = get(entry.url, allowRedirects = false)
-                        while(r.statusCode == 302) {
-                            val url = URLDecoder.decode(r.headers["Location"]!!, "UTF-8")
-                            logger.info("following to {}", url)
-                            r = get(url, allowRedirects = false)
-                        }
-                        if(r.statusCode == 200)
-                        {
-                            cacheFile.writeBytes(r.content)
-                        } else {
-                            logger.error("invalid statusCode {} from {}", r.statusCode, entry.url)
-                            logger.error("connection url: {}",r.connection.url)
-                            logger.error("content: {}", r.text)
-                            throw Exception("broken download")
+                        val (request, response, result) = entry.url.httpGet().response()
+                        when(result) {
+                            is Result.Success -> {
+                                cacheFile.writeBytes(result.component1()!!)
+                            }
+                            is Result.Failure -> {
+                                logger.error("invalid statusCode {} from {}", response.statusCode, entry.url)
+                                logger.error("connection url: {}", request.url)
+                                logger.error("content: {}", result.component1())
+                                logger.error("error: {}", result.error.toString())
+                                throw Exception("broken download https://cursemeta.dries007.net/api/v2/direct/GetAddOnFile/${entry.id}/${entry.fileId}")
+                            }
                         }
                     } else {
                         logger.info("skipping downloading ${entry.name} (is cached)")
