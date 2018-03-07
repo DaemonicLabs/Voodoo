@@ -14,13 +14,13 @@ def runDir = project.file("run").path
 def packDef = file(".")
 if (project.hasProperty('ACK')) {
     packDef = project.file("../samples/${ACK}")
-    if(!packDef.exists()) {
+    if (!packDef.exists()) {
         packDef = project.file("../samples/${ACK}.yaml")
     }
-    if(!packDef.exists()) {
+    if (!packDef.exists()) {
         packDef = project.file("../samples/${ACK}.yaml")
     }
-    if(!packDef.exists()) {
+    if (!packDef.exists()) {
         packDef = file("$ACK")
     }
 } else {
@@ -38,7 +38,7 @@ runShadow {
 
 task buildSamples {
     description = 'Build all Samples'
-    fileTree(dir: '../samples', include:'*.yaml').each { file ->
+    fileTree(dir: '../samples', include: '*.yaml').each { file ->
         println "building $file"
         doLast {
             project.javaexec {
@@ -58,12 +58,13 @@ shadowJar {
 
 dependencies {
     compile project(':util')
+    compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+' //for JVM
+    compile group: 'com.github.kittinunf.fuel', name: 'fuel-jackson', version: '+' //for JVM
     compile group: 'org.apache.commons', name: 'commons-compress', version: '+'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '+'
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '+'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-xml', version: '+'
-    compile group: 'com.github.jkcclemens', name: 'khttp', version: 'master-SNAPSHOT'
     compile group: 'com.github.aballano', name: 'MnemoniK', version: '+'
     compile group: 'io.github.microutils', name: 'kotlin-logging', version: '+'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'

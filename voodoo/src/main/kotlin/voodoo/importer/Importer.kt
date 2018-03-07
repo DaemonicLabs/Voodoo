@@ -3,10 +3,11 @@ package voodoo.importer
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
-import khttp.get
 import mu.KLogging
 import mu.KotlinLogging
 import voodoo.builder.curse.CurseManifest
@@ -79,10 +80,18 @@ object Importer : KLogging() {
             } else {
                 val tmpFile = directories.cacheHome.resolve(import.substringAfterLast("/"))
                 logger.info("downloading pack from {} to {}", import, tmpFile)
-                val r = get(import, stream = true)
-                if (tmpFile.exists())
-                    tmpFile.delete()
-                tmpFile.writeBytes(r.content)
+                val (request, response, result) = import.httpGet()
+                        .response()
+                when (result) {
+                    is Result.Success -> {
+                        if (tmpFile.exists())
+                            tmpFile.delete()
+                        tmpFile.writeBytes(result.value)
+                    }
+                    else -> {
+                        logger.error("cannot downlaod file")
+                    }
+                }
                 tmpFile
             }
         }

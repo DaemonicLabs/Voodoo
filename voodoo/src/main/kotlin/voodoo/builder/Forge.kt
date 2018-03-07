@@ -4,7 +4,8 @@ import aballano.kotlinmemoization.tuples.Quadruple
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import khttp.get
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
 import mu.KLogging
 import voodoo.builder.data.Entry
 import voodoo.builder.data.EntryInternal
@@ -79,16 +80,18 @@ object Forge : KLogging() {
     }
 
     fun getForgeData(): ForgeData {
-        val r = get("http://files.minecraftforge.net/maven/net/minecraftforge/forge/json")
-        if (r.statusCode == 200) {
-            val mapper = jacksonObjectMapper() // Enable YAML parsing
-            mapper.registerModule(KotlinModule()) // Enable Kotlin support
-
-            val state = mapper.readValue<ForgeData>(r.text)
-            return state
+        val (request, response, result) = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/json"
+                .httpGet().responseString()
+        return when(result) {
+            is Result.Success -> {
+                val mapper = jacksonObjectMapper() // Enable YAML parsing
+                mapper.registerModule(KotlinModule()) // Enable Kotlin support
+                mapper.readValue(result.component1()!!)
+            }
+            is Result.Failure -> {
+                throw Exception("cannot get forge data ${result.error}")
+            }
         }
-
-        throw Exception("cannot get forge data")
     }
 
 }

@@ -6,7 +6,9 @@
 
 package voodoo
 
-import khttp.get
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
 import mu.KLogging
 import voodoo.util.Directories
 import voodoo.util.jenkins.JenkinsServer
@@ -60,9 +62,17 @@ object Bootstrap : KLogging() {
         val tmpFile = File(binariesDir, "$buildNumber.tmp")
         val targetFile = File(binariesDir, "$buildNumber.jar")
         if (!targetFile.exists()) {
-            val r = get(url, allowRedirects = true, stream = true)
-            tmpFile.writeBytes(r.content)
-            tmpFile.renameTo(targetFile)
+            val (request, response, result) = url.httpGet()
+                    .response()
+            when (result) {
+                is Result.Success -> {
+                    tmpFile.writeBytes(result.value)
+                    tmpFile.renameTo(targetFile)
+                }
+                is Result.Failure -> {
+                    logger.error(result.error.toString())
+                }
+            }
         }
         return targetFile
     }

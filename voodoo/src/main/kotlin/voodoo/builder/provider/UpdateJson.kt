@@ -4,7 +4,8 @@ import aballano.kotlinmemoization.memoize
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import khttp.get
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
 import mu.KLogging
 
 /**
@@ -18,11 +19,13 @@ class UpdateJsonProviderThing : ProviderBase("UpdateJson Provider") {
                 .registerModule(KotlinModule()) // Enable Kotlin support
 
         val getUpdateJson = { url: String ->
-            val r = get(url)
-            if (r.statusCode == 200) {
-                mapper.readValue<UpdateJson>(r.text)
-            } else {
-                null
+            val (request, response, result) = url.httpGet()
+                    .responseString()
+            when (result) {
+                is Result.Success -> {
+                    mapper.readValue<UpdateJson>(result.value)
+                }
+                else -> null
             }
         }.memoize()
     }

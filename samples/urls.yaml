@@ -8,9 +8,7 @@ mods:
   jenkinsUrl: https://ci.elytradev.com
 
   entries:
-  - provider: DIRECT
-    url:  https://media.forgecdn.net/files/2443/194/BetterBuildersWands-1.12-0.11.1.245+69d0d70.jar
-  - "Better Builder's Wands"
+  - "Better Builder's Wands" # https://media.forgecdn.net/files/2443/194/BetterBuildersWands-1.12-0.11.1.245%2B69d0d70.jar
   - BiblioCraft
   - The Disenchanter Mod
   - Pam's HarvestCraft
