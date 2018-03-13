@@ -23,7 +23,7 @@ import java.io.*
 object CurseUtil : KLogging() {
     private val META_URL = "https://cursemeta.dries007.net" //TODO: move into Entry
     private val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10" //TODO: move into Entry ?
-    val useragent = "voodoo/$VERSION"
+    val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
     val mapper = jacksonObjectMapper() // Enable Json parsing
             .registerModule(KotlinModule()) // Enable Kotlin support
