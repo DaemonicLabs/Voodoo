@@ -27,7 +27,7 @@ import java.io.File
  */
 
 private val logger = KotlinLogging.logger {}
-
+private val META_URL = "https://cursemeta.dries007.net"
 fun main(vararg args: String) = mainBody {
 
     val arguments = Arguments(ArgParser(args))
@@ -137,12 +137,12 @@ object Importer : KLogging() {
         // add curse entries
         for(curseFile in manifest.files) {
             logger.info("processing file {}", curseFile)
-            val addon = CurseUtil.getAddon(curseFile.projectID)
+            val addon = CurseUtil.getAddon(curseFile.projectID, META_URL)
             if(addon == null) {
                 logger.error("cannot find addon ${curseFile.projectID}")
                 continue
             }
-            val file = CurseUtil.getAddonFile(curseFile.projectID, curseFile.fileID)!!
+            val file = CurseUtil.getAddonFile(curseFile.projectID, curseFile.fileID, META_URL)!!
             val entry = Entry(name = addon.name, version = file.fileName, optional = !curseFile.required)
             Entry(name = addon.name, version = file.fileName, optional = !curseFile.required)
             if (!file.gameVersion.contains(modpack.mcVersion)) {

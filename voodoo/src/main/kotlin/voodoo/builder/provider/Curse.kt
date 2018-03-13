@@ -23,7 +23,7 @@ class CurseProviderThing : ProviderBase("Curse Provider") {
         register("prepareDependencies",
                 { (it.id <= 0 || it.fileId <= 0) && it.name.isNotBlank() },
                 { e, m ->
-                    val (addonId, fileId, fileName) = findFile(e, m)
+                    val (addonId, fileId, fileName) = findFile(e, m, e.curseMetaUrl)
 
                     e.id = addonId
                     e.fileId = fileId
@@ -40,43 +40,43 @@ class CurseProviderThing : ProviderBase("Curse Provider") {
         register("setName",
                 { it.id > 0 && it.name.isBlank() },
                 { e, _ ->
-                    e.name = getAddon(e.id)!!.name
+                    e.name = getAddon(e.id, e.curseMetaUrl)!!.name
                 }
         )
         register("setDescription",
                 { it.id > 0 && it.description.isBlank() },
                 { e, _ ->
-                    e.description = getAddon(e.id)!!.summary
+                    e.description = getAddon(e.id, e.curseMetaUrl)!!.summary
                 }
         )
         register("setWebsiteUrl",
                 { it.id > 0 && it.websiteUrl.isBlank() },
                 { e, _ ->
-                    e.websiteUrl = getAddon(e.id)!!.webSiteURL
+                    e.websiteUrl = getAddon(e.id, e.curseMetaUrl)!!.webSiteURL
                 }
         )
         register("setUrl",
                 { it.id > 0 && it.fileId > 0 && it.url.isBlank() },
                 { e, _ ->
-                    e.url = getAddonFile(e.id, e.fileId)!!.downloadURL
+                    e.url = getAddonFile(e.id, e.fileId, e.curseMetaUrl)!!.downloadURL
                 }
         )
         register("setFileName",
                 { it.id > 0 && it.fileId > 0 && it.fileName.isBlank() },
                 { e, _ ->
-                    e.fileName = getAddonFile(e.id, e.fileId)!!.fileNameOnDisk
+                    e.fileName = getAddonFile(e.id, e.fileId, e.curseMetaUrl)!!.fileNameOnDisk
                 }
         )
         register("setPackageType",
                 { it.id > 0 && it.packageType == PackageType.ANY },
                 { e, _ ->
-                    e.packageType = getAddon(e.id)!!.packageType
+                    e.packageType = getAddon(e.id, e.curseMetaUrl)!!.packageType
                 }
         )
         register("setTargetPath",
                 { it.id > 0 && it.internal.targetPath.isBlank() },
                 { e, _ ->
-                    e.internal.targetPath = getAddon(e.id)!!.categorySection.path
+                    e.internal.targetPath = getAddon(e.id, e.curseMetaUrl)!!.categorySection.path
                 }
         )
         register("cacheRelpath",
@@ -100,14 +100,14 @@ class CurseProviderThing : ProviderBase("Curse Provider") {
     private fun resolveDependencies(entry: Entry, modpack: Modpack) {
         val addonId = entry.id
         val fileId = entry.fileId
-        val addon = getAddon(addonId)!!
-        val addonFile = getAddonFile(addonId, fileId)!!
+        val addon = getAddon(addonId, entry.curseMetaUrl)!!
+        val addonFile = getAddonFile(addonId, fileId, entry.curseMetaUrl)!!
         if(addonFile.dependencies == null) return
         logger.info("dependencies of ${entry.name} ${addonFile.dependencies}")
         logger.info(entry.toString())
         for ((depAddonId, depType) in addonFile.dependencies) {
             logger.info("resolve Dep $depAddonId")
-            val depAddon = getAddon(depAddonId) ?: continue
+            val depAddon = getAddon(depAddonId, entry.curseMetaUrl) ?: continue
 
 //            val depends = entry.dependencies
             var dependsList = entry.dependencies[depType] ?: listOf()

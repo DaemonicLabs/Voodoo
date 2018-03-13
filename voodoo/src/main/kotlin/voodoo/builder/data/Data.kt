@@ -104,6 +104,7 @@ data class Entry(
         var version: String = "", //TODO: use regex only ?
         var validMcVersions: List<String> = emptyList(),
         var doOptionals: Boolean = false,
+        var curseMetaUrl: String = "https://cursemeta.dries007.net",
         // DIRECT
         var url: String = "",
         var urlTxt: Boolean = true,
