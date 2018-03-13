@@ -8,11 +8,13 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
+import org.apache.commons.compress.compressors.CompressorStreamFactory
 import voodoo.builder.data.Entry
 import voodoo.builder.data.Modpack
-import org.apache.commons.compress.compressors.CompressorStreamFactory
 import voodoo.gen.VERSION
-import java.io.*
+import java.io.BufferedReader
+import java.io.ByteArrayInputStream
+import java.io.InputStreamReader
 
 
 /**
@@ -21,7 +23,7 @@ import java.io.*
  * @version 1.0
  */
 object CurseUtil : KLogging() {
-    private val META_URL = "https://cursemeta.dries007.net" //TODO: move into Entry
+    private val META_URL = "https://cursemeta.dries007.net"
     private val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10" //TODO: move into Entry ?
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
@@ -64,8 +66,8 @@ object CurseUtil : KLogging() {
         }
     }
 
-    private fun getAddonFileCall(addonId: Int, fileId: Int): AddOnFile? {
-        val url = "$META_URL/api/v2/direct/GetAddOnFile/$addonId/$fileId"
+    private fun getAddonFileCall(addonId: Int, fileId: Int, metaUrl: String = META_URL): AddOnFile? {
+        val url = "$metaUrl/api/v2/direct/GetAddOnFile/$addonId/$fileId"
 
         logger.debug("get $url")
         val (request, response, result) = url.httpGet()
@@ -81,8 +83,8 @@ object CurseUtil : KLogging() {
 
     val getAddonFile = ::getAddonFileCall.memoize()
 
-    private fun getAllFilesForAddOnCall(addonId: Int): List<AddOnFile> {
-        val url = "$META_URL/api/v2/direct/GetAllFilesForAddOn/$addonId"
+    private fun getAllFilesForAddOnCall(addonId: Int, metaUrl: String = META_URL): List<AddOnFile> {
+        val url = "$metaUrl/api/v2/direct/GetAllFilesForAddOn/$addonId"
 
         logger.debug("get $url")
         val (request, response, result) = url.httpGet()
@@ -98,8 +100,8 @@ object CurseUtil : KLogging() {
 
     val getAllFilesForAddOn = ::getAllFilesForAddOnCall.memoize()
 
-    private fun getAddonCall(addonId: Int): AddOn? {
-        val url = "$META_URL/api/v2/direct/GetAddOn/$addonId"
+    private fun getAddonCall(addonId: Int, metaUrl: String = META_URL): AddOn? {
+        val url = "$metaUrl/api/v2/direct/GetAddOn/$addonId"
 
         logger.debug("get $url")
         val (request, response, result) = url.httpGet()
@@ -119,7 +121,7 @@ object CurseUtil : KLogging() {
     val getAddon = ::getAddonCall.memoize()
 
 
-    fun findFile(entry: Entry, modpack: Modpack): Triple<Int, Int, String> {
+    fun findFile(entry: Entry, modpack: Modpack, metaUrl: String = META_URL): Triple<Int, Int, String> {
         val mcVersions = listOf(modpack.mcVersion) + entry.validMcVersions
         val name = entry.name
         val version = entry.version
@@ -134,7 +136,7 @@ object CurseUtil : KLogging() {
         val addon = data.find { addon ->
             (name.isNotBlank() && name.equals(addon.name, true))
                     || (addonId > 0 && addonId == addon.id)
-        } ?: if (addonId > 0) getAddon(addonId)!! else {
+        } ?: if (addonId > 0) getAddon(addonId, metaUrl)!! else {
             logger.error("no addon matching the parameters found for '$entry'")
             System.exit(-1)
             return Triple(-1, -1, "")
@@ -145,12 +147,12 @@ object CurseUtil : KLogging() {
         val re = Regex(fileNameRegex)
 
         if (fileId > 0) {
-            val file = getAddonFile(addonId, fileId)
+            val file = getAddonFile(addonId, fileId, metaUrl)
             if (file != null)
                 return Triple(addonId, file.id, file.fileNameOnDisk)
         }
 
-        var files = getAllFilesForAddOn(addonId).sortedWith(compareByDescending { it.fileDate })
+        var files = getAllFilesForAddOn(addonId, metaUrl).sortedWith(compareByDescending { it.fileDate })
 
         var oldFiles = files
 
