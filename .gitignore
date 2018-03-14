@@ -6,6 +6,7 @@ run/
 *.iml
 
 **/gen/
+**/output/
 
 /editor/
 /test/
