@@ -12,7 +12,6 @@ import archiver.gen.VERSION
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KotlinLogging
-import voodoo.util.Directories
 import java.io.File
 import java.util.concurrent.Executors
 
@@ -31,33 +30,30 @@ fun main(vararg args: String) {
             return
         }
         else -> {
-            CurseUtil.getFeed(true)
+            CurseUtil.getFeed()
         }
     }
 
-    val directories = Directories.get(moduleNam = "archiver")
-    val cachebase = directories.cacheHome.path
     val outputDir = File("output")
 
-    logger.info("${feed.size} AddOns to be downloaded")
+    logger.info("${feed.count()} AddOns to be downloaded")
     val executor = Executors.newFixedThreadPool(5)
     for (addOn in feed) {
         val worker = Runnable {
-            println("Getting AddOn ${addOn.id}")
-            val cacheDir = File(cachebase, addOn.id.toString())
+            println("Getting AddOn ${addOn.id} ${addOn.name}")
             val destDir = File(outputDir, addOn.id.toString())
             val files = CurseUtil.getAllFilesForAddOn(addOn.id, META_URL)
             for(file in files) {
-                val cacheFile = File(cacheDir, "${file.id}/${file.fileNameOnDisk}")
+                val destFile = File(destDir, "${file.id}/${file.fileNameOnDisk}")
                 val url = file.downloadURL
                 logger.info("downloading {}", url)
-                if(cacheFile.exists() && !cacheFile.isFile) cacheFile.delete()
-                if (!cacheFile.exists()) {
+                if(destFile.exists() && !destFile.isFile) destFile.delete()
+                if (!destFile.exists()) {
                     val (request, response, result) = url.httpGet().response()
                     when (result) {
                         is Result.Success -> {
-                            cacheFile.parentFile.mkdirs()
-                            cacheFile.writeBytes(result.value)
+                            destFile.parentFile.mkdirs()
+                            destFile.writeBytes(result.value)
                         }
                         is Result.Failure -> {
                             logger.error("invalid statusCode {} from {}", response.statusCode, url)
@@ -70,11 +66,6 @@ fun main(vararg args: String) {
                 } else {
                     logger.info("skipping downloading ${file.fileName} (is cached)")
                 }
-                val destinationDir = destDir.resolve(file.id.toString())
-                destinationDir.mkdir()
-                val destination = destinationDir.resolve(file.fileNameOnDisk)
-                logger.info("copying $cacheFile -> $destination")
-                cacheFile.copyTo(destination, overwrite = true)
             }
         }
         executor.execute(worker)
