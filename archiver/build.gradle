@@ -1,0 +1,43 @@
+plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.2'
+    id 'application'
+}
+
+mainClassName = "archiver.MainKt"
+major = project.major
+minor = project.minor
+patch = project.patch
+version = "$major.$minor.$patch"
+
+shadowJar {
+    classifier = null
+}
+
+dependencies {
+    compile project(':util')
+    compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+' //for JVM
+    compile group: 'com.github.kittinunf.fuel', name: 'fuel-jackson', version: '+' //for JVM
+    compile group: 'org.apache.commons', name: 'commons-compress', version: '+'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '+'
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '+'
+    compile group: 'com.github.aballano', name: 'MnemoniK', version: '+'
+    compile group: 'io.github.microutils', name: 'kotlin-logging', version: '+'
+    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
+    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
+}
+
+build.dependsOn(shadowJar)
+
+compileKotlin.doFirst {
+    copy {
+        from("src/templates/kotlin/archiver/Constants.kt")
+        into("src/main/kotlin/archiver/gen")
+        filter { String line ->
+            line
+                    .replace('/* MAJOR_VERSION */', "${project.major} //")
+                    .replace('/* MINOR_VERSION */', "${project.minor} //")
+                    .replace('/* PATCH_VERSION */', "${project.patch} //")
+        }
+    }
+}
