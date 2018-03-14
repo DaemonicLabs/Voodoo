@@ -52,7 +52,7 @@ data class AddOnFile(
         val fileName: String,
         val fileNameOnDisk: String,
         val fileStatus: FileStatus,
-        val gameVersion: List<String>,
+        val gameVersion: List<String>?,
         val isAlternate: Boolean,
         val isAvailable: Boolean,
         val packageFingerprint: Long,
@@ -62,7 +62,7 @@ data class AddOnFile(
 
 data class GameVersionLatestFile(
         val fileType: FileType,
-        val gameVesion: String,
+        val gameVesion: String?,
         val projectFileID: Int,
         val projectFileName: String
 )

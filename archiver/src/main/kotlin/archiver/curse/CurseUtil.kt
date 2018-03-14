@@ -35,7 +35,9 @@ object CurseUtil : KLogging() {
     fun getFeed(hourly: Boolean = false): List<AddOn> {
         logger.info("downloading curse feed")
         val type = if(hourly) "hourly" else "complete"
-        val (request, response, result) = "$FEED_URL/$type.json.bz2".httpGet()
+        val url = "$FEED_URL/$type.json.bz2"
+        logger.info("get $url")
+        val (request, response, result) = url.httpGet()
                 .header("User-Agent" to useragent)
                 .response()
         when (result) {
