@@ -271,3 +271,8 @@ enum class ProjectStatus {
         }
     }
 }
+
+data class NameIdPair(
+        val id: Int,
+        val name: String
+)

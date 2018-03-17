@@ -1,12 +1,13 @@
 name: Center of the Multiverse
 title: Center of the Multiverse
-version: 2.0.4
+version: 2.1.0
 mcVersion: 1.12.2
 forge: 2611
 mods:
 #==========#
 # Defaults #
 #==========#
+
   validMcVersions: [1.12.1, '1.12']
   doOptionals: false
   releaseTypes: [ alpha, beta, release ]
@@ -17,12 +18,8 @@ mods:
 #===========#
   entries:
 
-  # coolAlias
-  - Dynamic Sword Skills
-
   # moddinglegacy
   - Aether Legacy
-  - Glacidus
 
   # Vazkii
   - Akashic Tome
@@ -89,7 +86,6 @@ mods:
 
   # TheLMiffy1111
   - JAOPCA
-  - Just Enough HarvestCraft (JEHC)
 
   # mezz
   - Just Enough Items (JEI)
@@ -97,9 +93,6 @@ mods:
   # keridos
   - OpenModularTurrets
   - OMLib
-
-  # team_otg
-  - Biome Bundle
 
   # Benimatic
   - The Twilight Forest
@@ -123,15 +116,23 @@ mods:
   - Thermal Dynamics
   - Thermal Expansion
 
+  # McJTY
+  - RFTools
+  - RFTools Power
+  - RFTools Dimensions
+
+  # ValkyrieofNight
+  - Environmental Tech
+
+  # Mr_Crayfish
+  - "MrCrayfish's Furniture Mod"
+
   - The Disenchanter Mod
   - Draconic Evolution
-  - Doggy Talents
   - Dynamic Surroundings
   - Embers
   - Enchiridion
   - Ender Storage 1.8.+
-  - Environmental Tech
-  - ET Lunar [Environmental Tech Addon]
   - Exchangers
   - Extra Alchemy
   - Extra Bit Manipulation
@@ -141,10 +142,9 @@ mods:
   - Farming for Blockheads
   - Forestry
   - FTB Utilities
-  - MrCrayfish's Furniture Mod
+  - FTBLib
   - Gendustry
   - Grappling Hook Mod
-  - Hardcore Revival
   - HelpFixer
   - Hwyla
   - Initial Inventory
@@ -188,7 +188,6 @@ mods:
   - Refined Storage
   - Refined Storage Addons
   - Reliquary v1.3
-  - RFTools
   - Roguelike Dungeons
   - Roots
   - Rope Bridge
@@ -220,17 +219,51 @@ mods:
   - Totemic
   - Robotic Parts
   - ReWIRED
-  - Soulus
+  - Woot
   - Garbage Bins
   - Land Manager
   - Sit
   - Fast Leaf Decay
   - Unlimited Chisel Works - Botany
   - "Blood Magic "
-  #- Improvable Skills 3 (issue submitted)
   - Unloader
-  - Animania
   - ColorfulWater
+  - The Erebus
+  - chunkgen
+  - MatterLink
+
+  # asie
+  - Charset Lib
+  - Charset Tweaks
+  - Charset Storage - Barrels
+  - Charset Storage - Tanks
+  - Charset Block Carrying
+  - Charset Tablet
+  - Charset Crafting
+  - Charset Transport - Carts and Rails
+  - Charset Audio
+  - Charset Storage - Locks
+  - CharsetPatches
+
+  #FoamFix
+  - url: https://unascribed.com/foamfix/FoamFix-1.12.2-0.9.4-Anarchy.jar
+    name: FoamFix
+    provider: DIRECT
+
+  #Nutrition
+  - url: http://centerofthemultiverse.net/launcher/dist/Nutrition-1.12.2-2.9.0.jar
+    name: Nutrition
+    provider: DIRECT
+
+  #Testing
+
+  # - MrCrayfish's Device Mod
+  - id: 283055
+    name: MrCrayfish's Device Mod
+
+  - Better Builder's Wands
+  - Construct's Armory
+  - 'Dimensional Doors.'
 
   - provider: JENKINS
     jenkinsUrl: https://ci.elytradev.com
@@ -260,48 +293,33 @@ mods:
     - job: elytra/ArchitectureCraft/1.12
       name: ArchitectureCraft
 
-    - job: elytra/Teckle/1.12
-      name: Teckle
-
-    # asie
-    - job: CharsetMC/Charset/1.12
-      name: Charset
-
-  - provider: JSON
-    updateJson: https://asie.pl/files/minecraft/update/foamfix.json # resolves `name = foamfix` too
-    updateChannel: latest # default == reommended
-    template: https://unascribed.com/foamfix/FoamFix-1.12.2-{version}-Anarchy.jar
-
-  - provider: JSON
-    updateJson: https://asie.pl/files/minecraft/update/charsetpatches.json
-    name: CharsetPatches
-    template: https://asie.pl/files/mods/Charset/CharsetPatches-{version}.jar
-
-   #Nutrition
-  - url: http://centerofthemultiverse.net/launcher/dist/Nutrition-1.12.2-2.9.0.jar
-    name: Nutrition
-    provider: DIRECT
-
    #Dimensional Doors
-  - url: http://centerofthemultiverse.net/launcher/dist/Dimdoors-3.0.7-b-1.233.jar
-    name: Dimensional Doors
-    provider: DIRECT
+   #- url: http://centerofthemultiverse.net/launcher/dist/Dimdoors-3.0.7-b-1.233.jar
+   # name: Dimensional Doors
+   #provider: DIRECT
 
    #Better Builder's Wands
-  - url: http://centerofthemultiverse.net/launcher/dist/BetterBuildersWands.jar
-    name: Better Builder's Wands
-    provider: DIRECT
+   #- url: http://centerofthemultiverse.net/launcher/dist/BetterBuildersWands.jar
+   # name: Better Builder's Wands
+   #provider: DIRECT
 
    #MrCrayfish's Device Mod
-  - url: http://centerofthemultiverse.net/launcher/dist/device-mod-0.3.0-1.12.2.jar
-    name: MrCrayfish's Device Mod
-    provider: DIRECT
+   #- url: http://centerofthemultiverse.net/launcher/dist/device-mod-0.3.0-1.12.2.jar
+   # name: MrCrayfish's Device Mod
+   #provider: DIRECT
+
+   #Construct's Armory
+   #- url: http://centerofthemultiverse.net/launcher/dist/conarm-1.12.2-0.0.8-a.jar
+   # name: Construct's Armory
+   #provider: DIRECT
+
 
 #============#
 # Clientside #
 #============#
   - side: CLIENT
     entries:
+    - Just Enough HarvestCraft (JEHC)
     - Just Enough Resources (JER)
     - MineMenu
     - JourneyMap
