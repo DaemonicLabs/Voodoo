@@ -32,36 +32,22 @@ object CurseUtil : KLogging() {
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
 //            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
 
-    val data: List<AddOn> = getFeed()
+    private val pairs = getNameIdPairs()
 
-    private fun getFeed(): List<AddOn> {
-        logger.info("downloading curse feed")
-        val (request, response, result) = "$FEED_URL/complete.json.bz2".httpGet()
+    private fun getNameIdPairs(): List<NameIdPair> {
+        val url = "https://curse.nikky.moe/api/addon?property=id,name&mods=1&resourcepacks=1"
+
+        logger.debug("get $url")
+        val (request, response, result) = url.httpGet()
                 .header("User-Agent" to useragent)
-                .response()
-        when (result) {
+                .responseString()
+        return when (result) {
             is Result.Success -> {
-                val bis = ByteArrayInputStream(result.value)
-                val input = CompressorStreamFactory().createCompressorInputStream(bis)
-                val buf = BufferedReader(InputStreamReader(input))
-
-                val text = buf.use { it.readText() }
-
-                val feed = mapper.readValue<CurseFeed>(text)
-
-                return feed.data.filter {
-                    when (it.categorySection.id) {
-                        6 -> true //mod
-                        12 -> true //texture packs
-                        17 -> false //worlds
-                        4471 -> false //modpacks
-                        else -> false
-                    }
-                }
+                mapper.readValue(result.value)
             }
-            else -> {
-                logger.error("failed getting cursemeta data")
-                throw Exception("failed getting cursemeta data, code: ${response.statusCode}")
+            is Result.Failure -> {
+                logger.error(result.error.toString())
+                throw Exception("failed getting id-name pairs")
             }
         }
     }
@@ -120,6 +106,10 @@ object CurseUtil : KLogging() {
 
     val getAddon = ::getAddonCall.memoize()
 
+    fun getAddonByName(name: String) : AddOn? = pairs
+            .find { it.name == name }
+            ?.id
+            ?.let { getAddon(it, META_URL)}
 
     fun findFile(entry: Entry, modpack: Modpack, metaUrl: String = META_URL): Triple<Int, Int, String> {
         val mcVersions = listOf(modpack.mcVersion) + entry.validMcVersions
@@ -133,10 +123,16 @@ object CurseUtil : KLogging() {
         val fileId = entry.fileId
         val fileNameRegex = entry.curseFileNameRegex
 
-        val addon = data.find { addon ->
-            (name.isNotBlank() && name.equals(addon.name, true))
-                    || (addonId > 0 && addonId == addon.id)
-        } ?: if (addonId > 0) getAddon(addonId, metaUrl)!! else {
+        val addon = if(addonId < 0) {
+            if(name.isNotBlank())
+                getAddonByName(name)
+            else
+                null
+        } else {
+            getAddon(addonId, META_URL)
+        }
+
+        if(addon == null) {
             logger.error("no addon matching the parameters found for '$entry'")
             System.exit(-1)
             return Triple(-1, -1, "")

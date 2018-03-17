@@ -81,7 +81,7 @@ class DirectProviderThing : ProviderBase("Direct provider") {
                         val (request, response, result) = entry.url.httpGet().response()
                         when(result) {
                             is Result.Success -> {
-                                cacheFile.writeBytes(result.component1()!!)
+                                cacheFile.writeBytes(result.value)
                             }
                             is Result.Failure -> {
                                 logger.error("invalid statusCode {} from {}", response.statusCode, entry.url)
