@@ -3,6 +3,7 @@ package voodoo.builder.provider
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
+import voodoo.gen.VERSION
 import java.io.File
 import java.net.URL
 import java.net.URLDecoder
@@ -14,7 +15,9 @@ import java.net.URLDecoder
  */
 
 class DirectProviderThing : ProviderBase("Direct provider") {
-    companion object: KLogging()
+    companion object: KLogging() {
+        val useragent = "voodoo/${VERSION} (https://github.com/elytra/Voodoo)"
+    }
 
     //    override fun validate(): Boolean {
 //        return entry.url.isNotBlank()
@@ -78,7 +81,7 @@ class DirectProviderThing : ProviderBase("Direct provider") {
                     if (!cacheFile.exists() || !cacheFile.isFile) {
                         logger.info("downloading ${entry.name} to $cacheFile")
                         logger.info("downloading {}", entry.url)
-                        val (request, response, result) = entry.url.httpGet().response()
+                        val (request, response, result) = entry.url.httpGet().header("User-Agent" to useragent).response()
                         when(result) {
                             is Result.Success -> {
                                 cacheFile.writeBytes(result.value)
