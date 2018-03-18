@@ -157,7 +157,8 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
 
     logger.info("forge")
     val (forgeEntry, forgeVersion) = Forge.getForge(modpack.forge, modpack.mcVersion)
-    modpack.mods.entries += forgeEntry
+    if(modpack.mods.entries.find { it.name == forgeEntry.name } == null)
+        modpack.mods.entries += forgeEntry
     logger.info(modpack.toYAMLString())
 
     var counter = 0
