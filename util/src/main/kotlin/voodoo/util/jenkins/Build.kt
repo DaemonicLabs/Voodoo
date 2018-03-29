@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import khttp.get
 import mu.KLogging
 import mu.KotlinLogging
 
@@ -20,22 +19,20 @@ data class Build(
         val url: String
 ) {
     companion object : KLogging()
-    fun details(): BuildWithDetails? {
-        val r = get("$url/api/json")
-        if (r.statusCode == 200) {
-            return mapper.readValue(r.text)
+    fun details(userAgent: String): BuildWithDetails? {
+        val (_, _, result) = "$url/api/json"
+                .httpGet()
+                .header("User-Agent" to userAgent)
+                .responseString()
+        return when(result) {
+            is Result.Success -> {
+                mapper.readValue(result.value)
+            }
+            is Result.Failure -> {
+                logger.error(result.error.toString())
+                null
+            }
         }
-        return null
-//        val (request, response, result) = "$url/api/json".httpGet().responseString()
-//        return when(result) {
-//            is Result.Success -> {
-//                mapper.readValue(result.value)
-//            }
-//            is Result.Failure -> {
-//                logger.error(result.error.toString())
-//                null
-//            }
-//        }
     }
 }
 

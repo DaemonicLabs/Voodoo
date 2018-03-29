@@ -6,7 +6,6 @@
 
 package voodoo
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
@@ -27,7 +26,7 @@ fun main(args: Array<String>) {
 
 object Bootstrap : KLogging() {
 
-    private val directories: Directories = Directories.get(moduleNam = "bootstrap")
+    private val directories: Directories = Directories.get(moduleName = "bootstrap")
     private val binariesDir: File = directories.cacheHome
 
     fun cleanup() {

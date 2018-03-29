@@ -5,7 +5,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import khttp.get
 import mu.KLogging
 
 /**
@@ -20,22 +19,22 @@ internal val mapper = jacksonObjectMapper() // Enable Json parsing
 
 class JenkinsServer(val url: String) {
     companion object : KLogging()
-    fun getJob(job: String): Job? {
+
+    fun getJob(job: String, userAgent: String): Job? {
         val requestURL = url + "/job/" + job.replace("/", "/job/") + "/api/json"
-        val r = get(requestURL)
-        if (r.statusCode == 200) {
-            return mapper.readValue(r.text)
+        val (_, _, result) = requestURL
+                .httpGet()
+                .header("User-Agent" to userAgent)
+                .responseString()
+        return when (result) {
+            is Result.Success -> {
+                mapper.readValue(result.value)
+            }
+            is Result.Failure -> {
+                logger.error(result.error.toString())
+                null
+            }
         }
-        return null
     }
-//    val (request, response, result) =requestURL.httpGet().responseString()
-//    return when(result) {
-//        is Result.Success -> {
-//            mapper.readValue(result.value)
-//        }
-//        is Result.Failure -> {
-//            Build.logger.error(result.error.toString())
-//            null
-//        }
-//    }
+
 }

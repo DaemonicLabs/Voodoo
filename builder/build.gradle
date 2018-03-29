@@ -1,0 +1,28 @@
+plugins {
+    id 'application'
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = "voodoo.BuilderKt"
+
+def runDir = parent.project.file("run").path
+
+def runArgs = ["openpack.json", "-o", "openpack-out.json", "--stdout", "--force", "--save"]
+
+run {
+    workingDir = runDir
+    args = runArgs
+}
+
+runShadow {
+    workingDir = runDir
+    args = runArgs
+}
+
+dependencies {
+    compile project(':core')
+    compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+'
+    compile group: 'com.github.kittinunf.fuel', name: 'fuel-jackson', version: '+'
+    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
+}
