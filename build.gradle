@@ -1,4 +1,5 @@
 plugins {
+    id 'com.github.johnrengelman.shadow' version '2.0.3'
     id "org.jetbrains.kotlin.jvm" version "1.2.30"
     id 'idea'
 }
@@ -11,7 +12,7 @@ println """
 *******************************************
 """
 
-group = 'moe.nikky'
+//group = 'moe.nikky'
 
 idea {
     module {

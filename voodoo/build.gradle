@@ -1,7 +1,8 @@
 plugins {
-    id 'com.github.johnrengelman.shadow' version '2.0.2'
     id 'application'
 }
+
+apply plugin: 'com.github.johnrengelman.shadow'
 
 mainClassName = "voodoo.MainKt"
 major = project.major
