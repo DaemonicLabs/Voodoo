@@ -1,0 +1,46 @@
+name: Optional Test
+title: Optional Showcase
+forge: latest
+mcVersion: 1.12.2
+root:
+#===========#
+# Core Pack #
+#===========#
+  validMcVersions:
+  - 1.12.1
+  - '1.12'
+  entries:
+  #============#
+  # Clientside #
+  #============#
+    - side: CLIENT
+      entries:
+      - Just Enough HarvestCraft (JEHC)
+      - Just Enough Resources (JER)
+      - MineMenu
+      - AppleSkin
+      - BetterFps
+      - NoNausea
+      - Better Placement
+      - Controlling
+      - Custom Main Menu
+      - Default Options
+      - Durability Show
+      - Fullscreen Windowed (Borderless) for Minecraft
+      - JEI Integration
+      - Keyboard Wizard
+      - Mod Name Tooltip
+      - Neat
+      - ReAuth
+
+  #=======================#
+  # Clientside - Optional #
+  #=======================#
+      - feature:
+          selected: true
+        entries:
+        - Fancy Block Particles
+        - JourneyMap
+        - Client Tweaks
+        - Item Scroller
+        - Mouse Tweaks
