@@ -19,7 +19,7 @@ data class Job(
         val lastSuccessfulBuild: Build?,
         val lastStableBuild: Build?
 ) {
-    fun getBuildByNumber(build: Int): BuildWithDetails? {
-        return builds.find { it.number == build }?.details()
+    fun getBuildByNumber(build: Int, userAgent: String): BuildWithDetails? {
+        return builds.find { it.number == build }?.details(userAgent)
     }
 }

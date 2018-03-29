@@ -1,0 +1,26 @@
+plugins {
+    id 'application'
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = "voodoo.FlattenKt"
+
+def runDir = parent.project.file("run").path
+
+def runArgs = ["openpack.yaml"]
+
+run {
+    workingDir = runDir
+    args = runArgs
+}
+
+runShadow {
+    workingDir = runDir
+    args = runArgs
+}
+
+dependencies {
+    compile project(':core')
+    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
+}

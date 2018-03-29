@@ -72,7 +72,7 @@ private class Arguments(parser: ArgParser) {
 
 object Importer : KLogging() {
     fun import(import: String, target: String, workingDirectory: File, outPath: File) {
-        val directories = Directories.get(moduleNam = "importer")
+        val directories = Directories.get(moduleName = "importer")
         val packFile = with(File(import)) {
             if (isFile) {
                 logger.info("importing {}", this)

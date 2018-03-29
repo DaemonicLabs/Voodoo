@@ -118,7 +118,7 @@ fun process(modpack: Modpack, workingDirectory: File, outPath: File, multimcExpo
 //        throw IllegalArgumentException("no forge version define")
     modpack.flatten()
 
-    val directories = Directories.get(moduleNam = "builder")
+    val directories = Directories.get(moduleName = "builder")
 
     val packPath = outPath.resolve(modpack.name)
     val srcPath = packPath.resolve("src")

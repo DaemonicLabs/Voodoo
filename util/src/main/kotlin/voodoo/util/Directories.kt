@@ -72,10 +72,10 @@ interface Directories {
             }, "Runtime directory cleanup thread"))
         }
 
-        fun get(appName: String = "voodoo", moduleNam: String? = null, useBareDirectories: Boolean = false): Directories {
+        fun get(appName: String = "voodoo", moduleName: String? = null, useBareDirectories: Boolean = false): Directories {
             var cleanAppName = appName.toLowerCase(Locale.ROOT).replace(Regex("[^a-z0-9]"), "-")
-            if(moduleNam != null) {
-                val cleanModuleName = moduleNam.toLowerCase(Locale.ROOT).replace(Regex("[^a-z0-9]"), "-")
+            if(moduleName != null) {
+                val cleanModuleName = moduleName.toLowerCase(Locale.ROOT).replace(Regex("[^a-z0-9]"), "-")
                 cleanAppName += "/" + cleanModuleName
             }
             val directories: Directories
