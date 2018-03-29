@@ -73,16 +73,16 @@ class CurseProviderThing : ProviderBase {
 //        logger.info(entry.toString())
         var result = entry.transient || entry.optional
         if (result) return result
-        for ((depType, entryList) in entry.provides) {
-            if (depType != DependencyType.REQUIRED) continue
-            if (entryList.isEmpty()) return false
-            ProviderBase.logger.info("type: $depType list: $entryList")
-            for (entryName in entryList) {
-                val providerEntry = modpack.entries.firstOrNull { it.name == entryName }!!
-                val tmpResult = isOptional(providerEntry, modpack)
-                if (!tmpResult) return false
-            }
-        }
+//        for ((depType, entryList) in entry.provides) {
+//            if (depType != DependencyType.REQUIRED) continue
+//            if (entryList.isEmpty()) return false
+//            ProviderBase.logger.info("type: $depType list: $entryList")
+//            for (entryName in entryList) {
+//                val providerEntry = modpack.entries.firstOrNull { it.name == entryName }!!
+//                val tmpResult = isOptional(providerEntry, modpack)
+//                if (!tmpResult) return false
+//            }
+//        }
         return true
     }
 
