@@ -32,13 +32,14 @@ fun main(vararg args: String) = mainBody {
             inFile.writeJson(modpack)
         }
 
-        logger.info("Creating LockFile...")
-        val lockedPack = modpack.lock()
+        logger.info("Creating locked pack...")
+        val lockedPack = modpack.lock
 
         if (stdout) {
             print(lockedPack.json)
         }
         if (targetArg.isNotEmpty()) {
+            logger.info("Writing lock file...")
             var target = targetArg
             if (!target.endsWith(".json")) target += ".json"
             val targetFile = File(target)

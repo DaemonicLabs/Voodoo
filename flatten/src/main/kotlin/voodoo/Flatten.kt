@@ -34,9 +34,10 @@ fun main(vararg args: String) = mainBody {
         if (stdout) {
             print(flatpack.json)
         } else {
-            if (target.isEmpty()) target = "${nestedPack.name}.json"
+            if (target.isEmpty()) target = inFile.nameWithoutExtension
             if (!target.endsWith(".json")) target += ".json"
             val targetFile = File(target)
+            logger.info("writing output to $targetFile")
             targetFile.writeJson(flatpack)
         }
     }

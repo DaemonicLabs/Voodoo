@@ -20,6 +20,10 @@ runShadow {
     args = runArgs
 }
 
+shadowJar {
+    classifier = null
+}
+
 dependencies {
     compile project(':core')
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
