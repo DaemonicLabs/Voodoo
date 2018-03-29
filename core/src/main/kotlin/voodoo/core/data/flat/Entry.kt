@@ -23,9 +23,9 @@ data class Entry(
         var feature: EntryFeature? = null,
         var side: Side = Side.BOTH,
         var websiteUrl: String = "",
-        var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+//        var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(), //TODO: look into where this is set
         var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
-//        @JsonInclude(JsonInclude.Include.ALWAYS)
+        @JsonInclude(JsonInclude.Include.ALWAYS)
         var optional: Boolean = feature != null,
         var packageType: PackageType = PackageType.MOD,
         // INTERNAL //TODO: move into internal object or runtime data objects
