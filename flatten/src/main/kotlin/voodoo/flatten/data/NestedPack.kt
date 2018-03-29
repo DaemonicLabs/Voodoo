@@ -1,5 +1,6 @@
 package voodoo.core.data.nested
 
+import voodoo.core.data.UserFiles
 import voodoo.core.data.flat.Entry
 import voodoo.core.data.flat.ModPack
 
@@ -14,6 +15,7 @@ data class NestedPack(
         var version: String = "1.0",
         var forge: Int = -1,
         var mcVersion: String = "",
+        var userFiles: UserFiles = UserFiles(),
         var root: NestedEntry = NestedEntry(),
         var versionCache: String? = null,
         var featureCache: String? = null
@@ -25,6 +27,7 @@ data class NestedPack(
                 version = version,
                 forge = forge,
                 mcVersion = mcVersion,
+                userFiles = userFiles,
                 entries = root.flatten(),
                 versionCache = versionCache,
                 featureCache = featureCache

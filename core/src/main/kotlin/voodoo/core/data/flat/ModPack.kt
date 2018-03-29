@@ -4,7 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import mu.KLogging
 import voodoo.core.data.Feature
+import voodoo.core.data.UserFiles
 import voodoo.core.data.lock.LockEntry
+import voodoo.core.data.lock.LockPack
 import voodoo.util.*
 import java.io.File
 
@@ -16,11 +18,15 @@ import java.io.File
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class ModPack(
+        @JsonInclude(JsonInclude.Include.ALWAYS)
         var name: String,
         var title: String = "",
+        @JsonInclude(JsonInclude.Include.ALWAYS)
         var version: String = "1.0",
         var forge: Int = -1,
         var mcVersion: String = "",
+        @JsonInclude(JsonInclude.Include.ALWAYS)
+        var userFiles: UserFiles = UserFiles(),
         var entries: List<Entry> = emptyList(),
 
         var versionCache: String? = null,
@@ -65,4 +71,18 @@ data class ModPack(
     fun writeFeatureCache() {
         featureCacheFile.writeJson(features)
     }
+
+    val lock: LockPack
+        get() {
+            return LockPack(
+                    name = name,
+                    title = title,
+                    mcVersion = mcVersion,
+                    forge = forge,
+                    userFiles = userFiles,
+                    entries = entries.map { versions[it.name]!! },
+                    features = features
+            )
+        }
+
 }
