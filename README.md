@@ -10,7 +10,7 @@ recently a bootstrap application was added, but it is slightly smaller and just 
 
 ### download
 
-please grab the latest binaries from the [buildserver](https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/)
+please grab the latest binaries from the [buildserver](https://ci.elytradev.com/job/elytra/job/Voodoo/job/2.0/)
 
 ### build
 
@@ -19,16 +19,24 @@ windows: `./gradlew.bat :builder:build`
 
 ## usage
 
-`java -jar bootstrap.jar build pack_definition.yaml`
 
-or
+flatten the yaml (this created the main json)
+`java -jar flatten.jar cotm.yaml`
 
-`java -jar /path/to/Voodoo.jar build pack_definition.yaml`
+update the pack and write out the lockfile
+`java -jar builder.jar cotm.json -o cotm.lock.json --save`
+
+create a sklauncher workspace for it
+`java -jar pack.jar cotm.lock.json sk`
+
 
 samples: [samples](/samples)
 
 ## MultiMC integration
 
+WIP, currently being reimplemented
+
+<!--
 to have voodoo build the pack and automatically copy it into a multimc instance
 set the following as pre-launch command
 
@@ -37,3 +45,5 @@ set the following as pre-launch command
 example
 
 `java -jar $HOME/dev/voodoo/builder/build/libs/builder-1.0.jar test.yaml -d $HOME/dev/voodoo/builder/run/ -i $INST_DIR/.. --mmc`
+
+-->

@@ -37,12 +37,11 @@ fun main(vararg args: String) = mainBody {
 
         if (stdout) {
             print(lockedPack.json)
-        }
-        if (targetArg.isNotEmpty()) {
-            logger.info("Writing lock file...")
-            var target = targetArg
+        } else {
+            var target = targetArg ?: "${lockedPack.name}.lock.json"
             if (!target.endsWith(".json")) target += ".json"
             val targetFile = File(target)
+            logger.info("Writing lock file... $targetFile")
             targetFile.writeJson(lockedPack)
         }
     }
@@ -54,7 +53,7 @@ private class Arguments(parser: ArgParser) {
 
     val targetArg by parser.storing("--output", "-o",
             help = "output file json")
-            .default("")
+            .default<String?>(null)
 
     val save by parser.flagging("--save",
             help = "save inputfile after resolve")
