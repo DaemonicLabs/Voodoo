@@ -1,16 +1,13 @@
-package voodoo.builder.provider
+package voodoo.provider
 
 import aballano.kotlinmemoization.memoize
-import aballano.kotlinmemoization.tuples.Quintuple
 import mu.KLogging
 import voodoo.builder.Job
 import voodoo.builder.JobManager
-import voodoo.builder.JobTracker
 import voodoo.builder.curse.DependencyType
 import voodoo.builder.data.Entry
 import voodoo.builder.data.Modpack
 import voodoo.builder.data.Side
-import voodoo.builder.data.Feature
 import java.io.File
 
 /**

@@ -1,4 +1,4 @@
-package voodoo.builder
+package voodoo.forge
 
 import aballano.kotlinmemoization.tuples.Quadruple
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -7,8 +7,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
-import voodoo.builder.data.Entry
-import voodoo.builder.data.EntryInternal
+import voodoo.core.data.flat.Entry
 import voodoo.provider.Provider
 
 /**
@@ -19,21 +18,22 @@ import voodoo.provider.Provider
 object Forge : KLogging() {
     var data: ForgeData = getForgeData()
 
+    //FIXME: allow latest / recommended in configuration again
     fun getForge(forgeVersion: String, mcVersion: String/*, spongeEntry: Entry?*/): Pair<Entry, String> {
         val (url, filename, longVersion, version) = getForgeUrl(forgeVersion, mcVersion)
 
         val entry = Entry(
-                provider = Provider.DIRECT,
+                provider = Provider.DIRECT.toString(),
                 name = "Minecraft Forge",
                 url = url,
-                fileName = filename,
+                fileName = filename
 //                    packageType = PackageType.LOADER,
-                internal = EntryInternal(
-                        basePath = "loaders",
-                        targetPath = ".",
-                        path = ".",
-                        cacheRelpath = "FORGE/$longVersion"
-                )
+//                internal = EntryInternal(
+//                        basePath = "loaders",
+//                        targetPath = ".",
+//                        path = ".",
+//                        cacheRelpath = "FORGE/$longVersion"
+//                )
         )
         return Pair(entry, version)
     }
@@ -80,9 +80,9 @@ object Forge : KLogging() {
     }
 
     fun getForgeData(): ForgeData {
-        val (request, response, result) = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/json"
+        val (_, _, result) = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/json"
                 .httpGet().responseString()
-        return when(result) {
+        return when (result) {
             is Result.Success -> {
                 val mapper = jacksonObjectMapper() // Enable YAML parsing
                 mapper.registerModule(KotlinModule()) // Enable Kotlin support

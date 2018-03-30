@@ -14,7 +14,7 @@ import voodoo.builder.curse.CurseManifest
 import voodoo.builder.curse.CurseUtil
 import voodoo.builder.data.Entry
 import voodoo.builder.data.Modpack
-import voodoo.builder.provider.Provider
+import voodoo.provider.Provider
 import voodoo.util.Directories
 import voodoo.util.UnzipUtility
 import voodoo.writeToFile

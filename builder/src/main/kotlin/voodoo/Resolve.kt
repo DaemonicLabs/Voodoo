@@ -2,12 +2,14 @@ package voodoo
 
 import aballano.kotlinmemoization.memoize
 import mu.KotlinLogging
-import voodoo.builder.provider.Provider
 import voodoo.core.curse.DependencyType
-import voodoo.core.data.flat.Entry
 import voodoo.core.data.Feature
+import voodoo.core.data.flat.Entry
 import voodoo.core.data.flat.FeatureProperties
 import voodoo.core.data.flat.ModPack
+import voodoo.provider.Provider
+import voodoo.util.Directories
+import voodoo.util.writeJson
 import kotlin.system.exitProcess
 
 /**
@@ -44,6 +46,8 @@ fun resolveFeatureDependencies(entry: Entry, modpack: ModPack) {
     var feature = modpack.features.find { f -> f.properties.name == featureName }
 
     if (feature == null) {
+        var description = entryFeature.description
+        if (description.isEmpty()) description = entry.description
         feature = Feature(
                 entries = setOf(entry.name),
 //                processedEntries = emptyList(),
@@ -51,7 +55,7 @@ fun resolveFeatureDependencies(entry: Entry, modpack: ModPack) {
                 properties = FeatureProperties(
                         name = featureName,
                         selected = entryFeature.selected,
-                        description = entryFeature.description,
+                        description = description,
                         recommendation = entryFeature.recommendation
                 )
         )
@@ -128,6 +132,10 @@ fun ModPack.resolve(force: Boolean = false, updateEntries: List<String>) {
     for (entry in entries) {
         val provider = Provider.valueOf(entry.provider).base
         val lockEntry = provider.resolve(entry, this, ::addEntry)
+        if (entry.name.isBlank()) {
+            logger.error("entry has no name set: $entry")
+            exitProcess(2)
+        }
         if (!versions.containsKey(entry.name) && lockEntry != null)
             versions[entry.name] = lockEntry
     }
@@ -148,11 +156,15 @@ fun ModPack.resolve(force: Boolean = false, updateEntries: List<String>) {
                         it.optional && !feature.entries.contains(it.name)
                     }
                     .forEach {
-                        feature.entries += it.name
-                        logger.info("includes = ${feature.files.include}")
+                        if (!feature.entries.contains(it.name)) {
+                            feature.entries += it.name
+                            logger.info("includes = ${feature.files.include}")
+                        }
                     }
         }
-//        features += feature
+        val mainEntry = entries.find { it.name == feature.entries.first() }!!
+        feature.properties.description = mainEntry.description
+
         logger.info("processed feature $feature")
     }
     writeFeatureCache()
@@ -168,4 +180,11 @@ fun ModPack.resolve(force: Boolean = false, updateEntries: List<String>) {
         }
     }
     writeVersionCache()
+
+    val directories = Directories.get(moduleName = "history")
+    val historyPath = directories.dataHome.resolve(this.name)
+    historyPath.mkdirs()
+    val historyFile = historyPath.resolve("$name-$version.json")
+    logger.info("adding modpack to history -> $historyFile")
+    historyFile.writeJson(this)
 }

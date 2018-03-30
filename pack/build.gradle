@@ -4,11 +4,11 @@ plugins {
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
-mainClassName = "voodoo.BuilderKt"
+mainClassName = "voodoo.PackKt"
 
 def runDir = parent.project.file("run").path
 
-def runArgs = ["openpack.json", "-o", "openpack.lock.json", "--stdout", "--force", "--save"]
+def runArgs = ["openpack.lock.json", "sk"]
 
 run {
     workingDir = runDir
@@ -26,6 +26,7 @@ shadowJar {
 
 dependencies {
     compile project(':core')
+    compile project(':builder')
     compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+'
     compile group: 'com.github.kittinunf.fuel', name: 'fuel-jackson', version: '+'
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
