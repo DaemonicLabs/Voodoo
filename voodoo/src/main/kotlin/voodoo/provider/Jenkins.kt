@@ -1,4 +1,4 @@
-package voodoo.builder.provider
+package voodoo.provider
 
 import aballano.kotlinmemoization.memoize
 import mu.KLogging
@@ -134,13 +134,13 @@ class JenkinsProviderThing : ProviderBase("Jenkins Provider") {
 
     private val build = { jobName: String, url: String, buildNumber: Int ->
         logger.info("get build $buildNumber")
-        job(jobName, url).getBuildByNumber(buildNumber)!!
+        job(jobName, url).getBuildByNumber(buildNumber, "noagent")!!
     }.memoize()
 
     private val job = { jobName: String, url: String ->
         val server = server(url)
         logger.info("get jenkins job $jobName")
-        server.getJob(jobName) ?: throw Exception("no such job: '$jobName' on $url")
+        server.getJob(jobName, "noagent") ?: throw Exception("no such job: '$jobName' on $url")
     }.memoize()
 
     private val server = { url: String ->

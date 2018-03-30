@@ -1,4 +1,4 @@
-package voodoo.builder.provider
+package voodoo.provider.impl
 
 import aballano.kotlinmemoization.memoize
 import mu.KLogging
@@ -6,7 +6,11 @@ import voodoo.builder.VERSION
 import voodoo.core.data.flat.Entry
 import voodoo.core.data.flat.ModPack
 import voodoo.core.data.lock.LockEntry
+import voodoo.core.data.lock.LockPack
+import voodoo.provider.ProviderBase
+import voodoo.util.download
 import voodoo.util.jenkins.JenkinsServer
+import java.io.File
 
 /**
  * Created by nikky on 30/12/17.
@@ -17,15 +21,32 @@ import voodoo.util.jenkins.JenkinsServer
 class JenkinsProviderThing : ProviderBase {
     override val name = "Jenkins Provider"
 
-    companion object: KLogging() {
+    companion object : KLogging() {
         val useragent = "voodoo/${VERSION} (https://github.com/elytra/Voodoo)"
     }
 
     override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry? {
         val job = job(entry.job, entry.jenkinsUrl)
         val buildNumber = job.lastSuccessfulBuild?.number
-        return if(buildNumber == null) null
-        else LockEntry(provider = entry.provider, jenkinsUrl = entry.jenkinsUrl, job = entry.job, buildNumber = buildNumber)
+        return if (buildNumber == null) null
+        else LockEntry(
+                provider = entry.provider,
+                name = entry.name,
+                fileName = entry.fileName,
+                jenkinsUrl = entry.jenkinsUrl,
+                job = entry.job,
+                buildNumber = buildNumber,
+                fileNameRegex = entry.jenkinsFileNameRegex
+        )
+    }
+
+    override fun download(entry: LockEntry, modpack: LockPack, target: File, cacheDir: File): Pair<String, File> {
+        val build = build(entry.job, entry.jenkinsUrl, entry.buildNumber)
+        val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)
+        val url = build.url + "artifact/" + artifact.relativePath
+        val targetFile = target.resolve(entry.fileName ?: artifact.fileName)
+        targetFile.download(url, cacheDir.resolve("JENKINS").resolve(entry.job).resolve(entry.buildNumber.toString()))
+        return Pair(url, targetFile)
     }
 
     private val artifact = { jobName: String, url: String, buildNumber: Int, fileNameRegex: String ->

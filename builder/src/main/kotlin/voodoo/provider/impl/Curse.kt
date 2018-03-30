@@ -1,14 +1,21 @@
-package voodoo.builder.provider
+package voodoo.provider.impl
 
 import aballano.kotlinmemoization.memoize
 import mu.KLogging
+import voodoo.core.curse.CurseUtil
+import voodoo.core.curse.CurseUtil.findFile
 import voodoo.core.curse.CurseUtil.getAddon
 import voodoo.core.curse.CurseUtil.getAddonFile
-import voodoo.core.curse.CurseUtil.findFile
 import voodoo.core.curse.DependencyType
 import voodoo.core.data.flat.Entry
 import voodoo.core.data.flat.ModPack
 import voodoo.core.data.lock.LockEntry
+import voodoo.core.data.lock.LockPack
+import voodoo.provider.Provider
+import voodoo.provider.ProviderBase
+import voodoo.util.download
+import java.io.File
+import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 30/12/17.
@@ -21,24 +28,30 @@ class CurseProviderThing : ProviderBase {
     companion object : KLogging()
 
     override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
-        val (projectID, fileID, _) = findFile(entry, modpack.mcVersion, entry.curseMetaUrl)
+        val (projectID, fileID, _) = findFile(entry, modpack.mcVersion, modpack.curseMetaUrl)
 
         resolveDependencies(projectID, fileID, entry, modpack, addEntry)
 
         entry.optional = isOptional(entry, modpack)
 
-        return LockEntry(entry.provider, projectID = projectID, fileID = fileID)
+        return LockEntry(
+                provider = entry.provider,
+                name = entry.name,
+                fileName = entry.fileName,
+                projectID = projectID,
+                fileID = fileID
+        )
     }
 
     private fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit) {
-        val addon = getAddon(addonId, entry.curseMetaUrl)!!
-        val addonFile = getAddonFile(addonId, fileId, entry.curseMetaUrl)!!
-        if(addonFile.dependencies == null) return
+        val addon = getAddon(addonId, modpack.curseMetaUrl)!!
+        val addonFile = getAddonFile(addonId, fileId, modpack.curseMetaUrl)!!
+        if (addonFile.dependencies == null) return
         logger.info("dependencies of ${entry.name} ${addonFile.dependencies}")
         logger.info(entry.toString())
         for ((depAddonId, depType) in addonFile.dependencies!!) {
             logger.info("resolve Dep $depAddonId")
-            val depAddon = getAddon(depAddonId, entry.curseMetaUrl) ?: continue
+            val depAddon = getAddon(depAddonId, modpack.curseMetaUrl) ?: continue
 
 //            val depends = entry.dependencies
             var dependsList = entry.dependencies[depType] ?: listOf<String>()
@@ -88,4 +101,14 @@ class CurseProviderThing : ProviderBase {
 
     val isOptional = ::isOptionalCall.memoize()
 
+    override fun download(entry: LockEntry, modpack: LockPack, target: File, cacheDir: File): Pair<String, File> {
+        val addonFile = getAddonFile(entry.projectID, entry.fileID, modpack.curseMetaUrl)
+        if (addonFile == null) {
+            logger.error("cannot download ${entry.projectID}:${entry.fileID}")
+            exitProcess(3)
+        }
+        val targetFile = target.resolve(entry.fileName ?: addonFile.fileNameOnDisk)
+        targetFile.download(addonFile.downloadURL, cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()))
+        return Pair(addonFile.downloadURL, targetFile)
+    }
 }

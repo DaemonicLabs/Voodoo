@@ -1,9 +1,12 @@
-package voodoo.builder.provider
+package voodoo.provider
 
 import mu.KLogging
 import voodoo.core.data.flat.Entry
 import voodoo.core.data.flat.ModPack
 import voodoo.core.data.lock.LockEntry
+import voodoo.core.data.lock.LockPack
+import voodoo.provider.impl.*
+import java.io.File
 
 /**
  * Created by nikky on 04/01/18.
@@ -27,6 +30,10 @@ interface ProviderBase {
     }
 
     companion object : KLogging()
+
+    fun download(entry: LockEntry, modpack: LockPack, target: File, cacheDir: File): Pair<String?, File> {
+        TODO("not implemented")
+    }
 
 
 }
