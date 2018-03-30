@@ -15,5 +15,12 @@ pipeline {
 	            archive 'builder/build/libs/*jar'
 	        }
 	    }
+	    stage("pack") {
+	        steps {
+	            sh './gradlew :pack:clean'
+	            sh './gradlew :pack:build'
+	            archive 'pack/build/libs/*jar'
+	        }
+	    }
 	}
 }
