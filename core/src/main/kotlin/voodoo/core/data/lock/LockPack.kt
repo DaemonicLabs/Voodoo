@@ -1,6 +1,8 @@
 package voodoo.core.data.lock
 
+import voodoo.core.curse.CurseUtil.META_URL
 import voodoo.core.data.Feature
+import voodoo.core.data.Launch
 import voodoo.core.data.UserFiles
 
 /**
@@ -14,7 +16,11 @@ data class LockPack(
         val title: String = "",
         val mcVersion: String = "",
         val forge: Int = -1,
+        var curseMetaUrl: String = META_URL,
+        val launch: Launch = Launch(),
         var userFiles: UserFiles = UserFiles(),
+        var localDir: String = "local",
+        var minecraftDir: String = name,
         val entries: List<LockEntry> = emptyList(),
         val features: List<Feature> = emptyList()
 )

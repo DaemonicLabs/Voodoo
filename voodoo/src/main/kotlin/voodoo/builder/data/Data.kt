@@ -11,8 +11,8 @@ import voodoo.builder.JobTracker
 import voodoo.builder.curse.DependencyType
 import voodoo.builder.curse.FileType
 import voodoo.builder.curse.PackageType
-import voodoo.builder.provider.Provider
-import voodoo.builder.provider.UpdateChannel
+import voodoo.provider.Provider
+import voodoo.provider.UpdateChannel
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 

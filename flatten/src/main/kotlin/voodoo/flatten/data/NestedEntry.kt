@@ -42,11 +42,10 @@ data class NestedEntry(
         var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
         var curseFileNameRegex: String = ".*(?<!-deobf\\.jar)\$",
         var curseOptionalDependencies: Boolean = false,
-        var curseMetaUrl: String = "https://cursemeta.dries007.net",
         // DIRECT
         var url: String = "",
         var urlTxt: Boolean = true,
-        var fileName: String = "",
+        var fileName: String? = null,
         //JENKINS
         var jenkinsUrl: String = "",
         var job: String = "",

@@ -1,4 +1,4 @@
-package voodoo.builder.provider
+package voodoo.provider
 
 import mu.KLogging
 import voodoo.builder.curse.CurseUtil.getAddon

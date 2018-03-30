@@ -33,7 +33,7 @@ fun main(vararg args: String) = mainBody {
         }
 
         logger.info("Creating locked pack...")
-        val lockedPack = modpack.lock
+        val lockedPack = modpack.lock()
 
         if (stdout) {
             print(lockedPack.json)

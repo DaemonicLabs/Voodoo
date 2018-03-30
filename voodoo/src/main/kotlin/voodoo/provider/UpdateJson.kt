@@ -1,4 +1,4 @@
-package voodoo.builder.provider
+package voodoo.provider
 
 import aballano.kotlinmemoization.memoize
 import com.fasterxml.jackson.module.kotlin.KotlinModule

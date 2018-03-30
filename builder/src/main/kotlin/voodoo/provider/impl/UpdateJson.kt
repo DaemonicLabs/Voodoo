@@ -1,4 +1,4 @@
-package voodoo.builder.provider
+package voodoo.provider.impl
 
 import aballano.kotlinmemoization.memoize
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -11,6 +11,8 @@ import voodoo.core.data.flat.Entry
 import voodoo.core.data.flat.ModPack
 import voodoo.core.data.lock.LockEntry
 import voodoo.core.provider.UpdateChannel
+import voodoo.provider.Provider
+import voodoo.provider.ProviderBase
 
 /**
  * Created by nikky on 30/12/17.
@@ -38,6 +40,9 @@ class UpdateJsonProviderThing : ProviderBase {
 
     override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         val json = getUpdateJson(entry.updateJson)!!
+        if (entry.name.isBlank()) {
+            entry.name = entry.updateJson.substringAfterLast('/').substringBeforeLast('.')
+        }
         val key = modpack.mcVersion + when (entry.updateChannel) {
             UpdateChannel.recommended -> "-recommended"
             UpdateChannel.latest -> "-latest"
@@ -47,7 +52,12 @@ class UpdateJsonProviderThing : ProviderBase {
         }
         val version = json.promos[key]!!
         val url = entry.template.replace("{version}", version)
-        return LockEntry(entry.provider, url = url)
+        return LockEntry(
+                provider = Provider.DIRECT.toString(),
+                name = entry.name,
+                fileName = entry.fileName,
+                url = url
+        )
     }
 }
 

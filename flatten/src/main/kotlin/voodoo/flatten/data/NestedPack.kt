@@ -18,7 +18,9 @@ data class NestedPack(
         var userFiles: UserFiles = UserFiles(),
         var root: NestedEntry = NestedEntry(),
         var versionCache: String? = null,
-        var featureCache: String? = null
+        var featureCache: String? = null,
+        var localDir: String = "local",
+        var minecraftDir: String = name
 ) {
     fun flatten(): ModPack {
         return ModPack(
@@ -30,7 +32,9 @@ data class NestedPack(
                 userFiles = userFiles,
                 entries = root.flatten(),
                 versionCache = versionCache,
-                featureCache = featureCache
+                featureCache = featureCache,
+                localDir = localDir,
+                minecraftDir = minecraftDir
         )
     }
 }

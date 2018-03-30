@@ -1,4 +1,4 @@
-package voodoo.builder.provider
+package voodoo.provider
 
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result

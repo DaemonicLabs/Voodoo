@@ -17,7 +17,7 @@ import voodoo.core.data.flat.Entry
  * @version 1.0
  */
 object CurseUtil : KLogging() {
-    private val META_URL = "https://cursemeta.dries007.net"
+    val META_URL = "https://cursemeta.dries007.net"
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
     val mapper = jacksonObjectMapper() // Enable Json parsing
@@ -99,10 +99,10 @@ object CurseUtil : KLogging() {
 
     val getAddon = ::getAddonCall.memoize()
 
-    fun getAddonByName(name: String) : AddOn? = pairs
+    fun getAddonByName(name: String): AddOn? = pairs
             .find { it.name == name }
             ?.id
-            ?.let { getAddon(it, META_URL)}
+            ?.let { getAddon(it, META_URL) }
 
     fun findFile(entry: Entry, mcVersion: String, metaUrl: String = META_URL): Triple<Int, Int, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
@@ -116,8 +116,8 @@ object CurseUtil : KLogging() {
         val fileId = -1 // entry.lock?.fileID ?: -1
         val fileNameRegex = entry.curseFileNameRegex
 
-        val addon = if(addonId < 0) {
-            if(name.isNotBlank())
+        val addon = if (addonId < 0) {
+            if (name.isNotBlank())
                 getAddonByName(name)
             else
                 null
@@ -125,7 +125,7 @@ object CurseUtil : KLogging() {
             getAddon(addonId, META_URL)
         }
 
-        if(addon == null) {
+        if (addon == null) {
             logger.error("no addon matching the parameters found for '$entry'")
             System.exit(-1)
             return Triple(-1, -1, "")
