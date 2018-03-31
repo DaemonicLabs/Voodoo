@@ -5,8 +5,6 @@ out/
 run/
 *.iml
 
-Constants.kt
-
 **/gen/
 **/output/
 
