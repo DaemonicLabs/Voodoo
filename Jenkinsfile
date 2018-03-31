@@ -22,5 +22,12 @@ pipeline {
 	            archive 'pack/build/libs/*jar'
 	        }
 	    }
+	    stage("voodoo") {
+	        steps {
+	            sh './gradlew :voodoo:clean'
+	            sh './gradlew :voodoo:build'
+	            archive 'voodoo/build/libs/*jar'
+	        }
+	    }
 	}
 }

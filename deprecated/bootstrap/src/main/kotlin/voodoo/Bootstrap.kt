@@ -45,8 +45,8 @@ object Bootstrap : KLogging() {
 
     private fun download(): File {
         val server = JenkinsServer(jenkinsUrl)
-        val job = server.getJob(job)!!
-        val build = job.lastSuccessfulBuild?.details()!!
+        val job = server.getJob(job, "voodoo")!!
+        val build = job.lastSuccessfulBuild?.details("voodoo")!!
         val buildNumber = build.number
         logger.info("lastSuccessfulBuild: $buildNumber")
         val re = Regex(fileNameRegex)

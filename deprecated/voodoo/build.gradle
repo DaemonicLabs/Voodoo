@@ -76,8 +76,8 @@ build.dependsOn(shadowJar)
 
 compileKotlin.doFirst {
     copy {
-        from("src/templates/kotlin/voodoo/Constants.kt")
-        into("src/main/kotlin/voodoo/gen")
+        from "src/templates/kotlin/voodoo/Constants.kt"
+        into "src/main/kotlin/voodoo/gen"
         filter { String line ->
             line
                     .replace('/* MAJOR_VERSION */', "${project.major} //")

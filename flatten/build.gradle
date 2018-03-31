@@ -4,7 +4,7 @@ plugins {
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
-mainClassName = "voodoo.FlattenKt"
+mainClassName = "voodoo.Flatten"
 
 def runDir = parent.project.file("run").path
 
@@ -27,4 +27,18 @@ shadowJar {
 dependencies {
     compile project(':core')
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
+}
+
+version = "${project.major}.${project.minor}.${project.patch}"
+compileKotlin.doFirst {
+    copy {
+        from "../template/kotlin/voodoo/"
+        into "src/main/kotlin/voodoo/${project.name}"
+        expand(
+                PACKAGE: "voodoo.${project.name}",
+                MAJOR_VERSION: project.major,
+                MINOR_VERSION: project.minor,
+                PATCH_VERSION: project.patch
+        )
+    }
 }

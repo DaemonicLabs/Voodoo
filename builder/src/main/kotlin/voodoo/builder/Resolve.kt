@@ -1,4 +1,4 @@
-package voodoo
+package voodoo.builder
 
 import aballano.kotlinmemoization.memoize
 import mu.KotlinLogging
