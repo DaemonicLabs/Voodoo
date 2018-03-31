@@ -3,6 +3,7 @@ package voodoo
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import mu.KLogging
 import mu.KotlinLogging
 import voodoo.data.nested.NestedPack
 import voodoo.util.json
@@ -16,41 +17,42 @@ import java.io.File
  * @version 1.0
  */
 
-private val logger = KotlinLogging.logger {}
-fun main(vararg args: String) = mainBody {
+object Flatten: KLogging() {
+    @JvmStatic
+    fun main(vararg args: String) = mainBody {
 
-    val arguments = Arguments(ArgParser(args))
+        val arguments = Arguments(ArgParser(args))
 
-    arguments.run {
-        val inFile = File(importArg)
-        println(inFile.absolutePath)
-        val nestedPack = inFile.readYaml<NestedPack>()
-        var target = targetArg
+        arguments.run {
+            val inFile = File(importArg)
+            println(inFile.absolutePath)
+            val nestedPack = inFile.readYaml<NestedPack>()
+            var target = targetArg
 
+            logger.info("FLATTENING...")
+            val flatpack = nestedPack.flatten()
 
-        logger.info("FLATTENING...")
-        val flatpack = nestedPack.flatten()
-
-        if (stdout) {
-            print(flatpack.json)
-        } else {
-            if (target.isEmpty()) target = inFile.nameWithoutExtension
-            if (!target.endsWith(".json")) target += ".json"
-            val targetFile = File(target)
-            logger.info("writing output to $targetFile")
-            targetFile.writeJson(flatpack)
+            if (stdout) {
+                print(flatpack.json)
+            } else {
+                if (target.isEmpty()) target = inFile.nameWithoutExtension
+                if (!target.endsWith(".json")) target += ".json"
+                val targetFile = File(target)
+                logger.info("writing output to $targetFile")
+                targetFile.writeJson(flatpack)
+            }
         }
     }
-}
 
-private class Arguments(parser: ArgParser) {
-    val importArg by parser.positional("FILE",
-            help = "input pack yaml")
+    private class Arguments(parser: ArgParser) {
+        val importArg by parser.positional("FILE",
+                help = "input pack yaml")
 
-    val targetArg by parser.storing("--output", "-o",
-            help = "output file json").default("")
+        val targetArg by parser.storing("--output", "-o",
+                help = "output file json").default("")
 
-    val stdout by parser.flagging("--stdout", "-s",
-            help = "print output")
-            .default(false)
+        val stdout by parser.flagging("--stdout", "-s",
+                help = "print output")
+                .default(false)
+    }
 }

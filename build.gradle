@@ -1,3 +1,12 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "net.sf.proguard:proguard-gradle:6.0.1"
+    }
+}
+
 plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.3'
     id "org.jetbrains.kotlin.jvm" version "1.2.30"
@@ -48,4 +57,6 @@ subprojects {
             excludeDirs += [file("run")]
         }
     }
+
+
 }

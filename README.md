@@ -1,10 +1,7 @@
 # voodoo
 
 voodoo is a set of tools to quickly build and prepare modpacks for SKCraft launcher
-
-at the moment only the commandline app is working and being worked on
-
-recently a bootstrap application was added, but it is slightly smaller and just downloads and calls the voodoo binary (from the buildserver4
+and other launchers
 
 ## get it
 
@@ -14,11 +11,14 @@ please grab the latest binaries from the [buildserver](https://ci.elytradev.com/
 
 ### build
 
-unix: `./gradlew :builder:build`
-windows: `./gradlew.bat :builder:build`
+unix: `./gradlew build`
+windows: `./gradlew.bat build`
 
 ## usage
 
+### single command
+
+`./voodoo.sh `
 
 flatten the yaml (this created the main json)
 `java -jar flatten.jar cotm.yaml`
