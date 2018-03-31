@@ -12,46 +12,46 @@ version = "$major.$minor.$patch"
 
 def runDir = project.file("run").path
 
-def packDef = file(".")
-if (project.hasProperty('ACK')) {
-    packDef = project.file("../samples/${ACK}")
-    if (!packDef.exists()) {
-        packDef = project.file("../samples/${ACK}.yaml")
-    }
-    if (!packDef.exists()) {
-        packDef = project.file("../samples/${ACK}.yaml")
-    }
-    if (!packDef.exists()) {
-        packDef = file("$ACK")
-    }
-} else {
-    packDef = file("pack.yaml")
-}
-// pass -PACK=openpack to gradle
-
-run {
-    args = ["build", "-d", runDir, packDef.path]
-}
-
-runShadow {
-    args = ["build", "-d", runDir, packDef.path]
-}
-
-task buildSamples {
-    description = 'Build all Samples'
-    fileTree(dir: '../samples', include: '*.yaml').each { file ->
-        println "building $file"
-        doLast {
-            project.javaexec {
-                classpath sourceSets.main.runtimeClasspath
-                main = mainClassName
-                args = ["build", "-d", runDir, file.path]
-            }
-        }
-    }
-}
-
-buildSamples.dependsOn build
+//def packDef = file(".")
+//if (project.hasProperty('ACK')) {
+//    packDef = project.file("../samples/${ACK}")
+//    if (!packDef.exists()) {
+//        packDef = project.file("../samples/${ACK}.yaml")
+//    }
+//    if (!packDef.exists()) {
+//        packDef = project.file("../samples/${ACK}.yaml")
+//    }
+//    if (!packDef.exists()) {
+//        packDef = file("$ACK")
+//    }
+//} else {
+//    packDef = file("pack.yaml")
+//}
+//// pass -PACK=openpack to gradle
+//
+//run {
+//    args = ["build", "-d", runDir, packDef.path]
+//}
+//
+//runShadow {
+//    args = ["build", "-d", runDir, packDef.path]
+//}
+//
+//task buildSamples {
+//    description = 'Build all Samples'
+//    fileTree(dir: '../samples', include: '*.yaml').each { file ->
+//        println "building $file"
+//        doLast {
+//            project.javaexec {
+//                classpath sourceSets.main.runtimeClasspath
+//                main = mainClassName
+//                args = ["build", "-d", runDir, file.path]
+//            }
+//        }
+//    }
+//}
+//
+//buildSamples.dependsOn build
 
 shadowJar {
     classifier = null

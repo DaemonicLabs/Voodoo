@@ -1,14 +1,14 @@
-package voodoo.core.data.flat
+package voodoo.data.flat
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import mu.KLogging
-import voodoo.core.curse.CurseUtil.META_URL
-import voodoo.core.data.Feature
-import voodoo.core.data.Launch
-import voodoo.core.data.UserFiles
-import voodoo.core.data.lock.LockEntry
-import voodoo.core.data.lock.LockPack
+import voodoo.curse.CurseUtil.META_URL
+import voodoo.data.Feature
+import voodoo.data.Launch
+import voodoo.data.UserFiles
+import voodoo.data.lock.LockEntry
+import voodoo.data.lock.LockPack
 import voodoo.util.Directories
 import voodoo.util.readJsonOrNull
 import voodoo.util.writeJson
@@ -29,7 +29,8 @@ data class ModPack(
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var version: String = "1.0",
         var mcVersion: String = "",
-        var forge: Int = -1,
+        var forge: String = "recommended",
+        var forgeBuild: Int = -1,
         var curseMetaUrl: String = META_URL,
         @JsonInclude(JsonInclude.Include.ALWAYS)
         val launch: Launch = Launch(),
@@ -93,7 +94,7 @@ data class ModPack(
                 name = name,
                 title = title,
                 mcVersion = mcVersion,
-                forge = forge,
+                forge = forgeBuild,
                 curseMetaUrl = curseMetaUrl,
                 launch = launch,
                 userFiles = userFiles,

@@ -1,4 +1,4 @@
-package voodoo.core.curse
+package voodoo.curse
 
 import aballano.kotlinmemoization.memoize
 import com.fasterxml.jackson.databind.MapperFeature
@@ -9,7 +9,7 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
 import voodoo.core.VERSION
-import voodoo.core.data.flat.Entry
+import voodoo.data.flat.Entry
 
 /**
  * Created by nikky on 30/01/18.

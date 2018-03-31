@@ -1,8 +1,8 @@
-package voodoo.core.data.flat
+package voodoo.data.flat
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import voodoo.core.data.FeatureFiles
-import voodoo.core.data.Recommendation
+import voodoo.data.FeatureFiles
+import voodoo.data.Recommendation
 
 /**
  * Created by nikky on 29/03/18.

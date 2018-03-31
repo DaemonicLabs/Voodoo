@@ -1,4 +1,4 @@
-package voodoo.core.curse
+package voodoo.curse
 
 import com.fasterxml.jackson.annotation.JsonCreator
 

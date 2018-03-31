@@ -1,10 +1,10 @@
 package voodoo.provider
 
 import mu.KLogging
-import voodoo.core.data.flat.Entry
-import voodoo.core.data.flat.ModPack
-import voodoo.core.data.lock.LockEntry
-import voodoo.core.data.lock.LockPack
+import voodoo.data.flat.Entry
+import voodoo.data.flat.ModPack
+import voodoo.data.lock.LockEntry
+import voodoo.data.lock.LockPack
 import voodoo.provider.impl.*
 import java.io.File
 

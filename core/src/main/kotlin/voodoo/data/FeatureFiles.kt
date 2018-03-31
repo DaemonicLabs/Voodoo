@@ -1,4 +1,4 @@
-package voodoo.core.data
+package voodoo.data
 
 import com.fasterxml.jackson.annotation.JsonInclude
 

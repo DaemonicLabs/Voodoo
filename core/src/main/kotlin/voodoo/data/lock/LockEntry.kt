@@ -1,4 +1,4 @@
-package voodoo.core.data.lock
+package voodoo.data.lock
 
 import com.fasterxml.jackson.annotation.JsonInclude
 

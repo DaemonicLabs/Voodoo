@@ -4,7 +4,7 @@ import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import mu.KotlinLogging
-import voodoo.core.data.nested.NestedPack
+import voodoo.data.nested.NestedPack
 import voodoo.util.json
 import voodoo.util.readYaml
 import voodoo.util.writeJson

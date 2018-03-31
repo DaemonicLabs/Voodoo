@@ -1,6 +1,6 @@
 package voodoo.pack
 
-import voodoo.core.data.lock.LockPack
+import voodoo.data.lock.LockPack
 import voodoo.util.Directories
 
 /**
