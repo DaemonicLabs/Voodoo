@@ -4,7 +4,7 @@ forge: 2601
 mcVersion: 1.12.2
 versionCache: '.'
 featureCache: '.'
-minecraftDir: openpack
+minecraftDir: testpack
 localDir: local
 root:
 #===========#
