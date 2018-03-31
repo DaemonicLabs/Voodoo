@@ -25,11 +25,14 @@ dependencies {
 
 build.dependsOn(shadowJar)
 
+sourceSets {
+    main.kotlin.srcDirs += "$buildDir/generated-src"
+}
 version = "${project.major}.${project.minor}.${project.patch}"
 compileKotlin.doFirst {
     copy {
         from "../template/kotlin/voodoo/"
-        into "src/main/kotlin/${project.name}"
+        into "$buildDir/generated-src/${project.name}"
         expand(
                 PACKAGE: project.name,
                 MAJOR_VERSION: project.major,
