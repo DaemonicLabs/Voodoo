@@ -3,8 +3,8 @@ mcVersion: 1.12.2
 forge: latest
 mods:
   validMcVersions: [1.12.1, '1.12']
-  doOptionals: false
-  releaseTypes: [ alpha, beta, release ]
+  curseOptionalDependencies: false
+  curseReleaseTypes: [ alpha, beta, release ]
   jenkinsUrl: https://ci.elytradev.com
 
   entries:

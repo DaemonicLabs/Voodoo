@@ -2,11 +2,12 @@ package voodoo
 
 import aballano.kotlinmemoization.memoize
 import mu.KotlinLogging
-import voodoo.core.curse.DependencyType
-import voodoo.core.data.Feature
-import voodoo.core.data.flat.Entry
-import voodoo.core.data.flat.FeatureProperties
-import voodoo.core.data.flat.ModPack
+import voodoo.curse.DependencyType
+import voodoo.data.Feature
+import voodoo.data.flat.Entry
+import voodoo.data.flat.FeatureProperties
+import voodoo.data.flat.ModPack
+import voodoo.forge.Forge.getForgeBuild
 import voodoo.provider.Provider
 import voodoo.util.Directories
 import voodoo.util.writeJson
@@ -115,6 +116,9 @@ fun ModPack.resolve(force: Boolean = false, updateEntries: List<String>) {
 
     writeVersionCache()
 
+    if(forgeBuild < 0) {
+        forgeBuild = getForgeBuild(forge, mcVersion)
+    }
 
     fun addEntry(entry: Entry) {
         val duplicate = this.entries.find { it.name == entry.name }

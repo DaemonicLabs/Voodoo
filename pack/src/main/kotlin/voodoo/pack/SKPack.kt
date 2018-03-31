@@ -1,7 +1,7 @@
 package voodoo.pack
 
 import mu.KotlinLogging
-import voodoo.core.data.lock.LockPack
+import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.pack.sk.SKFeature
 import voodoo.pack.sk.SKLocation
@@ -36,7 +36,12 @@ object SKPack : AbstractPack() {
         }
         if (!srcFolder.exists()) {
             logger.info("copying files into src")
-            File(modpack.minecraftDir).copyRecursively(srcFolder, overwrite = true)
+            val mcDir = File(modpack.minecraftDir)
+            if(mcDir.exists()) {
+                mcDir.copyRecursively(srcFolder, overwrite = true)
+            } else {
+                logger.warn("directory $mcDir does not exist")
+            }
         }
 
         val loadersFolder = modpackDir.resolve("loaders")

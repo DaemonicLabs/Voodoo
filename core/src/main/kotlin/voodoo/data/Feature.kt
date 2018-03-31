@@ -1,7 +1,7 @@
-package voodoo.core.data
+package voodoo.data
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import voodoo.core.data.flat.FeatureProperties
+import voodoo.data.flat.FeatureProperties
 
 /**
  * Created by nikky on 29/03/18.
@@ -10,8 +10,6 @@ import voodoo.core.data.flat.FeatureProperties
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class Feature(
-//        @JsonIgnore
-//        var processedEntries: List<String> = emptyList(),
         var entries: Set<String>,
         var properties: FeatureProperties = FeatureProperties(),
         var files: FeatureFiles = FeatureFiles()

@@ -1,9 +1,8 @@
 package voodoo.pack.sk
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
-import voodoo.core.data.FeatureFiles
-import voodoo.core.data.flat.FeatureProperties
+import voodoo.data.FeatureFiles
+import voodoo.data.flat.FeatureProperties
 
 /**
  * Created by nikky on 30/01/18.

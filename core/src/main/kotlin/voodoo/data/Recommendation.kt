@@ -1,4 +1,4 @@
-package voodoo.core.data
+package voodoo.data
 
 /**
  * Created by nikky on 29/03/18.

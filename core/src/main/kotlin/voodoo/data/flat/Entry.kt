@@ -1,11 +1,11 @@
-package voodoo.core.data.flat
+package voodoo.data.flat
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import voodoo.core.curse.DependencyType
-import voodoo.core.curse.FileType
-import voodoo.core.curse.PackageType
-import voodoo.core.data.Side
-import voodoo.core.provider.UpdateChannel
+import voodoo.curse.DependencyType
+import voodoo.curse.FileType
+import voodoo.curse.PackageType
+import voodoo.data.Side
+import voodoo.provider.UpdateChannel
 
 /**
  * Created by nikky on 28/03/18.
@@ -41,7 +41,7 @@ data class Entry(
         var url: String = "",
         var urlTxt: Boolean = true,
         var fileName: String? = null,
-        //JENKINS
+        // JENKINS
         var jenkinsUrl: String = "",
         var job: String = "",
         var buildNumber: Int = -1,
@@ -50,7 +50,6 @@ data class Entry(
         var fileSrc: String = "",
         // UPDATE-JSON
         var updateJson: String = "",
-        var updateChannel: UpdateChannel = UpdateChannel.recommended,
+        var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
         var template: String = ""
 )
-

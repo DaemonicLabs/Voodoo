@@ -2,15 +2,14 @@ package voodoo.provider.impl
 
 import aballano.kotlinmemoization.memoize
 import mu.KLogging
-import voodoo.core.curse.CurseUtil
-import voodoo.core.curse.CurseUtil.findFile
-import voodoo.core.curse.CurseUtil.getAddon
-import voodoo.core.curse.CurseUtil.getAddonFile
-import voodoo.core.curse.DependencyType
-import voodoo.core.data.flat.Entry
-import voodoo.core.data.flat.ModPack
-import voodoo.core.data.lock.LockEntry
-import voodoo.core.data.lock.LockPack
+import voodoo.curse.CurseUtil.findFile
+import voodoo.curse.CurseUtil.getAddon
+import voodoo.curse.CurseUtil.getAddonFile
+import voodoo.curse.DependencyType
+import voodoo.data.flat.Entry
+import voodoo.data.flat.ModPack
+import voodoo.data.lock.LockEntry
+import voodoo.data.lock.LockPack
 import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
 import voodoo.util.download

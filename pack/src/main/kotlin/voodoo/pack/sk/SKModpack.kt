@@ -1,7 +1,7 @@
 package voodoo.pack.sk
 
-import voodoo.core.data.Launch
-import voodoo.core.data.UserFiles
+import voodoo.data.Launch
+import voodoo.data.UserFiles
 
 /**
  * Created by nikky on 30/03/18.

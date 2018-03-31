@@ -4,8 +4,7 @@ import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import mu.KotlinLogging
-import voodoo.core.data.lock.LockPack
-import voodoo.pack.AbstractPack
+import voodoo.data.lock.LockPack
 import voodoo.pack.SKPack
 import voodoo.util.readJson
 import java.io.File
