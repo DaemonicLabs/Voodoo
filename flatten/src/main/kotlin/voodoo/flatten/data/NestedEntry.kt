@@ -1,14 +1,14 @@
-package voodoo.core.data.nested
+package voodoo.data.nested
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import voodoo.core.curse.DependencyType
-import voodoo.core.curse.FileType
-import voodoo.core.curse.PackageType
-import voodoo.core.data.flat.EntryFeature
-import voodoo.core.data.Side
-import voodoo.core.data.flat.Entry
-import voodoo.core.provider.UpdateChannel
+import voodoo.curse.DependencyType
+import voodoo.curse.FileType
+import voodoo.curse.PackageType
+import voodoo.data.flat.EntryFeature
+import voodoo.data.Side
+import voodoo.data.flat.Entry
+import voodoo.provider.UpdateChannel
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 
@@ -55,7 +55,7 @@ data class NestedEntry(
         var fileSrc: String = "",
         // UPDATE-JSON
         var updateJson: String = "",
-        var updateChannel: UpdateChannel = UpdateChannel.recommended,
+        var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
         var template: String = "",
         // NESTED
         var entries: List<NestedEntry> = emptyList()

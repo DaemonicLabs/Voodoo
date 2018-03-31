@@ -1,9 +1,9 @@
-package voodoo.core.data.lock
+package voodoo.data.lock
 
-import voodoo.core.curse.CurseUtil.META_URL
-import voodoo.core.data.Feature
-import voodoo.core.data.Launch
-import voodoo.core.data.UserFiles
+import voodoo.curse.CurseUtil.META_URL
+import voodoo.data.Feature
+import voodoo.data.Launch
+import voodoo.data.UserFiles
 
 /**
  * Created by nikky on 28/03/18.

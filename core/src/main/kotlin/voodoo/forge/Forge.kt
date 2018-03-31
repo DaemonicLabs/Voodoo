@@ -7,8 +7,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
-import voodoo.core.data.flat.Entry
-import voodoo.provider.Provider
+import voodoo.data.flat.Entry
 
 /**
  * Created by nikky on 30/12/17.
@@ -18,24 +17,32 @@ import voodoo.provider.Provider
 object Forge : KLogging() {
     var data: ForgeData = getForgeData()
 
-    //FIXME: allow latest / recommended in configuration again
-    fun getForge(forgeVersion: String, mcVersion: String/*, spongeEntry: Entry?*/): Pair<Entry, String> {
-        val (url, filename, longVersion, version) = getForgeUrl(forgeVersion, mcVersion)
+//    fun getForge(forgeVersion: String, mcVersion: String/*, spongeEntry: Entry?*/): Pair<Entry, String> {
+//        val (url, filename, longVersion, version) = getForgeUrl(forgeVersion, mcVersion)
+//
+//        val entry = Entry(
+//                provider = "DIRECT",
+//                name = "Minecraft Forge",
+//                url = url,
+//                fileName = filename
+////                    packageType = PackageType.LOADER,
+////                internal = EntryInternal(
+////                        basePath = "loaders",
+////                        targetPath = ".",
+////                        path = ".",
+////                        cacheRelpath = "FORGE/$longVersion"
+////                )
+//        )
+//        return Pair(entry, version)
+//    }
 
-        val entry = Entry(
-                provider = Provider.DIRECT.toString(),
-                name = "Minecraft Forge",
-                url = url,
-                fileName = filename
-//                    packageType = PackageType.LOADER,
-//                internal = EntryInternal(
-//                        basePath = "loaders",
-//                        targetPath = ".",
-//                        path = ".",
-//                        cacheRelpath = "FORGE/$longVersion"
-//                )
-        )
-        return Pair(entry, version)
+    fun getForgeBuild(version: String, mcVersion: String): Int {
+        return if(version.equals("recommended", true) || version.equals("latest", true)) {
+            val promoVersion = "$mcVersion-${version.toLowerCase()}"
+            data.promos[promoVersion]!!
+        } else {
+            version.toInt()
+        }
     }
 
     fun getForgeUrl(version: String, mcVersion: String): Quadruple<String, String, String, String> {

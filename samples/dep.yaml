@@ -1,10 +1,10 @@
-name: Dep Test
+name: dep_test
 mcVersion: 1.7.10
 forge: latest
-mods:
+root:
   validMcVersions: []
-  doOptionals: false
-  releaseTypes: [ alpha, beta, release ]
+  curseOptionalDependencies: false
+  curseReleaseTypes: [ alpha, beta, release ]
   jenkinsUrl: https://ci.elytradev.com
 
   entries:

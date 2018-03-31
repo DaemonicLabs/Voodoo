@@ -7,10 +7,10 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
-import voodoo.core.data.flat.Entry
-import voodoo.core.data.flat.ModPack
-import voodoo.core.data.lock.LockEntry
-import voodoo.core.provider.UpdateChannel
+import voodoo.data.flat.Entry
+import voodoo.data.flat.ModPack
+import voodoo.data.lock.LockEntry
+import voodoo.provider.UpdateChannel
 import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
 
@@ -44,8 +44,8 @@ class UpdateJsonProviderThing : ProviderBase {
             entry.name = entry.updateJson.substringAfterLast('/').substringBeforeLast('.')
         }
         val key = modpack.mcVersion + when (entry.updateChannel) {
-            UpdateChannel.recommended -> "-recommended"
-            UpdateChannel.latest -> "-latest"
+            UpdateChannel.RECOMMENDED -> "-recommended"
+            UpdateChannel.LATEST -> "-latest"
         }
         if (!json.promos.containsKey(key)) {
             logger.error("update-json promos does not contain {}", key)
