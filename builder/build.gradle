@@ -31,11 +31,14 @@ dependencies {
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
 }
 
+sourceSets {
+    main.kotlin.srcDirs += "$buildDir/generated-src"
+}
 version = "${project.major}.${project.minor}.${project.patch}"
 compileKotlin.doFirst {
     copy {
         from "../template/kotlin/voodoo/"
-        into "src/main/kotlin/voodoo/${project.name}"
+        into "$buildDir/generated-src/voodoo/${project.name}"
         expand(
                 PACKAGE: "voodoo.${project.name}",
                 MAJOR_VERSION: project.major,
