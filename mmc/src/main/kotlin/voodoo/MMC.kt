@@ -3,15 +3,17 @@ package voodoo
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
+import com.xenomachina.argparser.ArgParser
+import com.xenomachina.argparser.mainBody
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
 import voodoo.data.Recommendation
-import voodoo.mmc.Feature
-import voodoo.mmc.IfTask
-import voodoo.mmc.Pack
-import voodoo.util.Directories
-import voodoo.util.download
-import voodoo.util.jsonMapper
+import voodoo.mmc.MultiMCPack
+import voodoo.mmc.PackComponent
+import voodoo.mmc.sk.Feature
+import voodoo.mmc.sk.IfTask
+import voodoo.mmc.sk.Pack
+import voodoo.util.*
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Component
@@ -25,8 +27,6 @@ import javax.swing.*
 import javax.swing.BoxLayout
 
 
-
-
 /**
  * Created by nikky on 01/04/18.
  * @author Nikky
@@ -34,24 +34,26 @@ import javax.swing.BoxLayout
  */
 
 object MMC : KLogging() {
-    val directories = Directories.get(moduleName = "mmc")
+    private val directories = Directories.get(moduleName = "multimc")
 
     @JvmStatic
-    fun main(vararg args: String) {
-//
-//        val input = File(args[0])
-//
-//        val pack = input.readJson<Pack>()
-        load(args[0])
+    fun main(vararg args: String) = mainBody {
+        val arguments = Arguments(ArgParser(args))
 
+        arguments.run {
+
+            install(instanceId, instanceDir, minecraftDir)
+        }
 
     }
 
-    fun load(url: String) {
+    fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
+        val urlFile = instanceDir.resolve("voodoo.url.txt")
+        val url = urlFile.readText()
         val (_, _, result) = url.httpGet()
 //                .header("User-Agent" to useragent)
                 .responseString()
-        val pack: Pack = when (result) {
+        val modpack: Pack = when (result) {
             is Result.Success -> {
                 jsonMapper.readValue(result.value)
             }
@@ -61,46 +63,42 @@ object MMC : KLogging() {
             }
         }
 
-        logger.info("loaded ${pack.name}")
+        logger.info("loaded ${modpack.name}")
 
-        //TODO: cache pack version
-
+        val versionFile = instanceDir.resolve("voodoo.version.txt")
+        if (versionFile.exists()) {
+            val version = versionFile.readText()
+            if (version == modpack.version) {
+                logger.info("no update required ?")
+//                return
+            }
+        }
 
         val forgePrefix = "net.minecraftforge:forge:"
-        val (_, _, forgeVersion) = pack.versionManifest.libraries.find {
+        val (_, _, forgeVersion) = modpack.versionManifest.libraries.find {
             it.name.startsWith(forgePrefix)
         }?.name.let { it ?: "::" }.split(':')
 
         logger.info("forge version is $forgeVersion")
 
-//        val featues = mapOf(
-//                *pack.features.map { it.name to true }.toTypedArray()
-//        )
-        val features = selectFeatures(pack.features)
-        //TODO: read user input
-//
-//        val dialog = object : JDialog() {
-//            fun show() : Map<String, Bool> {
-//                isVisible = true
-//
-//
-//            }
-//        }
-//
-//        val result = dialog.
-
-
-        val folder = File("mmc", pack.name)
-        folder.mkdirs()
+        // read user input
+        val featureJson = instanceDir.resolve("voodoo.features.json")
+        val defaults = if(featureJson.exists()) {
+            featureJson.readJson()
+        } else {
+            mapOf<String, Boolean>()
+        }
+        val features = selectFeatures(modpack.features, defaults)
+        featureJson.writeJson(features)
 
         val cacheFolder = directories.cacheHome
 
-        val objectsUrl = url.substringBeforeLast('/') + "/" + pack.objectsLocation
+        val objectsUrl = url.substringBeforeLast('/') + "/" + modpack.objectsLocation
 
-        val modsFolder = folder.resolve("mods")
+        val modsFolder = minecraftDir.resolve("mods")
         modsFolder.deleteRecursively()
 
-        for (task in pack.tasks) {
+        for (task in modpack.tasks) {
             val whenTask = task.`when`
             if (whenTask != null) {
                 val download = when (whenTask.`if`) {
@@ -109,7 +107,7 @@ object MMC : KLogging() {
                     }
                 }
                 if (!download) {
-                    logger.info("${pack.name} is disabled, skipping download")
+                    logger.info("${modpack.name} is disabled, skipping download")
                     continue
                 }
             }
@@ -119,7 +117,7 @@ object MMC : KLogging() {
             } else {
                 "$objectsUrl/${task.location}"
             }
-            val target = folder.resolve(task.to)
+            val target = minecraftDir.resolve(task.to)
             target.parentFile.mkdirs()
             if (target.exists()) {
                 val sha1 = target.sha1Hex()
@@ -144,17 +142,35 @@ object MMC : KLogging() {
                     logger.error(task.hash)
                 }
             }
-
         }
 
+        // set minecraft and forge versions
+        val mmcPackPath = instanceDir.resolve("mmc-pack.json")
+        val mmcPack = if (mmcPackPath.exists()) {
+            mmcPackPath.readJson()
+        } else MultiMCPack()
+        mmcPack.components = listOf(
+                PackComponent(
+                        uid = "net.minecraft",
+                        version = modpack.gameVersion,
+                        important = true
+                ),
+                PackComponent(
+                        uid = "net.minecraftforge",
+                        version = forgeVersion.substringAfter("${modpack.gameVersion}-"),
+                        important = true
+                )
+        ) + mmcPack.components
+        mmcPackPath.writeJson(mmcPack)
 
+        versionFile.writeText(modpack.version)
     }
 
     fun File.sha1Hex(): String? {
         return DigestUtils.sha1Hex(this.inputStream())
     }
 
-    fun selectFeatures(features: List<Feature>): Map<String, Boolean> {
+    fun selectFeatures(features: List<Feature>, defaults: Map<String, Boolean>): Map<String, Boolean> {
         if (features.isEmpty()) {
             logger.info("no selectable features")
             return mapOf()
@@ -163,13 +179,10 @@ object MMC : KLogging() {
         val checkPane = JPanel()
         checkPane.layout = BoxLayout(checkPane, BoxLayout.Y_AXIS)
 
-
-//        logger.info("${checkPane.layout}")
-
         val checkBoxes = features.associateBy({
             it.name
         }, {
-            JCheckBox("", it.selected)
+            JCheckBox("", defaults[it.name] ?: it.selected)
         })
 
         val adapter = object : WindowAdapter() {
@@ -244,5 +257,16 @@ object MMC : KLogging() {
         }
         logger.info("created dialog")
         return dialog.getValue()
+    }
+
+    private class Arguments(parser: ArgParser) {
+        val instanceId by parser.storing("--id",
+                help = "\$INST_ID - ID of the instance")
+
+        val instanceDir by parser.storing("--inst",
+                help = "\$INST_DIR - absolute path of the instance") { File(this) }
+
+        val minecraftDir by parser.storing("--mc",
+                help = "\$INST_MC_DIR - absolute path of minecraft") { File(this) }
     }
 }
