@@ -32,6 +32,7 @@ class JenkinsProviderThing : ProviderBase {
         else LockEntry(
                 provider = entry.provider,
                 name = entry.name,
+                useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
                 jenkinsUrl = entry.jenkinsUrl,
                 job = entry.job,

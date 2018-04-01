@@ -25,6 +25,7 @@ class DirectProviderThing : ProviderBase {
         return LockEntry(
                 provider = entry.provider,
                 name = entry.name,
+                useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
                 url = entry.url
         )

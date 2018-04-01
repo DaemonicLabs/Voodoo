@@ -36,6 +36,7 @@ class CurseProviderThing : ProviderBase {
         return LockEntry(
                 provider = entry.provider,
                 name = entry.name,
+                useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
                 projectID = projectID,
                 fileID = fileID

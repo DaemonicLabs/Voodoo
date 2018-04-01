@@ -38,9 +38,24 @@ root:
   #=======================#
       - feature:
           selected: true
+        description: some text
         entries:
         - Fancy Block Particles
+      - feature:
+          selected: true
+          recommendation: starred
+        entries:
         - JourneyMap
+      - feature:
+          selected: false
+          recommendation: avoid
+        entries:
         - Client Tweaks
+      - feature:
+          selected: false
+        entries:
         - Item Scroller
+      - feature:
+          selected: true
+        entries:
         - Mouse Tweaks
