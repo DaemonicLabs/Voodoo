@@ -1,4 +1,4 @@
-package voodoo.mmc
+package voodoo.mmc.sk
 
 import voodoo.data.Launch
 
