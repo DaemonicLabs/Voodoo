@@ -55,6 +55,7 @@ class UpdateJsonProviderThing : ProviderBase {
         return LockEntry(
                 provider = Provider.DIRECT.toString(),
                 name = entry.name,
+                useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
                 url = url
         )

@@ -6,7 +6,6 @@ import mu.KLogger
 import mu.KotlinLogging
 import voodoo.core.VERSION
 import java.io.File
-import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 30/03/18.
@@ -36,7 +35,8 @@ fun File.download(url: String, cacheDir: File, useragent: String = downloader.us
                 logger.error("connection url: {}", request.url)
                 logger.error("content: {}", result.component1())
                 logger.error("error: {}", result.error.toString())
-                exitProcess(1)
+                //exitProcess(1)
+                return
             }
         }
     }
