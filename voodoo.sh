@@ -14,16 +14,16 @@ echo
 echo "flattening $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" flatten "$PWD/$1.yaml"
+java -jar "$DIR/voodoo/build/libs/voodoo-2.0.0.jar" flatten "$DIR/samples/$1.yaml"
 
 echo
 echo "building $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" build $1.json --save -o $1.lock.json
+java -jar "$DIR/voodoo/build/libs/voodoo-2.0.0.jar" build $1.json --save -o $1.lock.json
 
 echo
 echo "packaging $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" pack $1.lock.json sk
+java -jar "$DIR/voodoo/build/libs/voodoo-2.0.0.jar" pack $1.lock.json sk

@@ -39,7 +39,7 @@ data class Entry(
         var curseOptionalDependencies: Boolean = false,
         // DIRECT
         var url: String = "",
-        var urlTxt: Boolean = true,
+        var useUrlTxt: Boolean = true,
         var fileName: String? = null,
         // JENKINS
         var jenkinsUrl: String = "",
