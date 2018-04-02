@@ -1,342 +1,348 @@
 #===========#
 # Pack Info #
 #===========#
-  name: Center of the Multiverse
-  title: Center of the Multiverse
-  version: 2.1.1
-  mcVersion: 1.12.2
-  forge: 2611
-
+name: Center of the Multiverse
+title: Center of the Multiverse
+version: 2.1.2
+mcVersion: 1.12.2
+forge: 2611
+versionCache: '.'
+featureCache: '.'
+minecraftDir: cotm
 #================#
 # Client Configs #
 #================#
-  userFiles:
-    include:
-     - options.txt
-     - "config/dsurround/dsurround.cfg"
-
+userFiles:
+  include:
+   - options.txt
+   - "config/dsurround/dsurround.cfg"
 
 #===========#
 # Core Pack #
 #===========#
-  root:
+root:
 #==============#
 # Version Info #
 #==============#
-    validMcVersions: [1.12.1, '1.12']
-    curseOptionalDependencies: false
-    curseReleaseTypes: [ alpha, beta, release ]
-    jenkinsUrl: https://ci.elytradev.com
+  validMcVersions: [1.12.1, '1.12']
+  curseOptionalDependencies: false
+  curseReleaseTypes: [ alpha, beta, release ]
+  jenkinsUrl: https://ci.elytradev.com
 
 #==============#
 # Pack Content #
 #==============#
+  entries:
+  # moddinglegacy
+  - Aether Legacy
+
+  # Vazkii
+  - Akashic Tome
+  - Botania
+
+  # Sangar
+  - Architect
+  - Bedrock Ores
+
+  # HellFirePvP
+  - Astral Sorcery
+
+  # Azanor
+  - Baubles
+
+  # Way2muchnoise
+  - Better Advancements
+
+  # Nuchaz
+  - BiblioCraft
+
+  # Binnie
+  - "Binnie's Mods"
+
+  # Glitchfiend, Forstride
+  - Bullseye
+
+  # chiselTeam
+  - Chisel
+
+  # AlgorithmX2
+  - Chisels & Bits
+
+  # clienthax, xalcon
+  - ChocoCraft
+
+  # jaredlll08
+  - Clumps
+
+  # TheIllusiveC4
+  - Colytra
+  - Comforts
+
+  # bdew
+  - Compacter
+
+  # BlayTheNinth
+  - Cooking for Blockheads
+  - Farming for Blockheads
+  - Crafting Tweaks
+  - Waystones
+
+  # ZLainSama
+  - Cosmetic Armor Reworked
+
+  # jaredlll08
+  - CraftTweaker
+  - Diamond Glass
+
+  # copygirl
+  - Wearable Backpacks
+
+  # TheLMiffy1111
+  - JAOPCA
+
+  # mezz
+  - Just Enough Items (JEI)
+
+  # keridos
+  - OpenModularTurrets
+  - OMLib
+
+  # Benimatic
+  - The Twilight Forest
+
+  # The_Wabbit
+  - Upsizer Mod
+
+  # Bartz24
+  - Useful Nullifiers
+
+  # Viesis
+  - "ViesCraft - Airships!"
+
+  # gegy1000, JurassicAlien_KOC_owner
+  - Wearables
+
+  # TehNut
+  - Xtones
+
+  # Team CoFH
+  - Thermal Dynamics
+  - Thermal Expansion
+  - Thermal Cultivation
+
+  # McJTY
+  - RFTools
+  - RFTools Dimensions
+
+  # ValkyrieofNight
+  - Environmental Tech
+
+  # Mr_Crayfish
+  - "MrCrayfish's Furniture Mod"
+  - MrCrayfish's Device Mod
+
+  # zabi94
+  - Extra Alchemy
+  - NoMoreGlowingPots
+
+  - The Disenchanter Mod
+  - Draconic Evolution
+  - Dynamic Surroundings
+  - Embers
+  - Enchiridion
+  - Ender Storage 1.8.+
+  - Exchangers
+  - Extra Bit Manipulation
+  - Extra Utilities
+  - Fairy Lights
+  - Forestry
+  - FTB Utilities
+  - FTBLib
+  - Gendustry
+  - Grappling Hook Mod
+  - HelpFixer
+  - Hwyla
+  - Initial Inventory
+  - Inventory Tweaks
+  - Iron Chests
+  - Redstone Paste
+  - MmmMmmMmmMmm
+  - Inventory Pets
+  - JEI Bees
+  - Just Enough Torches (JET)
+  - Just Enough Dimensions
+  - KleeSlabs
+  - Magic Bees
+  - Magic Feather
+  - MalisisDoors
+  - Mob Grinding Utils
+  - ModTweaker
+  - More Bees
+  - More Shearables
+  - Natura
+  - Nature's Compass
+  - NetherEx
+  - NetherPortalFix
+  - 'stimmedcow : NoMoreRecipeConflict'
+  - NotEnoughIDs
+  - OpenComputers
+  - OpenBlocks
+  - Packing Tape
+  - Pam's HarvestCraft
+  - Passthrough Signs
+  - Platforms
+  - Psi
+  - Quark
+  - Random Things
+  - RandomTweaks
+  - Ranged Pumps
+  - Recurrent Complex
+  - Redstone Arsenal
+  - Redstone Flux
+  - Refined Storage
+  - Reliquary v1.3
+  - Roguelike Dungeons
+  - Roots
+  - Rope Bridge
+  - Rustic
+  - Scannable
+  - Simple Sponge
+  - Spartan Shields
+  - Storage Drawers
+  - Storage Drawers Extras
+  - Tails
+  - TamModized
+  - "[ANGRY PIXEL] The Betweenlands"
+  - Unlimited Chisel Works
+  - Tinkers Construct
+  - Tinkers' Tool Leveling
+  - The Spotlight Mod
+  - TickProfiler
+  - Good Ol' Currency
+  - Extreme Reactors
+  - ZeroCore
+  - Paintings ++
+  - Painting Selection Gui Revamped
+  - Tool Belt
+  - TorchMaster
+  - Totemic
+  - Robotic Parts
+  - ReWIRED
+  - Woot
+  - Garbage Bins
+  - Land Manager
+  - Sit
+  - Fast Leaf Decay
+  - "Blood Magic "
+  - Unlimited Chisel Works - Botany
+  - Unloader
+  - ColorfulWater
+  - The Erebus
+  - Construct's Armory
+  - 'Dimensional Doors.'
+  - Simple Void World
+  - Yoyos
+  - MultiBeds
+  - "IKWID (I Know What I'm Doing)"
+
+  # asie
+  - Charset Lib
+  - Charset Tweaks
+  - Charset Storage - Barrels
+  - Charset Storage - Tanks
+  - Charset Block Carrying
+  - Charset Tablet
+  - Charset Crafting
+  - Charset Transport - Carts and Rails
+  - Charset Audio
+  - Charset Storage - Locks
+  - CharsetPatches
+
+  #FoamFix
+  - url: https://unascribed.com/foamfix/FoamFix-1.12.2-0.9.4-Anarchy.jar
+    name: FoamFix
+    provider: DIRECT
+
+  #Nutrition
+  - url: http://centerofthemultiverse.net/launcher/dist/Nutrition-1.12.2-3.0.0.jar
+    name: Nutrition
+    provider: DIRECT
+
+  # Player's Sampler
+  - url: http://files.player.to/sampler-1.73.jar
+    name: Player's Sampler
+    provider: DIRECT
+
+  - provider: JENKINS
+    jenkinsUrl: https://ci.elytradev.com
     entries:
-    # moddinglegacy
-    - Aether Legacy
 
-    # Vazkii
-    - Akashic Tome
-    - Botania
+    # Falkreon
+    - job: elytra/Thermionics/master
+      name: Thermionics
 
-    # Tamaized
-    - Angel of Vengeance
+    - job: elytra/ThermionicsWorld/master
+      name: ThermionicsWorld
 
-    # Sangar
-    - Architect
-    - Bedrock Ores
+    - job: elytra/Engination/master
+      name: Engination
 
-    # HellFirePvP
-    - Astral Sorcery
+    # unascribed
+    - job: elytra/GlassHearts/1.12.1
+      name: GlassHearts
 
-    # Azanor
-    - Baubles
+    - job: elytra/FruitPhone/1.12.2
+      name: FruitPhone
 
-    # Way2muchnoise
-    - Better Advancements
+    - job: elytra/ProbeDataProvider/1.12
+      name: ProbeDataProvider
 
-    # Nuchaz
-    - BiblioCraft
+    # Darkevilmac
+    - job: elytra/ArchitectureCraft/1.12
+      name: ArchitectureCraft
 
-    # Binnie
-    - "Binnie's Mods"
+#============#
+# Clientside #
+#============#
+  - side: CLIENT
+    entries:
+    - Just Enough HarvestCraft (JEHC)
+    - Just Enough Resources (JER)
+    - AppleSkin
+    - BetterFps
+    - NoNausea
+    - Better Placement
+    - Controlling
+    - Custom Main Menu
+    - Default Options
+    - Durability Show
+    - Fullscreen Windowed (Borderless) for Minecraft
+    - JEI Integration
+    - Keyboard Wizard
+    - Mod Name Tooltip
+    - Neat
+    - ReAuth
 
-    # Glitchfiend, Forstride
-    - Bullseye
-
-    # chiselTeam
-    - Chisel
-
-    # AlgorithmX2
-    - Chisels & Bits
-
-    # clienthax, xalcon
-    - ChocoCraft
-
-    # jaredlll08
-    - Clumps
-
-    # TheIllusiveC4
-    - Colytra
-    - Comforts
-
-    # bdew
-    - Compacter
-
-    # BlayTheNinth
-    - Cooking for Blockheads
-    - Farming for Blockheads
-    - Crafting Tweaks
-    - Waystones
-
-    # ZLainSama
-    - Cosmetic Armor Reworked
-
-    # jaredlll08
-    - CraftTweaker
-    - Diamond Glass
-
-    # copygirl
-    - Wearable Backpacks
-
-    # TheLMiffy1111
-    - JAOPCA
-
-    # mezz
-    - Just Enough Items (JEI)
-
-    # keridos
-    - OpenModularTurrets
-    - OMLib
-
-    # Benimatic
-    - The Twilight Forest
-
-    # The_Wabbit
-    - Upsizer Mod
-
-    # Bartz24
-    - Useful Nullifiers
-
-    # Viesis
-    - "ViesCraft - Airships!"
-
-    # gegy1000, JurassicAlien_KOC_owner
-    - Wearables
-
-    # TehNut
-    - Xtones
-
-    # Team CoFH
-    - Thermal Dynamics
-    - Thermal Expansion
-    - Thermal Cultivation
-
-    # McJTY
-    - RFTools
-    - RFTools Power
-    - RFTools Dimensions
-
-    # ValkyrieofNight
-    - Environmental Tech
-
-    # Mr_Crayfish
-    - "MrCrayfish's Furniture Mod"
-   #- MrCrayfish's Device Mod
-    - name: MrCrayfish's Device Mod
-    # id: 283055
-
-    # zabi94
-    - Extra Alchemy
-    - NoMoreGlowingPots
-
-    - The Disenchanter Mod
-    - Draconic Evolution
-    - Dynamic Surroundings
-    - Embers
-    - Enchiridion
-    - Ender Storage 1.8.+
-    - Exchangers
-    - Extra Bit Manipulation
-    - Extra Utilities
-    - Fairy Lights
-    - Forestry
-    - FTB Utilities
-    - FTBLib
-    - Gendustry
-    - Grappling Hook Mod
-    - HelpFixer
-    - Hwyla
-    - Initial Inventory
-    - Inventory Tweaks
-    - Iron Chests
-    - Redstone Paste
-    - MmmMmmMmmMmm
-    - Inventory Pets
-    - JEI Bees
-    - Just Enough Torches (JET)
-    - Just Enough Dimensions
-    - KleeSlabs
-    - Magic Bees
-    - Magic Feather
-    - MalisisDoors
-    - Mob Grinding Utils
-    - ModTweaker
-    - More Bees
-    - More Shearables
-    - Natura
-    - Nature's Compass
-    - NetherEx
-    - NetherPortalFix
-    - 'stimmedcow : NoMoreRecipeConflict'
-    - NotEnoughIDs
-    - OpenComputers
-    - OpenBlocks
-    - Packing Tape
-    - Pam's HarvestCraft
-    - Passthrough Signs
-    - Platforms
-    - Psi
-    - Quark
-    - Random Things
-    - RandomTweaks
-    - Ranged Pumps
-    - Recurrent Complex
-    - Redstone Arsenal
-    - Redstone Flux
-    - Refined Storage
-    - Reliquary v1.3
-    - Roguelike Dungeons
-    - Roots
-    - Rope Bridge
-    - Rustic
-    - Scannable
-    - Simple Sponge
-    - Spartan Shields
-    - Storage Drawers
-    - Storage Drawers Extras
-    - Tails
-    - TamModized
-    - "[ANGRY PIXEL] The Betweenlands Mod"
-    - Unlimited Chisel Works
-    - Tinkers Construct
-    - Tinkers' Tool Leveling
-    - The Spotlight Mod
-    - TickProfiler
-    - Good Ol' Currency
-    - Extreme Reactors
-    - ZeroCore
-    - Paintings ++
-    - Painting Selection Gui Revamped
-    - Tool Belt
-    - TorchMaster
-    - Totemic
-    - Robotic Parts
-    - ReWIRED
-    - Woot
-    - Garbage Bins
-    - Land Manager
-    - Sit
-    - Fast Leaf Decay
-    - "Blood Magic "
-    - Unlimited Chisel Works - Botany
-    - Unloader
-    - ColorfulWater
-    - The Erebus
-    - Construct's Armory
-    - 'Dimensional Doors.'
-    - Simple Void World
-    - Yoyos
-    - MultiBeds
-    - "IKWID (I Know What I'm Doing)"
-
-    # asie
-    - Charset Lib
-    - Charset Tweaks
-    - Charset Storage - Barrels
-    - Charset Storage - Tanks
-    - Charset Block Carrying
-    - Charset Tablet
-    - Charset Crafting
-    - Charset Transport - Carts and Rails
-    - Charset Audio
-    - Charset Storage - Locks
-    - CharsetPatches
-
-    #FoamFix
-    - url: https://unascribed.com/foamfix/FoamFix-1.12.2-0.9.4-Anarchy.jar
-      name: FoamFix
-      provider: DIRECT
-
-    #Nutrition
-    - url: http://centerofthemultiverse.net/launcher/dist/Nutrition-1.12.2-3.0.0.jar
-      name: Nutrition
-      provider: DIRECT
-
-    # Player's Sampler
-    - url: http://files.player.to/sampler-1.73.jar
-      name: Player's Sampler
-      provider: DIRECT
-
-    - provider: JENKINS
-      jenkinsUrl: https://ci.elytradev.com
-      entries:
-
-      # Falkreon
-      - job: elytra/Thermionics/master
-        name: Thermionics
-
-      - job: elytra/ThermionicsWorld/master
-        name: ThermionicsWorld
-
-      - job: elytra/Engination/master
-        name: Engination
-
-      # unascribed
-      - job: elytra/GlassHearts/1.12.1
-        name: GlassHearts
-
-      - job: elytra/FruitPhone/1.12.2
-        name: FruitPhone
-
-      - job: elytra/ProbeDataProvider/1.12
-        name: ProbeDataProvider
-
-      # Darkevilmac
-      - job: elytra/ArchitectureCraft/1.12
-        name: ArchitectureCraft
-
-  #============#
-  # Clientside #
-  #============#
-    - side: CLIENT
-      entries:
-      - Just Enough HarvestCraft (JEHC)
-      - Just Enough Resources (JER)
-      - MineMenu
-      - AppleSkin
-      - BetterFps
-      - NoNausea
-      - Better Placement
-      - Controlling
-      - Custom Main Menu
-      - Default Options
-      - Durability Show
-      - Fullscreen Windowed (Borderless) for Minecraft
-      - JEI Integration
-      - Keyboard Wizard
-      - Mod Name Tooltip
-      - Neat
-      - ReAuth
-
-   #=======================#
-   # Clientside - Optional #
-   #=======================#
-      - feature:
-          selected: true
-        entries:
-        - Fancy Block Particles
-        - JourneyMap
-        - Client Tweaks
-        - Mouse Tweaks
-        - "World Handler - Command GUI"
+ #=======================#
+ # Clientside - Optional #
+ #=======================#
+    - name: Fancy Block Particles
+      feature:
+        selected: true
+        recommendation: starred
+    - name: JourneyMap
+      feature:
+        selected: true
+        recommendation: starred
+    - name: Client Tweaks
+      feature:
+        selected: true
+    - name: Mouse Tweaks
+      feature:
+        selected: true
+    - name: "World Handler - Command GUI"
+      feature:
+        selected: true
+    - name: MineMenu
+      feature:
+        selected: false
