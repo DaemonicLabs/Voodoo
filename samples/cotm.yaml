@@ -1,21 +1,20 @@
 #===========#
 # Pack Info #
 #===========#
-name: Center of the Multiverse
+name: cotm
 title: Center of the Multiverse
 version: 2.1.2
 mcVersion: 1.12.2
 forge: 2611
-versionCache: '.'
-featureCache: '.'
-minecraftDir: cotm
+minecraftDir: src
+
 #================#
 # Client Configs #
 #================#
 userFiles:
   include:
-   - options.txt
-   - "config/dsurround/dsurround.cfg"
+    - options.txt
+    - "config/dsurround/dsurround.cfg"
 
 #===========#
 # Core Pack #
@@ -27,7 +26,6 @@ root:
   validMcVersions: [1.12.1, '1.12']
   curseOptionalDependencies: false
   curseReleaseTypes: [ alpha, beta, release ]
-  jenkinsUrl: https://ci.elytradev.com
 
 #==============#
 # Pack Content #
@@ -139,7 +137,7 @@ root:
 
   # Mr_Crayfish
   - "MrCrayfish's Furniture Mod"
-  - MrCrayfish's Device Mod
+  - "MrCrayfish's Device Mod"
 
   # zabi94
   - Extra Alchemy
@@ -225,7 +223,6 @@ root:
   - Painting Selection Gui Revamped
   - Tool Belt
   - TorchMaster
-  - Totemic
   - Robotic Parts
   - ReWIRED
   - Woot
@@ -244,6 +241,9 @@ root:
   - Yoyos
   - MultiBeds
   - "IKWID (I Know What I'm Doing)"
+  - "Bad Wither No Cookie - Reloaded"
+  - Ender IO
+  - Sampler
 
   # asie
   - Charset Lib
@@ -257,22 +257,17 @@ root:
   - Charset Audio
   - Charset Storage - Locks
   - CharsetPatches
+  - FoamFix for Minecraft
 
-  #FoamFix
-  - url: https://unascribed.com/foamfix/FoamFix-1.12.2-0.9.4-Anarchy.jar
-    name: FoamFix
-    provider: DIRECT
+  # Direct Downloads
+  - provider: DIRECT
+    entries:
 
-  #Nutrition
-  - url: http://centerofthemultiverse.net/launcher/dist/Nutrition-1.12.2-3.0.0.jar
-    name: Nutrition
-    provider: DIRECT
+  # Nutrition
+    - url: https://github.com/WesCook/Nutrition/releases/download/v3.1.0/Nutrition-1.12.2-3.1.0.jar
+      name: Nutrition
 
-  # Player's Sampler
-  - url: http://files.player.to/sampler-1.73.jar
-    name: Player's Sampler
-    provider: DIRECT
-
+  # Jenkins Downloads
   - provider: JENKINS
     jenkinsUrl: https://ci.elytradev.com
     entries:
@@ -308,6 +303,7 @@ root:
     entries:
     - Just Enough HarvestCraft (JEHC)
     - Just Enough Resources (JER)
+    - JEI Integration
     - AppleSkin
     - BetterFps
     - NoNausea
@@ -317,32 +313,39 @@ root:
     - Default Options
     - Durability Show
     - Fullscreen Windowed (Borderless) for Minecraft
-    - JEI Integration
     - Keyboard Wizard
     - Mod Name Tooltip
     - Neat
     - ReAuth
+    - TipTheScales
 
- #=======================#
- # Clientside - Optional #
- #=======================#
-    - name: Fancy Block Particles
-      feature:
+  #=======================#
+  # Clientside - Optional #
+  #=======================#
+    - feature:
         selected: true
         recommendation: starred
-    - name: JourneyMap
-      feature:
-        selected: true
-        recommendation: starred
-    - name: Client Tweaks
-      feature:
-        selected: true
-    - name: Mouse Tweaks
-      feature:
-        selected: true
-    - name: "World Handler - Command GUI"
-      feature:
-        selected: true
-    - name: MineMenu
-      feature:
+      entries:
+      - JourneyMap
+
+    - feature:
         selected: false
+        recommendation: starred
+      entries:
+      - Fancy Block Particles
+
+    - feature:
+        selected: true
+      entries:
+      - Client Tweaks
+      - Mouse Tweaks
+      - "World Handler - Command GUI"
+
+    - feature:
+        selected: false
+      entries:
+      - MineMenu
+      - ItemZoom
+      - Mob Dismemberment
+      - Chunk Animator
+      - "RPG-Hud"
