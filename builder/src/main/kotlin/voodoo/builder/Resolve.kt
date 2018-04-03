@@ -144,6 +144,8 @@ fun ModPack.resolve(force: Boolean = false, updateEntries: List<String>) {
             versions[entry.name] = lockEntry
     }
 
+
+    features.clear()
     for (entry in entries) {
         resolveFeatureDependencies(entry, this)
     }

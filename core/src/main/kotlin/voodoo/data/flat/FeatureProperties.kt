@@ -11,6 +11,7 @@ import voodoo.data.Recommendation
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class FeatureProperties(
         var name: String = "",
+        @JsonInclude(JsonInclude.Include.ALWAYS)
         var selected: Boolean = true,
         var description: String = "",
         @JsonInclude(JsonInclude.Include.NON_NULL)
