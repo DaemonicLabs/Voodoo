@@ -38,6 +38,7 @@ class CurseProviderThing : ProviderBase {
                 name = entry.name,
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
+                side = entry.side,
                 projectID = projectID,
                 fileID = fileID
         )

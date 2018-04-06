@@ -27,6 +27,7 @@ class DirectProviderThing : ProviderBase {
                 name = entry.name,
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
+                side = entry.side,
                 url = entry.url
         )
     }

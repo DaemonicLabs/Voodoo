@@ -1,6 +1,7 @@
 package voodoo.data.lock
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import voodoo.data.Side
 
 /**
  * Created by nikky on 28/03/18.
@@ -16,6 +17,7 @@ data class LockEntry(
         var name: String = "",
         var folder: String = "mods",
         var fileName: String? = null,
+        var side: Side = Side.BOTH,
         // CURSE
         var projectID: Int = -1,
         var fileID: Int = -1,
