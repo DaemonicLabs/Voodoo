@@ -34,6 +34,7 @@ class JenkinsProviderThing : ProviderBase {
                 name = entry.name,
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
+                side = entry.side,
                 jenkinsUrl = entry.jenkinsUrl,
                 job = entry.job,
                 buildNumber = buildNumber,

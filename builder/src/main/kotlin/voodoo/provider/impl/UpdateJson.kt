@@ -10,9 +10,9 @@ import mu.KLogging
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
-import voodoo.provider.UpdateChannel
 import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
+import voodoo.provider.UpdateChannel
 
 /**
  * Created by nikky on 30/12/17.
@@ -57,6 +57,7 @@ class UpdateJsonProviderThing : ProviderBase {
                 name = entry.name,
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
+                side = entry.side,
                 url = url
         )
     }

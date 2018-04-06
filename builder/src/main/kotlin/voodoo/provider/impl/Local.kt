@@ -23,6 +23,7 @@ class LocalProviderThing : ProviderBase {
         return LockEntry(
                 provider = entry.provider,
                 name = entry.name,
+                side = entry.side,
                 fileSrc = entry.fileSrc
         )
     }

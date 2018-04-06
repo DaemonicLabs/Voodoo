@@ -1,6 +1,7 @@
 package voodoo.pack
 
 import mu.KotlinLogging
+import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.pack.sk.SKFeature
@@ -62,7 +63,12 @@ object SKPack : AbstractPack() {
 //        srcFolder.resolve("mods").deleteRecursively()
         for (entry in modpack.entries) {
             val provider = Provider.valueOf(entry.provider).base
-            val (url, file) = provider.download(entry, modpack, srcFolder.resolve(entry.folder), cacheDir)
+            val targetFolder = when(entry.side) {
+                Side.CLIENT -> srcFolder.resolve(entry.folder).resolve("_CLIENT")
+                Side.SERVER -> srcFolder.resolve(entry.folder).resolve("_SERVER")
+                Side.BOTH -> srcFolder.resolve(entry.folder)
+            }
+            val (url, file) = provider.download(entry, modpack, targetFolder, cacheDir)
             if (url != null && entry.useUrlTxt) {
                 val urlTxtFile = file.parentFile.resolve(file.name + ".url.txt")
                 urlTxtFile.writeText(url)
