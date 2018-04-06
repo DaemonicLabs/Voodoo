@@ -20,7 +20,7 @@ echo
 echo "building $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo-2.0.0.jar" build $1.json --save -o $1.lock.json
+java -jar "$DIR/voodoo/build/libs/voodoo-2.0.0.jar" build $1.json --save -o $1.lock.json --force
 
 echo
 echo "packaging $1"
