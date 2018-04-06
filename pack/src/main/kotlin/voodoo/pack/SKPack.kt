@@ -38,10 +38,10 @@ object SKPack : AbstractPack() {
         if (!srcFolder.exists()) {
             logger.info("copying files into src")
             val mcDir = File(modpack.minecraftDir)
-            if(mcDir.exists()) {
+            if (mcDir.exists()) {
                 mcDir.copyRecursively(srcFolder, overwrite = true)
             } else {
-                logger.warn("directory $mcDir does not exist")
+                logger.warn("minecraft directory $mcDir does not exist")
             }
         }
 
@@ -63,17 +63,21 @@ object SKPack : AbstractPack() {
 //        srcFolder.resolve("mods").deleteRecursively()
         for (entry in modpack.entries) {
             val provider = Provider.valueOf(entry.provider).base
-            val targetFolder = when(entry.side) {
-                Side.CLIENT -> srcFolder.resolve(entry.folder).resolve("_CLIENT")
-                Side.SERVER -> srcFolder.resolve(entry.folder).resolve("_SERVER")
-                Side.BOTH -> srcFolder.resolve(entry.folder)
-            }
+            val targetFolder = srcFolder.resolve(entry.folder)
             val (url, file) = provider.download(entry, modpack, targetFolder, cacheDir)
             if (url != null && entry.useUrlTxt) {
                 val urlTxtFile = file.parentFile.resolve(file.name + ".url.txt")
                 urlTxtFile.writeText(url)
             }
             targetFiles[entry.name] = file.relativeTo(srcFolder).path
+            when (entry.side) {
+                Side.CLIENT -> targetFolder.resolve("_CLIENT").resolve(file.name)
+                Side.SERVER -> targetFolder.resolve("_SERVER").resolve(file.name)
+                Side.BOTH -> null
+            }?.let {
+                it.parentFile.mkdirs()
+                file.renameTo(it)
+            }
         }
 
         // write features
@@ -89,7 +93,6 @@ object SKPack : AbstractPack() {
                     files = feature.files
             )
             logger.info("processed feature $feature")
-
         }
 
 
