@@ -244,6 +244,7 @@ root:
   - "Bad Wither No Cookie - Reloaded"
   - Ender IO
   - Sampler
+  - "Millénaire"
 
   # asie
   - Charset Lib
@@ -326,26 +327,43 @@ root:
         selected: true
         recommendation: starred
       entries:
-      - JourneyMap
+      - name: JourneyMap
+        description: "You know what this is."
 
     - feature:
         selected: false
         recommendation: starred
       entries:
-      - Fancy Block Particles
+      - name: Fancy Block Particles
+        description: "Adds some flair to particle effects and animations. Highly configurable, but can cause client lag."
 
     - feature:
         selected: true
       entries:
-      - Client Tweaks
-      - Mouse Tweaks
-      - "World Handler - Command GUI"
+      - name: Client Tweaks
+        description: "Client Tweaks"
+
+      - name: Mouse Tweaks
+        description: "Mouse Tweaks"
+
+      - name: "World Handler - Command GUI"
+        description: "World Handler"
 
     - feature:
         selected: false
       entries:
-      - MineMenu
-      - ItemZoom
-      - Mob Dismemberment
-      - Chunk Animator
-      - "RPG-Hud"
+
+      - name: MineMenu
+        description: "Radial menu that can be used for command/keyboard shortcuts."
+
+      - name: ItemZoom
+        description: "Item Zoom"
+
+      - name: Mob Dismemberment
+        description: "Gibtastic!"
+
+      - name: Chunk Animator
+        description: "Makes chunks load in an amusing way. Can cause lag."
+
+      - name: RPG-Hud
+        description: "Highly configureable hud when you really feel like you need more stuff on screen."
