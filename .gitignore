@@ -5,7 +5,6 @@ out/
 run/
 *.iml
 
-**/gen/
 **/output/
 
 /editor/
