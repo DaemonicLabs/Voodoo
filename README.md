@@ -7,7 +7,7 @@ and other launchers
 
 ### download
 
-please grab the latest binaries from the [buildserver](https://ci.elytradev.com/job/elytra/job/Voodoo/job/2.0/)
+please grab the latest binaries from the [buildserver](https://ci.elytradev.com/job/elytra/job/Voodoo/job/dev/)
 
 ### build
 
