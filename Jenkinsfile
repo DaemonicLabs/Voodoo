@@ -20,8 +20,8 @@ pipeline {
 	            sh './gradlew :bootstrap:clean'
 	            sh './gradlew :bootstrap:build -Ptarget=voodoo'
 	            sh './gradlew :bootstrap:build -Ptarget=hex'
-	            archive 'bootstrap/build/libs/voodoo*'
-	            archive 'bootstrap/build/libs/hex*'
+	            archive 'bootstrap/build/libs/*voodoo*'
+	            archive 'bootstrap/build/libs/*hex*'
 	        }
 	    }
 	}
