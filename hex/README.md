@@ -1,4 +1,4 @@
-# MultiMC Pack update
+# Hex SK installer for MultiMC
 
 MultiMC PRE_LAUNCH command
 
@@ -10,3 +10,6 @@ read URL from file `voodoo.url.txt`
 $ cat voodoo.url.txt
 https://testificate.xen.prgmr.com/craft/repo/openpack.json
 ```
+
+not officially supported by MultiMC, please do not annoy them when this breaks
+contact the original Author (NikkyAI) instead

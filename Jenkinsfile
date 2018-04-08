@@ -22,6 +22,13 @@ pipeline {
 	            archive 'pack/build/libs/*jar'
 	        }
 	    }
+	    stage("hex") {
+	        steps {
+	            sh './gradlew :hex:clean'
+	            sh './gradlew :hex:build'
+	            archive 'hex/build/libs/*jar'
+	        }
+	    }
 	    stage("voodoo") {
 	        steps {
 	            sh './gradlew :voodoo:clean'

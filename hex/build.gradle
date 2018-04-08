@@ -28,9 +28,6 @@ dependencies {
     compile project(':core')
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
     compile group: 'commons-codec', name: 'commons-codec', version: '+'
-//    compile group: 'com.github.thomasnield', name: 'rxkotlinfx', version: '+'
-//    compile group: 'no.tornado', name: 'tornadofx', version: '+'
-
 }
 
 sourceSets {
