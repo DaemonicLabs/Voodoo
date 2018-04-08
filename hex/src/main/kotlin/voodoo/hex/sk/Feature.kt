@@ -1,4 +1,4 @@
-package voodoo.mmc.sk
+package voodoo.hex.sk
 
 import voodoo.data.Recommendation
 
