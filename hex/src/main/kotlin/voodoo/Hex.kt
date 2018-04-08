@@ -8,11 +8,11 @@ import com.xenomachina.argparser.mainBody
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
 import voodoo.data.Recommendation
-import voodoo.mmc.MultiMCPack
-import voodoo.mmc.PackComponent
-import voodoo.mmc.sk.Feature
-import voodoo.mmc.sk.IfTask
-import voodoo.mmc.sk.Pack
+import voodoo.hex.MultiMCPack
+import voodoo.hex.PackComponent
+import voodoo.hex.sk.Feature
+import voodoo.hex.sk.IfTask
+import voodoo.hex.sk.Pack
 import voodoo.util.*
 import java.awt.BorderLayout
 import java.awt.Color
@@ -33,8 +33,8 @@ import javax.swing.BoxLayout
  * @version 1.0
  */
 
-object MMC : KLogging() {
-    private val directories = Directories.get(moduleName = "multimc")
+object Hex : KLogging() {
+    private val directories = Directories.get(moduleName = "hex")
 
     @JvmStatic
     fun main(vararg args: String) = mainBody {

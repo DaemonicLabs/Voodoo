@@ -37,9 +37,13 @@ compileKotlin.doFirst {
                 PACKAGE: project.name,
                 MAJOR_VERSION: project.major,
                 MINOR_VERSION: project.minor,
-                PATCH_VERSION: project.patch
+                PATCH_VERSION: project.patch,
+                BUILD_NUMBER: System.env.BUILD_NUMBER ?: -1
         )
     }
+}
+if (System.env.BUILD_NUMBER) {
+    version += "-${System.env.BUILD_NUMBER}"
 }
 
 task proguard(type: ProGuardTask, dependsOn: shadowJar) {

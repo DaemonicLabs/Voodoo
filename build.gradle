@@ -51,12 +51,10 @@ subprojects {
         maven { url "http://jcenter.bintray.com" }
     }
 
-
     idea {
         module {
             excludeDirs += [file("run")]
         }
     }
-
 
 }
