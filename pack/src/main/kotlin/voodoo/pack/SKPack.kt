@@ -54,37 +54,42 @@ object SKPack : AbstractPack() {
         val forgeFile = loadersFolder.resolve(forgeFileName)
         forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
 
-//        val modsFolder = srcFolder.resolve("mods")
-//        logger.info("cleaning mods $modsFolder")
-//        modsFolder.deleteRecursively()
+        val modsFolder = srcFolder.resolve("mods")
+        logger.info("cleaning mods $modsFolder")
+        modsFolder.deleteRecursively()
 
-        val targetFiles = mutableMapOf<String, String>()
         // download entries
-//        srcFolder.resolve("mods").deleteRecursively()
+        val targetFiles = mutableMapOf<String, File>()
         for (entry in modpack.entries) {
             val provider = Provider.valueOf(entry.provider).base
-            val targetFolder = srcFolder.resolve(entry.folder)
+            val targetFolder = when (entry.side) {
+                Side.CLIENT -> srcFolder.resolve(entry.folder).resolve("_CLIENT")
+                Side.SERVER -> srcFolder.resolve(entry.folder).resolve("_SERVER")
+                Side.BOTH -> srcFolder.resolve(entry.folder)
+            }
             val (url, file) = provider.download(entry, modpack, targetFolder, cacheDir)
             if (url != null && entry.useUrlTxt) {
                 val urlTxtFile = file.parentFile.resolve(file.name + ".url.txt")
                 urlTxtFile.writeText(url)
             }
-            targetFiles[entry.name] = file.relativeTo(srcFolder).path
-            when (entry.side) {
-                Side.CLIENT -> targetFolder.resolve("_CLIENT").resolve(file.name)
-                Side.SERVER -> targetFolder.resolve("_SERVER").resolve(file.name)
-                Side.BOTH -> null
-            }?.let {
-                it.parentFile.mkdirs()
-                file.renameTo(it)
-            }
+            targetFiles[entry.name] = file.relativeTo(srcFolder)
         }
 
         // write features
         val features = mutableListOf<SKFeature>()
         for (feature in modpack.features) {
             for (name in feature.entries) {
-                feature.files.include += targetFiles[name]!!
+                logger.info(name)
+
+                val targetFile = targetFiles[name]!!.let {
+                    if (it.parentFile.name == "_SERVER" || it.parentFile.name == "_CLIENT") {
+                        it.parentFile.parentFile.resolve(it.name)
+                    } else
+                        it
+                }
+
+
+                feature.files.include += targetFile.path.replace('\\', '/')
                 logger.info("includes = ${feature.files.include}")
             }
 
