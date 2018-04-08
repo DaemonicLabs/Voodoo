@@ -17,10 +17,11 @@ pipeline {
 	    }
 	    stage("bootstrap") {
 	        steps {
-	            sh './gradlew :bootstrap:clean :bootstrap:build -Ptarget=voodoo'
-	            archive 'voodoo/build/libs/voodoo*jar'
-	            sh './gradlew :bootstrap:clean :bootstrap:build -Ptarget=hex'
-	            archive 'voodoo/build/libs/hex*jar'
+	            sh './gradlew :bootstrap:clean'
+	            sh './gradlew :bootstrap:build -Ptarget=voodoo'
+	            sh './gradlew :bootstrap:build -Ptarget=hex'
+	            archive 'voodoo/build/libs/voodoo*'
+	            archive 'voodoo/build/libs/hex*'
 	        }
 	    }
 	}
