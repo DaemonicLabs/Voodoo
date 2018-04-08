@@ -21,12 +21,12 @@ def fileRegex
 if(project.hasProperty('target')) {
     if (project.target == "voodoo") {
         moduleName = "voodoo"
-        fileRegex = /^[Vv]oodoo.*\\.jar$/
-        shadowJar.baseName = "voodoo-bootstrap"
+        fileRegex = /^[Vv]oodoo-.*\\.jar$/
+        shadowJar.baseName = "bootstrap-voodoo"
     } else if (project.target == "hex") {
         moduleName = "hex"
-        fileRegex = /^[Hh]ex.*\\.jar$/
-        shadowJar.baseName = "hex-bootstrap"
+        fileRegex = /^[Hh]ex-.*\\.jar$/
+        shadowJar.baseName = "bootstrap-hex"
     } else {
         throw new InvalidUserDataException("invalid target property")
     }
@@ -58,4 +58,7 @@ compileKotlin.doFirst {
                 FILE_REGEX: fileRegex
         )
     }
+}
+if (System.env.BUILD_NUMBER) {
+    version += "-${System.env.BUILD_NUMBER}"
 }
