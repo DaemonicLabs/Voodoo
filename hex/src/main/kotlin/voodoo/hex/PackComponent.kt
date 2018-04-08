@@ -1,4 +1,4 @@
-package voodoo.mmc
+package voodoo.hex
 
 import com.fasterxml.jackson.annotation.JsonInclude
 
