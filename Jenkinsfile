@@ -1,25 +1,11 @@
 pipeline {
     agent any
 	stages {
-	    stage("flatten") {
+	    stage("voodoo") {
 	        steps {
-	            sh './gradlew :flatten:clean'
-	            sh './gradlew :flatten:build'
-	            archive 'flatten/build/libs/*jar'
-	        }
-	    }
-	    stage("builder") {
-	        steps {
-	            sh './gradlew :builder:clean'
-	            sh './gradlew :builder:build'
-	            archive 'builder/build/libs/*jar'
-	        }
-	    }
-	    stage("pack") {
-	        steps {
-	            sh './gradlew :pack:clean'
-	            sh './gradlew :pack:build'
-	            archive 'pack/build/libs/*jar'
+	            sh './gradlew :voodoo:clean'
+	            sh './gradlew :voodoo:build'
+	            archive 'voodoo/build/libs/*jar'
 	        }
 	    }
 	    stage("hex") {
@@ -29,11 +15,12 @@ pipeline {
 	            archive 'hex/build/libs/*jar'
 	        }
 	    }
-	    stage("voodoo") {
+	    stage("bootstrap") {
 	        steps {
-	            sh './gradlew :voodoo:clean'
-	            sh './gradlew :voodoo:build'
-	            archive 'voodoo/build/libs/*jar'
+	            sh './gradlew :bootstrap:clean :bootstrap:build -Ptarget=voodoo'
+	            archive 'voodoo/build/libs/voodoo*jar'
+	            sh './gradlew :bootstrap:clean :bootstrap:build -Ptarget=hex'
+	            archive 'voodoo/build/libs/hex*jar'
 	        }
 	    }
 	}

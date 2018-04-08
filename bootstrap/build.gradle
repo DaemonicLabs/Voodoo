@@ -1,0 +1,63 @@
+plugins {
+    id 'application'
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = "voodoo.BootstrapKt"
+version = project.version
+
+dependencies {
+    compile project(':util')
+}
+
+shadowJar {
+    classifier = null
+}
+
+def moduleName
+def fileRegex
+
+if(project.hasProperty('target')) {
+    if (project.target == "voodoo") {
+        moduleName = "voodoo"
+        fileRegex = /^[Vv]oodoo.*\\.jar$/
+        shadowJar.baseName = "voodoo-bootstrap"
+    } else if (project.target == "hex") {
+        moduleName = "hex"
+        fileRegex = /^[Hh]ex.*\\.jar$/
+        shadowJar.baseName = "hex-bootstrap"
+    } else {
+        throw new InvalidUserDataException("invalid target property")
+    }
+}else {
+    throw new InvalidUserDataException("missing target property")
+}
+
+sourceSets {
+    main.kotlin.srcDirs += "$buildDir/generated-src"
+}
+version = "${project.major}.${project.minor}.${project.patch}"
+compileKotlin.doFirst {
+    copy {
+        from "../template/kotlin/voodoo/"
+        into "$buildDir/generated-src/voodoo/${project.name}"
+        expand(
+                PACKAGE: "voodoo.${project.name}",
+                MAJOR_VERSION: project.major,
+                MINOR_VERSION: project.minor,
+                PATCH_VERSION: project.patch,
+                BUILD_NUMBER: System.env.BUILD_NUMBER ?: -1
+        )
+    }
+    copy {
+        from "src/template/kotlin/voodoo/"
+        into "$buildDir/generated-src/voodoo/"
+        expand(
+                JENKINS_URL: "https://ci.elytradev.com",
+                JENKINS_JOB: "elytra/Voodoo/master",
+                MODULE_NAME: moduleName,
+                FILE_REGEX: fileRegex
+        )
+    }
+}
