@@ -28,7 +28,7 @@ object Builder : KLogging() {
             val modpack = inFile.readYaml<ModPack>()
 
             modpack.resolve(force, entries)
-            if (save) {
+            if (nosave) {
                 println("saving changes...")
                 inFile.writeJson(modpack)
             }
@@ -56,8 +56,8 @@ object Builder : KLogging() {
                 help = "output file json")
                 .default<String?>(null)
 
-        val save by parser.flagging("--save",
-                help = "save inputfile after resolve")
+        val nosave by parser.flagging("--nosave",
+                help = "do not save inputfile after resolve")
                 .default(true)
 
         val stdout by parser.flagging("--stdout", "-s",
