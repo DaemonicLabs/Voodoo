@@ -5,6 +5,7 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
+import mu.KLogger
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
 import voodoo.data.Recommendation
@@ -25,6 +26,7 @@ import java.awt.event.WindowEvent
 import java.io.File
 import javax.swing.*
 import javax.swing.BoxLayout
+import kotlin.system.exitProcess
 
 
 /**
@@ -132,7 +134,7 @@ object Hex : KLogging() {
             }
 
             val path = task.hash.chunked(6).joinToString("/")
-            target.download(url, cacheFolder.resolve(path))
+            download(target, url, cacheFolder.resolve(path))
 
             if (target.exists()) {
                 val sha1 = target.sha1Hex()
@@ -187,7 +189,7 @@ object Hex : KLogging() {
 
         val adapter = object : WindowAdapter() {
             override fun windowClosed(e: WindowEvent) {
-                throw Exception("cancelled")
+                logger.info("closing dialog")
             }
         }
 
@@ -268,5 +270,34 @@ object Hex : KLogging() {
 
         val minecraftDir by parser.storing("--mc",
                 help = "\$INST_MC_DIR - absolute path of minecraft") { File(this) }
+    }
+
+    fun download(file: File, url: String, cacheDir: File, useragent: String = downloader.useragent, logger: KLogger = downloader.logger) {
+        logger.info("downloading $url -> $this")
+        val cacheFile = cacheDir.resolve(file.name)
+        logger.debug("cacheFile $cacheFile")
+        if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
+        if (!cacheFile.exists() || !cacheFile.isFile) {
+            val (request, response, result) = url.httpGet().header("User-Agent" to useragent).response()
+            when (result) {
+                is Result.Success -> {
+                    cacheDir.mkdirs()
+                    cacheFile.parentFile.mkdirs()
+                    cacheFile.writeBytes(result.value)
+                }
+                is Result.Failure -> {
+                    logger.error("invalid statusCode {} from {}", response.statusCode, url)
+                    logger.error("connection url: {}", request.url)
+                    logger.error("content: {}", result.component1())
+                    logger.error("error: {}", result.error.toString())
+                    exitProcess(1)
+                }
+            }
+        }
+        try {
+            cacheFile.copyTo(file, overwrite = true)
+        }catch(e: FileAlreadyExistsException) {
+            logger.info("failed to copy file, blame java, try using openjdk instead, throw windows away")
+        }
     }
 }
