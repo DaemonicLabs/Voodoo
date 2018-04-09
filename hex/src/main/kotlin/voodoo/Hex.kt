@@ -245,7 +245,7 @@ object Hex : KLogging() {
             override fun setVisible(visible: Boolean) {
                 super.setVisible(visible)
                 if (!visible) {
-                    (parent as JFrame).dispose()
+                    (parent as? JFrame)?.dispose()
                 }
             }
 
