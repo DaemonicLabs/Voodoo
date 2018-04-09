@@ -37,9 +37,13 @@ fun File.download(url: String, cacheDir: File, useragent: String = downloader.us
                 logger.error("content: {}", result.component1())
                 logger.error("error: {}", result.error.toString())
                 exitProcess(1)
-                return
             }
         }
     }
-    cacheFile.copyTo(this, overwrite = true)
+    try {
+        cacheFile.copyTo(this, overwrite = true)
+    }catch(e: FileAlreadyExistsException) {
+        logger.error("failed to copy file $cacheFile to $this .. trying again")
+        cacheFile.copyTo(this, overwrite = true)
+    }
 }
