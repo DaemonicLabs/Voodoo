@@ -27,7 +27,7 @@ class CurseProviderThing : ProviderBase {
     companion object : KLogging()
 
     override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
-        val (projectID, fileID, _) = findFile(entry, modpack.mcVersion, modpack.curseMetaUrl)
+        val (projectID, fileID, path) = findFile(entry, modpack.mcVersion, modpack.curseMetaUrl)
 
         resolveDependencies(projectID, fileID, entry, modpack, addEntry)
 
@@ -40,7 +40,8 @@ class CurseProviderThing : ProviderBase {
                 fileName = entry.fileName,
                 side = entry.side,
                 projectID = projectID,
-                fileID = fileID
+                fileID = fileID,
+                folder = path
         )
     }
 

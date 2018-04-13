@@ -28,7 +28,7 @@ object CurseUtil : KLogging() {
     private val pairs = getNameIdPairs()
 
     private fun getNameIdPairs(): List<NameIdPair> {
-        val url = "https://curse.nikky.moe/api/addon?property=id,name&mods=1&resourcepacks=1"
+        val url = "https://curse.nikky.moe/api/addon?property=id,name&mods=1&resourcepacks=1&texturepacks=1"
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -196,6 +196,6 @@ object CurseUtil : KLogging() {
             System.exit(-1)
             return Triple(addonId, -1, "")
         }
-        return Triple(addonId, file.id, file.fileNameOnDisk)
+        return Triple(addonId, file.id, addon.categorySection.path)
     }
 }
