@@ -40,13 +40,13 @@ fun File.download(url: String, cacheDir: File, useragent: String = downloader.us
             }
         }
     }
-    
+
     try {
         cacheFile.copyTo(this, overwrite = true)
-    }catch(e: FileAlreadyExistsException) {
+    } catch (e: FileAlreadyExistsException) {
         val fileIsLocked = !this.renameTo(this)
         logger.error("failed to copy file $cacheFile to $this .. file is locked ? $fileIsLocked")
-        if(!fileIsLocked)
+        if (!fileIsLocked)
             cacheFile.copyTo(this, overwrite = true)
     }
 }

@@ -1,20 +1,9 @@
+# TODO
 
-http://45.79.138.67/launcher/packages.json
-
-```
-{
-  "minimumVersion": 1,
-  "packages": [
-    {
-      "title": "Center of the Multiverse",
-      "name": "Center of the Multiverse",
-      "version": "CotM - 2.1.1",
-      "location": "center-of-the-multiverse.json",
-      "priority": 0
-    }
-  ]
-}
-```
+request all packs from packages.json and find the first one with matching name
+ 
+https://centerofthemultiverse.net/launcher/packages.json
+https://canitzp.de/limbocon/pack/
 
 http://45.79.138.67/launcher/center-of-the-multiverse.json
 https://testificate.xen.prgmr.com/craft/repo/openpack.json
