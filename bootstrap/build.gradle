@@ -15,6 +15,8 @@ shadowJar {
     classifier = null
 }
 
+build.dependsOn(shadowJar)
+
 def moduleName
 def fileRegex
 
@@ -32,22 +34,7 @@ if(project.hasProperty('target')) {
     }
 }
 
-sourceSets {
-    main.kotlin.srcDirs += "$buildDir/generated-src"
-}
-version = "${project.major}.${project.minor}.${project.patch}"
 compileKotlin.doFirst {
-    copy {
-        from "../template/kotlin/voodoo/"
-        into "$buildDir/generated-src/voodoo/${project.name}"
-        expand(
-                PACKAGE: "voodoo.${project.name}",
-                MAJOR_VERSION: project.major,
-                MINOR_VERSION: project.minor,
-                PATCH_VERSION: project.patch,
-                BUILD_NUMBER: System.env.BUILD_NUMBER ?: -1
-        )
-    }
     copy {
         from "src/template/kotlin/voodoo/"
         into "$buildDir/generated-src/voodoo/"
@@ -58,7 +45,4 @@ compileKotlin.doFirst {
                 FILE_REGEX: fileRegex
         )
     }
-}
-if (System.env.BUILD_NUMBER) {
-    version += "-${System.env.BUILD_NUMBER}"
 }
