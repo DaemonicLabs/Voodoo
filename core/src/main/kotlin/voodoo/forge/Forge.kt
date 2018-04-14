@@ -7,7 +7,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
-import voodoo.data.flat.Entry
 
 /**
  * Created by nikky on 30/12/17.
@@ -37,7 +36,7 @@ object Forge : KLogging() {
 //    }
 
     fun getForgeBuild(version: String, mcVersion: String): Int {
-        return if(version.equals("recommended", true) || version.equals("latest", true)) {
+        return if (version.equals("recommended", true) || version.equals("latest", true)) {
             val promoVersion = "$mcVersion-${version.toLowerCase()}"
             data.promos[promoVersion]!!
         } else {

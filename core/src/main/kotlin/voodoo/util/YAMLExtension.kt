@@ -23,7 +23,7 @@ val yamlMapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
 val Any?.yaml: String
     get() = yamlMapper.writeValueAsString(this)
 
-inline fun <reified T: Any> File.readYaml(): T {
+inline fun <reified T : Any> File.readYaml(): T {
     this.bufferedReader().use {
         return yamlMapper.readValue(it)
     }

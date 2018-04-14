@@ -162,7 +162,7 @@ enum class FileStatus {
                 null
             else {
                 val index = key.toIntOrNull() ?: return valueOf(key.toUpperCase())
-                return values()[index-1]
+                return values()[index - 1]
             }
         }
     }
@@ -181,7 +181,7 @@ enum class FileType {
                 null
             else {
                 val index = key.toIntOrNull() ?: return valueOf(key.toUpperCase())
-                return values()[index-1]
+                return values()[index - 1]
             }
         }
     }
@@ -200,7 +200,7 @@ enum class DependencyType {
                 null
             else {
                 val index = key.toIntOrNull() ?: return valueOf(key.toUpperCase())
-                return values()[index-1]
+                return values()[index - 1]
             }
         }
     }
@@ -223,7 +223,7 @@ enum class PackageType {
                 null
             else {
                 val index = key.toIntOrNull() ?: return valueOf(key.toUpperCase())
-                return values()[index-1]
+                return values()[index - 1]
             }
         }
     }
@@ -247,7 +247,7 @@ enum class ProjectStage {
                 null
             else {
                 val index = key.toIntOrNull() ?: return valueOf(key.toUpperCase())
-                return values()[index-1]
+                return values()[index - 1]
             }
         }
     }
@@ -266,7 +266,7 @@ enum class ProjectStatus {
                 null
             else {
                 val index = key.toIntOrNull() ?: return valueOf(key.toUpperCase())
-                return values()[index-1]
+                return values()[index - 1]
             }
         }
     }

@@ -1,4 +1,4 @@
-package voodoo.provider;
+package voodoo.provider
 
 enum class UpdateChannel {
     LATEST, RECOMMENDED
