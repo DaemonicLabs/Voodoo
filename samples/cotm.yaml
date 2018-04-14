@@ -3,18 +3,19 @@
 #===========#
 name: cotm
 title: Center of the Multiverse
-version: 2.1.2
+version: 2.1.2.2
 mcVersion: 1.12.2
-forge: 2611
+forge: 2654
 minecraftDir: src
 
 #================#
 # Client Configs #
 #================#
 userFiles:
-  include:
-    - options.txt
-    - "config/dsurround/dsurround.cfg"
+
+  exclude:
+  - "config/dsurround/dsurround.cfg"
+  - options.txt
 
 #===========#
 # Core Pack #
@@ -145,7 +146,6 @@ root:
 
   - The Disenchanter Mod
   - Draconic Evolution
-  - Dynamic Surroundings
   - Embers
   - Enchiridion
   - Ender Storage 1.8.+
@@ -327,43 +327,52 @@ root:
         selected: true
         recommendation: starred
       entries:
-      - name: JourneyMap
-        description: "You know what this is."
+
+        - name: JourneyMap
+          description: "You know what this is."
 
     - feature:
         selected: false
         recommendation: starred
       entries:
-      - name: Fancy Block Particles
-        description: "Adds some flair to particle effects and animations. Highly configurable, but can cause client lag."
+
+        - name: SmoothWater
+          description: "Makes the surface of water nicer, better underwater lighting, can cost FPS."
+
+        - name: Fancy Block Particles
+          description: "Adds some flair to particle effects and animations. Highly configurable, but can cause FPS spikes."
 
     - feature:
         selected: true
       entries:
-      - name: Client Tweaks
-        description: "Client Tweaks"
 
-      - name: Mouse Tweaks
-        description: "Mouse Tweaks"
+        - name: Client Tweaks
+          description: "Client Tweaks"
 
-      - name: "World Handler - Command GUI"
-        description: "World Handler"
+        - name: Mouse Tweaks
+          description: "Mouse Tweaks"
+
+        - name: "World Handler - Command GUI"
+          description: "World Handler"
 
     - feature:
         selected: false
       entries:
 
-      - name: MineMenu
-        description: "Radial menu that can be used for command/keyboard shortcuts."
+        - name: MineMenu
+          description: "Radial menu that can be used for command/keyboard shortcuts. Not default because random keybinds cannot be added to radial menu."
 
-      - name: ItemZoom
-        description: "Item Zoom"
+        - name: ItemZoom
+          description: "Item Zoom"
 
-      - name: Mob Dismemberment
-        description: "Gibtastic!"
+        - name: Mob Dismemberment
+          description: "Gibtastic! Probably laggy."
 
-      - name: Chunk Animator
-        description: "Makes chunks load in an amusing way. Can cause lag."
+        - name: Chunk Animator
+          description: "Makes chunks load in an amusing way. Can/will cause lag."
 
-      - name: RPG-Hud
-        description: "Highly configureable hud when you really feel like you need more stuff on screen."
+        - name: RPG-Hud
+          description: "Highly configureable HUD when you really feel like you need more stuff on screen."
+
+        - name: Dynamic Surroundings
+          description: "Quite nice, kinda buggy. Causes crashes."

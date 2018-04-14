@@ -99,10 +99,10 @@ object CurseUtil : KLogging() {
 
     val getAddon = ::getAddonCall.memoize()
 
-    fun getAddonByName(name: String): AddOn? = pairs
+    fun getAddonByName(name: String, metaUrl: String = META_URL): AddOn? = pairs
             .find { it.name == name }
             ?.id
-            ?.let { getAddon(it, META_URL) }
+            ?.let { getAddon(it, metaUrl) }
 
     fun findFile(entry: Entry, mcVersion: String, metaUrl: String = META_URL): Triple<Int, Int, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
@@ -118,11 +118,11 @@ object CurseUtil : KLogging() {
 
         val addon = if (addonId < 0) {
             if (name.isNotBlank())
-                getAddonByName(name)
+                getAddonByName(name, metaUrl)
             else
                 null
         } else {
-            getAddon(addonId, META_URL)
+            getAddon(addonId, metaUrl)
         }
 
         if (addon == null) {
@@ -197,5 +197,15 @@ object CurseUtil : KLogging() {
             return Triple(addonId, -1, "")
         }
         return Triple(addonId, file.id, addon.categorySection.path)
+    }
+
+    fun getAuthors(projectID: Int, metaUrl: String = META_URL): List<String> {
+        val addon = getAddon(projectID, metaUrl)!!
+        return addon.authors.map { it.name }
+    }
+
+    fun getProjectPage(projectID: Int, metaUrl: String): String {
+        val addon = getAddon(projectID, metaUrl)!!
+        return addon.webSiteURL
     }
 }

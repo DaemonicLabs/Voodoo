@@ -1,0 +1,22 @@
+plugins {
+    id 'application'
+}
+
+mainClassName = "voodoo.Tome"
+
+def runDir = parent.project.file("run").path
+
+def runArgs = ["template.md", "-o", "output.md"]
+
+run {
+    workingDir = runDir
+    args = runArgs
+}
+
+dependencies {
+    compile project(':core')
+    compile project(':builder')
+    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
+}
+
+

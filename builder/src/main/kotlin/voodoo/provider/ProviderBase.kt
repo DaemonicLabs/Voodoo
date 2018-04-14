@@ -31,8 +31,14 @@ interface ProviderBase {
 
     companion object : KLogging()
 
-    fun download(entry: LockEntry, modpack: LockPack, target: File, cacheDir: File): Pair<String?, File> {
-        TODO("not implemented")
+    fun download(entry: LockEntry, modpack: LockPack, target: File, cacheDir: File): Pair<String?, File>
+
+    fun getAuthors(entry: LockEntry, modpack: LockPack): List<String> {
+        return emptyList()
+    }
+
+    fun getProjectPage(entry: LockEntry, modpack: LockPack): String {
+        return ""
     }
 
 

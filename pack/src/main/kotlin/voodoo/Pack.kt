@@ -4,7 +4,6 @@ import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import mu.KLogging
-import mu.KotlinLogging
 import voodoo.data.lock.LockPack
 import voodoo.pack.SKPack
 import voodoo.util.readJson
@@ -44,10 +43,10 @@ object Pack : KLogging() {
 
     private class Arguments(parser: ArgParser) {
         val importArg by parser.positional("FILE",
-                help = "input pack json")
+                help = "input pack lock.json")
 
         val methodeArg by parser.positional("METHODE",
-                help = "input pack json")
+                help = "format to package into")
                 .default("")
 
         val targetArg by parser.storing("--output", "-o",

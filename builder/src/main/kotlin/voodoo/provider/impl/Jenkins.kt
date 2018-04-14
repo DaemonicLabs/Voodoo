@@ -51,6 +51,15 @@ class JenkinsProviderThing : ProviderBase {
         return Pair(url, targetFile)
     }
 
+    override fun getAuthors(entry: LockEntry, modpack: LockPack): List<String> {
+        return listOf(entry.job.substringBeforeLast('/').substringBeforeLast('/').substringAfterLast('/'))
+    }
+
+    override fun getProjectPage(entry: LockEntry, modpack: LockPack): String {
+        val server = server(entry.jenkinsUrl)
+        return server.getUrl(entry.job)
+    }
+
     private val artifact = { jobName: String, url: String, buildNumber: Int, fileNameRegex: String ->
         val build = build(jobName, url, buildNumber)
         val re = Regex(fileNameRegex)
@@ -75,6 +84,5 @@ class JenkinsProviderThing : ProviderBase {
         logger.info("get jenkins server $url")
         JenkinsServer(url)
     }.memoize()
-
 }
 

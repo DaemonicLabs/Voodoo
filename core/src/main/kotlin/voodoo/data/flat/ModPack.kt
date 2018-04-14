@@ -93,6 +93,7 @@ data class ModPack(
         return LockPack(
                 name = name,
                 title = title,
+                version = version,
                 mcVersion = mcVersion,
                 forge = forgeBuild,
                 curseMetaUrl = curseMetaUrl,

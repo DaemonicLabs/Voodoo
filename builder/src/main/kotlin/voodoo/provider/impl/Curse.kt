@@ -2,6 +2,7 @@ package voodoo.provider.impl
 
 import aballano.kotlinmemoization.memoize
 import mu.KLogging
+import voodoo.curse.CurseUtil
 import voodoo.curse.CurseUtil.findFile
 import voodoo.curse.CurseUtil.getAddon
 import voodoo.curse.CurseUtil.getAddonFile
@@ -43,6 +44,14 @@ class CurseProviderThing : ProviderBase {
                 fileID = fileID,
                 folder = path
         )
+    }
+
+    override fun getAuthors(entry: LockEntry, modpack: LockPack): List<String> {
+        return CurseUtil.getAuthors(entry.projectID, modpack.curseMetaUrl)
+    }
+
+    override fun getProjectPage(entry: LockEntry, modpack: LockPack): String {
+        return CurseUtil.getProjectPage(entry.projectID, modpack.curseMetaUrl)
     }
 
     private fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit) {
