@@ -1,6 +1,3 @@
-import org.apache.tools.ant.filters.ReplaceTokens
-import proguard.gradle.ProGuardTask
-
 plugins {
     id 'application'
 }
@@ -25,44 +22,3 @@ dependencies {
 
 build.dependsOn(shadowJar)
 
-sourceSets {
-    main.kotlin.srcDirs += "$buildDir/generated-src"
-}
-version = "${project.major}.${project.minor}.${project.patch}"
-compileKotlin.doFirst {
-    copy {
-        from "../template/kotlin/voodoo/"
-        into "$buildDir/generated-src/${project.name}"
-        expand(
-                PACKAGE: project.name,
-                MAJOR_VERSION: project.major,
-                MINOR_VERSION: project.minor,
-                PATCH_VERSION: project.patch,
-                BUILD_NUMBER: System.env.BUILD_NUMBER ?: -1
-        )
-    }
-}
-if (System.env.BUILD_NUMBER) {
-    version += "-${System.env.BUILD_NUMBER}"
-}
-
-task proguard(type: ProGuardTask, dependsOn: shadowJar) {
-    libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
-    injars shadowJar.archivePath
-    outjars "build/libs/proguard.jar"
-    keep 'class voodoo.Voodoo { *; }'
-
-    keep 'class org.slf4j.**'
-    keep 'interface org.slf4j.**'
-    keep 'enum org.slf4j.**'
-
-    keep '@com.fasterxml.jackson.annotation.JsonIgnoreProperties class * { *; }'
-    keep 'class com.fasterxml.** { *; }'
-    keep 'class org.codehaus.** { *; }'
-    keepnames 'class com.fasterxml.jackson.** { *; }'
-    keepclassmembers '''
-        public final enum com.fasterxml.jackson.annotation.JsonAutoDetect$Visibility {
-            public static final com.fasterxml.jackson.annotation.JsonAutoDetect$Visibility *;
-        }
-        '''
-}

@@ -2,8 +2,6 @@ plugins {
     id 'application'
 }
 
-apply plugin: 'com.github.johnrengelman.shadow'
-
 mainClassName = "voodoo.Pack"
 
 def runDir = parent.project.file("run").path
@@ -15,15 +13,6 @@ run {
     args = runArgs
 }
 
-runShadow {
-    workingDir = runDir
-    args = runArgs
-}
-
-shadowJar {
-    classifier = null
-}
-
 dependencies {
     compile project(':core')
     compile project(':builder')
@@ -32,23 +21,3 @@ dependencies {
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
 }
 
-sourceSets {
-    main.kotlin.srcDirs += "$buildDir/generated-src"
-}
-version = "${project.major}.${project.minor}.${project.patch}"
-compileKotlin.doFirst {
-    copy {
-        from "../template/kotlin/voodoo/"
-        into "$buildDir/generated-src/voodoo/${project.name}"
-        expand(
-                PACKAGE: "voodoo.${project.name}",
-                MAJOR_VERSION: project.major,
-                MINOR_VERSION: project.minor,
-                PATCH_VERSION: project.patch,
-                BUILD_NUMBER: System.env.BUILD_NUMBER ?: -1
-        )
-    }
-}
-if (System.env.BUILD_NUMBER) {
-    version += "-${System.env.BUILD_NUMBER}"
-}
