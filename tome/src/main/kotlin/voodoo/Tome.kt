@@ -25,7 +25,7 @@ object Tome : KLogging() {
             val inFile = File(inputArg)
             val modpack = inFile.readJson<LockPack>()
             val builder = StringBuilder()
-            if(headerFile != null) {
+            if (headerFile != null) {
                 val header = headerFile!!.readText()
                         .replace("[packName]", modpack.name)
                         .replace("[packTitle]", modpack.title)
@@ -36,7 +36,13 @@ object Tome : KLogging() {
 
             val template = templateFile.readText()
 
-            for(entry in modpack.entries) {
+            val entries = if (sort) {
+                modpack.entries.sortedBy { it.name }
+            } else {
+                modpack.entries
+            }
+
+            for (entry in entries) {
                 logger.info("processing ${entry.name}")
                 val provider = Provider.valueOf(entry.provider).base
 
@@ -49,7 +55,7 @@ object Tome : KLogging() {
                 builder.append("\n")
             }
 
-            if(footerFile != null) {
+            if (footerFile != null) {
                 val footer = footerFile!!.readText()
                         .replace("[packName]", modpack.name)
                         .replace("[packTitle]", modpack.title)
@@ -75,15 +81,18 @@ object Tome : KLogging() {
                 help = "input pack lock.json")
 
         val templateFile by parser.positional("TEMPLATE",
-                help = "template header") {File(this)}
+                help = "template header") { File(this) }
 
         val headerFile by parser.storing("--header",
-                help = "template header") {File(this)}
+                help = "template header") { File(this) }
                 .default<File?>(null)
 
         val footerFile by parser.storing("--footer",
-                help = "template header") {File(this)}
+                help = "template header") { File(this) }
                 .default<File?>(null)
+
+        val sort by parser.flagging("--sort",
+                help = "template header")
 
         val targetArg by parser.storing("--output", "-o",
                 help = "output file json")
