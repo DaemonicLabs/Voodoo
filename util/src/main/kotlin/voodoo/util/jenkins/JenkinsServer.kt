@@ -20,8 +20,10 @@ internal val mapper = jacksonObjectMapper() // Enable Json parsing
 class JenkinsServer(val url: String) {
     companion object : KLogging()
 
+    fun getUrl(job: String) = url + "/job/" + job.replace("/", "/job/")
+
     fun getJob(job: String, userAgent: String): Job? {
-        val requestURL = url + "/job/" + job.replace("/", "/job/") + "/api/json"
+        val requestURL = getUrl(job) + "/api/json"
         val (_, _, result) = requestURL
                 .httpGet()
                 .header("User-Agent" to userAgent)

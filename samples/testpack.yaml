@@ -194,7 +194,7 @@ root:
   # asie
   - provider: JSON
     updateJson: https://asie.pl/files/minecraft/update/foamfix.json # resolves `name = foamfix` too
-    updateChannel: LATEST # default == reommended
+    updateChannel: LATEST # default == recommended
     template: https://asie.pl/files/mods/FoamFix/foamfix-{version}-1.12.2-anarchy.jar
 
   # TheRandomLabs

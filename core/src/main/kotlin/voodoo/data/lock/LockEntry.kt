@@ -21,14 +21,16 @@ data class LockEntry(
         // CURSE
         var projectID: Int = -1,
         var fileID: Int = -1,
-        //DIRECT
+        // DIRECT
         var url: String = "",
         var useUrlTxt: Boolean = true,
-        //JENKINS
+        // JENKINS
         var jenkinsUrl: String = "",
         var job: String = "",
         var buildNumber: Int = -1,
         var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
+        // JSON
+        var updateJson: String = "",
         // LOCAL
         var fileSrc: String = ""
 )

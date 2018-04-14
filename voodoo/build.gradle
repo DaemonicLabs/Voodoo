@@ -18,6 +18,7 @@ dependencies {
     compile project(':flatten')
     compile project(':builder')
     compile project(':pack')
+    compile project(':tome')
 }
 
 build.dependsOn(shadowJar)

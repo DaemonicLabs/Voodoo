@@ -10,9 +10,11 @@ import mu.KLogging
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
+import voodoo.data.lock.LockPack
 import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
 import voodoo.provider.UpdateChannel
+import java.io.File
 
 /**
  * Created by nikky on 30/12/17.
@@ -53,13 +55,23 @@ class UpdateJsonProviderThing : ProviderBase {
         val version = json.promos[key]!!
         val url = entry.template.replace("{version}", version)
         return LockEntry(
-                provider = Provider.DIRECT.toString(),
+                provider = entry.provider,
                 name = entry.name,
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
                 side = entry.side,
-                url = url
+                url = url,
+                updateJson = entry.updateJson
         )
+    }
+
+    override fun download(entry: LockEntry, modpack: LockPack, target: File, cacheDir: File): Pair<String?, File> {
+        return Provider.DIRECT.base.download(entry, modpack, target, cacheDir)
+    }
+
+    override fun getProjectPage(entry: LockEntry, modpack: LockPack): String {
+        val json = getUpdateJson(entry.updateJson)!!
+        return json.homepage
     }
 }
 
