@@ -9,8 +9,6 @@ package voodoo
 import mu.KLogging
 
 object Voodoo : KLogging() {
-//    const val VERSION = "2.0.0"
-
     val funcs = mapOf<String, (Array<String>) -> Unit>(
             "flatten" to Flatten::main,
             "build" to Builder::main,

@@ -1,13 +1,9 @@
 package voodoo
 
-import com.xenomachina.argparser.ArgParser
-import com.xenomachina.argparser.default
-import com.xenomachina.argparser.mainBody
 import mu.KLogging
-import voodoo.data.lock.LockPack
-import voodoo.provider.Provider
-import voodoo.util.readJson
-import java.io.File
+import voodoo.tome.Changelog
+import voodoo.tome.Credits
+import voodoo.tome.VERSION
 
 
 /**
@@ -17,89 +13,44 @@ import java.io.File
  */
 
 object Tome : KLogging() {
-    @JvmStatic
-    fun main(vararg args: String) = mainBody {
-        val arguments = Arguments(ArgParser(args))
-
-        arguments.run {
-            val inFile = File(inputArg)
-            val modpack = inFile.readJson<LockPack>()
-            val builder = StringBuilder()
-            if (headerFile != null) {
-                val header = headerFile!!.readText()
-                        .replace("[packName]", modpack.name)
-                        .replace("[packTitle]", modpack.title)
-                        .replace("[packVersion]", modpack.version)
-                builder.append(header)
-                builder.append("\n")
+    val funcs = mapOf<String, (Array<String>) -> Unit>(
+            "credits" to Credits::main,
+            "changelog" to Changelog::main,
+            "version" to { _ ->
+                println(VERSION)
             }
+    )
 
-            val template = templateFile.readText()
-
-            val entries = if (sort) {
-                modpack.entries.sortedBy { it.name }
-            } else {
-                modpack.entries
-            }
-
-            for (entry in entries) {
-                logger.info("processing ${entry.name}")
-                val provider = Provider.valueOf(entry.provider).base
-
-                val section = template
-                        .replace("[modName]", entry.name)
-                        .replace("[authors]", provider.getAuthors(entry, modpack).joinToString(", "))
-                        .replace("[projectPage]", provider.getProjectPage(entry, modpack))
-
-                builder.append(section)
-                builder.append("\n")
-            }
-
-            if (footerFile != null) {
-                val footer = footerFile!!.readText()
-                        .replace("[packName]", modpack.name)
-                        .replace("[packTitle]", modpack.title)
-                        .replace("[packVersion]", modpack.version)
-                builder.append(footer)
-            }
-
-            if (stdout) {
-                print(builder.toString())
-            } else {
-                var target = targetArg ?: "${modpack.name}.md"
-                if (!target.endsWith(".md")) target += ".md"
-                val targetFile = File(target)
-                logger.info("Writing modlist file... $targetFile")
-                targetFile.writeText(builder.toString())
-            }
+    fun printCommands(cmd: String?) {
+        if(cmd == null) {
+            logger.error("no command specified")
+        } else {
+            logger.error("unknown command $cmd")
         }
-
+        logger.warn("voodoo-tome $VERSION")
+        logger.warn("commands: ")
+        funcs.keys.forEach { key ->
+            logger.warn("> $key")
+        }
     }
 
-    private class Arguments(parser: ArgParser) {
-        val inputArg by parser.positional("FILE",
-                help = "input pack lock.json")
+    @JvmStatic
+    fun main(vararg args: String) {
+        val command = args.getOrNull(0)
+        val remainingArgs = args.drop(1).toTypedArray()
 
-        val templateFile by parser.positional("TEMPLATE",
-                help = "template header") { File(this) }
+        if(command == null) {
+            printCommands(null)
+            return
+        }
 
-        val headerFile by parser.storing("--header",
-                help = "template header") { File(this) }
-                .default<File?>(null)
+        val function = funcs[command.toLowerCase()]
+        if(function == null) {
+            printCommands(command)
+            return
+        }
 
-        val footerFile by parser.storing("--footer",
-                help = "template header") { File(this) }
-                .default<File?>(null)
+        function(remainingArgs)
 
-        val sort by parser.flagging("--sort",
-                help = "template header")
-
-        val targetArg by parser.storing("--output", "-o",
-                help = "output file json")
-                .default<String?>(null)
-
-        val stdout by parser.flagging("--stdout", "-s",
-                help = "print output")
-                .default(false)
     }
 }

@@ -17,7 +17,8 @@ echo
 echo "creating modlist for $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo-2.0.0.jar" tome $pack.lock.json template.md --header header.md --footer footer.md
+java -jar "$DIR/voodoo/build/libs/voodoo-2.0.0.jar" tome changelog $(ls history/$pack.*.lock.json) --sort
+java -jar "$DIR/voodoo/build/libs/voodoo-2.0.0.jar" tome credits $pack.lock.json template.md --header header.md --footer footer.md --sort
 if [ ! $? -eq 0 ]; then
     echo "Error Packing $pack"
     exit 1

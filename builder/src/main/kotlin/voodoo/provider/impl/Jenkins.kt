@@ -60,6 +60,11 @@ class JenkinsProviderThing : ProviderBase {
         return server.getUrl(entry.job)
     }
 
+    override fun getVersion(entry: LockEntry, modpack: LockPack): String {
+        val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)
+        return artifact.fileName
+    }
+
     private val artifact = { jobName: String, url: String, buildNumber: Int, fileNameRegex: String ->
         val build = build(jobName, url, buildNumber)
         val re = Regex(fileNameRegex)

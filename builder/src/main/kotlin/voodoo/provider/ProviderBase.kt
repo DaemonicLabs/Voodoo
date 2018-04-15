@@ -41,5 +41,9 @@ interface ProviderBase {
         return ""
     }
 
+    fun getVersion(entry: LockEntry, modpack: LockPack): String {
+        return ""
+    }
+
 
 }

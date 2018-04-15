@@ -61,7 +61,8 @@ class UpdateJsonProviderThing : ProviderBase {
                 fileName = entry.fileName,
                 side = entry.side,
                 url = url,
-                updateJson = entry.updateJson
+                updateJson = entry.updateJson,
+                jsonVersion = version
         )
     }
 
@@ -72,6 +73,10 @@ class UpdateJsonProviderThing : ProviderBase {
     override fun getProjectPage(entry: LockEntry, modpack: LockPack): String {
         val json = getUpdateJson(entry.updateJson)!!
         return json.homepage
+    }
+
+    override fun getVersion(entry: LockEntry, modpack: LockPack): String {
+        return entry.jsonVersion
     }
 }
 
