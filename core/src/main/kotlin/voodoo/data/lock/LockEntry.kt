@@ -31,6 +31,7 @@ data class LockEntry(
         var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
         // JSON
         var updateJson: String = "",
+        var jsonVersion: String = "",
         // LOCAL
         var fileSrc: String = ""
 )

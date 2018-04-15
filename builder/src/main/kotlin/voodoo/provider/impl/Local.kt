@@ -34,4 +34,8 @@ class LocalProviderThing : ProviderBase {
         fileSrc.copyTo(targetFile, overwrite = true)
         return Pair(null, targetFile)
     }
+
+    override fun getVersion(entry: LockEntry, modpack: LockPack): String {
+        return entry.fileSrc.substringBeforeLast('.').substringAfterLast('/')
+    }
 }

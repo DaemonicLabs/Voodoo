@@ -54,6 +54,11 @@ class CurseProviderThing : ProviderBase {
         return CurseUtil.getProjectPage(entry.projectID, modpack.curseMetaUrl)
     }
 
+    override fun getVersion(entry: LockEntry, modpack: LockPack): String {
+        val addonFile = getAddonFile(entry.projectID, entry.fileID, modpack.curseMetaUrl)
+        return addonFile?.fileName ?: ""
+    }
+
     private fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit) {
         val addon = getAddon(addonId, modpack.curseMetaUrl)!!
         val addonFile = getAddonFile(addonId, fileId, modpack.curseMetaUrl)!!

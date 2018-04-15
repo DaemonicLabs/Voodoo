@@ -39,4 +39,8 @@ class DirectProviderThing : ProviderBase {
         targetFile.download(entry.url, cacheDir.resolve("DIRECT").resolve(url.host + url.path.substringBeforeLast('/')))
         return Pair(entry.url, targetFile)
     }
+
+    override fun getVersion(entry: LockEntry, modpack: LockPack): String {
+        return entry.url.substringBeforeLast('.').substringAfterLast('/')
+    }
 }
