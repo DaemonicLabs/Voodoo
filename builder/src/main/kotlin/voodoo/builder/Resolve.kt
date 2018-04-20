@@ -121,6 +121,9 @@ fun ModPack.resolve(force: Boolean = false, updateEntries: List<String>) {
     }
 
     fun addEntry(entry: Entry) {
+        if(entry.name.isBlank()) {
+            logger.error ("invalid: $entry" )
+        }
         val duplicate = this.entries.find { it.name == entry.name }
         if (duplicate == null) {
             entry.transient = true

@@ -28,7 +28,7 @@ object Builder : KLogging() {
             val modpack = inFile.readYaml<ModPack>()
 
             modpack.resolve(force, entries)
-            if (nosave) {
+            if (!nosave) {
                 println("saving changes...")
                 inFile.writeJson(modpack)
             }

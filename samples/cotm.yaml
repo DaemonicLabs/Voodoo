@@ -3,9 +3,9 @@
 #===========#
 name: cotm
 title: Center of the Multiverse
-version: 2.1.2.2
+version: 2.1.3
 mcVersion: 1.12.2
-forge: 2654
+forge: 2655
 minecraftDir: src
 
 #================#
@@ -13,9 +13,10 @@ minecraftDir: src
 #================#
 userFiles:
 
+  include: []
+
   exclude:
   - "config/dsurround/dsurround.cfg"
-  - options.txt
 
 #===========#
 # Core Pack #
@@ -31,6 +32,11 @@ root:
 #==============#
 # Pack Content #
 #==============#
+
+#======#
+# Mods #
+#======#
+
   entries:
   # moddinglegacy
   - Aether Legacy
@@ -96,9 +102,6 @@ root:
   # copygirl
   - Wearable Backpacks
 
-  # TheLMiffy1111
-  - JAOPCA
-
   # mezz
   - Just Enough Items (JEI)
 
@@ -128,6 +131,7 @@ root:
   - Thermal Dynamics
   - Thermal Expansion
   - Thermal Cultivation
+  - Thermal Innovation
 
   # McJTY
   - RFTools
@@ -147,7 +151,6 @@ root:
   - The Disenchanter Mod
   - Draconic Evolution
   - Embers
-  - Enchiridion
   - Ender Storage 1.8.+
   - Exchangers
   - Extra Bit Manipulation
@@ -158,7 +161,6 @@ root:
   - FTBLib
   - Gendustry
   - Grappling Hook Mod
-  - HelpFixer
   - Hwyla
   - Initial Inventory
   - Inventory Tweaks
@@ -166,7 +168,6 @@ root:
   - Redstone Paste
   - MmmMmmMmmMmm
   - Inventory Pets
-  - JEI Bees
   - Just Enough Torches (JET)
   - Just Enough Dimensions
   - KleeSlabs
@@ -201,7 +202,6 @@ root:
   - Reliquary v1.3
   - Roguelike Dungeons
   - Roots
-  - Rope Bridge
   - Rustic
   - Scannable
   - Simple Sponge
@@ -215,7 +215,6 @@ root:
   - Tinkers Construct
   - Tinkers' Tool Leveling
   - The Spotlight Mod
-  - TickProfiler
   - Good Ol' Currency
   - Extreme Reactors
   - ZeroCore
@@ -232,19 +231,19 @@ root:
   - Fast Leaf Decay
   - "Blood Magic "
   - Unlimited Chisel Works - Botany
-  - Unloader
   - ColorfulWater
   - The Erebus
   - Construct's Armory
-  - 'Dimensional Doors.'
   - Simple Void World
   - Yoyos
   - MultiBeds
-  - "IKWID (I Know What I'm Doing)"
   - "Bad Wither No Cookie - Reloaded"
   - Ender IO
   - Sampler
   - "Millénaire"
+  - Dynamic Sword Skills
+  - Hunting Dimension
+  - Electroblob's Wizardry
 
   # asie
   - Charset Lib
@@ -283,6 +282,9 @@ root:
     - job: elytra/Engination/master
       name: Engination
 
+    - job: elytra/MagicArsenal/master
+      name: Magic Arsenal
+
     # unascribed
     - job: elytra/GlassHearts/1.12.1
       name: GlassHearts
@@ -298,13 +300,36 @@ root:
       name: ArchitectureCraft
 
 #============#
+# Serverside #
+#============#
+  - side: SERVER
+    entries:
+    - TickProfiler
+    - Unloader
+
+    - provider: JENKINS
+      jenkinsUrl: https://ci.elytradev.com
+      entries:
+      - job: elytra/MatterLink/master
+        name: MatterLink
+
+      - job: elytra/BTFU/multi-version
+        name: BTFU
+        jenkinsFileNameRegex: ".*1\\.12\\.2.*(?<!-sources\\.jar)$"
+
+#============#
 # Clientside #
 #============#
   - side: CLIENT
     entries:
+    - "IKWID (I Know What I'm Doing)"
+    - Wawla - What Are We Looking At
+    - Waila Harvestability
     - Just Enough HarvestCraft (JEHC)
     - Just Enough Resources (JER)
+    - Tinker's JEI
     - JEI Integration
+    - JEI Bees
     - AppleSkin
     - BetterFps
     - NoNausea
@@ -319,10 +344,18 @@ root:
     - Neat
     - ReAuth
     - TipTheScales
+    - CleanView
 
-  #=======================#
-  # Clientside - Optional #
-  #=======================#
+ #========================#
+ # Clientside - Resources #
+ #========================#
+    # Unity Resource Pack
+    - name: Unity
+      side: CLIENT
+
+ #=======================#
+ # Clientside - Optional #
+ #=======================#
     - feature:
         selected: true
         recommendation: starred
@@ -375,4 +408,4 @@ root:
           description: "Highly configureable HUD when you really feel like you need more stuff on screen."
 
         - name: Dynamic Surroundings
-          description: "Quite nice, kinda buggy. Causes crashes."
+          description: "Quite nice, has a lot of configurable features."
