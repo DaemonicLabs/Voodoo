@@ -15,11 +15,11 @@ data class Job(
         val fullName: String,
         val displayName: String,
         val fullDisplayName: String,
-        val builds: List<Build>,
+        val builds: List<Build>?,
         val lastSuccessfulBuild: Build?,
         val lastStableBuild: Build?
 ) {
     fun getBuildByNumber(build: Int, userAgent: String): BuildWithDetails? {
-        return builds.find { it.number == build }?.details(userAgent)
+        return builds?.find { it.number == build }?.details(userAgent)
     }
 }
