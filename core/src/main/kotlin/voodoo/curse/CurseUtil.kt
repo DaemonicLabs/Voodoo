@@ -25,10 +25,11 @@ object CurseUtil : KLogging() {
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
 //            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
 
-    private val pairs = getNameIdPairs()
+    private var idMap = getIdMap()
 
-    private fun getNameIdPairs(): List<NameIdPair> {
-        val url = "https://curse.nikky.moe/api/addon?property=id,name&mods=1&resourcepacks=1&texturepacks=1"
+    private fun getIdMap(): Map<String, Int> {
+//        val url = "https://curse.nikky.moe/api/addon?property=id,name&mods=1&resourcepacks=1&texturepacks=1"
+        val url = "https://curse.nikky.moe/api/"
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -79,8 +80,29 @@ object CurseUtil : KLogging() {
 
     val getAllFilesForAddOn = ::getAllFilesForAddOnCall.memoize()
 
+    val announceAddon = { addonID: Int ->
+
+        val url = "https://curse.nikky.moe/api/$addonID"
+        logger.info("url: $url")
+
+        logger.debug("get $url")
+        val (_, _, result) = url.httpGet()
+                .header("User-Agent" to useragent)
+                .responseString()
+        when (result) {
+            is Result.Success -> {
+                logger.info("announced $addonID to curse.nikky.moe")
+            }
+            is Result.Failure -> {
+                logger.error(result.error.toString())
+                throw Exception("failed getting id-name pairs")
+            }
+        }
+    }.memoize()
+
     private fun getAddonCall(addonId: Int, metaUrl: String = META_URL): AddOn? {
         val url = "$metaUrl/api/v2/direct/GetAddOn/$addonId"
+        announceAddon(addonId)
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -99,10 +121,16 @@ object CurseUtil : KLogging() {
 
     val getAddon = ::getAddonCall.memoize()
 
-    fun getAddonByName(name: String, metaUrl: String = META_URL): AddOn? = pairs
-            .find { it.name == name }
-            ?.id
-            ?.let { getAddon(it, metaUrl) }
+    fun getAddonByName(name: String, metaUrl: String = META_URL): AddOn? {
+        val addon = idMap[name]
+                ?.let { getAddon(it, metaUrl) }
+        if (addon != null) {
+            return addon
+        }
+        idMap = getIdMap()
+        return idMap[name]
+                ?.let { getAddon(it, metaUrl) }
+    }
 
     fun findFile(entry: Entry, mcVersion: String, metaUrl: String = META_URL): Triple<Int, Int, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
@@ -113,7 +141,6 @@ object CurseUtil : KLogging() {
 //            curseReleaseTypes = setOf(ReleaseType.RELEASE, ReleaseType.BETA) //TODO: is this not already set because i enforce defaults ?
 //        }
         var addonId = -1 // entry.lock?.projectID ?: -1
-        val fileId = -1 // entry.lock?.fileID ?: -1
         val fileNameRegex = entry.curseFileNameRegex
 
         val addon = if (addonId < 0) {
@@ -134,12 +161,6 @@ object CurseUtil : KLogging() {
         addonId = addon.id
 
         val re = Regex(fileNameRegex)
-
-        if (fileId > 0) {
-            val file = getAddonFile(addonId, fileId, metaUrl)
-            if (file != null)
-                return Triple(addonId, file.id, file.fileNameOnDisk)
-        }
 
         var files = getAllFilesForAddOn(addonId, metaUrl).sortedWith(compareByDescending { it.fileDate })
 
