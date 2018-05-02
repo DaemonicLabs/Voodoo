@@ -29,7 +29,7 @@ object CurseUtil : KLogging() {
 
     private fun getIdMap(): Map<String, Int> {
 //        val url = "https://curse.nikky.moe/api/addon?property=id,name&mods=1&resourcepacks=1&texturepacks=1"
-        val url = "https://curse.nikky.moe/api/"
+        val url = "https://curse.nikky.moe/api/ids/"
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -82,7 +82,7 @@ object CurseUtil : KLogging() {
 
     val announceAddon = { addonID: Int ->
 
-        val url = "https://curse.nikky.moe/api/$addonID"
+        val url = "https://curse.nikky.moe/api/ids/$addonID"
         logger.info("url: $url")
 
         logger.debug("get $url")
