@@ -193,7 +193,7 @@ object CurseUtil : KLogging() {
             }
 
             if (files.isEmpty()) {
-                logger.error("filtered files did not match releaseType {}", oldFiles)
+                logger.error("filtered files did not match releaseType $releaseTypes $oldFiles")
             }
             oldFiles = files
         }

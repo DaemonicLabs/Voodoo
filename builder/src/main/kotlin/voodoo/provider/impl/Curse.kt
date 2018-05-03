@@ -86,6 +86,7 @@ class CurseProviderThing : ProviderBase {
                     name = depAddon.name
                     side = entry.side
                     transient = true
+                    curseReleaseTypes = entry.curseReleaseTypes
                     curseOptionalDependencies = entry.curseOptionalDependencies
                 }
                 addEntry(depEntry)
