@@ -45,6 +45,13 @@ object SKPack : AbstractPack() {
             }
         }
 
+        for(file in srcFolder.walkTopDown()) {
+            when {
+                file.name == "_SERVER" -> file.deleteRecursively()
+                file.name == "_CLIENT" -> file.renameTo(file.parentFile)
+            }
+        }
+
         val loadersFolder = modpackDir.resolve("loaders")
         logger.info("cleaning loaders $loadersFolder")
         loadersFolder.deleteRecursively()
