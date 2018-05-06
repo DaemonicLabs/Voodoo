@@ -37,6 +37,13 @@ object ServerPack : AbstractPack() {
             }
         }
 
+        for(file in srcFolder.walkTopDown()) {
+            when {
+                file.name == "_CLIENT" -> file.deleteRecursively()
+                file.name == "_SERVER" -> file.renameTo(file.parentFile)
+            }
+        }
+
         // download forge
         val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
         val forgeFile = modpackDir.resolve(forgeFileName)
