@@ -15,6 +15,13 @@ pipeline {
 	            archive 'hex/build/libs/*jar'
 	        }
 	    }
+	    stage("archiver") {
+	        steps {
+	            sh './gradlew :archiver:clean'
+	            sh './gradlew :archiver:build'
+	            archive 'archiver/build/libs/*jar'
+	        }
+	    }
 	    stage("bootstrap") {
 	        steps {
 	            sh './gradlew :bootstrap:clean'

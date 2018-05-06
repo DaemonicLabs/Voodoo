@@ -3,7 +3,7 @@
 #===========#
 name: cotm
 title: Center of the Multiverse
-version: 2.1.3
+version: 2.1.4
 mcVersion: 1.12.2
 forge: 2655
 minecraftDir: src
@@ -17,6 +17,7 @@ userFiles:
 
   exclude:
   - "config/dsurround/dsurround.cfg"
+  - "options.txt"
 
 #===========#
 # Core Pack #
@@ -38,8 +39,6 @@ root:
 #======#
 
   entries:
-  # moddinglegacy
-  - Aether Legacy
 
   # Vazkii
   - Akashic Tome
@@ -64,9 +63,6 @@ root:
   # Binnie
   - "Binnie's Mods"
 
-  # Glitchfiend, Forstride
-  - Bullseye
-
   # chiselTeam
   - Chisel
 
@@ -90,7 +86,6 @@ root:
   - Cooking for Blockheads
   - Farming for Blockheads
   - Crafting Tweaks
-  - Waystones
 
   # ZLainSama
   - Cosmetic Armor Reworked
@@ -105,10 +100,6 @@ root:
   # mezz
   - Just Enough Items (JEI)
 
-  # keridos
-  - OpenModularTurrets
-  - OMLib
-
   # Benimatic
   - The Twilight Forest
 
@@ -121,35 +112,34 @@ root:
   # Viesis
   - "ViesCraft - Airships!"
 
-  # gegy1000, JurassicAlien_KOC_owner
-  - Wearables
-
-  # TehNut
-  - Xtones
-
   # Team CoFH
   - Thermal Dynamics
   - Thermal Expansion
-  - Thermal Cultivation
   - Thermal Innovation
 
   # McJTY
   - RFTools
   - RFTools Dimensions
 
-  # ValkyrieofNight
-  - Environmental Tech
-
   # Mr_Crayfish
   - "MrCrayfish's Furniture Mod"
-  - "MrCrayfish's Device Mod"
 
   # zabi94
   - Extra Alchemy
   - NoMoreGlowingPots
 
+  # asie
+  - Charset Lib
+  - Charset Tweaks
+  - Charset Block Carrying
+  - Charset Tablet
+  - Charset Crafting
+  - Charset Audio
+  - Charset Storage - Locks
+  - CharsetPatches
+  - FoamFix for Minecraft
+
   - The Disenchanter Mod
-  - Draconic Evolution
   - Embers
   - Ender Storage 1.8.+
   - Exchangers
@@ -160,7 +150,6 @@ root:
   - FTB Utilities
   - FTBLib
   - Gendustry
-  - Grappling Hook Mod
   - Hwyla
   - Initial Inventory
   - Inventory Tweaks
@@ -202,7 +191,6 @@ root:
   - Reliquary v1.3
   - Roguelike Dungeons
   - Roots
-  - Rustic
   - Scannable
   - Simple Sponge
   - Spartan Shields
@@ -236,28 +224,19 @@ root:
   - Construct's Armory
   - Simple Void World
   - Yoyos
-  - MultiBeds
   - "Bad Wither No Cookie - Reloaded"
   - Ender IO
   - Sampler
-  - "Millénaire"
-  - Dynamic Sword Skills
-  - Hunting Dimension
-  - Electroblob's Wizardry
+  - Morpheus
 
-  # asie
-  - Charset Lib
-  - Charset Tweaks
-  - Charset Storage - Barrels
-  - Charset Storage - Tanks
-  - Charset Block Carrying
-  - Charset Tablet
-  - Charset Crafting
-  - Charset Transport - Carts and Rails
-  - Charset Audio
-  - Charset Storage - Locks
-  - CharsetPatches
-  - FoamFix for Minecraft
+  # In Testing
+  - Electroblob's Wizardry
+  - Improvable Skills 3
+  - Portality
+  - Thaumcraft
+  - The Aether II
+  - Zetta Industries
+  # /In Testing
 
   # Direct Downloads
   - provider: DIRECT
@@ -304,18 +283,12 @@ root:
 #============#
   - side: SERVER
     entries:
+    - "BTFU continuous rsync incremental backup"
     - TickProfiler
     - Unloader
 
-    - provider: JENKINS
-      jenkinsUrl: https://ci.elytradev.com
-      entries:
-      - job: elytra/MatterLink/master
-        name: MatterLink
-
-      - job: elytra/BTFU/multi-version
-        name: BTFU
-        jenkinsFileNameRegex: ".*1\\.12\\.2.*(?<!-sources\\.jar)$"
+    - job: elytra/MatterLink/master
+      name: MatterLink
 
 #============#
 # Clientside #
@@ -327,7 +300,6 @@ root:
     - Waila Harvestability
     - Just Enough HarvestCraft (JEHC)
     - Just Enough Resources (JER)
-    - Tinker's JEI
     - JEI Integration
     - JEI Bees
     - AppleSkin
@@ -343,8 +315,8 @@ root:
     - Mod Name Tooltip
     - Neat
     - ReAuth
-    - TipTheScales
     - CleanView
+    - Vise
 
  #========================#
  # Clientside - Resources #
@@ -362,50 +334,44 @@ root:
       entries:
 
         - name: JourneyMap
-          description: "You know what this is."
+          description: "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
+
+        - name: SmoothWater
+          description: "Makes the surface of water nicer, better underwater lighting, can cost some FPS."
 
     - feature:
         selected: false
         recommendation: starred
       entries:
 
-        - name: SmoothWater
-          description: "Makes the surface of water nicer, better underwater lighting, can cost FPS."
-
         - name: Fancy Block Particles
-          description: "Adds some flair to particle effects and animations. Highly configurable, but can cause FPS spikes."
+          description: "Adds some flair to particle effects and animations. Highly configurable, costs fps."
+
+        - name: Better Foliage
+          description: "Adds a lot of texture to the world. That said, can be quite resource heavy."
+
+        - name: Dynamic Surroundings
+          description: "Quite nice, has a lot of configurable features that add immersive sound/visual effects. Includes light-level overlay."
 
     - feature:
         selected: true
       entries:
 
         - name: Client Tweaks
-          description: "Client Tweaks"
+          description: "Various client related fixes and tweaks, all in a handy menu."
 
         - name: Mouse Tweaks
-          description: "Mouse Tweaks"
-
-        - name: "World Handler - Command GUI"
-          description: "World Handler"
+          description: "Add extra mouse gestures for inventories and crafting grids."
 
     - feature:
         selected: false
       entries:
 
         - name: MineMenu
-          description: "Radial menu that can be used for command/keyboard shortcuts. Not default because random keybinds cannot be added to radial menu."
+          description: "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
 
         - name: ItemZoom
-          description: "Item Zoom"
+          description: "Check this if you like to get a closer look at item textures."
 
-        - name: Mob Dismemberment
-          description: "Gibtastic! Probably laggy."
-
-        - name: Chunk Animator
-          description: "Makes chunks load in an amusing way. Can/will cause lag."
-
-        - name: RPG-Hud
-          description: "Highly configureable HUD when you really feel like you need more stuff on screen."
-
-        - name: Dynamic Surroundings
-          description: "Quite nice, has a lot of configurable features."
+        - name: Light Level Overlay Reloaded
+          description: "Smol light-level overlay if you aren't using Dynamic Surroundings."
