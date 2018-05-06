@@ -1,7 +1,7 @@
 package archiver.curse
 
 import aballano.kotlinmemoization.memoize
-import archiver.gen.VERSION
+import voodoo.archiver.VERSION
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper

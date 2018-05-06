@@ -5,10 +5,6 @@ plugins {
 apply plugin: 'com.github.johnrengelman.shadow'
 
 mainClassName = "archiver.MainKt"
-major = project.major
-minor = project.minor
-patch = project.patch
-version = "$major.$minor.$patch"
 
 shadowJar {
     classifier = null
@@ -30,15 +26,3 @@ dependencies {
 
 build.dependsOn(shadowJar)
 
-compileKotlin.doFirst {
-    copy {
-        from("src/templates/kotlin/archiver/Constants.kt")
-        into("src/main/kotlin/archiver/gen")
-        filter { String line ->
-            line
-                    .replace('/* MAJOR_VERSION */', "${project.major} //")
-                    .replace('/* MINOR_VERSION */', "${project.minor} //")
-                    .replace('/* PATCH_VERSION */', "${project.patch} //")
-        }
-    }
-}

@@ -6,6 +6,7 @@ import com.xenomachina.argparser.mainBody
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.pack.SKPack
+import voodoo.pack.ServerPack
 import voodoo.util.readJson
 import java.io.File
 import kotlin.system.exitProcess
@@ -30,6 +31,7 @@ object Pack : KLogging() {
 
             val packer = when (methode) {
                 "sk" -> SKPack
+                "server" -> ServerPack
 
                 else -> {
                     logger.error("no such packing methode: $methode")

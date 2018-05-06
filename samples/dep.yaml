@@ -1,11 +1,12 @@
 name: dep_test
-mcVersion: 1.7.10
+mcVersion: 1.12.2
 forge: latest
 root:
-  validMcVersions: []
+  validMcVersions: ['1.12.1', '1.12']
   curseOptionalDependencies: false
   curseReleaseTypes: [ alpha, beta, release ]
   jenkinsUrl: https://ci.elytradev.com
 
   entries:
-  - AcademyCraft
+  - The Aether II
+  - Orbis API
