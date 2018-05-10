@@ -1,6 +1,11 @@
 pipeline {
     agent any
 	stages {
+	    stage("init") {
+	        steps {
+	            sh 'git submodule update --init --recursive'
+	        }
+	    }
 	    stage("voodoo") {
 	        steps {
 	            sh './gradlew :voodoo:clean'
@@ -27,8 +32,10 @@ pipeline {
 	            sh './gradlew :bootstrap:clean'
 	            sh './gradlew :bootstrap:build -Ptarget=voodoo'
 	            sh './gradlew :bootstrap:build -Ptarget=hex'
+	            sh './gradlew :bootstrap:build -Ptarget=archiver'
 	            archive 'bootstrap/build/libs/*voodoo*'
 	            archive 'bootstrap/build/libs/*hex*'
+	            archive 'bootstrap/build/libs/*archiver*'
 	        }
 	    }
 	}

@@ -16,6 +16,7 @@ run {
 dependencies {
     compile project(':core')
     compile project(':builder')
+    compile project(':launcher-builder')
     compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+'
     compile group: 'com.github.kittinunf.fuel', name: 'fuel-jackson', version: '+'
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'

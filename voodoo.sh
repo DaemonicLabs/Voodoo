@@ -7,6 +7,11 @@ cd $DIR
 
 $DIR/gradlew :voodoo:build
 
+if [ ! $? -eq 0 ]; then
+    echo "Error building voodoo"
+    exit 1
+fi
+
 pack=$1
 
 [ ! -e run ] && mkdir run
