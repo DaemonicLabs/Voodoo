@@ -1,3 +1,9 @@
 rootProject.name = 'voodoo-parent'
 
 include 'core', 'util', 'flatten', 'builder', 'pack', 'voodoo', 'hex', 'tome', 'bootstrap', 'archiver'
+include ':launcher-parent'
+project(':launcher-parent').projectDir = new File(settingsDir, 'sklauncher')
+include ':launcher'
+project(':launcher').projectDir = new File(settingsDir, 'sklauncher/launcher')
+include ':launcher-builder'
+project(':launcher-builder').projectDir = new File(settingsDir, 'sklauncher/launcher-builder')

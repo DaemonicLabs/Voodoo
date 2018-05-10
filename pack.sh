@@ -17,13 +17,11 @@ pack=$1
 [ ! -e run ] && mkdir run
 cd run
 
-
 echo
-echo "creating modlist for $1"
+echo "packaging $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo-2.1.0.jar" tome changelog $(ls history/$pack.*.lock.json) --sort
-java -jar "$DIR/voodoo/build/libs/voodoo-2.1.0.jar" tome credits $pack.lock.json template.md --header header.md --footer footer.md --sort
+java -jar "$DIR/voodoo/build/libs/voodoo-2.1.0.jar" pack $pack.lock.json sk
 if [ ! $? -eq 0 ]; then
     echo "Error Packing $pack"
     exit 1

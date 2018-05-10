@@ -9,3 +9,6 @@ run/
 
 /editor/
 /test/
+
+launcher/
+launcher-builder

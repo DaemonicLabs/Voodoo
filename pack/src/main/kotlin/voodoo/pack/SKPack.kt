@@ -13,6 +13,9 @@ import voodoo.util.download
 import voodoo.util.readJson
 import voodoo.util.writeJson
 import java.io.File
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 /**
  * Created by nikky on 30/03/18.
@@ -27,8 +30,8 @@ object SKPack : AbstractPack() {
 
     override fun download(modpack: LockPack, target: String?, clean: Boolean) {
         val cacheDir = directories.cacheHome
-        val targetDir = File(target ?: "workspace")
-        val modpackDir = targetDir.resolve(modpack.name)
+        val workspaceDir = File("workspace")
+        val modpackDir = workspaceDir.resolve(modpack.name)
 
         val srcFolder = modpackDir.resolve("src")
         if (clean) {
@@ -45,7 +48,7 @@ object SKPack : AbstractPack() {
             }
         }
 
-        for(file in srcFolder.walkTopDown()) {
+        for (file in srcFolder.walkTopDown()) {
             when {
                 file.name == "_SERVER" -> file.deleteRecursively()
                 file.name == "_CLIENT" -> file.renameTo(file.parentFile)
@@ -121,9 +124,9 @@ object SKPack : AbstractPack() {
 
         // add to workspace.json
         logger.info("adding {} to workpace.json", modpack.name)
-        val worspaceFolder = targetDir.resolve(".modpacks")
-        worspaceFolder.mkdirs()
-        val workspacePath = worspaceFolder.resolve("workspace.json")
+        val workspaceMetaFolder = workspaceDir.resolve(".modpacks")
+        workspaceMetaFolder.mkdirs()
+        val workspacePath = workspaceMetaFolder.resolve("workspace.json")
         val workspace = if (workspacePath.exists()) {
             workspacePath.readJson()
         } else {
@@ -132,6 +135,28 @@ object SKPack : AbstractPack() {
         workspace.packs += SKLocation(modpack.name)
 
         workspacePath.writeJson(workspace)
+
+        val targetDir = if (target != null) {
+            File(target)
+        } else {
+            workspaceDir.resolve("_upload")
+        }
+
+        val manifestDest = targetDir.resolve("modpack.json")
+
+        val uniqueVersion = "${modpack.version}-" + DateTimeFormatter
+                .ofPattern("yyyy-MM-dd_HH:mm")
+                .withZone(ZoneOffset.UTC)
+                .format(Instant.now())
+
+        com.skcraft.launcher.builder.PackageBuilder.main(
+                arrayOf(
+                        "--version", uniqueVersion,
+                        "--input", modpackDir.path,
+                        "--output", targetDir.path,
+                        "--manifest-dest", manifestDest.path
+                )
+        )
     }
 
 }
