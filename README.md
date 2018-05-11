@@ -16,18 +16,18 @@ windows: `./gradlew.bat build`
 
 ## usage
 
-### single command
 
-`./voodoo.sh `
-
-flatten the yaml (this created the main json)
-`java -jar flatten.jar cotm.yaml`
+flatten the yaml (this creates the main json)
+`java -jar voodoo.jar flatten cotm.yaml`
 
 update the pack and write out the lockfile
-`java -jar builder.jar cotm.json -o cotm.lock.json --save`
+`java -jar voodoo.jar build cotm.json -o cotm.lock.json --force`
 
-create a sklauncher workspace for it
+compile the pack for sklauncher
 `java -jar pack.jar cotm.lock.json sk`
+
+create a server package
+`java -jar pack.jar cotm.lock.json server`
 
 
 samples: [samples](/samples)
