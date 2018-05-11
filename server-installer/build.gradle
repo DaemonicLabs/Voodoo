@@ -1,0 +1,26 @@
+plugins {
+    id 'application'
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+mainClassName = "voodoo.server.Install"
+
+def runDir = parent.project.file("run").path
+
+run {
+    workingDir = runDir
+}
+
+shadowJar {
+    classifier = null
+}
+
+dependencies {
+    compile project(':core')
+    compile project(':builder')
+    compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+'
+    compile group: 'com.github.kittinunf.fuel', name: 'fuel-jackson', version: '+'
+    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
+}
+

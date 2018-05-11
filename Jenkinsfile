@@ -27,6 +27,13 @@ pipeline {
 	            archive 'archiver/build/libs/*jar'
 	        }
 	    }
+	    stage("server-installer") {
+	        steps {
+	            sh './gradlew :server-installer:clean'
+	            sh './gradlew :server-installer:build'
+	            archive 'server-installer/build/libs/*jar'
+	        }
+	    }
 	    stage("bootstrap") {
 	        steps {
 	            sh './gradlew :bootstrap:clean'

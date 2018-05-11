@@ -18,7 +18,7 @@ object ServerPack : AbstractPack() {
     override val label = "Server Pack"
 
     override fun download(modpack: LockPack, target: String?, clean: Boolean) {
-        val cacheDir = SKPack.directories.cacheHome
+        val cacheDir = directories.cacheHome
         val targetDir = File(target ?: "server")
         val modpackDir = targetDir.resolve(modpack.name)
 

@@ -7,6 +7,7 @@ import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.pack.SKPack
 import voodoo.pack.ServerPack
+import voodoo.pack.ServerPackSparse
 import voodoo.util.readJson
 import java.io.File
 import kotlin.system.exitProcess
@@ -31,7 +32,8 @@ object Pack : KLogging() {
 
             val packer = when (methode) {
                 "sk" -> SKPack
-                "server" -> ServerPack
+                "serverFull" -> ServerPack
+                "server" -> ServerPackSparse
 
                 else -> {
                     logger.error("no such packing methode: $methode")

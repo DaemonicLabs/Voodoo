@@ -67,7 +67,7 @@ subprojects {
             from "../template/kotlin/voodoo/"
             into  "$buildDir/generated-src/$folder"
             expand(
-                    PACKAGE: folder.replace('/', '.'),
+                    PACKAGE: folder.replace('/', '.').replace('-', '.'),
                     MAJOR_VERSION: project.major,
                     MINOR_VERSION: project.minor,
                     PATCH_VERSION: project.patch,
