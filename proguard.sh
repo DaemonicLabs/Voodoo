@@ -6,6 +6,11 @@ cd $DIR
 
 $DIR/gradlew :voodoo:clean :voodoo:proguard
 
+if [ ! $? -eq 0 ]; then
+    echo "Error building voodoo"
+    exit 1
+fi
+
 [ ! -e run ] && mkdir run
 cd run
 

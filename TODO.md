@@ -16,3 +16,7 @@ using
 - [ ] write server specific installer / unpacker
 - [ ] think about upgrade process of servers  
       which files to keep / override if they changed
+
+## Refactor
+
+- [ ] move providers into core or seperate module

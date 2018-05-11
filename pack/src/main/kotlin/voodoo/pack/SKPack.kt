@@ -145,7 +145,7 @@ object SKPack : AbstractPack() {
         val manifestDest = targetDir.resolve("modpack.json")
 
         val uniqueVersion = "${modpack.version}-" + DateTimeFormatter
-                .ofPattern("yyyy-MM-dd_HH:mm")
+                .ofPattern("yyyy-MM-dd HH:mm")
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now())
 
@@ -157,6 +157,8 @@ object SKPack : AbstractPack() {
                         "--manifest-dest", manifestDest.path
                 )
         )
+
+        println(uniqueVersion)
     }
 
 }
