@@ -1,11 +1,11 @@
 package voodoo.pack
 
-import voodoo.data.Side
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
 import voodoo.data.lock.LockPack
-import voodoo.forge.Forge
-import voodoo.provider.Provider
-import voodoo.util.download
 import voodoo.util.downloader.logger
+import voodoo.util.jenkins.JenkinsServer
+import voodoo.util.writeJson
 import java.io.File
 
 /**
@@ -18,53 +18,89 @@ object ServerPack : AbstractPack() {
     override val label = "Server Pack"
 
     override fun download(modpack: LockPack, target: String?, clean: Boolean) {
-        val cacheDir = directories.cacheHome
         val targetDir = File(target ?: "server")
         val modpackDir = targetDir.resolve(modpack.name)
 
-        val srcFolder = modpackDir.resolve("src")
         if (clean) {
-            logger.info("cleaning modpack directory $modpackDir")
+            logger.info("cleaning server directory $modpackDir")
             modpackDir.deleteRecursively()
         }
-        if (!srcFolder.exists()) {
-            logger.info("copying files into src")
-            val mcDir = File(modpack.minecraftDir)
-            if (mcDir.exists()) {
-                mcDir.copyRecursively(srcFolder, overwrite = true) //TODOO filter _CLIENT and strip _SERVER from paths
-            } else {
-                logger.warn("minecraft directory $mcDir does not exist")
-            }
+
+        val localDir = File(modpack.localDir)
+        if(localDir.exists()) {
+            val targetLocalDir = modpackDir.resolve("local")
+            modpack.localDir = targetLocalDir.name
+
+            if(targetLocalDir.exists()) targetLocalDir.deleteRecursively()
+            targetLocalDir.mkdirs()
+
+            localDir.copyRecursively(targetLocalDir, true)
         }
 
-        for(file in srcFolder.walkTopDown()) {
-            when {
-                file.name == "_CLIENT" -> file.deleteRecursively()
-                file.name == "_SERVER" -> file.renameTo(file.parentFile)
-            }
+        val minecraftDir = File(modpack.minecraftDir)
+        if(localDir.exists()) {
+            val targetMinecraftDir = modpackDir.resolve("minecraft")
+            modpack.minecraftDir = targetMinecraftDir.name
+
+            if(targetMinecraftDir.exists()) targetMinecraftDir.deleteRecursively()
+            targetMinecraftDir.mkdirs()
+
+            minecraftDir.copyRecursively(targetMinecraftDir, true)
         }
 
-        // download forge
-        val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
-        val forgeFile = modpackDir.resolve(forgeFileName)
-        forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
+        val packFile = modpackDir.resolve("pack.lock.json")
+        packFile.writeJson(modpack)
 
 
-        // download entries
-        val targetFiles = mutableMapOf<String, File>()
-        for (entry in modpack.entries) {
-            if(entry.side == Side.CLIENT) continue
-            val provider = Provider.valueOf(entry.provider).base
-            val targetFolder = srcFolder.resolve(entry.folder)
-            val (url, file) = provider.download(entry, modpack, targetFolder, cacheDir)
-            if (url != null && entry.useUrlTxt) {
-                val urlTxtFile = file.parentFile.resolve(file.name + ".url.txt")
-                urlTxtFile.writeText(url)
-            }
-            targetFiles[entry.name] = file.relativeTo(srcFolder)
-        }
+        logger.info("packaging installer jar")
+        val installer = downloadInstaller()
 
+        val serverInstaller = modpackDir.resolve("install-server.jar")
+        installer.copyTo(serverInstaller)
     }
 
+    const val FILE_REGEX = "^[Ss]erver-installer-.*\\.jar$"
+    const val JENKINS_URL = "https://ci.elytradev.com"
+    const val JENKINS_JOB = "elytra/Voodoo/master"
+    const val MODULE_NAME = "server-installer"
 
+    private fun downloadInstaller(): File {
+        val userAgent = "voodoo-pack/$VERSION"
+        val binariesDir = directories.cacheHome
+
+        val server = JenkinsServer(JENKINS_URL)
+        val job = server.getJob(JENKINS_JOB, userAgent)!!
+        val build = job.lastSuccessfulBuild?.details(userAgent)!!
+        val buildNumber = build.number
+        logger.info("lastSuccessfulBuild: $buildNumber")
+        logger.debug("looking for $FILE_REGEX")
+        val re = Regex(FILE_REGEX)
+        val artifact = build.artifacts.find {
+            logger.debug(it.fileName)
+            re.matches(it.fileName)
+        }
+        if(artifact == null) {
+            logger.error("did not find {} in {}", FILE_REGEX, build.artifacts)
+            throw Exception()
+        }
+        val url = build.url + "artifact/" + artifact.relativePath
+        val tmpFile = File(binariesDir, "$MODULE_NAME-$buildNumber.tmp")
+        val targetFile = File(binariesDir, "$MODULE_NAME-$buildNumber.jar")
+        if (!targetFile.exists()) {
+            val (_, _, result) = url.httpGet()
+                    .header("User-Agent" to userAgent)
+                    .response()
+            when (result) {
+                is Result.Success -> {
+                    tmpFile.writeBytes(result.value)
+                    tmpFile.renameTo(targetFile)
+                }
+                is Result.Failure -> {
+                    logger.error(result.error.toString())
+                    throw Exception("unable to download jarfile from $url")
+                }
+            }
+        }
+        return targetFile
+    }
 }
