@@ -68,7 +68,7 @@ object Server {
         val forgeJar = serverDir.resolve("forge-$forgeLongVersion-universal.jar")
         val targetForgeJar = serverDir.resolve("forge.jar")
         targetForgeJar.delete()
-        forgeJar.renameTo(targetForgeJar)
+        forgeJar.copyTo(targetForgeJar, overwrite = true)
 
         // download entries
         for (entry in modpack.entries) {
@@ -77,8 +77,5 @@ object Server {
             val targetFolder = serverDir.resolve(entry.folder)
             val (url, file) = provider.download(entry, modpack, targetFolder, cacheDir)
         }
-
     }
-
-
 }
