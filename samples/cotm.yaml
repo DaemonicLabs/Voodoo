@@ -7,6 +7,8 @@ version: 2.1.4
 mcVersion: 1.12.2
 forge: 2655
 minecraftDir: src
+versionCache: 'cotm.version.json'
+featureCache: 'cotm.feature.json'
 
 #================#
 # Client Configs #

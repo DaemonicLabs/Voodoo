@@ -15,6 +15,7 @@ import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
 import voodoo.util.download
 import java.io.File
+import java.time.Instant
 import kotlin.system.exitProcess
 
 /**
@@ -22,10 +23,8 @@ import kotlin.system.exitProcess
  * @author Nikky
  * @version 1.0
  */
-class CurseProviderThing : ProviderBase {
+object CurseProviderThing : ProviderBase, KLogging() {
     override val name = "Curse Provider"
-
-    companion object : KLogging()
 
     override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         val (projectID, fileID, path) = findFile(entry, modpack.mcVersion, modpack.curseMetaUrl)
@@ -116,7 +115,7 @@ class CurseProviderThing : ProviderBase {
         return true
     }
 
-    val isOptional = ::isOptionalCall.memoize()
+    val isOptional = CurseProviderThing::isOptionalCall.memoize()
 
     override fun download(entry: LockEntry, modpack: LockPack, target: File, cacheDir: File): Pair<String, File> {
         val addonFile = getAddonFile(entry.projectID, entry.fileID, modpack.curseMetaUrl)
@@ -127,5 +126,15 @@ class CurseProviderThing : ProviderBase {
         val targetFile = target.resolve(entry.fileName ?: addonFile.fileNameOnDisk)
         targetFile.download(addonFile.downloadURL, cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()))
         return Pair(addonFile.downloadURL, targetFile)
+    }
+
+    override fun getReleaseDate(entry: LockEntry, modpack: LockPack): Instant? {
+        val addonFile = getAddonFile(entry.projectID, entry.fileID, modpack.curseMetaUrl)
+        return when(addonFile) {
+            null -> return null
+            else -> {
+                addonFile.fileDate.toInstant()
+            }
+        }
     }
 }

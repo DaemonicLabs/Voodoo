@@ -14,10 +14,8 @@ import java.io.File
  * @version 1.0
  */
 
-class LocalProviderThing : ProviderBase {
+object LocalProviderThing : ProviderBase, KLogging() {
     override val name = "Local Provider"
-
-    companion object : KLogging()
 
     override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         return LockEntry(

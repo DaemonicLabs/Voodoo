@@ -2,7 +2,7 @@ package voodoo.provider.impl
 
 import aballano.kotlinmemoization.memoize
 import mu.KLogging
-import voodoo.builder.VERSION
+import voodoo.core.VERSION
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
@@ -11,6 +11,7 @@ import voodoo.provider.ProviderBase
 import voodoo.util.download
 import voodoo.util.jenkins.JenkinsServer
 import java.io.File
+import java.time.Instant
 
 /**
  * Created by nikky on 30/12/17.
@@ -18,12 +19,11 @@ import java.io.File
  * @version 1.0
  */
 
-class JenkinsProviderThing : ProviderBase {
+object JenkinsProviderThing : ProviderBase, KLogging() {
     override val name = "Jenkins Provider"
 
-    companion object : KLogging() {
-        val useragent = "voodoo/${VERSION} (https://github.com/elytra/Voodoo)"
-    }
+    val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
+
 
     override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry? {
         val job = job(entry.job, entry.jenkinsUrl)
@@ -63,6 +63,11 @@ class JenkinsProviderThing : ProviderBase {
     override fun getVersion(entry: LockEntry, modpack: LockPack): String {
         val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)
         return artifact.fileName
+    }
+
+    override fun getReleaseDate(entry: LockEntry, modpack: LockPack): Instant? {
+        val build = build(entry.job, entry.jenkinsUrl, entry.buildNumber)
+        return build.timestamp.toInstant()
     }
 
     private val artifact = { jobName: String, url: String, buildNumber: Int, fileNameRegex: String ->

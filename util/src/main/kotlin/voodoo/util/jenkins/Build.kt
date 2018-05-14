@@ -1,11 +1,12 @@
 package voodoo.util.jenkins
 
+import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
-import mu.KotlinLogging
+import java.util.*
 
 /**
  * Created by nikky on 03/02/18.
@@ -40,5 +41,7 @@ data class Build(
 data class BuildWithDetails(
         val number: Int,
         val url: String,
-        val artifacts: List<Artifact>
+        val artifacts: List<Artifact>,
+        @JsonFormat(shape=JsonFormat.Shape.NUMBER, pattern="s")
+        val timestamp: Date
 )

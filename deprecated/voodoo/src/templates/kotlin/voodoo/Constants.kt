@@ -1,6 +1,0 @@
-package voodoo.gen
-const val MAJOR_VERSION = /* MAJOR_VERSION */ 0
-const val MINOR_VERSION = /* MINOR_VERSION */ 0
-const val PATCH_VERSION = /* PATCH_VERSION */ 0
-
-const val VERSION = "$MAJOR_VERSION.$MINOR_VERSION.$PATCH_VERSION"

@@ -21,24 +21,22 @@ import java.io.File
  * @author Nikky
  * @version 1.0
  */
-class UpdateJsonProviderThing : ProviderBase {
+object UpdateJsonProviderThing : ProviderBase, KLogging() {
     override val name = "UpdateJson Provider"
 
-    companion object : KLogging() {
-        val mapper = jacksonObjectMapper() // Enable YAML parsing
-                .registerModule(KotlinModule()) // Enable Kotlin support
+    val mapper = jacksonObjectMapper() // Enable YAML parsing
+            .registerModule(KotlinModule()) // Enable Kotlin support
 
-        val getUpdateJson = { url: String ->
-            val (request, response, result) = url.httpGet()
-                    .responseString()
-            when (result) {
-                is Result.Success -> {
-                    mapper.readValue<UpdateJson>(result.value)
-                }
-                else -> null
+    val getUpdateJson = { url: String ->
+        val (request, response, result) = url.httpGet()
+                .responseString()
+        when (result) {
+            is Result.Success -> {
+                mapper.readValue<UpdateJson>(result.value)
             }
-        }.memoize()
-    }
+            else -> null
+        }
+    }.memoize()
 
     override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         val json = getUpdateJson(entry.updateJson)!!
