@@ -38,43 +38,36 @@ data class ModPack(
         var userFiles: UserFiles = UserFiles(),
         var entries: List<Entry> = emptyList(),
 
-        var versionCache: String? = null,
-        var featureCache: String? = null,
+        var versionCache: File = File(".voodoo/", name),
+        var featureCache: File = File(".voodoo/", name),
 
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var localDir: String = "local",
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var minecraftDir: String = name
 ) {
-    private var versionCacheFile: File
-    private var featureCacheFile: File
     @JsonIgnore
     val versions: MutableMap<String, LockEntry>
     @JsonIgnore
     val features: MutableList<Feature>
 
     init {
-        versionCacheFile = if (versionCache != null) {
-            File(versionCache)
-        } else {
-            directories.cacheHome
+        if(versionCache.path == featureCache.path) {
+            versionCache.mkdirs()
+            featureCache.mkdirs()
         }
-        if (versionCacheFile.isDirectory)
-            versionCacheFile = versionCacheFile.resolve("$name.versions.json")
 
-        logger.info("using version cache: $versionCacheFile")
-        versions = versionCacheFile.readJsonOrNull() ?: mutableMapOf()
+        if (versionCache.isDirectory)
+            versionCache = versionCache.resolve("versions.json")
 
-        featureCacheFile = if (featureCache != null) {
-            File(versionCache)
-        } else {
-            directories.cacheHome
-        }
-        if (featureCacheFile.isDirectory)
-            featureCacheFile = featureCacheFile.resolve("$name.features.json")
+        logger.info("using version cache: $versionCache")
+        versions = versionCache.readJsonOrNull() ?: mutableMapOf()
 
-        logger.info("using feature cache: $featureCacheFile")
-        features = featureCacheFile.readJsonOrNull() ?: mutableListOf()
+        if (featureCache.isDirectory)
+            featureCache = featureCache.resolve("features.json")
+
+        logger.info("using feature cache: $featureCache")
+        features = featureCache.readJsonOrNull() ?: mutableListOf()
     }
 
     companion object : KLogging() {
@@ -82,11 +75,11 @@ data class ModPack(
     }
 
     fun writeVersionCache() {
-        versionCacheFile.writeJson(versions)
+        versionCache.writeJson(versions)
     }
 
     fun writeFeatureCache() {
-        featureCacheFile.writeJson(features)
+        featureCache.writeJson(features)
     }
 
     fun lock(): LockPack {

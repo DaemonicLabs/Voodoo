@@ -2,7 +2,7 @@
 
 MultiMC PRE_LAUNCH command
 
-`$INST_JAVA -jar $INST_DIR/mmc-2.0.0.jar --id $INST_ID --inst $INST_DIR --mc $INST_MC_DIR`
+`$INST_JAVA -jar $INST_DIR/hex-2.0.0.jar --id $INST_ID --inst $INST_DIR --mc $INST_MC_DIR`
 
 read URL from file `voodoo.url.txt`
 

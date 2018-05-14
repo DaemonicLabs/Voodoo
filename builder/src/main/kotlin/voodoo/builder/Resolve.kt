@@ -36,9 +36,6 @@ fun getDependenciesCall(entryName: String, modpack: ModPack): List<Entry> {
 val getDependencies = ::getDependenciesCall.memoize()
 
 fun resolveFeatureDependencies(entry: Entry, modpack: ModPack) {
-    if (entry.feature == null) {
-        return
-    }
     val entryFeature = entry.feature ?: return
     var featureName = entryFeature.name
     if (featureName.isBlank())
@@ -87,7 +84,7 @@ private fun processFeature(feature: Feature, modpack: ModPack) {
             var depNames = entry.dependencies.values.flatten()
             logger.info("depNames: $depNames")
             depNames = depNames.filter { d ->
-                modpack.entries.any { e -> e.name == d }
+                modpack.entries.any { e -> e.name == d && e.optional }
             }
             logger.info("filtered dependency names: $depNames")
             for (dep in depNames) {

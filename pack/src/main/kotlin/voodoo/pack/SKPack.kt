@@ -142,7 +142,7 @@ object SKPack : AbstractPack() {
             workspaceDir.resolve("_upload")
         }
 
-        val manifestDest = targetDir.resolve("modpack.json")
+        val manifestDest = targetDir.resolve("${modpack.name}.json")
 
         val uniqueVersion = "${modpack.version}-" + DateTimeFormatter
                 .ofPattern("yyyy-MM-dd HH:mm")

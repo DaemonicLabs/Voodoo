@@ -64,7 +64,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
         if (addonFile.dependencies == null) return
         logger.info("dependencies of ${entry.name} ${addonFile.dependencies}")
         logger.info(entry.toString())
-        for ((depAddonId, depType) in addonFile.dependencies!!) {
+        for ((depAddonId, depType) in addonFile.dependencies) {
             logger.info("resolve Dep $depAddonId")
             val depAddon = getAddon(depAddonId, modpack.curseMetaUrl) ?: continue
 
@@ -112,7 +112,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
 //                if (!tmpResult) return false
 //            }
 //        }
-        return true
+        return false
     }
 
     val isOptional = CurseProviderThing::isOptionalCall.memoize()

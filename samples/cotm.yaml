@@ -3,12 +3,10 @@
 #===========#
 name: cotm
 title: Center of the Multiverse
-version: 2.1.4
+version: 2.1.5.1
 mcVersion: 1.12.2
-forge: 2655
+forge: 2678
 minecraftDir: src
-versionCache: 'cotm.version.json'
-featureCache: 'cotm.feature.json'
 
 #================#
 # Client Configs #
@@ -18,9 +16,8 @@ userFiles:
   include: []
 
   exclude:
-  - "config/dsurround/dsurround.cfg"
   - "options.txt"
-
+   
 #===========#
 # Core Pack #
 #===========#
@@ -56,9 +53,6 @@ root:
   # Azanor
   - Baubles
 
-  # Way2muchnoise
-  - Better Advancements
-
   # Nuchaz
   - BiblioCraft
 
@@ -87,7 +81,6 @@ root:
   # BlayTheNinth
   - Cooking for Blockheads
   - Farming for Blockheads
-  - Crafting Tweaks
 
   # ZLainSama
   - Cosmetic Armor Reworked
@@ -168,7 +161,6 @@ root:
   - Mob Grinding Utils
   - ModTweaker
   - More Bees
-  - More Shearables
   - Natura
   - Nature's Compass
   - NetherEx
@@ -205,13 +197,12 @@ root:
   - Tinkers Construct
   - Tinkers' Tool Leveling
   - The Spotlight Mod
-  - Good Ol' Currency
   - Extreme Reactors
   - ZeroCore
   - Paintings ++
   - Painting Selection Gui Revamped
   - Tool Belt
-  - TorchMaster
+  - TorchMaster 
   - Robotic Parts
   - ReWIRED
   - Woot
@@ -230,25 +221,38 @@ root:
   - Ender IO
   - Sampler
   - Morpheus
+  - Waystones
+  - Aether Legacy
 
   # In Testing
   - Electroblob's Wizardry
   - Improvable Skills 3
   - Portality
   - Thaumcraft
-  - The Aether II
+  #- The Aether II (early alpha very unstable)
   - Zetta Industries
+  - Corpse Complex
+  - Thaumic Inventory Scanning (Thaumcraft Addon)
+  - Peckish
   # /In Testing
+
+  # Beta Server Reset
+  #- Dregora
+  #- "Open Terrain Generator (OTG)"
 
   # Direct Downloads
   - provider: DIRECT
     entries:
-
+  
   # Nutrition
-    - url: https://github.com/WesCook/Nutrition/releases/download/v3.1.0/Nutrition-1.12.2-3.1.0.jar
+    - url: https://github.com/WesCook/Nutrition/releases/download/v3.3.0/Nutrition-1.12.2-3.3.0.jar
       name: Nutrition
 
-  # Jenkins Downloads
+  # Better Builder's Wands
+    - url: https://centerofthemultiverse.net/launcher/mirror/BetterBuildersWands-1.12-0.11.1.245+69d0d70.jar
+      name: Better Builder's Wands
+
+  # Jenkins Downloads      
   - provider: JENKINS
     jenkinsUrl: https://ci.elytradev.com
     entries:
@@ -300,10 +304,7 @@ root:
     - "IKWID (I Know What I'm Doing)"
     - Wawla - What Are We Looking At
     - Waila Harvestability
-    - Just Enough HarvestCraft (JEHC)
-    - Just Enough Resources (JER)
     - JEI Integration
-    - JEI Bees
     - AppleSkin
     - BetterFps
     - NoNausea
@@ -311,14 +312,16 @@ root:
     - Controlling
     - Custom Main Menu
     - Default Options
-    - Durability Show
     - Fullscreen Windowed (Borderless) for Minecraft
-    - Keyboard Wizard
     - Mod Name Tooltip
     - Neat
     - ReAuth
     - CleanView
     - Vise
+    - Crafting Tweaks
+
+    # Way2muchnoise
+    - Better Advancements
 
  #========================#
  # Clientside - Resources #
@@ -341,24 +344,6 @@ root:
         - name: SmoothWater
           description: "Makes the surface of water nicer, better underwater lighting, can cost some FPS."
 
-    - feature:
-        selected: false
-        recommendation: starred
-      entries:
-
-        - name: Fancy Block Particles
-          description: "Adds some flair to particle effects and animations. Highly configurable, costs fps."
-
-        - name: Better Foliage
-          description: "Adds a lot of texture to the world. That said, can be quite resource heavy."
-
-        - name: Dynamic Surroundings
-          description: "Quite nice, has a lot of configurable features that add immersive sound/visual effects. Includes light-level overlay."
-
-    - feature:
-        selected: true
-      entries:
-
         - name: Client Tweaks
           description: "Various client related fixes and tweaks, all in a handy menu."
 
@@ -377,3 +362,27 @@ root:
 
         - name: Light Level Overlay Reloaded
           description: "Smol light-level overlay if you aren't using Dynamic Surroundings."
+
+        - name: Durability Show
+          description: Toggle-able item/tool/armor durability HUD
+
+        - name: Fancy Block Particles
+          description: "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps."
+
+        - name: Dynamic Surroundings
+          description: "Caution: Resource heavy. Quite nice, has a lot of configurable features that add immersive sound/visual effects. Includes light-level overlay."
+
+        - name: JEI Bees
+          description: JEI Integration for Reorestry/Gendustry Bees.
+
+        - name: Just Enough HarvestCraft (JEHC)
+          description: JEI Integration for Pam's HarvestCraft.
+
+        - name: Just Enough Resources (JER)
+          description: JEI Integration that gives drop-rates for mobs, dungeonloot, etc.
+
+        - name: Thaumic JEI
+          description: JEI Integration for Thaumcraft.
+
+        - name: Keyboard Wizard
+          description: Visual keybind editor.
