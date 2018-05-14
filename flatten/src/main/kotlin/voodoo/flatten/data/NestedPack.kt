@@ -2,6 +2,7 @@ package voodoo.data.nested
 
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
+import java.io.File
 
 /**
  * Created by nikky on 28/03/18.
@@ -16,8 +17,8 @@ data class NestedPack(
         var mcVersion: String = "",
         var userFiles: UserFiles = UserFiles(),
         var root: NestedEntry = NestedEntry(),
-        var versionCache: String? = null,
-        var featureCache: String? = null,
+        var versionCache: File = File(".voodoo/", name),
+        var featureCache: File = File(".voodoo/", name),
         var localDir: String = "local",
         var minecraftDir: String = name
 ) {
@@ -30,8 +31,8 @@ data class NestedPack(
                 mcVersion = mcVersion,
                 userFiles = userFiles,
                 entries = root.flatten(),
-                versionCache = versionCache,
-                featureCache = featureCache,
+                versionCache = File(versionCache.path),
+                featureCache = File(featureCache.path),
                 localDir = localDir,
                 minecraftDir = minecraftDir
         )
