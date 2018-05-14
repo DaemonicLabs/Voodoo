@@ -7,6 +7,7 @@ import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.provider.impl.*
 import java.io.File
+import java.time.Instant
 
 /**
  * Created by nikky on 04/01/18.
@@ -15,11 +16,11 @@ import java.io.File
  */
 
 enum class Provider(val base: ProviderBase) {
-    CURSE(CurseProviderThing()),
-    DIRECT(DirectProviderThing()),
-    LOCAL(LocalProviderThing()),
-    JENKINS(JenkinsProviderThing()),
-    JSON(UpdateJsonProviderThing())
+    CURSE(CurseProviderThing),
+    DIRECT(DirectProviderThing),
+    LOCAL(LocalProviderThing),
+    JENKINS(JenkinsProviderThing),
+    JSON(UpdateJsonProviderThing)
 }
 
 interface ProviderBase {
@@ -43,6 +44,10 @@ interface ProviderBase {
 
     fun getVersion(entry: LockEntry, modpack: LockPack): String {
         return ""
+    }
+
+    fun getReleaseDate(entry: LockEntry, modpack: LockPack): Instant? {
+        return null
     }
 
 

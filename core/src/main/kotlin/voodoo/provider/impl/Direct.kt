@@ -16,10 +16,8 @@ import java.net.URL
  * @version 1.0
  */
 
-class DirectProviderThing : ProviderBase {
+object DirectProviderThing : ProviderBase, KLogging() {
     override val name = "Direct Provider"
-
-    companion object : KLogging()
 
     override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         return LockEntry(

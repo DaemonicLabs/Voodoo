@@ -24,4 +24,8 @@ data class LockPack(
         var minecraftDir: String = name,
         val entries: List<LockEntry> = emptyList(),
         val features: List<Feature> = emptyList()
-)
+) {
+    init {
+        entries.forEach { it.parent = this }
+    }
+}

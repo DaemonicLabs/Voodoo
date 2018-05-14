@@ -1,7 +1,11 @@
 package voodoo.data.lock
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import voodoo.data.Side
+import voodoo.provider.Provider
+import voodoo.provider.ProviderBase
+import java.time.Instant
 
 /**
  * Created by nikky on 28/03/18.
@@ -34,4 +38,37 @@ data class LockEntry(
         var jsonVersion: String = "",
         // LOCAL
         var fileSrc: String = ""
-)
+) {
+        @JsonIgnore
+        lateinit var parent: LockPack
+
+        @JsonIgnore
+        private fun providerBase(): ProviderBase = Provider.valueOf(provider).base
+
+        @JsonIgnore
+        fun version(): String = providerBase().getVersion(this, parent)
+
+        @JsonIgnore
+        fun authors(): String = providerBase().getAuthors(this, parent).joinToString(", ")
+
+        @JsonIgnore
+        fun projectPage(): String = providerBase().getProjectPage(this, parent)
+
+        @JsonIgnore
+        fun releaseDate(): Instant? = providerBase().getReleaseDate(this, parent)
+
+        @JsonIgnore
+        fun isCurse(): Boolean = provider == Provider.CURSE.name
+
+        @JsonIgnore
+        fun isJenkins(): Boolean = provider == Provider.JENKINS.name
+
+        @JsonIgnore
+        fun isDirect(): Boolean = provider == Provider.DIRECT.name
+
+        @JsonIgnore
+        fun isJson(): Boolean = provider == Provider.JSON.name
+
+        @JsonIgnore
+        fun sLocal(): Boolean = provider == Provider.LOCAL.name
+}

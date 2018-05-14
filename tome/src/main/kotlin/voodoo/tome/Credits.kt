@@ -1,14 +1,15 @@
 package voodoo.tome
 
+import com.github.mustachejava.DefaultMustacheFactory
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import mu.KLogging
-import voodoo.Tome
 import voodoo.data.lock.LockPack
-import voodoo.provider.Provider
 import voodoo.util.readJson
 import java.io.File
+import java.io.StringWriter
+
 
 /**
  * Created by nikky on 15/04/18.
@@ -29,55 +30,25 @@ object Credits : KLogging() {
 
         arguments.run {
             val inFile = File(inputArg)
-            val modpack = inFile.readJson<LockPack>()
-            val builder = StringBuilder()
-            if (headerFile != null) {
-                val header = headerFile!!.readText()
-                        .replace("[packName]", modpack.name)
-                        .replace("[packTitle]", modpack.title)
-                        .replace("[packVersion]", modpack.version)
-                builder.append(header)
-                builder.append("\n")
+            var modpack = inFile.readJson<LockPack>()
+
+            if (sort) {
+                modpack = modpack.copy(entries = modpack.entries.sortedBy { it.name })
             }
 
-            val template = templateFile.readText()
-
-            val entries = if (sort) {
-                modpack.entries.sortedBy { it.name }
-            } else {
-                modpack.entries
-            }
-
-            for (entry in entries) {
-                Tome.logger.info("processing ${entry.name}")
-                val provider = Provider.valueOf(entry.provider).base
-
-                val section = template
-                        .replace("[modName]", entry.name)
-                        .replace("[modVersion]", provider.getVersion(entry, modpack))
-                        .replace("[authors]", provider.getAuthors(entry, modpack).joinToString(", "))
-                        .replace("[projectPage]", provider.getProjectPage(entry, modpack))
-
-                builder.append(section)
-                builder.append("\n")
-            }
-
-            if (footerFile != null) {
-                val footer = footerFile!!.readText()
-                        .replace("[packName]", modpack.name)
-                        .replace("[packTitle]", modpack.title)
-                        .replace("[packVersion]", modpack.version)
-                builder.append(footer)
-            }
+            val mf = DefaultMustacheFactory()
+            val mustache = mf.compile(templateFile.path)
+            val sw = StringWriter()
+            mustache.execute(sw, modpack)
 
             if (stdout) {
-                print(builder.toString())
+                print(sw.toString())
             } else {
                 var target = targetArg ?: "${modpack.name}.credits.md"
                 if (!target.endsWith(".md")) target += ".md"
                 val targetFile = File(target)
                 logger.info("Writing credits file... $targetFile")
-                targetFile.writeText(builder.toString())
+                targetFile.writeText(sw.toString())
             }
         }
 
@@ -90,16 +61,8 @@ object Credits : KLogging() {
         val templateFile by parser.positional("TEMPLATE",
                 help = "template header") { File(this) }
 
-        val headerFile by parser.storing("--header",
-                help = "template header") { File(this) }
-                .default<File?>(null)
-
-        val footerFile by parser.storing("--footer",
-                help = "template header") { File(this) }
-                .default<File?>(null)
-
         val sort by parser.flagging("--sort",
-                help = "template header")
+                help = "sort entries alphanumerically")
 
         val targetArg by parser.storing("--output", "-o",
                 help = "output file json")

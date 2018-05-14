@@ -1,6 +1,7 @@
 package voodoo.curse
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import java.util.*
 
 
 /**
@@ -48,7 +49,7 @@ data class AddOnFile(
         val alternateFileId: Int,
         val dependencies: List<AddOnFileDependency>?,
         val downloadURL: String,
-        val fileDate: String,
+        val fileDate: Date,
         val fileName: String,
         val fileNameOnDisk: String,
         val fileStatus: FileStatus,
