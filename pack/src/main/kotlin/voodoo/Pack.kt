@@ -5,6 +5,7 @@ import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import mu.KLogging
 import voodoo.data.lock.LockPack
+import voodoo.pack.CursePack
 import voodoo.pack.FatServerPack
 import voodoo.pack.SKPack
 import voodoo.pack.ServerPack
@@ -34,6 +35,7 @@ object Pack : KLogging() {
                 "sk" -> SKPack
                 "fatserver" -> FatServerPack
                 "server" -> ServerPack
+                "curse" -> CursePack
 
                 else -> {
                     logger.error("no such packing methode: $methode")
@@ -56,5 +58,9 @@ object Pack : KLogging() {
         val targetArg by parser.storing("--output", "-o",
                 help = "output folder")
                 .default<String?>(null)
+
+//        val clean by parser.flagging("--clean", "-c",
+//                help = "clean output folder before packaging")
+//                .default(true)
     }
 }

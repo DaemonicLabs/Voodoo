@@ -14,7 +14,8 @@ import voodoo.data.UserFiles
 data class LockPack(
         val name: String = "",
         val title: String = "",
-        val version: String = "",
+        val version: String = "1.0",
+        val authors: List<String> = emptyList(),
         val mcVersion: String = "",
         val forge: Int = -1,
         var curseMetaUrl: String = META_URL,

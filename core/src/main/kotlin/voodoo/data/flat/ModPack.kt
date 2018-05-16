@@ -28,6 +28,7 @@ data class ModPack(
         var title: String = "",
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var version: String = "1.0",
+        val authors: List<String> = emptyList(),
         var mcVersion: String = "",
         var forge: String = "recommended",
         var forgeBuild: Int = -1,
@@ -87,6 +88,7 @@ data class ModPack(
                 name = name,
                 title = title,
                 version = version,
+                authors = authors,
                 mcVersion = mcVersion,
                 forge = forgeBuild,
                 curseMetaUrl = curseMetaUrl,

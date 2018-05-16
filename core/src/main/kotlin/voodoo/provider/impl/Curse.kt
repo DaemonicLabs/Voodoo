@@ -50,7 +50,8 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     override fun getProjectPage(entry: LockEntry, modpack: LockPack): String {
-        return CurseUtil.getProjectPage(entry.projectID, modpack.curseMetaUrl)
+        return "https://minecraft.curseforge.com/mc-mods/${entry.projectID}"
+        //CurseUtil.getProjectPage(entry.projectID, modpack.curseMetaUrl)
     }
 
     override fun getVersion(entry: LockEntry, modpack: LockPack): String {
