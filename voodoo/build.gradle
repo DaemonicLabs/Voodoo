@@ -6,7 +6,15 @@ apply plugin: 'com.github.johnrengelman.shadow'
 
 mainClassName = "voodoo.Voodoo"
 
-def runDir = project.file("run").path
+def runDir = parent.file("run").path
+
+run {
+    workingDir = runDir
+}
+
+runShadow {
+    workingDir = runDir
+}
 
 shadowJar {
     classifier = null

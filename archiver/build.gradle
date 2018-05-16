@@ -5,6 +5,19 @@ plugins {
 apply plugin: 'com.github.johnrengelman.shadow'
 
 mainClassName = "archiver.MainKt"
+def runDir = parent.file("run")
+def runArgs = ['--changelog', '--threads', '4']
+
+
+run {
+    workingDir = runDir
+    args = runArgs
+}
+
+runShadow {
+    workingDir = runDir
+    args = runArgs
+}
 
 shadowJar {
     classifier = null
@@ -12,6 +25,7 @@ shadowJar {
 
 dependencies {
     compile project(':util')
+    compile project(':core')
     compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+' //for JVM
     compile group: 'com.github.kittinunf.fuel', name: 'fuel-jackson', version: '+' //for JVM
     compile group: 'org.apache.commons', name: 'commons-compress', version: '+'
