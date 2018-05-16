@@ -8,8 +8,12 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
+import org.apache.commons.compress.compressors.CompressorStreamFactory
 import voodoo.core.VERSION
 import voodoo.data.flat.Entry
+import java.io.BufferedReader
+import java.io.ByteArrayInputStream
+import java.io.InputStreamReader
 
 /**
  * Created by nikky on 30/01/18.
@@ -18,6 +22,7 @@ import voodoo.data.flat.Entry
  */
 object CurseUtil : KLogging() {
     val META_URL = "https://cursemeta.dries007.net"
+    val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10"
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
     val mapper = jacksonObjectMapper() // Enable Json parsing
@@ -62,6 +67,21 @@ object CurseUtil : KLogging() {
     }
 
     val getAddonFile = ::getAddonFileCall.memoize()
+
+    private fun getFileChangelogCall(addonId: Int, fileId: Int, metaUrl: String = META_URL): String? {
+        val url = "$metaUrl/api/v2/direct/v2GetChangeLog/$addonId/$fileId"
+
+        logger.debug("get $url")
+        val (_, _, result) = url.httpGet()
+                .header("User-Agent" to useragent)
+                .responseString()
+        return when (result) {
+            is Result.Success -> mapper.readValue(result.value)
+            else -> null
+        }
+    }
+
+    val getFileChangelog = ::getFileChangelogCall.memoize()
 
     private fun getAllFilesForAddOnCall(addonId: Int, metaUrl: String = META_URL): List<AddOnFile> {
         val url = "$metaUrl/api/v2/direct/GetAllFilesForAddOn/$addonId"
@@ -228,5 +248,40 @@ object CurseUtil : KLogging() {
     fun getProjectPage(projectID: Int, metaUrl: String): String {
         val addon = getAddon(projectID, metaUrl)!!
         return addon.webSiteURL
+    }
+
+    fun getFeed(hourly: Boolean = false): List<AddOn> {
+        logger.info("downloading curse feed")
+        val type = if(hourly) "hourly" else "complete"
+        val url = "$FEED_URL/$type.json.bz2"
+        logger.info("get $url")
+        val (request, response, result) = url.httpGet()
+                .header("User-Agent" to useragent)
+                .response()
+        when (result) {
+            is Result.Success -> {
+                val bis = ByteArrayInputStream(result.value)
+                val input = CompressorStreamFactory().createCompressorInputStream(bis)
+                val buf = BufferedReader(InputStreamReader(input))
+
+                val text = buf.use { it.readText() }
+
+                val feed = mapper.readValue<CurseFeed>(text)
+
+                return feed.data.filter {
+                    when (it.categorySection.id) {
+                        6 -> true //mod
+                        12 -> true //texture packs
+                        17 -> false //worlds
+                        4471 -> false //modpacks
+                        else -> false
+                    }
+                }
+            }
+            is Result.Failure -> {
+                logger.error("failed getting cursemeta data ${result.error}")
+                throw Exception("failed getting cursemeta data, code: ${response.statusCode}")
+            }
+        }
     }
 }
