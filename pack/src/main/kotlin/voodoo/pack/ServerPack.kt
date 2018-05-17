@@ -18,7 +18,7 @@ object ServerPack : AbstractPack() {
     override val label = "Server Pack"
 
     override fun download(modpack: LockPack, target: String?, clean: Boolean) {
-        val targetDir = File(target ?: "server")
+        val targetDir = File(target ?: ".server")
         val modpackDir = targetDir.resolve(modpack.name)
 
         if (clean) {
@@ -26,7 +26,10 @@ object ServerPack : AbstractPack() {
             modpackDir.deleteRecursively()
         }
 
+        modpackDir.mkdirs()
+
         val localDir = File(modpack.localDir)
+        logger.info("local: $localDir")
         if(localDir.exists()) {
             val targetLocalDir = modpackDir.resolve("local")
             modpack.localDir = targetLocalDir.name
@@ -38,7 +41,8 @@ object ServerPack : AbstractPack() {
         }
 
         val minecraftDir = File(modpack.minecraftDir)
-        if(localDir.exists()) {
+        logger.info("mcDir: $minecraftDir")
+        if(minecraftDir.exists()) {
             val targetMinecraftDir = modpackDir.resolve("minecraft")
             modpack.minecraftDir = targetMinecraftDir.name
 
@@ -57,6 +61,8 @@ object ServerPack : AbstractPack() {
 
         val serverInstaller = modpackDir.resolve("install-server.jar")
         installer.copyTo(serverInstaller)
+
+        logger.info("server package ready: ${modpackDir.absolutePath}")
     }
 
     const val FILE_REGEX = "^[Ss]erver-installer-.*\\.jar$"
