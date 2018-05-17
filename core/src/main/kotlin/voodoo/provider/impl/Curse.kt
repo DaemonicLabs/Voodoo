@@ -60,14 +60,14 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     private fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit) {
-        val addon = getAddon(addonId, modpack.curseMetaUrl)!!
+        val addon = getAddon(addonId, true, modpack.curseMetaUrl)!!
         val addonFile = getAddonFile(addonId, fileId, modpack.curseMetaUrl)!!
         if (addonFile.dependencies == null) return
         logger.info("dependencies of ${entry.name} ${addonFile.dependencies}")
         logger.info(entry.toString())
         for ((depAddonId, depType) in addonFile.dependencies) {
             logger.info("resolve Dep $depAddonId")
-            val depAddon = getAddon(depAddonId, modpack.curseMetaUrl) ?: continue
+            val depAddon = getAddon(depAddonId, true, modpack.curseMetaUrl) ?: continue
 
 //            val depends = entry.dependencies
             var dependsList = entry.dependencies[depType] ?: listOf<String>()
