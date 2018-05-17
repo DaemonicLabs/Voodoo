@@ -49,6 +49,12 @@ data class LockEntry(
         fun version(): String = providerBase().getVersion(this, parent)
 
         @JsonIgnore
+        fun license(): String = providerBase().getLicense(this, parent)
+
+        @JsonIgnore
+        fun thumbnail(): String = providerBase().getThumbnial(this, parent)
+
+        @JsonIgnore
         fun authors(): String = providerBase().getAuthors(this, parent).joinToString(", ")
 
         @JsonIgnore

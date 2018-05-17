@@ -17,12 +17,6 @@ import java.io.StringWriter
  * @version 1.0
  */
 
-/**
- * Created by nikky on 01/04/18.
- * @author Nikky
- * @version 1.0
- */
-
 object Credits : KLogging() {
     @JvmStatic
     fun main(vararg args: String) = mainBody {
@@ -44,8 +38,7 @@ object Credits : KLogging() {
             if (stdout) {
                 print(sw.toString())
             } else {
-                var target = targetArg ?: "${modpack.name}.credits.md"
-                if (!target.endsWith(".md")) target += ".md"
+                val target = targetArg ?: "${modpack.name}.credits.md"
                 val targetFile = File(target)
                 logger.info("Writing credits file... $targetFile")
                 targetFile.writeText(sw.toString())

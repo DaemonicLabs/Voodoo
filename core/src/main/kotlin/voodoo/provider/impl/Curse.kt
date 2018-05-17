@@ -50,13 +50,22 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     override fun getProjectPage(entry: LockEntry, modpack: LockPack): String {
-        return "https://minecraft.curseforge.com/mc-mods/${entry.projectID}"
+        return "https://minecraft.curseforge.com/projects/${entry.projectID}"
         //CurseUtil.getProjectPage(entry.projectID, modpack.curseMetaUrl)
     }
 
     override fun getVersion(entry: LockEntry, modpack: LockPack): String {
         val addonFile = getAddonFile(entry.projectID, entry.fileID, modpack.curseMetaUrl)
         return addonFile?.fileName ?: ""
+    }
+
+    override fun getLicense(entry: LockEntry, modpack: LockPack): String {
+        return "https://minecraft.curseforge.com/projects/${entry.fileID}/license"
+    }
+
+    override fun getThumbnial(entry: LockEntry, modpack: LockPack): String {
+        val addon = CurseUtil.getAddon(entry.projectID, false, modpack.curseMetaUrl)!!
+        return addon.attachments?.firstOrNull { it.isDefault }?.thumbnailUrl ?: ""
     }
 
     private fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit) {

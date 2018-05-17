@@ -46,6 +46,14 @@ interface ProviderBase {
         return ""
     }
 
+    fun getLicense(entry: LockEntry, modpack: LockPack): String {
+        return ""
+    }
+
+    fun getThumbnial(entry: LockEntry, modpack: LockPack): String {
+        return ""
+    }
+
     fun getReleaseDate(entry: LockEntry, modpack: LockPack): Instant? {
         return null
     }
