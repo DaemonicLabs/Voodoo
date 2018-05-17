@@ -103,7 +103,7 @@ object CurseUtil : KLogging() {
     val announceAddon = { addonID: Int ->
 
         val url = "https://curse.nikky.moe/api/ids/$addonID"
-        logger.info("url: $url")
+        logger.debug("url: $url")
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -111,7 +111,7 @@ object CurseUtil : KLogging() {
                 .responseString()
         when (result) {
             is Result.Success -> {
-                logger.info("announced $addonID to curse.nikky.moe")
+                logger.debug("announced $addonID to curse.nikky.moe")
             }
             is Result.Failure -> {
                 logger.error(result.error.toString())
@@ -120,9 +120,9 @@ object CurseUtil : KLogging() {
         }
     }.memoize()
 
-    private fun getAddonCall(addonId: Int, metaUrl: String = META_URL): AddOn? {
+    private fun getAddonCall(addonId: Int, announce: Boolean = true, metaUrl: String = META_URL): AddOn? {
         val url = "$metaUrl/api/v2/direct/GetAddOn/$addonId"
-        announceAddon(addonId)
+        if(announce) announceAddon(addonId)
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -143,13 +143,13 @@ object CurseUtil : KLogging() {
 
     fun getAddonByName(name: String, metaUrl: String = META_URL): AddOn? {
         val addon = idMap[name]
-                ?.let { getAddon(it, metaUrl) }
+                ?.let { getAddon(it, false, metaUrl) }
         if (addon != null) {
             return addon
         }
         idMap = getIdMap()
         return idMap[name]
-                ?.let { getAddon(it, metaUrl) }
+                ?.let { getAddon(it, false, metaUrl) }
     }
 
     fun findFile(entry: Entry, mcVersion: String, metaUrl: String = META_URL): Triple<Int, Int, String> {
@@ -169,7 +169,7 @@ object CurseUtil : KLogging() {
             else
                 null
         } else {
-            getAddon(addonId, metaUrl)
+            getAddon(addonId, true, metaUrl)
         }
 
         if (addon == null) {
@@ -241,12 +241,12 @@ object CurseUtil : KLogging() {
     }
 
     fun getAuthors(projectID: Int, metaUrl: String = META_URL): List<String> {
-        val addon = getAddon(projectID, metaUrl)!!
+        val addon = getAddon(projectID, false, metaUrl)!!
         return addon.authors.map { it.name }
     }
 
     fun getProjectPage(projectID: Int, metaUrl: String): String {
-        val addon = getAddon(projectID, metaUrl)!!
+        val addon = getAddon(projectID, false, metaUrl)!!
         return addon.webSiteURL
     }
 

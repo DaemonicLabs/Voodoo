@@ -88,7 +88,6 @@ object CursePack : AbstractPack() {
 
         // generate modlist
         val modListFile = modpackDir.resolve("modlist.html")
-        //TODO: create modlist
         val html = "<ul>\n" + modpack.entries.joinToString("") { entry ->
             val provider = Provider.valueOf(entry.provider).base
             if (entry.side == Side.SERVER) return@joinToString ""
