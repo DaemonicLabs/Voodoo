@@ -19,7 +19,7 @@ object FatServerPack : AbstractPack() {
 
     override fun download(modpack: LockPack, target: String?, clean: Boolean) {
         val cacheDir = directories.cacheHome
-        val targetDir = File(target ?: "server")
+        val targetDir = File(target ?: ".server-fat")
         val modpackDir = targetDir.resolve(modpack.name)
 
         val srcFolder = modpackDir.resolve("src")

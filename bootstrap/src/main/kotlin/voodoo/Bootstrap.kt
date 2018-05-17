@@ -18,6 +18,7 @@ import voodoo.util.Directories
 import voodoo.util.jenkins.JenkinsServer
 import java.io.File
 import java.util.concurrent.TimeUnit
+import kotlin.system.exitProcess
 
 @Throws(Throwable::class)
 fun main(args: Array<String>) {
@@ -97,11 +98,12 @@ object Bootstrap : KLogging() {
 
         val args = arrayOf(java, "-jar", file.path, *originalArgs)
         logger.debug("running " + args.joinToString(" ") { "\"$it\"" })
-        ProcessBuilder(*args)
+        val exitStatus = ProcessBuilder(*args)
                 .directory(workingDir)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 .redirectError(ProcessBuilder.Redirect.INHERIT)
                 .start()
-                .waitFor(60, TimeUnit.MINUTES)
+                .waitFor()
+        exitProcess(exitStatus)
     }
 }
