@@ -157,8 +157,6 @@ object SKPack : AbstractPack() {
                         "--manifest-dest", manifestDest.path
                 )
         )
-
-        println(uniqueVersion)
     }
 
 }

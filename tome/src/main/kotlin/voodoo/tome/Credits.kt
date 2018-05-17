@@ -37,7 +37,7 @@ object Credits : KLogging() {
             }
 
             val mf = DefaultMustacheFactory()
-            val mustache = mf.compile(templateFile.path)
+            val mustache = mf.compile(templateFile.reader(), templateFile.path)
             val sw = StringWriter()
             mustache.execute(sw, modpack)
 
