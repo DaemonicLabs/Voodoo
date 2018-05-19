@@ -4,12 +4,10 @@ import mu.KotlinLogging
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
-import voodoo.pack.sk.SKFeature
-import voodoo.pack.sk.SKLocation
-import voodoo.pack.sk.SKModpack
-import voodoo.pack.sk.SKWorkspace
+import voodoo.pack.sk.*
 import voodoo.provider.Provider
 import voodoo.util.download
+import voodoo.util.json
 import voodoo.util.readJson
 import voodoo.util.writeJson
 import java.io.File
@@ -157,6 +155,24 @@ object SKPack : AbstractPack() {
                         "--manifest-dest", manifestDest.path
                 )
         )
+
+        //regenerate packages.json
+        val packagesFile = targetDir.resolve("packages.json")
+        val packages: SKPackages = if (packagesFile.exists()) {
+            packagesFile.readJson()
+        } else {
+            SKPackages()
+        }
+
+        val packFragment = packages.packages.find { it.name == modpack.name }
+                ?: SkPackageFragment(
+                        title = modpack.title,
+                        name = modpack.name,
+                        version = uniqueVersion,
+                        location = "${modpack.name}.json"
+                ).apply { packages.packages += this }
+        packFragment.version = uniqueVersion
+        packagesFile.writeJson(packages)
     }
 
 }
