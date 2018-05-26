@@ -6,23 +6,21 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
 import mu.KLogging
-import org.apache.commons.compress.compressors.CompressorStreamFactory
 import voodoo.core.VERSION
+import voodoo.curse.data.Addon
+import voodoo.curse.data.AddonFile
 import voodoo.data.flat.Entry
-import java.io.BufferedReader
-import java.io.ByteArrayInputStream
-import java.io.InputStreamReader
 
 /**
  * Created by nikky on 30/01/18.
  * @author Nikky
  * @version 1.0
  */
-object CurseUtil : KLogging() {
-    val META_URL = "https://cursemeta.dries007.net"
-    val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10"
+object CurseClient : KLogging() {
+    val PROXY_URL = "https://curse.nikky.moe/api"
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
     val mapper = jacksonObjectMapper() // Enable Json parsing
@@ -31,28 +29,62 @@ object CurseUtil : KLogging() {
 //            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
 
     private var idMap = getIdMap()
+    
+    data class GraphQLRequest(
+            val query: String,
+            val operationName: String,
+            val variables: Map<String, Any> = emptyMap()
+    )
+
+    data class IdNamePair(
+            val id: Int,
+            val name: String
+    )
+
+    data class WrapperAddonResult(
+            val addons: List<IdNamePair>
+    )
+
+    data class GraphQlResult(
+            val data: WrapperAddonResult
+    )
 
     private fun getIdMap(): Map<String, Int> {
-//        val url = "https://curse.nikky.moe/api/addon?property=id,name&mods=1&resourcepacks=1&texturepacks=1"
-        val url = "https://curse.nikky.moe/api/ids/"
+        val url = "https://curse.nikky.moe/graphql"
 
-        logger.debug("get $url")
-        val (_, _, result) = url.httpGet()
-                .header("User-Agent" to useragent)
+        logger.debug("post $url")
+        val graphQlRequest = GraphQLRequest(
+                query = """
+                    |{
+                    |  addons {
+                    |    id
+                    |    name
+                    |  }
+                    |}
+                """.trimMargin(),
+                operationName = "GetNameIDPairs"
+        )
+        val (_, _, result) = url.httpPost()
+                .body(mapper.writeValueAsBytes(graphQlRequest))
+                .header("User-Agent" to useragent, "Content-Type" to "application/json")
                 .responseString()
-        return when (result) {
+        val grapqhQlResult: GraphQlResult = when (result) {
             is Result.Success -> {
                 mapper.readValue(result.value)
             }
             is Result.Failure -> {
-                logger.error(result.error.toString())
                 throw Exception("failed getting id-name pairs")
             }
         }
+        return grapqhQlResult.data.addons.groupBy(
+                { it.name },
+                { it.id }).mapValues {
+            it.value.first()
+        }
     }
 
-    private fun getAddonFileCall(addonId: Int, fileId: Int, metaUrl: String = META_URL): AddOnFile? {
-        val url = "$metaUrl/api/v2/direct/GetAddOnFile/$addonId/$fileId"
+    private fun getAddonFileCall(addonId: Int, fileId: Int, metaUrl: String = PROXY_URL): AddonFile? {
+        val url = "$PROXY_URL/addon/$addonId/file/$fileId"
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -68,23 +100,8 @@ object CurseUtil : KLogging() {
 
     val getAddonFile = ::getAddonFileCall.memoize()
 
-    private fun getFileChangelogCall(addonId: Int, fileId: Int, metaUrl: String = META_URL): String? {
-        val url = "$metaUrl/api/v2/direct/v2GetChangeLog/$addonId/$fileId"
-
-        logger.debug("get $url")
-        val (_, _, result) = url.httpGet()
-                .header("User-Agent" to useragent)
-                .responseString()
-        return when (result) {
-            is Result.Success -> mapper.readValue(result.value)
-            else -> null
-        }
-    }
-
-    val getFileChangelog = ::getFileChangelogCall.memoize()
-
-    private fun getAllFilesForAddOnCall(addonId: Int, metaUrl: String = META_URL): List<AddOnFile> {
-        val url = "$metaUrl/api/v2/direct/GetAllFilesForAddOn/$addonId"
+    private fun getAllFilesForAddonCall(addonId: Int, metaUrl: String = PROXY_URL): List<AddonFile> {
+        val url = "$PROXY_URL/addon/$addonId/files"
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -98,31 +115,10 @@ object CurseUtil : KLogging() {
         }
     }
 
-    val getAllFilesForAddOn = ::getAllFilesForAddOnCall.memoize()
+    val getAllFilesForAddon = ::getAllFilesForAddonCall.memoize()
 
-    val announceAddon = { addonID: Int ->
-
-        val url = "https://curse.nikky.moe/api/ids/$addonID"
-        logger.debug("url: $url")
-
-        logger.debug("get $url")
-        val (_, _, result) = url.httpGet()
-                .header("User-Agent" to useragent)
-                .responseString()
-        when (result) {
-            is Result.Success -> {
-                logger.debug("announced $addonID to curse.nikky.moe")
-            }
-            is Result.Failure -> {
-                logger.error(result.error.toString())
-                throw Exception("failed getting id-name pairs")
-            }
-        }
-    }.memoize()
-
-    private fun getAddonCall(addonId: Int, announce: Boolean = true, metaUrl: String = META_URL): AddOn? {
-        val url = "$metaUrl/api/v2/direct/GetAddOn/$addonId"
-        if(announce) announceAddon(addonId)
+    private fun getAddonCall(addonId: Int, metaUrl: String = PROXY_URL): Addon? {
+        val url = "$PROXY_URL/addon/$addonId"
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -141,18 +137,18 @@ object CurseUtil : KLogging() {
 
     val getAddon = ::getAddonCall.memoize()
 
-    fun getAddonByName(name: String, metaUrl: String = META_URL): AddOn? {
+    fun getAddonByName(name: String, metaUrl: String = PROXY_URL): Addon? {
         val addon = idMap[name]
-                ?.let { getAddon(it, false, metaUrl) }
+                ?.let { getAddon(it, metaUrl) }
         if (addon != null) {
             return addon
         }
         idMap = getIdMap()
         return idMap[name]
-                ?.let { getAddon(it, false, metaUrl) }
+                ?.let { getAddon(it, metaUrl) }
     }
 
-    fun findFile(entry: Entry, mcVersion: String, metaUrl: String = META_URL): Triple<Int, Int, String> {
+    fun findFile(entry: Entry, mcVersion: String, proxyUrl: String = PROXY_URL): Triple<Int, Int, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
         val name = entry.name
         val version = entry.version
@@ -165,11 +161,11 @@ object CurseUtil : KLogging() {
 
         val addon = if (addonId < 0) {
             if (name.isNotBlank())
-                getAddonByName(name, metaUrl)
+                getAddonByName(name, proxyUrl)
             else
                 null
         } else {
-            getAddon(addonId, true, metaUrl)
+            getAddon(addonId, proxyUrl)
         }
 
         if (addon == null) {
@@ -182,7 +178,7 @@ object CurseUtil : KLogging() {
 
         val re = Regex(fileNameRegex)
 
-        var files = getAllFilesForAddOn(addonId, metaUrl).sortedWith(compareByDescending { it.fileDate })
+        var files = getAllFilesForAddon(addonId, proxyUrl).sortedWith(compareByDescending { it.fileDate })
 
         var oldFiles = files
 
@@ -229,7 +225,7 @@ object CurseUtil : KLogging() {
 
         val file = files.sortedWith(compareByDescending { it.fileDate }).firstOrNull()
         if (file == null) {
-            val filesUrl = "$META_URL/api/addon/$addonId/files"
+            val filesUrl = "$PROXY_URL/addon/$addonId/files"
             logger.error("no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
                     "files: $filesUrl mc version: $mcVersions version: $version \n" +
                     "$addon")
@@ -240,48 +236,13 @@ object CurseUtil : KLogging() {
         return Triple(addonId, file.id, addon.categorySection.path)
     }
 
-    fun getAuthors(projectID: Int, metaUrl: String = META_URL): List<String> {
-        val addon = getAddon(projectID, false, metaUrl)!!
+    fun getAuthors(projectID: Int, metaUrl: String = PROXY_URL): List<String> {
+        val addon = getAddon(projectID, metaUrl)!!
         return addon.authors.map { it.name }
     }
 
     fun getProjectPage(projectID: Int, metaUrl: String): String {
-        val addon = getAddon(projectID, false, metaUrl)!!
+        val addon = getAddon(projectID, metaUrl)!!
         return addon.webSiteURL
-    }
-
-    fun getFeed(hourly: Boolean = false): List<AddOn> {
-        logger.info("downloading curse feed")
-        val type = if(hourly) "hourly" else "complete"
-        val url = "$FEED_URL/$type.json.bz2"
-        logger.info("get $url")
-        val (request, response, result) = url.httpGet()
-                .header("User-Agent" to useragent)
-                .response()
-        when (result) {
-            is Result.Success -> {
-                val bis = ByteArrayInputStream(result.value)
-                val input = CompressorStreamFactory().createCompressorInputStream(bis)
-                val buf = BufferedReader(InputStreamReader(input))
-
-                val text = buf.use { it.readText() }
-
-                val feed = mapper.readValue<CurseFeed>(text)
-
-                return feed.data.filter {
-                    when (it.categorySection.id) {
-                        6 -> true //mod
-                        12 -> true //texture packs
-                        17 -> false //worlds
-                        4471 -> false //modpacks
-                        else -> false
-                    }
-                }
-            }
-            is Result.Failure -> {
-                logger.error("failed getting cursemeta data ${result.error}")
-                throw Exception("failed getting cursemeta data, code: ${response.statusCode}")
-            }
-        }
     }
 }

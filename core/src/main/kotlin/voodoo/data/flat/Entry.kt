@@ -1,9 +1,9 @@
 package voodoo.data.flat
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import voodoo.curse.DependencyType
-import voodoo.curse.FileType
-import voodoo.curse.PackageType
+import voodoo.curse.data.DependencyType
+import voodoo.curse.data.FileType
+import voodoo.curse.data.PackageType
 import voodoo.data.Side
 import voodoo.provider.UpdateChannel
 

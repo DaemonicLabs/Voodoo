@@ -2,6 +2,7 @@ package voodoo.data.nested
 
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
+import voodoo.flatten.data.NestedEntry
 import java.io.File
 
 /**

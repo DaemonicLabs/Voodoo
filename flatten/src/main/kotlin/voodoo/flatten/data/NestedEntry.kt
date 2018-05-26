@@ -1,10 +1,10 @@
-package voodoo.data.nested
+package voodoo.flatten.data
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import voodoo.curse.DependencyType
-import voodoo.curse.FileType
-import voodoo.curse.PackageType
+import voodoo.curse.data.DependencyType
+import voodoo.curse.data.PackageType
+import voodoo.curse.data.FileType
 import voodoo.data.flat.EntryFeature
 import voodoo.data.Side
 import voodoo.data.flat.Entry

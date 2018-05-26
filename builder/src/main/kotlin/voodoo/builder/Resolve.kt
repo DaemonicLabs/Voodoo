@@ -2,7 +2,7 @@ package voodoo.builder
 
 import aballano.kotlinmemoization.memoize
 import mu.KotlinLogging
-import voodoo.curse.DependencyType
+import voodoo.curse.data.DependencyType
 import voodoo.data.Feature
 import voodoo.data.flat.Entry
 import voodoo.data.flat.FeatureProperties

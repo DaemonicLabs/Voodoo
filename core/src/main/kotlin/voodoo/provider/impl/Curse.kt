@@ -2,11 +2,11 @@ package voodoo.provider.impl
 
 import aballano.kotlinmemoization.memoize
 import mu.KLogging
-import voodoo.curse.CurseUtil
-import voodoo.curse.CurseUtil.findFile
-import voodoo.curse.CurseUtil.getAddon
-import voodoo.curse.CurseUtil.getAddonFile
-import voodoo.curse.DependencyType
+import voodoo.curse.CurseClient
+import voodoo.curse.CurseClient.findFile
+import voodoo.curse.CurseClient.getAddon
+import voodoo.curse.CurseClient.getAddonFile
+import voodoo.curse.data.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
@@ -46,12 +46,12 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     override fun getAuthors(entry: LockEntry, modpack: LockPack): List<String> {
-        return CurseUtil.getAuthors(entry.projectID, modpack.curseMetaUrl)
+        return CurseClient.getAuthors(entry.projectID, modpack.curseMetaUrl)
     }
 
     override fun getProjectPage(entry: LockEntry, modpack: LockPack): String {
         return "https://minecraft.curseforge.com/projects/${entry.projectID}"
-        //CurseUtil.getProjectPage(entry.projectID, modpack.curseMetaUrl)
+        //CurseClient.getProjectPage(entry.projectID, modpack.curseMetaUrl)
     }
 
     override fun getVersion(entry: LockEntry, modpack: LockPack): String {
@@ -64,19 +64,19 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     override fun getThumbnial(entry: LockEntry, modpack: LockPack): String {
-        val addon = CurseUtil.getAddon(entry.projectID, false, modpack.curseMetaUrl)!!
-        return addon.attachments?.firstOrNull { it.isDefault }?.thumbnailUrl ?: ""
+        val addon = CurseClient.getAddon(entry.projectID, modpack.curseMetaUrl)!!
+        return addon.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
     }
 
     private fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit) {
-        val addon = getAddon(addonId, true, modpack.curseMetaUrl)!!
+        val addon = getAddon(addonId, modpack.curseMetaUrl)!!
         val addonFile = getAddonFile(addonId, fileId, modpack.curseMetaUrl)!!
         if (addonFile.dependencies == null) return
         logger.info("dependencies of ${entry.name} ${addonFile.dependencies}")
         logger.info(entry.toString())
         for ((depAddonId, depType) in addonFile.dependencies) {
             logger.info("resolve Dep $depAddonId")
-            val depAddon = getAddon(depAddonId, true, modpack.curseMetaUrl) ?: continue
+            val depAddon = getAddon(depAddonId, modpack.curseMetaUrl) ?: continue
 
 //            val depends = entry.dependencies
             var dependsList = entry.dependencies[depType] ?: listOf<String>()
