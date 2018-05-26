@@ -6,14 +6,13 @@ package archiver
  * @version 1.0
  */
 
-import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.InvalidArgumentException
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import mu.KotlinLogging
-import voodoo.curse.CurseUtil
+import voodoo.curse.CurseClient
 import voodoo.curse.Murmur2Hash
 import java.io.File
 import java.util.concurrent.Executors
@@ -31,10 +30,10 @@ fun main(vararg args: String) = mainBody {
 
         val feed = when (mode) {
             FeedType.HOURLY -> {
-                CurseUtil.getFeed(true)
+                CurseClient.getFeed(true)
             }
             FeedType.COMPLETE -> {
-                CurseUtil.getFeed()
+                CurseClient.getFeed()
             }
         }
 
@@ -45,7 +44,7 @@ fun main(vararg args: String) = mainBody {
             val worker = Runnable {
                 println("Getting AddOn ${addOn.id} ${addOn.name}")
                 val destDir = File(outputDir, addOn.id.toString())
-                val files = CurseUtil.getAllFilesForAddOn(addOn.id, CurseUtil.META_URL)
+                val files = CurseClient.getAllFilesForAddOn(addOn.id, CurseClient.META_URL)
                 for (file in files) {
                     var finishedFile = false
                     var failCount = 0
@@ -105,7 +104,7 @@ fun main(vararg args: String) = mainBody {
                         if (changelogFile.exists() && !changelogFile.isFile) changelogFile.delete()
 
                         if (!changelogFile.exists()) {
-                            val changelog = CurseUtil.getFileChangelog(addOn.id, file.id, CurseUtil.META_URL)
+                            val changelog = CurseClient.getFileChangelog(addOn.id, file.id, CurseClient.META_URL)
                             if (changelog != null) {
                                 changelogFile.createNewFile()
                                 changelogFile.writeText(changelog)

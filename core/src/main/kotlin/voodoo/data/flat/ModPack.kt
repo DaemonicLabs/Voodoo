@@ -3,7 +3,7 @@ package voodoo.data.flat
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import mu.KLogging
-import voodoo.curse.CurseUtil.META_URL
+import voodoo.curse.CurseClient.PROXY_URL
 import voodoo.data.Feature
 import voodoo.data.Launch
 import voodoo.data.UserFiles
@@ -32,7 +32,7 @@ data class ModPack(
         var mcVersion: String = "",
         var forge: String = "recommended",
         var forgeBuild: Int = -1,
-        var curseMetaUrl: String = META_URL,
+        var curseMetaUrl: String = PROXY_URL,
         @JsonInclude(JsonInclude.Include.ALWAYS)
         val launch: Launch = Launch(),
         @JsonInclude(JsonInclude.Include.ALWAYS)
