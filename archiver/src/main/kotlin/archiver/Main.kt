@@ -6,6 +6,7 @@ package archiver
  * @version 1.0
  */
 
+import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.InvalidArgumentException
@@ -44,7 +45,7 @@ fun main(vararg args: String) = mainBody {
             val worker = Runnable {
                 println("Getting AddOn ${addOn.id} ${addOn.name}")
                 val destDir = File(outputDir, addOn.id.toString())
-                val files = CurseClient.getAllFilesForAddOn(addOn.id, CurseClient.META_URL)
+                val files = CurseClient.getAllFilesForAddon(addOn.id, CurseClient.PROXY_URL)
                 for (file in files) {
                     var finishedFile = false
                     var failCount = 0
@@ -104,7 +105,7 @@ fun main(vararg args: String) = mainBody {
                         if (changelogFile.exists() && !changelogFile.isFile) changelogFile.delete()
 
                         if (!changelogFile.exists()) {
-                            val changelog = CurseClient.getFileChangelog(addOn.id, file.id, CurseClient.META_URL)
+                            val changelog = CurseClient.getFileChangelog(addOn.id, file.id, CurseClient.PROXY_URL)
                             if (changelog != null) {
                                 changelogFile.createNewFile()
                                 changelogFile.writeText(changelog)
