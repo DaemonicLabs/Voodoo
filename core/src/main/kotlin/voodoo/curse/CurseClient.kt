@@ -9,10 +9,15 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
 import mu.KLogging
+import org.apache.commons.compress.compressors.CompressorStreamFactory
 import voodoo.core.VERSION
 import voodoo.curse.data.Addon
 import voodoo.curse.data.AddonFile
+import voodoo.curse.data.feed.CurseFeed
 import voodoo.data.flat.Entry
+import java.io.BufferedReader
+import java.io.ByteArrayInputStream
+import java.io.InputStreamReader
 
 /**
  * Created by nikky on 30/01/18.
@@ -21,6 +26,7 @@ import voodoo.data.flat.Entry
  */
 object CurseClient : KLogging() {
     val PROXY_URL = "https://curse.nikky.moe/api"
+    val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10"
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
     val mapper = jacksonObjectMapper() // Enable Json parsing
@@ -137,6 +143,23 @@ object CurseClient : KLogging() {
 
     val getAddon = ::getAddonCall.memoize()
 
+    fun getFileChangelogCall(addonId: Int, fileId: Int, proxyUrl: String = PROXY_URL): String {
+        val url = "$PROXY_URL/addon/$addonId/file/$fileId/changelog"
+
+        logger.debug("get $url")
+        val (_, _, result) = url.httpGet()
+                .header("User-Agent" to useragent)
+                .responseString()
+        return when (result) {
+            is Result.Success -> {
+                mapper.readValue(result.value)
+            }
+            else -> throw Exception("failed getting cursemeta data")
+        }
+    }
+
+    val getFileChangelog = ::getFileChangelogCall.memoize()
+
     fun getAddonByName(name: String, metaUrl: String = PROXY_URL): Addon? {
         val addon = idMap[name]
                 ?.let { getAddon(it, metaUrl) }
@@ -236,6 +259,41 @@ object CurseClient : KLogging() {
         return Triple(addonId, file.id, addon.categorySection.path)
     }
 
+    fun getFeed(hourly: Boolean = false): List<Addon> {
+        logger.info("downloading curse feed")
+        val type = if(hourly) "hourly" else "complete"
+        val url = "$FEED_URL/$type.json.bz2"
+        logger.info("get $url")
+        val (request, response, result) = url.httpGet()
+                .header("User-Agent" to useragent)
+                .response()
+        when (result) {
+            is Result.Success -> {
+                val bis = ByteArrayInputStream(result.value)
+                val input = CompressorStreamFactory().createCompressorInputStream(bis)
+                val buf = BufferedReader(InputStreamReader(input))
+
+                val text = buf.use { it.readText() }
+
+                val feed = mapper.readValue<CurseFeed>(text)
+
+                return feed.data.filter {
+                    when (it.categorySection.id) {
+                        6 -> true //mod
+                        12 -> true //texture packs
+                        17 -> false //worlds
+                        4471 -> false //modpacks
+                        else -> false
+                    }
+                }
+            }
+            is Result.Failure -> {
+                logger.error("failed getting cursemeta data ${result.error}")
+                throw Exception("failed getting cursemeta data, code: ${response.statusCode}")
+            }
+        }
+    }
+
     fun getAuthors(projectID: Int, metaUrl: String = PROXY_URL): List<String> {
         val addon = getAddon(projectID, metaUrl)!!
         return addon.authors.map { it.name }
@@ -245,4 +303,5 @@ object CurseClient : KLogging() {
         val addon = getAddon(projectID, metaUrl)!!
         return addon.webSiteURL
     }
+
 }

@@ -1,10 +1,10 @@
 package voodoo.pack
 
 import mu.KotlinLogging
-import voodoo.curse.CurseFile
-import voodoo.curse.CurseManifest
-import voodoo.curse.CurseMinecraft
-import voodoo.curse.CurseModLoader
+import voodoo.curse.data.CurseFile
+import voodoo.curse.data.CurseManifest
+import voodoo.curse.data.CurseMinecraft
+import voodoo.curse.data.CurseModLoader
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
