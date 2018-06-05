@@ -27,6 +27,7 @@ fun main(args: Array<String>) {
         Bootstrap.launch(args)
     } catch (t: Throwable) {
         Bootstrap.logger.error("Error", t)
+        exitProcess(-1)
     }
 }
 

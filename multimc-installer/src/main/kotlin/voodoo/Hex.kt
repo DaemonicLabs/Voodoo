@@ -97,7 +97,7 @@ object Hex : KLogging() {
         val features = selectFeatures(modpack.features, defaults)
         featureJson.writeJson(features)
 
-        val cacheFolder = directories.cacheHome
+        val cacheFolder = directories.cacheHome.resolve("hex")
 
         val objectsUrl = packUrl.substringBeforeLast('/') + "/" + modpack.objectsLocation
 
