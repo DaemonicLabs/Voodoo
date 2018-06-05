@@ -1,4 +1,4 @@
-package voodoo.hex.sk
+package voodoo.sk.data
 
 /**
  * Created by nikky on 01/04/18.

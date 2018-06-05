@@ -8,11 +8,11 @@ import com.xenomachina.argparser.mainBody
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
 import voodoo.data.Recommendation
-import voodoo.hex.MultiMCPack
-import voodoo.hex.PackComponent
-import voodoo.hex.sk.Feature
-import voodoo.hex.sk.IfTask
-import voodoo.hex.sk.Pack
+import voodoo.mmc.data.MultiMCPack
+import voodoo.mmc.data.PackComponent
+import voodoo.sk.data.Feature
+import voodoo.sk.data.IfTask
+import voodoo.sk.data.Pack
 import voodoo.util.*
 import java.awt.BorderLayout
 import java.awt.Color
@@ -46,6 +46,8 @@ object Hex : KLogging() {
         }
 
     }
+
+    fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
 
     fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
         val urlFile = instanceDir.resolve("voodoo.url.txt")
@@ -164,10 +166,6 @@ object Hex : KLogging() {
         mmcPackPath.writeJson(mmcPack)
 
         versionFile.writeText(modpack.version)
-    }
-
-    fun File.sha1Hex(): String? {
-        return DigestUtils.sha1Hex(this.inputStream())
     }
 
     fun selectFeatures(features: List<Feature>, defaults: Map<String, Boolean>): Map<String, Boolean> {

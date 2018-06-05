@@ -1,6 +1,8 @@
 rootProject.name = 'voodoo-parent'
 
-include 'core', 'util', 'flatten', 'builder', 'pack', 'voodoo', 'multimc-installer', 'tome', 'bootstrap', 'archiver', 'server-installer'
+include 'core', 'core/data',  'core/multimc', 'core/sk', 'util'
+include 'flatten', 'builder', 'pack', 'voodoo', 'tome', 'bootstrap', 'archiver'
+include 'multimc-installer', 'server-installer'
 include ':launcher'
 project(':launcher').projectDir = new File(settingsDir, 'sklauncher/launcher')
 include ':launcher-builder'

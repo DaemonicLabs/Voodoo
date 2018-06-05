@@ -1,7 +1,6 @@
 package voodoo.data
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import voodoo.data.flat.FeatureProperties
 
 /**
  * Created by nikky on 29/03/18.

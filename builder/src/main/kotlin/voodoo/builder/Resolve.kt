@@ -5,7 +5,7 @@ import mu.KotlinLogging
 import voodoo.curse.data.DependencyType
 import voodoo.data.Feature
 import voodoo.data.flat.Entry
-import voodoo.data.flat.FeatureProperties
+import voodoo.data.FeatureProperties
 import voodoo.data.flat.ModPack
 import voodoo.forge.Forge.getForgeBuild
 import voodoo.provider.Provider
