@@ -8,7 +8,7 @@ mainClassName = "voodoo.Hex"
 
 def runDir = parent.project.file("run").path
 
-def runArgs = ["https://testificate.xen.prgmr.com/craft/repo/openpack.json", "--id", "Test"]
+def runArgs = ["--id", "Test", "--inst", "multimc/cotm", "--mc", "multimc/cotm/.minecraft"]
 
 run {
     workingDir = runDir

@@ -14,17 +14,14 @@ import voodoo.sk.data.Feature
 import voodoo.sk.data.IfTask
 import voodoo.sk.data.Pack
 import voodoo.util.*
-import java.awt.BorderLayout
-import java.awt.Color
-import java.awt.Component
-import java.awt.Dialog
+import java.awt.*
 import java.awt.event.ActionEvent
 import java.awt.event.ActionListener
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.io.File
 import javax.swing.*
-import javax.swing.BoxLayout
+import kotlin.system.exitProcess
 
 
 /**
@@ -50,11 +47,13 @@ object Hex : KLogging() {
     fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
 
     fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
+
         val urlFile = instanceDir.resolve("voodoo.url.txt")
-        val url = urlFile.readText()
-        val (_, _, result) = url.httpGet()
+        val packUrl = urlFile.readText()
+        val (_, _, result) = packUrl.httpGet()
 //                .header("User-Agent" to useragent)
                 .responseString()
+
         val modpack: Pack = when (result) {
             is Result.Success -> {
                 jsonMapper.readValue(result.value)
@@ -65,12 +64,17 @@ object Hex : KLogging() {
             }
         }
 
-        logger.info("loaded ${modpack.name}")
+        val oldpackFile = instanceDir.resolve("voodoo.modpack.json")
+        val oldpack: Pack? = if (!oldpackFile.exists())
+            null
+        else {
+            val pack: Pack = jsonMapper.readValue(oldpackFile)
+            logger.info("loaded old pack ${pack.name} ${pack.version}")
+            pack
+        }
 
-        val versionFile = instanceDir.resolve("voodoo.version.txt")
-        if (versionFile.exists()) {
-            val version = versionFile.readText()
-            if (version == modpack.version) {
+        if (oldpack != null) {
+            if (oldpack.version == modpack.version) {
                 logger.info("no update required ?")
 //                return
             }
@@ -85,7 +89,7 @@ object Hex : KLogging() {
 
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
-        val defaults = if(featureJson.exists()) {
+        val defaults = if (featureJson.exists()) {
             featureJson.readJson()
         } else {
             mapOf<String, Boolean>()
@@ -95,11 +99,11 @@ object Hex : KLogging() {
 
         val cacheFolder = directories.cacheHome
 
-        val objectsUrl = url.substringBeforeLast('/') + "/" + modpack.objectsLocation
+        val objectsUrl = packUrl.substringBeforeLast('/') + "/" + modpack.objectsLocation
 
-        val modsFolder = minecraftDir.resolve("mods")
-        modsFolder.deleteRecursively()
+        val oldTasks = oldpack?.tasks?.toMutableList()
 
+        // iterate new tasks
         for (task in modpack.tasks) {
             val whenTask = task.`when`
             if (whenTask != null) {
@@ -114,27 +118,51 @@ object Hex : KLogging() {
                 }
             }
 
+
             val url = if (task.location.startsWith("http")) {
                 task.location
             } else {
                 "$objectsUrl/${task.location}"
             }
             val target = minecraftDir.resolve(task.to)
-            target.parentFile.mkdirs()
-            if (target.exists()) {
-                val sha1 = target.sha1Hex()
-                if (sha1 == task.hash) {
-                    logger.info("no changes to ${task.to}")
-                    continue
-                }
-                if (task.userFile) {
-                    logger.info("userfile: ${task.to}")
-                    continue
-                }
-            }
+            val chunkedHash = task.hash.chunked(6).joinToString("/")
 
-            val path = task.hash.chunked(6).joinToString("/")
-            target.download(url, cacheFolder.resolve(path))
+            val oldTask = oldTasks?.find { it.location == task.location }
+            if (target.exists()) {
+                if (oldTask != null) {
+                    // file exists already and existed in the last version
+
+                    if (task.userFile) {
+                        if (oldTask.userFile) {
+                            logger.info("task ${task.location} is a userfile, will not be modified")
+                            oldTasks.remove(oldTask)
+                            continue
+                        }
+                    }
+                    if (oldTask.hash == task.hash) {
+                        if (target.isFile && target.sha1Hex() == task.hash) {
+                            logger.info("task ${task.location} file did not change and sha1 hash matches")
+                            oldTasks.remove(oldTask)
+                            continue
+                        }
+                    } else {
+                        // mismatching hash.. override file
+                        oldTasks.remove(oldTask)
+                        target.delete()
+                        target.parentFile.mkdirs()
+                        target.download(url, cacheFolder.resolve(chunkedHash))
+                    }
+                } else {
+                    // file exists but was not in the last version.. reset to make sure
+                    target.delete()
+                    target.parentFile.mkdirs()
+                    target.download(url, cacheFolder.resolve(chunkedHash))
+                }
+            } else {
+                // new file
+                target.parentFile.mkdirs()
+                target.download(url, cacheFolder.resolve(chunkedHash))
+            }
 
             if (target.exists()) {
                 val sha1 = target.sha1Hex()
@@ -145,6 +173,13 @@ object Hex : KLogging() {
                 }
             }
         }
+
+        // iterate old
+        oldTasks?.forEach { task ->
+            val target = minecraftDir.resolve(task.to)
+            target.delete()
+        }
+
 
         // set minecraft and forge versions
         val mmcPackPath = instanceDir.resolve("mmc-pack.json")
@@ -165,8 +200,9 @@ object Hex : KLogging() {
         ) + mmcPack.components
         mmcPackPath.writeJson(mmcPack)
 
-        versionFile.writeText(modpack.version)
+        oldpackFile.writeJson(modpack)
     }
+
 
     fun selectFeatures(features: List<Feature>, defaults: Map<String, Boolean>): Map<String, Boolean> {
         if (features.isEmpty()) {
@@ -174,8 +210,9 @@ object Hex : KLogging() {
             return mapOf()
         }
 
-        val checkPane = JPanel()
-        checkPane.layout = BoxLayout(checkPane, BoxLayout.Y_AXIS)
+        UIManager.setLookAndFeel(
+                UIManager.getSystemLookAndFeelClassName()
+        )
 
         val checkBoxes = features.associateBy({
             it.name
@@ -183,47 +220,91 @@ object Hex : KLogging() {
             JCheckBox("", defaults[it.name] ?: it.selected)
         })
 
+        var success = false
+
         val adapter = object : WindowAdapter() {
             override fun windowClosed(e: WindowEvent) {
                 logger.info("closing dialog")
+                if (!success)
+                    exitProcess(1)
             }
         }
 
         val dialog = object : JDialog(null as Dialog?, "Features", true), ActionListener {
             init {
                 modalityType = Dialog.ModalityType.APPLICATION_MODAL
-                val messagePane = JPanel()
 
-                val listPanel = JPanel()
-                listPanel.layout = BoxLayout(listPanel, BoxLayout.Y_AXIS)
+                val panel = JPanel()
+                panel.layout = GridBagLayout()
 
-                for (feature in features) {
+                for ((row, feature) in features.withIndex()) {
 
-                    val panel = JPanel()
                     val check = checkBoxes[feature.name]
                     if (check != null) {
-                        panel.add(check)
+                        check.foreground = Color.LIGHT_GRAY
+                        check.alignmentX = Component.LEFT_ALIGNMENT
+                        panel.add(check,
+                                GridBagConstraints().apply {
+                                    gridx = 0
+                                    gridy = row
+                                    weightx = 0.001
+                                    anchor = GridBagConstraints.LINE_START
+                                    fill = GridBagConstraints.BOTH
+                                }
+                        )
                     }
-                    val name = JLabel(feature.name).apply { panel.add(this) }
-                    when (feature.recommendation) {
+
+                    val name = JLabel(feature.name)
+                    panel.add(name,
+                            GridBagConstraints().apply {
+                                gridx = 1
+                                gridy = row
+                                weightx = 0.001
+                                anchor = GridBagConstraints.LINE_END
+                            }
+                    )
+
+                    val recommendation = when (feature.recommendation) {
                         Recommendation.starred -> {
-                            panel.add(JLabel("★").apply { foreground = Color.YELLOW })
+                            val orange = Color(0xFFd09b0d.toInt())
+                            name.foreground = orange
+                            JLabel("★").apply { foreground = orange }
                         }
                         Recommendation.avoid -> {
-                            panel.add(JLabel("avoid"))
                             name.foreground = Color.RED
+                            JLabel("⚠️").apply { foreground = Color.RED }
                         }
-
+                        else -> {
+                            JLabel("")
+                        }
                     }
+
+                    panel.add(recommendation,
+                            GridBagConstraints().apply {
+                                gridx = 2
+                                gridy = row
+                                weightx = 0.001
+                                insets = Insets(0, 8, 0, 8)
+                            }
+                    )
+
+                    val description = JLabel("<html>${feature.description}</html>")
+
                     if (!feature.description.isNullOrBlank()) {
-                        panel.add(JLabel(feature.description))
+                        panel.add(description,
+                                GridBagConstraints().apply {
+                                    gridx = 3
+                                    gridy = row
+                                    weightx = 1.0
+                                    anchor = GridBagConstraints.LINE_START
+                                    fill = GridBagConstraints.BOTH
+                                    ipady = 8
+                                }
+                        )
                     }
-                    panel.alignmentX = Component.LEFT_ALIGNMENT
-                    listPanel.add(panel)
                 }
-                messagePane.add(listPanel)
 
-                add(messagePane, BorderLayout.CENTER)
+                add(panel, BorderLayout.CENTER)
                 val buttonPane = JPanel()
                 val button = JButton("OK")
                 button.addActionListener(this)
@@ -237,6 +318,7 @@ object Hex : KLogging() {
 
             override fun actionPerformed(e: ActionEvent) {
                 isVisible = false
+                success = true
                 dispose()
             }
 
