@@ -13,7 +13,6 @@ dependencies {
 
 shadowJar {
     classifier = null
-    version = null
 }
 
 build.dependsOn(shadowJar)

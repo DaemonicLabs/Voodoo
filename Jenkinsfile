@@ -41,7 +41,7 @@ pipeline {
 	            sh './gradlew :bootstrap:build -Ptarget=multimc-installer'
 	            sh './gradlew :bootstrap:build -Ptarget=archiver'
 	            archive 'bootstrap/build/libs/*voodoo*'
-	            archive 'bootstrap/build/libs/*hmultimc-installerx*'
+	            archive 'bootstrap/build/libs/*multimc-installer*'
 	            archive 'bootstrap/build/libs/*archiver*'
 	        }
 	    }
