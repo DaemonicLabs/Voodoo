@@ -60,7 +60,7 @@ subprojects {
     sourceSets {
         main.kotlin.srcDirs += "$buildDir/generated-src"
     }
-    version = "${project.major}.${project.minor}.${project.patch}"
+//    version = "${project.major}.${project.minor}.${project.patch}"
     compileKotlin.doFirst {
         def folder = project.name != "voodoo" ? "voodoo/${project.name}" : "voodoo"
         copy {
@@ -76,6 +76,6 @@ subprojects {
         }
     }
     if (System.env.BUILD_NUMBER) {
-        version += "-${System.env.BUILD_NUMBER}"
+        version = System.env.BUILD_NUMBER
     }
 }

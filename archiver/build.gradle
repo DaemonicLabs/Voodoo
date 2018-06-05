@@ -21,7 +21,6 @@ runShadow {
 
 shadowJar {
     classifier = null
-    version = null
 }
 
 dependencies {
