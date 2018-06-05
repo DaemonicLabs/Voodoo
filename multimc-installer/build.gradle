@@ -1,3 +1,14 @@
+import proguard.gradle.ProGuardTask
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "net.sf.proguard:proguard-gradle:6.0.1"
+    }
+}
+
 plugins {
     id 'application'
 }
@@ -21,7 +32,7 @@ runShadow {
 }
 
 shadowJar {
-    classifier = null
+    classifier = 'fat'
 }
 
 dependencies {
@@ -31,4 +42,83 @@ dependencies {
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
 }
 
-build.dependsOn(shadowJar)
+shadowJar {
+//    exclude '.keep'
+    exclude "**/*.txt"
+    exclude "**/*.xml"
+    exclude "**/*.properties"
+}
+
+task minify(type: ProGuardTask, dependsOn: 'shadowJar') {
+    libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
+    libraryjars "${System.getProperty('java.home')}/lib/jce.jar"
+
+    injars  shadowJar
+    outjars "build/libs/${project.name}${version != 'unspecified' ? "-$version" : ""}.jar"
+
+    printmapping 'build/libs/out.map'
+
+    optimizations '*'
+
+    keepclasseswithmembers 'public class * { \
+        public static void main(java.lang.String[]); \
+    }'
+
+    assumenosideeffects 'class kotlin.jvm.internal.Intrinsics { \
+        static void checkParameterIsNotNull(java.lang.Object, java.lang.String); \
+    }'
+
+    // Jackson
+    keepattributes '*Annotation*'
+    keepattributes 'EnclosingMethod'
+    keepattributes 'Signature'
+    keepnames 'class com.fasterxml.jackson.** {  *; }'
+    dontwarn 'com.fasterxml.jackson.databind.**'
+    keep 'class org.codehaus.** { *; }'
+    keepclassmembers 'public final enum org.codehaus.jackson.annotate.JsonAutoDetect$Visibility { \
+       public static final org.codehaus.jackson.annotate.JsonAutoDetect$Visibility *; }'
+    keepclassmembers 'enum * { \
+        public static **[] values(); \
+        public static ** valueOf(java.lang.String); \
+    }'
+
+    // Kotlin
+    keep 'class org.jetbrains.annotations.** { *; }'
+    keepclassmembers 'class ** { \
+        @org.jetbrains.annotations.ReadOnly public *; \
+    }'
+    keep 'class kotlin.Metadata { *; }'
+
+    //Kotlin Reflect
+    keep 'class kotlin.reflect.** { *; }'
+
+    // JNA
+    dontwarn 'java.awt.*'
+    keep 'class com.sun.jna.* { *; }'
+    keepclassmembers 'class * extends com.sun.jna.* { public *; }'
+
+    // apache commons compress
+    dontwarn 'org.apache.commons.compress.compressors.**'
+    dontwarn 'org.apache.commons.compress.archivers.**'
+
+    // Logging
+    keep 'class ch.qos.** { *; }'
+    keep 'class org.slf4j.** { *; }'
+    keepattributes '*Annotation*'
+    dontwarn 'ch.qos.logback.core.net.*'
+
+    // Voodoo
+    keepattributes 'LineNumberTable'
+    keep 'public class voodoo.** {\
+        *;\
+    }'
+
+//    keepnames 'class * { *; }'
+}
+
+configure(minify) {
+    group = 'build'
+    description = 'Optimize JAR'
+}
+
+build.dependsOn(minify)
