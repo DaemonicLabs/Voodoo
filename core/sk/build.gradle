@@ -1,12 +1,10 @@
 dependencies {
-    compile project(':util')
+//    compile project(':core')
     compile project(':core/data')
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '+'
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
-    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '+'
-    compile group: 'org.apache.commons', name: 'commons-compress', version: '+'
-    compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+'
-    compile group: 'com.github.aballano', name: 'MnemoniK', version: '+'
+    compile group: 'commons-codec', name: 'commons-codec', version: '+'
+
     compile group: 'io.github.microutils', name: 'kotlin-logging', version: '+'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '+' // required by kotlin-logging
 }

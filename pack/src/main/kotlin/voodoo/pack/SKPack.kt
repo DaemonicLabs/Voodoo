@@ -7,7 +7,6 @@ import voodoo.forge.Forge
 import voodoo.pack.sk.*
 import voodoo.provider.Provider
 import voodoo.util.download
-import voodoo.util.json
 import voodoo.util.readJson
 import voodoo.util.writeJson
 import java.io.File

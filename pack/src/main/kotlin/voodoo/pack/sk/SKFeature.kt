@@ -2,7 +2,7 @@ package voodoo.pack.sk
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import voodoo.data.FeatureFiles
-import voodoo.data.flat.FeatureProperties
+import voodoo.data.FeatureProperties
 
 /**
  * Created by nikky on 30/01/18.

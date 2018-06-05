@@ -1,0 +1,4 @@
+dependencies {
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '+'
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
+}

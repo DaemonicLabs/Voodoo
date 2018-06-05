@@ -1,7 +1,6 @@
-package voodoo.data.flat
+package voodoo.data
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import voodoo.data.Recommendation
 
 /**
  * Created by nikky on 29/03/18.
