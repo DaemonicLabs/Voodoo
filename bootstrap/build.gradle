@@ -24,15 +24,15 @@ def fileRegex
 if(project.hasProperty('target')) {
     if (project.target == "voodoo") {
         moduleName = "voodoo"
-        fileRegex = /^[Vv]oodoo-.*\\.jar$/
+        fileRegex = /^[Vv]oodoo(-.*)?\\.jar$/
         shadowJar.baseName = "bootstrap-voodoo"
-    } else if (project.target == "hex") {
-        moduleName = "hex"
-        fileRegex = /^[Hh]ex-.*\\.jar$/
-        shadowJar.baseName = "bootstrap-hex"
+    } else if (project.target == "multimc-installer") {
+        moduleName = "multimc-installer"
+        fileRegex = /^[Hh]ex(-.*)?\\.jar$/
+        shadowJar.baseName = "bootstrap-multimc-installer"
     } else if (project.target == "archiver") {
         moduleName = "archiver"
-        fileRegex = /^[Aa]rchiver-.*\\.jar$/
+        fileRegex = /^[Aa]rchiver(-.*)?\\.jar$/
         shadowJar.baseName = "bootstrap-archiver"
     } else {
         throw new InvalidUserDataException("invalid target property")
