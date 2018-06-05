@@ -65,7 +65,7 @@ object ServerPack : AbstractPack() {
         logger.info("server package ready: ${modpackDir.absolutePath}")
     }
 
-    const val FILE_REGEX = "^[Ss]erver-installer-.*\\.jar$"
+    const val FILE_REGEX = "server-installer-[^-]*(?!-fat)\\.jar"
     const val JENKINS_URL = "https://ci.elytradev.com"
     const val JENKINS_JOB = "elytra/Voodoo/master"
     const val MODULE_NAME = "server-installer"
