@@ -21,7 +21,7 @@ echo
 echo "packaging $1 server"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo-2.2.0.jar" pack $pack.lock.json server
+java -jar "$DIR/voodoo/build/libs/voodoo.jar" pack $pack.lock.json server
 if [ ! $? -eq 0 ]; then
     echo "Error Packing $pack"
     exit 1

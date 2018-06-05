@@ -21,7 +21,7 @@ echo
 echo "flattening $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo-2.1.0.jar" flatten "$DIR/samples/$pack.yaml"
+java -jar "$DIR/voodoo/build/libs/voodoo.jar" flatten "$DIR/samples/$pack.yaml"
 if [ ! $? -eq 0 ]; then
     echo "Error Flattenig $pack"
     exit 1
@@ -31,7 +31,7 @@ echo
 echo "building $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo-2.1.0.jar" build $1.json -o $pack.lock.json --force
+java -jar "$DIR/voodoo/build/libs/voodoo.jar" build $1.json -o $pack.lock.json --force
 if [ ! $? -eq 0 ]; then
     echo "Error Building $pack"
     exit 1
@@ -41,7 +41,7 @@ echo
 echo "packaging $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo-2.1.0.jar" pack $pack.lock.json sk
+java -jar "$DIR/voodoo/build/libs/voodoo.jar" pack $pack.lock.json sk
 if [ ! $? -eq 0 ]; then
     echo "Error Packing $pack"
     exit 1

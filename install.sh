@@ -29,7 +29,7 @@ echo
 
 pwd
 
-java -jar "$DIR/server-installer/build/libs/server-installer-0.1.0.jar" "../install/$pack"
+java -jar "$DIR/server-installer/build/libs/server-installer.jar" "../install/$pack"
 if [ ! $? -eq 0 ]; then
     echo "Error installing $pack"
     exit 1
