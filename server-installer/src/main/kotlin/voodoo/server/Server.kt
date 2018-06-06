@@ -46,6 +46,14 @@ object Server {
             }
         }
 
+        // download entries
+        for (entry in modpack.entries) {
+            if(entry.side == Side.CLIENT) continue
+            val provider = Provider.valueOf(entry.provider).base
+            val targetFolder = serverDir.resolve(entry.folder)
+            val (url, file) = provider.download(entry, modpack, targetFolder, cacheDir)
+        }
+
         // download forge
         val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
         val forgeFile = directories.runtimeDir.resolve(forgeFileName)
@@ -70,12 +78,5 @@ object Server {
         targetForgeJar.delete()
         forgeJar.copyTo(targetForgeJar, overwrite = true)
 
-        // download entries
-        for (entry in modpack.entries) {
-            if(entry.side == Side.CLIENT) continue
-            val provider = Provider.valueOf(entry.provider).base
-            val targetFolder = serverDir.resolve(entry.folder)
-            val (url, file) = provider.download(entry, modpack, targetFolder, cacheDir)
-        }
     }
 }

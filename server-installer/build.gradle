@@ -87,6 +87,9 @@ task minify(type: ProGuardTask, dependsOn: 'shadowJar') {
     dontwarn 'org.apache.commons.compress.compressors.**'
     dontwarn 'org.apache.commons.compress.archivers.**'
 
+    //KLogging
+    keep 'class mu.** { *; }'
+
     // Logging
     keep 'class ch.qos.** { *; }'
     keep 'class org.slf4j.** { *; }'
@@ -106,4 +109,6 @@ configure(minify) {
     group = 'build'
     description = 'Optimize JAR'
 }
+
+build.dependsOn(minify)
 
