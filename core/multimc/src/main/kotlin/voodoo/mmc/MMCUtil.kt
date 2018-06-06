@@ -44,11 +44,12 @@ object MMCUtil : KLogging() {
 
     fun findDir(): File = when {
         Platform.isWindows() -> {
-            val location = "where multimc".runCommandToString() ?: throw FileNotFoundException("cannot find multimc on path")
+            val location = "where multimc".runCommandToString()
+                    ?: throw FileNotFoundException("cannot find multimc on path")
             val multimcFile = File(location)
             multimcFile.parentFile
         }
-        Platform.isLinux() -> File(System.getProperty("user.home")+"/.local/share/multimc")
+        Platform.isLinux() -> File(System.getProperty("user.home") + "/.local/share/multimc")
         else -> throw Exception("unsupported platform")
     }
 
@@ -88,14 +89,10 @@ object MMCUtil : KLogging() {
 
     fun writeCfg(cfgFile: File, properties: Map<String, String>) {
         cfgFile.createNewFile()
-        cfgFile.bufferedWriter().use { bw ->
-            properties.forEach { key, value ->
-                bw.write(key)
-                bw.write("=")
-                bw.write(value)
-                bw.newLine()
-            }
-        }
+        cfgFile.writeText(
+                properties.map { (key, value) -> "$key=$value" }
+                        .joinToString("\n")
+        )
     }
 
     fun install(name: String, folder: String, modpack: LockPack) {
@@ -123,7 +120,7 @@ object MMCUtil : KLogging() {
             mapOf<String, Boolean>()
         }
         val features = selectFeatures(modpack.features.map { it.properties }, defaults)
-        if(!features.isEmpty()){
+        if (!features.isEmpty()) {
             featureJson.createNewFile()
             featureJson.writeJson(features)
         }
