@@ -2,8 +2,8 @@ package voodoo.mmc
 
 import com.sun.jna.Platform
 import mu.KLogging
-import voodoo.data.SKFeature
 import voodoo.data.Recommendation
+import voodoo.data.SKFeature
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
@@ -42,14 +42,14 @@ object MMCUtil : KLogging() {
         logger.info("started multimc instance $name")
     }
 
-    fun findDir(): File {
-        val cmd = when {
-            Platform.isWindows() -> "where multimc"
-            else -> "which multimc"
+    fun findDir(): File = when {
+        Platform.isWindows() -> {
+            val location = "where multimc".runCommandToString() ?: throw FileNotFoundException("cannot find multimc on path")
+            val multimcFile = File(location)
+            multimcFile.parentFile
         }
-        val location = cmd.runCommandToString() ?: throw FileNotFoundException("cannot find multimc on path")
-        val multimcFile = File(location)
-        return multimcFile.parentFile
+        Platform.isLinux() -> File(System.getProperty("user.home")+"/.local/share/multimc")
+        else -> throw Exception("unsupported platform")
     }
 
     private val path = System.getProperty("user.dir")
@@ -123,7 +123,10 @@ object MMCUtil : KLogging() {
             mapOf<String, Boolean>()
         }
         val features = selectFeatures(modpack.features.map { it.properties }, defaults)
-        featureJson.writeJson(features)
+        if(!features.isEmpty()){
+            featureJson.createNewFile()
+            featureJson.writeJson(features)
+        }
 
         for (entry in modpack.entries) {
             if (entry.side == Side.SERVER) continue

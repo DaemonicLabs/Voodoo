@@ -1,14 +1,8 @@
 package voodoo.tester
 
-import voodoo.data.Side
 import voodoo.data.lock.LockPack
-import voodoo.forge.Forge
 import voodoo.mmc.MMCUtil
 import voodoo.pack.AbstractTester
-import voodoo.provider.Provider
-import voodoo.util.download
-import voodoo.util.downloader.logger
-import java.io.File
 
 /**
  * Created by nikky on 06/05/18.
@@ -21,7 +15,9 @@ object MultiMCTester : AbstractTester() {
 
     override fun execute(modpack: LockPack, clean: Boolean) {
         val folder = "voodoo_${modpack.name}_test"
-        val name = "${modpack.title} Test"
+        var title = modpack.title
+        if(title.isBlank()) title = modpack.name
+        val name = "$title Voodoo Test"
 
         MMCUtil.install(name, folder, modpack)
 
