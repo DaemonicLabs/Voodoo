@@ -13,6 +13,7 @@ import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
+import voodoo.util.blankOr
 import voodoo.util.download
 import java.io.File
 import java.time.Instant
@@ -36,12 +37,12 @@ object CurseProviderThing : ProviderBase, KLogging() {
         return LockEntry(
                 provider = entry.provider,
                 name = entry.name,
+                folder = path, //maybe use entry.folder only if its non-default
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
                 side = entry.side,
                 projectID = projectID,
-                fileID = fileID,
-                folder = path
+                fileID = fileID
         )
     }
 
