@@ -20,8 +20,6 @@ import java.io.File
  */
 
 object CursePack : AbstractPack() {
-    private val logger = KotlinLogging.logger {}
-
     override val label = "SK Packer"
 
     override fun download(modpack: LockPack, target: String?, clean: Boolean) {
@@ -134,6 +132,7 @@ object CursePack : AbstractPack() {
 
 
         packToZip(modpackDir.toPath(), workspaceDir.toPath().resolve(with(modpack) { "$name-$version.zip" }))
+        //        workspaceDir.resolve(with(modpack) { "$name-$version.zip" }).packToZip(modpackDir)
     }
 
 }

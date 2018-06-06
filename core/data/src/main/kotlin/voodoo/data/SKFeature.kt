@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
  * @version 1.0
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-data class FeatureProperties(
+data class SKFeature(
         var name: String = "",
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var selected: Boolean = true,

@@ -8,7 +8,7 @@ minecraftDir: testpack
 localDir: local
 root:
 #===========#
-# Core Pack #
+# Core Test #
 #===========#
   validMcVersions:
   - 1.12.1

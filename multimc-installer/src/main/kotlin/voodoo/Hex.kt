@@ -8,11 +8,11 @@ import com.xenomachina.argparser.mainBody
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
 import voodoo.data.Recommendation
+import voodoo.data.SKFeature
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
-import voodoo.sk.data.Feature
-import voodoo.sk.data.IfTask
-import voodoo.sk.data.Pack
+import voodoo.data.IfTask
+import voodoo.data.Pack
 import voodoo.util.*
 import java.awt.*
 import java.awt.event.ActionEvent
@@ -76,7 +76,7 @@ object Hex : KLogging() {
         if (oldpack != null) {
             if (oldpack.version == modpack.version) {
                 logger.info("no update required ?")
-//                return
+//                return //TODO: make dialog close continue when no update is required ?
             }
         }
 
@@ -113,7 +113,7 @@ object Hex : KLogging() {
                     }
                 }
                 if (!download) {
-                    logger.info("${modpack.name} is disabled, skipping download")
+                    logger.info("${whenTask.features} is disabled, skipping download")
                     continue
                 }
             }
@@ -204,7 +204,7 @@ object Hex : KLogging() {
     }
 
 
-    fun selectFeatures(features: List<Feature>, defaults: Map<String, Boolean>): Map<String, Boolean> {
+    fun selectFeatures(features: List<SKFeature>, defaults: Map<String, Boolean>): Map<String, Boolean> {
         if (features.isEmpty()) {
             logger.info("no selectable features")
             return mapOf()

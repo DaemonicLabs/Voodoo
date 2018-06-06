@@ -12,7 +12,7 @@ data class SKModpack(
         var name: String,
         var title: String = "",
         var gameVersion: String,
-        var features: List<SKFeature> = emptyList(),
+        var features: List<SKFeatureComposite> = emptyList(),
         var userFiles: UserFiles = UserFiles(),
         var launch: Launch = Launch()
 )

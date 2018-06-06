@@ -10,6 +10,6 @@ import com.fasterxml.jackson.annotation.JsonInclude
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class Feature(
         var entries: Set<String>,
-        var properties: FeatureProperties = FeatureProperties(),
+        var properties: SKFeature = SKFeature(),
         var files: FeatureFiles = FeatureFiles()
 )

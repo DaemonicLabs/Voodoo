@@ -4,7 +4,7 @@ forge: latest
 mcVersion: 1.12.2
 root:
 #===========#
-# Core Pack #
+# Core Test #
 #===========#
   validMcVersions:
   - 1.12.1

@@ -1,6 +1,4 @@
-package voodoo.sk.data
-
-import voodoo.data.Launch
+package voodoo.data
 
 /**
  * Created by nikky on 01/04/18.
@@ -16,7 +14,7 @@ data class Pack(
         val librariesLocation: String,
         val objectsLocation: String,
         val gameVersion: String,
-        val features: List<Feature> = emptyList(),
+        val features: List<SKFeature> = emptyList(),
         val tasks: List<Task>,
         val versionManifest: VersionManifest,
         val launch: Launch

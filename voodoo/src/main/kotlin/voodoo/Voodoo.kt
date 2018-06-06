@@ -13,6 +13,7 @@ object Voodoo : KLogging() {
             "flatten" to Flatten::main,
             "build" to Builder::main,
             "pack" to Pack::main,
+            "test" to Tester::main,
             "tome" to Tome::main,
             "version" to { _ ->
                 println(VERSION)

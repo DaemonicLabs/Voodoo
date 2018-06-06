@@ -1,6 +1,5 @@
 package voodoo.pack
 
-import mu.KotlinLogging
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
@@ -21,7 +20,6 @@ import java.time.format.DateTimeFormatter
  */
 
 object SKPack : AbstractPack() {
-    private val logger = KotlinLogging.logger {}
 
     override val label = "SK Packer"
 
@@ -83,7 +81,7 @@ object SKPack : AbstractPack() {
         }
 
         // write features
-        val features = mutableListOf<SKFeature>()
+        val features = mutableListOf<SKFeatureComposite>()
         for (feature in modpack.features) {
             for (name in feature.entries) {
                 logger.info(name)
@@ -100,7 +98,7 @@ object SKPack : AbstractPack() {
                 logger.info("includes = ${feature.files.include}")
             }
 
-            features += SKFeature(
+            features += SKFeatureComposite(
                     properties = feature.properties,
                     files = feature.files
             )
