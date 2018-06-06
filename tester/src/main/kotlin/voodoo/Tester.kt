@@ -5,7 +5,7 @@ import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import mu.KLogging
 import voodoo.data.lock.LockPack
-import voodoo.pack.*
+import voodoo.tester.MultiMCTester
 import voodoo.util.readJson
 import java.io.File
 import kotlin.system.exitProcess
@@ -16,19 +16,15 @@ import kotlin.system.exitProcess
  * @version 1.0
  */
 
-object Pack : KLogging() {
+object Tester : KLogging() {
     @JvmStatic
     fun main(vararg args: String) = mainBody {
 
         val arguments = Arguments(ArgParser(args))
 
         arguments.run {
-            val packer = when (methode) {
-                "sk" -> SKPack
-                "mmc" -> MMCPack
-                "fatserver" -> FatServerPack
-                "server" -> ServerPack
-                "curse" -> CursePack
+            val tester = when (methode) {
+                "mmc" -> MultiMCTester
 
                 else -> {
                     logger.error("no such packing methode: $methode")
@@ -36,7 +32,7 @@ object Pack : KLogging() {
                 }
             }
 
-            packer.download(modpack = modpack, target = targetArg, clean = true)
+            tester.execute(modpack = modpack, clean = clean)
         }
     }
 
@@ -48,12 +44,8 @@ object Pack : KLogging() {
                 help = "format to package into") { this.toLowerCase()}
                 .default("")
 
-        val targetArg by parser.storing("--output", "-o",
-                help = "output folder")
-                .default<String?>(null)
-
-//        val clean by parser.flagging("--clean", "-c",
-//                help = "clean output folder before packaging")
-//                .default(true)
+        val clean by parser.flagging("--clean", "-c",
+                help = "clean output folder before packaging")
+                .default(true)
     }
 }

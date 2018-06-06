@@ -4,7 +4,7 @@ forge: 2601
 mcVersion: 1.12.2
 mods:
 #===========#
-# Core Pack #
+# Core Test #
 #===========#
   validMcVersions:
   - 1.12.1

@@ -18,10 +18,10 @@ pack=$1
 cd run
 
 echo
-echo "packaging $1 curse"
+echo "testing $1 on multimc"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" pack $pack.lock.json curse
+java -jar "$DIR/voodoo/build/libs/voodoo.jar" test $pack.lock.json mmc
 if [ ! $? -eq 0 ]; then
     echo "Error Packing $pack"
     exit 1

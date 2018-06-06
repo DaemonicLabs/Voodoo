@@ -2,7 +2,7 @@ package voodoo.pack.sk
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import voodoo.data.FeatureFiles
-import voodoo.data.FeatureProperties
+import voodoo.data.SKFeature
 
 /**
  * Created by nikky on 30/01/18.
@@ -12,7 +12,7 @@ import voodoo.data.FeatureProperties
 
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-data class SKFeature(
-        var properties: FeatureProperties = FeatureProperties(),
+data class SKFeatureComposite(
+        var properties: SKFeature = SKFeature(),
         var files: FeatureFiles = FeatureFiles()
 )

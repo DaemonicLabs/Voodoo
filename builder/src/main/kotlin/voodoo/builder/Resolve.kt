@@ -5,7 +5,7 @@ import mu.KotlinLogging
 import voodoo.curse.data.DependencyType
 import voodoo.data.Feature
 import voodoo.data.flat.Entry
-import voodoo.data.FeatureProperties
+import voodoo.data.SKFeature
 import voodoo.data.flat.ModPack
 import voodoo.forge.Forge.getForgeBuild
 import voodoo.provider.Provider
@@ -50,7 +50,7 @@ fun resolveFeatureDependencies(entry: Entry, modpack: ModPack) {
                 entries = setOf(entry.name),
 //                processedEntries = emptyList(),
                 files = entryFeature.files,
-                properties = FeatureProperties(
+                properties = SKFeature(
                         name = featureName,
                         selected = entryFeature.selected,
                         description = description,

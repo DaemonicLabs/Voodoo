@@ -10,10 +10,10 @@ import voodoo.util.Directories
  * @version 1.0
  */
 
-abstract class AbstractPack : KLogging() {
+abstract class AbstractTester : KLogging() {
     abstract val label: String
 
-    abstract fun download(modpack: LockPack, target: String?, clean: Boolean = true)
+    abstract fun execute(modpack: LockPack, clean: Boolean = true)
 
     val directories = Directories.get(moduleName = "pack")
 }
