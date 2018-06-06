@@ -8,6 +8,7 @@ import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.provider.ProviderBase
+import voodoo.util.blankOr
 import voodoo.util.download
 import voodoo.util.jenkins.JenkinsServer
 import java.io.File
@@ -32,6 +33,7 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
         else LockEntry(
                 provider = entry.provider,
                 name = entry.name,
+                folder = entry.folder,
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
                 side = entry.side,

@@ -18,6 +18,7 @@ data class Entry(
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var provider: String = "CURSE",
         var name: String = "",
+        var folder: String = "mods",
         var comment: String = "",
         var description: String = "",
         var feature: EntryFeature? = null,
