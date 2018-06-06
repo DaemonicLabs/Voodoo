@@ -3,14 +3,9 @@ package voodoo.pack
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import voodoo.data.lock.LockPack
-import voodoo.forge.Forge
 import voodoo.mmc.MMCUtil
-import voodoo.mmc.data.MultiMCPack
-import voodoo.mmc.data.PackComponent
 import voodoo.util.jenkins.JenkinsServer
 import voodoo.util.packToZip
-import voodoo.util.readJson
-import voodoo.util.writeJson
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -22,9 +17,10 @@ object MMCPack : AbstractPack() {
         val cacheDir = directories.cacheHome.resolve("mmc")
         val wrapperDir = cacheDir.resolve(modpack.name).apply { deleteRecursively() }
         val instanceDir = wrapperDir.resolve(modpack.name).apply { mkdirs() }
+        logger.info("tmp dir: $instanceDir")
 
         val urlFile = File("${modpack.name}.url.txt")
-        if(!urlFile.exists()) {
+        if (!urlFile.exists()) {
             logger.error("no file '$urlFile' found")
             exitProcess(3)
         }
@@ -33,48 +29,31 @@ object MMCPack : AbstractPack() {
         val cfg = sortedMapOf(
                 "InstanceType" to "OneSix",
                 "OverrideCommands" to "true",
-                "iconKey" to "default",
-                "PreLaunchCommand" to "\$INST_JAVA -jar \"\$INST_DIR\\\\mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\"",
-                "name" to modpack.name //title
+                "PreLaunchCommand" to "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\"",
+                "name" to modpack.title
         )
 
         val cfgFile = instanceDir.resolve("instance.cfg")
 
         MMCUtil.writeCfg(cfgFile, cfg)
 
-        // set minecraft and forge versions
-        val mmcPackPath = instanceDir.resolve("mmc-pack.json")
-        val mmcPack = MultiMCPack()
-        MMCUtil.logger.info("forge version for build ${modpack.forge}")
-        val (_, _, _, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
-        MMCUtil.logger.info("forge version : $forgeVersion")
-        mmcPack.components = listOf(
-                PackComponent(
-                        uid = "net.minecraft",
-                        version = modpack.mcVersion,
-                        important = true
-                ),
-                PackComponent(
-                        uid = "net.minecraftforge",
-                        version = forgeVersion,
-                        important = true
-                )
-        )
-        mmcPackPath.writeJson(mmcPack)
-
         val serverInstaller = instanceDir.resolve("mmc-installer.jar")
         val installer = downloadInstaller()
         installer.copyTo(serverInstaller)
 
         val packignore = instanceDir.resolve(".packignore")
-        packignore.writeText(".minecraft\n")
+        packignore.writeText(
+                """.minecraft
+                  |mmc-pack.json
+                """.trimMargin()
+        )
 
         targetDir.mkdirs()
         val instanceZip = targetDir.resolve(modpack.name + ".zip")
 
         instanceZip.delete()
-//        instanceDir.packToZip(instanceZip)
         packToZip(wrapperDir.toPath(), instanceZip.toPath())
+        logger.info("created mmc pack $instanceZip")
     }
 
 
@@ -98,7 +77,7 @@ object MMCPack : AbstractPack() {
             logger.debug(it.fileName)
             re.matches(it.fileName)
         }
-        if(artifact == null) {
+        if (artifact == null) {
             logger.error("did not find {} in {}", FILE_REGEX, build.artifacts)
             throw Exception()
         }

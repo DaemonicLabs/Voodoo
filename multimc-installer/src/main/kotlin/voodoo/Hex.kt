@@ -7,21 +7,13 @@ import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
-import voodoo.data.Recommendation
-import voodoo.data.SKFeature
-import voodoo.mmc.data.MultiMCPack
-import voodoo.mmc.data.PackComponent
 import voodoo.data.IfTask
 import voodoo.data.Pack
+import voodoo.mmc.MMCUtil.selectFeatures
+import voodoo.mmc.data.MultiMCPack
+import voodoo.mmc.data.PackComponent
 import voodoo.util.*
-import java.awt.*
-import java.awt.event.ActionEvent
-import java.awt.event.ActionListener
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
 import java.io.File
-import javax.swing.*
-import kotlin.system.exitProcess
 
 
 /**
@@ -204,140 +196,140 @@ object Hex : KLogging() {
     }
 
 
-    fun selectFeatures(features: List<SKFeature>, defaults: Map<String, Boolean>): Map<String, Boolean> {
-        if (features.isEmpty()) {
-            logger.info("no selectable features")
-            return mapOf()
-        }
-
-        UIManager.setLookAndFeel(
-                UIManager.getSystemLookAndFeelClassName()
-        )
-
-        val checkBoxes = features.associateBy({
-            it.name
-        }, {
-            JCheckBox("", defaults[it.name] ?: it.selected)
-        })
-
-        var success = false
-
-        val adapter = object : WindowAdapter() {
-            override fun windowClosed(e: WindowEvent) {
-                logger.info("closing dialog")
-                if (!success)
-                    exitProcess(1)
-            }
-        }
-
-        val dialog = object : JDialog(null as Dialog?, "Features", true), ActionListener {
-            init {
-                modalityType = Dialog.ModalityType.APPLICATION_MODAL
-
-                val panel = JPanel()
-                panel.layout = GridBagLayout()
-
-                for ((row, feature) in features.withIndex()) {
-
-                    val check = checkBoxes[feature.name]
-                    if (check != null) {
-                        check.foreground = Color.LIGHT_GRAY
-                        check.alignmentX = Component.LEFT_ALIGNMENT
-                        panel.add(check,
-                                GridBagConstraints().apply {
-                                    gridx = 0
-                                    gridy = row
-                                    weightx = 0.001
-                                    anchor = GridBagConstraints.LINE_START
-                                    fill = GridBagConstraints.BOTH
-                                }
-                        )
-                    }
-
-                    val name = JLabel(feature.name)
-                    panel.add(name,
-                            GridBagConstraints().apply {
-                                gridx = 1
-                                gridy = row
-                                weightx = 0.001
-                                anchor = GridBagConstraints.LINE_END
-                            }
-                    )
-
-                    val recommendation = when (feature.recommendation) {
-                        Recommendation.starred -> {
-                            val orange = Color(0xFFd09b0d.toInt())
-                            name.foreground = orange
-                            JLabel("★").apply { foreground = orange }
-                        }
-                        Recommendation.avoid -> {
-                            name.foreground = Color.RED
-                            JLabel("⚠️").apply { foreground = Color.RED }
-                        }
-                        else -> {
-                            JLabel("")
-                        }
-                    }
-
-                    panel.add(recommendation,
-                            GridBagConstraints().apply {
-                                gridx = 2
-                                gridy = row
-                                weightx = 0.001
-                                insets = Insets(0, 8, 0, 8)
-                            }
-                    )
-
-                    val description = JLabel("<html>${feature.description}</html>")
-
-                    if (!feature.description.isNullOrBlank()) {
-                        panel.add(description,
-                                GridBagConstraints().apply {
-                                    gridx = 3
-                                    gridy = row
-                                    weightx = 1.0
-                                    anchor = GridBagConstraints.LINE_START
-                                    fill = GridBagConstraints.BOTH
-                                    ipady = 8
-                                }
-                        )
-                    }
-                }
-
-                add(panel, BorderLayout.CENTER)
-                val buttonPane = JPanel()
-                val button = JButton("OK")
-                button.addActionListener(this)
-                buttonPane.add(button)
-                add(buttonPane, BorderLayout.SOUTH)
-                defaultCloseOperation = DISPOSE_ON_CLOSE
-                addWindowListener(adapter)
-                pack()
-                setLocationRelativeTo(null)
-            }
-
-            override fun actionPerformed(e: ActionEvent) {
-                isVisible = false
-                success = true
-                dispose()
-            }
-
-            override fun setVisible(visible: Boolean) {
-                super.setVisible(visible)
-                if (!visible) {
-                    (parent as? JFrame)?.dispose()
-                }
-            }
-
-            fun getValue(): Map<String, Boolean> {
-                isVisible = true
-                dispose()
-                return features.associateBy({ it.name }, { checkBoxes[it.name]!!.isSelected })
-            }
-        }
-        logger.info("created dialog")
-        return dialog.getValue()
-    }
+//    fun selectFeatures(features: List<SKFeature>, defaults: Map<String, Boolean>): Map<String, Boolean> {
+//        if (features.isEmpty()) {
+//            logger.info("no selectable features")
+//            return mapOf()
+//        }
+//
+//        UIManager.setLookAndFeel(
+//                UIManager.getSystemLookAndFeelClassName()
+//        )
+//
+//        val checkBoxes = features.associateBy({
+//            it.name
+//        }, {
+//            JCheckBox("", defaults[it.name] ?: it.selected)
+//        })
+//
+//        var success = false
+//
+//        val adapter = object : WindowAdapter() {
+//            override fun windowClosed(e: WindowEvent) {
+//                logger.info("closing dialog")
+//                if (!success)
+//                    exitProcess(1)
+//            }
+//        }
+//
+//        val dialog = object : JDialog(null as Dialog?, "Features", true), ActionListener {
+//            init {
+//                modalityType = Dialog.ModalityType.APPLICATION_MODAL
+//
+//                val panel = JPanel()
+//                panel.layout = GridBagLayout()
+//
+//                for ((row, feature) in features.withIndex()) {
+//
+//                    val check = checkBoxes[feature.name]
+//                    if (check != null) {
+//                        check.foreground = Color.LIGHT_GRAY
+//                        check.alignmentX = Component.LEFT_ALIGNMENT
+//                        panel.add(check,
+//                                GridBagConstraints().apply {
+//                                    gridx = 0
+//                                    gridy = row
+//                                    weightx = 0.001
+//                                    anchor = GridBagConstraints.LINE_START
+//                                    fill = GridBagConstraints.BOTH
+//                                }
+//                        )
+//                    }
+//
+//                    val name = JLabel(feature.name)
+//                    panel.add(name,
+//                            GridBagConstraints().apply {
+//                                gridx = 1
+//                                gridy = row
+//                                weightx = 0.001
+//                                anchor = GridBagConstraints.LINE_END
+//                            }
+//                    )
+//
+//                    val recommendation = when (feature.recommendation) {
+//                        Recommendation.starred -> {
+//                            val orange = Color(0xFFd09b0d.toInt())
+//                            name.foreground = orange
+//                            JLabel("★").apply { foreground = orange }
+//                        }
+//                        Recommendation.avoid -> {
+//                            name.foreground = Color.RED
+//                            JLabel("⚠️").apply { foreground = Color.RED }
+//                        }
+//                        else -> {
+//                            JLabel("")
+//                        }
+//                    }
+//
+//                    panel.add(recommendation,
+//                            GridBagConstraints().apply {
+//                                gridx = 2
+//                                gridy = row
+//                                weightx = 0.001
+//                                insets = Insets(0, 8, 0, 8)
+//                            }
+//                    )
+//
+//                    val description = JLabel("<html>${feature.description}</html>")
+//
+//                    if (!feature.description.isNullOrBlank()) {
+//                        panel.add(description,
+//                                GridBagConstraints().apply {
+//                                    gridx = 3
+//                                    gridy = row
+//                                    weightx = 1.0
+//                                    anchor = GridBagConstraints.LINE_START
+//                                    fill = GridBagConstraints.BOTH
+//                                    ipady = 8
+//                                }
+//                        )
+//                    }
+//                }
+//
+//                add(panel, BorderLayout.CENTER)
+//                val buttonPane = JPanel()
+//                val button = JButton("OK")
+//                button.addActionListener(this)
+//                buttonPane.add(button)
+//                add(buttonPane, BorderLayout.SOUTH)
+//                defaultCloseOperation = DISPOSE_ON_CLOSE
+//                addWindowListener(adapter)
+//                pack()
+//                setLocationRelativeTo(null)
+//            }
+//
+//            override fun actionPerformed(e: ActionEvent) {
+//                isVisible = false
+//                success = true
+//                dispose()
+//            }
+//
+//            override fun setVisible(visible: Boolean) {
+//                super.setVisible(visible)
+//                if (!visible) {
+//                    (parent as? JFrame)?.dispose()
+//                }
+//            }
+//
+//            fun getValue(): Map<String, Boolean> {
+//                isVisible = true
+//                dispose()
+//                return features.associateBy({ it.name }, { checkBoxes[it.name]!!.isSelected })
+//            }
+//        }
+//        logger.info("created dialog")
+//        return dialog.getValue()
+//    }
 
     private class Arguments(parser: ArgParser) {
         val instanceId by parser.storing("--id",
