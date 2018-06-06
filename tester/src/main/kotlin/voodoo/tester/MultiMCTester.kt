@@ -3,6 +3,7 @@ package voodoo.tester
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
 import voodoo.pack.AbstractTester
+import voodoo.util.blankOr
 
 /**
  * Created by nikky on 06/05/18.
@@ -15,9 +16,7 @@ object MultiMCTester : AbstractTester() {
 
     override fun execute(modpack: LockPack, clean: Boolean) {
         val folder = "voodoo_${modpack.name}_test"
-        var title = modpack.title
-        if(title.isBlank()) title = modpack.name
-        val name = "$title Voodoo Test"
+        val name = "${modpack.title.blankOr ?: modpack.name} Voodoo Test"
 
         MMCUtil.install(name, folder, modpack)
 

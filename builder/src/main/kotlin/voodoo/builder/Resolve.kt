@@ -4,12 +4,13 @@ import aballano.kotlinmemoization.memoize
 import mu.KotlinLogging
 import voodoo.curse.data.DependencyType
 import voodoo.data.Feature
-import voodoo.data.flat.Entry
 import voodoo.data.SKFeature
+import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.forge.Forge.getForgeBuild
 import voodoo.provider.Provider
 import voodoo.util.Directories
+import voodoo.util.blankOr
 import voodoo.util.writeJson
 import kotlin.system.exitProcess
 
@@ -37,9 +38,7 @@ val getDependencies = ::getDependenciesCall.memoize()
 
 fun resolveFeatureDependencies(entry: Entry, modpack: ModPack) {
     val entryFeature = entry.feature ?: return
-    var featureName = entryFeature.name
-    if (featureName.isBlank())
-        featureName = entry.name
+    val featureName = entryFeature.name.blankOr ?: entry.name
     // find feature with matching name
     var feature = modpack.features.find { f -> f.properties.name == featureName }
 
