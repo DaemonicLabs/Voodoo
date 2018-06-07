@@ -17,10 +17,12 @@ object MMCPack : AbstractPack() {
         val definitionsDir = File("multimc").apply { mkdirs() }
         val cacheDir = directories.cacheHome.resolve("mmc")
         val instanceDir = cacheDir.resolve(modpack.name)
-                .apply {
-                    deleteRecursively()
-                    mkdirs()
-                }
+        instanceDir.deleteRecursively()
+
+        val iconFile = definitionsDir.resolve("${modpack.name}.icon.png")
+        val preLaunchCommand = "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
+        val minecraftDir = MMCUtil.installEmptyPack(modpack.title, modpack.name, icon = iconFile, instanceDir = instanceDir, preLaunchCommand = preLaunchCommand)
+
         logger.info("tmp dir: $instanceDir")
 
         val urlFile = definitionsDir.resolve("${modpack.name}.url.txt")
@@ -29,28 +31,6 @@ object MMCPack : AbstractPack() {
             exitProcess(3)
         }
         urlFile.copyTo(instanceDir.resolve("voodoo.url.txt"))
-
-        val iconFile = definitionsDir.resolve("${modpack.name}.icon.png")
-        val icon = if(iconFile.exists()) {
-            val iconName = "icon_${modpack.name}"
-//            val iconName = "icon"
-            iconFile.copyTo(instanceDir.resolve("$iconName.png"))
-            iconName
-        } else {
-            "default"
-        }
-
-        val cfg = sortedMapOf(
-                "InstanceType" to "OneSix",
-                "OverrideCommands" to "true",
-                "PreLaunchCommand" to "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\"",
-                "name" to modpack.title,
-                "iconKey" to icon
-        )
-
-        val cfgFile = instanceDir.resolve("instance.cfg")
-
-        MMCUtil.writeCfg(cfgFile, cfg)
 
         val serverInstaller = instanceDir.resolve("mmc-installer.jar")
         val installer = downloadInstaller()
