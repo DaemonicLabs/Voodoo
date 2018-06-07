@@ -10,7 +10,6 @@ import java.time.Instant
 /**
  * Created by nikky on 28/03/18.
  * @author Nikky
- * @version 1.0
  */
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)

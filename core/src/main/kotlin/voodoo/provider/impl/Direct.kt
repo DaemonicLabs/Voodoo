@@ -6,7 +6,6 @@ import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.provider.ProviderBase
-import voodoo.util.blankOr
 import voodoo.util.download
 import java.io.File
 import java.net.URL
@@ -14,7 +13,6 @@ import java.net.URL
 /**
  * Created by nikky on 30/12/17.
  * @author Nikky
- * @version 1.0
  */
 
 object DirectProviderThing : ProviderBase, KLogging() {
@@ -32,9 +30,9 @@ object DirectProviderThing : ProviderBase, KLogging() {
         )
     }
 
-    override fun download(entry: LockEntry, modpack: LockPack, target: File, cacheDir: File): Pair<String, File> {
+    override fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
         val fileName = entry.fileName ?: entry.url.substringAfterLast('/')
-        val targetFile = target.resolve(fileName)
+        val targetFile = targetFolder.resolve(fileName)
         val url = URL(entry.url)
         targetFile.download(entry.url, cacheDir.resolve("DIRECT").resolve(url.host + url.path.substringBeforeLast('/')))
         return Pair(entry.url, targetFile)

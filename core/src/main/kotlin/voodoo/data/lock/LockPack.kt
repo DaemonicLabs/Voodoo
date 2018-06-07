@@ -2,13 +2,12 @@ package voodoo.data.lock
 
 import voodoo.curse.CurseClient.PROXY_URL
 import voodoo.data.Feature
-import voodoo.data.Launch
 import voodoo.data.UserFiles
+import voodoo.data.sk.Launch
 
 /**
  * Created by nikky on 28/03/18.
  * @author Nikky
- * @version 1.0
  */
 
 data class LockPack(

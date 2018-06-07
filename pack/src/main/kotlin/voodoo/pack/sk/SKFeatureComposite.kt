@@ -2,12 +2,11 @@ package voodoo.pack.sk
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import voodoo.data.FeatureFiles
-import voodoo.data.SKFeature
+import voodoo.data.sk.SKFeature
 
 /**
  * Created by nikky on 30/01/18.
  * @author Nikky
- * @version 1.0
  */
 
 

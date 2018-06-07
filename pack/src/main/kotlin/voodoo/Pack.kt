@@ -13,7 +13,6 @@ import kotlin.system.exitProcess
 /**
  * Created by nikky on 28/03/18.
  * @author Nikky
- * @version 1.0
  */
 
 object Pack : KLogging() {
@@ -28,7 +27,7 @@ object Pack : KLogging() {
                 "mmc" -> MMCPack
                 "fatserver" -> FatServerPack
                 "server" -> ServerPack
-                "curse" -> CursePack
+                "voodoo/data/curse" -> CursePack
 
                 else -> {
                     logger.error("no such packing methode: $methode")

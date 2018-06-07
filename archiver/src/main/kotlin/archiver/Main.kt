@@ -3,7 +3,6 @@ package archiver
 /**
  * Created by nikky on 30/12/17.
  * @author Nikky
- * @version 1.0
  */
 
 import com.github.kittinunf.fuel.httpGet

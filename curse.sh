@@ -18,10 +18,10 @@ pack=$1
 cd run
 
 echo
-echo "packaging $1 curse"
+echo "packaging $1 voodoo.data.curse"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" pack $pack.lock.json curse
+java -jar "$DIR/voodoo/build/libs/voodoo.jar" pack $pack.lock.json voodoo.data.curse
 if [ ! $? -eq 0 ]; then
     echo "Error Packing $pack"
     exit 1

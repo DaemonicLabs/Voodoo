@@ -8,7 +8,6 @@ import voodoo.util.blankOr
 /**
  * Created by nikky on 06/05/18.
  * @author Nikky
- * @version 1.0
  */
 
 object MultiMCTester : AbstractTester() {

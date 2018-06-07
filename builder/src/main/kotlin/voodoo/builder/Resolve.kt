@@ -2,11 +2,11 @@ package voodoo.builder
 
 import aballano.kotlinmemoization.memoize
 import mu.KotlinLogging
-import voodoo.curse.data.DependencyType
 import voodoo.data.Feature
-import voodoo.data.SKFeature
+import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
+import voodoo.data.sk.SKFeature
 import voodoo.forge.Forge.getForgeBuild
 import voodoo.provider.Provider
 import voodoo.util.Directories
@@ -17,7 +17,6 @@ import kotlin.system.exitProcess
 /**
  * Created by nikky on 28/03/18.
  * @author Nikky
- * @version 1.0
  */
 
 private val logger = KotlinLogging.logger {}

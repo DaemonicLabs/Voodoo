@@ -5,17 +5,15 @@ import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.provider.Provider
 import voodoo.util.download
-import voodoo.util.downloader.logger
 import java.io.File
 
 /**
  * Created by nikky on 06/05/18.
  * @author Nikky
- * @version 1.0
  */
 
 object FatServerPack : AbstractPack() {
-    override val label = "Server Pack"
+    override val label = "Server SKPack"
 
     override fun download(modpack: LockPack, target: String?, clean: Boolean) {
         val cacheDir = directories.cacheHome
@@ -56,7 +54,7 @@ object FatServerPack : AbstractPack() {
             if(entry.side == Side.CLIENT) continue
             val provider = Provider.valueOf(entry.provider).base
             val targetFolder = srcFolder.resolve(entry.folder)
-            val (url, file) = provider.download(entry, modpack, targetFolder, cacheDir)
+            val (url, file) = provider.download(entry, targetFolder, cacheDir)
             if (url != null && entry.useUrlTxt) {
                 val urlTxtFile = file.parentFile.resolve(file.name + ".url.txt")
                 urlTxtFile.writeText(url)

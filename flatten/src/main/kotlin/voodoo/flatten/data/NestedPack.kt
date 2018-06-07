@@ -8,7 +8,6 @@ import java.io.File
 /**
  * Created by nikky on 28/03/18.
  * @author Nikky
- * @version 1.0
  */
 data class NestedPack(
         var name: String,

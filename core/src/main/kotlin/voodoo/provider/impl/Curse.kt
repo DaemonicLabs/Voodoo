@@ -6,14 +6,13 @@ import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
 import voodoo.curse.CurseClient.getAddon
 import voodoo.curse.CurseClient.getAddonFile
-import voodoo.curse.data.DependencyType
+import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
-import voodoo.util.blankOr
 import voodoo.util.download
 import java.io.File
 import java.time.Instant
@@ -22,7 +21,6 @@ import kotlin.system.exitProcess
 /**
  * Created by nikky on 30/12/17.
  * @author Nikky
- * @version 1.0
  */
 object CurseProviderThing : ProviderBase, KLogging() {
     override val name = "Curse Provider"
@@ -72,10 +70,12 @@ object CurseProviderThing : ProviderBase, KLogging() {
     private fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit) {
         val addon = getAddon(addonId, modpack.curseMetaUrl)!!
         val addonFile = getAddonFile(addonId, fileId, modpack.curseMetaUrl)!!
-        if (addonFile.dependencies == null) return
+        val dependencies = addonFile.dependencies ?: return
+
         logger.info("dependencies of ${entry.name} ${addonFile.dependencies}")
         logger.info(entry.toString())
-        for ((depAddonId, depType) in addonFile.dependencies) {
+
+        for ((depAddonId, depType) in dependencies) {
             logger.info("resolve Dep $depAddonId")
             val depAddon = getAddon(depAddonId, modpack.curseMetaUrl) ?: continue
 
@@ -128,13 +128,13 @@ object CurseProviderThing : ProviderBase, KLogging() {
 
     val isOptional = CurseProviderThing::isOptionalCall.memoize()
 
-    override fun download(entry: LockEntry, modpack: LockPack, target: File, cacheDir: File): Pair<String, File> {
-        val addonFile = getAddonFile(entry.projectID, entry.fileID, modpack.curseMetaUrl)
+    override fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
+        val addonFile = getAddonFile(entry.projectID, entry.fileID, entry.parent.curseMetaUrl)
         if (addonFile == null) {
             logger.error("cannot download ${entry.projectID}:${entry.fileID}")
             exitProcess(3)
         }
-        val targetFile = target.resolve(entry.fileName ?: addonFile.fileNameOnDisk)
+        val targetFile = targetFolder.resolve(entry.fileName ?: addonFile.fileNameOnDisk)
         targetFile.download(addonFile.downloadURL, cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()))
         return Pair(addonFile.downloadURL, targetFile)
     }

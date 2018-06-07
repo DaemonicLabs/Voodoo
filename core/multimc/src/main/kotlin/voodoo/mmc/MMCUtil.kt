@@ -3,9 +3,9 @@ package voodoo.mmc
 import com.sun.jna.Platform
 import mu.KLogging
 import voodoo.data.Recommendation
-import voodoo.data.SKFeature
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
+import voodoo.data.sk.SKFeature
 import voodoo.forge.Forge
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
@@ -42,9 +42,12 @@ object MMCUtil : KLogging() {
         logger.info("started multimc instance $name")
     }
 
+    /**
+     * Finds the MultiMC data loccation
+     */
     fun findDir(): File = when {
         Platform.isWindows() -> {
-            val location = "where multimc".runCommandToString()
+            val location = "where multimc".runCommand()
                     ?: throw FileNotFoundException("cannot find multimc on path")
             val multimcFile = File(location)
             multimcFile.parentFile
@@ -53,8 +56,7 @@ object MMCUtil : KLogging() {
         else -> throw Exception("unsupported platform")
     }
 
-    private val path = System.getProperty("user.dir")
-    fun String.runCommand(workingDir: File = cacheHome) {
+    fun String.runCommandWithRedirct(workingDir: File = cacheHome) {
         logger.info("running '$this' in $workingDir")
         ProcessBuilder(*split(" ").toTypedArray())
                 .directory(workingDir)
@@ -65,7 +67,7 @@ object MMCUtil : KLogging() {
 //                .waitFor()
     }
 
-    fun String.runCommandToString(workingDir: File = cacheHome): String? {
+    fun String.runCommand(workingDir: File = cacheHome): String? {
         try {
             val parts = this.split("\\s".toRegex())
             val proc = ProcessBuilder(*parts.toTypedArray())
@@ -137,7 +139,7 @@ object MMCUtil : KLogging() {
             }
             val provider = Provider.valueOf(entry.provider).base
             val targetFolder = minecraftDir.resolve(entry.folder)
-            val (url, file) = provider.download(entry, modpack, targetFolder, cacheDir)
+            val (url, file) = provider.download(entry, targetFolder, cacheDir)
         }
 
         // set minecraft and forge versions

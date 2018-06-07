@@ -1,12 +1,11 @@
 package voodoo.pack.sk
 
-import voodoo.data.Launch
+import voodoo.data.sk.Launch
 import voodoo.data.UserFiles
 
 /**
  * Created by nikky on 30/03/18.
  * @author Nikky
- * @version 1.0
  */
 data class SKModpack(
         var name: String,

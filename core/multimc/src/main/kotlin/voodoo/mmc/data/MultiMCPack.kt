@@ -3,7 +3,6 @@ package voodoo.mmc.data
 /**
  * Created by nikky on 01/04/18.
  * @author Nikky
- * @version 1.0
  */
 
 data class MultiMCPack(

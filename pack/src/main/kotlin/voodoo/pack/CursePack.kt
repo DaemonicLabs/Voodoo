@@ -1,10 +1,9 @@
 package voodoo.pack
 
-import mu.KotlinLogging
-import voodoo.curse.data.CurseFile
-import voodoo.curse.data.CurseManifest
-import voodoo.curse.data.CurseMinecraft
-import voodoo.curse.data.CurseModLoader
+import voodoo.data.curse.CurseFile
+import voodoo.data.curse.CurseManifest
+import voodoo.data.curse.CurseMinecraft
+import voodoo.data.curse.CurseModLoader
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
@@ -16,7 +15,6 @@ import java.io.File
 /**
  * Created by nikky on 30/03/18.
  * @author Nikky
- * @version 1.0
  */
 
 object CursePack : AbstractPack() {
@@ -24,7 +22,7 @@ object CursePack : AbstractPack() {
 
     override fun download(modpack: LockPack, target: String?, clean: Boolean) {
         val cacheDir = directories.cacheHome
-        val workspaceDir = File(".curse")
+        val workspaceDir = File(".voodoo.data.curse")
         val modpackDir = workspaceDir.resolve(with(modpack) { "$name-$version" })
         val srcFolder = modpackDir.resolve("overrides")
 
@@ -73,10 +71,10 @@ object CursePack : AbstractPack() {
             val provider = Provider.valueOf(entry.provider).base
             if (entry.side == Side.SERVER) continue
             if (entry.provider == Provider.CURSE.name) {
-                curseMods += CurseFile(entry.projectID, entry.fileID, required).apply { println("added curse file $this") }
+                curseMods += CurseFile(entry.projectID, entry.fileID, required).apply { println("added voodoo.data.curse file $this") }
             } else {
                 val targetFolder = srcFolder.resolve(entry.folder)
-                val (url, file) = provider.download(entry, modpack, targetFolder, cacheDir)
+                val (url, file) = provider.download(entry, targetFolder, cacheDir)
                 if (!required) {
                     val optionalFile = file.parentFile.resolve(file.name + ".disabled")
                     file.renameTo(optionalFile)

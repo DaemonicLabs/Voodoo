@@ -11,7 +11,6 @@ import mu.KLogging
 /**
  * Created by nikky on 30/12/17.
  * @author Nikky
- * @version 1.0
  */
 object Forge : KLogging() {
     var data: ForgeData = getForgeData()

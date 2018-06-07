@@ -8,7 +8,6 @@ import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.provider.ProviderBase
-import voodoo.util.blankOr
 import voodoo.util.download
 import voodoo.util.jenkins.JenkinsServer
 import java.io.File
@@ -17,7 +16,6 @@ import java.time.Instant
 /**
  * Created by nikky on 30/12/17.
  * @author Nikky
- * @version 1.0
  */
 
 object JenkinsProviderThing : ProviderBase, KLogging() {
@@ -44,11 +42,11 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
         )
     }
 
-    override fun download(entry: LockEntry, modpack: LockPack, target: File, cacheDir: File): Pair<String, File> {
+    override fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
         val build = build(entry.job, entry.jenkinsUrl, entry.buildNumber)
         val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)
         val url = build.url + "artifact/" + artifact.relativePath
-        val targetFile = target.resolve(entry.fileName ?: artifact.fileName)
+        val targetFile = targetFolder.resolve(entry.fileName ?: artifact.fileName)
         targetFile.download(url, cacheDir.resolve("JENKINS").resolve(entry.job).resolve(entry.buildNumber.toString()))
         return Pair(url, targetFile)
     }

@@ -13,7 +13,6 @@ import kotlin.system.exitProcess
 /**
  * Created by nikky on 28/03/18.
  * @author Nikky
- * @version 1.0
  */
 
 object Tester : KLogging() {

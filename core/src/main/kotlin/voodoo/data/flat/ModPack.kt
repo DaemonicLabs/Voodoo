@@ -5,11 +5,10 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import mu.KLogging
 import voodoo.curse.CurseClient.PROXY_URL
 import voodoo.data.Feature
-import voodoo.data.Launch
 import voodoo.data.UserFiles
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
-import voodoo.util.Directories
+import voodoo.data.sk.Launch
 import voodoo.util.readJsonOrNull
 import voodoo.util.writeJson
 import java.io.File
@@ -18,7 +17,6 @@ import java.io.File
 /**
  * Created by nikky on 28/03/18.
  * @author Nikky
- * @version 1.0
  */
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -52,8 +50,10 @@ data class ModPack(
     @JsonIgnore
     val features: MutableList<Feature>
 
+    companion object : KLogging()
+
     init {
-        if(versionCache.path == featureCache.path) {
+        if (versionCache.path == featureCache.path) {
             versionCache.mkdirs()
             featureCache.mkdirs()
         }
@@ -71,9 +71,6 @@ data class ModPack(
         features = featureCache.readJsonOrNull() ?: mutableListOf()
     }
 
-    companion object : KLogging() {
-        private val directories = Directories.get(moduleName = "builder")
-    }
 
     fun writeVersionCache() {
         versionCache.writeJson(versions)

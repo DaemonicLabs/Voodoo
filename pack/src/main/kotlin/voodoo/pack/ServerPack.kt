@@ -3,7 +3,6 @@ package voodoo.pack
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import voodoo.data.lock.LockPack
-import voodoo.util.downloader.logger
 import voodoo.util.jenkins.JenkinsServer
 import voodoo.util.writeJson
 import java.io.File
@@ -11,11 +10,10 @@ import java.io.File
 /**
  * Created by nikky on 06/05/18.
  * @author Nikky
- * @version 1.0
  */
 
 object ServerPack : AbstractPack() {
-    override val label = "Server Pack"
+    override val label = "Server SKPack"
 
     override fun download(modpack: LockPack, target: String?, clean: Boolean) {
         val targetDir = File(target ?: ".server")
@@ -59,7 +57,7 @@ object ServerPack : AbstractPack() {
         logger.info("packaging installer jar")
         val installer = downloadInstaller()
 
-        val serverInstaller = modpackDir.resolve("install-server.jar")
+        val serverInstaller = modpackDir.resolve("server-installer.jar")
         installer.copyTo(serverInstaller)
 
         logger.info("server package ready: ${modpackDir.absolutePath}")
@@ -70,6 +68,7 @@ object ServerPack : AbstractPack() {
     const val JENKINS_JOB = "elytra/Voodoo/master"
     const val MODULE_NAME = "server-installer"
 
+    //TODO: generalize for all jars and allow to pick local compiled jar
     private fun downloadInstaller(): File {
         val userAgent = "voodoo-pack/$VERSION"
         val binariesDir = directories.cacheHome
