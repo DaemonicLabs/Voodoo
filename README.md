@@ -9,41 +9,56 @@ and other launchers
 
 [![Jenkins](https://img.shields.io/jenkins/s/https/ci.elytradev.com/job/elytra/job/Voodoo/job/master.svg?style=for-the-badge&label=Jenkins%20Build)](https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/lastSuccessfulBuild/artifact/)
 
+`-fat` files are not modified by proguard in case something breaks randomly, \
+but please report those errors too
+
 ### build
 
 unix: `./gradlew build`
 windows: `./gradlew.bat build`
 
 ## usage
+examples based on [Center of the Multiverse](https://github.com/elytra/Center-of-the-Multiverse)
 
+other samples: [samples](/samples)
 
-flatten the yaml (this creates the main json)
+flatten the yaml (this creates the main json) \
 `java -jar voodoo.jar flatten cotm.yaml`
 
-update the pack and write out the lockfile
+update the pack and write out the lockfile \
 `java -jar voodoo.jar build cotm.json -o cotm.lock.json --force`
 
-compile the pack for sklauncher
-`java -jar pack.jar cotm.lock.json sk`
+to update just a few mods in the update step \
+`java -jar voodoo.jar build cotm.json -o cotm.lock.json -E Correlated -E "Magic Arsenal"`
 
-create a server package
+compile the pack for sklauncher \
+`java -jar pack.jar cotm.lock.json sk` \
+now you can just upload the contents of `workspace/_upload`
+
+## Server Deployment
+
+create a server package \
 `java -jar pack.jar cotm.lock.json server`
 
+that creates a server *package* in `.server/`
+ 1. upload that package to **different** folder on your minecraft server
+ 2. stop the minecraft server and
+ 3. execute the server installer with the actual location of your minecraft server installation
 
-samples: [samples](/samples)
+this will:
+ - update configs/files
+ - install mods
+ - install/update forge
+ - create `forge.jar`
 
-## MultiMC integration
+## MultiMC Integration / Deployment
 
-WIP, currently being reimplemented
+To run a test instance use \
+`java -jar voodoo.jar test cotm.lock.json mmc`
 
-<!--
-to have voodoo build the pack and automatically copy it into a multimc instance
-set the following as pre-launch command
-
-`java -jar /path/to/builder.jar pack_definition.yaml -d /path/to/pack/dev -i $INST_DIR/.. --mmc`
-
-example
-
-`java -jar $HOME/dev/voodoo/builder/build/libs/builder-1.0.jar test.yaml -d $HOME/dev/voodoo/builder/run/ -i $INST_DIR/.. --mmc`
-
--->
+to compile a minimalistic MMC pack that selfupdates \
+`java -jar voodoo.jar pack cotm.lock.json mmc` \
+this expects a file `$packname.url.txt` that points at the previously uploaded
+skcraft data \
+more specifically the json file of the pack \
+eg: `https://centerofthemultiverse.net/launcher/cotm.json` in `cotm.url.txt`
