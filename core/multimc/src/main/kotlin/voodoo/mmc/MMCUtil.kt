@@ -11,6 +11,7 @@ import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.provider.Provider
 import voodoo.util.Directories
+import voodoo.util.blankOr
 import voodoo.util.readJson
 import voodoo.util.writeJson
 import java.awt.*
@@ -97,49 +98,26 @@ object MMCUtil : KLogging() {
         )
     }
 
-    fun install(name: String, folder: String, modpack: LockPack) {
-        val cacheDir = directories.cacheHome
-        val multimcDir = MMCUtil.findDir()
-        val instanceDir = multimcDir.resolve("instances").resolve(folder)
+    /**
+     * Prepares a MultiMC instance
+     * @return Minecraft Directory
+     */
+    fun installEmptyPack(name: String, folder: String,
+                         icon: File? = null, mcVersion: String? = null, forgeBuild: Int? = null,
+                         instanceDir: File = MMCUtil.findDir().resolve("instances").resolve(folder),
+                         preLaunchCommand: String? = null): File {
         instanceDir.mkdirs()
 
         val minecraftDir = instanceDir.resolve(".minecraft")
         minecraftDir.mkdirs()
 
-        val modsDir = minecraftDir.resolve("mods")
-        modsDir.deleteRecursively()
-
-        val minecraftSrcDir = File(modpack.minecraftDir)
-        if (minecraftSrcDir.exists()) {
-            minecraftSrcDir.copyRecursively(minecraftDir, overwrite = true)
-        }
-
-        // read user input
-        val featureJson = instanceDir.resolve("voodoo.features.json")
-        val defaults = if (featureJson.exists()) {
-            featureJson.readJson()
+        val iconKey = if (icon != null && icon.exists()) {
+            val iconName = "icon_$name"
+//            val iconName = "icon"
+            icon.copyTo(instanceDir.resolve("$iconName.png"))
+            iconName
         } else {
-            mapOf<String, Boolean>()
-        }
-        val features = selectFeatures(modpack.features.map { it.properties }, defaults, modpack.title.blankOr ?: modpack.name, modpack.version)
-        if (!features.isEmpty()) {
-            featureJson.createNewFile()
-            featureJson.writeJson(features)
-        }
-
-        for (entry in modpack.entries) {
-            if (entry.side == Side.SERVER) continue
-            val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.name) }
-            if (!matchedFeatureList.isEmpty()) {
-                val download = matchedFeatureList.any { features[it.properties.name] ?: false }
-                if (!download) {
-                    logger.info("${matchedFeatureList.map { it.properties.name }} is disabled, skipping download")
-                    continue
-                }
-            }
-            val provider = Provider.valueOf(entry.provider).base
-            val targetFolder = minecraftDir.resolve(entry.folder)
-            val (url, file) = provider.download(entry, targetFolder, cacheDir)
+            "default"
         }
 
         // set minecraft and forge versions
@@ -147,37 +125,48 @@ object MMCUtil : KLogging() {
         val mmcPack = if (mmcPackPath.exists()) {
             mmcPackPath.readJson()
         } else MultiMCPack()
-        logger.info("forge version for build ${modpack.forge}")
-        val (_, _, _, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
-        logger.info("forge version : $forgeVersion")
-        mmcPack.components = listOf(
-                PackComponent(
-                        uid = "net.minecraft",
-                        version = modpack.mcVersion,
-                        important = true
-                ),
-                PackComponent(
-                        uid = "net.minecraftforge",
-                        version = forgeVersion,
-                        important = true
-                )
-        ) + mmcPack.components
+
+        if (mcVersion != null) {
+            if (forgeBuild != null) {
+                logger.info("forge version for build $forgeBuild")
+                val (_, _, _, forgeVersion) = Forge.getForgeUrl(forgeBuild.toString(), mcVersion)
+                logger.info("forge version : $forgeVersion")
+                mmcPack.components = listOf(
+                        PackComponent(
+                                uid = "net.minecraftforge",
+                                version = forgeVersion,
+                                important = true
+                        )
+                ) + mmcPack.components
+            }
+            mmcPack.components = listOf(
+                    PackComponent(
+                            uid = "net.minecraft",
+                            version = mcVersion,
+                            important = true
+                    )
+            ) + mmcPack.components
+        }
         mmcPackPath.writeJson(mmcPack)
 
         val cfgFile = instanceDir.resolve("instance.cfg")
-        val cfgMap = if (cfgFile.exists())
+        val cfg = if (cfgFile.exists())
             readCfg(cfgFile)
         else
             sortedMapOf()
 
-        cfgMap["InstanceType"] = "OneSix"
-        if (!cfgMap.containsKey("iconKey"))
-            cfgMap["iconKey"] = "default"
-        if (!cfgMap.containsKey("iconKey"))
-            cfgMap["iconKey"] = "default"
-        cfgMap["name"] = name
-        writeCfg(cfgFile, cfgMap)
+        cfg["InstanceType"] = "OneSix"
+        cfg["name"] = name
+        cfg["iconKey"] = iconKey
 
+        if (preLaunchCommand != null) {
+            cfg["OverrideCommands"] = "true"
+            cfg["PreLaunchCommand"] = preLaunchCommand
+        }
+
+        writeCfg(cfgFile, cfg)
+
+        return minecraftDir
     }
 
     fun selectFeatures(features: List<SKFeature>, defaults: Map<String, Boolean>, name: String, version: String): Map<String, Boolean> {

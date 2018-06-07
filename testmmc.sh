@@ -23,6 +23,6 @@ echo
 
 java -jar "$DIR/voodoo/build/libs/voodoo.jar" test $pack.lock.json mmc
 if [ ! $? -eq 0 ]; then
-    echo "Error Packing $pack"
+    echo "Error Testing $pack in multimc"
     exit 1
 fi
