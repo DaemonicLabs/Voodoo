@@ -8,7 +8,6 @@ import java.io.File
 /**
  * Created by nikky on 02/02/18.
  * @author Nikky
- * @version 1.0
  */
 
 fun Any.writeToFile(file: File) {

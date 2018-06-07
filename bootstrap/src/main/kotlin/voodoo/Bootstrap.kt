@@ -17,7 +17,6 @@ import voodoo.bootstrap.VERSION
 import voodoo.util.Directories
 import voodoo.util.jenkins.JenkinsServer
 import java.io.File
-import java.util.concurrent.TimeUnit
 import kotlin.system.exitProcess
 
 @Throws(Throwable::class)

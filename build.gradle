@@ -63,9 +63,10 @@ subprojects {
 //    version = "${project.major}.${project.minor}.${project.patch}"
     compileKotlin.doFirst {
         def folder = project.name != "voodoo" ? "voodoo/${project.name}" : "voodoo"
+        def templateSrc = project.parent.file("template/kotlin/voodoo/")
         copy {
-            from "../template/kotlin/voodoo/"
-            into  "$buildDir/generated-src/$folder"
+            from templateSrc
+            into "$buildDir/generated-src/$folder"
             expand(
                     PACKAGE: folder.replace('/', '.').replace('-', '.'),
                     MAJOR_VERSION: project.major,

@@ -19,7 +19,8 @@ mainClassName = "voodoo.BootstrapKt"
 version = project.version
 
 dependencies {
-    compile project(':util')
+    compile project(':util/dir')
+    compile project(':util/jenkins')
 }
 
 shadowJar {

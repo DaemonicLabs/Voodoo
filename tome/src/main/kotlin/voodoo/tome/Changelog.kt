@@ -13,13 +13,11 @@ import java.io.File
 /**
  * Created by nikky on 15/04/18.
  * @author Nikky
- * @version 1.0
  */
 
 /**
  * Created by nikky on 01/04/18.
  * @author Nikky
- * @version 1.0
  */
 
 object Changelog : KLogging() {

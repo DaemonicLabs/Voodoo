@@ -12,7 +12,6 @@ import java.time.Instant
 /**
  * Created by nikky on 04/01/18.
  * @author Nikky
- * @version 1.0
  */
 
 enum class Provider(val base: ProviderBase) {
@@ -32,7 +31,14 @@ interface ProviderBase {
 
     companion object : KLogging()
 
-    fun download(entry: LockEntry, modpack: LockPack, target: File, cacheDir: File): Pair<String?, File>
+    /**
+     * downloads a entry
+     *
+     * @param entry the entry oyu are working on
+     * @param targetFolder provided target folder/location
+     * @param cacheDir prepared cache directory
+     */
+    fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File>
 
     fun getAuthors(entry: LockEntry, modpack: LockPack): List<String> {
         return emptyList()

@@ -13,13 +13,12 @@ import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
-import voodoo.provider.UpdateChannel
+import voodoo.data.provider.UpdateChannel
 import java.io.File
 
 /**
  * Created by nikky on 30/12/17.
  * @author Nikky
- * @version 1.0
  */
 object UpdateJsonProviderThing : ProviderBase, KLogging() {
     override val name = "UpdateJson Provider"
@@ -65,8 +64,8 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
         )
     }
 
-    override fun download(entry: LockEntry, modpack: LockPack, target: File, cacheDir: File): Pair<String?, File> {
-        return Provider.DIRECT.base.download(entry, modpack, target, cacheDir)
+    override fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File> {
+        return Provider.DIRECT.base.download(entry, targetFolder, cacheDir)
     }
 
     override fun getProjectPage(entry: LockEntry, modpack: LockPack): String {

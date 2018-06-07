@@ -2,20 +2,19 @@ package voodoo.flatten.data
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
-import voodoo.curse.data.DependencyType
-import voodoo.curse.data.PackageType
-import voodoo.curse.data.FileType
-import voodoo.data.flat.EntryFeature
+import voodoo.data.curse.DependencyType
+import voodoo.data.curse.FileType
+import voodoo.data.curse.PackageType
 import voodoo.data.Side
 import voodoo.data.flat.Entry
-import voodoo.provider.UpdateChannel
+import voodoo.data.flat.EntryFeature
+import voodoo.data.provider.UpdateChannel
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 
 /**
  * Created by nikky on 28/03/18.
  * @author Nikky
- * @version 1.0
  */
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
@@ -34,7 +33,7 @@ data class NestedEntry(
 //        @JsonInclude(JsonInclude.Include.ALWAYS)
 //        var optional: Boolean = feature != null,
         var packageType: PackageType = PackageType.MOD,
-        // INTERNAL //TODO: move into internal object or runtime data objects
+        // INTERNAL //TODO: move into internal object or runtime data objects ?
 //        @JsonIgnore
 //        val internal: EntryInternal = EntryInternal(),
         var transient: Boolean = false, // this entry got added as dependency for something else

@@ -16,7 +16,6 @@ import java.time.format.DateTimeFormatter
 /**
  * Created by nikky on 30/03/18.
  * @author Nikky
- * @version 1.0
  */
 
 object SKPack : AbstractPack() {
@@ -72,7 +71,7 @@ object SKPack : AbstractPack() {
                 Side.SERVER -> srcFolder.resolve(entry.folder).resolve("_SERVER")
                 Side.BOTH -> srcFolder.resolve(entry.folder)
             }
-            val (url, file) = provider.download(entry, modpack, targetFolder, cacheDir)
+            val (url, file) = provider.download(entry, targetFolder, cacheDir)
             if (url != null && entry.useUrlTxt) {
                 val urlTxtFile = file.parentFile.resolve(file.name + ".url.txt")
                 urlTxtFile.writeText(url)

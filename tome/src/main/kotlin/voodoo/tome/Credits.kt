@@ -14,7 +14,6 @@ import java.io.StringWriter
 /**
  * Created by nikky on 15/04/18.
  * @author Nikky
- * @version 1.0
  */
 
 object Credits : KLogging() {

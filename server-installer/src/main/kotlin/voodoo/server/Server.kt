@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit
 /**
  * Created by nikky on 06/05/18.
  * @author Nikky
- * @version 1.0
  */
 
 object Server {
@@ -51,7 +50,7 @@ object Server {
             if(entry.side == Side.CLIENT) continue
             val provider = Provider.valueOf(entry.provider).base
             val targetFolder = serverDir.resolve(entry.folder)
-            val (url, file) = provider.download(entry, modpack, targetFolder, cacheDir)
+            val (url, file) = provider.download(entry, targetFolder, cacheDir)
         }
 
         // download forge

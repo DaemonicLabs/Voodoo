@@ -11,7 +11,6 @@ import java.io.File
 /**
  * Created by nikky on 30/12/17.
  * @author Nikky
- * @version 1.0
  */
 
 object LocalProviderThing : ProviderBase, KLogging() {
@@ -27,9 +26,9 @@ object LocalProviderThing : ProviderBase, KLogging() {
         )
     }
 
-    override fun download(entry: LockEntry, modpack: LockPack, target: File, cacheDir: File): Pair<String?, File> {
-        val fileSrc = File(modpack.localDir, entry.fileSrc)
-        val targetFile = target.resolve(fileSrc.name)
+    override fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File> {
+        val fileSrc = File(entry.parent.localDir, entry.fileSrc)
+        val targetFile = targetFolder.resolve(fileSrc.name)
         fileSrc.copyTo(targetFile, overwrite = true)
         return Pair(null, targetFile)
     }

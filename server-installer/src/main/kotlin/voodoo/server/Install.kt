@@ -12,7 +12,6 @@ import java.io.File
 /**
  * Created by nikky on 11/05/18.
  * @author Nikky
- * @version 1.0
  */
 
 object Install : KLogging() {
