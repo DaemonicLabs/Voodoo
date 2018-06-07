@@ -85,7 +85,7 @@ object Hex : KLogging() {
         } else {
             mapOf<String, Boolean>()
         }
-        val features = selectFeatures(modpack.features, defaults)
+        val features = selectFeatures(modpack.features, defaults, modpack.title.blankOr ?: modpack.name, modpack.version)
         featureJson.writeJson(features)
 
         val cacheFolder = directories.cacheHome.resolve("hex")

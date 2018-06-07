@@ -121,7 +121,7 @@ object MMCUtil : KLogging() {
         } else {
             mapOf<String, Boolean>()
         }
-        val features = selectFeatures(modpack.features.map { it.properties }, defaults)
+        val features = selectFeatures(modpack.features.map { it.properties }, defaults, modpack.title.blankOr ?: modpack.name, modpack.version)
         if (!features.isEmpty()) {
             featureJson.createNewFile()
             featureJson.writeJson(features)
@@ -180,7 +180,7 @@ object MMCUtil : KLogging() {
 
     }
 
-    fun selectFeatures(features: List<SKFeature>, defaults: Map<String, Boolean>): Map<String, Boolean> {
+    fun selectFeatures(features: List<SKFeature>, defaults: Map<String, Boolean>, name: String, version: String): Map<String, Boolean> {
         if (features.isEmpty()) {
             logger.info("no selectable features")
             return mapOf()
@@ -206,7 +206,8 @@ object MMCUtil : KLogging() {
             }
         }
 
-        val dialog = object : JDialog(null as Dialog?, "Features", true), ActionListener {
+        val title = "Features" + if (name.isBlank()) "" else " - $name" + if (version.isBlank()) "" else " - $version"
+        val dialog = object : JDialog(null as Dialog?, title, true), ActionListener {
             init {
                 modalityType = Dialog.ModalityType.APPLICATION_MODAL
 

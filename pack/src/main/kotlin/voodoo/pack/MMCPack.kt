@@ -14,23 +14,38 @@ object MMCPack : AbstractPack() {
 
     override fun download(modpack: LockPack, target: String?, clean: Boolean) {
         val targetDir = File(target ?: ".multimc")
+        val definitionsDir = File("multimc").apply { mkdirs() }
         val cacheDir = directories.cacheHome.resolve("mmc")
-        val wrapperDir = cacheDir.resolve(modpack.name).apply { deleteRecursively() }
-        val instanceDir = wrapperDir.resolve(modpack.name).apply { mkdirs() }
+        val instanceDir = cacheDir.resolve(modpack.name)
+                .apply {
+                    deleteRecursively()
+                    mkdirs()
+                }
         logger.info("tmp dir: $instanceDir")
 
-        val urlFile = File("${modpack.name}.url.txt")
+        val urlFile = definitionsDir.resolve("${modpack.name}.url.txt")
         if (!urlFile.exists()) {
-            logger.error("no file '$urlFile' found")
+            logger.error("no file '${urlFile.absolutePath}' found")
             exitProcess(3)
         }
         urlFile.copyTo(instanceDir.resolve("voodoo.url.txt"))
+
+        val iconFile = definitionsDir.resolve("${modpack.name}.icon.png")
+        val icon = if(iconFile.exists()) {
+            val iconName = "icon_${modpack.name}"
+//            val iconName = "icon"
+            iconFile.copyTo(instanceDir.resolve("$iconName.png"))
+            iconName
+        } else {
+            "default"
+        }
 
         val cfg = sortedMapOf(
                 "InstanceType" to "OneSix",
                 "OverrideCommands" to "true",
                 "PreLaunchCommand" to "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\"",
-                "name" to modpack.title
+                "name" to modpack.title,
+                "iconKey" to icon
         )
 
         val cfgFile = instanceDir.resolve("instance.cfg")
@@ -52,7 +67,7 @@ object MMCPack : AbstractPack() {
         val instanceZip = targetDir.resolve(modpack.name + ".zip")
 
         instanceZip.delete()
-        packToZip(wrapperDir.toPath(), instanceZip.toPath())
+        packToZip(instanceDir.toPath(), instanceZip.toPath())
         logger.info("created mmc pack $instanceZip")
     }
 
