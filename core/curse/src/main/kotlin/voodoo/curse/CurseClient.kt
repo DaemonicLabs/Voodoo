@@ -24,7 +24,7 @@ import java.io.InputStreamReader
  * @author Nikky
  */
 object CurseClient : KLogging() {
-    val PROXY_URL = "https://voodoo.data.curse.nikky.moe/api"
+    val PROXY_URL = "https://curse.nikky.moe/api"
     val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10"
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
@@ -55,7 +55,7 @@ object CurseClient : KLogging() {
     )
 
     private fun getIdMap(): Map<String, Int> {
-        val url = "https://voodoo.data.curse.nikky.moe/graphql"
+        val url = "https://curse.nikky.moe/graphql"
 
         logger.debug("post $url")
         val graphQlRequest = GraphQLRequest(
@@ -69,7 +69,7 @@ object CurseClient : KLogging() {
                 """.trimMargin(),
                 operationName = "GetNameIDPairs"
         )
-        val (_, _, result) = url.httpPost()
+        val (request, response, result) = url.httpPost()
                 .body(mapper.writeValueAsBytes(graphQlRequest))
                 .header("User-Agent" to useragent, "Content-Type" to "application/json")
                 .responseString()
@@ -78,6 +78,9 @@ object CurseClient : KLogging() {
                 mapper.readValue(result.value)
             }
             is Result.Failure -> {
+                logger.error { request }
+                logger.error { response }
+                logger.error { result }
                 throw Exception("failed getting id-name pairs")
             }
         }
