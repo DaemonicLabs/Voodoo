@@ -4,7 +4,6 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
 import voodoo.util.jenkins.JenkinsServer
-import voodoo.util.jenkins.VERSION
 import java.io.File
 
 object DownloadVoodoo : KLogging() {
@@ -18,22 +17,22 @@ object DownloadVoodoo : KLogging() {
             binariesDir: File
     ): File {
         val moduleName = "${if(bootstrap) "bootstrap-" else ""}$component"
-        val FILE_REGEX = "$moduleName-[^-]*(?!-fat)\\.jar"
-        val userAgent = "voodoo-pack/$VERSION"
+        val fileRegex = "$moduleName-[^-]*(?!-fat)\\.jar"
+        val userAgent = "voodoo-pack/${voodoo.util.jenkins.VERSION}"
 
         val server = JenkinsServer(url)
         val jenkinsJob = server.getJob(job, userAgent)!!
         val build = jenkinsJob.lastSuccessfulBuild?.details(userAgent)!!
         val buildNumber = build.number
         logger.info("lastSuccessfulBuild: $buildNumber")
-        logger.debug("looking for $FILE_REGEX")
-        val re = Regex(FILE_REGEX)
+        logger.debug("looking for $fileRegex")
+        val re = Regex(fileRegex)
         val artifact = build.artifacts.find {
             logger.debug(it.fileName)
             re.matches(it.fileName)
         }
         if (artifact == null) {
-            logger.error("did not find {} in {}", FILE_REGEX, build.artifacts)
+            logger.error("did not find {} in {}", fileRegex, build.artifacts)
             throw Exception()
         }
         val url = build.url + "artifact/" + artifact.relativePath

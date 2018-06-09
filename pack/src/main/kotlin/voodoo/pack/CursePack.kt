@@ -22,7 +22,7 @@ object CursePack : AbstractPack() {
 
     override fun download(modpack: LockPack, target: String?, clean: Boolean) {
         val cacheDir = directories.cacheHome
-        val workspaceDir = File(".voodoo.data.curse")
+        val workspaceDir = File(".curse")
         val modpackDir = workspaceDir.resolve(with(modpack) { "$name-$version" })
         val srcFolder = modpackDir.resolve("overrides")
 
@@ -128,9 +128,11 @@ object CursePack : AbstractPack() {
         val manifestFile = modpackDir.resolve("manifest.json")
         manifestFile.writeJson(curseManifest)
 
+        val cursePackFile = workspaceDir.resolve(with(modpack) { "$name-$version.zip" })
 
-        packToZip(modpackDir.toPath(), workspaceDir.toPath().resolve(with(modpack) { "$name-$version.zip" }))
-        //        workspaceDir.resolve(with(modpack) { "$name-$version.zip" }).packToZip(modpackDir)
+        packToZip(modpackDir.toPath(), cursePackFile.toPath())
+
+        logger.info("packed ${modpack.name} -> $cursePackFile")
     }
 
 }
