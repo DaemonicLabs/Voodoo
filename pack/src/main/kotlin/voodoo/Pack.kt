@@ -27,7 +27,7 @@ object Pack : KLogging() {
                 "mmc" -> MMCPack
                 "fatserver" -> FatServerPack
                 "server" -> ServerPack
-                "voodoo/data/curse" -> CursePack
+                "curse" -> CursePack
 
                 else -> {
                     logger.error("no such packing methode: $methode")
