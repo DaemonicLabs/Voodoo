@@ -41,7 +41,10 @@ object Server {
         for(file in serverDir.walkTopDown()) {
             when {
                 file.name == "_CLIENT" -> file.deleteRecursively()
-                file.name == "_SERVER" -> file.renameTo(file.parentFile)
+                file.name == "_SERVER" -> {
+                    file.copyRecursively(file.parentFile)
+                    file.deleteRecursively()
+                }
             }
         }
 
