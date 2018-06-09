@@ -106,7 +106,7 @@ object MMCUtil : KLogging() {
         minecraftDir.mkdirs()
 
         val iconKey = if (icon != null && icon.exists()) {
-            val iconName = "icon_$name"
+            val iconName = "icon_$folder"
 //            val iconName = "icon"
             icon.copyTo(instanceDir.resolve("$iconName.png"), overwrite = true)
             iconName
