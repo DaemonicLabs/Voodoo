@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 object Server {
     val directories = Directories.get(moduleName = "server-installer")
 
-    fun install(modpack: LockPack, serverDir: File, clean: Boolean) {
+    fun install(modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean) {
         val cacheDir = directories.cacheHome
 
         if (clean) {
@@ -61,21 +61,26 @@ object Server {
         logger.info("forge: $forgeLongVersion")
 
         // install forge
-        val java = arrayOf(System.getProperty("java.home"), "bin", "java").joinToString(File.separator)
-        val args = arrayOf(java, "-jar", forgeFile.path, "--installServer")
-        logger.debug("running " + args.joinToString(" ") { "\"$it\"" })
-        ProcessBuilder(*args)
-                .directory(serverDir)
-                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                .redirectError(ProcessBuilder.Redirect.INHERIT)
-                .start()
-                .waitFor(60, TimeUnit.MINUTES)
+        if(!skipForge) {
+            val java = arrayOf(System.getProperty("java.home"), "bin", "java").joinToString(File.separator)
+            val args = arrayOf(java, "-jar", forgeFile.path, "--installServer")
+            logger.debug("running " + args.joinToString(" ") { "\"$it\"" })
+            ProcessBuilder(*args)
+                    .directory(serverDir)
+                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                    .redirectError(ProcessBuilder.Redirect.INHERIT)
+                    .start()
+                    .waitFor(60, TimeUnit.MINUTES)
 
-        //rename forge jar
-        val forgeJar = serverDir.resolve("forge-$forgeLongVersion-universal.jar")
-        val targetForgeJar = serverDir.resolve("forge.jar")
-        targetForgeJar.delete()
-        forgeJar.copyTo(targetForgeJar, overwrite = true)
+            //rename forge jar
+            val forgeJar = serverDir.resolve("forge-$forgeLongVersion-universal.jar")
+            val targetForgeJar = serverDir.resolve("forge.jar")
+            targetForgeJar.delete()
+            forgeJar.copyTo(targetForgeJar, overwrite = true)
+        } else {
+            val forgeJar = serverDir.resolve("forge-installer.jar")
+            forgeFile.copyTo(forgeJar, overwrite = true)
+        }
 
     }
 }

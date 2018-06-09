@@ -25,7 +25,7 @@ object Pack : KLogging() {
             val packer = when (methode) {
                 "sk" -> SKPack
                 "mmc" -> MMCPack
-                "fatserver" -> FatServerPack
+                "mmc-static" -> MMCStaticPack
                 "server" -> ServerPack
                 "curse" -> CursePack
 
