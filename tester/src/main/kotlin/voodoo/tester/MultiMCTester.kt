@@ -6,6 +6,7 @@ import voodoo.mmc.MMCUtil
 import voodoo.pack.AbstractTester
 import voodoo.provider.Provider
 import voodoo.util.blankOr
+import voodoo.util.downloader
 import voodoo.util.readJson
 import voodoo.util.writeJson
 import java.io.File
@@ -33,9 +34,17 @@ object MultiMCTester : AbstractTester() {
         val modsDir = minecraftDir.resolve("mods")
         modsDir.deleteRecursively()
 
+        downloader.logger.info("copying files into minecraft dir")
         val minecraftSrcDir = File(modpack.minecraftDir)
         if (minecraftSrcDir.exists()) {
             minecraftSrcDir.copyRecursively(minecraftDir, overwrite = true)
+        }
+
+        for(file in minecraftDir.walkTopDown()) {
+            when {
+                file.name == "_CLIENT" -> file.renameTo(file.parentFile)
+                file.name == "_SERVER" -> file.deleteRecursively()
+            }
         }
 
         // read user input
