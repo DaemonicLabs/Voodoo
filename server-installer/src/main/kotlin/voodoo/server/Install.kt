@@ -30,7 +30,7 @@ object Install : KLogging() {
 
             val modpack = packFile.readJson<LockPack>()
 
-            Server.install(modpack, targetDir, false)
+            Server.install(modpack, targetDir, skipForge, clean)
         }
     }
 
@@ -47,5 +47,12 @@ object Install : KLogging() {
                 help = "input pack lock.json") { File(this) }
                 .default(File("pack.lock.json"))
 
+        val skipForge by parser.flagging("--skipForge",
+                help = "do not call the forge installer")
+                .default(false)
+
+        val clean by parser.flagging("--clean",
+                help = "clean install (WARNING: will delete server contents before install)")
+                .default(false)
     }
 }
