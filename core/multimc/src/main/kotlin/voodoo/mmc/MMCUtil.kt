@@ -3,22 +3,15 @@ package voodoo.mmc
 import com.sun.jna.Platform
 import mu.KLogging
 import voodoo.data.Recommendation
-import voodoo.data.Side
-import voodoo.data.lock.LockPack
 import voodoo.data.sk.SKFeature
 import voodoo.forge.Forge
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
-import voodoo.provider.Provider
 import voodoo.util.Directories
-import voodoo.util.blankOr
 import voodoo.util.readJson
 import voodoo.util.writeJson
 import java.awt.*
-import java.awt.event.ActionEvent
-import java.awt.event.ActionListener
-import java.awt.event.WindowAdapter
-import java.awt.event.WindowEvent
+import java.awt.event.*
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -26,6 +19,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import javax.swing.*
 import kotlin.system.exitProcess
+
 
 object MMCUtil : KLogging() {
     private val directories = Directories.get(moduleName = "multimc")
@@ -114,7 +108,7 @@ object MMCUtil : KLogging() {
         val iconKey = if (icon != null && icon.exists()) {
             val iconName = "icon_$name"
 //            val iconName = "icon"
-            icon.copyTo(instanceDir.resolve("$iconName.png"))
+            icon.copyTo(instanceDir.resolve("$iconName.png"), overwrite = true)
             iconName
         } else {
             "default"
@@ -179,66 +173,60 @@ object MMCUtil : KLogging() {
                 UIManager.getSystemLookAndFeelClassName()
         )
 
-        val checkBoxes = features.associateBy({
+        val toggleButtons = features.associateBy({
             it.name
         }, {
-            JCheckBox("", defaults[it.name] ?: it.selected)
+            JToggleButton(it.name, defaults[it.name] ?: it.selected)
+                    .apply {
+                        horizontalAlignment = SwingConstants.RIGHT
+                    }
         })
 
         var success = false
 
-        val adapter = object : WindowAdapter() {
-            override fun windowClosed(e: WindowEvent) {
-                logger.info("closing dialog")
-                if (!success)
-                    exitProcess(1)
-            }
-        }
+//        logger.info { UIManager.getDefaults()/*.filterValues { it is Icon }.map { (k, v) -> "$k = $v\n" }*/ }
 
-        val title = "Features" + if (name.isBlank()) "" else " - $name" + if (version.isBlank()) "" else " - $version"
-        val dialog = object : JDialog(null as Dialog?, title, true), ActionListener {
+        val windowTitle = "Features" + if (name.isBlank()) "" else " - $name" + if (version.isBlank()) "" else " - $version"
+        val dialog = object : JDialog(null as Dialog?, windowTitle, true) {
             init {
                 modalityType = Dialog.ModalityType.APPLICATION_MODAL
 
                 val panel = JPanel()
                 panel.layout = GridBagLayout()
 
-                for ((row, feature) in features.withIndex()) {
+                for ((row, feature) in features.sortedBy { it.name }.withIndex()) {
 
-                    val check = checkBoxes[feature.name]
-                    if (check != null) {
-                        check.foreground = Color.LIGHT_GRAY
-                        check.alignmentX = Component.LEFT_ALIGNMENT
-                        panel.add(check,
-                                GridBagConstraints().apply {
-                                    gridx = 0
-                                    gridy = row
-                                    weightx = 0.001
-                                    anchor = GridBagConstraints.LINE_START
-                                    fill = GridBagConstraints.BOTH
-                                }
-                        )
+                    val toggle = toggleButtons[feature.name]!!.apply {
+                        alignmentX = Component.RIGHT_ALIGNMENT
                     }
-
-                    val name = JLabel(feature.name)
-                    panel.add(name,
+                    panel.add(toggle,
                             GridBagConstraints().apply {
-                                gridx = 1
+                                gridx = 0
                                 gridy = row
                                 weightx = 0.001
-                                anchor = GridBagConstraints.LINE_END
+                                weighty = 0.001
+                                anchor = GridBagConstraints.LINE_START
+                                fill = GridBagConstraints.BOTH
+                                ipady = 4
                             }
                     )
+
 
                     val recommendation = when (feature.recommendation) {
                         Recommendation.starred -> {
                             val orange = Color(0xFFd09b0d.toInt())
-                            name.foreground = orange
-                            JLabel("★").apply { foreground = orange }
+//                            toggle.foreground = orange
+                            JLabel("★").apply {
+                                foreground = orange
+                                toolTipText = "Recommended"
+                            }
                         }
                         Recommendation.avoid -> {
-                            name.foreground = Color.RED
-                            JLabel("⚠️").apply { foreground = Color.RED }
+//                            toggle.foreground = Color.RED
+                            JLabel("⚠️").apply {
+                                foreground = Color.RED
+                                toolTipText = "Avoid"
+                            }
                         }
                         else -> {
                             JLabel("")
@@ -250,14 +238,15 @@ object MMCUtil : KLogging() {
                                 gridx = 2
                                 gridy = row
                                 weightx = 0.001
+                                fill = GridBagConstraints.BOTH
                                 insets = Insets(0, 8, 0, 8)
                             }
                     )
 
-                    val description = JLabel("<html>${feature.description}</html>")
 
-                    if (!feature.description.isNullOrBlank()) {
-                        panel.add(description,
+                    if (!feature.description.isBlank()) {
+                        val descriptionText = JLabel("<html>${feature.description}</html>")
+                        panel.add(descriptionText,
                                 GridBagConstraints().apply {
                                     gridx = 3
                                     gridy = row
@@ -265,27 +254,42 @@ object MMCUtil : KLogging() {
                                     anchor = GridBagConstraints.LINE_START
                                     fill = GridBagConstraints.BOTH
                                     ipady = 8
+                                    insets = Insets(0, 8, 0, 8)
                                 }
                         )
                     }
                 }
 
                 add(panel, BorderLayout.CENTER)
-                val buttonPane = JPanel()
+                val buttonPane = JPanel(GridBagLayout())
                 val button = JButton("OK")
-                button.addActionListener(this)
-                buttonPane.add(button)
+                button.addActionListener {
+                    isVisible = false
+                    success = true
+                    dispose()
+                }
+                buttonPane.add(button, GridBagConstraints().apply {
+                    gridx = 0
+                    weightx = 0.7
+                    anchor = GridBagConstraints.LINE_END
+                    fill = GridBagConstraints.HORIZONTAL
+                    ipady = 4
+                    insets = Insets(4, 0, 0, 0)
+                })
+
                 add(buttonPane, BorderLayout.SOUTH)
                 defaultCloseOperation = DISPOSE_ON_CLOSE
-                addWindowListener(adapter)
+                addWindowListener(
+                        object : WindowAdapter() {
+                            override fun windowClosed(e: WindowEvent) {
+                                logger.info("closing dialog")
+                                if (!success)
+                                    exitProcess(1)
+                            }
+                        }
+                )
                 pack()
                 setLocationRelativeTo(null)
-            }
-
-            override fun actionPerformed(e: ActionEvent) {
-                isVisible = false
-                success = true
-                dispose()
             }
 
             override fun setVisible(visible: Boolean) {
@@ -298,7 +302,7 @@ object MMCUtil : KLogging() {
             fun getValue(): Map<String, Boolean> {
                 isVisible = true
                 dispose()
-                return features.associateBy({ it.name }, { checkBoxes[it.name]!!.isSelected })
+                return features.associateBy({ it.name }, { toggleButtons[it.name]!!.isSelected })
             }
         }
         logger.info("created dialog")
