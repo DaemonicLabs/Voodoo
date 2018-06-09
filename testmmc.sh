@@ -21,7 +21,7 @@ echo
 echo "testing $1 on multimc"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" test $pack.lock.json mmc
+java -jar "$DIR/voodoo/build/libs/voodoo.jar" test $pack.lock.json mmc --clean
 if [ ! $? -eq 0 ]; then
     echo "Error Testing $pack in multimc"
     exit 1

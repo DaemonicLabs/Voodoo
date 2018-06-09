@@ -10,6 +10,7 @@ import voodoo.util.downloader
 import voodoo.util.readJson
 import voodoo.util.writeJson
 import java.io.File
+import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 06/05/18.
@@ -26,6 +27,12 @@ object MultiMCTester : AbstractTester() {
         val cacheDir = directories.cacheHome
         val multimcDir = MMCUtil.findDir()
         val instanceDir = multimcDir.resolve("instances").resolve(folder)
+
+        if(clean) {
+            logger.info("cleaning old instance dir")
+            instanceDir.deleteRecursively()
+        }
+
         instanceDir.mkdirs()
 
         val iconFile = File("multimc").resolve("${modpack.name}.icon.png")
@@ -42,8 +49,13 @@ object MultiMCTester : AbstractTester() {
 
         for(file in minecraftDir.walkTopDown()) {
             when {
-                file.name == "_CLIENT" -> file.renameTo(file.parentFile)
-                file.name == "_SERVER" -> file.deleteRecursively()
+                file.name == "_CLIENT" -> {
+                    file.copyRecursively(file.parentFile)
+                    file.deleteRecursively()
+                }
+                file.name == "_SERVER" -> {
+                    file.deleteRecursively()
+                }
             }
         }
 

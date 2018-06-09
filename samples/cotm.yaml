@@ -1,10 +1,10 @@
 #===========#
-# Test Info #
+# Pack Info #
 #===========#
 name: cotm
 title: Center of the Multiverse
 authors: ["AnsuzThuriaz", "Falkreon", "NikkyAi"]
-version: 2.1.7
+version: 2.1.7.3
 mcVersion: 1.12.2
 forge: 2705
 minecraftDir: src
@@ -15,11 +15,13 @@ minecraftDir: src
 userFiles:
 
   include:
+  - "options.txt"
   - "quark.cfg"
 
   exclude: []
+
 #===========#
-# Core Test #
+# Core Pack #
 #===========#
 root:
 #==============#
@@ -30,7 +32,7 @@ root:
   curseReleaseTypes: [ alpha, beta, release ]
 
 #==============#
-# Test Content #
+# Pack Content #
 #==============#
 
 #======#
@@ -72,9 +74,6 @@ root:
   - Colytra
   - Comforts
 
-  # bdew
-  - Compacter
-
   # BlayTheNinth
   - Cooking for Blockheads
   - Farming for Blockheads
@@ -107,8 +106,11 @@ root:
   - Thermal Innovation
 
   # McJTY
-  - RFTools
-  - RFTools Dimensions
+  - curseReleaseTypes: [ beta, release ]
+    # because alphas are buggy
+    entries:
+    - RFTools
+    - RFTools Dimensions
 
   # Mr_Crayfish
   - "MrCrayfish's Furniture Mod"
@@ -192,7 +194,7 @@ root:
   - Paintings ++
   - Painting Selection Gui Revamped
   - Tool Belt
-  - TorchMaster
+  - TorchMaster 
   - Robotic Parts
   - ReWIRED
   - Woot
@@ -218,33 +220,32 @@ root:
   - Electroblob's Wizardry
   - Reliquary v1.3
   - CookieCore
-
-  #- Thaumcraft
-  #- version: 1.12.2-6.1.BETA13
+  - Thaumcraft
 
   # In Testing
   - Portality
   - DimensionalDoors
+  - Stargate Atlantiscraft
   #- The Aether II (early alpha, very unstable)
   # /In Testing
 
   # Direct Downloads
   - provider: DIRECT
     entries:
-
+  
   # Thaumcraft
-    - url: https://centerofthemultiverse.net/launcher/mirror/Thaumcraft-1.12.2-6.1.BETA13.jar
-      name: Thaumcraft
+  #  - url: https://centerofthemultiverse.net/launcher/mirror/Thaumcraft-1.12.2-6.1.BETA13.jar
+  #    name: Thaumcraft 
 
   # Nutrition
     - url: https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar
-      name: Nutrition
+      name: Nutrition 
 
   # Better Builder's Wands
     - url: https://centerofthemultiverse.net/launcher/mirror/BetterBuildersWands-1.12-0.11.1.245+69d0d70.jar
       name: Better Builder's Wands
 
-  # Jenkins Downloads
+  # Jenkins Downloads      
   - provider: JENKINS
     jenkinsUrl: https://ci.elytradev.com
     entries:
@@ -285,7 +286,7 @@ root:
   - side: SERVER
     entries:
     - "BTFU continuous rsync incremental backup"
-    - Unloader
+    - SwingThroughGrass
 
     - job: elytra/MatterLink/master
       name: MatterLink
@@ -313,16 +314,10 @@ root:
     - CleanView
     - Vise
     - Crafting Tweaks
+    - Smooth Font
 
     # Way2muchnoise
     - Better Advancements
-
- #========================#
- # Clientside - Resources #
- #========================#
-    # Unity Resource Test
-    - name: Unity
-      side: CLIENT
 
  #=======================#
  # Clientside - Optional #
@@ -347,6 +342,12 @@ root:
     - feature:
         selected: false
       entries:
+
+        - name: Item Scroller
+          description: Alternative to MouseTweaks
+
+        - name: Xaero's Minimap
+          description: Lightweight alternative to JourneyMap
 
         - name: MineMenu
           description: "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
@@ -380,3 +381,18 @@ root:
 
         - name: Keyboard Wizard
           description: Visual keybind editor.
+
+ #================#
+ # Resource Packs #
+ #================#
+    # Unity Resource Pack
+        - name: Unity
+          description: "A nice, traditional-style resourcepack with support for many of our mods. Does have some minor visual bugs and is a tad heavy. Remember to apply from the main menu, and not in game!"
+
+    # Slice
+        - provider: DIRECT
+          entries: 
+          - name: Slice
+            folder: resourcepacks
+            url: https://centerofthemultiverse.net/launcher/mirror/Slice.zip
+            description: Resource pack to replace system font with something better.
