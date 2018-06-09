@@ -4,6 +4,7 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
 import voodoo.util.jenkins.JenkinsServer
+import voodoo.util.jenkins.VERSION
 import java.io.File
 
 object DownloadVoodoo : KLogging() {
@@ -18,7 +19,7 @@ object DownloadVoodoo : KLogging() {
     ): File {
         val moduleName = "${if(bootstrap) "bootstrap-" else ""}$component"
         val fileRegex = "$moduleName-[^-]*(?!-fat)\\.jar"
-        val userAgent = "voodoo-pack/${voodoo.util.jenkins.VERSION}"
+        val userAgent = "voodoo/$VERSION"
 
         val server = JenkinsServer(url)
         val jenkinsJob = server.getJob(job, userAgent)!!

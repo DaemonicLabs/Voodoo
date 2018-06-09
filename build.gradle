@@ -75,6 +75,13 @@ subprojects {
                     BUILD_NUMBER: System.env.BUILD_NUMBER ?: -1
             )
         }
+        fileTree("$buildDir/generated-src/$folder").visit { FileVisitDetails details ->
+            println "# " +details.file.path
+            details.file.readLines().forEach {
+                println it
+            }
+        }
+
     }
     if (System.env.BUILD_NUMBER) {
         version = System.env.BUILD_NUMBER
