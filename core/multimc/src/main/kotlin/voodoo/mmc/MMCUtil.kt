@@ -43,8 +43,16 @@ object MMCUtil : KLogging() {
     fun findDir(): File = when {
         Platform.isWindows() -> {
             val location = "where multimc".runCommand()
-                    ?: throw FileNotFoundException("cannot find multimc on path")
             val multimcFile = File(location)
+            if(!multimcFile.exists()) {
+                logger.error("Cannot find MultiMC on PATH")
+                logger.error("make sure to add the multimc install location to the PATH")
+                logger.error("go to `Control Panel\\All Control Panel Items\\System`" +
+                        " >> Advanced system settings" +
+                        " >> Environment Variables")
+                logger.info("once added restart the shell and try to execute `multimc`")
+                exitProcess(1)
+            }
             multimcFile.parentFile
         }
         Platform.isLinux() -> File(System.getProperty("user.home") + "/.local/share/multimc")
