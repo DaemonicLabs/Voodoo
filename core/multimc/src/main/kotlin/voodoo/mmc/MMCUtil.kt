@@ -44,7 +44,8 @@ object MMCUtil : KLogging() {
         Platform.isWindows() -> {
             val location = "where multimc".runCommand()
             val multimcFile = File(location)
-            if(!multimcFile.exists()) {
+            multimcFile.parentFile ?: run {
+                logger.error { multimcFile }
                 logger.error("Cannot find MultiMC on PATH")
                 logger.error("make sure to add the multimc install location to the PATH")
                 logger.error("go to `Control Panel\\All Control Panel Items\\System`" +
@@ -53,7 +54,6 @@ object MMCUtil : KLogging() {
                 logger.info("once added restart the shell and try to execute `multimc`")
                 exitProcess(1)
             }
-            multimcFile.parentFile
         }
         Platform.isLinux() -> File(System.getProperty("user.home") + "/.local/share/multimc")
         else -> throw Exception("unsupported platform")
@@ -70,7 +70,7 @@ object MMCUtil : KLogging() {
 //                .waitFor()
     }
 
-    fun String.runCommand(workingDir: File = cacheHome): String? {
+    fun String.runCommand(workingDir: File = cacheHome): String {
         try {
             val parts = this.split("\\s".toRegex())
             val proc = ProcessBuilder(*parts.toTypedArray())
@@ -83,7 +83,7 @@ object MMCUtil : KLogging() {
             return proc.inputStream.bufferedReader().readText()
         } catch (e: IOException) {
             e.printStackTrace()
-            return null
+            throw Exception("cannot execute '$this'")
         }
     }
 
