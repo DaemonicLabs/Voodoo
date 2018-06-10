@@ -1,4 +1,9 @@
-# Build Sample Pack
+title: Build Sample Pack
+---
+
+[index](../)
+
+## Requirements
 
 assuming you have a `.yaml` file ready to use from
 [Setup](setup)

@@ -1,4 +1,7 @@
-# Setup
+title: Setup
+---
+
+[index](../)
 
 ## Pack Setup
 
