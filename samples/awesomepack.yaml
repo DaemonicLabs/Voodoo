@@ -1,0 +1,132 @@
+# Short Name / folder name
+name: awesomePack
+
+# Display Name
+title: Awesome Pack
+
+# Minecraft Version
+mcVersion: 1.12.2
+
+# Forge version / build number
+forge: recommended
+
+# Your nNme here
+authors:
+ - SomeDude
+ - OtherDude
+
+# Pack version
+version: 1.0
+
+# minecraft src dir
+minecraftDir: .minecraft
+
+root:
+  validMcVersions: [1.12.1, '1.12']
+  curseOptionalDependencies: false
+  curseReleaseTypes: [ alpha, beta, release ]
+  entries:
+  - Akashic Tome
+  - Botania
+  - Baubles
+  - Wearable Backpacks
+  - Just Enough Items (JEI)
+
+  - provider: DIRECT
+    entries:
+
+    - url: https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar
+      name: Nutrition
+
+    - url: https://centerofthemultiverse.net/launcher/mirror/BetterBuildersWands-1.12-0.11.1.245+69d0d70.jar
+      name: Better Builder's Wands
+
+  - provider: JENKINS
+    jenkinsUrl: https://ci.elytradev.com
+    entries:
+
+    - job: elytra/MagicArsenal/master
+      name: Magic Arsenal
+
+    - job: elytra/FruitPhone/1.12.2
+      name: FruitPhone
+
+    - job: elytra/ProbeDataProvider/1.12
+      name: ProbeDataProvider
+
+  - side: SERVER
+    entries:
+    - "BTFU continuous rsync incremental backup"
+    - SwingThroughGrass
+
+    - job: elytra/MatterLink/master
+      name: MatterLink
+
+  - side: CLIENT
+    entries:
+    - "IKWID (I Know What I'm Doing)"
+    - Wawla - What Are We Looking At
+    - Waila Harvestability
+    - JEI Integration
+    - AppleSkin
+    - BetterFps
+    - NoNausea
+    - Better Placement
+    - Controlling
+    - Default Options
+    - Fullscreen Windowed (Borderless) for Minecraft
+    - Mod Name Tooltip
+    - Neat
+    - ReAuth
+    - CleanView
+    - Vise
+    - Smooth Font
+
+    - feature:
+        selected: true
+        recommendation: starred
+      entries:
+
+        - name: JourneyMap
+          description: "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
+
+        - name: SmoothWater
+          description: "Makes the surface of water nicer, better underwater lighting, can cost some FPS."
+
+        - name: Client Tweaks
+          description: "Various client related fixes and tweaks, all in a handy menu."
+
+        - name: Mouse Tweaks
+          description: "Add extra mouse gestures for inventories and crafting grids."
+
+    - feature:
+        selected: false
+      entries:
+
+        - name: Item Scroller
+          description: Alternative to MouseTweaks
+
+        - name: Fancy Block Particles
+          description: "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps."
+
+        - name: Keyboard Wizard
+          description: Visual keybind editor.
+
+        - name: Xaero's Minimap
+          description: Lightweight alternative to JourneyMap
+
+
+      - feature:
+        selected: false
+      entries:
+
+      - name: Unity
+        fileName: Unity.zip
+        description: "A nice, traditional-style resourcepack with support for many of our mods. Does have some minor visual bugs and is a tad heavy. Remember to apply from the main menu, and not in game!"
+
+      - provider: DIRECT
+        entries:
+        - name: Slice
+          folder: resourcepacks
+          url: https://centerofthemultiverse.net/launcher/mirror/Slice.zip
+          description: Resource pack to replace system font with something better.
