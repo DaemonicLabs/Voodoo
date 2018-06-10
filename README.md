@@ -17,6 +17,10 @@ but please report those errors too
 unix: `./gradlew build`
 windows: `./gradlew.bat build`
 
+## Docs
+
+https://elytra.github.io/Voodoo
+
 ## usage
 examples based on [Center of the Multiverse](https://github.com/elytra/Center-of-the-Multiverse)
 

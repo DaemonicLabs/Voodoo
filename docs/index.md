@@ -6,7 +6,7 @@ and other launchers
 ## Getting Started
 
 - [Setup](setup)
-- [Building](building)
+- [Building](build)
 - [Testing](testing)
 
 ## get it
