@@ -5,9 +5,9 @@ and other launchers
 
 ## Getting Started
 
-- [Setup](/setup)
-- [Building](/building)
-- [Testing](/testing)
+- [Setup](setup)
+- [Building](building)
+- [Testing](testing)
 
 ## get it
 

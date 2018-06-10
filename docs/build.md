@@ -1,7 +1,7 @@
 # Build Sample Pack
 
-assuming you have a `.yaml` file ready to use from 
-[Setup](/setup)
+assuming you have a `.yaml` file ready to use from
+[Setup](setup)
 
 ## Get Voodoo
 
@@ -52,4 +52,4 @@ voodoo build awesomepack.json -o awesomepack.lock.json -E "Botania" -E "Magic Ar
 ```
 
 
-continue with [Testing the Modpack](/testing)
+continue with [Testing the Modpack](testing)

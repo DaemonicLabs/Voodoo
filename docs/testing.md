@@ -1,7 +1,7 @@
 # Testing
 
-assuming you have a `.lock.json` file ready to use from 
-[Build](/build)
+assuming you have a `.lock.json` file ready to use from
+[Build](build)
 
 ## MultiMC
 
