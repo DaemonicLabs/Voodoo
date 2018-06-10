@@ -302,4 +302,4 @@ the filename of Unity we modify because then we can provide default options that
 
 the pack definition file may now look like [samples/awesomepack.yaml](https://github.com/elytra/Voodoo/blob/master/samples/awesomepack.yaml)
 
-continue with [Build the Pack](https://github.com/elytra/Voodoo/blob/master/docs/build.md)
+continue with [Build the Pack](/build)

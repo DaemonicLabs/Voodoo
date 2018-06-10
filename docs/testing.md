@@ -1,7 +1,7 @@
 # Testing
 
 assuming you have a `.lock.json` file ready to use from 
-[Build](https://github.com/elytra/Voodoo/blob/master/docs/build.md)
+[Build](/build)
 
 ## MultiMC
 
