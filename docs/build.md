@@ -1,14 +1,17 @@
 # Build Sample Pack
 
 assuming you have a `.yaml` file ready to use from 
-[Setup](https://github.com/elytra/Voodoo/blob/master/docs/setup.md)
+[Setup](/setup)
 
 ## Get Voodoo
 
-Before we cna continue you need to download or compile Voodoo
-download it here: https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/97/artifact/bootstrap/build/libs/bootstrap-voodoo-97.jar
-or if this is far in the future and i neglected to update this url.. grab a newer version from
-https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/
+Before we can continue you need to download or compile Voodoo
+
+download it 
+[here](https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/97/artifact/bootstrap/build/libs/bootstrap-voodoo-97.jar)
+
+or if this is far in the future and i neglected to update this url.. grab the 
+[lastSucessfulBuild](https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/lastSuccessfulBuild/)
 
 my recommendation is to drop this jar in `~/bin/bootstrap-voodoo.jar`
 and add this to your .bashrc or similar
@@ -49,4 +52,4 @@ voodoo build awesomepack.json -o awesomepack.lock.json -E "Botania" -E "Magic Ar
 ```
 
 
-continue with [Testing the Modpack](https://github.com/elytra/Voodoo/blob/master/docs/testing.md)
+continue with [Testing the Modpack](/testing)
