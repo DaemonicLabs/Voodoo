@@ -1,7 +1,3 @@
----
-title: Testing
----
-
 [index](index)
 
 # Testing
