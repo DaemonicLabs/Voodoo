@@ -1,11 +1,11 @@
-[index](/Voodoo)
+[index](../../)
 
 # Testing
 
 ## Requirements
 
 assuming you have a `.lock.json` file ready to use from
-[Build](build)
+[Build](../building)
 
 ## MultiMC
 
