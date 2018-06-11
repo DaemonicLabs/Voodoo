@@ -3,6 +3,10 @@
 voodoo is a set of tools to quickly build and prepare modpacks for SKCraft launcher
 and other launchers
 
+- [Setup](docs/setup)
+- [Building](docs/build)
+- [Testing](docs/testing)
+
 ## get it
 
 ### download
@@ -14,7 +18,7 @@ but please report those errors too
 
 ### build
 
-unix: `./gradlew build`
+unix: `./gradlew build`  
 windows: `./gradlew.bat build`
 
 ## Docs
@@ -24,7 +28,7 @@ https://elytra.github.io/Voodoo
 ## usage
 examples based on [Center of the Multiverse](https://github.com/elytra/Center-of-the-Multiverse)
 
-other samples: [samples](/samples)
+other samples: [samples](samples)
 
 flatten the yaml (this creates the main json) \
 `java -jar voodoo.jar flatten cotm.yaml`
