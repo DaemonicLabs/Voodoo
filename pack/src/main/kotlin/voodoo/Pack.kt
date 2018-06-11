@@ -40,12 +40,12 @@ object Pack : KLogging() {
     }
 
     private class Arguments(parser: ArgParser) {
-        val modpack by parser.positional("FILE",
-                help = "input pack .lock.json") { File(this).readJson<LockPack>() }
-
         val methode by parser.positional("METHODE",
                 help = "format to package into") { this.toLowerCase()}
                 .default("")
+
+        val modpack by parser.positional("FILE",
+                help = "input pack .lock.json") { File(this).readJson<LockPack>() }
 
         val targetArg by parser.storing("--output", "-o",
                 help = "output folder")

@@ -21,7 +21,7 @@ echo
 echo "packing $1 for multimc"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" pack $pack.lock.json mmc
+java -jar "$DIR/voodoo/build/libs/voodoo.jar" pack mmc $pack.lock.json
 if [ ! $? -eq 0 ]; then
     echo "Error Packing $pack"
     exit 1

@@ -47,11 +47,11 @@ object Credits : KLogging() {
     }
 
     private class Arguments(parser: ArgParser) {
-        val inputArg by parser.positional("FILE",
-                help = "input pack lock.json")
-
         val templateFile by parser.positional("TEMPLATE",
                 help = "template header") { File(this) }
+
+        val inputArg by parser.positional("FILE",
+                help = "input pack lock.json")
 
         val sort by parser.flagging("--sort",
                 help = "sort entries alphanumerically")
