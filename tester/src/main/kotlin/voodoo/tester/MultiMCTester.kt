@@ -50,7 +50,7 @@ object MultiMCTester : AbstractTester() {
         for(file in minecraftDir.walkTopDown()) {
             when {
                 file.name == "_CLIENT" -> {
-                    file.copyRecursively(file.parentFile)
+                    file.copyRecursively(file.parentFile, overwrite = true)
                     file.deleteRecursively()
                 }
                 file.name == "_SERVER" -> {
