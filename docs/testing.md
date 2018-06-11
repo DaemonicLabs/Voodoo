@@ -4,6 +4,8 @@ title: Testing
 
 [index](index)
 
+# Testing
+
 ## Requirements
 
 assuming you have a `.lock.json` file ready to use from

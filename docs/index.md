@@ -1,7 +1,11 @@
+---
+title: Voodoo
+---
+
 Voodoo is a set of tools to quickly build and prepare modpacks for SKCraft launcher and other Platforms
 and other launchers
 
-## Getting Started
+# Index
 
 - [Setup](setup)
 - [Building](build)

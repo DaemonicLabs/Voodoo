@@ -4,7 +4,7 @@ title: Setup
 
 [index](index)
 
-## Pack Setup
+# Setup
 
 Lets make a Pack.. 
 we call it Awesome Pack

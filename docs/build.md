@@ -1,8 +1,10 @@
 ---
-title: Build Sample Pack
+title: Building
 ---
 
 [index](index)
+
+# Building Sample pack
 
 ## Requirements
 
@@ -20,10 +22,13 @@ or if this is far in the future and i neglected to update this url.. grab the
 [lastSucessfulBuild](https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/lastSuccessfulBuild/)
 
 my recommendation is to drop this jar in `~/bin/bootstrap-voodoo.jar`
-and add this to your .bashrc or similar
+
+add to your .bashrc or similar
+
 ```bash
 alias voodoo='java -jar ~/bin/bootstrap-voodoo.jar'
 ```
+
 for the rest of thise guide you can assume this is what is meant 
 when you just see the `voodoo` command
 
