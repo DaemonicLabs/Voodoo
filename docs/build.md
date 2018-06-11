@@ -1,7 +1,8 @@
+---
 title: Build Sample Pack
 ---
 
-[index](../)
+[index](index)
 
 ## Requirements
 

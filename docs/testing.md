@@ -1,7 +1,8 @@
+---
 title: Testing
 ---
 
-[index](../)
+[index](index)
 
 ## Requirements
 
