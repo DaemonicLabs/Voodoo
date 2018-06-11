@@ -1,7 +1,3 @@
----
-title: Setup
----
-
 [index](index)
 
 # Setup
