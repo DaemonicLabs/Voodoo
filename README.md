@@ -1,13 +1,54 @@
-# voodoo
+Want to make a modpack ? quickly test locally and then make it available on multiple platforms for users ?
 
-voodoo is a set of tools to quickly build and prepare modpacks for SKCraft launcher
-and other launchers
+voodoo is a set of tools to quickly prepare, build, test and deploy modpacks to users and servers
+
+Voodoo might be for you if: 
+
+:heavy_check_mark: You want a fast and mostly automated process  
+:heavy_check_mark: You want to be able to update the modpack whenever you want  
+:heavy_check_mark: You don't want to depend on anyone else  
+
+or
+
+:heavy_check_mark: You already use SKCraft Launcher  
+
+It may not be for you if:
+
+:small_orange_diamond: You doo not feel comfortable using a shell  
+:small_orange_diamond: You don't have a website or place for people to download files from  
+:small_orange_diamond: You don't want anything to do with distributing the launcher or pack  
+
+This applies to different modules of voodoo individually.. without a place to host files you can still export
+a pack and upload it to curse, it will just be a much slower process due to approval and waiting time
+
+## What We Do Right
+
+Creating Modpacks with Voodoo requires minimal effort, just create one `yaml` definition
+
+You can Test Any pack in MultiMC, creating a instance and launching it is completely automated, no more clicking than necessary
+
+Modern Minecraft versions (1.6.+) and Forge are supported
+
+Uses [SKCraft Launcher](https://github.com/SKCraft/Launcher#skcraft-launcher) Pack Format, but download all files,
+dependencies and configures all file input based on the `yaml` definition
+
+Reproducability: with a modpacks `.lock.json` file you can reproduce the modpack on any platform, server install or local testing
+(given that the urls do not get taken down)
+
+Minimalistic Packs: on all platforms that support it (SK and the multimc-wrapper) mods will be downloaded by the user from the original location,  
+**No Rehosting of Mods!** completely automated by preparing `.url.txt` files for SKLauncher
+
+## Docs
+
+https://elytra.github.io/Voodoo
+
+## Guides
 
 - [Setup](docs/setup)
 - [Building](docs/build)
 - [Testing](docs/testing)
 
-## get it
+## Get it
 
 ### download
 
@@ -21,11 +62,8 @@ but please report those errors too
 unix: `./gradlew build`  
 windows: `./gradlew.bat build`
 
-## Docs
-
-https://elytra.github.io/Voodoo
-
 ## usage
+
 examples based on [Center of the Multiverse](https://github.com/elytra/Center-of-the-Multiverse)
 
 other samples: [samples](samples)
@@ -66,7 +104,7 @@ To run a test instance use \
 
 to compile a minimalistic MMC pack that selfupdates \
 `java -jar voodoo.jar pack cotm.lock.json mmc` \
-this expects a file `multimc/$packname.url.txt` that points at the previously uploaded
+this expects a file `multimc/${packname}.url.txt` that points at the previously uploaded
 skcraft data \
 more specifically the json file of the pack \
 eg: `https://centerofthemultiverse.net/launcher/cotm.json` in `cotm.url.txt`
