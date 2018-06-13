@@ -21,13 +21,13 @@ now with all that out of the way.. lets run the pack locally
 
 
 ```bash
-vodoo test awesomepack.lock.json mmc
+vodoo test mmc awesomepack.lock.json
 ```
 
 to force a clean install of the pack you can use
 
 ```bash
-vodoo test awesomepack.lock.json mmc --clean
+vodoo test mmc awesomepack.lock.json --clean
 ```
 
 ## SK Creator Tools
@@ -37,7 +37,7 @@ this assumes prior knowledge of skcraft creator tools
 you can package the modpack for skcraft
 
 ````bash
-voodoo pack awesomepack.lock.json sk
+voodoo pack sk awesomepack.lock.json
 ````
 
 this will create a `workspace` folder

@@ -9,6 +9,10 @@ import voodoo.data.Side
 import voodoo.data.flat.Entry
 import voodoo.data.flat.EntryFeature
 import voodoo.data.provider.UpdateChannel
+import voodoo.util.json
+import voodoo.util.readJson
+import voodoo.util.readYaml
+import java.io.File
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 
@@ -58,7 +62,8 @@ data class NestedEntry(
         var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
         var template: String = "",
         // NESTED
-        var entries: List<NestedEntry> = emptyList()
+        var entries: List<NestedEntry> = emptyList(),
+        var include: String? = null
 ) {
     companion object {
         @JvmStatic
@@ -76,8 +81,8 @@ data class NestedEntry(
 //                else
 //                        "NestedEntry(super=${super.toString()}, entries=$entries)"
 //        }
-    fun flatten(): List<Entry> {
-        flatten("")
+    fun flatten(parentFile: File): List<Entry> {
+        flatten("", parentFile)
         return this.entries.map { it ->
             Entry().apply {
                 for (prop in NestedEntry::class.memberProperties) {
@@ -93,8 +98,31 @@ data class NestedEntry(
         }
     }
 
-    private fun flatten(indent: String) {
+    private fun flatten(indent: String, parentFile: File) {
+        var parent = parentFile
         val toDelete = mutableListOf<NestedEntry>()
+        include?.let {
+            println("loading $include")
+            val includeFile = parentFile.resolve(it)
+            val includeEntry = includeFile.readYaml<NestedEntry>()
+
+            for (prop in NestedEntry::class.memberProperties) {
+                if (prop is KMutableProperty<*>) {
+                    val includeValue = prop.get(includeEntry)
+                    val thisValue = prop.get(this)
+                    val defaultValue = prop.get(default)
+
+                    if (thisValue == defaultValue) {
+                        println("setting ${prop.name}")
+                        prop.setter.call(this, includeValue)
+                    }
+                }
+            }
+            parent = includeFile.parentFile
+            println("loaded $includeFile")
+            include = null
+        }
+
         entries.forEach { entry ->
             for (prop in NestedEntry::class.memberProperties) {
                 if (prop is KMutableProperty<*>) {
@@ -124,7 +152,7 @@ data class NestedEntry(
                 }
             }
 
-            entry.flatten("$indent|  ")
+            entry.flatten("$indent|  ", parent)
             if (entry.entries.isNotEmpty()) {
                 toDelete += entry
             }

@@ -23,7 +23,7 @@ data class NestedPack(
         var localDir: String = "local",
         var minecraftDir: String = name
 ) {
-    fun flatten(): ModPack {
+    fun flatten(parentFile: File): ModPack {
         return ModPack(
                 name = name,
                 title = title,
@@ -32,7 +32,7 @@ data class NestedPack(
                 forge = forge,
                 mcVersion = mcVersion,
                 userFiles = userFiles,
-                entries = root.flatten(),
+                entries = root.flatten(parentFile),
                 versionCache = File(versionCache.path),
                 featureCache = File(featureCache.path),
                 localDir = localDir,
