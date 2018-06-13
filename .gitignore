@@ -12,3 +12,6 @@ run/
 
 launcher/
 launcher-builder
+
+_site/
+Gemfile\.lock
