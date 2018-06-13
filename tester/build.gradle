@@ -6,7 +6,7 @@ mainClassName = "voodoo.Test"
 
 def runDir = parent.project.file("run").path
 
-def runArgs = ["cotm.lock.json", "mmc"]
+def runArgs = ["mmc", "cotm.lock.json"]
 
 run {
     workingDir = runDir

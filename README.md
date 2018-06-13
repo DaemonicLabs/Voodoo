@@ -14,7 +14,7 @@ or
 
 It may not be for you if:
 
-:small_orange_diamond: You doo not feel comfortable using a shell  
+:small_orange_diamond: You do not feel comfortable using a shell  
 :small_orange_diamond: You don't have a website or place for people to download files from  
 :small_orange_diamond: You don't want anything to do with distributing the launcher or pack  
 

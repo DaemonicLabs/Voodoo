@@ -37,7 +37,7 @@ object Tester : KLogging() {
 
     private class Arguments(parser: ArgParser) {
         val methode by parser.positional("METHODE",
-                help = "format to package into") { this.toLowerCase()}
+                help = "testing provider to use") { this.toLowerCase()}
                 .default("")
 
         val modpack by parser.positional("FILE",
