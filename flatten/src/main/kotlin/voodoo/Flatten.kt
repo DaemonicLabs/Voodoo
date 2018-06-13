@@ -5,6 +5,7 @@ import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import mu.KLogging
 import voodoo.data.nested.NestedPack
+import voodoo.flatten.flatten
 import voodoo.util.json
 import voodoo.util.readYaml
 import voodoo.util.writeJson
@@ -42,6 +43,8 @@ object Flatten: KLogging() {
             }
         }
     }
+
+    fun flattenPack(pack: NestedPack, parentFile: File) = pack.flatten(parentFile)
 
     private class Arguments(parser: ArgParser) {
         val importArg by parser.positional("FILE",

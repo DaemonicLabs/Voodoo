@@ -2,8 +2,11 @@ rootProject.name = 'voodoo-parent'
 
 include 'core', 'core/data', 'core/curse', 'core/multimc', 'core/sk'
 include 'util', 'util/dir', 'util/jenkins'
-include 'flatten', 'builder', 'pack', 'tester', 'voodoo', 'tome', 'bootstrap', 'archiver'
+include 'flatten', 'builder', 'pack', 'tester', 'voodoo', 'tome', 'importer'
 include 'multimc-installer', 'server-installer'
+include 'bootstrap'
+include 'archiver'
+
 include ':launcher'
 project(':launcher').projectDir = new File(settingsDir, 'sklauncher/launcher')
 include ':launcher-builder'

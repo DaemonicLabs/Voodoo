@@ -2,20 +2,12 @@ plugins {
     id 'application'
 }
 
-mainClassName = "voodoo.Flatten"
-
-def runDir = parent.project.file("run").path
-
-def runArgs = ["openpack.yaml"]
-
-run {
-    workingDir = runDir
-    args = runArgs
-}
+mainClassName = "voodoo.Import"
 
 dependencies {
     compile project(':core')
     compile project(':core/data')
+    compile project(':flatten')
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
 }
 
