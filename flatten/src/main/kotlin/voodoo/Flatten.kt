@@ -28,11 +28,12 @@ object Flatten: KLogging() {
             var target = targetArg
 
             logger.info("FLATTENING...")
-            val flatpack = nestedPack.flatten()
+            val flatpack = nestedPack.flatten(inFile.parentFile)
 
             if (stdout) {
                 print(flatpack.json)
-            } else {
+            }
+            if (!nofile){
                 if (target.isEmpty()) target = inFile.nameWithoutExtension
                 if (!target.endsWith(".json")) target += ".json"
                 val targetFile = File(target)
@@ -51,6 +52,10 @@ object Flatten: KLogging() {
 
         val stdout by parser.flagging("--stdout", "-s",
                 help = "print output")
+                .default(false)
+
+        val nofile by parser.flagging("--nofile", "-n",
+                help = "do not write output to a file")
                 .default(false)
     }
 }
