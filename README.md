@@ -45,7 +45,7 @@ https://elytra.github.io/Voodoo
 ## Guides
 
 - [Setup](docs/setup)
-- [Building](docs/build)
+- [Building](docs/building)
 - [Testing](docs/testing)
 
 ## Get it
