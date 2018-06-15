@@ -3,6 +3,7 @@ package voodoo.tome
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import com.xenomachina.text.clear
 import mu.KLogging
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
@@ -44,14 +45,14 @@ object Changelog : KLogging() {
     fun commonSuffix(a: String, b: String, exclude: List<Char> = "0123456789".toList()): String {
         val minLength = Math.min(a.length, b.length)
         for (i in 1 until minLength) {
-            val ca =a[a.length-i]
-            val cb =b[b.length-i]
+            val ca = a[a.length - i]
+            val cb = b[b.length - i]
 //            logger.info("${-i} $ca $cb")
             if (ca != cb || exclude.contains(ca)) {
-                return a.substring(a.length-i+1, a.length)
+                return a.substring(a.length - i + 1, a.length)
             }
         }
-        return a.substring(a.length-minLength, a.length)
+        return a.substring(a.length - minLength, a.length)
     }
 
     fun cut(first: String, second: String): Pair<String, String> {
@@ -84,39 +85,46 @@ object Changelog : KLogging() {
             val builder = StringBuilder()
             val modpacks = sources.map { it.readJson<LockPack>() }
 
+            val sections = mutableListOf<String>()
+
             // first version
             val first = modpacks.first()
-            builder.append("## ${first.title} ${first.version}  \n")
-            builder.append("**name:** `${first.name}`  \n")
-            builder.append("**title:** `${first.title}`  \n")
-            builder.append("**version:** `${first.version}`  \n")
-            builder.append("**forge:** `${first.forge}`  \n")
-            builder.append("\n")
+            val section = StringBuilder()
+
+            builder.append("# ${first.title}\n\n")
+
+            section.append("## ${first.title} ${first.version}  \n\n")
+            section.append("**name:** `${first.name}`  \n")
+            section.append("**title:** `${first.title}`  \n")
+            section.append("**version:** `${first.version}`  \n")
+            section.append("**forge:** `${first.forge}`  \n")
+            section.append("\n")
             for (entry in first.entries) {
                 logger.info("add ${entry.name}")
                 val provider = Provider.valueOf(entry.provider).base
-                builder.append(TEMPLATE_ADD
+                section.append(TEMPLATE_ADD
                         .replace("[modName]", entry.name)
-                        .replace("[modVersion]", provider.getVersion(entry, first))
+                        .replaceElse("[modVersion]", { provider.getVersion(entry, first) })
                 )
             }
-            builder.append("\n\n")
+            sections.add(0, section.toString())
 
             val pairs = modpacks.dropLast(1).zip(modpacks.drop(1))
 
             for ((old, next) in pairs) {
+                section.clear()
                 logger.info("previous: ${old.version} next: ${next.version}")
 
-                builder.append("## ${next.title} ${next.version}  \n")
+                section.append("## ${next.title} ${next.version}  \n\n")
                 if (old.name != next.name)
-                    builder.append("**name:** `${old.name}` -> `${next.name}`  \n")
+                    section.append("**name:** `${old.name}` -> `${next.name}`  \n")
                 if (old.title != next.title)
-                    builder.append("**title:** `${old.title}` -> `${next.title}`  \n")
+                    section.append("**title:** `${old.title}` -> `${next.title}`  \n")
                 if (old.version != next.version)
-                    builder.append("**version:** `${old.version}` -> `${next.version}`  \n")
+                    section.append("**version:** `${old.version}` -> `${next.version}`  \n")
                 if (old.forge != next.forge)
-                    builder.append("**forge:** `${old.forge}` -> `${next.forge}`  \n")
-                builder.append("\n")
+                    section.append("**forge:** `${old.forge}` -> `${next.forge}`  \n")
+                section.append("\n")
 
                 val entries = if (sort) {
                     old.entries.sortedBy { it.name }
@@ -131,15 +139,15 @@ object Changelog : KLogging() {
                     val oldEntry = old.entries.find { it.name == entry.name }
                     if (oldEntry == null) {
                         val provider = Provider.valueOf(entry.provider).base
-                        builder.append(TEMPLATE_ADD
+                        section.append(TEMPLATE_ADD
                                 .replace("[modName]", entry.name)
-                                .replaceElse("[modVersion]", {provider.getVersion(entry, next)})
+                                .replaceElse("[modVersion]", { provider.getVersion(entry, next) })
                         )
                         added = true
                     }
                 }
                 if (!added) {
-                    builder.append("\nno mods added  \n\n")
+                    section.append("no mods added  \n\n")
                 }
 
                 logger.info("scanning changed entries")
@@ -167,7 +175,7 @@ object Changelog : KLogging() {
 
                         if (oldVersionLong != nextVersionLong) {
                             val (oldVersion, nextVersion) = cut(oldVersionLong, nextVersionLong)
-                            builder.append(TEMPLATE_UPDATE
+                            section.append(TEMPLATE_UPDATE
                                     .replace("[modName]", entry.name)
                                     .replace("[oldModVersion]", oldVersion)
                                     .replace("[newModVersion]", nextVersion)
@@ -179,27 +187,32 @@ object Changelog : KLogging() {
                     }
                 }
                 if (!updated) {
-                    builder.append("\nno mods updated  \n\n")
+                    section.append("\nno mods updated  \n\n")
                 }
 
                 logger.info("scanning removed entries")
                 for (entry in removed) {
 //                    logger.info("remove ${entry.name}")
                     val provider = Provider.valueOf(entry.provider).base
-                    builder.append(TEMPLATE_REMOVED
+                    section.append(TEMPLATE_REMOVED
                             .replace("[modName]", entry.name)
-                            .replaceElse("[modVersion]", {provider.getVersion(entry, next)})
+                            .replaceElse("[modVersion]", { provider.getVersion(entry, next) })
                     )
                 }
                 if (removed.isEmpty()) {
-                    builder.append("\nno mods removed  \n")
+                    section.append("\nno mods removed  \n")
                 }
-                builder.append("\n\n")
+
+                // append section to top
+                sections.add(0, section.toString())
             }
+
+            builder.append(sections.joinToString("\n"))
 
             if (stdout) {
                 print(builder.toString())
-            } else {
+            }
+            if(!nofile){
                 var target = targetArg ?: "${modpacks.last().name}.changelog.md"
                 if (!target.endsWith(".md")) target += ".md"
                 val targetFile = File(target)
@@ -217,14 +230,6 @@ object Changelog : KLogging() {
         val sources by parser.positionalList("SOURCE", sizeRange = 2..Int.MAX_VALUE,
                 help = "...") { File(this) }
 
-        val headerFile by parser.storing("--header",
-                help = "template header") { File(this) }
-                .default<File?>(null)
-
-        val footerFile by parser.storing("--footer",
-                help = "template header") { File(this) }
-                .default<File?>(null)
-
         val sort by parser.flagging("--sort",
                 help = "template header")
 
@@ -234,6 +239,10 @@ object Changelog : KLogging() {
 
         val stdout by parser.flagging("--stdout", "-s",
                 help = "print output")
+                .default(false)
+
+        val nofile by parser.flagging("--nofile", "-n",
+                help = "do not write output to a file")
                 .default(false)
     }
 }
