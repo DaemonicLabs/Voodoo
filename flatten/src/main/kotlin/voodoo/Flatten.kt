@@ -29,7 +29,7 @@ object Flatten: KLogging() {
             var target = targetArg
 
             logger.info("FLATTENING...")
-            val flatpack = nestedPack.flatten(inFile.parentFile)
+            val flatpack = nestedPack.flatten(inFile.absoluteFile.parentFile)
 
             if (stdout) {
                 print(flatpack.json)
