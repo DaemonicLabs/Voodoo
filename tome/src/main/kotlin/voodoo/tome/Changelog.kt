@@ -64,6 +64,16 @@ object Changelog : KLogging() {
         return Pair(first.removePrefix(prefix).removeSuffix(suffix), second.removePrefix(prefix).removeSuffix(suffix))
     }
 
+    fun String.replaceElse(oldValue: String, newValue: () -> String, alternateiveValue: String = "[unavailable]", ignoreCase: Boolean = false): String {
+        val newString = try {
+            newValue()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            alternateiveValue
+        }
+        return this.replace(oldValue, newString, ignoreCase)
+    }
+
     @JvmStatic
     fun main(vararg args: String) = mainBody {
         val arguments = Arguments(ArgParser(args))
@@ -123,7 +133,7 @@ object Changelog : KLogging() {
                         val provider = Provider.valueOf(entry.provider).base
                         builder.append(TEMPLATE_ADD
                                 .replace("[modName]", entry.name)
-                                .replace("[modVersion]", provider.getVersion(entry, next))
+                                .replaceElse("[modVersion]", {provider.getVersion(entry, next)})
                         )
                         added = true
                     }
@@ -141,8 +151,20 @@ object Changelog : KLogging() {
                     if (nextEntry != null) {
                         val provider = Provider.valueOf(entry.provider).base
                         val nextProvider = Provider.valueOf(nextEntry.provider).base
-                        val oldVersionLong = provider.getVersion(entry, old)
-                        val nextVersionLong = nextProvider.getVersion(nextEntry, next)
+                        val oldVersionLong = try {
+                            provider.getVersion(entry, old)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            "[unavailable]"
+                        }
+
+                        val nextVersionLong = try {
+                            nextProvider.getVersion(nextEntry, next)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            "[unavailable]"
+                        }
+
                         if (oldVersionLong != nextVersionLong) {
                             val (oldVersion, nextVersion) = cut(oldVersionLong, nextVersionLong)
                             builder.append(TEMPLATE_UPDATE
@@ -166,7 +188,7 @@ object Changelog : KLogging() {
                     val provider = Provider.valueOf(entry.provider).base
                     builder.append(TEMPLATE_REMOVED
                             .replace("[modName]", entry.name)
-                            .replace("[modVersion]", provider.getVersion(entry, next))
+                            .replaceElse("[modVersion]", {provider.getVersion(entry, next)})
                     )
                 }
                 if (removed.isEmpty()) {
