@@ -1,10 +1,10 @@
 package voodoo.pack
 
+import voodoo.data.Side
 import voodoo.data.curse.CurseFile
 import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.CurseMinecraft
 import voodoo.data.curse.CurseModLoader
-import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.provider.Provider
@@ -87,8 +87,8 @@ object CursePack : AbstractPack() {
         val html = "<ul>\n" + modpack.entries.joinToString("") { entry ->
             val provider = Provider.valueOf(entry.provider).base
             if (entry.side == Side.SERVER) return@joinToString ""
-            val projectPage = provider.getProjectPage(entry, modpack)
-            val authors = provider.getAuthors(entry, modpack)
+            val projectPage = provider.getProjectPage(entry)
+            val authors = provider.getAuthors(entry)
             val authorString = if(authors.isNotEmpty()) " (by ${authors.joinToString(", ")})" else ""
 
             when {

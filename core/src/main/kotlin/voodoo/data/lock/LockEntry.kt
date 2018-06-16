@@ -3,6 +3,7 @@ package voodoo.data.lock
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import voodoo.data.Side
+import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
 import java.time.Instant
@@ -18,6 +19,7 @@ data class LockEntry(
         var provider: String = "",
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var name: String = "",
+        var curseMetaUrl: String = PROXY_URL,
         var folder: String = "mods",
         var fileName: String? = null,
         var side: Side = Side.BOTH,
@@ -45,22 +47,22 @@ data class LockEntry(
         private fun providerBase(): ProviderBase = Provider.valueOf(provider).base
 
         @JsonIgnore
-        fun version(): String = providerBase().getVersion(this, parent)
+        fun version(): String = providerBase().getVersion(this)
 
         @JsonIgnore
-        fun license(): String = providerBase().getLicense(this, parent)
+        fun license(): String = providerBase().getLicense(this)
 
         @JsonIgnore
-        fun thumbnail(): String = providerBase().getThumbnial(this, parent)
+        fun thumbnail(): String = providerBase().getThumbnail(this)
 
         @JsonIgnore
-        fun authors(): String = providerBase().getAuthors(this, parent).joinToString(", ")
+        fun authors(): String = providerBase().getAuthors(this).joinToString(", ")
 
         @JsonIgnore
-        fun projectPage(): String = providerBase().getProjectPage(this, parent)
+        fun projectPage(): String = providerBase().getProjectPage(this)
 
         @JsonIgnore
-        fun releaseDate(): Instant? = providerBase().getReleaseDate(this, parent)
+        fun releaseDate(): Instant? = providerBase().getReleaseDate(this)
 
         @JsonIgnore
         fun isCurse(): Boolean = provider == Provider.CURSE.name

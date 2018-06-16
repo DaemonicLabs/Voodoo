@@ -6,7 +6,6 @@ import voodoo.core.VERSION
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
-import voodoo.data.lock.LockPack
 import voodoo.provider.ProviderBase
 import voodoo.util.download
 import voodoo.util.jenkins.JenkinsServer
@@ -51,21 +50,21 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
         return Pair(url, targetFile)
     }
 
-    override fun getAuthors(entry: LockEntry, modpack: LockPack): List<String> {
+    override fun getAuthors(entry: LockEntry): List<String> {
         return listOf(entry.job.substringBeforeLast('/').substringBeforeLast('/').substringAfterLast('/'))
     }
 
-    override fun getProjectPage(entry: LockEntry, modpack: LockPack): String {
+    override fun getProjectPage(entry: LockEntry): String {
         val server = server(entry.jenkinsUrl)
         return server.getUrl(entry.job)
     }
 
-    override fun getVersion(entry: LockEntry, modpack: LockPack): String {
+    override fun getVersion(entry: LockEntry): String {
         val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)
         return artifact.fileName
     }
 
-    override fun getReleaseDate(entry: LockEntry, modpack: LockPack): Instant? {
+    override fun getReleaseDate(entry: LockEntry): Instant? {
         val build = build(entry.job, entry.jenkinsUrl, entry.buildNumber)
         return build.timestamp.toInstant()
     }

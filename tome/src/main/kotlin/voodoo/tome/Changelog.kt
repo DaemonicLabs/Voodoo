@@ -104,7 +104,7 @@ object Changelog : KLogging() {
                 val provider = Provider.valueOf(entry.provider).base
                 section.append(TEMPLATE_ADD
                         .replace("[modName]", entry.name)
-                        .replaceElse("[modVersion]", { provider.getVersion(entry, first) })
+                        .replaceElse("[modVersion]", { provider.getVersion(entry) })
                 )
             }
             sections.add(0, section.toString())
@@ -141,7 +141,7 @@ object Changelog : KLogging() {
                         val provider = Provider.valueOf(entry.provider).base
                         section.append(TEMPLATE_ADD
                                 .replace("[modName]", entry.name)
-                                .replaceElse("[modVersion]", { provider.getVersion(entry, next) })
+                                .replaceElse("[modVersion]", { provider.getVersion(entry) })
                         )
                         added = true
                     }
@@ -160,14 +160,14 @@ object Changelog : KLogging() {
                         val provider = Provider.valueOf(entry.provider).base
                         val nextProvider = Provider.valueOf(nextEntry.provider).base
                         val oldVersionLong = try {
-                            provider.getVersion(entry, old)
+                            provider.getVersion(entry)
                         } catch (e: Exception) {
                             e.printStackTrace()
                             "[unavailable]"
                         }
 
                         val nextVersionLong = try {
-                            nextProvider.getVersion(nextEntry, next)
+                            nextProvider.getVersion(nextEntry)
                         } catch (e: Exception) {
                             e.printStackTrace()
                             "[unavailable]"
@@ -196,7 +196,7 @@ object Changelog : KLogging() {
                     val provider = Provider.valueOf(entry.provider).base
                     section.append(TEMPLATE_REMOVED
                             .replace("[modName]", entry.name)
-                            .replaceElse("[modVersion]", { provider.getVersion(entry, next) })
+                            .replaceElse("[modVersion]", { provider.getVersion(entry) })
                     )
                 }
                 if (removed.isEmpty()) {

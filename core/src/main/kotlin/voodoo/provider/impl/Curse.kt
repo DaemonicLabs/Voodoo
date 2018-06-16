@@ -10,7 +10,6 @@ import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
-import voodoo.data.lock.LockPack
 import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
 import voodoo.util.download
@@ -26,14 +25,15 @@ object CurseProviderThing : ProviderBase, KLogging() {
     override val name = "Curse Provider"
 
     override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
-        val (projectID, fileID, path) = findFile(entry, modpack.mcVersion, modpack.curseMetaUrl)
+        val (projectID, fileID, path) = findFile(entry, modpack.mcVersion, entry.curseMetaUrl)
 
-        resolveDependencies(projectID, fileID, entry, modpack, addEntry)
+        resolveDependencies(projectID, fileID, entry, addEntry)
 
         entry.optional = isOptional(entry, modpack)
 
         return LockEntry(
                 provider = entry.provider,
+                curseMetaUrl = entry.curseMetaUrl,
                 name = entry.name,
                 folder = path, //maybe use entry.folder only if its non-default
                 useUrlTxt = entry.useUrlTxt,
@@ -44,32 +44,37 @@ object CurseProviderThing : ProviderBase, KLogging() {
         )
     }
 
-    override fun getAuthors(entry: LockEntry, modpack: LockPack): List<String> {
-        return CurseClient.getAuthors(entry.projectID, modpack.curseMetaUrl)
+    override fun getAuthors(entry: LockEntry): List<String> {
+        return CurseClient.getAuthors(entry.projectID, entry.curseMetaUrl)
     }
 
-    override fun getProjectPage(entry: LockEntry, modpack: LockPack): String {
+    override fun getProjectPage(entry: LockEntry): String {
         return "https://minecraft.curseforge.com/projects/${entry.projectID}"
         //CurseClient.getProjectPage(entry.projectID, modpack.curseMetaUrl)
     }
 
-    override fun getVersion(entry: LockEntry, modpack: LockPack): String {
-        val addonFile = getAddonFile(entry.projectID, entry.fileID, modpack.curseMetaUrl)
+    override fun getVersion(entry: LockEntry): String {
+        val addonFile = getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)
         return addonFile?.fileName ?: ""
     }
 
-    override fun getLicense(entry: LockEntry, modpack: LockPack): String {
+    override fun getLicense(entry: LockEntry): String {
         return "https://minecraft.curseforge.com/projects/${entry.fileID}/license"
     }
 
-    override fun getThumbnial(entry: LockEntry, modpack: LockPack): String {
-        val addon = CurseClient.getAddon(entry.projectID, modpack.curseMetaUrl)!!
+    override fun getThumbnail(entry: LockEntry): String {
+        val addon = CurseClient.getAddon(entry.projectID, entry.curseMetaUrl)!!
         return addon.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
     }
 
-    private fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit) {
-        val addon = getAddon(addonId, modpack.curseMetaUrl)!!
-        val addonFile = getAddonFile(addonId, fileId, modpack.curseMetaUrl)!!
+    override fun getThumbnail(entry: Entry): String {
+        val addon = CurseClient.getAddonByName(entry.name, entry.curseMetaUrl)!!
+        return addon.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
+    }
+
+    private fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, addEntry: (Entry) -> Unit) {
+        val addon = getAddon(addonId, entry.curseMetaUrl)!!
+        val addonFile = getAddonFile(addonId, fileId, entry.curseMetaUrl)!!
         val dependencies = addonFile.dependencies ?: return
 
         logger.info("dependencies of ${entry.name} ${addonFile.dependencies}")
@@ -77,7 +82,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
 
         for ((depAddonId, depType) in dependencies) {
             logger.info("resolve Dep $depAddonId")
-            val depAddon = getAddon(depAddonId, modpack.curseMetaUrl) ?: continue
+            val depAddon = getAddon(depAddonId, entry.curseMetaUrl) ?: continue
 
 //            val depends = entry.dependencies
             var dependsList = entry.dependencies[depType] ?: listOf<String>()
@@ -129,7 +134,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
     val isOptional = CurseProviderThing::isOptionalCall.memoize()
 
     override fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
-        val addonFile = getAddonFile(entry.projectID, entry.fileID, entry.parent.curseMetaUrl)
+        val addonFile = getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)
         if (addonFile == null) {
             logger.error("cannot download ${entry.projectID}:${entry.fileID}")
             exitProcess(3)
@@ -139,8 +144,8 @@ object CurseProviderThing : ProviderBase, KLogging() {
         return Pair(addonFile.downloadURL, targetFile)
     }
 
-    override fun getReleaseDate(entry: LockEntry, modpack: LockPack): Instant? {
-        val addonFile = getAddonFile(entry.projectID, entry.fileID, modpack.curseMetaUrl)
+    override fun getReleaseDate(entry: LockEntry): Instant? {
+        val addonFile = getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)
         return when(addonFile) {
             null -> return null
             else -> {

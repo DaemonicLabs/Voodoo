@@ -4,7 +4,6 @@ import mu.KLogging
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
-import voodoo.data.lock.LockPack
 import voodoo.provider.impl.*
 import java.io.File
 import java.time.Instant
@@ -40,27 +39,31 @@ interface ProviderBase {
      */
     fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File>
 
-    fun getAuthors(entry: LockEntry, modpack: LockPack): List<String> {
+    fun getAuthors(entry: LockEntry): List<String> {
         return emptyList()
     }
 
-    fun getProjectPage(entry: LockEntry, modpack: LockPack): String {
+    fun getProjectPage(entry: LockEntry): String {
         return ""
     }
 
-    fun getVersion(entry: LockEntry, modpack: LockPack): String {
+    fun getVersion(entry: LockEntry): String {
         return ""
     }
 
-    fun getLicense(entry: LockEntry, modpack: LockPack): String {
+    fun getLicense(entry: LockEntry): String {
         return ""
     }
 
-    fun getThumbnial(entry: LockEntry, modpack: LockPack): String {
+    fun getThumbnail(entry: LockEntry): String {
         return ""
     }
 
-    fun getReleaseDate(entry: LockEntry, modpack: LockPack): Instant? {
+    fun getThumbnail(entry: Entry): String {
+        return ""
+    }
+
+    fun getReleaseDate(entry: LockEntry): Instant? {
         return null
     }
 
