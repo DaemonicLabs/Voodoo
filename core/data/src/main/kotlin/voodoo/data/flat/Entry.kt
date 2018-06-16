@@ -33,10 +33,14 @@ data class Entry(
 //        val internal: EntryInternal = EntryInternal(),
         var transient: Boolean = false, // this entry got added as dependency for something else
         var version: String = "", //TODO: use regex only ?
+        var fileNameRegex: String = when {
+            provider.equals("CURSE", true) -> ".*(?<!-deobf\\.jar)\$"
+            provider.equals("JENKINS", true) -> ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$"
+            else -> ".*"
+        },
         var validMcVersions: List<String> = emptyList(),
         var curseMetaUrl: String = PROXY_URL,
         var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
-        var curseFileNameRegex: String = ".*(?<!-deobf\\.jar)\$",
         var curseOptionalDependencies: Boolean = false,
         // DIRECT
         var url: String = "",
@@ -46,7 +50,6 @@ data class Entry(
         var jenkinsUrl: String = "",
         var job: String = "",
         var buildNumber: Int = -1,
-        var jenkinsFileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
         // LOCAL
         var fileSrc: String = "",
         // UPDATE-JSON
