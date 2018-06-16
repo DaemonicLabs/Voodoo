@@ -13,7 +13,7 @@ import bootstrap.MODULE_NAME
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
-import voodoo.bootstrap.VERSION
+import voodoo.bootstrap.BootstrapConstants.VERSION
 import voodoo.util.Directories
 import voodoo.util.jenkins.JenkinsServer
 import java.io.File

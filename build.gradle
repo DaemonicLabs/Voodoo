@@ -39,6 +39,7 @@ subprojects {
 
     compileKotlin {
         kotlinOptions {
+            jvmTarget = "1.8"
             languageVersion = "1.2"
         }
     }
@@ -63,12 +64,14 @@ subprojects {
 //    version = "${project.major}.${project.minor}.${project.patch}"
     compileKotlin.doFirst {
         def folder = project.name != "voodoo" ? "voodoo/${project.name}" : "voodoo"
+        def name = project.name.tokenize('/').last().capitalize().tokenize('-')*.capitalize().join('')
         def templateSrc = project.parent.file("template/kotlin/voodoo/")
         copy {
             from templateSrc
             into "$buildDir/generated-src/$folder"
             expand(
                     PACKAGE: folder.replace('/', '.').replace('-', '.'),
+                    NAME: name,
                     MAJOR_VERSION: project.major,
                     MINOR_VERSION: project.minor,
                     PATCH_VERSION: project.patch,

@@ -10,7 +10,7 @@ import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
 import mu.KLogging
 import org.apache.commons.compress.compressors.CompressorStreamFactory
-import voodoo.core.curse.VERSION
+import voodoo.core.curse.CurseConstants.VERSION
 import voodoo.data.curse.Addon
 import voodoo.data.curse.AddonFile
 import voodoo.data.curse.CurseConstancts.PROXY_URL
@@ -183,7 +183,7 @@ object CurseClient : KLogging() {
 //            curseReleaseTypes = setOf(ReleaseType.RELEASE, ReleaseType.BETA) //TODO: is this not already set because i enforce defaults ?
 //        }
         var addonId = -1 // entry.lock?.projectID ?: -1
-        val fileNameRegex = entry.curseFileNameRegex
+        val fileNameRegex = entry.fileNameRegex
 
         val addon = if (addonId < 0) {
             if (name.isNotBlank())

@@ -4,6 +4,7 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogger
 import mu.KotlinLogging
+import voodoo.util.UtilConstants.VERSION
 import java.io.File
 import kotlin.system.exitProcess
 

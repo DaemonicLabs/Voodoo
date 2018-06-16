@@ -116,10 +116,9 @@ root:
           description: Lightweight alternative to JourneyMap
 
 
-      - feature:
+    - feature:
         selected: false
       entries:
-
       - name: Unity
         fileName: Unity.zip
         description: "A nice, traditional-style resourcepack with support for many of our mods. Does have some minor visual bugs and is a tad heavy. Remember to apply from the main menu, and not in game!"

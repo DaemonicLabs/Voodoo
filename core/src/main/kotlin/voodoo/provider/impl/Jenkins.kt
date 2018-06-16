@@ -2,7 +2,7 @@ package voodoo.provider.impl
 
 import aballano.kotlinmemoization.memoize
 import mu.KLogging
-import voodoo.core.VERSION
+import voodoo.core.CoreConstants.VERSION
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
@@ -37,7 +37,7 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
                 jenkinsUrl = entry.jenkinsUrl,
                 job = entry.job,
                 buildNumber = buildNumber,
-                fileNameRegex = entry.jenkinsFileNameRegex
+                fileNameRegex = entry.fileNameRegex
         )
     }
 

@@ -3,7 +3,7 @@ package voodoo
 import mu.KLogging
 import voodoo.tome.Changelog
 import voodoo.tome.Credits
-import voodoo.tome.VERSION
+import voodoo.tome.TomeConstants.VERSION
 
 
 /**

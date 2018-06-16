@@ -6,6 +6,7 @@ package voodoo
  */
 
 import mu.KLogging
+import voodoo.VoodooConstants.VERSION
 
 object Voodoo : KLogging() {
     val funcs = mapOf<String, (Array<String>) -> Unit>(

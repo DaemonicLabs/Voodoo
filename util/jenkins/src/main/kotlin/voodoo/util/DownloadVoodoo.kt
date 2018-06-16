@@ -4,7 +4,7 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
 import voodoo.util.jenkins.JenkinsServer
-import voodoo.util.jenkins.VERSION
+import voodoo.util.jenkins.JenkinsConstants.VERSION
 import java.io.File
 
 object DownloadVoodoo : KLogging() {
