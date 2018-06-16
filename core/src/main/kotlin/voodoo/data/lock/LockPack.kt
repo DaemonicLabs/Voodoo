@@ -1,6 +1,5 @@
 package voodoo.data.lock
 
-import voodoo.curse.CurseClient.PROXY_URL
 import voodoo.data.Feature
 import voodoo.data.UserFiles
 import voodoo.data.sk.Launch
@@ -17,7 +16,6 @@ data class LockPack(
         val authors: List<String> = emptyList(),
         val mcVersion: String = "",
         val forge: Int = -1,
-        var curseMetaUrl: String = PROXY_URL,
         val launch: Launch = Launch(),
         var userFiles: UserFiles = UserFiles(),
         var localDir: String = "local",

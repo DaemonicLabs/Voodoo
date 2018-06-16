@@ -38,7 +38,7 @@ object DirectProviderThing : ProviderBase, KLogging() {
         return Pair(entry.url, targetFile)
     }
 
-    override fun getVersion(entry: LockEntry, modpack: LockPack): String {
+    override fun getVersion(entry: LockEntry): String {
         return entry.url.substringBeforeLast('.').substringAfterLast('/')
     }
 }

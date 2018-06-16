@@ -13,6 +13,7 @@ import org.apache.commons.compress.compressors.CompressorStreamFactory
 import voodoo.core.curse.VERSION
 import voodoo.data.curse.Addon
 import voodoo.data.curse.AddonFile
+import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.data.curse.feed.CurseFeed
 import voodoo.data.flat.Entry
 import java.io.BufferedReader
@@ -24,7 +25,6 @@ import java.io.InputStreamReader
  * @author Nikky
  */
 object CurseClient : KLogging() {
-    val PROXY_URL = "https://curse.nikky.moe/api"
     val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10"
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
@@ -33,7 +33,8 @@ object CurseClient : KLogging() {
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
 //            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
 
-    private var idMap = getIdMap()
+    var idMap = initIdMap()
+    private set
     
     data class GraphQLRequest(
             val query: String,
@@ -54,7 +55,7 @@ object CurseClient : KLogging() {
             val data: WrapperAddonResult
     )
 
-    private fun getIdMap(): Map<String, Int> {
+    private fun initIdMap(): Map<String, Int> {
         val url = "https://curse.nikky.moe/graphql"
 
         logger.debug("post $url")
@@ -91,8 +92,8 @@ object CurseClient : KLogging() {
         }
     }
 
-    private fun getAddonFileCall(addonId: Int, fileId: Int, metaUrl: String = PROXY_URL): AddonFile? {
-        val url = "${PROXY_URL}/addon/$addonId/file/$fileId"
+    private fun getAddonFileCall(addonId: Int, fileId: Int, proxyUrl: String): AddonFile? {
+        val url = "${proxyUrl}/addon/$addonId/file/$fileId"
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -108,8 +109,8 @@ object CurseClient : KLogging() {
 
     val getAddonFile = CurseClient::getAddonFileCall.memoize()
 
-    private fun getAllFilesForAddonCall(addonId: Int, metaUrl: String = PROXY_URL): List<AddonFile> {
-        val url = "${PROXY_URL}/addon/$addonId/files"
+    private fun getAllFilesForAddonCall(addonId: Int, proxyUrl: String): List<AddonFile> {
+        val url = "${proxyUrl}/addon/$addonId/files"
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -125,8 +126,8 @@ object CurseClient : KLogging() {
 
     val getAllFilesForAddon = CurseClient::getAllFilesForAddonCall.memoize()
 
-    private fun getAddonCall(addonId: Int, metaUrl: String = PROXY_URL): Addon? {
-        val url = "${PROXY_URL}/addon/$addonId"
+    private fun getAddonCall(addonId: Int, proxyUrl: String): Addon? {
+        val url = "${proxyUrl}/addon/$addonId"
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -145,8 +146,8 @@ object CurseClient : KLogging() {
 
     val getAddon = CurseClient::getAddonCall.memoize()
 
-    fun getFileChangelogCall(addonId: Int, fileId: Int, proxyUrl: String = PROXY_URL): String {
-        val url = "${PROXY_URL}/addon/$addonId/file/$fileId/changelog"
+    fun getFileChangelogCall(addonId: Int, fileId: Int, proxyUrl: String): String {
+        val url = "${proxyUrl}/addon/$addonId/file/$fileId/changelog"
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -162,15 +163,15 @@ object CurseClient : KLogging() {
 
     val getFileChangelog = CurseClient::getFileChangelogCall.memoize()
 
-    fun getAddonByName(name: String, metaUrl: String = PROXY_URL): Addon? {
+    fun getAddonByName(name: String, proxyUrl: String = PROXY_URL): Addon? {
         val addon = idMap[name]
-                ?.let { getAddon(it, metaUrl) }
+                ?.let { getAddon(it, proxyUrl) }
         if (addon != null) {
             return addon
         }
-        idMap = getIdMap()
+        idMap = initIdMap()
         return idMap[name]
-                ?.let { getAddon(it, metaUrl) }
+                ?.let { getAddon(it, proxyUrl) }
     }
 
     fun findFile(entry: Entry, mcVersion: String, proxyUrl: String = PROXY_URL): Triple<Int, Int, String> {
@@ -250,7 +251,7 @@ object CurseClient : KLogging() {
 
         val file = files.sortedWith(compareByDescending { it.fileDate }).firstOrNull()
         if (file == null) {
-            val filesUrl = "${PROXY_URL}/addon/$addonId/files"
+            val filesUrl = "${proxyUrl}/addon/$addonId/files"
             logger.error("no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
                     "files: $filesUrl mc version: $mcVersions version: $version \n" +
                     "$addon")
@@ -296,13 +297,13 @@ object CurseClient : KLogging() {
         }
     }
 
-    fun getAuthors(projectID: Int, metaUrl: String = PROXY_URL): List<String> {
-        val addon = getAddon(projectID, metaUrl)!!
+    fun getAuthors(projectID: Int, proxyUrl: String = PROXY_URL): List<String> {
+        val addon = getAddon(projectID, proxyUrl)!!
         return addon.authors.map { it.name }
     }
 
-    fun getProjectPage(projectID: Int, metaUrl: String): String {
-        val addon = getAddon(projectID, metaUrl)!!
+    fun getProjectPage(projectID: Int, proxyUrl: String): String {
+        val addon = getAddon(projectID, proxyUrl)!!
         return addon.webSiteURL
     }
 

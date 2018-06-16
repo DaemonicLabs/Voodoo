@@ -4,7 +4,6 @@ import mu.KLogging
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
-import voodoo.data.lock.LockPack
 import voodoo.provider.ProviderBase
 import java.io.File
 
@@ -33,7 +32,7 @@ object LocalProviderThing : ProviderBase, KLogging() {
         return Pair(null, targetFile)
     }
 
-    override fun getVersion(entry: LockEntry, modpack: LockPack): String {
+    override fun getVersion(entry: LockEntry): String {
         return entry.fileSrc.substringBeforeLast('.').substringAfterLast('/')
     }
 }

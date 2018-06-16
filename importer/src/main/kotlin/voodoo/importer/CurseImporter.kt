@@ -3,6 +3,7 @@ package voodoo.importer
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import voodoo.curse.CurseClient
+import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.FileType
 import voodoo.data.flat.Entry
@@ -53,8 +54,8 @@ object CurseImporter : AbstractImporter() {
 
         val entries = manifest.files.map {
             logger.info { it }
-            val addon = CurseClient.getAddon(it.projectID, CurseClient.PROXY_URL)!!
-            val addonFile = CurseClient.getAddonFile(it.projectID, it.fileID, CurseClient.PROXY_URL)!!
+            val addon = CurseClient.getAddon(it.projectID, PROXY_URL)!!
+            val addonFile = CurseClient.getAddonFile(it.projectID, it.fileID, PROXY_URL)!!
             val entry = NestedEntry(
                     name = addon.name,
                     version = addonFile.fileName
@@ -69,7 +70,7 @@ object CurseImporter : AbstractImporter() {
                     validMcVersions = addonFile.gameVersion
             )
 
-            val (projectID, fileID, path) = CurseClient.findFile(flatEntry, manifest.minecraft.version, CurseClient.PROXY_URL)
+            val (projectID, fileID, path) = CurseClient.findFile(flatEntry, manifest.minecraft.version, PROXY_URL)
 
             versions[addon.name] = LockEntry(
                     provider = "CURSE",
