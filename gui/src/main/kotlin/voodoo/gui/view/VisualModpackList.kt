@@ -15,7 +15,7 @@ import voodoo.gui.extensions.*
  * @author Nikky
  * @version 1.0
  */
-class ViualModpackList : View("Fancy ModpackWrapper List") {
+class VisualModpackList : View("Fancy ModpackWrapper List") {
     val controller: ModpackController by inject()
     val CONTENT_PANE = "ContentPane"
     override val root = stackpane {
@@ -64,8 +64,14 @@ class ModpackListFragment : ListCellFragment<ModpackWrapper>() {
     val modpack = ModpackModel().bindTo(this)
     override val root = form {
         fieldset {
+            field("Title") {
+                label(modpack.title)
+            }
             field("Name") {
                 label(modpack.name)
+            }
+            field("Version") {
+                label(modpack.version)
             }
             field("Version") {
                 label(modpack.version)

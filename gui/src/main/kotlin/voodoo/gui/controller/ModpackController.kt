@@ -14,6 +14,8 @@ import java.io.File
  * @version 1.0
  */
 class ModpackController : Controller() {
+    val tabController: TabController by inject()
+
     val modpacks = SimpleListProperty<ModpackWrapper>(observableList())
 
     val selectedModpack = ModpackModel()
@@ -22,10 +24,10 @@ class ModpackController : Controller() {
         // iterate though json files and try to load them
         val path = System.getProperty("user.dir")
         val files = File(path).listFiles({ dir, name ->
-                    name.endsWith(".json")
-                            && !name.endsWith(".lock.json")
-                            && !name.endsWith(".features.json")
-                            && !name.endsWith(".versions.json")
+            name.endsWith(".json")
+                    && !name.endsWith(".lock.json")
+                    && !name.endsWith(".features.json")
+                    && !name.endsWith(".versions.json")
         })
         files.forEach {
             log.info("try loading $it")
@@ -42,6 +44,9 @@ class ModpackController : Controller() {
             selectedModpack.item = this
         }
 
+        selectedModpack.itemProperty.addListener(ChangeListener { observable, oldValue, newValue ->
+            tabController.selectionModel.select(0)
+        })
 
     }
 }

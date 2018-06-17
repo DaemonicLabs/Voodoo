@@ -33,6 +33,7 @@ data class Entry(
 //        val internal: EntryInternal = EntryInternal(),
         var transient: Boolean = false, // this entry got added as dependency for something else
         var version: String = "", //TODO: use regex only ?
+        var fileName: String? = null,
         var fileNameRegex: String = when {
             provider.equals("CURSE", true) -> ".*(?<!-deobf\\.jar)\$"
             provider.equals("JENKINS", true) -> ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$"
@@ -45,7 +46,6 @@ data class Entry(
         // DIRECT
         var url: String = "",
         var useUrlTxt: Boolean = true,
-        var fileName: String? = null,
         // JENKINS
         var jenkinsUrl: String = "",
         var job: String = "",

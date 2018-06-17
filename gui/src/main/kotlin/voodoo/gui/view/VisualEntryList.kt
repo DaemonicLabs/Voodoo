@@ -5,6 +5,7 @@ import javafx.geometry.Pos
 import javafx.scene.layout.Priority
 import javafx.scene.text.FontWeight
 import tornadofx.*
+import voodoo.data.Side
 import voodoo.gui.controller.EntryController
 import voodoo.gui.controller.ModpackController
 import voodoo.gui.extensions.animatedOptionButton
@@ -49,22 +50,10 @@ class EntryListFragment : ListCellFragment<EntryWrapper>() {
 //            fillWidth = true
 //            spacing = 0.px
 //        }
-        println(style)
+
+        //cached thumbnail info in EntryWrapper
 //        fieldset {
 //            field("Icon") {
-        label(entry.comment) {
-            isWrapText = true
-            removeWhen {
-                entry.provider.booleanBinding { it != Provider.CURSE.name }
-                        .or(entry.thumbnail.booleanBinding { it.isNullOrBlank()})
-            }
-            //cached thumbnail info in EntryWrapper
-            graphic = imageview(entry.thumbnail, true) {
-                fitHeight = 64.0
-                fitWidth = 64.0
-                isPreserveRatio = true
-            }
-        }
 //            }
 //        enableWhen { entry.enabled }
 
@@ -76,23 +65,49 @@ class EntryListFragment : ListCellFragment<EntryWrapper>() {
                 fontWeight = FontWeight.BOLD
             }
         }
-//            }
-//            field("provider") {
-        label(entry.provider) {
-            //                    alignment = Pos.CENTER_RIGHT
-//                    style {
-//                        fontSize = 22.px
-//                        fontWeight = FontWeight.BOLD
-//                    }
+
+        label(entry.comment) {
+            isWrapText = true
+            removeWhen {
+                entry.comment.isNotBlank().not()
+            }
         }
-//            }
-//            field("side") {
-        label(entry.side) {
-            //                    alignment = Pos.CENTER_RIGHT
+        imageview(entry.thumbnail, true) {
+            removeWhen {
+                entry.provider.booleanBinding { it == Provider.CURSE.name }
+                        .and(entry.thumbnail.booleanBinding { !it.isNullOrBlank() })
+                        .not()
+            }
+            fitHeight = 64.0
+            fitWidth = 64.0
+            isPreserveRatio = true
+        }
+
+        hbox {
+            label("Provider: ") {
+                style {
+                    fontWeight = FontWeight.BOLD
+                }
+            }
+            label(entry.provider) {
+                //    alignment = Pos.CENTER_RIGHT
 //                    style {
 //                        fontSize = 22.px
 //                        fontWeight = FontWeight.BOLD
 //                    }
+            }
+        }
+        hbox {
+            removeWhen { entry.side.booleanBinding { it != Side.BOTH }.not() }
+            label("Side: ") {
+                style {
+                    fontWeight = FontWeight.BOLD
+                }
+            }
+            label(entry.side) {
+                alignment = Pos.CENTER_RIGHT
+            }
+
         }
 
     }

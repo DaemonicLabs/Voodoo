@@ -31,6 +31,11 @@ fun <T> EventTarget.jfxlistview(values: ObservableValue<ObservableList<T>>, op: 
     }
 }
 
+fun <T> EventTarget.jfxlistview(op: JFXListView<T>.() -> Unit = {}): JFXListView<T> {
+    val listView = JFXListView<T>()
+    return opcr(this, listView, op)
+}
+
 fun <T> EventTarget.jfxcombobox(property: Property<T>? = null, values: List<T>? = null, op: JFXComboBox<T>.() -> Unit = {}) = JFXComboBox<T>().attachTo(this, op) {
     if (values != null) it.items = values as? ObservableList<T> ?: values.observable()
     if (property != null) it.bind(property)

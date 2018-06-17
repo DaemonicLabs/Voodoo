@@ -2,11 +2,14 @@ package voodoo.gui.extensions
 
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXNodesList
+import com.jfoenix.controls.JFXTabPane
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIconView
 import javafx.event.EventTarget
 import javafx.geometry.Pos
 import javafx.scene.control.ContentDisplay
+import javafx.scene.control.Tab
+import javafx.scene.control.TabPane
 import tornadofx.*
 
 /**
@@ -56,4 +59,16 @@ fun EventTarget.mainIcon(icon: FontAwesomeIcon, op: FontAwesomeIconView.() -> Un
 
 fun EventTarget.subIcon(icon: FontAwesomeIcon, op: FontAwesomeIconView.() -> Unit = {}): FontAwesomeIconView {
     return fontawesomeiconview(icon, 24, "sub-icon", op)
+}
+
+fun EventTarget.tabPane(op: JFXTabPane.() -> Unit = {}): JFXTabPane {
+    val tabPane = JFXTabPane()
+    return opcr(this, tabPane, op)
+}
+
+fun EventTarget.tab(text: String? = null, op: Tab.() -> Unit = {}): Tab {
+    val tab = Tab()
+    text?.let { tab.text = it }
+    tab.op()
+    return tab
 }

@@ -3,9 +3,11 @@ package voodoo.gui.model
 import com.fasterxml.jackson.annotation.JsonIgnore
 import javafx.beans.property.*
 import tornadofx.*
+import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
+import voodoo.data.provider.UpdateChannel
 import voodoo.gui.extensions.json
 
 /**
@@ -65,6 +67,10 @@ class EntryWrapper(entry: Entry, val modpack: ModPack) {
     var version by versionProperty
 
     @JsonIgnore
+    val fileNameProperty = SimpleStringProperty(entry.fileName)
+    var fileName: String? by fileNameProperty
+
+    @JsonIgnore
     val fileNameRegexProperty = SimpleStringProperty(entry.fileNameRegex)
     var fileNameRegex by fileNameRegexProperty
 
@@ -76,6 +82,49 @@ class EntryWrapper(entry: Entry, val modpack: ModPack) {
     val curseMetaUrlProperty = SimpleStringProperty(entry.curseMetaUrl)
     var curseMetaUrl by curseMetaUrlProperty
 
+    @JsonIgnore
+    val curseReleaseTypesProperty = SimpleSetProperty<FileType>(entry.curseReleaseTypes.observable())
+    var curseReleaseTypes by curseReleaseTypesProperty
+
+    @JsonIgnore
+    val curseOptionalDependenciesProperty = SimpleBooleanProperty(entry.curseOptionalDependencies)
+    var curseOptionalDependencies by curseOptionalDependenciesProperty
+
+    @JsonIgnore
+    val urlProperty = SimpleStringProperty(entry.url)
+    var url by urlProperty
+
+    @JsonIgnore
+    val useUrlTxtProperty = SimpleBooleanProperty(entry.useUrlTxt)
+    var useUrlTxt by useUrlTxtProperty
+
+    @JsonIgnore
+    val jenkinsUrlProperty = SimpleStringProperty(entry.jenkinsUrl)
+    var jenkinsUrl by jenkinsUrlProperty
+
+    @JsonIgnore
+    val jobProperty = SimpleStringProperty(entry.job)
+    var job by jobProperty
+
+    @JsonIgnore
+    val buildNumberProperty = SimpleIntegerProperty(entry.buildNumber)
+    var buildNumber by buildNumberProperty
+
+    @JsonIgnore
+    val fileSrcProperty = SimpleStringProperty(entry.fileSrc)
+    var fileSrc by fileSrcProperty
+
+    @JsonIgnore
+    val updateJsonProperty = SimpleStringProperty(entry.updateJson)
+    var updateJson by updateJsonProperty
+
+    @JsonIgnore
+    val updateChannelProperty = SimpleObjectProperty<UpdateChannel>(entry.updateChannel)
+    var updateChannel by updateChannelProperty
+
+    @JsonIgnore
+    val templateProperty = SimpleStringProperty(entry.template)
+    var template by templateProperty
 
 
     val providerObj = voodoo.provider.Provider.valueOf(provider)
@@ -106,9 +155,21 @@ class EntryWrapper(entry: Entry, val modpack: ModPack) {
                     dependencies = dependencies,
                     packageType = packageType,
                     version = version,
+                    fileName = fileName,
+                    fileNameRegex = fileNameRegex,
                     validMcVersions = validMcVersions,
-                    curseMetaUrl = curseMetaUrl
-                    //TODO: add more
+                    curseMetaUrl = curseMetaUrl,
+                    curseReleaseTypes = curseReleaseTypes,
+                    curseOptionalDependencies = curseOptionalDependencies,
+                    url = url,
+                    useUrlTxt = useUrlTxt,
+                    jenkinsUrl = jenkinsUrl,
+                    job = job,
+                    buildNumber = buildNumber,
+                    fileSrc = fileSrc,
+                    updateJson = updateJson,
+                    updateChannel = updateChannel,
+                    template = template
             )
         }
 }
@@ -126,9 +187,21 @@ class EntryModel : ItemViewModel<EntryWrapper>() {
     val dependencies = bind(EntryWrapper::dependenciesProperty)
     val packageType = bind(EntryWrapper::packageTypeProperty)
     val version = bind(EntryWrapper::versionProperty)
+    val fileName = bind(EntryWrapper::fileNameProperty)
     val fileNameRegex = bind(EntryWrapper::fileNameRegexProperty)
     val validMcVersions = bind(EntryWrapper::validMCVersionsProperty)
-    //TODO: bind more
+    val curseMetaUrl = bind(EntryWrapper::curseMetaUrlProperty)
+    val curseReleaseTypes = bind(EntryWrapper::curseReleaseTypesProperty)
+    val curseOptionalDependencies = bind(EntryWrapper::curseOptionalDependenciesProperty)
+    val url = bind(EntryWrapper::urlProperty)
+    val useUrlTxt = bind(EntryWrapper::useUrlTxtProperty)
+    val jenkinsUrl = bind(EntryWrapper::jenkinsUrlProperty)
+    val job = bind(EntryWrapper::jobProperty)
+    val buildNumber = bind(EntryWrapper::buildNumberProperty)
+    val fileSrc = bind(EntryWrapper::fileSrcProperty)
+    val updateJson = bind(EntryWrapper::updateJsonProperty)
+    val updateChannel = bind(EntryWrapper::updateChannelProperty)
+    val template = bind(EntryWrapper::templateProperty)
 
     val thumbnail = bind(EntryWrapper::thumbnailProperty)
 

@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import javafx.beans.property.Property
 import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleStringProperty
+import javafx.beans.property.StringProperty
+import javafx.collections.ObservableList
 import tornadofx.*
 import voodoo.data.flat.ModPack
 import voodoo.gui.extensions.json
@@ -28,7 +30,7 @@ class ModpackWrapper(modpack: ModPack) {
     var version by versionProperty
 
     @JsonIgnore
-    val authorsProperty = SimpleListProperty<String>(modpack.authors.observable())
+    val authorsProperty = SimpleListProperty<SimpleStringProperty>(modpack.authors.map{ SimpleStringProperty(it) }.observable())
     var authors by authorsProperty
 
     @JsonIgnore
@@ -67,7 +69,7 @@ class ModpackWrapper(modpack: ModPack) {
                 name = name,
                 title = title,
                 version = version,
-                authors = authors,
+                authors = authors.map { it.get() },
                 mcVersion = mcVersion,
                 forge = forge,
 //                launch = launch, //TODO: make wrapper
@@ -88,16 +90,25 @@ class ModpackModel : ItemViewModel<ModpackWrapper>() {
     val name = bind(ModpackWrapper::nameProperty)
     val title = bind(ModpackWrapper::titleProperty)
     val version = bind(ModpackWrapper::versionProperty)
+    val authors: ObservableList<SimpleStringProperty> = bind(ModpackWrapper::authorsProperty)
+    val mcVersion = bind(ModpackWrapper::mcVersionProperty)
+    val forge = bind(ModpackWrapper::forgeProperty)
+    val localDir = bind(ModpackWrapper::localDirProperty)
+    val minecraftDir = bind(ModpackWrapper::minecraftDirProperty)
     val entries = bind(ModpackWrapper::entriesProperty)
 
-//    override fun onCommit(commits: List<Commit>) {
-//        commits.findChanged(name)?.let { println("Name changed from ${it.first} to ${it.second}")}
-//        commits.findChanged(provider)?.let { println("Provider changed from ${it.first} to ${it.second}")}
+
+
+    override fun onCommit(commits: List<Commit>) {
+        commits.findChanged(name)?.let { println("Name changed from ${it.first} to ${it.second}")}
+        commits.findChanged(title)?.let { println("Title changed from ${it.first} to ${it.second}")}
 //        commits.findChanged(side)?.let { println("Side changed from ${it.first} to ${it.second}")}
 //        commits.findChanged(id)?.let { println("ID changed from ${it.first} to ${it.second}")}
-//
-//        onCommit()
-//    }
+
+        onCommit()
+    }
+
+
 
     private fun <T> List<Commit>.findChanged(ref: Property<T>): Pair<T, T>? {
         val commit = find { it.property == ref && it.changed }
@@ -106,7 +117,7 @@ class ModpackModel : ItemViewModel<ModpackWrapper>() {
 
 
     override fun onCommit() {
-        println("onCommit()")
+        log.info("onCommit()")
 //        item.compile()
     }
 
