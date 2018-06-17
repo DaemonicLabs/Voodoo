@@ -24,6 +24,7 @@ fun EventTarget.jfxdialog(
     return dialog
 //    return opcr(this, dialog, op)
 }
+
 fun EventTarget.jfxdialog(
         op: JFXDialog.() -> Unit
 ): JFXDialog {
@@ -32,6 +33,7 @@ fun EventTarget.jfxdialog(
     return dialog
 //    return opcr(this, dialog, op)
 }
+
 fun EventTarget.jfxdialoglayout(
         op: JFXDialogLayout.() -> Unit
 ): JFXDialogLayout {

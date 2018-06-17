@@ -17,7 +17,7 @@ import voodoo.provider.Provider
  * @author Nikky
  * @version 1.0
  */
-class EntryEditorView : View("EntryWrapper Editor") {
+class EntryEditorView : View("Entry Editor") {
     val controller: EntryController by inject()
     val model: EntryModel by inject()
 
@@ -27,18 +27,18 @@ class EntryEditorView : View("EntryWrapper Editor") {
 
     override val root = form {
         val entry = controller.selectedEntry
-        fieldset("Edit modpack") {
+        fieldset("Edit Entry") {
             vgrow = Priority.ALWAYS //important
 
             field("Name") {
-                removeWhen { entry.provider.booleanBinding { it == Provider.CURSE.name } }
+                removeWhen { entry.provider.booleanBinding { it != Provider.CURSE.name }.not() }
                 jfxtextfield(entry.name) {
                     required()
                 }
             }
             field("Name") {
                 text("(?)").tooltip("select and start typing to filter mod names")
-                removeWhen { entry.provider.booleanBinding { it != Provider.CURSE.name } }
+                removeWhen { entry.provider.booleanBinding { it == Provider.CURSE.name }.not() }
                 jfxcombobox(entry.name, validCurseNames.observable()) {
                     makeAutocompletable { text -> validCurseNames.filter { it.contains(text) } }
                     validator { input ->

@@ -12,6 +12,8 @@ import tornadofx.*
  */
 class EntryController : Controller() {
     val modpackController: ModpackController by inject()
+    val tabController: TabController by inject()
+
     val entries: ObservableList<EntryWrapper> = observableList()
       // get() = modpackController.selectedModpack.entries.value ?: observableList()
     //FXCollections.observableArrayList<EntryWrapper>()
@@ -26,5 +28,10 @@ class EntryController : Controller() {
 //            selectedEntry.item = modpackController.selectedModpack.entries.value.first()
 //        }
         selectedEntry.item = modpackController.selectedModpack.entries.value.firstOrNull()
+
+
+        selectedEntry.itemProperty.addListener(ChangeListener { observable, oldValue, newValue ->
+            tabController.selectionModel.select(1)
+        })
     }
 }

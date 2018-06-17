@@ -1,6 +1,5 @@
 package voodoo.gui.view
 
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon.*
 import javafx.scene.layout.StackPane
 import tornadofx.*
 
@@ -12,13 +11,13 @@ class MainView : View("Hello Voodoo TornadoFX") {
         borderpane {
             // addClass(Styles.wrapper)
             left = hbox {
-                add<ViualModpackList>()
+                add<VisualModpackList>()
             }
             center = hbox {
                 add<ViualEntryList>()
             }
             right = hbox {
-                add<EntryEditorView>()
+                add<TabbedEditorView>()
             }
 //        top = stackpane {
 //            tornadofx.insets(insets.top, 10, 10, insets.left)
