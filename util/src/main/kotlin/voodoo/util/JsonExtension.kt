@@ -1,6 +1,7 @@
 package voodoo.util
 
 import com.fasterxml.jackson.databind.JsonMappingException
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -18,9 +19,9 @@ val jsonMapper = jacksonObjectMapper() // Enable JSON parsing
 val Any?.json: String
     get() = jsonMapper.writeValueAsString(this)
 
-inline fun <reified T : Any> File.readJson(): T {
+inline fun <reified T : Any> File.readJson(mapper: ObjectMapper = jsonMapper): T {
     this.bufferedReader().use {
-        return jsonMapper.readValue(it)
+        return mapper.readValue(it)
     }
 }
 
