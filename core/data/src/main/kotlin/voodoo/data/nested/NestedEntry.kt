@@ -35,19 +35,22 @@ data class NestedEntry(
 //        val internal: EntryInternal = EntryInternal(),
         var transient: Boolean = false, // this entry got added as dependency for something else
         var version: String = "", //TODO: use regex only ?
+        var fileName: String? = null,
+        var fileNameRegex: String = when {
+            provider.equals("CURSE", true) -> ".*(?<!-deobf\\.jar)\$"
+            provider.equals("JENKINS", true) -> ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$"
+            else -> ".*"
+        },
         var validMcVersions: List<String> = emptyList(),
         var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
-        var curseFileNameRegex: String = ".*(?<!-deobf\\.jar)\$",
         var curseOptionalDependencies: Boolean = false,
         // DIRECT
         var url: String = "",
         var urlTxt: Boolean = true,
-        var fileName: String? = null,
         //JENKINS
         var jenkinsUrl: String = "",
         var job: String = "",
         var buildNumber: Int = -1,
-        var jenkinsFileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
         // LOCAL
         var fileSrc: String = "",
         // UPDATE-JSON
