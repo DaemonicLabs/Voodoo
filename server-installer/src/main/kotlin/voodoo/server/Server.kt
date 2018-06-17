@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 object Server {
     val directories = Directories.get(moduleName = "server-installer")
 
-    fun install(modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean) {
+    fun install(modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean, cleanConfig: Boolean) {
         val cacheDir = directories.cacheHome
 
         if (clean) {
@@ -27,13 +27,15 @@ object Server {
         }
         serverDir.mkdirs()
 
-        serverDir.resolve("config").deleteRecursively()
+        if(cleanConfig) {
+            serverDir.resolve("config").deleteRecursively()
+        }
         serverDir.resolve("mods").deleteRecursively()
 
         logger.info("copying files into server dir")
         val mcDir = File(modpack.minecraftDir)
         if (mcDir.exists()) {
-            mcDir.copyRecursively(serverDir, overwrite = true) //TODOO filter _CLIENT and strip _SERVER from paths
+            mcDir.copyRecursively(serverDir, overwrite = true)
         } else {
             logger.warn("minecraft directory $mcDir does not exist")
         }
@@ -42,7 +44,7 @@ object Server {
             when {
                 file.name == "_CLIENT" -> file.deleteRecursively()
                 file.name == "_SERVER" -> {
-                    file.copyRecursively(file.parentFile)
+                    file.copyRecursively(file.absoluteFile.parentFile, overwrite = true)
                     file.deleteRecursively()
                 }
             }

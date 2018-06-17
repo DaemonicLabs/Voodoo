@@ -26,11 +26,11 @@ object Install : KLogging() {
         parsedArgs.run {
             logger.info ("target dir: $targetDir")
             logger.info ("pack file: $packFile")
-            logger.info("dummy code, please implement")
+            logger.info("cleanConfig: $cleanConfig")
 
             val modpack = packFile.readJson<LockPack>()
 
-            Server.install(modpack, targetDir, skipForge, clean)
+            Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
         }
     }
 
@@ -53,6 +53,10 @@ object Install : KLogging() {
 
         val clean by parser.flagging("--clean",
                 help = "clean install (WARNING: will delete server contents before install)")
+                .default(false)
+
+        val cleanConfig by parser.flagging("--cleanConfig",
+                help = "delete all configs before install")
                 .default(false)
     }
 }
