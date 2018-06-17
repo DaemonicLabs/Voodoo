@@ -19,12 +19,12 @@ cd run
 
 
 echo
-echo "creating modlist for $1"
+echo "creating changelog $1"
 echo
 
-# java -jar "$DIR/voodoo/build/libs/voodoo.jar" tome changelog $(ls history/$pack.*.lock.json) --sort
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" tome credits $pack.lock.json template.md --sort
+java -jar "$DIR/voodoo/build/libs/voodoo.jar" tome changelog $(ls .history/*.lock.json) --sort
+# java -jar "$DIR/voodoo/build/libs/voodoo.jar" tome credits $pack.lock.json template.md --sort
 if [ ! $? -eq 0 ]; then
-    echo "Error creating modlist of $pack"
+    echo "Error generating changelog for $pack"
     exit 1
 fi

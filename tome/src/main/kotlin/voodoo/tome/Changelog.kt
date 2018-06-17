@@ -1,5 +1,6 @@
 package voodoo.tome
 
+import com.fasterxml.jackson.databind.DeserializationFeature
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
@@ -8,6 +9,7 @@ import mu.KLogging
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.provider.Provider
+import voodoo.util.jsonMapper
 import voodoo.util.readJson
 import java.io.File
 
@@ -83,7 +85,10 @@ object Changelog : KLogging() {
             logger.info("sources: $sources")
 //            logger.info("templateFile: $templateFile")
             val builder = StringBuilder()
-            val modpacks = sources.map { it.readJson<LockPack>() }
+            val mapper = jsonMapper
+                    .copy()
+                    .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            val modpacks = sources.map { it.readJson<LockPack>(mapper) }
 
             val sections = mutableListOf<String>()
 
