@@ -78,13 +78,13 @@ to update just a few mods in the update step \
 `java -jar voodoo.jar build cotm.json -o cotm.lock.json -E Correlated -E "Magic Arsenal"`
 
 compile the pack for sklauncher \
-`java -jar pack.jar cotm.lock.json sk` \
+`java -jar voodoo.jar pack sk cotm.lock.json` \
 now you can just upload the contents of `workspace/_upload`
 
 ## Server Deployment
 
 create a server package \
-`java -jar pack.jar cotm.lock.json server`
+`java -jar voodoo.jar pack server cotm.lock.json`
 
 that creates a server *package* in `.server/`
  1. upload that package to **different** folder on your minecraft server
@@ -100,10 +100,10 @@ this will:
 ## MultiMC Integration / Deployment
 
 To run a test instance use \
-`java -jar voodoo.jar test cotm.lock.json mmc`
+`java -jar voodoo.jar test mmc cotm.lock.json`
 
 to compile a minimalistic MMC pack that selfupdates \
-`java -jar voodoo.jar pack cotm.lock.json mmc` \
+`java -jar voodoo.jar pack mmc cotm.lock.json` \
 this expects a file `multimc/${packname}.url.txt` that points at the previously uploaded
 skcraft data \
 more specifically the json file of the pack \
