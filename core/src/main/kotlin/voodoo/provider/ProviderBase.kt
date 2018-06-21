@@ -4,6 +4,7 @@ import mu.KLogging
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
+import voodoo.flatten.data.NestedEntry
 import voodoo.provider.impl.*
 import java.io.File
 import java.time.Instant
@@ -62,6 +63,10 @@ interface ProviderBase {
     fun getThumbnail(entry: Entry): String {
         return ""
     }
+//
+//    fun getThumbnail(entry: NestedEntry): String {
+//        return ""
+//    }
 
     fun getReleaseDate(entry: LockEntry): Instant? {
         return null

@@ -5,6 +5,7 @@ include 'util', 'util/dir', 'util/jenkins'
 include 'flatten', 'builder', 'pack', 'tester', 'voodoo', 'tome', 'importer'
 include 'multimc-installer', 'server-installer'
 include 'bootstrap'
+include 'gui'
 include 'archiver'
 
 include ':launcher'
