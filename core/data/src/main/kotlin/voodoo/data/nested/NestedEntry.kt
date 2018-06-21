@@ -3,6 +3,7 @@ package voodoo.flatten.data
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import voodoo.data.Side
+import voodoo.data.curse.CurseConstancts
 import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
@@ -27,12 +28,8 @@ data class NestedEntry(
         var websiteUrl: String = "",
         var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
-//        @JsonInclude(JsonInclude.Include.ALWAYS)
-//        var optional: Boolean = feature != null,
         var packageType: PackageType = PackageType.MOD,
         // INTERNAL //TODO: move into internal object or runtime data objects ?
-//        @JsonIgnore
-//        val internal: EntryInternal = EntryInternal(),
         var transient: Boolean = false, // this entry got added as dependency for something else
         var version: String = "", //TODO: use regex only ?
         var fileName: String? = null,
@@ -42,11 +39,13 @@ data class NestedEntry(
             else -> ".*"
         },
         var validMcVersions: List<String> = emptyList(),
+        //CURSE
+        var curseMetaUrl: String = CurseConstancts.PROXY_URL,
         var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
         var curseOptionalDependencies: Boolean = false,
         // DIRECT
         var url: String = "",
-        var urlTxt: Boolean = true,
+        var useUrlTxt: Boolean = true,
         //JENKINS
         var jenkinsUrl: String = "",
         var job: String = "",

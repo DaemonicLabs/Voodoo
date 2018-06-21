@@ -1,23 +1,17 @@
 package voodoo.gui.view
 
 import com.jfoenix.controls.JFXButton
-import com.jfoenix.controls.JFXListView
-import com.jfoenix.controls.JFXTextField
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.layout.HBox
 import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import tornadofx.*
-import voodoo.curse.CurseClient
-import voodoo.gui.controller.EntryController
-import voodoo.gui.controller.ModpackController
+import voodoo.gui.controller.NestedModpackController
 import voodoo.gui.extensions.jfxbutton
-import voodoo.gui.extensions.jfxcombobox
 import voodoo.gui.extensions.jfxlistview
 import voodoo.gui.extensions.jfxtextfield
-import voodoo.gui.model.EntryModel
-import voodoo.gui.model.ModpackModel
-import voodoo.provider.Provider
+import voodoo.gui.model.FlatModpackModel
+import voodoo.gui.model.NestedModpackModel
 
 /**
  * Created by nikky on 18/03/18.
@@ -25,8 +19,8 @@ import voodoo.provider.Provider
  * @version 1.0
  */
 class ModpackEditorView : View("Modpack Editor") {
-    val controller: ModpackController by inject()
-    val model: ModpackModel by inject()
+    val controller: NestedModpackController by inject()
+    val model: NestedModpackModel by inject()
 
     override val root = form {
         val modpack = controller.selectedModpack

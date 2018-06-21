@@ -4,20 +4,21 @@ import com.jfoenix.controls.JFXDialog
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon
 import javafx.geometry.Pos
 import javafx.scene.control.Label
-import voodoo.gui.controller.ModpackController
-import voodoo.gui.model.ModpackWrapper
-import voodoo.gui.model.ModpackModel
+import voodoo.gui.model.FlatModpackWrapper
+import voodoo.gui.model.FlatModpackModel
 import tornadofx.*
+import voodoo.gui.controller.NestedModpackController
 import voodoo.gui.extensions.*
+import voodoo.gui.model.NestedModpackModel
+import voodoo.gui.model.NestedModpackWrapper
 
 /**
  * Created by nikky on 18/03/18.
  * @author Nikky
  * @version 1.0
  */
-class VisualModpackList : View("Fancy ModpackWrapper List") {
-    val controller: ModpackController by inject()
-    val CONTENT_PANE = "ContentPane"
+class VisualModpackList : View("Fancy FlatModpackWrapper List") {
+    val controller: NestedModpackController by inject()
     override val root = stackpane {
         jfxlistview(controller.modpacks) {
             bindSelected(controller.selectedModpack)
@@ -60,8 +61,8 @@ class VisualModpackList : View("Fancy ModpackWrapper List") {
     }
 }
 
-class ModpackListFragment : ListCellFragment<ModpackWrapper>() {
-    val modpack = ModpackModel().bindTo(this)
+class ModpackListFragment : ListCellFragment<NestedModpackWrapper>() {
+    val modpack = NestedModpackModel().bindTo(this)
     override val root = form {
         fieldset {
             field("Title") {
@@ -77,7 +78,7 @@ class ModpackListFragment : ListCellFragment<ModpackWrapper>() {
                 label(modpack.version)
             }
             field("Entries") {
-                label(modpack.entries.integerBinding { it?.count() ?: 0 })
+                label(modpack.rootEntry.integerBinding { it?.flatCount()?: 0 })
             }
         }
     }

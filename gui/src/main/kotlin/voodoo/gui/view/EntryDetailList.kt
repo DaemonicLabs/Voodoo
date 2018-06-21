@@ -1,9 +1,9 @@
 //package moe.nikky.voodoo.view
 //
 //import javafx.scene.layout.Priority
-//import voodoo.gui.EntryController
-//import voodoo.gui.ModpackController
-//import voodoo.gui.EntryWrapper
+//import voodoo.gui.FlatEntryController
+//import voodoo.gui.FlatModpackController
+//import voodoo.gui.FlatEntryWrapper
 //import tornadofx.*
 //
 ///**
@@ -11,10 +11,10 @@
 // * @author Nikky
 // * @version 1.0
 // */
-//class EntryDetailList : View("EntryWrapper List") {
-//    val modpackController: ModpackController by inject()
-//    val controller: EntryController by inject()
-//    //var tableViewEditModel: TableViewEditModel<EntryWrapper> by singleAssign()
+//class EntryDetailList : View("FlatEntryWrapper List") {
+//    val modpackController: FlatModpackController by inject()
+//    val controller: FlatEntryController by inject()
+//    //var tableViewEditModel: TableViewEditModel<FlatEntryWrapper> by singleAssign()
 //    override val root = borderpane {
 //        hgrow = Priority.ALWAYS //important
 ////        top = buttonbar {
@@ -27,12 +27,12 @@
 ////        }
 //        center = tableview(modpackController.selectedModpack.entries) {
 //
-//            column("name", EntryWrapper::name).contentWidth(useAsMax = true)//.makeEditable()
-//            column("CurseId", EntryWrapper::id)
-//            column("provider", EntryWrapper::provider)//.useChoiceBox(Provider.values().toList().observable())
-//            column("side", EntryWrapper::side)//.useChoiceBox(Side.values().toList().observable())
-//            column("description", EntryWrapper::description)//.makeEditable()
-//            column("comment", EntryWrapper::comment)//.makeEditable()
+//            column("name", FlatEntryWrapper::name).contentWidth(useAsMax = true)//.makeEditable()
+//            column("CurseId", FlatEntryWrapper::id)
+//            column("provider", FlatEntryWrapper::provider)//.useChoiceBox(Provider.values().toList().observable())
+//            column("side", FlatEntryWrapper::side)//.useChoiceBox(Side.values().toList().observable())
+//            column("description", FlatEntryWrapper::description)//.makeEditable()
+//            column("comment", FlatEntryWrapper::comment)//.makeEditable()
 //
 //            bindSelected(controller.selectedEntry)
 //
