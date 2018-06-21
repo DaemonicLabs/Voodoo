@@ -16,7 +16,7 @@ import voodoo.gui.extensions.json
  * @version 1.0
  */
 
-class EntryWrapper(entry: Entry, val modpack: ModPack) {
+class FlatEntryWrapper(entry: Entry, val modpack: ModPack) {
 //    @JsonIgnore
 //    val enabledProperty = SimpleBooleanProperty(enabled)
 //    var enabled by enabledProperty
@@ -138,7 +138,7 @@ class EntryWrapper(entry: Entry, val modpack: ModPack) {
     }
 
     override fun toString(): String {
-        return "EntryWrapper(${this.json})"
+        return "FlatEntryWrapper(${this.json})"
     }
 
     val entry: Entry
@@ -174,38 +174,38 @@ class EntryWrapper(entry: Entry, val modpack: ModPack) {
         }
 }
 
-class EntryModel : ItemViewModel<EntryWrapper>() {
-    //    val enabled = bind(EntryWrapper::enabledProperty)
-    val provider = bind(EntryWrapper::providerProperty)
-    val name = bind(EntryWrapper::nameProperty)
-    val folder = bind(EntryWrapper::folderProperty)
-    val comment = bind(EntryWrapper::commentProperty)
-    val description = bind(EntryWrapper::descriptionProperty)
-    val feature = bind(EntryWrapper::featureProperty)
-    val side = bind(EntryWrapper::sideProperty)
-    val websiteUrl = bind(EntryWrapper::websiteUrlProperty)
-    val dependencies = bind(EntryWrapper::dependenciesProperty)
-    val packageType = bind(EntryWrapper::packageTypeProperty)
-    val version = bind(EntryWrapper::versionProperty)
-    val fileName = bind(EntryWrapper::fileNameProperty)
-    val fileNameRegex = bind(EntryWrapper::fileNameRegexProperty)
-    val validMcVersions = bind(EntryWrapper::validMCVersionsProperty)
-    val curseMetaUrl = bind(EntryWrapper::curseMetaUrlProperty)
-    val curseReleaseTypes = bind(EntryWrapper::curseReleaseTypesProperty)
-    val curseOptionalDependencies = bind(EntryWrapper::curseOptionalDependenciesProperty)
-    val url = bind(EntryWrapper::urlProperty)
-    val useUrlTxt = bind(EntryWrapper::useUrlTxtProperty)
-    val jenkinsUrl = bind(EntryWrapper::jenkinsUrlProperty)
-    val job = bind(EntryWrapper::jobProperty)
-    val buildNumber = bind(EntryWrapper::buildNumberProperty)
-    val fileSrc = bind(EntryWrapper::fileSrcProperty)
-    val updateJson = bind(EntryWrapper::updateJsonProperty)
-    val updateChannel = bind(EntryWrapper::updateChannelProperty)
-    val template = bind(EntryWrapper::templateProperty)
+class EntryModel : ItemViewModel<FlatEntryWrapper>() {
+    //    val enabled = bind(FlatEntryWrapper::enabledProperty)
+    val provider = bind(FlatEntryWrapper::providerProperty)
+    val name = bind(FlatEntryWrapper::nameProperty)
+    val folder = bind(FlatEntryWrapper::folderProperty)
+    val comment = bind(FlatEntryWrapper::commentProperty)
+    val description = bind(FlatEntryWrapper::descriptionProperty)
+    val feature = bind(FlatEntryWrapper::featureProperty)
+    val side = bind(FlatEntryWrapper::sideProperty)
+    val websiteUrl = bind(FlatEntryWrapper::websiteUrlProperty)
+    val dependencies = bind(FlatEntryWrapper::dependenciesProperty)
+    val packageType = bind(FlatEntryWrapper::packageTypeProperty)
+    val version = bind(FlatEntryWrapper::versionProperty)
+    val fileName = bind(FlatEntryWrapper::fileNameProperty)
+    val fileNameRegex = bind(FlatEntryWrapper::fileNameRegexProperty)
+    val validMcVersions = bind(FlatEntryWrapper::validMCVersionsProperty)
+    val curseMetaUrl = bind(FlatEntryWrapper::curseMetaUrlProperty)
+    val curseReleaseTypes = bind(FlatEntryWrapper::curseReleaseTypesProperty)
+    val curseOptionalDependencies = bind(FlatEntryWrapper::curseOptionalDependenciesProperty)
+    val url = bind(FlatEntryWrapper::urlProperty)
+    val useUrlTxt = bind(FlatEntryWrapper::useUrlTxtProperty)
+    val jenkinsUrl = bind(FlatEntryWrapper::jenkinsUrlProperty)
+    val job = bind(FlatEntryWrapper::jobProperty)
+    val buildNumber = bind(FlatEntryWrapper::buildNumberProperty)
+    val fileSrc = bind(FlatEntryWrapper::fileSrcProperty)
+    val updateJson = bind(FlatEntryWrapper::updateJsonProperty)
+    val updateChannel = bind(FlatEntryWrapper::updateChannelProperty)
+    val template = bind(FlatEntryWrapper::templateProperty)
 
-    val thumbnail = bind(EntryWrapper::thumbnailProperty)
+    val thumbnail = bind(FlatEntryWrapper::thumbnailProperty)
 
-//    val forceRebuild = bind(EntryWrapper::forceRebuildProperty)
+//    val forceRebuild = bind(FlatEntryWrapper::forceRebuildProperty)
 
 //    override fun onCommit(commits: List<Commit>) {
 //        commits.findChanged(name)?.let { println("Name changed from ${it.first} to ${it.second}")}

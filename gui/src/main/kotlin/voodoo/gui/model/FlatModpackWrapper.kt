@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import javafx.beans.property.Property
 import javafx.beans.property.SimpleListProperty
 import javafx.beans.property.SimpleStringProperty
-import javafx.beans.property.StringProperty
 import javafx.collections.ObservableList
 import tornadofx.*
 import voodoo.data.flat.ModPack
@@ -16,7 +15,7 @@ import voodoo.gui.extensions.json
  * @version 1.0
  */
 
-class ModpackWrapper(modpack: ModPack) {
+class FlatModpackWrapper(modpack: ModPack) {
     @JsonIgnore
     val nameProperty = SimpleStringProperty(modpack.name)
     var name by nameProperty
@@ -50,9 +49,9 @@ class ModpackWrapper(modpack: ModPack) {
     var minecraftDir by minecraftDirProperty
 
 
-    // load EntryWrapper
+    // load FlatEntryWrapper
     @JsonIgnore
-    val entriesProperty = SimpleListProperty<EntryWrapper>(modpack.entries.map { EntryWrapper(it, modpack) }.observable())
+    val entriesProperty = SimpleListProperty<FlatEntryWrapper>(modpack.entries.map { FlatEntryWrapper(it, modpack) }.observable())
     var entries by entriesProperty
 
     init {
@@ -60,7 +59,7 @@ class ModpackWrapper(modpack: ModPack) {
     }
 
     override fun toString(): String {
-        return "ModpackWrapper(${this.json})"
+        return "FlatModpackWrapper(${this.json})"
     }
 
     val modpack: ModPack
@@ -86,16 +85,16 @@ class ModpackWrapper(modpack: ModPack) {
 
 }
 
-class ModpackModel : ItemViewModel<ModpackWrapper>() {
-    val name = bind(ModpackWrapper::nameProperty)
-    val title = bind(ModpackWrapper::titleProperty)
-    val version = bind(ModpackWrapper::versionProperty)
-    val authors: ObservableList<SimpleStringProperty> = bind(ModpackWrapper::authorsProperty)
-    val mcVersion = bind(ModpackWrapper::mcVersionProperty)
-    val forge = bind(ModpackWrapper::forgeProperty)
-    val localDir = bind(ModpackWrapper::localDirProperty)
-    val minecraftDir = bind(ModpackWrapper::minecraftDirProperty)
-    val entries = bind(ModpackWrapper::entriesProperty)
+class FlatModpackModel : ItemViewModel<FlatModpackWrapper>() {
+    val name = bind(FlatModpackWrapper::nameProperty)
+    val title = bind(FlatModpackWrapper::titleProperty)
+    val version = bind(FlatModpackWrapper::versionProperty)
+    val authors: ObservableList<SimpleStringProperty> = bind(FlatModpackWrapper::authorsProperty)
+    val mcVersion = bind(FlatModpackWrapper::mcVersionProperty)
+    val forge = bind(FlatModpackWrapper::forgeProperty)
+    val localDir = bind(FlatModpackWrapper::localDirProperty)
+    val minecraftDir = bind(FlatModpackWrapper::minecraftDirProperty)
+    val entries = bind(FlatModpackWrapper::entriesProperty)
 
 
 

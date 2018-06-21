@@ -14,7 +14,7 @@ class MainView : View("Hello Voodoo TornadoFX") {
                 add<VisualModpackList>()
             }
             center = hbox {
-                add<ViualEntryList>()
+                add<VisualEntryList>()
             }
             right = hbox {
                 add<TabbedEditorView>()

@@ -5,11 +5,12 @@ import javafx.scene.layout.Priority
 import javafx.scene.paint.Color
 import tornadofx.*
 import voodoo.curse.CurseClient
-import voodoo.gui.controller.EntryController
+import voodoo.gui.controller.NestedEntryController
 import voodoo.gui.extensions.jfxbutton
+import voodoo.gui.extensions.jfxcheckbox
 import voodoo.gui.extensions.jfxcombobox
 import voodoo.gui.extensions.jfxtextfield
-import voodoo.gui.model.EntryModel
+import voodoo.gui.model.NestedEntryModel
 import voodoo.provider.Provider
 
 /**
@@ -18,8 +19,8 @@ import voodoo.provider.Provider
  * @version 1.0
  */
 class EntryEditorView : View("Entry Editor") {
-    val controller: EntryController by inject()
-    val model: EntryModel by inject()
+    val controller: NestedEntryController by inject()
+    val model: NestedEntryModel by inject()
 
     companion object {
         val validCurseNames = CurseClient.idMap.keys.toList()
@@ -30,16 +31,28 @@ class EntryEditorView : View("Entry Editor") {
         fieldset("Edit Entry") {
             vgrow = Priority.ALWAYS //important
 
+            field("Provider") {
+                jfxcheckbox(entry.providerOverride)
+                jfxcombobox(entry.provider, Provider.values().map { it.name }.toList()) {
+                    enableWhen(entry.providerOverride)
+                }
+            }
+
             field("Name") {
                 removeWhen { entry.provider.booleanBinding { it != Provider.CURSE.name }.not() }
+
+                jfxcheckbox(entry.nameOverride)
                 jfxtextfield(entry.name) {
+                    enableWhen(entry.nameOverride)
                     required()
                 }
             }
             field("Name") {
-                text("(?)").tooltip("select and start typing to filter mod names")
                 removeWhen { entry.provider.booleanBinding { it == Provider.CURSE.name }.not() }
+                jfxcheckbox(entry.nameOverride)
+                text("(?)").tooltip("select and start typing to filter mod names")
                 jfxcombobox(entry.name, validCurseNames.observable()) {
+                    enableWhen(entry.nameOverride)
                     makeAutocompletable { text -> validCurseNames.filter { it.contains(text) } }
                     validator { input ->
                         if (validCurseNames.contains(input))
@@ -51,18 +64,18 @@ class EntryEditorView : View("Entry Editor") {
                 }
             }
 
-            field("Provider") {
-                jfxcombobox(entry.provider, Provider.values().map { it.name }.toList())
+            field("Folder") {
+                jfxcheckbox(entry.folderOverride)
+                jfxtextfield(entry.folder) {
+                    enableWhen(entry.folderOverride)
+                    required()
+                }
             }
 
-//            field("Freeze EntryWrapper") {
-//                jfxcheckbox(null, entry.freeze)
-//            }
-//            field("Force Rebuild") {
-//                jfxcheckbox(null, entry.forceRebuild) {
-//                    enableWhen(entry.dirty.not())
-//                }
-//            }
+
+            field("has sub-entries") {
+                jfxcheckbox(entry.entriesOverride, "entries")
+            }
 
             jfxbutton("Save", type = JFXButton.ButtonType.RAISED) {
                 enableWhen(entry.dirty)
@@ -85,12 +98,6 @@ class EntryEditorView : View("Entry Editor") {
                 prefWidth = 80.0
                 spacing = 5.0
             }
-
-//            text("\nResult:\n")
-//            jfxtextarea(entry.resultJson) {
-//                vgrow = Priority.SOMETIMES //important
-//                isEditable = false
-//            }
         }
     }
 

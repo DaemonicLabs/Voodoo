@@ -18,7 +18,7 @@ import tornadofx.*
  * @version 1.0
  */
 
-fun EventTarget.jfxcheckbox(text: String? = null, property: Property<Boolean>? = null, op: JFXCheckBox.() -> Unit = {}): JFXCheckBox {
+fun EventTarget.jfxcheckbox(property: Property<Boolean>? = null, text: String? = null, op: JFXCheckBox.() -> Unit = {}): JFXCheckBox {
     val checkbox = JFXCheckBox(text)
     if (property != null) checkbox.bind(property)
     return opcr(this, checkbox, op)
