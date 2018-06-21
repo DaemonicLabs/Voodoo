@@ -10,6 +10,7 @@ import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
+import voodoo.flatten.data.NestedEntry
 import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
 import voodoo.util.download
@@ -63,14 +64,19 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     override fun getThumbnail(entry: LockEntry): String {
-        val addon = CurseClient.getAddon(entry.projectID, entry.curseMetaUrl)!!
-        return addon.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
+        val addon = CurseClient.getAddon(entry.projectID, entry.curseMetaUrl)
+        return addon?.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
     }
 
     override fun getThumbnail(entry: Entry): String {
-        val addon = CurseClient.getAddonByName(entry.name, entry.curseMetaUrl)!!
-        return addon.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
+        val addon = CurseClient.getAddonByName(entry.name, entry.curseMetaUrl)
+        return addon?.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
     }
+
+//    override fun getThumbnail(entry: NestedEntry): String {
+//        val addon = CurseClient.getAddonByName(entry.name, entry.curseMetaUrl)!!
+//        return addon.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
+//    }
 
     private fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, addEntry: (Entry) -> Unit) {
         val addon = getAddon(addonId, entry.curseMetaUrl)!!
