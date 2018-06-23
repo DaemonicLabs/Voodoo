@@ -138,6 +138,7 @@ object Hex : KLogging() {
                         }
                     } else {
                         // mismatching hash.. override file
+                        logger.info("task ${task.location} mismatching hash.. override file")
                         oldTasks.remove(oldTask)
                         target.delete()
                         target.parentFile.mkdirs()
@@ -145,12 +146,14 @@ object Hex : KLogging() {
                     }
                 } else {
                     // file exists but was not in the last version.. reset to make sure
+                    logger.info("task ${task.location} exists but was not in the last version.. reset to make sure")
                     target.delete()
                     target.parentFile.mkdirs()
                     target.download(url, cacheFolder.resolve(chunkedHash))
                 }
             } else {
                 // new file
+                logger.info("task ${task.location} creating new file")
                 target.parentFile.mkdirs()
                 target.download(url, cacheFolder.resolve(chunkedHash))
             }
@@ -158,7 +161,7 @@ object Hex : KLogging() {
             if (target.exists()) {
                 val sha1 = target.sha1Hex()
                 if (sha1 != task.hash) {
-                    logger.error("hashes do not match")
+                    logger.error("hashes do not match for task ${task.location}")
                     logger.error(sha1)
                     logger.error(task.hash)
                 }
