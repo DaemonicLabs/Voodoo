@@ -95,8 +95,8 @@ private fun processFeature(feature: Feature, modpack: ModPack) {
     }
 }
 
-fun ModPack.resolve(force: Boolean = false, updateEntries: List<String>) {
-    if (force) {
+fun ModPack.resolve(updateAll: Boolean = false, updateEntries: List<String>) {
+    if (updateAll) {
         versions.clear()
     } else {
         for (entryName in updateEntries) {
@@ -115,17 +115,29 @@ fun ModPack.resolve(force: Boolean = false, updateEntries: List<String>) {
         forgeBuild = getForgeBuild(forge, mcVersion)
     }
 
+    val tmpEntries = mutableListOf<Entry>()
+
     fun addEntry(entry: Entry) {
         if(entry.name.isBlank()) {
             logger.error ("invalid: $entry" )
         }
-        val duplicate = this.entries.find { it.name == entry.name }
+        val duplicate = tmpEntries.find { it.name == entry.name }
         if (duplicate == null) {
             entry.transient = true
-            this.entries += entry
+            tmpEntries += entry
         } else {
             duplicate.side += entry.side
+            if(duplicate.feature == null) {
+                duplicate.feature = entry.feature
+            }
+            if(duplicate.description.isBlank()) {
+                duplicate.feature = entry.feature
+            }
         }
+    }
+
+    entries.forEach {
+        addEntry(it)
     }
 
     // remove all transient entries
@@ -142,6 +154,7 @@ fun ModPack.resolve(force: Boolean = false, updateEntries: List<String>) {
             versions[entry.name] = lockEntry
     }
 
+    this.entries = tmpEntries.toList()
 
     features.clear()
     for (entry in entries) {

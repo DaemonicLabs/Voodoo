@@ -26,7 +26,7 @@ object Builder : KLogging() {
             val inFile = File(importArg)
             val modpack = inFile.readYaml<ModPack>()
 
-            modpack.resolve(force, entries)
+            modpack.resolve(updateAll, entries)
             if (!nosave) {
                 println("saving changes...")
                 inFile.writeJson(modpack)
@@ -63,8 +63,8 @@ object Builder : KLogging() {
                 help = "print output")
                 .default(false)
 
-        val force by parser.flagging("--force", "-f",
-                help = "print output")
+        val updateAll by parser.flagging("--updateAll", "-u",
+                help = "update all entries")
                 .default(false)
 
         val entries by parser.adding(
