@@ -1,3 +1,7 @@
+[![Discord](https://img.shields.io/discord/342696338556977153.svg?style=for-the-badge&logo=discord)](https://discord.gg/hXqNgq5)
+[![Jenkins](https://img.shields.io/jenkins/s/https/ci.elytradev.com/job/elytra/job/Voodoo/job/master.svg?style=for-the-badge&label=Jenkins%20Build)](https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/lastSuccessfulBuild/artifact/)
+[![GitHub issues](https://img.shields.io/github/issues/elytra/Voodoo.svg?style=for-the-badge&logo=github)](https://github.com/elytra/Voodoo/issues)
+
 Want to make a modpack ? quickly test locally and then make it available on multiple platforms for users ?
 
 voodoo is a set of tools to quickly prepare, build, test and deploy modpacks to users and servers
