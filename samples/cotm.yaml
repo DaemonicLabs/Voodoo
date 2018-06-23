@@ -4,7 +4,7 @@
 name: cotm
 title: Center of the Multiverse
 authors: ["AnsuzThuriaz", "Falkreon", "NikkyAi"]
-version: 2.1.8
+version: 2.1.8.6
 mcVersion: 1.12.2
 forge: 2705
 minecraftDir: src
@@ -17,6 +17,7 @@ userFiles:
   include:
   - "options.txt"
   - "quark.cfg"
+  - "foamfix.cfg"
 
   exclude: []
 
@@ -52,7 +53,7 @@ root:
   - Bedrock Ores
 
   # HellFirePvP
-  #- Astral Sorcery (current release crashing client)
+  #- Astral Sorcery
   - name: Astral Sorcery
     version: 1.8.10
 
@@ -75,7 +76,6 @@ root:
   - Clumps
 
   # TheIllusiveC4
-  - Colytra
   - Comforts
 
   # BlayTheNinth
@@ -173,9 +173,7 @@ root:
   - Passthrough Signs
   - Platforms
   - Random Things
-  #- RandomTweaks (current release crashing client)
-  - name: RandomTweaks
-    version: 2.0.0.0
+  - RandomTweaks
   - Ranged Pumps
   - Recurrent Complex
   - Redstone Flux
@@ -209,7 +207,6 @@ root:
   - Yoyos
   - "Bad Wither No Cookie - Reloaded"
   - Ender IO
-  - Sampler
   - Waystones
   - Aether Legacy
   - Corpse Complex
@@ -220,12 +217,9 @@ root:
   - CookieCore
   - Thaumcraft
   - FastWorkbench
-  - Portality
   - DimensionalDoors
   - "Better Builder's Wands"
-
-  # Testing
-  #- The Aether II (early alpha, very unstable)
+  - AntiGhost
 
   # Direct Downloads
   - provider: DIRECT
@@ -277,15 +271,37 @@ root:
 #============#
 # Serverside #
 #============#
+
   - side: SERVER
     entries:
-    - name: Shadowfacts' Forgelin
-      version: 1.7.2
+    - "Shadowfacts' Forgelin"
     - "BTFU continuous rsync incremental backup"
     - SwingThroughGrass
+    - Caliper
+    - LagGoggles
+    - Sampler
 
     - job: elytra/MatterLink/master
       name: MatterLink
+
+#===================#
+# Common - Optional #
+#===================#
+
+  - side: CLIENT
+    feature:
+      selected: false
+    entries:
+
+    - name: Caliper
+      description: "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
+
+    - name: LagGoggles
+      description: "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
+
+    - name: Sampler
+      description: "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
+
 
 #============#
 # Clientside #
@@ -305,45 +321,108 @@ root:
     - Default Options
     - Fullscreen Windowed (Borderless) for Minecraft
     - Mod Name Tooltip
-    - Neat
     - ReAuth
     - CleanView
-    - Vise
     - Crafting Tweaks
-    - Smooth Font
-    - Player's Choice
 
     # Way2muchnoise
     - Better Advancements
 
-    # Client Mods handled by Player's Choice
-    - JourneyMap
-    - MAGE
-    - Client Tweaks
-    - Mouse Tweaks
-    - Thaumic JEI
-    - JEI Bees
-    - Just Enough HarvestCraft (JEHC)
-    - Just Enough Resources (JER)
-    - Item Scroller
-    - Xaero's Minimap
-    - MineMenu
-    - ItemZoom
-    - Light Level Overlay Reloaded
-    - Durability Show
-    - Fancy Block Particles
-    - Dynamic Surroundings
-    - Keyboard Wizard
+#=======================#
+# Clientside - Optional #
+#=======================#
 
- #================#
- # Resource Packs #
- #================#
+    # OPT-OUT
+    - feature:
+        selected: true
+        recommendation: starred
+      entries:
+
+        - name: JourneyMap
+          description: "Mod-compatible mini-map."
+
+        - name: MAGE
+          description: "Configurable graphics enhancements. Highly recomended."
+
+        - name: Neat
+          description: "Simple health and unit frames. (Sometimes mis-reports player health)"
+
+        - name: Client Tweaks
+          description: "Various client related fixes and tweaks, all in a handy menu."
+
+        - name: Mouse Tweaks
+          description: "Add extra mouse gestures for inventories and crafting grids."
+
+        - name: Thaumic JEI
+          description: "JEI Integration for Thaumcraft."
+
+        - name: JEI Bees
+          description: "JEI Integration for Reorestry/Gendustry Bees."
+
+        - name: Just Enough HarvestCraft (JEHC)
+          description: "JEI Integration for Pam's HarvestCraft."
+
+        - name: Just Enough Resources (JER)
+          description: "JEI Integration that gives drop-rates for mobs, dungeonloot, etc."
+
+        - name: Vise
+          description: "More granular control over UI/HUD elements."
+
+        - name: Smooth Font
+          description: "It smoothes fonts."
+
+    # OPT-IN
+    - feature:
+        selected: false
+      entries:
+
+        - name: Item Scroller
+          description: "Alternative to MouseTweaks."
+
+        - name: Xaero's Minimap
+          description: "Lightweight alternative to JourneyMap."
+
+        - name: MineMenu
+          description: "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
+
+        - name: ItemZoom
+          description: "Check this if you like to get a closer look at item textures."
+
+        - name: Light Level Overlay Reloaded
+          description: "Smol light-level overlay if you aren't using Dynamic Surroundings."
+
+        - name: Durability Show
+          description: "Toggle-able item/tool/armor durability HUD."
+
+        - name: Fancy Block Particles
+          description: "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps. (Defaults set to be less intrusive.)"
+
+        - name: Dynamic Surroundings
+          description: "Caution: Resource heavy. Quite nice, has a lot of configurable features that add immersive sound/visual effects. Includes light-level overlay. (Defaults set to remove some sounds and generally be better.)"
+
+        - name: RPG-Hud
+          description: "Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)"
+
+        - name: Better Foliage
+          description: "Improves the fauna in the world. Very heavy, but very pretty. (Sane defaults set.)"
+
+        - name: Keyboard Wizard
+          description: "Visual keybind manager."
+
+#================#
+# Resource Packs #
+#================#
+
     # Unity Resource Pack
-    - Unity
+        - name: Unity
+          filename: Unity.zip
+          description: "Multi-mod compatible resource pack. Very nice, but does have some broken textures here and there."
 
     # Slice
-    - provider: DIRECT
-      entries:
-      - name: Slice
-        folder: resourcepacks
-        url: https://centerofthemultiverse.net/launcher/mirror/Slice.zip
+        - provider: DIRECT
+          entries:
+          - name: Slice
+            description: "Custom client font based off of Chicago. Made by Falkreon."
+            folder: resourcepacks
+            url: https://centerofthemultiverse.net/launcher/mirror/Slice.zip
+
