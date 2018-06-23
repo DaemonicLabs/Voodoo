@@ -1,4 +1,4 @@
-# Hex SK installer for MultiMC
+# SK installer for MultiMC
 
 MultiMC PRE_LAUNCH command
 
