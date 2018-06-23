@@ -85,10 +85,9 @@ object Hex : KLogging() {
         } else {
             mapOf<String, Boolean>()
         }
-        val features = selectFeatures(modpack.features, defaults, modpack.title.blankOr ?: modpack.name, modpack.version)
+        val features = selectFeatures(modpack.features, defaults, modpack.title.blankOr
+                ?: modpack.name, modpack.version)
         featureJson.writeJson(features)
-
-        val cacheFolder = directories.cacheHome.resolve("hex")
 
         val objectsUrl = packUrl.substringBeforeLast('/') + "/" + modpack.objectsLocation
 
@@ -96,6 +95,9 @@ object Hex : KLogging() {
 
         // iterate new tasks
         for (task in modpack.tasks) {
+
+            val oldTask = oldTaskList.find { it.to == task.to }
+
             val whenTask = task.`when`
             if (whenTask != null) {
                 val download = when (whenTask.`if`) {
@@ -117,45 +119,43 @@ object Hex : KLogging() {
             }
             val target = minecraftDir.resolve(task.to)
             val chunkedHash = task.hash.chunked(6).joinToString("/")
+            val cacheFolder = directories.cacheHome.resolve(chunkedHash)
 
-            val oldTask = oldTaskList.find { it.to == task.to }
             if (target.exists()) {
                 if (oldTask != null) {
                     // file exists already and existed in the last version
 
-                    if (task.userFile) {
-                        if (oldTask.userFile) {
-                            logger.info("task ${task.to} is a userfile, will not be modified")
-                            oldTaskList.remove(oldTask)
-                            continue
-                        }
+                    if (task.userFile && oldTask.userFile) {
+                        logger.info("task ${task.to} is a userfile, will not be modified")
+                        oldTask.let { oldTaskList.remove(it) }
+                        continue
                     }
-                    if (oldTask.hash == task.hash) {
-                        if (target.isFile && target.sha1Hex() == task.hash) {
-                            logger.info("task ${task.to} file did not change and sha1 hash matches")
-                            oldTaskList.remove(oldTask)
-                            continue
-                        }
+                    if (oldTask.hash == task.hash && target.isFile && target.sha1Hex() == task.hash) {
+                        logger.info("task ${task.to} file did not change and sha1 hash matches")
+                        oldTask.let { oldTaskList.remove(it) }
+                        continue
                     } else {
                         // mismatching hash.. override file
-                        logger.info("task ${task.to} mismatching hash.. override file")
-                        oldTaskList.remove(oldTask)
+                        logger.info("task ${task.to} mismatching hash.. reset and override file")
+                        oldTask.let { oldTaskList.remove(it) }
                         target.delete()
                         target.parentFile.mkdirs()
-                        target.download(url, cacheFolder.resolve(chunkedHash))
+                        target.download(url, cacheFolder)
                     }
                 } else {
                     // file exists but was not in the last version.. reset to make sure
                     logger.info("task ${task.to} exists but was not in the last version.. reset to make sure")
                     target.delete()
                     target.parentFile.mkdirs()
-                    target.download(url, cacheFolder.resolve(chunkedHash))
+                    target.download(url, cacheFolder)
                 }
             } else {
                 // new file
                 logger.info("task ${task.to} creating new file")
                 target.parentFile.mkdirs()
-                target.download(url, cacheFolder.resolve(chunkedHash))
+                target.download(url, cacheFolder)
+
+                oldTask?.let { oldTaskList.remove(it) }
             }
 
             if (target.exists()) {
@@ -164,13 +164,18 @@ object Hex : KLogging() {
                     logger.error("hashes do not match for task ${task.to}")
                     logger.error(sha1)
                     logger.error(task.hash)
+                } else {
+                    logger.trace("task ${task.to} validated")
                 }
+            } else {
+                logger.error("file $target was not created")
             }
         }
 
         // iterate old
         oldTaskList.forEach { task ->
             val target = minecraftDir.resolve(task.to)
+            logger.info("deleting $target")
             target.delete()
         }
 

@@ -41,6 +41,7 @@ fun File.download(url: String, cacheDir: File, useragent: String = downloader.us
     }
 
     try {
+        this.parentFile.mkdirs()
         cacheFile.copyTo(this, overwrite = true)
     } catch (e: FileAlreadyExistsException) {
         val fileIsLocked = !this.renameTo(this)
