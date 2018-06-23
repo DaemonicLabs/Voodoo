@@ -92,7 +92,7 @@ object Hex : KLogging() {
 
         val objectsUrl = packUrl.substringBeforeLast('/') + "/" + modpack.objectsLocation
 
-        val oldTasks = oldpack?.tasks?.toMutableList()
+        val oldTaskList = oldpack?.tasks?.toMutableList() ?: mutableListOf()
 
         // iterate new tasks
         for (task in modpack.tasks) {
@@ -118,42 +118,42 @@ object Hex : KLogging() {
             val target = minecraftDir.resolve(task.to)
             val chunkedHash = task.hash.chunked(6).joinToString("/")
 
-            val oldTask = oldTasks?.find { it.location == task.location }
+            val oldTask = oldTaskList.find { it.to == task.to }
             if (target.exists()) {
                 if (oldTask != null) {
                     // file exists already and existed in the last version
 
                     if (task.userFile) {
                         if (oldTask.userFile) {
-                            logger.info("task ${task.location} is a userfile, will not be modified")
-                            oldTasks.remove(oldTask)
+                            logger.info("task ${task.to} is a userfile, will not be modified")
+                            oldTaskList.remove(oldTask)
                             continue
                         }
                     }
                     if (oldTask.hash == task.hash) {
                         if (target.isFile && target.sha1Hex() == task.hash) {
-                            logger.info("task ${task.location} file did not change and sha1 hash matches")
-                            oldTasks.remove(oldTask)
+                            logger.info("task ${task.to} file did not change and sha1 hash matches")
+                            oldTaskList.remove(oldTask)
                             continue
                         }
                     } else {
                         // mismatching hash.. override file
-                        logger.info("task ${task.location} mismatching hash.. override file")
-                        oldTasks.remove(oldTask)
+                        logger.info("task ${task.to} mismatching hash.. override file")
+                        oldTaskList.remove(oldTask)
                         target.delete()
                         target.parentFile.mkdirs()
                         target.download(url, cacheFolder.resolve(chunkedHash))
                     }
                 } else {
                     // file exists but was not in the last version.. reset to make sure
-                    logger.info("task ${task.location} exists but was not in the last version.. reset to make sure")
+                    logger.info("task ${task.to} exists but was not in the last version.. reset to make sure")
                     target.delete()
                     target.parentFile.mkdirs()
                     target.download(url, cacheFolder.resolve(chunkedHash))
                 }
             } else {
                 // new file
-                logger.info("task ${task.location} creating new file")
+                logger.info("task ${task.to} creating new file")
                 target.parentFile.mkdirs()
                 target.download(url, cacheFolder.resolve(chunkedHash))
             }
@@ -161,7 +161,7 @@ object Hex : KLogging() {
             if (target.exists()) {
                 val sha1 = target.sha1Hex()
                 if (sha1 != task.hash) {
-                    logger.error("hashes do not match for task ${task.location}")
+                    logger.error("hashes do not match for task ${task.to}")
                     logger.error(sha1)
                     logger.error(task.hash)
                 }
@@ -169,7 +169,7 @@ object Hex : KLogging() {
         }
 
         // iterate old
-        oldTasks?.forEach { task ->
+        oldTaskList.forEach { task ->
             val target = minecraftDir.resolve(task.to)
             target.delete()
         }
@@ -194,6 +194,7 @@ object Hex : KLogging() {
         ) + mmcPack.components
         mmcPackPath.writeJson(mmcPack)
 
+        oldpackFile.createNewFile()
         oldpackFile.writeJson(modpack)
     }
 
