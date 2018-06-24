@@ -1,3 +1,4 @@
+[![Discord](https://img.shields.io/discord/176780432371744769.svg?style=for-the-badge&label=%23ai-dev&logo=discord)](http://discord.gg/Fm5EST)
 [![Discord](https://img.shields.io/discord/342696338556977153.svg?style=for-the-badge&logo=discord)](https://discord.gg/hXqNgq5)
 [![Jenkins](https://img.shields.io/jenkins/s/https/ci.elytradev.com/job/elytra/job/Voodoo/job/master.svg?style=for-the-badge&label=Jenkins%20Build)](https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/lastSuccessfulBuild/artifact/)
 [![GitHub issues](https://img.shields.io/github/issues/elytra/Voodoo.svg?style=for-the-badge&logo=github)](https://github.com/elytra/Voodoo/issues)
