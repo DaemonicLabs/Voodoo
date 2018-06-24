@@ -118,6 +118,7 @@ fun ModPack.resolve(updateAll: Boolean = false, updateEntries: List<String>) {
     val tmpEntries = mutableListOf<Entry>()
 
     fun addEntry(entry: Entry) {
+        logger.info("adding ${entry.name}")
         if(entry.name.isBlank()) {
             logger.error ("invalid: $entry" )
         }
@@ -187,7 +188,7 @@ fun ModPack.resolve(updateAll: Boolean = false, updateEntries: List<String>) {
     writeFeatureCache()
 
     var unresolved: List<Entry> = emptyList()
-    while (this.entries.filter { !versions.containsKey(it.name) }.apply { unresolved = this }.isNotEmpty()) {
+    while (tmpEntries.filter { !versions.containsKey(it.name) }.apply { unresolved = this }.isNotEmpty()) {
         for (entry in unresolved) {
             val provider = Provider.valueOf(entry.provider).base
 
@@ -196,7 +197,10 @@ fun ModPack.resolve(updateAll: Boolean = false, updateEntries: List<String>) {
                 versions[entry.name] = lockEntry
         }
     }
+    this.entries = tmpEntries.toList()
     writeVersionCache()
+
+    logger.info { this.entries.map { it.name } }
 
     val directories = Directories.get(moduleName = "history")
     val historyPath = directories.dataHome.resolve(this.name)
