@@ -131,8 +131,11 @@ fun ModPack.resolve(updateAll: Boolean = false, updateDependencies: Boolean = fa
         }
     }
 
-    if (updateDependencies){
+    if (updateDependencies || updateAll) {
         // remove all transient entries
+        entries.filter { it.transient }.forEach {
+            versions.remove(it.name)
+        }
         entries = entries.filter { !it.transient }
     }
 
@@ -149,9 +152,11 @@ fun ModPack.resolve(updateAll: Boolean = false, updateDependencies: Boolean = fa
         }
         val duplicate = entries.find { it.name == entry.name }
         if (duplicate == null) {
+            logger.info("new entry $entry.name")
             entry.transient = true
             entries += entry
         } else {
+            logger.info("duplicate entry $entry.name")
             duplicate.side += entry.side
             if (duplicate.feature == null) {
                 duplicate.feature = entry.feature
@@ -162,19 +167,23 @@ fun ModPack.resolve(updateAll: Boolean = false, updateDependencies: Boolean = fa
         }
     }
 
-
     // recalculate all dependencies
-    for (entry in entries) {
-        val provider = Provider.valueOf(entry.provider).base
-        val lockEntry = provider.resolve(entry, this, ::addEntry)
-        if (entry.name.isBlank()) {
-            logger.error("entry has no name set: $entry")
-            exitProcess(2)
-        }
-        if (!versions.containsKey(entry.name) && lockEntry != null)
-            versions[entry.name] = lockEntry
-    }
+    val resolved: MutableSet<String> = mutableSetOf()
+    do {
+        val unresolved: List<Entry> = entries.filter { !resolved.contains(it.name) }
+        for (entry in unresolved) {
+            val provider = Provider.valueOf(entry.provider).base
 
+            provider.resolve(entry, this, ::addEntry)
+                    ?.let { lockEntry ->
+                        if (!versions.containsKey(entry.name))
+                            versions[entry.name] = lockEntry
+                        resolved += entry.name
+                    }
+
+        }
+    } while (entries.any { !resolved.contains(it.name) })
+    writeVersionCache()
 
     features.clear()
     for (entry in entries) {
@@ -206,19 +215,7 @@ fun ModPack.resolve(updateAll: Boolean = false, updateDependencies: Boolean = fa
     }
     writeFeatureCache()
 
-    var unresolved: List<Entry> = emptyList()
-    while (entries.filter { !versions.containsKey(it.name) }.apply { unresolved = this }.isNotEmpty()) {
-        for (entry in unresolved) {
-            val provider = Provider.valueOf(entry.provider).base
-
-            val lockEntry = provider.resolve(entry, this, ::addEntry)
-            if (lockEntry != null)
-                versions[entry.name] = lockEntry
-        }
-    }
-    writeVersionCache()
-
-    logger.info { this.entries.map { it.name } }
+//    logger.info { this.entries.map { it.name } }
 
     val directories = Directories.get(moduleName = "history")
     val historyPath = directories.dataHome.resolve(this.name)

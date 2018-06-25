@@ -31,7 +31,7 @@ echo
 echo "building $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" build $pack.json -o $pack.lock.json --updateAll
+java -jar "$DIR/voodoo/build/libs/voodoo.jar" build $pack.json -o $pack.lock.json $2
 if [ ! $? -eq 0 ]; then
     echo "Error Building $pack"
     exit 1
