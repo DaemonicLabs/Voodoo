@@ -55,7 +55,7 @@ fun resolveFeatureDependencies(entry: Entry, modpack: ModPack) {
                         recommendation = entryFeature.recommendation
                 )
         )
-        processFeature(feature, modpack)
+        modpack.processFeature(feature)
         modpack.features += feature
         entry.optional = true
 //            entry.dependenciesDirty = true
@@ -63,7 +63,7 @@ fun resolveFeatureDependencies(entry: Entry, modpack: ModPack) {
     logger.debug("processed ${entry.name}")
 }
 
-private fun processFeature(feature: Feature, modpack: ModPack) {
+private fun ModPack.processFeature(feature: Feature) {
     logger.info("processing feature: $feature")
     var processedEntries = emptyList<String>()
     var processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
@@ -71,7 +71,7 @@ private fun processFeature(feature: Feature, modpack: ModPack) {
         processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
         for (entry_name in processableEntries) {
             logger.info("searching $entry_name")
-            val entry = modpack.entries.find { e ->
+            val entry = this.entries.find { e ->
                 e.name == entry_name
             }
             if (entry == null) {
@@ -82,7 +82,7 @@ private fun processFeature(feature: Feature, modpack: ModPack) {
             var depNames = entry.dependencies.values.flatten()
             logger.info("depNames: $depNames")
             depNames = depNames.filter { d ->
-                modpack.entries.any { e -> e.name == d && e.optional }
+                this.entries.any { e -> e.name == d && e.optional }
             }
             logger.info("filtered dependency names: $depNames")
             for (dep in depNames) {
@@ -96,6 +96,28 @@ private fun processFeature(feature: Feature, modpack: ModPack) {
 }
 
 fun ModPack.resolve(updateAll: Boolean = false, updateEntries: List<String>) {
+    //init entries
+    val tmpEntries = mutableListOf<Entry>()
+    entries.forEach { entry ->
+        logger.info("adding ${entry.name}")
+        if (entry.name.isBlank()) {
+            logger.error("invalid: $entry")
+        }
+        val duplicate = tmpEntries.find { it.name == entry.name }
+        if (duplicate == null) {
+            tmpEntries += entry
+        } else {
+            duplicate.side += entry.side
+            if (duplicate.feature == null) {
+                duplicate.feature = entry.feature
+            }
+            if (duplicate.description.isBlank()) {
+                duplicate.feature = entry.feature
+            }
+        }
+    }
+    this.entries = tmpEntries.toList()
+
     if (updateAll) {
         versions.clear()
     } else {
@@ -111,35 +133,30 @@ fun ModPack.resolve(updateAll: Boolean = false, updateEntries: List<String>) {
 
     writeVersionCache()
 
-    if(forgeBuild < 0) {
+    if (forgeBuild < 0) {
         forgeBuild = getForgeBuild(forge, mcVersion)
     }
 
-    val tmpEntries = mutableListOf<Entry>()
-
     fun addEntry(entry: Entry) {
         logger.info("adding ${entry.name}")
-        if(entry.name.isBlank()) {
-            logger.error ("invalid: $entry" )
+        if (entry.name.isBlank()) {
+            logger.error("invalid: $entry")
         }
-        val duplicate = tmpEntries.find { it.name == entry.name }
+        val duplicate = entries.find { it.name == entry.name }
         if (duplicate == null) {
             entry.transient = true
-            tmpEntries += entry
+            entries += entry
         } else {
             duplicate.side += entry.side
-            if(duplicate.feature == null) {
+            if (duplicate.feature == null) {
                 duplicate.feature = entry.feature
             }
-            if(duplicate.description.isBlank()) {
+            if (duplicate.description.isBlank()) {
                 duplicate.feature = entry.feature
             }
         }
     }
 
-    entries.forEach {
-        addEntry(it)
-    }
 
     // remove all transient entries
     entries = entries.filter { !it.transient }
@@ -155,7 +172,6 @@ fun ModPack.resolve(updateAll: Boolean = false, updateEntries: List<String>) {
             versions[entry.name] = lockEntry
     }
 
-    this.entries = tmpEntries.toList()
 
     features.clear()
     for (entry in entries) {
@@ -188,7 +204,7 @@ fun ModPack.resolve(updateAll: Boolean = false, updateEntries: List<String>) {
     writeFeatureCache()
 
     var unresolved: List<Entry> = emptyList()
-    while (tmpEntries.filter { !versions.containsKey(it.name) }.apply { unresolved = this }.isNotEmpty()) {
+    while (entries.filter { !versions.containsKey(it.name) }.apply { unresolved = this }.isNotEmpty()) {
         for (entry in unresolved) {
             val provider = Provider.valueOf(entry.provider).base
 
@@ -197,7 +213,6 @@ fun ModPack.resolve(updateAll: Boolean = false, updateEntries: List<String>) {
                 versions[entry.name] = lockEntry
         }
     }
-    this.entries = tmpEntries.toList()
     writeVersionCache()
 
     logger.info { this.entries.map { it.name } }
