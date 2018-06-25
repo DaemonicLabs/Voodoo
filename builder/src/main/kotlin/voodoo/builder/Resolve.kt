@@ -95,7 +95,7 @@ private fun ModPack.processFeature(feature: Feature) {
     }
 }
 
-fun ModPack.resolve(updateAll: Boolean = false, updateEntries: List<String>) {
+fun ModPack.resolve(updateAll: Boolean = false, updateDependencies: Boolean = false, updateEntries: List<String>) {
     //init entries
     val tmpEntries = mutableListOf<Entry>()
     entries.forEach { entry ->
@@ -131,6 +131,11 @@ fun ModPack.resolve(updateAll: Boolean = false, updateEntries: List<String>) {
         }
     }
 
+    if (updateDependencies){
+        // remove all transient entries
+        entries = entries.filter { !it.transient }
+    }
+
     writeVersionCache()
 
     if (forgeBuild < 0) {
@@ -158,8 +163,6 @@ fun ModPack.resolve(updateAll: Boolean = false, updateEntries: List<String>) {
     }
 
 
-    // remove all transient entries
-    entries = entries.filter { !it.transient }
     // recalculate all dependencies
     for (entry in entries) {
         val provider = Provider.valueOf(entry.provider).base
