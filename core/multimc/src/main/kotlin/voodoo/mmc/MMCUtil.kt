@@ -11,9 +11,9 @@ import voodoo.util.Directories
 import voodoo.util.readJson
 import voodoo.util.writeJson
 import java.awt.*
-import java.awt.event.*
+import java.awt.event.WindowAdapter
+import java.awt.event.WindowEvent
 import java.io.File
-import java.io.FileNotFoundException
 import java.io.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -206,6 +206,8 @@ object MMCUtil : KLogging() {
 
                     val toggle = toggleButtons[feature.name]!!.apply {
                         alignmentX = Component.RIGHT_ALIGNMENT
+//                        this.foreground = Color.MAGENTA
+                        this.background = Color.CYAN
                     }
                     panel.add(toggle,
                             GridBagConstraints().apply {
