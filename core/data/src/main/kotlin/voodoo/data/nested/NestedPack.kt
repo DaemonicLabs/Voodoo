@@ -1,7 +1,6 @@
 package voodoo.data.nested
 
 import voodoo.data.UserFiles
-import voodoo.flatten.data.NestedEntry
 import java.io.File
 
 /**
@@ -9,6 +8,9 @@ import java.io.File
  * @author Nikky
  */
 data class NestedPack(
+        /**
+         * Name of the Pack
+         */
         var name: String,
         var title: String = "",
         var version: String = "1.0",

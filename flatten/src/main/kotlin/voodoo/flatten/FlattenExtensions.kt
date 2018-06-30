@@ -2,8 +2,8 @@ package voodoo.flatten
 
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
+import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
-import voodoo.flatten.data.NestedEntry
 import voodoo.util.readYaml
 import java.io.File
 import kotlin.reflect.KMutableProperty

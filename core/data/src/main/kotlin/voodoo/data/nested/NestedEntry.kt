@@ -1,4 +1,4 @@
-package voodoo.flatten.data
+package voodoo.data.nested
 
 import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
