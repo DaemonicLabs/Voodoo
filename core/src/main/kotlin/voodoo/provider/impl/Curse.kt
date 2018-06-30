@@ -10,7 +10,6 @@ import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
-import voodoo.flatten.data.NestedEntry
 import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
 import voodoo.util.download

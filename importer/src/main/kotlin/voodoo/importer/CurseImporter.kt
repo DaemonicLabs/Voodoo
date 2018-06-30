@@ -8,8 +8,8 @@ import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.FileType
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
+import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
-import voodoo.flatten.data.NestedEntry
 import voodoo.pack.AbstractImporter
 import voodoo.util.UnzipUtility.unzip
 import voodoo.util.readJson
