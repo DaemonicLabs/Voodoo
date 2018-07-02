@@ -18,8 +18,10 @@ import java.util.concurrent.TimeUnit
 object Server {
     val directories = Directories.get(moduleName = "server-installer")
 
-    fun install(modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean, cleanConfig: Boolean) {
+    fun install(rootFolder: File, modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean, cleanConfig: Boolean) {
         val cacheDir = directories.cacheHome
+
+        val packSrc = rootFolder.resolve(modpack.sourceDir)
 
         if (clean) {
             logger.info("cleaning modpack directory $serverDir")
@@ -27,7 +29,7 @@ object Server {
         }
         serverDir.mkdirs()
 
-        if(cleanConfig) {
+        if (cleanConfig) {
             serverDir.resolve("config").deleteRecursively()
         }
         serverDir.resolve("mods").deleteRecursively()
@@ -40,7 +42,7 @@ object Server {
             logger.warn("minecraft directory $mcDir does not exist")
         }
 
-        for(file in serverDir.walkTopDown()) {
+        for (file in serverDir.walkTopDown()) {
             when {
                 file.name == "_CLIENT" -> file.deleteRecursively()
                 file.name == "_SERVER" -> {
@@ -51,10 +53,12 @@ object Server {
         }
 
         // download entries
-        for (entry in modpack.entries) {
-            if(entry.side == Side.CLIENT) continue
+        for ((name, pair) in modpack.entriesMapping) {
+            val (entry, entryFile) = pair
+            val relativeFolder = entryFile.absoluteFile.parentFile.relativeTo(packSrc)
+            if (entry.side == Side.CLIENT) continue
             val provider = Provider.valueOf(entry.provider).base
-            val targetFolder = serverDir.resolve(entry.folder)
+            val targetFolder = serverDir.resolve(relativeFolder)
             val (url, file) = provider.download(entry, targetFolder, cacheDir)
         }
 
@@ -66,7 +70,7 @@ object Server {
         logger.info("forge: $forgeLongVersion")
 
         // install forge
-        if(!skipForge) {
+        if (!skipForge) {
             val java = arrayOf(System.getProperty("java.home"), "bin", "java").joinToString(File.separator)
             val args = arrayOf(java, "-jar", forgeFile.path, "--installServer")
             logger.debug("running " + args.joinToString(" ") { "\"$it\"" })

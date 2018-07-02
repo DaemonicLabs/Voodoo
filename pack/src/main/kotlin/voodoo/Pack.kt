@@ -52,9 +52,9 @@ object Pack : KLogging() {
 
             val jsonObject = jankson.load(modpackLockFile)
             val modpack: LockPack = jankson.fromJson(jsonObject)
-            val folder = modpackLockFile.absoluteFile.parentFile
+            val rootFolder = modpackLockFile.absoluteFile.parentFile
 
-            modpack.loadEntries(folder, jankson)
+            modpack.loadEntries(rootFolder, jankson)
 
             val packer = when (methode) {
                 "sk" -> SKPack
@@ -69,7 +69,7 @@ object Pack : KLogging() {
                 }
             }
 
-            packer.download(rootFolder = folder, modpack = modpack, target = targetArg, clean = true)
+            packer.download(rootFolder = rootFolder, modpack = modpack, target = targetArg, clean = true)
         }
     }
 
