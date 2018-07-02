@@ -66,18 +66,17 @@ object SKPack : AbstractPack() {
 
         // download entries
         val targetFiles = mutableMapOf<String, File>()
-        modpack.entriesMapping.forEach { name, (entry, entryFile) ->
+        modpack.entriesMapping.forEach { name, (entry, relEntryFile) ->
             val provider = Provider.valueOf(entry.provider).base
 
-            val relativeFile = entryFile.relativeTo(packSrc)
-            val folder = skSrcFolder.resolve(relativeFile)
+            val folder = skSrcFolder.resolve(relEntryFile).parentFile
 
             val (url, file) = provider.download(entry, folder, cacheDir)
             if (url != null && entry.useUrlTxt) {
-                val urlTxtFile = file.parentFile.resolve(file.name + ".url.txt")
+                val urlTxtFile = folder.resolve(file.name + ".url.txt")
                 urlTxtFile.writeText(url)
             }
-            targetFiles[entry.name] = relativeFile // file.relativeTo(skSrcFolder)
+            targetFiles[entry.name] = file // file.relativeTo(skSrcFolder)
         }
 
         logger.info { targetFiles }
