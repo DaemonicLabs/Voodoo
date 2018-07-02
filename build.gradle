@@ -61,36 +61,38 @@ subprojects {
         }
     }
 
-    sourceSets {
-        main.kotlin.srcDirs += "$buildDir/generated-src"
-    }
+    if(name != "Jankson") {
+        sourceSets {
+            main.kotlin.srcDirs += "$buildDir/generated-src"
+        }
 //    version = "${project.major}.${project.minor}.${project.patch}"
-    compileKotlin.doFirst {
-        def folder = project.name != "voodoo" ? "voodoo/${project.name}" : "voodoo"
-        def name = project.name.tokenize('/').last().capitalize().tokenize('-')*.capitalize().join('')
-        def templateSrc = project.parent.file("template/kotlin/voodoo/")
-        copy {
-            from templateSrc
-            into "$buildDir/generated-src/$folder"
-            expand(
-                    PACKAGE: folder.replace('/', '.').replace('-', '.'),
-                    NAME: name,
-                    MAJOR_VERSION: project.major,
-                    MINOR_VERSION: project.minor,
-                    PATCH_VERSION: project.patch,
-                    BUILD_NUMBER: System.env.BUILD_NUMBER ?: -1
-            )
-        }
-        fileTree("$buildDir/generated-src/$folder").visit { FileVisitDetails details ->
-            println "# " +details.file.path
-            details.file.readLines().forEach {
-                println it
+        compileKotlin.doFirst {
+            def folder = project.name != "voodoo" ? "voodoo/${project.name}" : "voodoo"
+            def name = project.name.tokenize('/').last().capitalize().tokenize('-')*.capitalize().join('')
+            def templateSrc = project.parent.file("template/kotlin/voodoo/")
+            copy {
+                from templateSrc
+                into "$buildDir/generated-src/$folder"
+                expand(
+                        PACKAGE: folder.replace('/', '.').replace('-', '.'),
+                        NAME: name,
+                        MAJOR_VERSION: project.major,
+                        MINOR_VERSION: project.minor,
+                        PATCH_VERSION: project.patch,
+                        BUILD_NUMBER: System.env.BUILD_NUMBER ?: -1
+                )
             }
-        }
+            fileTree("$buildDir/generated-src/$folder").visit { FileVisitDetails details ->
+                println "# " +details.file.path
+                details.file.readLines().forEach {
+                    println it
+                }
+            }
 
-    }
-    if (System.env.BUILD_NUMBER) {
-        version = System.env.BUILD_NUMBER
+        }
+        if (System.env.BUILD_NUMBER) {
+            version = System.env.BUILD_NUMBER
+        }
     }
 
     dokka {

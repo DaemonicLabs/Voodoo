@@ -1,14 +1,24 @@
 package voodoo
 
+import blue.endless.jankson.Jankson
+import blue.endless.jankson.JsonObject
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import mu.KLogging
 import voodoo.builder.resolve
+import voodoo.data.Side
+import voodoo.data.UserFiles
+import voodoo.data.flat.Entry
+import voodoo.data.flat.EntryFeature
 import voodoo.data.flat.ModPack
+import voodoo.data.lock.LockEntry
+import voodoo.data.lock.LockPack
+import voodoo.data.sk.FeatureFiles
+import voodoo.data.sk.FeatureProperties
+import voodoo.data.sk.Launch
+import voodoo.data.sk.SKFeature
 import voodoo.util.json
-import voodoo.util.readYaml
-import voodoo.util.writeJson
 import java.io.File
 
 /**
@@ -19,21 +29,73 @@ import java.io.File
 object Builder : KLogging() {
     @JvmStatic
     fun main(vararg args: String) = mainBody {
+        val jankson = Jankson.builder()
+                .registerTypeAdapter(ModPack.Companion::fromJson)
+                .registerTypeAdapter(Entry.Companion::fromJson)
+                .registerTypeAdapter(LockPack.Companion::fromJson)
+                .registerTypeAdapter(LockEntry.Companion::fromJson)
+                .registerTypeAdapter(EntryFeature.Companion::fromJson)
+                .registerTypeAdapter(UserFiles.Companion::fromJson)
+                .registerTypeAdapter(Launch.Companion::fromJson)
+                .registerTypeAdapter(SKFeature.Companion::fromJson)
+                .registerTypeAdapter(FeatureProperties.Companion::fromJson)
+                .registerTypeAdapter(FeatureFiles.Companion::fromJson)
+                .registerSerializer(ModPack.Companion::toJson)
+                .registerSerializer(Entry.Companion::toJson)
+                .registerSerializer(LockPack.Companion::toJson)
+                .registerSerializer(LockEntry.Companion::toJson)
+//            .registerSerializer(EntryFeature.Companion::toJson)
+                .build()
 
         val arguments = Arguments(ArgParser(args))
 
         arguments.run {
-            val inFile = File(importArg)
-            val modpack = inFile.readYaml<ModPack>()
+
+            val jsonObject = jankson.load(packFile)
+            val modpack: ModPack = jankson.fromJson(jsonObject)
+            //val modpack = inFile.readYaml<ModPack>()
+
+            val parentFolder = packFile.absoluteFile.parentFile
+
+            modpack.loadEntries(parentFolder, jankson)
+
+            modpack.entriesMapping.forEach { name, (entry, file, jonObject) ->
+                logger.info("name: $name entry: $entry")
+            }
+
+            //TODO: lock entries - DONE
+            //TODO: collect features
+            //TODO: write files - DONE
 
             modpack.resolve(
+                    parentFolder,
+                    jankson,
                     updateAll = updateAll,
                     updateDependencies = updateDependencies,
                     updateEntries = entries
             )
+
+            modpack.versionsMapping.forEach { name, (lockEntry, file) ->
+                logger.info("saving: $name , file: $file , entry: $lockEntry")
+                val defaultJson = lockEntry.toDefaultJson(jankson.marshaller)
+                val lockJson = jankson.toJson(lockEntry) as JsonObject
+                val delta = lockJson.getDelta(defaultJson)
+
+                val folder = file.absoluteFile.parentFile
+                val targetFolder = when (lockEntry.side) {
+                    Side.CLIENT -> folder.resolve("_CLIENT")
+                    Side.SERVER -> folder.resolve("_SERVER")
+                    Side.BOTH -> folder
+                }
+                targetFolder.mkdirs()
+                val targetFile = targetFolder.resolve(file.name)
+
+                targetFile.writeText(delta.toJson(true, true).replace("\t", "  "))
+            }
+
             if (!nosave) {
                 println("saving changes...")
-                inFile.writeJson(modpack)
+//                inFile.writeJson(modpack)
             }
 
             logger.info("Creating locked pack...")
@@ -42,22 +104,24 @@ object Builder : KLogging() {
             if (stdout) {
                 print(lockedPack.json)
             } else {
-                var target = targetArg ?: "${lockedPack.name}.lock.json"
-                if (!target.endsWith(".json")) target += ".json"
-                val targetFile = File(target)
+                val file = targetFile ?: parentFolder.resolve("${lockedPack.name}.lock.json")
                 logger.info("Writing lock file... $targetFile")
-                targetFile.writeJson(lockedPack)
+                val defaultJson = JsonObject()
+                val lockJson = jankson.toJson(lockedPack) as JsonObject
+                val delta = lockJson.getDelta(defaultJson)
+                file.writeText(delta.toJson(true, true).replace("\t", "  "))
+//                file.writeJson(lockedPack) //TOD: use jankson
             }
         }
     }
 
     private class Arguments(parser: ArgParser) {
-        val importArg by parser.positional("FILE",
-                help = "input pack json")
+        val packFile by parser.positional("FILE",
+                help = "input pack json") { File(this) }
 
-        val targetArg by parser.storing("--output", "-o",
-                help = "output file json")
-                .default<String?>(null)
+        val targetFile by parser.storing("--output", "-o",
+                help = "output file json") { File(this) }
+                .default<File?>(null)
 
         val nosave by parser.flagging("--nosave",
                 help = "do not save inputfile after resolve")

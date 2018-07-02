@@ -4,7 +4,6 @@ import mu.KLogging
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
-import voodoo.data.lock.LockPack
 import voodoo.provider.ProviderBase
 import voodoo.util.download
 import java.io.File
@@ -22,7 +21,7 @@ object DirectProviderThing : ProviderBase, KLogging() {
         return LockEntry(
                 provider = entry.provider,
                 name = entry.name,
-                folder = entry.folder,
+                //folder = entry.folder,
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
                 side = entry.side,

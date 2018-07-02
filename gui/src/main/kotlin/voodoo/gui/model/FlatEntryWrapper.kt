@@ -75,7 +75,7 @@ class FlatEntryWrapper(entry: Entry, val modpack: ModPack) {
     var fileNameRegex by fileNameRegexProperty
 
     @JsonIgnore
-    val validMCVersionsProperty = SimpleListProperty<String>(entry.validMcVersions.observable())
+    val validMCVersionsProperty = SimpleSetProperty<String>(entry.validMcVersions.observable())
     var validMcVersions by validMCVersionsProperty
 
     @JsonIgnore

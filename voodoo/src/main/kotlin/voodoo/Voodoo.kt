@@ -10,10 +10,9 @@ import voodoo.VoodooConstants.VERSION
 
 object Voodoo : KLogging() {
     val funcs = mapOf<String, (Array<String>) -> Unit>(
-            "flatten" to Flatten::main,
+            "import" to Import::main,
             "build" to Builder::main,
             "pack" to Pack::main,
-            "import" to Import::main,
             "test" to Tester::main,
             "tome" to Tome::main,
             "version" to { _ ->

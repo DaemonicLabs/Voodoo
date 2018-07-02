@@ -2,10 +2,8 @@ package voodoo.gui.controller
 
 import javafx.beans.property.SimpleListProperty
 import tornadofx.*
-import voodoo.data.flat.ModPack
 import voodoo.data.nested.NestedPack
 import voodoo.gui.model.*
-import voodoo.util.readJson
 import voodoo.util.readYaml
 import java.io.File
 

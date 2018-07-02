@@ -29,7 +29,7 @@ class FlatModpackWrapper(modpack: ModPack) {
     var version by versionProperty
 
     @JsonIgnore
-    val authorsProperty = SimpleListProperty<SimpleStringProperty>(modpack.authors.map{ SimpleStringProperty(it) }.observable())
+    val authorsProperty = SimpleListProperty<SimpleStringProperty>(modpack.authors.map { SimpleStringProperty(it) }.observable())
     var authors by authorsProperty
 
     @JsonIgnore
@@ -45,14 +45,9 @@ class FlatModpackWrapper(modpack: ModPack) {
     var localDir by localDirProperty
 
     @JsonIgnore
-    val minecraftDirProperty = SimpleStringProperty(modpack.minecraftDir)
+    val minecraftDirProperty = SimpleStringProperty(modpack.sourceDir)
     var minecraftDir by minecraftDirProperty
 
-
-    // load FlatEntryWrapper
-    @JsonIgnore
-    val entriesProperty = SimpleListProperty<FlatEntryWrapper>(modpack.entries.map { FlatEntryWrapper(it, modpack) }.observable())
-    var entries by entriesProperty
 
     init {
 
@@ -63,25 +58,23 @@ class FlatModpackWrapper(modpack: ModPack) {
     }
 
     val modpack: ModPack
-    get() {
-        return ModPack(
-                name = name,
-                title = title,
-                version = version,
-                authors = authors.map { it.get() },
-                mcVersion = mcVersion,
-                forge = forge,
+        get() {
+            return ModPack(
+                    name = name,
+                    title = title,
+                    version = version,
+                    authors = authors.map { it.get() },
+                    mcVersion = mcVersion,
+                    forge = forge,
 //                launch = launch, //TODO: make wrapper
 //                userFiles = userFiles //TODO: make wrapper
-                //TODO: make sure versions are saved
-                //TODO: make sure features are saved
+                    //TODO: make sure versions are saved
+                    //TODO: make sure features are saved
 
-                entries = entries.map { it.entry },
-
-                localDir = localDir,
-                minecraftDir = minecraftDir
-        )
-    }
+                    localDir = localDir,
+                    sourceDir = minecraftDir
+            )
+        }
 
 }
 
@@ -94,19 +87,16 @@ class FlatModpackModel : ItemViewModel<FlatModpackWrapper>() {
     val forge = bind(FlatModpackWrapper::forgeProperty)
     val localDir = bind(FlatModpackWrapper::localDirProperty)
     val minecraftDir = bind(FlatModpackWrapper::minecraftDirProperty)
-    val entries = bind(FlatModpackWrapper::entriesProperty)
-
 
 
     override fun onCommit(commits: List<Commit>) {
-        commits.findChanged(name)?.let { println("Name changed from ${it.first} to ${it.second}")}
-        commits.findChanged(title)?.let { println("Title changed from ${it.first} to ${it.second}")}
+        commits.findChanged(name)?.let { println("Name changed from ${it.first} to ${it.second}") }
+        commits.findChanged(title)?.let { println("Title changed from ${it.first} to ${it.second}") }
 //        commits.findChanged(side)?.let { println("Side changed from ${it.first} to ${it.second}")}
 //        commits.findChanged(id)?.let { println("ID changed from ${it.first} to ${it.second}")}
 
         onCommit()
     }
-
 
 
     private fun <T> List<Commit>.findChanged(ref: Property<T>): Pair<T, T>? {

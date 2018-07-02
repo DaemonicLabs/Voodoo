@@ -13,7 +13,7 @@ import kotlin.system.exitProcess
 object MMCStaticPack : AbstractPack() {
     override val label = "MultiMC Static Packer"
 
-    override fun download(modpack: LockPack, target: String?, clean: Boolean) {
+    override fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean) {
         val targetDir = File(target ?: ".multimc")
         val definitionsDir = File("multimc").apply { mkdirs() }
         val cacheDir = directories.cacheHome.resolve("mmc")

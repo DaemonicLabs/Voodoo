@@ -1,8 +1,8 @@
 rootProject.name = 'voodoo-parent'
 
-include 'core', 'core/data', 'core/curse', 'core/multimc', 'core/sk'
+include 'core', 'core/multimc', 'core/sk', 'Jankson'
 include 'util', 'util/dir', 'util/jenkins'
-include 'flatten', 'builder', 'pack', 'tester', 'voodoo', 'tome', 'importer'
+include 'importer', 'builder', 'pack', 'tester', 'voodoo', 'tome'
 include 'multimc-installer', 'server-installer'
 include 'bootstrap'
 include 'gui'

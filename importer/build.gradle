@@ -6,8 +6,6 @@ mainClassName = "voodoo.Import"
 
 dependencies {
     compile project(':core')
-    compile project(':core/data')
-    compile project(':flatten')
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
 }
 

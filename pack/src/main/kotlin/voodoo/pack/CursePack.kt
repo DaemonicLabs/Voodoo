@@ -20,7 +20,7 @@ import java.io.File
 object CursePack : AbstractPack() {
     override val label = "SK Packer"
 
-    override fun download(modpack: LockPack, target: String?, clean: Boolean) {
+    override fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean) {
         val cacheDir = directories.cacheHome
         val workspaceDir = File(".curse")
         val modpackDir = workspaceDir.resolve(with(modpack) { "$name-$version" })
@@ -32,7 +32,7 @@ object CursePack : AbstractPack() {
         }
         if (!srcFolder.exists()) {
             logger.info("copying files into overrides")
-            val mcDir = File(modpack.minecraftDir)
+            val mcDir = File(modpack.sourceDir)
             if (mcDir.exists()) {
                 mcDir.copyRecursively(srcFolder, overwrite = true)
             } else {
@@ -63,7 +63,9 @@ object CursePack : AbstractPack() {
         val curseMods = mutableListOf<CurseFile>()
 
         // download entries
-        for (entry in modpack.entries) {
+        for ( (name, pair) in modpack.entriesMapping) {
+            val (entry, entryFile) = pair
+            val folder = entryFile.absoluteFile.parentFile
             val required = modpack.features.none { feature ->
                 feature.entries.any { it == entry.name }
             }
@@ -73,7 +75,7 @@ object CursePack : AbstractPack() {
             if (entry.provider == Provider.CURSE.name) {
                 curseMods += CurseFile(entry.projectID, entry.fileID, required).apply { println("added voodoo.data.curse file $this") }
             } else {
-                val targetFolder = srcFolder.resolve(entry.folder)
+                val targetFolder = srcFolder.resolve(folder)
                 val (url, file) = provider.download(entry, targetFolder, cacheDir)
                 if (!required) {
                     val optionalFile = file.parentFile.resolve(file.name + ".disabled")

@@ -9,8 +9,8 @@ import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.EntryFeature
+import voodoo.data.nested.NestedEntry
 import voodoo.data.provider.UpdateChannel
-import voodoo.flatten.data.NestedEntry
 import voodoo.gui.extensions.json
 import voodoo.provider.Provider
 
@@ -221,13 +221,13 @@ class NestedEntryWrapper(
     var validMcVersionsOverride by validMcVersionsOverrideProperty
 
     @JsonIgnore
-    val validMcVersionsProperty = object : SimpleListProperty<String>(entry.validMcVersions.observable()) {
+    val validMcVersionsProperty = object : SimpleSetProperty<String>(entry.validMcVersions.observable()) {
         override fun get() = if (validMcVersionsOverride)
             super.get()
         else
             parent?.validMcVersions?.observable() ?: DEFAULT.validMcVersions.observable()
     }
-    var validMcVersions: MutableList<String> by validMcVersionsProperty
+    var validMcVersions: MutableSet<String> by validMcVersionsProperty
 
 
     @JsonIgnore

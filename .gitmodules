@@ -1,3 +1,6 @@
 [submodule "sklauncher"]
 	path = sklauncher
 	url = https://github.com/SKCraft/Launcher.git
+[submodule "Jankson"]
+	path = Jankson
+	url = https://github.com/falkreon/Jankson.git

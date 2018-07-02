@@ -3,7 +3,7 @@ package voodoo.mmc
 import com.sun.jna.Platform
 import mu.KLogging
 import voodoo.data.Recommendation
-import voodoo.data.sk.SKFeature
+import voodoo.data.sk.FeatureProperties
 import voodoo.forge.Forge
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
@@ -171,7 +171,7 @@ object MMCUtil : KLogging() {
         return minecraftDir
     }
 
-    fun selectFeatures(features: List<SKFeature>, defaults: Map<String, Boolean>, name: String, version: String): Map<String, Boolean> {
+    fun selectFeatures(features: List<FeatureProperties>, defaults: Map<String, Boolean>, name: String, version: String): Map<String, Boolean> {
         if (features.isEmpty()) {
             logger.info("no selectable features")
             return mapOf()

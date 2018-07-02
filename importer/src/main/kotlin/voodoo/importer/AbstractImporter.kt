@@ -1,8 +1,8 @@
-package voodoo.pack
+package voodoo.importer
 
 import mu.KLogging
+import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
-import voodoo.data.nested.NestedPack
 import voodoo.util.Directories
 import java.io.File
 
@@ -14,7 +14,7 @@ import java.io.File
 abstract class AbstractImporter : KLogging() {
     abstract val label: String
 
-    abstract fun import(source: String, target: File): Pair<NestedPack, MutableMap<String, LockEntry>?>
+    abstract fun import(source: String, target: File): Pair<ModPack?, MutableMap<String, LockEntry>?>
 
     val directories = Directories.get(moduleName = "import")
 }

@@ -10,7 +10,6 @@ import voodoo.util.downloader
 import voodoo.util.readJson
 import voodoo.util.writeJson
 import java.io.File
-import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 06/05/18.
@@ -42,7 +41,7 @@ object MultiMCTester : AbstractTester() {
         modsDir.deleteRecursively()
 
         downloader.logger.info("copying files into minecraft dir")
-        val minecraftSrcDir = File(modpack.minecraftDir)
+        val minecraftSrcDir = File(modpack.sourceDir)
         if (minecraftSrcDir.exists()) {
             minecraftSrcDir.copyRecursively(minecraftDir, overwrite = true)
         }
@@ -73,7 +72,9 @@ object MultiMCTester : AbstractTester() {
             featureJson.writeJson(features)
         }
 
-        for (entry in modpack.entries) {
+        for ( (name, pair) in modpack.entriesMapping) {
+            val (entry, entryFile) = pair
+            val folder = entryFile.absoluteFile.parentFile
             if (entry.side == Side.SERVER) continue
             val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.name) }
             if (!matchedFeatureList.isEmpty()) {
@@ -84,7 +85,7 @@ object MultiMCTester : AbstractTester() {
                 }
             }
             val provider = Provider.valueOf(entry.provider).base
-            val targetFolder = minecraftDir.resolve(entry.folder)
+            val targetFolder = minecraftDir.resolve(folder)
             val (url, file) = provider.download(entry, targetFolder, cacheDir)
         }
 

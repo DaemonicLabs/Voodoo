@@ -26,7 +26,9 @@ object Credits : KLogging() {
             var modpack = inFile.readJson<LockPack>()
 
             if (sort) {
-                modpack = modpack.copy(entries = modpack.entries.sortedBy { it.name })
+                modpack = modpack.copy().apply {
+                    entries = modpack.entries.sortedBy { it.name }
+                }
             }
 
             val mf = DefaultMustacheFactory()
