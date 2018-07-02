@@ -91,7 +91,7 @@ data class LockPack(
                 .forEach {
                     val entryJsonObj = jankson.load(it)
                     val lockEntry: LockEntry = jankson.fromJson(entryJsonObj)
-                    entriesMapping[lockEntry.name] = Pair(lockEntry, it)
+                    entriesMapping[lockEntry.name] = Pair(lockEntry, it.relativeTo(srcDir))
                 }
     }
 }
