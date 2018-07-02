@@ -17,13 +17,16 @@ pack=$1
 [ ! -e run ] && mkdir run
 cd run
 
+[ ! -e "$pack" ] && mkdir "$pack"
+cd "$pack"
+
 echo
-echo "flattening $1"
+echo "importing $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" flatten "$DIR/samples/$pack.yaml" -o $pack.json --stdout
+java -jar "$DIR/voodoo/build/libs/voodoo.jar" import "$DIR/samples/$pack.yaml" .
 if [ ! $? -eq 0 ]; then
-    echo "Error Flattenig $pack"
+    echo "Error importing $pack"
     exit 1
 fi
 
@@ -31,7 +34,7 @@ echo
 echo "building $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" build $pack.json -o $pack.lock.json $2
+java -jar "$DIR/voodoo/build/libs/voodoo.jar" build $pack.pack.hjson -o $pack.lock.json $2
 if [ ! $? -eq 0 ]; then
     echo "Error Building $pack"
     exit 1

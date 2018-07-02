@@ -1,10 +1,7 @@
 package voodoo.pack
 
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
 import voodoo.data.lock.LockPack
 import voodoo.util.DownloadVoodoo
-import voodoo.util.jenkins.JenkinsServer
 import voodoo.util.writeJson
 import java.io.File
 
@@ -16,7 +13,7 @@ import java.io.File
 object ServerPack : AbstractPack() {
     override val label = "Server SKPack"
 
-    override fun download(modpack: LockPack, target: String?, clean: Boolean) {
+    override fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean) {
         val targetDir = File(target ?: ".server")
         val modpackDir = targetDir.resolve(modpack.name)
 
@@ -39,11 +36,11 @@ object ServerPack : AbstractPack() {
             localDir.copyRecursively(targetLocalDir, true)
         }
 
-        val minecraftDir = File(modpack.minecraftDir)
+        val minecraftDir = File(modpack.sourceDir)
         logger.info("mcDir: $minecraftDir")
         if(minecraftDir.exists()) {
             val targetMinecraftDir = modpackDir.resolve("minecraft")
-            modpack.minecraftDir = targetMinecraftDir.name
+            modpack.sourceDir = targetMinecraftDir.name
 
             if(targetMinecraftDir.exists()) targetMinecraftDir.deleteRecursively()
             targetMinecraftDir.mkdirs()

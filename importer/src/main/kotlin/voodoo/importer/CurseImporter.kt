@@ -7,10 +7,11 @@ import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.FileType
 import voodoo.data.flat.Entry
+import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
-import voodoo.pack.AbstractImporter
+import voodoo.provider.Provider
 import voodoo.util.UnzipUtility.unzip
 import voodoo.util.readJson
 import java.io.File
@@ -24,7 +25,7 @@ import kotlin.system.exitProcess
 object CurseImporter : AbstractImporter() {
     override val label = "Curse Importer"
 
-    override fun import(source: String, target: File): Pair<NestedPack, MutableMap<String, LockEntry>?> {
+    override fun import(source: String, target: File): Pair<ModPack?, MutableMap<String, LockEntry>?> {
         val versions = mutableMapOf<String, LockEntry>()
 
         val name = target.nameWithoutExtension
@@ -57,17 +58,18 @@ object CurseImporter : AbstractImporter() {
             val addon = CurseClient.getAddon(it.projectID, PROXY_URL)!!
             val addonFile = CurseClient.getAddonFile(it.projectID, it.fileID, PROXY_URL)!!
             val entry = NestedEntry(
+                    provider = Provider.CURSE.name,
                     name = addon.name,
                     version = addonFile.fileName
             )
             validMcVersions += addonFile.gameVersion
 
             val flatEntry = Entry(
-                    provider = "CURSE",
+                    provider = Provider.CURSE.name,
                     curseReleaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
                     name = addon.name,
                     fileName = addonFile.fileName,
-                    validMcVersions = addonFile.gameVersion
+                    validMcVersions = addonFile.gameVersion.toSet()
             )
 
             val (projectID, fileID, path) = CurseClient.findFile(flatEntry, manifest.minecraft.version, PROXY_URL)
@@ -75,7 +77,7 @@ object CurseImporter : AbstractImporter() {
             versions[addon.name] = LockEntry(
                     provider = "CURSE",
                     name = entry.name,
-                    folder = path, //maybe use entry.folder only if its non-default
+                    //folder = path, //maybe use entry.folder only if its non-default
                     useUrlTxt = true,
                     projectID = projectID,
                     fileID = fileID
@@ -99,15 +101,17 @@ object CurseImporter : AbstractImporter() {
                 version = manifest.version,
                 forge = forge ?: "recommended",
                 mcVersion = manifest.minecraft.version,
-                minecraftDir = overridesFolder.path,
+                sourceDir = overridesFolder.path,
                 root = NestedEntry(
-                        validMcVersions = validMcVersions.toList(),
+                        validMcVersions = validMcVersions,
                         provider = "CURSE",
                         curseReleaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
                         entries = entries
                 )
         )
 
-        return Pair(pack, versions)
+        //TODO: create srcDir with single entries and version-locked files and ModPack
+
+        return Pair(null, null)
     }
 }

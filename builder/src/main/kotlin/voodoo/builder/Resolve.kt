@@ -1,17 +1,17 @@
 package voodoo.builder
 
 import aballano.kotlinmemoization.memoize
+import blue.endless.jankson.Jankson
+import blue.endless.jankson.JsonObject
 import mu.KotlinLogging
-import voodoo.data.Feature
 import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
+import voodoo.data.sk.FeatureProperties
 import voodoo.data.sk.SKFeature
-import voodoo.forge.Forge.getForgeBuild
 import voodoo.provider.Provider
 import voodoo.util.Directories
-import voodoo.util.blankOr
-import voodoo.util.writeJson
+import java.io.File
 import kotlin.system.exitProcess
 
 /**
@@ -22,7 +22,7 @@ import kotlin.system.exitProcess
 private val logger = KotlinLogging.logger {}
 
 fun getDependenciesCall(entryName: String, modpack: ModPack): List<Entry> {
-    val entry = modpack.entries.find { it.name == entryName } ?: return emptyList()
+    val entry = modpack.entriesMapping[entryName]?.first ?: return emptyList()
     var result = listOf(entry)
     for ((depType, entryList) in entry.dependencies) {
         if (depType == DependencyType.EMBEDDED) continue
@@ -37,18 +37,19 @@ val getDependencies = ::getDependenciesCall.memoize()
 
 fun resolveFeatureDependencies(entry: Entry, modpack: ModPack) {
     val entryFeature = entry.feature ?: return
-    val featureName = entryFeature.name.blankOr ?: entry.name
+    val featureName =/* entryFeature.name.blankOr ?:*/ entry.name
     // find feature with matching name
     var feature = modpack.features.find { f -> f.properties.name == featureName }
 
+    //TODO: merge existing features with matching name
     if (feature == null) {
         var description = entryFeature.description
         if (description.isEmpty()) description = entry.description
-        feature = Feature(
+        feature = SKFeature(
                 entries = setOf(entry.name),
 //                processedEntries = emptyList(),
                 files = entryFeature.files,
-                properties = SKFeature(
+                properties = FeatureProperties(
                         name = featureName,
                         selected = entryFeature.selected,
                         description = description,
@@ -63,7 +64,7 @@ fun resolveFeatureDependencies(entry: Entry, modpack: ModPack) {
     logger.debug("processed ${entry.name}")
 }
 
-private fun ModPack.processFeature(feature: Feature) {
+private fun ModPack.processFeature(feature: SKFeature) {
     logger.info("processing feature: $feature")
     var processedEntries = emptyList<String>()
     var processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
@@ -71,9 +72,7 @@ private fun ModPack.processFeature(feature: Feature) {
         processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
         for (entry_name in processableEntries) {
             logger.info("searching $entry_name")
-            val entry = this.entries.find { e ->
-                e.name == entry_name
-            }
+            val entry = entriesMapping[entry_name]?.first
             if (entry == null) {
                 logger.warn("$entry_name not in entries")
                 processedEntries += entry_name
@@ -82,7 +81,7 @@ private fun ModPack.processFeature(feature: Feature) {
             var depNames = entry.dependencies.values.flatten()
             logger.info("depNames: $depNames")
             depNames = depNames.filter { d ->
-                this.entries.any { e -> e.name == d && e.optional }
+                entriesMapping.any { (name, triple) -> name == d && triple.first.optional }
             }
             logger.info("filtered dependency names: $depNames")
             for (dep in depNames) {
@@ -95,98 +94,76 @@ private fun ModPack.processFeature(feature: Feature) {
     }
 }
 
-fun ModPack.resolve(updateAll: Boolean = false, updateDependencies: Boolean = false, updateEntries: List<String>) {
-    //init entries
-    val tmpEntries = mutableListOf<Entry>()
-    entries.forEach { entry ->
-        logger.info("adding ${entry.name}")
-        if (entry.name.isBlank()) {
-            logger.error("invalid: $entry")
-        }
-        val duplicate = tmpEntries.find { it.name == entry.name }
-        if (duplicate == null) {
-            tmpEntries += entry
-        } else {
-            duplicate.side += entry.side
-            if (duplicate.feature == null) {
-                duplicate.feature = entry.feature
-            }
-            if (duplicate.description.isBlank()) {
-                duplicate.feature = entry.feature
-            }
-        }
-    }
-    this.entries = tmpEntries.toList()
+/**
+ * ensure entries are loaded before calling resolve
+ */
+fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean = false, updateDependencies: Boolean = false, updateEntries: List<String>) {
+    this.loadEntries(folder, jankson)
+    this.loadLockEntry(folder, jankson)
+
+
+    val srcDir = folder.resolve(sourceDir)
 
     if (updateAll) {
-        versions.clear()
+        versionsMapping.clear()
+//        versions.clear()
     } else {
         for (entryName in updateEntries) {
-            val entry = this.entries.find { it.name == entryName }
+            val entry = entriesMapping[entryName]?.first
             if (entry == null) {
                 logger.error("entry $entryName not found")
                 exitProcess(-1)
             }
-            versions.remove(entry.name)
+            versionsMapping.remove(entry.name)
         }
     }
 
     if (updateDependencies || updateAll) {
         // remove all transient entries
-        entries.filter { it.transient }.forEach {
-            versions.remove(it.name)
+        versionsMapping.filter { (name, _) ->
+            entriesMapping[name]?.first?.transient ?: true
+        }.forEach { name, (_, _) ->
+            versionsMapping.remove(name)
         }
-        entries = entries.filter { !it.transient }
-    }
-
-    writeVersionCache()
-
-    if (forgeBuild < 0) {
-        forgeBuild = getForgeBuild(forge, mcVersion)
+        //entries = entries.filter { !it.transient }
     }
 
     fun addEntry(entry: Entry) {
-        logger.info("adding ${entry.name}")
-        if (entry.name.isBlank()) {
-            logger.error("invalid: $entry")
-        }
-        val duplicate = entries.find { it.name == entry.name }
-        if (duplicate == null) {
-            logger.info("new entry $entry.name")
-            entry.transient = true
-            entries += entry
-        } else {
-            logger.info("duplicate entry $entry.name")
-            duplicate.side += entry.side
-            if (duplicate.feature == null) {
-                duplicate.feature = entry.feature
-            }
-            if (duplicate.description.isBlank()) {
-                duplicate.feature = entry.feature
-            }
-        }
+        val filename = entry.name.replace("\\W+".toRegex(), "")
+        val file = srcDir.resolve("mods").resolve("$filename.entry.hjson")
+        val jsonObj = jankson.toJson(entry) as JsonObject
+        this.addEntry(entry, file, jsonObj, jankson, dependency = true)
     }
 
     // recalculate all dependencies
     val resolved: MutableSet<String> = mutableSetOf()
     do {
-        val unresolved: List<Entry> = entries.filter { !resolved.contains(it.name) }
-        for (entry in unresolved) {
+        val unresolved: List<Triple<Entry, File, JsonObject>> = entriesMapping.filter { (name, tuple) ->
+            !resolved.contains(name)
+        }.map { (name, triple) ->
+            triple
+        }
+        unresolved.forEach { (entry, file, jsonObj)->
+            logger.info("resolving: ${entry.name}")
             val provider = Provider.valueOf(entry.provider).base
 
-            provider.resolve(entry, this, ::addEntry)
-                    ?.let { lockEntry ->
-                        if (!versions.containsKey(entry.name))
-                            versions[entry.name] = lockEntry
-                        resolved += entry.name
-                    }
+            provider.resolve(entry, this, ::addEntry)?.let { lockEntry ->
+                val existingLockEntry = versionsMapping[lockEntry.name]?.first
+                logger.info("existing lockEntry: $existingLockEntry")
+
+                if (existingLockEntry == null) {
+                    val filename = file.nameWithoutExtension
+                    val lockFile = file.absoluteFile.parentFile.resolve("$filename.lock.json")
+                    versionsMapping[lockEntry.name] = Pair(lockEntry, lockFile)
+                }
+                resolved += entry.name
+            }
 
         }
-    } while (entries.any { !resolved.contains(it.name) })
-    writeVersionCache()
+    } while (entriesMapping.any { (name, _) -> !resolved.contains(name) })
 
     features.clear()
-    for (entry in entries) {
+    entriesMapping.forEach { name, (entry, file, jsonObj) ->
         resolveFeatureDependencies(entry, this)
     }
 
@@ -208,19 +185,21 @@ fun ModPack.resolve(updateAll: Boolean = false, updateDependencies: Boolean = fa
                         }
                     }
         }
-        val mainEntry = entries.find { it.name == feature.entries.first() }!!
+        val mainEntry = entriesMapping[feature.entries.first()]!!.first
         feature.properties.description = mainEntry.description
 
         logger.info("processed feature $feature")
     }
-    writeFeatureCache()
 
-//    logger.info { this.entries.map { it.name } }
+//    features.forEach {
+//        logger.info("feature: $it")
+//    }
 
     val directories = Directories.get(moduleName = "history")
     val historyPath = directories.dataHome.resolve(this.name)
     historyPath.mkdirs()
-    val historyFile = historyPath.resolve("$name-$version.json")
+    val historyFile = historyPath.resolve("$name-$version.pack.hjson")
     logger.info("adding modpack to history -> $historyFile")
-    historyFile.writeJson(this)
+    val historyJson = jankson.toJson(this)
+    historyFile.writeText(historyJson.toJson(true, true))
 }

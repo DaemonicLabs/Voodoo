@@ -1,6 +1,5 @@
 package voodoo.pack
 
-import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.pack.sk.*
@@ -22,27 +21,30 @@ object SKPack : AbstractPack() {
 
     override val label = "SK Packer"
 
-    override fun download(modpack: LockPack, target: String?, clean: Boolean) {
+    override fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean) {
         val cacheDir = directories.cacheHome
-        val workspaceDir = File("workspace")
+        val workspaceDir = rootFolder.resolve("workspace").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.name)
 
-        val srcFolder = modpackDir.resolve("src")
-        if (clean) {
-            logger.info("cleaning modpack directory $srcFolder")
-            srcFolder.deleteRecursively()
-        }
-        if (!srcFolder.exists()) {
-            logger.info("copying files into src")
-            val mcDir = File(modpack.minecraftDir)
-            if (mcDir.exists()) {
-                mcDir.copyRecursively(srcFolder, overwrite = true)
-            } else {
-                logger.warn("minecraft directory $mcDir does not exist")
+        val skSrcFolder = modpackDir.resolve("src")
+        logger.info("cleaning modpack directory $skSrcFolder")
+        skSrcFolder.deleteRecursively()
+        logger.info("copying files into src")
+        val packSrc = rootFolder.resolve(modpack.sourceDir)
+        if (packSrc.exists()) {
+            packSrc.copyRecursively(skSrcFolder, overwrite = true)
+            skSrcFolder.walkBottomUp().forEach {
+                if (it.name.endsWith(".entry.hjson") || it.name.endsWith(".lock.json"))
+                    it.delete()
+                if(it.isDirectory && it.listFiles().isEmpty()) {
+                    it.delete()
+                }
             }
+        } else {
+            logger.warn("minecraft directory $packSrc does not exist")
         }
 
-        for (file in srcFolder.walkTopDown()) {
+        for (file in skSrcFolder.walkTopDown()) {
             when {
                 file.name == "_SERVER" -> file.deleteRecursively()
                 file.name == "_CLIENT" -> file.renameTo(file.parentFile)
@@ -58,26 +60,27 @@ object SKPack : AbstractPack() {
         val forgeFile = loadersFolder.resolve(forgeFileName)
         forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
 
-        val modsFolder = srcFolder.resolve("mods")
+        val modsFolder = skSrcFolder.resolve("mods")
         logger.info("cleaning mods $modsFolder")
         modsFolder.deleteRecursively()
 
         // download entries
         val targetFiles = mutableMapOf<String, File>()
-        for (entry in modpack.entries) {
+        modpack.entriesMapping.forEach { name, (entry, entryFile) ->
             val provider = Provider.valueOf(entry.provider).base
-            val targetFolder = when (entry.side) {
-                Side.CLIENT -> srcFolder.resolve(entry.folder).resolve("_CLIENT")
-                Side.SERVER -> srcFolder.resolve(entry.folder).resolve("_SERVER")
-                Side.BOTH -> srcFolder.resolve(entry.folder)
-            }
-            val (url, file) = provider.download(entry, targetFolder, cacheDir)
+
+            val relativeFile = entryFile.relativeTo(packSrc)
+            val folder = skSrcFolder.resolve(relativeFile)
+
+            val (url, file) = provider.download(entry, folder, cacheDir)
             if (url != null && entry.useUrlTxt) {
                 val urlTxtFile = file.parentFile.resolve(file.name + ".url.txt")
                 urlTxtFile.writeText(url)
             }
-            targetFiles[entry.name] = file.relativeTo(srcFolder)
+            targetFiles[entry.name] = relativeFile // file.relativeTo(skSrcFolder)
         }
+
+        logger.info { targetFiles }
 
         // write features
         val features = mutableListOf<SKFeatureComposite>()

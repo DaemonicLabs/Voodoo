@@ -7,7 +7,6 @@ import javafx.beans.property.SimpleObjectProperty
 import javafx.beans.property.SimpleStringProperty
 import javafx.collections.ObservableList
 import tornadofx.*
-import voodoo.data.flat.ModPack
 import voodoo.data.nested.NestedPack
 import voodoo.gui.extensions.json
 
@@ -47,7 +46,7 @@ class NestedModpackWrapper(modpack: NestedPack) {
     var localDir by localDirProperty
 
     @JsonIgnore
-    val minecraftDirProperty = SimpleStringProperty(modpack.minecraftDir)
+    val minecraftDirProperty = SimpleStringProperty(modpack.sourceDir)
     var minecraftDir by minecraftDirProperty
 
 
@@ -79,9 +78,8 @@ class NestedModpackWrapper(modpack: NestedPack) {
                 //TODO: make sure features are saved
 
 
-
                 localDir = localDir,
-                minecraftDir = minecraftDir,
+                sourceDir = minecraftDir,
                 root = rootEntry.entry
         )
     }

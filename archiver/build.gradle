@@ -26,7 +26,6 @@ shadowJar {
 dependencies {
     compile project(':util')
     compile project(':core')
-    compile project(':core/curse')
     compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+' //for JVM
     compile group: 'com.github.kittinunf.fuel', name: 'fuel-jackson', version: '+' //for JVM
     compile group: 'org.apache.commons', name: 'commons-compress', version: '+'

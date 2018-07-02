@@ -33,7 +33,7 @@ object Server {
         serverDir.resolve("mods").deleteRecursively()
 
         logger.info("copying files into server dir")
-        val mcDir = File(modpack.minecraftDir)
+        val mcDir = File(modpack.sourceDir)
         if (mcDir.exists()) {
             mcDir.copyRecursively(serverDir, overwrite = true)
         } else {

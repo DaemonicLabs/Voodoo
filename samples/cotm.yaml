@@ -7,7 +7,7 @@ authors: ["AnsuzThuriaz", "Falkreon", "NikkyAi"]
 version: 2.1.8.6
 mcVersion: 1.12.2
 forge: 2705
-minecraftDir: src
+sourceDir: src
 
 #================#
 # Client Configs #
@@ -28,6 +28,7 @@ root:
 #==============#
 # Version Info #
 #==============#
+  provider: CURSE
   validMcVersions: [1.12.1, '1.12']
   curseOptionalDependencies: false
   curseReleaseTypes: [ alpha, beta, release ]
@@ -257,6 +258,10 @@ root:
 
     - job: elytra/FruitPhone/1.12.2
       name: FruitPhone
+      dependencies:
+        REQUIRED:
+         - ProbeDataProvider
+
 
     - job: elytra/ProbeDataProvider/1.12
       name: ProbeDataProvider

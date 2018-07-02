@@ -19,7 +19,7 @@ object LocalProviderThing : ProviderBase, KLogging() {
         return LockEntry(
                 provider = entry.provider,
                 name = entry.name,
-                folder = entry.folder,
+                //folder = entry.folder,
                 side = entry.side,
                 fileSrc = entry.fileSrc
         )

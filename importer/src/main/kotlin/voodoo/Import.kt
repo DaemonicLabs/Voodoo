@@ -5,7 +5,7 @@ import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import mu.KLogging
 import voodoo.importer.CurseImporter
-import voodoo.util.writeYaml
+import voodoo.importer.YamlImporter
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -23,6 +23,7 @@ object Import : KLogging() {
         arguments.run {
             val tester = when (methode) {
                 "curse" -> CurseImporter
+                "yaml" -> YamlImporter
 
                 else -> {
                     logger.error("no such packing methode: $methode")
@@ -30,15 +31,19 @@ object Import : KLogging() {
                 }
             }
 
-            val (nestedPack, versions) = tester.import(source = source, target = target)
-            target.writeYaml(nestedPack)
+            //TODO: import as ModPack and NestedPack ?
 
-            //TODO: also provide versions
-            versions?.let {
-                val flatpack = Flatten.flattenPack(nestedPack, target.absoluteFile.parentFile)
-                flatpack.versions.putAll(it)
-                flatpack.writeVersionCache()
-            }
+            val (nestedPack, versions) = tester.import(source = source, target = target)
+//            nestedPack?.let {
+//                target.writeYaml(it)
+//
+//                versions?.let {
+//                    val flatpack = Flatten.flattenPack(nestedPack, target.absoluteFile.parentFile)
+//                    flatpack.versions.putAll(it)
+//                    flatpack.writeVersionCache()
+//                }
+//            }
+
 
             println("import successful")
         }

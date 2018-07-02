@@ -35,7 +35,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
                 provider = entry.provider,
                 curseMetaUrl = entry.curseMetaUrl,
                 name = entry.name,
-                folder = path, //maybe use entry.folder only if its non-default
+                //folder = path, //maybe use entry.folder only if its non-default
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
                 side = entry.side,
@@ -100,8 +100,8 @@ object CurseProviderThing : ProviderBase, KLogging() {
             logger.info("set dependency $depType = $dependsList")
 
             if (depType == DependencyType.REQUIRED || (entry.curseOptionalDependencies && depType == DependencyType.OPTIONAL)) {
-                val depEntry = Entry().apply {
-                    provider = Provider.CURSE.toString()
+                val depEntry = Entry(provider = Provider.CURSE.name).apply {
+//                    provider = Provider.CURSE.toString()
                     //id = depAddon.id,
                     name = depAddon.name
                     side = entry.side
@@ -121,8 +121,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
     private fun isOptionalCall(entry: Entry, modpack: ModPack): Boolean {
         ProviderBase.logger.info("test optional of ${entry.name}")
 //        logger.info(entry.toString())
-        var result = entry.transient || entry.optional
-        if (result) return result
+        return entry.transient || entry.optional
 //        for ((depType, entryList) in entry.provides) {
 //            if (depType != DependencyType.REQUIRED) continue
 //            if (entryList.isEmpty()) return false
@@ -133,7 +132,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
 //                if (!tmpResult) return false
 //            }
 //        }
-        return false
+//        return false
     }
 
     val isOptional = CurseProviderThing::isOptionalCall.memoize()

@@ -1,12 +1,21 @@
 package voodoo
 
+import blue.endless.jankson.Jankson
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import mu.KLogging
+import voodoo.data.UserFiles
+import voodoo.data.flat.Entry
+import voodoo.data.flat.EntryFeature
+import voodoo.data.flat.ModPack
+import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
+import voodoo.data.sk.FeatureFiles
+import voodoo.data.sk.FeatureProperties
+import voodoo.data.sk.Launch
+import voodoo.data.sk.SKFeature
 import voodoo.pack.*
-import voodoo.util.readJson
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -19,9 +28,34 @@ object Pack : KLogging() {
     @JvmStatic
     fun main(vararg args: String) = mainBody {
 
+        val jankson = Jankson.builder()
+                .registerTypeAdapter(ModPack.Companion::fromJson)
+                .registerTypeAdapter(Entry.Companion::fromJson)
+                .registerTypeAdapter(LockPack.Companion::fromJson)
+                .registerTypeAdapter(LockEntry.Companion::fromJson)
+                .registerTypeAdapter(EntryFeature.Companion::fromJson)
+                .registerTypeAdapter(UserFiles.Companion::fromJson)
+                .registerTypeAdapter(Launch.Companion::fromJson)
+                .registerTypeAdapter(SKFeature.Companion::fromJson)
+                .registerTypeAdapter(FeatureProperties.Companion::fromJson)
+                .registerTypeAdapter(FeatureFiles.Companion::fromJson)
+                .registerSerializer(ModPack.Companion::toJson)
+                .registerSerializer(Entry.Companion::toJson)
+                .registerSerializer(LockPack.Companion::toJson)
+                .registerSerializer(LockEntry.Companion::toJson)
+//            .registerSerializer(EntryFeature.Companion::toJson)
+                .build()
+
         val arguments = Arguments(ArgParser(args))
 
         arguments.run {
+
+            val jsonObject = jankson.load(modpackLockFile)
+            val modpack: LockPack = jankson.fromJson(jsonObject)
+            val folder = modpackLockFile.absoluteFile.parentFile
+
+            modpack.loadEntries(folder, jankson)
+
             val packer = when (methode) {
                 "sk" -> SKPack
                 "mmc" -> MMCPack
@@ -35,7 +69,7 @@ object Pack : KLogging() {
                 }
             }
 
-            packer.download(modpack = modpack, target = targetArg, clean = true)
+            packer.download(rootFolder = folder, modpack = modpack, target = targetArg, clean = true)
         }
     }
 
@@ -44,8 +78,8 @@ object Pack : KLogging() {
                 help = "format to package into") { this.toLowerCase()}
                 .default("")
 
-        val modpack by parser.positional("FILE",
-                help = "input pack .lock.json") { File(this).readJson<LockPack>() }
+        val modpackLockFile by parser.positional("FILE",
+                help = "input pack .lock.json") { File(this) }
 
         val targetArg by parser.storing("--output", "-o",
                 help = "output folder")

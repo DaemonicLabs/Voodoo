@@ -53,7 +53,7 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
         return LockEntry(
                 provider = entry.provider,
                 name = entry.name,
-                folder = entry.folder,
+                //folder = entry.folder,
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
                 side = entry.side,
