@@ -29,8 +29,9 @@ object Install : KLogging() {
             logger.info("cleanConfig: $cleanConfig")
 
             val modpack = packFile.readJson<LockPack>()
+            val rootFolder = packFile.absoluteFile.parentFile
 
-            Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
+            Server.install(rootFolder, modpack, targetDir, skipForge, clean, cleanConfig) //TODO: replace mock of rootFolder
         }
     }
 
