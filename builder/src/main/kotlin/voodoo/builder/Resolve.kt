@@ -138,29 +138,32 @@ fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean = false, 
     // recalculate all dependencies
     val resolved: MutableSet<String> = mutableSetOf()
     do {
-        val unresolved: List<Triple<Entry, File, JsonObject>> = entriesMapping.filter { (name, tuple) ->
+        val unresolved: List<Triple<Entry, File, JsonObject>> = entriesMapping.filter { (_, triple) ->
+            val (entry, _, _) = triple
             !resolved.contains(name)
-        }.map { (name, triple) ->
-            triple
-        }
-        unresolved.forEach { (entry, file, jsonObj)->
+        }.map { it.value }
+        logger.info("resolved: $resolved")
+        unresolved.forEach { (entry, file, _) ->
             logger.info("resolving: ${entry.name}")
             val provider = Provider.valueOf(entry.provider).base
 
             provider.resolve(entry, this, ::addEntry)?.let { lockEntry ->
                 val existingLockEntry = versionsMapping[lockEntry.name]?.first
-                logger.info("existing lockEntry: $existingLockEntry")
 
                 if (existingLockEntry == null) {
                     val filename = file.nameWithoutExtension
                     val lockFile = file.absoluteFile.parentFile.resolve("$filename.lock.json")
                     versionsMapping[lockEntry.name] = Pair(lockEntry, lockFile)
+                } else {
+                    logger.info("existing lockEntry: $existingLockEntry")
                 }
                 resolved += entry.name
             }
-
         }
-    } while (entriesMapping.any { (name, _) -> !resolved.contains(name) })
+    } while (entriesMapping.any { (name, triple) ->
+                val (entry, _, _) = triple
+                !resolved.contains(name)
+            })
 
     features.clear()
     entriesMapping.forEach { name, (entry, file, jsonObj) ->
@@ -185,7 +188,10 @@ fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean = false, 
                         }
                     }
         }
-        val mainEntry = entriesMapping[feature.entries.first()]!!.first
+        println { feature.entries.first() }
+        val first = entriesMapping.values.firstOrNull { it.first.name == feature.entries.first() }
+        println { first }
+        val mainEntry = entriesMapping.values.firstOrNull { it.first.name == feature.entries.first() }!!.first
         feature.properties.description = mainEntry.description
 
         logger.info("processed feature $feature")

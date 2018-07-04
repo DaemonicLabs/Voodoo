@@ -1,4 +1,4 @@
-package voodoo.provider.impl
+package voodoo.provider
 
 import aballano.kotlinmemoization.memoize
 import mu.KLogging
@@ -6,7 +6,6 @@ import voodoo.core.CoreConstants.VERSION
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
-import voodoo.provider.ProviderBase
 import voodoo.util.download
 import voodoo.util.jenkins.JenkinsServer
 import java.io.File

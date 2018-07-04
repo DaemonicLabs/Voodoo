@@ -90,7 +90,8 @@ subprojects {
                         MAJOR_VERSION: project.major,
                         MINOR_VERSION: project.minor,
                         PATCH_VERSION: project.patch,
-                        BUILD_NUMBER: System.env.BUILD_NUMBER ?: -1
+                        BUILD_NUMBER: System.env.BUILD_NUMBER ?: -1,
+                        BUILD: System.env.BUILD_NUMBER ?: "dev"
                 )
             }
             fileTree("$buildDir/generated-src/$folder").visit { FileVisitDetails details ->

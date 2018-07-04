@@ -23,7 +23,7 @@ class EntryEditorView : View("Entry Editor") {
     val model: NestedEntryModel by inject()
 
     companion object {
-        val validCurseNames = CurseClient.idMap.keys.toList()
+        val validCurseNames = CurseClient.nameIdMap.keys.toList()
     }
 
     override val root = form {

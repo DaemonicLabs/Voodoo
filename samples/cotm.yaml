@@ -4,9 +4,9 @@
 name: cotm
 title: Center of the Multiverse
 authors: ["AnsuzThuriaz", "Falkreon", "NikkyAi"]
-version: 2.1.8.6
+version: 2.1.8.11
 mcVersion: 1.12.2
-forge: 2705
+forge: 2727
 sourceDir: src
 
 #================#
@@ -37,190 +37,200 @@ root:
 # Pack Content #
 #==============#
 
-#======#
-# Mods #
-#======#
+#===============================#
+# Mods (Core) Client and Server #
+#===============================#
 
   entries:
 
   # Vazkii
-  - Akashic Tome
-  - Botania
-  - Psi
-  - Quark
+  - akashic-tome
+  - botania
+  - psi
+  - quark
+  - morph-o-tool
 
   # Sangar
-  - Architect
-  - Bedrock Ores
+  - architect
+  - bedrockores
 
   # HellFirePvP
-  #- Astral Sorcery
-  - name: Astral Sorcery
-    version: 1.8.10
+  - astral-sorcery
 
   # Azanor
-  - Baubles
+  - baubles
 
   # Nuchaz
-  - BiblioCraft
+  - bibliocraft
 
   # Binnie
-  - "Binnie's Mods"
+  - binnies-mods
 
   # chiselTeam
-  - Chisel
+  - chisel
 
   # AlgorithmX2
-  - Chisels & Bits
+  - chisels-bits
 
   # jaredlll08
-  - Clumps
+  - clumps
 
   # TheIllusiveC4
-  - Comforts
+  - comforts
 
   # BlayTheNinth
-  - Cooking for Blockheads
-  - Farming for Blockheads
+  - cooking-for-blockheads
+  - farming-for-blockheads
 
   # ZLainSama
-  - Cosmetic Armor Reworked
+  - cosmetic-armor-reworked
 
   # jaredlll08
-  - CraftTweaker
-  - Diamond Glass
+  - crafttweaker
+  - modtweaker
+  - diamond-glass
 
   # copygirl
-  - Wearable Backpacks
+  - wearable-backpacks
 
   # mezz
-  - Just Enough Items (JEI)
+  - jei
 
   # Benimatic
-  - The Twilight Forest
+  - the-twilight-forest
 
   # The_Wabbit
-  - Upsizer Mod
+  - upsizer-mod
 
   # Viesis
-  - "ViesCraft - Airships!"
+  - viescraft-airships
 
   # Team CoFH
-  - Thermal Dynamics
-  - Thermal Expansion
-  - Thermal Innovation
+  - thermal-dynamics
+  - thermalexpansion
+  - thermal-innovation
 
   # McJTY
   - curseReleaseTypes: [ beta, release ]
     # because alphas are buggy
     entries:
-    - RFTools
-    - RFTools Dimensions
+    - rftools
+    - rftools-dimensions
 
   # Mr_Crayfish
-  - "MrCrayfish's Furniture Mod"
+  - mrcrayfish-furniture-mod
 
   # zabi94
-  - Extra Alchemy
-  - NoMoreGlowingPots
+  - extra-alchemy
+  - nomoreglowingpots
+
+  # CrazyPants
+  # ender-io
+  - name: ender-io
+    version: 5.0.26
 
   # asie
-  - Charset Lib
-  - Charset Tweaks
-  - Charset Block Carrying
-  - Charset Tablet
-  - Charset Crafting
-  - Charset Audio
-  - Charset Storage - Locks
-  - CharsetPatches
-  - Charset Immersion
-  - FoamFix for Minecraft
-  - SimpleLogic
-  - Unlimited Chisel Works
-  - Unlimited Chisel Works - Botany
+  - charset-lib
+  - charset-tweaks
+  - charset-block-carrying
+  - charset-tablet
+  - charset-crafting
+  - charset-audio
+  - charset-storage-locks
+  - charsetpatches
+  - charset-immersion
+  - foamfix-for-minecraft
+  - simplelogic
+  - Unlimited chisel Works
+  - Unlimited chisel Works - Botany
 
-  - Embers
-  - Ender Storage 1.8.+
-  - Exchangers
-  - Extra Bit Manipulation
-  - Extra Utilities
-  - Fairy Lights
-  - Forestry
-  - FTB Utilities
-  - FTBLib
-  - Gendustry
-  - Hwyla
-  - Initial Inventory
-  - Inventory Tweaks
-  - Iron Chests
-  - Redstone Paste
-  - MmmMmmMmmMmm
-  - Just Enough Dimensions
-  - KleeSlabs
-  - Magic Bees
-  - MalisisDoors
-  - Mob Grinding Utils
-  - ModTweaker
-  - Natura
-  - Nature's Compass
-  - NetherEx
-  - NetherPortalFix
-  - 'stimmedcow : NoMoreRecipeConflict'
-  - NotEnoughIDs
-  - OpenComputers
-  - OpenBlocks
-  - Packing Tape
-  - Pam's HarvestCraft
-  - Passthrough Signs
-  - Platforms
-  - Random Things
-  - RandomTweaks
-  - Ranged Pumps
-  - Recurrent Complex
-  - Redstone Flux
-  - Roguelike Dungeons
-  - Roots
-  - Scannable
-  - Simple Sponge
-  - Spartan Shields
-  - Storage Drawers
-  - Storage Drawers Extras
-  - Tails
-  - TamModized
-  - "[ANGRY PIXEL] The Betweenlands"
-  - Tinkers Construct
-  - Tinkers' Tool Leveling
-  - Extreme Reactors
-  - ZeroCore
-  - Paintings ++
-  - Painting Selection Gui Revamped
-  - Tool Belt
-  - TorchMaster
-  - Robotic Parts
-  - ReWIRED
-  - Woot
-  - Quick Leaf Decay
-  - "Blood Magic "
-  - ColorfulWater
-  - The Erebus
-  - Construct's Armory
-  - Simple Void World
-  - Yoyos
-  - "Bad Wither No Cookie - Reloaded"
-  - Ender IO
-  - Waystones
-  - Aether Legacy
-  - Corpse Complex
-  - Thaumic Inventory Scanning (Thaumcraft Addon)
-  - Peckish
-  - Electroblob's Wizardry
-  - Reliquary v1.3
-  - CookieCore
-  - Thaumcraft
-  - FastWorkbench
-  - DimensionalDoors
-  - "Better Builder's Wands"
-  - AntiGhost
+  - embers
+  - ender-storage-1-8
+  - exchangers
+  - extra-bit-manipulation
+  - extra-utilities
+  - fairy-lights
+  - forestry
+  - ftb-utilities
+  - ftblib
+  - gendustry
+  - hwyla
+  - initial-inventory
+  - inventory-tweaks
+  - iron-chests
+  - redstone-paste
+  - mmmmmmmmmmmm
+  #- Just Enough Dimensions (currently unused)
+  - kleeslabs
+  - magic-bees
+  - malisisdoors
+  - mob-grinding-utils
+  - natura
+  - natures-compass
+  - netherex
+  - netherportalfix
+  - stimmedcow-nomorerecipeconflict
+  - notenoughids
+  - opencomputers
+  - openblocks
+  - packing-tape
+  - pams-harvestcraft
+  - passthrough-signs
+  - platforms
+  - random-things
+  - randomtweaks
+  - ranged-pumps
+  - recurrent-complex
+  - redstone-flux
+  - roguelike-dungeons
+  - roots
+  - scannable
+  - simple-sponge
+  - spartan-shields
+  - storage-drawers
+  - storage-drawers-extras
+  - tails
+  - tammodized
+  - angry-pixel-the-betweenlands-mod
+  - tinkers-construct
+  - tinkers-tool-leveling
+  - extreme-reactors
+  - zerocore
+  - tool-belt
+  - torchmaster
+  - roboticparts
+  - woot
+  - quick-leaf-decay
+  - blood-magic
+  - colorfulwater
+  - constructs-armory
+  - simple-void-world
+  - yoyos
+  - bad-wither-no-cookie-reloaded
+  - waystones
+  - aether-legacy
+  - corpse-complex
+  - Thaumic Inventory Scanning (thaumcraft Addon)
+  - peckish
+  - electroblobs-wizardry
+  - reliquary-v1-3
+  - cookiecore
+  - thaumcraft
+  - fastworkbench
+  - dimensionaldoors
+  - better-builders-wands
+  - antighost
+  - login-shield
+  - caliper
+  - refined-storage
+  - flopper
+  - catwalks-4
+  - wall-jump
+
+  #Pulled due to outstanding issues
+  #- Paintings ++
+  #- Painting Selection Gui Revamped
+  #- The Erebus
 
   # Direct Downloads
   - provider: DIRECT
@@ -238,6 +248,10 @@ root:
   - provider: JENKINS
     jenkinsUrl: https://ci.elytradev.com
     entries:
+
+    # b0undrybreaker
+    - job: elytra/FriendshipBracelet/master
+      name: Friendship Bracelet
 
     # Falkreon
     - job: elytra/Thermionics/master
@@ -260,8 +274,7 @@ root:
       name: FruitPhone
       dependencies:
         REQUIRED:
-         - ProbeDataProvider
-
+          - ProbeDataProvider
 
     - job: elytra/ProbeDataProvider/1.12
       name: ProbeDataProvider
@@ -273,65 +286,65 @@ root:
     - job: elytra/ArchitectureCraft/1.12
       name: ArchitectureCraft
 
+    - job: elytra/MatterLink/master
+      name: MatterLink
+      dependencies:
+        REQUIRED:
+          - shadowfacts-forgelin
 #============#
 # Serverside #
 #============#
 
   - side: SERVER
     entries:
-    - "Shadowfacts' Forgelin"
-    - "BTFU continuous rsync incremental backup"
-    - SwingThroughGrass
-    - Caliper
-    - LagGoggles
-    - Sampler
+    - btfu-continuous-rsync-incremental-backup
+    - swingthroughgrass
+    - colorchat
 
-    - job: elytra/MatterLink/master
-      name: MatterLink
 
 #===================#
 # Common - Optional #
 #===================#
 
-  - side: CLIENT
+  - side: BOTH
     feature:
       selected: false
     entries:
 
-    - name: Caliper
+    - name: laggoggles
       description: "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
 
-    - name: LagGoggles
+    - name: sampler
       description: "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
 
-    - name: Sampler
-      description: "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
-
+    - name: openeye
+      description: "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
 
 #============#
 # Clientside #
 #============#
+
   - side: CLIENT
     entries:
-    - Toast Control
-    - Wawla - What Are We Looking At
-    - Waila Harvestability
-    - JEI Integration
-    - AppleSkin
-    - BetterFps
-    - NoNausea
-    - Better Placement
-    - Controlling
-    - Custom Main Menu
-    - Default Options
-    - Fullscreen Windowed (Borderless) for Minecraft
-    - Mod Name Tooltip
-    - ReAuth
-    - CleanView
-    - Crafting Tweaks
+    - toast-control
+    - wawla-what-are-we-looking-at
+    - waila-harvestability
+    - jei-integration
+    - appleskin
+    - betterfps
+    - nonausea
+    - better-placement
+    - controlling
+    - custom-main-menu
+    - default-options
+    - fullscreen-windowed-borderless-for-minecraft
+    - mod-name-tooltip
+    - reauth
+    - cleanview
+    - crafting-tweaks
 
     # Way2muchnoise
-    - Better Advancements
+    - better-advancements
 
 #=======================#
 # Clientside - Optional #
@@ -343,37 +356,37 @@ root:
         recommendation: starred
       entries:
 
-        - name: JourneyMap
+        - name: journeymap
           description: "Mod-compatible mini-map."
 
-        - name: MAGE
+        - name: mage
           description: "Configurable graphics enhancements. Highly recomended."
 
-        - name: Neat
-          description: "Simple health and unit frames. (Sometimes mis-reports player health)"
+        - name: neat
+          description: "Simple health and unit frames."
 
-        - name: Client Tweaks
+        - name: client-tweaks
           description: "Various client related fixes and tweaks, all in a handy menu."
 
-        - name: Mouse Tweaks
+        - name: mouse-tweaks
           description: "Add extra mouse gestures for inventories and crafting grids."
 
-        - name: Thaumic JEI
+        - name: thaumic-jei
           description: "JEI Integration for Thaumcraft."
 
-        - name: JEI Bees
-          description: "JEI Integration for Reorestry/Gendustry Bees."
+        - name: jei-bees
+          description: "JEI Integration for Forestry/Gendustry Bees."
 
-        - name: Just Enough HarvestCraft (JEHC)
+        - name: just-enough-harvestcraft
           description: "JEI Integration for Pam's HarvestCraft."
 
-        - name: Just Enough Resources (JER)
+        - name: just-enough-resources-jer
           description: "JEI Integration that gives drop-rates for mobs, dungeonloot, etc."
 
-        - name: Vise
+        - name: vise
           description: "More granular control over UI/HUD elements."
 
-        - name: Smooth Font
+        - name: smooth-font
           description: "It smoothes fonts."
 
     # OPT-IN
@@ -381,45 +394,51 @@ root:
         selected: false
       entries:
 
-        - name: Item Scroller
+        - name: item-scroller
           description: "Alternative to MouseTweaks."
 
-        - name: Xaero's Minimap
+        - name: xaeros-minimap
           description: "Lightweight alternative to JourneyMap."
 
-        - name: MineMenu
+        - name: minemenu
           description: "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
 
-        - name: ItemZoom
+        - name: itemzoom
           description: "Check this if you like to get a closer look at item textures."
 
-        - name: Light Level Overlay Reloaded
+        - name: light-level-overlay-reloaded
           description: "Smol light-level overlay if you aren't using Dynamic Surroundings."
 
-        - name: Durability Show
-          description: "Toggle-able item/tool/armor durability HUD."
+        - name: durability-show
+          description: "Toggle-able item/tool/armor durability HUD. Duplicates with RPG-HUD."
 
-        - name: Fancy Block Particles
+        - name: fancy-block-particles
           description: "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps. (Defaults set to be less intrusive.)"
 
-        - name: Dynamic Surroundings
+        - name: dynamic-surroundings
           description: "Caution: Resource heavy. Quite nice, has a lot of configurable features that add immersive sound/visual effects. Includes light-level overlay. (Defaults set to remove some sounds and generally be better.)"
 
-        - name: RPG-Hud
+        - name: rpg-hud
           description: "Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)"
 
-        - name: Better Foliage
+        - name: better-foliage
           description: "Improves the fauna in the world. Very heavy, but very pretty. (Sane defaults set.)"
 
-        - name: Keyboard Wizard
+        - name: keyboard-wizard
           description: "Visual keybind manager."
+
+        - name: chunk-animator
+          description: "Configurable chunk pop-in animator."
+
+        - name: faster-ladder-climbing
+          description: "Helps you control ladder climb speed and allows you to go a bit faster."
 
 #================#
 # Resource Packs #
 #================#
 
-    # Unity Resource Pack
-        - name: Unity
+    # unity Resource Pack
+        - name: unity
           filename: Unity.zip
           description: "Multi-mod compatible resource pack. Very nice, but does have some broken textures here and there."
 
@@ -430,4 +449,3 @@ root:
             description: "Custom client font based off of Chicago. Made by Falkreon."
             folder: resourcepacks
             url: https://centerofthemultiverse.net/launcher/mirror/Slice.zip
-

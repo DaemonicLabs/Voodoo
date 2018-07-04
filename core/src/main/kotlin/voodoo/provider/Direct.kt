@@ -1,10 +1,9 @@
-package voodoo.provider.impl
+package voodoo.provider
 
 import mu.KLogging
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
-import voodoo.provider.ProviderBase
 import voodoo.util.download
 import java.io.File
 import java.net.URL

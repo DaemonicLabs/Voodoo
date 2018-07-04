@@ -1,4 +1,4 @@
-package voodoo.provider.impl
+package voodoo.provider
 
 import aballano.kotlinmemoization.memoize
 import mu.KLogging
@@ -10,8 +10,6 @@ import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
-import voodoo.provider.Provider
-import voodoo.provider.ProviderBase
 import voodoo.util.download
 import java.io.File
 import java.time.Instant
@@ -23,9 +21,18 @@ import kotlin.system.exitProcess
  */
 object CurseProviderThing : ProviderBase, KLogging() {
     override val name = "Curse Provider"
+    val resolved = mutableListOf<String>()
 
     override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         val (projectID, fileID, path) = findFile(entry, modpack.mcVersion, entry.curseMetaUrl)
+
+        logger.info { resolved }
+        resolved += entry.name
+
+        val count = resolved.count { entry.name == it }
+        if(count > 1) {
+            throw Exception("duplicate effort")
+        }
 
         resolveDependencies(projectID, fileID, entry, addEntry)
 
@@ -68,7 +75,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     override fun getThumbnail(entry: Entry): String {
-        val addon = CurseClient.getAddonByName(entry.name, entry.curseMetaUrl)
+        val addon = CurseClient.getAddonBySlug(entry.name, entry.curseMetaUrl)
         return addon?.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
     }
 
@@ -90,20 +97,19 @@ object CurseProviderThing : ProviderBase, KLogging() {
             val depAddon = getAddon(depAddonId, entry.curseMetaUrl) ?: continue
 
 //            val depends = entry.dependencies
-            var dependsList = entry.dependencies[depType] ?: listOf<String>()
-            logger.info("get dependency $depType = $dependsList + ${depAddon.name}")
-            if (!dependsList.contains(depAddon.name)) {
+            var dependsSet = entry.dependencies[depType]?.toSet() ?: setOf<String>()
+            logger.info("get dependency $depType = $dependsSet + ${depAddon.slug}")
+            if (!dependsSet.contains(depAddon.slug)) {
                 logger.info("${entry.name} adding dependency ${depAddon.name}")
-                dependsList += depAddon.name
+                dependsSet += depAddon.slug
             }
-            entry.dependencies[depType] = dependsList
-            logger.info("set dependency $depType = $dependsList")
+            entry.dependencies[depType] = dependsSet.toList()
+            logger.info("set dependency $depType = $dependsSet")
 
             if (depType == DependencyType.REQUIRED || (entry.curseOptionalDependencies && depType == DependencyType.OPTIONAL)) {
                 val depEntry = Entry(provider = Provider.CURSE.name).apply {
-//                    provider = Provider.CURSE.toString()
                     //id = depAddon.id,
-                    name = depAddon.name
+                    name = depAddon.slug
                     side = entry.side
                     transient = true
                     curseReleaseTypes = entry.curseReleaseTypes
