@@ -21,6 +21,9 @@ cd run
 [ ! -e "$pack" ] && mkdir "$pack"
 cd "$pack"
 
+rm src/**/*.lock.json
+rm src/**/*.entry.hjson
+
 echo
 echo "importing $pack"
 echo

@@ -3,7 +3,7 @@ package voodoo
 import mu.KLogging
 import voodoo.tome.Changelog
 import voodoo.tome.Credits
-import voodoo.tome.TomeConstants.VERSION
+import voodoo.tome.TomeConstants.FULL_VERSION
 
 
 /**
@@ -16,7 +16,7 @@ object Tome : KLogging() {
             "credits" to Credits::main,
             "changelog" to Changelog::main,
             "version" to { _ ->
-                println(VERSION)
+                println(FULL_VERSION)
             }
     )
 
@@ -26,7 +26,7 @@ object Tome : KLogging() {
         } else {
             logger.error("unknown command $cmd")
         }
-        logger.warn("voodoo-tome $VERSION")
+        logger.warn("voodoo-tome $FULL_VERSION")
         logger.warn("commands: ")
         funcs.keys.forEach { key ->
             logger.warn("> $key")

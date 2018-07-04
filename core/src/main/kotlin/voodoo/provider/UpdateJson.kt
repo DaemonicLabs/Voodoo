@@ -1,4 +1,4 @@
-package voodoo.provider.impl
+package voodoo.provider
 
 import aballano.kotlinmemoization.memoize
 import com.fasterxml.jackson.module.kotlin.KotlinModule
@@ -11,8 +11,6 @@ import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import voodoo.data.provider.UpdateChannel
-import voodoo.provider.Provider
-import voodoo.provider.ProviderBase
 import java.io.File
 
 /**

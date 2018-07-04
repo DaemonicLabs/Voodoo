@@ -16,6 +16,7 @@ import voodoo.data.curse.AddonFile
 import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.data.curse.feed.CurseFeed
 import voodoo.data.flat.Entry
+import voodoo.util.equalsIgnoreCase
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
@@ -33,9 +34,11 @@ object CurseClient : KLogging() {
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
 //            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
 
-    var idMap = initIdMap()
-    private set
-    
+    var nameIdMap: Map<String, Int> = initNameIdMap()
+        private set
+    var slugIdMap: Map<String, Int> = initSlugIdMap()
+        private set
+
     data class GraphQLRequest(
             val query: String,
             val operationName: String,
@@ -44,7 +47,8 @@ object CurseClient : KLogging() {
 
     data class IdNamePair(
             val id: Int,
-            val name: String
+            val name: String,
+            val slug: String
     )
 
     data class WrapperAddonResult(
@@ -55,7 +59,8 @@ object CurseClient : KLogging() {
             val data: WrapperAddonResult
     )
 
-    private fun initIdMap(): Map<String, Int> {
+    private fun graphQLRequest(): GraphQlResult {
+
         val url = "https://curse.nikky.moe/graphql"
 
         logger.debug("post $url")
@@ -65,6 +70,7 @@ object CurseClient : KLogging() {
                     |  addons {
                     |    id
                     |    name
+                    |    slug
                     |  }
                     |}
                 """.trimMargin(),
@@ -74,7 +80,7 @@ object CurseClient : KLogging() {
                 .body(mapper.writeValueAsBytes(graphQlRequest))
                 .header("User-Agent" to useragent, "Content-Type" to "application/json")
                 .responseString()
-        val grapqhQlResult: GraphQlResult = when (result) {
+        return when (result) {
             is Result.Success -> {
                 mapper.readValue(result.value)
             }
@@ -85,9 +91,24 @@ object CurseClient : KLogging() {
                 throw Exception("failed getting id-name pairs")
             }
         }
+    }
+
+    private fun initSlugIdMap(): Map<String, Int> {
+        val grapqhQlResult = graphQLRequest()
+        return grapqhQlResult.data.addons.groupBy(
+                { it.slug },
+                { it.id }).mapValues {
+            //(slug, list) ->
+            it.value.first()
+        }
+    }
+
+    private fun initNameIdMap(): Map<String, Int> {
+        val grapqhQlResult = graphQLRequest()
         return grapqhQlResult.data.addons.groupBy(
                 { it.name },
                 { it.id }).mapValues {
+            //(slug, list) ->
             it.value.first()
         }
     }
@@ -127,7 +148,7 @@ object CurseClient : KLogging() {
     val getAllFilesForAddon = CurseClient::getAllFilesForAddonCall.memoize()
 
     private fun getAddonCall(addonId: Int, proxyUrl: String): Addon? {
-        val url = "${proxyUrl}/addon/$addonId"
+        val url = "$proxyUrl/addon/$addonId"
 
         logger.debug("get $url")
         val (_, _, result) = url.httpGet()
@@ -163,33 +184,41 @@ object CurseClient : KLogging() {
 
     val getFileChangelog = CurseClient::getFileChangelogCall.memoize()
 
+    @Deprecated("use slugs instead")
     fun getAddonByName(name: String, proxyUrl: String = PROXY_URL): Addon? {
-        val addon = idMap[name]
+        nameIdMap.entries.firstOrNull { it.key.equalsIgnoreCase(name) }
+                ?.value
                 ?.let { getAddon(it, proxyUrl) }
-        if (addon != null) {
-            return addon
-        }
-        idMap = initIdMap()
-        return idMap[name]
+                ?.let {
+                    return it
+                }
+        nameIdMap = initNameIdMap()
+        return nameIdMap[name]
+                ?.let { getAddon(it, proxyUrl) }
+    }
+
+    fun getAddonBySlug(slug: String, proxyUrl: String = PROXY_URL): Addon? {
+        slugIdMap[slug]
+                ?.let { getAddon(it, proxyUrl) }
+                ?.let {
+                    return it
+                }
+        slugIdMap = initSlugIdMap()
+        return slugIdMap[slug]
                 ?.let { getAddon(it, proxyUrl) }
     }
 
     fun findFile(entry: Entry, mcVersion: String, proxyUrl: String = PROXY_URL): Triple<Int, Int, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
-        val name = entry.name
+        val slug = entry.name //TODO: maybe make into separate property
         val version = entry.version
         val releaseTypes = entry.curseReleaseTypes
-//        if(curseReleaseTypes.isEmpty()) {
-//            curseReleaseTypes = setOf(ReleaseType.RELEASE, ReleaseType.BETA) //TODO: is this not already set because i enforce defaults ?
-//        }
-        var addonId = -1 // entry.lock?.projectID ?: -1
+        var addonId = -1
         val fileNameRegex = entry.fileNameRegex
 
         val addon = if (addonId < 0) {
-            if (name.isNotBlank())
-                getAddonByName(name, proxyUrl)
-            else
-                null
+            slug.takeUnless { it.isBlank() }
+                    ?.let { getAddonBySlug(it, proxyUrl) }
         } else {
             getAddon(addonId, proxyUrl)
         }
@@ -265,7 +294,7 @@ object CurseClient : KLogging() {
 
     fun getFeed(hourly: Boolean = false): List<Addon> {
         logger.info("downloading voodoo.data.curse feed")
-        val type = if(hourly) "hourly" else "complete"
+        val type = if (hourly) "hourly" else "complete"
         val url = "$FEED_URL/$type.json.bz2"
         logger.info("get $url")
         val (request, response, result) = url.httpGet()
