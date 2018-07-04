@@ -72,7 +72,7 @@ object ServerPack : AbstractPack() {
 
 
         logger.info("packaging installer jar")
-        val installer = DownloadVoodoo.downloadVoodoo(component = "server-installer-fat", bootstrap = false, fat = false, binariesDir = directories.cacheHome)
+        val installer = DownloadVoodoo.downloadVoodoo(component = "server-installer", bootstrap = false, fat = false, binariesDir = directories.cacheHome)
 
         val serverInstaller = modpackDir.resolve("server-installer.jar")
         installer.copyTo(serverInstaller)
