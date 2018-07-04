@@ -18,10 +18,9 @@ import java.util.concurrent.TimeUnit
 object Server {
     val directories = Directories.get(moduleName = "server-installer")
 
+
     fun install(rootFolder: File, modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean, cleanConfig: Boolean) {
         val cacheDir = directories.cacheHome
-
-        val packSrc = rootFolder.resolve(modpack.sourceDir)
 
         if (clean) {
             logger.info("cleaning modpack directory $serverDir")
@@ -35,13 +34,22 @@ object Server {
         serverDir.resolve("mods").deleteRecursively()
 
         logger.info("copying files into server dir")
-        val mcDir = File(modpack.sourceDir)
-        if (mcDir.exists()) {
-            mcDir.copyRecursively(serverDir, overwrite = true)
+        val srcDir = rootFolder.resolve(modpack.sourceDir)
+        if (srcDir.exists()) {
+            srcDir.copyRecursively(serverDir, overwrite = true)
+
+            serverDir.walkBottomUp().forEach {
+                if (it.name.endsWith(".entry.hjson") || it.name.endsWith(".lock.json"))
+                    it.delete()
+                if (it.isDirectory && it.listFiles().isEmpty()) {
+                    it.delete()
+                }
+            }
         } else {
-            logger.warn("minecraft directory $mcDir does not exist")
+            logger.warn("minecraft directory $srcDir does not exist")
         }
 
+        //TODO: move to server package
         for (file in serverDir.walkTopDown()) {
             when {
                 file.name == "_CLIENT" -> file.deleteRecursively()
@@ -54,11 +62,13 @@ object Server {
 
         // download entries
         for ((name, pair) in modpack.entriesMapping) {
-            val (entry, entryFile) = pair
-            val relativeFolder = entryFile.absoluteFile.parentFile.relativeTo(packSrc)
+            logger.info("entry: $name")
+            val (entry, relEntryFile) = pair
+            val relativeFolder = relEntryFile.parentFile
             if (entry.side == Side.CLIENT) continue
             val provider = Provider.valueOf(entry.provider).base
             val targetFolder = serverDir.resolve(relativeFolder)
+            logger.info("${relEntryFile.path} - ${relativeFolder.path} - ${targetFolder.path}")
             val (url, file) = provider.download(entry, targetFolder, cacheDir)
         }
 

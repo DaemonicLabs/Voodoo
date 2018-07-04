@@ -110,5 +110,5 @@ configure(minify) {
     description = 'Optimize JAR'
 }
 
-build.dependsOn(minify)
+//build.dependsOn(minify)
 

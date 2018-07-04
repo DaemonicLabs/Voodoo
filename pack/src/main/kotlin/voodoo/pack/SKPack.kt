@@ -1,5 +1,6 @@
 package voodoo.pack
 
+import blue.endless.jankson.Jankson
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.pack.sk.*
@@ -21,7 +22,7 @@ object SKPack : AbstractPack() {
 
     override val label = "SK Packer"
 
-    override fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean) {
+    override fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
         val cacheDir = directories.cacheHome
         val workspaceDir = rootFolder.resolve("workspace").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.name)

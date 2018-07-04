@@ -77,17 +77,28 @@ object Builder : KLogging() {
 
             modpack.versionsMapping.forEach { name, (lockEntry, file) ->
                 logger.info("saving: $name , file: $file , entry: $lockEntry")
+
+                val folder = file.absoluteFile.parentFile
+
+                val targetFolder = if (folder.toPath().none { it.toString() == "_CLIENT" || it.toString() == "_SERVER" }) {
+                    when (lockEntry.side) {
+                        Side.CLIENT -> {
+                            folder.resolve("_CLIENT")
+                        }
+                        Side.SERVER -> {
+                            folder.resolve("_SERVER")
+                        }
+                        Side.BOTH -> folder
+                    }
+                } else folder
+
+//                lockEntry.side = Side.BOTH
+                targetFolder.mkdirs()
+
                 val defaultJson = lockEntry.toDefaultJson(jankson.marshaller)
                 val lockJson = jankson.toJson(lockEntry) as JsonObject
                 val delta = lockJson.getDelta(defaultJson)
 
-                val folder = file.absoluteFile.parentFile
-                val targetFolder = when (lockEntry.side) {
-                    Side.CLIENT -> folder.resolve("_CLIENT")
-                    Side.SERVER -> folder.resolve("_SERVER")
-                    Side.BOTH -> folder
-                }
-                targetFolder.mkdirs()
                 val targetFile = targetFolder.resolve(file.name)
 
                 targetFile.writeText(delta.toJson(true, true).replace("\t", "  "))

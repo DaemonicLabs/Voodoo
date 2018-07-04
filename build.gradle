@@ -12,6 +12,7 @@ buildscript {
 plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.3'
     id "org.jetbrains.kotlin.jvm" version "1.2.41"
+    id "io.gitlab.arturbosch.detekt" version "1.0.0.RC7-3"
     id 'idea'
 }
 
@@ -23,11 +24,17 @@ println """
 *******************************************
 """
 
-//group = 'moe.nikky'
-
 idea {
     module {
         excludeDirs += [file("run")]
+    }
+}
+
+detekt {
+    version = "1.0.0.RC7-3"
+    defaultProfile {
+//        input = file("src/main/kotlin")
+        filters = ".*/resources/.*,.*/build/.*"
     }
 }
 

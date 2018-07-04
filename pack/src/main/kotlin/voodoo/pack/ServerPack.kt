@@ -1,8 +1,9 @@
 package voodoo.pack
 
+import blue.endless.jankson.Jankson
+import blue.endless.jankson.JsonObject
 import voodoo.data.lock.LockPack
 import voodoo.util.DownloadVoodoo
-import voodoo.util.writeJson
 import java.io.File
 
 /**
@@ -13,7 +14,7 @@ import java.io.File
 object ServerPack : AbstractPack() {
     override val label = "Server SKPack"
 
-    override fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean) {
+    override fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
         val targetDir = File(target ?: ".server")
         val modpackDir = targetDir.resolve(modpack.name)
 
@@ -24,36 +25,54 @@ object ServerPack : AbstractPack() {
 
         modpackDir.mkdirs()
 
-        val localDir = File(modpack.localDir)
+        val localDir = rootFolder.resolve(modpack.localDir)
         logger.info("local: $localDir")
-        if(localDir.exists()) {
+        if (localDir.exists()) {
             val targetLocalDir = modpackDir.resolve("local")
             modpack.localDir = targetLocalDir.name
 
-            if(targetLocalDir.exists()) targetLocalDir.deleteRecursively()
+            if (targetLocalDir.exists()) targetLocalDir.deleteRecursively()
             targetLocalDir.mkdirs()
 
             localDir.copyRecursively(targetLocalDir, true)
         }
 
-        val minecraftDir = File(modpack.sourceDir)
-        logger.info("mcDir: $minecraftDir")
-        if(minecraftDir.exists()) {
-            val targetMinecraftDir = modpackDir.resolve("minecraft")
-            modpack.sourceDir = targetMinecraftDir.name
+        val sourceDir = rootFolder.resolve(modpack.sourceDir)
+        logger.info("mcDir: $sourceDir")
+        if (sourceDir.exists()) {
+            val targetSourceDir = modpackDir.resolve("src")
+            modpack.sourceDir = targetSourceDir.name
 
-            if(targetMinecraftDir.exists()) targetMinecraftDir.deleteRecursively()
-            targetMinecraftDir.mkdirs()
+            if (targetSourceDir.exists()) targetSourceDir.deleteRecursively()
+            targetSourceDir.mkdirs()
 
-            minecraftDir.copyRecursively(targetMinecraftDir, true)
+            sourceDir.copyRecursively(targetSourceDir, true)
+            targetSourceDir.walkBottomUp().forEach { file ->
+                if (file.name.endsWith(".entry.hjson"))
+                    file.delete()
+                if (file.isDirectory && file.listFiles().isEmpty()) {
+                    file.delete()
+                }
+                when {
+                    file.name == "_CLIENT" -> file.deleteRecursively()
+                    file.name == "_SERVER" -> {
+                        file.copyRecursively(file.absoluteFile.parentFile, overwrite = true)
+                        file.deleteRecursively()
+                    }
+                }
+            }
         }
 
         val packFile = modpackDir.resolve("pack.lock.json")
-        packFile.writeJson(modpack)
+
+        val defaultJson = JsonObject() //TODO: get default pack ?
+        val lockJson = jankson.toJson(modpack) as JsonObject
+        val delta = lockJson.getDelta(defaultJson)
+        packFile.writeText(delta.toJson(true, true).replace("\t", "  "))
 
 
         logger.info("packaging installer jar")
-        val installer = DownloadVoodoo.downloadVoodoo(component = "server-installer", bootstrap = false,  fat = false, binariesDir = directories.cacheHome)
+        val installer = DownloadVoodoo.downloadVoodoo(component = "server-installer", bootstrap = false, fat = false, binariesDir = directories.cacheHome)
 
         val serverInstaller = modpackDir.resolve("server-installer.jar")
         installer.copyTo(serverInstaller)

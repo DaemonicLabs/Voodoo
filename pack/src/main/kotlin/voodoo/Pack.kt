@@ -69,7 +69,7 @@ object Pack : KLogging() {
                 }
             }
 
-            packer.download(rootFolder = rootFolder, modpack = modpack, target = targetArg, clean = true)
+            packer.download(rootFolder = rootFolder, modpack = modpack, target = targetArg, clean = true, jankson = jankson)
         }
     }
 
