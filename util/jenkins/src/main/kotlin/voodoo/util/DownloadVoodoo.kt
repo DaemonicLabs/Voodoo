@@ -3,8 +3,8 @@ package voodoo.util
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
-import voodoo.util.jenkins.JenkinsServer
 import voodoo.util.jenkins.JenkinsConstants.VERSION
+import voodoo.util.jenkins.JenkinsServer
 import java.io.File
 
 object DownloadVoodoo : KLogging() {
@@ -14,7 +14,7 @@ object DownloadVoodoo : KLogging() {
             bootstrap: Boolean = true,
             fat: Boolean = false,
             url: String = "https://ci.elytradev.com",
-            job: String = "elytra/Voodoo/master",
+            job: String = "elytra/Voodoo/rewrite", //TODO: switch to master once merged
             binariesDir: File
     ): File {
         val moduleName = "${if(bootstrap) "bootstrap-" else ""}$component"
