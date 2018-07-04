@@ -80,6 +80,7 @@ data class LockPack(
         }
     }
 
+    @JsonIgnore
     val entriesMapping: MutableMap<String, Pair<LockEntry, File>> = mutableMapOf()
 
     fun loadEntries(folder: File, jankson: Jankson) {
@@ -92,6 +93,7 @@ data class LockPack(
                     val entryJsonObj = jankson.load(it)
                     val lockEntry: LockEntry = jankson.fromJson(entryJsonObj)
                     entriesMapping[lockEntry.name] = Pair(lockEntry, it.relativeTo(srcDir))
+//                    logger.info("loaded ${lockEntry.name} ${it.relativeTo(srcDir).path}")
                 }
     }
 }

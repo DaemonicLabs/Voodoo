@@ -1,12 +1,22 @@
 package voodoo.server
 
+import blue.endless.jankson.Jankson
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.InvalidArgumentException
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import mu.KLogging
+import voodoo.data.UserFiles
+import voodoo.data.flat.EntryFeature
+import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
-import voodoo.util.readJson
+import voodoo.data.sk.FeatureFiles
+import voodoo.data.sk.FeatureProperties
+import voodoo.data.sk.Launch
+import voodoo.data.sk.SKFeature
+import voodoo.fromJson
+import voodoo.registerSerializer
+import voodoo.registerTypeAdapter
 import java.io.File
 
 /**
@@ -15,6 +25,20 @@ import java.io.File
  */
 
 object Install : KLogging() {
+
+    private val jankson = Jankson.builder()
+            .registerTypeAdapter(LockPack.Companion::fromJson)
+            .registerTypeAdapter(LockEntry.Companion::fromJson)
+            .registerTypeAdapter(EntryFeature.Companion::fromJson)
+            .registerTypeAdapter(UserFiles.Companion::fromJson)
+            .registerTypeAdapter(Launch.Companion::fromJson)
+            .registerTypeAdapter(SKFeature.Companion::fromJson)
+            .registerTypeAdapter(FeatureProperties.Companion::fromJson)
+            .registerTypeAdapter(FeatureFiles.Companion::fromJson)
+            .registerSerializer(LockPack.Companion::toJson)
+            .registerSerializer(LockEntry.Companion::toJson)
+//            .registerSerializer(EntryFeature.Companion::toJson)
+            .build()
 
     @JvmStatic
     fun main(vararg args: String): Unit = mainBody {
@@ -28,16 +52,18 @@ object Install : KLogging() {
             logger.info ("pack file: $packFile")
             logger.info("cleanConfig: $cleanConfig")
 
-            val modpack = packFile.readJson<LockPack>()
+            val jsonObject = jankson.load(packFile)
+            val modpack: LockPack = jankson.fromJson(jsonObject)
             val rootFolder = packFile.absoluteFile.parentFile
+            modpack.loadEntries(rootFolder, jankson)
 
-            Server.install(rootFolder, modpack, targetDir, skipForge, clean, cleanConfig) //TODO: replace mock of rootFolder
+            Server.install(rootFolder, modpack, targetDir, skipForge, clean, cleanConfig)
         }
     }
 
     private class Arguments(parser: ArgParser) {
         val targetDir by parser.positional("TARGET",
-                help = "output folder") { File(this) }
+                help = "output folder") { File(this).absoluteFile }
                 .addValidator {
                     if(value.exists() && !value.isDirectory) {
                         throw InvalidArgumentException("$value exists and is not a directory")

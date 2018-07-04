@@ -1,5 +1,6 @@
 package voodoo.pack
 
+import blue.endless.jankson.Jankson
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.util.Directories
@@ -13,7 +14,7 @@ import java.io.File
 abstract class AbstractPack : KLogging() {
     abstract val label: String
 
-    abstract fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean = true)
+    abstract fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean = true, jankson: Jankson)
 
     val directories = Directories.get(moduleName = "pack")
 }

@@ -17,6 +17,11 @@ pack=$1
 [ ! -e run ] && mkdir run
 cd run
 
+[ ! -e "$pack" ] && mkdir "$pack"
+cd "$pack"
+
+rm -rf .server
+
 echo
 echo "packaging $1 server"
 echo

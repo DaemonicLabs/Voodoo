@@ -1,11 +1,9 @@
 package voodoo.pack
 
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
+import blue.endless.jankson.Jankson
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
 import voodoo.util.DownloadVoodoo
-import voodoo.util.jenkins.JenkinsServer
 import voodoo.util.packToZip
 import java.io.File
 import kotlin.system.exitProcess
@@ -13,7 +11,7 @@ import kotlin.system.exitProcess
 object MMCStaticPack : AbstractPack() {
     override val label = "MultiMC Static Packer"
 
-    override fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean) {
+    override fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
         val targetDir = File(target ?: ".multimc")
         val definitionsDir = File("multimc").apply { mkdirs() }
         val cacheDir = directories.cacheHome.resolve("mmc")
