@@ -56,7 +56,7 @@ compileKotlin.doFirst {
         into "$buildDir/generated-src/voodoo/"
         expand(
                 JENKINS_URL: "https://ci.elytradev.com",
-                JENKINS_JOB: "elytra/Voodoo/master",
+                JENKINS_JOB: "elytra/Voodoo/rewrite",
                 MODULE_NAME: moduleName,
                 FILE_REGEX: fileRegex
         )

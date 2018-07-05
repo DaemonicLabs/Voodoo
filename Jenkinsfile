@@ -34,7 +34,7 @@ pipeline {
 	            archive 'archiver/build/libs/*jar'
 	        }
 	    }
-	    /* stage("bootstrap") {
+	    stage("bootstrap") {
 	        steps {
 	            sh './gradlew :bootstrap:clean'
 	            sh './gradlew :bootstrap:minify -Ptarget=voodoo'
@@ -44,6 +44,6 @@ pipeline {
 	            archive 'bootstrap/build/libs/*multimc-installer*'
 	            archive 'bootstrap/build/libs/*archiver*'
 	        }
-	    } */
+	    }
 	}
 }
