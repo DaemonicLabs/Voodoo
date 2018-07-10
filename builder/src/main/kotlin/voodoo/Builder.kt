@@ -59,13 +59,9 @@ object Builder : KLogging() {
 
             modpack.loadEntries(parentFolder, jankson)
 
-            modpack.entriesMapping.forEach { name, (entry, file, jonObject) ->
+            modpack.entriesMapping.forEach { name, (entry, file, jsonObject) ->
                 logger.info("name: $name entry: $entry")
             }
-
-            //TODO: lock entries - DONE
-            //TODO: collect features
-            //TODO: write files - DONE
 
             modpack.resolve(
                     parentFolder,

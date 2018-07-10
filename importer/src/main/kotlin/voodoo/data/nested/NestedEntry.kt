@@ -1,6 +1,7 @@
 package voodoo.data.nested
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import com.fasterxml.jackson.annotation.JsonInclude
 import mu.KLogging
 import voodoo.data.Side
 import voodoo.data.curse.CurseConstancts
@@ -21,9 +22,9 @@ import kotlin.reflect.full.memberProperties
  * @author Nikky
  */
 
-//@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class NestedEntry(
-        //@JsonInclude(JsonInclude.Include.ALWAYS)
+        @JsonInclude(JsonInclude.Include.ALWAYS)
         var provider: String = "",
         var name: String = "",
         var folder: String = "mods",
