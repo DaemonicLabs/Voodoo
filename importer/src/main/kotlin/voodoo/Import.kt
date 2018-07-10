@@ -17,7 +17,7 @@ import kotlin.system.exitProcess
 object Import : KLogging() {
     @JvmStatic
     fun main(vararg args: String) = mainBody {
-        logger.info { args.map { it } }
+//        logger.info { args.map { it } }
         val arguments = Arguments(ArgParser(args))
 
         arguments.run {
