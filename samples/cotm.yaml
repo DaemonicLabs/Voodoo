@@ -286,11 +286,7 @@ root:
     - job: elytra/ArchitectureCraft/1.12
       name: ArchitectureCraft
 
-    - job: elytra/MatterLink/master
-      name: MatterLink
-      dependencies:
-        REQUIRED:
-          - shadowfacts-forgelin
+
 #============#
 # Serverside #
 #============#
@@ -300,7 +296,15 @@ root:
     - btfu-continuous-rsync-incremental-backup
     - swingthroughgrass
     - colorchat
+    - shadowfacts-forgelin
 
+    - provider: JENKINS
+      jenkinsUrl: https://ci.elytradev.com
+      job: elytra/MatterLink/master
+      name: MatterLink
+      dependencies:
+        REQUIRED:
+          - shadowfacts-forgelin
 
 #===================#
 # Common - Optional #

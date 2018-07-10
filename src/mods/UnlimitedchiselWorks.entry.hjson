@@ -1,0 +1,14 @@
+{ 
+  "provider": "CURSE",
+  "name": "Unlimited chisel Works",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

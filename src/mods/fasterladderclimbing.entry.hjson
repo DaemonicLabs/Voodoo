@@ -1,0 +1,19 @@
+{ 
+  "provider": "CURSE",
+  "name": "faster-ladder-climbing",
+  "description": "Helps you control ladder climb speed and allows you to go a bit faster.",
+  "feature": { 
+    "selected": false
+  },
+  "side": "CLIENT",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

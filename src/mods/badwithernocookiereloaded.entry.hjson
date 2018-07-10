@@ -1,0 +1,14 @@
+{ 
+  "provider": "CURSE",
+  "name": "bad-wither-no-cookie-reloaded",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

@@ -1,0 +1,20 @@
+{ 
+  "provider": "CURSE",
+  "name": "client-tweaks",
+  "description": "Various client related fixes and tweaks, all in a handy menu.",
+  "feature": { 
+    "selected": true,
+    "recommendation": "starred"
+  },
+  "side": "CLIENT",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

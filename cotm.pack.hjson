@@ -1,0 +1,19 @@
+{ 
+	"name": "cotm",
+	"title": "Center of the Multiverse",
+	"version": "2.1.8.11",
+	"authors": [ 
+		"AnsuzThuriaz",
+		"Falkreon",
+		"NikkyAi"
+	],
+	"mcVersion": "1.12.2",
+	"forge": "2727",
+	"userFiles": { 
+		"include": [ 
+			"options.txt",
+			"quark.cfg",
+			"foamfix.cfg"
+		]
+	}
+}

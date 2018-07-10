@@ -1,0 +1,20 @@
+{ 
+  "provider": "CURSE",
+  "name": "unity",
+  "description": "Multi-mod compatible resource pack. Very nice, but does have some broken textures here and there.",
+  "feature": { 
+    "selected": false
+  },
+  "side": "CLIENT",
+  "fileName": "Unity.zip",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

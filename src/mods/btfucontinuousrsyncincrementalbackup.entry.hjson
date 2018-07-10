@@ -1,0 +1,15 @@
+{ 
+  "provider": "CURSE",
+  "name": "btfu-continuous-rsync-incremental-backup",
+  "side": "SERVER",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

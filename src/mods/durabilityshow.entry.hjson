@@ -1,0 +1,19 @@
+{ 
+  "provider": "CURSE",
+  "name": "durability-show",
+  "description": "Toggle-able item/tool/armor durability HUD. Duplicates with RPG-HUD.",
+  "feature": { 
+    "selected": false
+  },
+  "side": "CLIENT",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

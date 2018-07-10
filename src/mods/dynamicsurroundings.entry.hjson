@@ -1,0 +1,19 @@
+{ 
+  "provider": "CURSE",
+  "name": "dynamic-surroundings",
+  "description": "Caution: Resource heavy. Quite nice, has a lot of configurable features that add immersive sound/visual effects. Includes light-level overlay. (Defaults set to remove some sounds and generally be better.)",
+  "feature": { 
+    "selected": false
+  },
+  "side": "CLIENT",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

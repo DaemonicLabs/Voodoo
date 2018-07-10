@@ -1,0 +1,20 @@
+{ 
+  "provider": "CURSE",
+  "name": "jei-bees",
+  "description": "JEI Integration for Forestry/Gendustry Bees.",
+  "feature": { 
+    "selected": true,
+    "recommendation": "starred"
+  },
+  "side": "CLIENT",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}
