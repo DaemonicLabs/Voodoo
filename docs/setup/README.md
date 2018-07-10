@@ -47,18 +47,18 @@ version: 1.0
 where will the pack find files ? that means.. configs, scripts, more configs and a bunch of config files
 
 ```yaml
-minecraftDir: .minecraft
+sourceDir: src
 ```
 
-this means it will look for a folder called `.minecraft` from wherever you invoke voodoo later,
-keep in mind this is a relaitve path .. full paths are supüported but discouraged as it makes any pack
-configuration very specific to one machine
+this means it will look for a folder called `src` relative to wherever you invoke voodoo later,
+keep in mind this is a **relative** path .. full paths are supported but discouraged as it makes any pack
+configuration very specific to one machine and non-portable
 
 
 one optional step is to define userFiles,
 on supported platforms these will be user editable, any other files will be automatically reset to what the pack defines
 
-explude rules are useful if your include rules are too broad and you want to exclude jsut some of the files
+exclude rules are useful if your include rules are too broad and you want to exclude just some of the files
 
 ```yaml
   include:
@@ -80,20 +80,21 @@ lets take a simple sample like this
 
 ```yaml
 root:
+  provider: CURSE
   validMcVersions: [1.12.1, '1.12']
   curseOptionalDependencies: false
   curseReleaseTypes: [ alpha, beta, release ]
   entries:
 
-  - Thermal Dynamics
-  - Thermal Expansion
-  - Thermal Innovation
+  - thermal-dynamics
+  - thermalexpansion
+  - thermal-innovation
 
   - curseReleaseTypes: [ beta, release ]
     # because alphas are buggy
     entries:
-    - RFTools
-    - RFTools Dimensions
+    - rftools
+    - rftools-dimensions
 ```
 
 the root is always a single entry.. any entry can have child entries and all properties of the entry are assigned to its
@@ -102,23 +103,24 @@ in this case we use alpha-release on a broad scope but specify the RFTools mods 
 
 ## simple string and name notation
 
-so you have seen we can refer to mods by just their name.. which is usually the projectname on curse,
+so you have seen we can refer to mods by just their url slug.. which is usually the project name on curse lowercased and spaces replaced with `-`,
+
+
+```yaml
+- opencomputers
+```
+
 but what if we want to specify more info ?
+the short form is gonna be expanded to something like this
 
 ```yaml
-- OpenComputers
+- name: opencomputers
 ```
 
-is gonna be expanded to something like this
+so you can add more properties
 
 ```yaml
-- name: OpenComputers
-```
-
-so you can also add flags
-
-```yaml
-- name: OpenComputers
+- name: opencomputers
   version: 1.2.3
 ```
 
@@ -154,7 +156,7 @@ Kinda self explainging.. jenkins needs the base url and the name of the job
 also supported but now shows is the `jenkinsFileNameRegex` it has a sane default but maybe you need to match a
 different file or make sure your generated docs are not used as mod jar? then use that
 
-´´´yaml
+```yaml
 - provider: JENKINS
   jenkinsUrl: https://ci.elytradev.com
   entries:
@@ -177,7 +179,8 @@ they also make pack dev less portable
 
 anyway.. local entries will take a relative path and pull the file from the `localDir`
 
-```
+```yaml
+
 localDir: local
 
 root:
@@ -201,28 +204,27 @@ Voodoo will automatically only install the mods for the chosen side on export / 
 
 ### Clientside
 
-just some of the basics.. all pulled from curse
+just some of the basics.. all examples use curse, but they could be from any provider
 
 ```yaml
 - side: CLIENT
   entries:
-  - "IKWID (I Know What I'm Doing)"
-  - Wawla - What Are We Looking At
-  - Waila Harvestability
-  - JEI Integration
-  - AppleSkin
-  - BetterFps
-  - NoNausea
-  - Better Placement
-  - Controlling
-  - Default Options
-  - Fullscreen Windowed (Borderless) for Minecraft
-  - Mod Name Tooltip
-  - Neat
-  - ReAuth
-  - CleanView
-  - Vise
-  - Smooth Font
+    - toast-control
+    - wawla-what-are-we-looking-at
+    - waila-harvestability
+    - jei-integration
+    - appleskin
+    - betterfps
+    - nonausea
+    - better-placement
+    - controlling
+    - custom-main-menu
+    - default-options
+    - fullscreen-windowed-borderless-for-minecraft
+    - mod-name-tooltip
+    - reauth
+    - cleanview
+    - crafting-tweaks
 ```
 
 ### Serverside
@@ -232,11 +234,16 @@ Backup Solution and universal chatbridge
 ```yaml
 - side: SERVER
   entries:
-  - "BTFU continuous rsync incremental backup"
-  - SwingThroughGrass
+    - btfu-continuous-rsync-incremental-backup
+    - swingthroughgrass
+    - colorchat
+    - shadowfacts-forgelin
 
-  - job: elytra/MatterLink/master
-    name: MatterLink
+    - job: elytra/MatterLink/master
+      name: MatterLink
+        dependencies:
+          REQUIRED:
+            - shadowfacts-forgelin
 ```
 
 ## Optionals
@@ -256,39 +263,42 @@ the default value is to show no preference
     recommendation: starred
   entries:
 
-    - name: JourneyMap
+    - name: journeymap
       description: "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
 
-    - name: SmoothWater
-      description: "Makes the surface of water nicer, better underwater lighting, can cost some FPS."
+    - name: mage
+      description: "Configurable graphics enhancements. Highly recomended."
 
-    - name: Client Tweaks
+    - name: neat
+      description: "Simple health and unit frames."
+
+    - name: client-tweaks
       description: "Various client related fixes and tweaks, all in a handy menu."
 
-    - name: Mouse Tweaks
+    - name: mouse-tweaks
       description: "Add extra mouse gestures for inventories and crafting grids."
 
 - feature:
     selected: false
   entries:
 
-    - name: Item Scroller
-      description: Alternative to MouseTweaks
+    - name: item-scroller
+      description: "Alternative to MouseTweaks."
 
-    - name: Fancy Block Particles
-      description: "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps."
+    - name: xaeros-minimap
+      description: "Lightweight alternative to JourneyMap."
 
-    - name: Keyboard Wizard
-      description: Visual keybind editor.
+    - name: minemenu
+      description: "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
 
-    - name: Xaero's Minimap
-      description: Lightweight alternative to JourneyMap
+    - name: itemzoom
+      description: "Check this if you like to get a closer look at item textures."
 ```
 
 finally we can not only download mods.. but also resource packs
 
-```
-- name: Unity
+```yaml
+- name: unity
   fileName: Unity.zip
 
 - name: Slice
@@ -298,7 +308,7 @@ finally we can not only download mods.. but also resource packs
 ```
 
 this also showcases you can modify the filename and/or the target folder of files
-the filename of Unity we modify because then we can provide default options that have Unity.zip enabled by default
+we modify the filename of Unity because then we can provide default options that have Unity.zip enabled by default
 
 the pack definition file may now look like [samples/awesomepack.yaml](https://github.com/elytra/Voodoo/blob/master/samples/awesomepack.yaml)
 

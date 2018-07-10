@@ -1,0 +1,15 @@
+{ 
+  "provider": "DIRECT",
+  "name": "Slice",
+  "description": "Custom client font based off of Chicago. Made by Falkreon.",
+  "feature": { 
+    "selected": false
+  },
+  "side": "CLIENT",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "url": "https://centerofthemultiverse.net/launcher/mirror/Slice.zip"
+}

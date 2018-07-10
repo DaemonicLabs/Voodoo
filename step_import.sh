@@ -3,15 +3,6 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PWD=$(pwd)
 
-cd $DIR
-
-$DIR/gradlew :voodoo:build
-
-if [ ! $? -eq 0 ]; then
-    echo "Error building voodoo"
-    exit 1
-fi
-
 pack=$1
 url=$2
 
@@ -28,7 +19,8 @@ echo
 echo "importing $pack"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" import yaml "$DIR/samples/$pack.yaml" .
+cd $DIR
+$DIR/gradlew :voodoo:run --args "import yaml '$DIR/samples/$pack.yaml' $DIR/run/$pack"
 if [ ! $? -eq 0 ]; then
     echo "Error importing $pack from yaml"
     exit 1

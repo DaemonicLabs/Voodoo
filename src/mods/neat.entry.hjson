@@ -1,0 +1,20 @@
+{ 
+  "provider": "CURSE",
+  "name": "neat",
+  "description": "Simple health and unit frames.",
+  "feature": { 
+    "selected": true,
+    "recommendation": "starred"
+  },
+  "side": "CLIENT",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

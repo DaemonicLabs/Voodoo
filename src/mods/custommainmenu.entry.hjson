@@ -1,0 +1,15 @@
+{ 
+  "provider": "CURSE",
+  "name": "custom-main-menu",
+  "side": "CLIENT",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

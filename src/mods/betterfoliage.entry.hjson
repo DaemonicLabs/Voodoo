@@ -1,0 +1,19 @@
+{ 
+  "provider": "CURSE",
+  "name": "better-foliage",
+  "description": "Improves the fauna in the world. Very heavy, but very pretty. (Sane defaults set.)",
+  "feature": { 
+    "selected": false
+  },
+  "side": "CLIENT",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

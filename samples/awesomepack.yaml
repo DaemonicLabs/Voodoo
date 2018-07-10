@@ -19,18 +19,19 @@ authors:
 version: 1.0
 
 # minecraft src dir
-minecraftDir: .minecraft
+sourceDir: .minecraft
 
 root:
+  provider: CURSE
   validMcVersions: [1.12.1, '1.12']
   curseOptionalDependencies: false
   curseReleaseTypes: [ alpha, beta, release ]
   entries:
-  - Akashic Tome
-  - Botania
-  - Baubles
-  - Wearable Backpacks
-  - Just Enough Items (JEI)
+  - akashic-tome
+  - botania
+  - baubles
+  - wearable-backpacks
+  - jei
 
   - provider: DIRECT
     entries:
@@ -50,76 +51,88 @@ root:
 
     - job: elytra/FruitPhone/1.12.2
       name: FruitPhone
+      dependencies:
+        REQUIRED:
+          - ProbeDataProvider
 
     - job: elytra/ProbeDataProvider/1.12
       name: ProbeDataProvider
 
   - side: SERVER
     entries:
-    - "BTFU continuous rsync incremental backup"
-    - SwingThroughGrass
+    - btfu-continuous-rsync-incremental-backup
+    - swingthroughgrass
+    - colorchat
 
-    - job: elytra/MatterLink/master
+    - shadowfacts-forgelin
+
+    - provider: JENKINS
+      jenkinsUrl: https://ci.elytradev.com
+      job: elytra/MatterLink/master
       name: MatterLink
+      dependencies:
+        REQUIRED:
+          - shadowfacts-forgelin
 
   - side: CLIENT
     entries:
     - "IKWID (I Know What I'm Doing)"
-    - Wawla - What Are We Looking At
-    - Waila Harvestability
-    - JEI Integration
-    - AppleSkin
-    - BetterFps
-    - NoNausea
-    - Better Placement
-    - Controlling
-    - Default Options
-    - Fullscreen Windowed (Borderless) for Minecraft
-    - Mod Name Tooltip
-    - Neat
-    - ReAuth
-    - CleanView
-    - Vise
-    - Smooth Font
+    - wawla-what-are-we-looking-at
+    - waila-harvestability
+    - jei-integration
+    - appleskin
+    - betterfps
+    - nonausea
+    - better-placement
+    - controlling
+    - custom-main-menu
+    - default-options
+    - fullscreen-windowed-borderless-for-minecraft
+    - mod-name-tooltip
+    - neat
+    - reauth
+    - cleanview
+    - vise
+    - smooth-font
 
     - feature:
         selected: true
         recommendation: starred
       entries:
 
-        - name: JourneyMap
+        - name: journeymap
           description: "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
 
-        - name: SmoothWater
-          description: "Makes the surface of water nicer, better underwater lighting, can cost some FPS."
+        - name: mage
+          description: "Configurable graphics enhancements. Highly recomended."
 
-        - name: Client Tweaks
+        - name: neat
+          description: "Simple health and unit frames."
+
+        - name: client-tweaks
           description: "Various client related fixes and tweaks, all in a handy menu."
 
-        - name: Mouse Tweaks
+        - name: mouse-tweaks
           description: "Add extra mouse gestures for inventories and crafting grids."
 
     - feature:
         selected: false
       entries:
 
-        - name: Item Scroller
-          description: Alternative to MouseTweaks
+        - name: item-scroller
+          description: "Alternative to MouseTweaks."
 
-        - name: Fancy Block Particles
-          description: "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps."
+        - name: fancy-block-particles
+         description: "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps. (Defaults set to be less intrusive.)"
 
-        - name: Keyboard Wizard
-          description: Visual keybind editor.
-
-        - name: Xaero's Minimap
-          description: Lightweight alternative to JourneyMap
+        - name: keyboard-wizard
+          description: "Visual keybind manager."
 
 
     - feature:
         selected: false
       entries:
-      - name: Unity
+      - name: unity
         fileName: Unity.zip
         description: "A nice, traditional-style resourcepack with support for many of our mods. Does have some minor visual bugs and is a tad heavy. Remember to apply from the main menu, and not in game!"
 

@@ -1,0 +1,11 @@
+{ 
+  "provider": "JENKINS",
+  "name": "GlassHearts",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "jenkinsUrl": "https://ci.elytradev.com",
+  "job": "elytra/GlassHearts/1.12.1"
+}

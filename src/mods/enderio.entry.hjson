@@ -1,0 +1,15 @@
+{ 
+  "provider": "CURSE",
+  "name": "ender-io",
+  "version": "5.0.26",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

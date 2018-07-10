@@ -104,10 +104,10 @@ object Builder : KLogging() {
                 targetFile.writeText(delta.toJson(true, true).replace("\t", "  "))
             }
 
-            if (!nosave) {
-                println("saving changes...")
-//                inFile.writeJson(modpack)
-            }
+//            if (!nosave) {
+//                println("saving changes...")
+////                inFile.writeJson(modpack)
+//            }
 
             logger.info("Creating locked pack...")
             val lockedPack = modpack.lock()
@@ -134,9 +134,10 @@ object Builder : KLogging() {
                 help = "output file json") { File(this) }
                 .default<File?>(null)
 
-        val nosave by parser.flagging("--nosave",
-                help = "do not save inputfile after resolve")
-                .default(true)
+        //TODO: should be moved to a `update` task
+//        val nosave by parser.flagging("--nosave",
+//                help = "do not save inputfile after resolve")
+//                .default(true)
 
         val stdout by parser.flagging("--stdout", "-s",
                 help = "print output")

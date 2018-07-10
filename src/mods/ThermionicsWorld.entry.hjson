@@ -1,0 +1,11 @@
+{ 
+  "provider": "JENKINS",
+  "name": "ThermionicsWorld",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "jenkinsUrl": "https://ci.elytradev.com",
+  "job": "elytra/ThermionicsWorld/master"
+}

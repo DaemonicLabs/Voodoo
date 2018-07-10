@@ -1,0 +1,19 @@
+{ 
+  "provider": "CURSE",
+  "name": "rpg-hud",
+  "description": "Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)",
+  "feature": { 
+    "selected": false
+  },
+  "side": "CLIENT",
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

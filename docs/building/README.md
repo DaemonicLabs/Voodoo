@@ -12,7 +12,7 @@ assuming you have a `.yaml` file ready to use from
 Before we can continue you need to download or compile Voodoo
 
 download it
-[here](https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/97/artifact/bootstrap/build/libs/bootstrap-voodoo-97.jar)
+[here](https://ci.elytradev.com/job/elytra/job/Voodoo/job/rewrite/8/artifact/bootstrap/build/libs/bootstrap-voodoo-8.jar)
 
 or if this is far in the future and i neglected to update this url.. grab the 
 [lastSucessfulBuild](https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/lastSuccessfulBuild/)
@@ -25,21 +25,24 @@ add to your .bashrc or similar
 alias voodoo='java -jar ~/bin/bootstrap-voodoo.jar'
 ```
 
-for the rest of thise guide you can assume this is what is meant 
+for the rest of this guide you can assume this is what is meant 
 when you just see the `voodoo` command
 
 ## Building
 
-building is seperated into multiple steps
-1. flattening the yaml to json
+building is separated into multiple steps
+1. import the nested yaml
 2. updating and locking the pack
 
-### Flattening
+### Import
 
 this step needs to be executed any time you change the yaml input file
 
 ```bash
-voodoo flatten awesomepack.yaml -o awesomepack.json
+# assuming sourceDir is 'src'
+rm src/**/*.lock.json
+rm src/**/*.entry.hjson
+voodoo import yaml awesomepack.yaml .
 ```
 
 ### Locking
@@ -48,14 +51,14 @@ This step updates mod versions and creates a static file that can be used to rep
 
 you can either update all mods
 ```bash
-voodoo build awesomepack.json -o awesomepack.lock.json --force
+voodoo build awesomepack.pack.hjson -o awesomepack.lock.json --updateAll
 ```
 
 or specify which mods to update, any mods that were resolved before will not be updated,
 versions of dependencies might be recalculated as needed
 
 ```bash
-voodoo build awesomepack.json -o awesomepack.lock.json -E "Botania" -E "Magic Arsenal"
+voodoo build awesomepack.pack.hjson -o awesomepack.lock.json -E "Botania" -E "Magic Arsenal"
 ```
 
 

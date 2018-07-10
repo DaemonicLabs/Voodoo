@@ -1,0 +1,18 @@
+{ 
+  "provider": "CURSE",
+  "name": "laggoggles",
+  "description": "***Admin/diagnostic tool. Leave off unless asked to help test performance issues.",
+  "feature": { 
+    "selected": false
+  },
+  "validMcVersions": [ 
+    "1.12",
+    "1.12.1",
+    "1.12.2"
+  ],
+  "curseReleaseTypes": [ 
+    "ALPHA",
+    "RELEASE",
+    "BETA"
+  ]
+}

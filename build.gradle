@@ -94,12 +94,12 @@ subprojects {
                         BUILD: System.env.BUILD_NUMBER ?: "dev"
                 )
             }
-            fileTree("$buildDir/generated-src/$folder").visit { FileVisitDetails details ->
-                println "# " +details.file.path
-                details.file.readLines().forEach {
-                    println it
-                }
-            }
+//            fileTree("$buildDir/generated-src/$folder").visit { FileVisitDetails details ->
+//                println "# " +details.file.path
+//                details.file.readLines().forEach {
+//                    println it
+//                }
+//            }
 
         }
         if (System.env.BUILD_NUMBER) {
