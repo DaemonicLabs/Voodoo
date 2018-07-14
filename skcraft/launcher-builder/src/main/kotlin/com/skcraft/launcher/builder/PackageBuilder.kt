@@ -16,10 +16,7 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import com.google.common.base.Preconditions.checkNotNull
 import com.google.common.base.Strings
-import com.google.common.base.Strings.emptyToNull
-import com.google.common.collect.Lists
 import com.google.common.io.ByteStreams
 import com.google.common.io.CharStreams
 import com.google.common.io.Closer
@@ -61,7 +58,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
             }
             field = prettyPrint
         }
-    private val loaderLibraries = Lists.newArrayList<Library>()
+    private val loaderLibraries = arrayListOf<Library>()
     private var mavenRepos: List<String>? = null
 
     init {
@@ -129,43 +126,39 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                 val version = manifest.versionManifest
                 // Copy tweak class arguments
                 val args = profile.versionInfo.minecraftArguments
-                if (args != null) {
-                    val existingArgs = Strings.nullToEmpty(version.minecraftArguments)
-                    val m = TWEAK_CLASS_ARG.matcher(args)
-                    while (m.find()) {
-                        version.minecraftArguments = existingArgs + " " + m.group()
-                        log.info("Adding " + m.group() + " to launch arguments")
-                    }
+                val existingArgs = Strings.nullToEmpty(version.minecraftArguments)
+                val m = TWEAK_CLASS_ARG.matcher(args)
+                while (m.find()) {
+                    version.minecraftArguments = existingArgs + " " + m.group()
+                    log.info("Adding " + m.group() + " to launch arguments")
                 }
+
                 // Add libraries
                 val libraries = profile.versionInfo.libraries
-                if (libraries != null) {
-                    for (library in libraries) {
-                        if (version.libraries?.contains(library) != true) {
-                            loaderLibraries.add(library)
-                        }
+                for (library in libraries) {
+                    if (version.libraries?.contains(library) != true) {
+                        loaderLibraries.add(library)
                     }
                 }
+
                 // Copy main class
                 val mainClass = profile.versionInfo.mainClass
-                if (mainClass != null) {
-                    version.mainClass = mainClass
-                    log.info("Using $mainClass as the main class")
-                }
+                version.mainClass = mainClass
+                log.info("Using $mainClass as the main class")
+
                 // Extract the library
                 val filePath = profile.installData.filePath
                 val libraryPath = profile.installData.path
-                if (filePath != null && libraryPath != null) {
-                    val libraryEntry = BuilderUtils.getZipEntry(jarFile, filePath)
-                    if (libraryEntry != null) {
-                        val library = Library(name = libraryPath)
-                        val extractPath = File(librariesDir, library.getPath(Environment.getInstance()))
-                        Files.createParentDirs(extractPath)
-                        ByteStreams.copy(closer.register(jarFile.getInputStream(libraryEntry)), Files.newOutputStreamSupplier(extractPath))
-                    } else {
-                        log.warning("Could not find the file \'" + filePath + "\' in " + file.absolutePath + ", which means that this mod loader will not work correctly")
-                    }
+                val libraryEntry = BuilderUtils.getZipEntry(jarFile, filePath)
+                if (libraryEntry != null) {
+                    val library = Library(name = libraryPath)
+                    val extractPath = File(librariesDir, library.getPath(Environment.getInstance()))
+                    Files.createParentDirs(extractPath)
+                    ByteStreams.copy(closer.register(jarFile.getInputStream(libraryEntry)), Files.newOutputStreamSupplier(extractPath))
+                } else {
+                    log.warning("Could not find the file \'" + filePath + "\' in " + file.absolutePath + ", which means that this mod loader will not work correctly")
                 }
+
             } else {
                 log.warning("The file at " + file.absolutePath + " did not appear to have an install_profile.json file inside -- is it actually an installer for a mod loader?")
             }
@@ -186,9 +179,9 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                 Files.createParentDirs(outputPath)
                 var found = false
                 // Gather a list of repositories to download from
-                val sources = Lists.newArrayList<String>()
-                if (library.baseUrl != null) {
-                    sources.add(library.baseUrl)
+                val sources = arrayListOf<String>() //Lists.newArrayList<String>()
+                library.baseUrl?.let {
+                    sources.add(it)
                 }
                 sources.addAll(mavenRepos!!)
                 // Try each repository
@@ -196,7 +189,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                     var pathname = library.getPath(env)
                     // Some repositories compress their files
                     val compressors = BuilderUtils.getCompressors(baseUrl)
-                    for (compressor in Lists.reverse(compressors)) {
+                    for (compressor in compressors.reversed()) {
                         pathname = compressor.transformPathname(pathname)
                     }
                     val url = baseUrl + pathname
@@ -204,7 +197,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                     try {
                         log.info("Downloading library " + library.name + " from " + url + "...")
 //                        HttpRequest.get(URL(url)).execute().expectResponseCode(200).saveContent(tempFile)
-                        val (request, response, result) = url.httpGet().response()
+                        val (_, response, result) = url.httpGet().response()
                         when (result) {
                             is Result.Success -> {
                                 log.info("writing to $tempFile")
@@ -238,9 +231,13 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
         }
     }
 
-    fun validateManifest() {
-        checkNotNull<String>(emptyToNull(manifest.name), "Package name is not defined")
-        checkNotNull<String>(emptyToNull(manifest.gameVersion), "Game version is not defined")
+    private fun validateManifest() {
+        if (manifest.name.isEmpty()) {
+            throw IllegalStateException("Package name is not defined")
+        }
+        if (manifest.gameVersion.isEmpty()) {
+            throw IllegalStateException("Game version is not defined")
+        }
     }
 
     @Throws(IOException::class)
@@ -260,17 +257,15 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
             manifest.versionManifest = versionManifest
             log.info("Loaded version manifest from " + path.absolutePath)
         } else {
-//            val url = url(String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion))
             val url = String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion)
             log.info("Fetching version manifest from $url...")
-//            manifest.versionManifest = HttpRequest.get(url).execute().expectResponseCode(200).returnContent().asJson<VersionManifest>(VersionManifest::class.java)
-            val (request, response, result) = url.httpGet().responseString()
+            val (_, response, result) = url.httpGet().responseString()
             manifest.versionManifest = when (result) {
                 is Result.Success -> {
                     mapper.readValue(result.value)
                 }
                 is Result.Failure -> {
-                    throw Exception("cannot HTTP GET $url")
+                    throw Exception("cannot HTTP GET $url status: ${response.statusCode}")
                 }
             }
         }
