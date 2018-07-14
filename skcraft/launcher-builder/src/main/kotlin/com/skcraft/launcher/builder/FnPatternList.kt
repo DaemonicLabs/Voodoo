@@ -7,12 +7,11 @@
 package com.skcraft.launcher.builder
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.google.common.collect.Lists
 import java.util.EnumSet
 
 class FnPatternList {
-    var include: List<String> = Lists.newArrayList()
-    var exclude: List<String> = Lists.newArrayList()
+    var include: List<String> = arrayListOf()
+    var exclude: List<String> = arrayListOf()
     @JsonIgnore
     var flags: EnumSet<FnMatch.Flag> = DEFAULT_FLAGS
 

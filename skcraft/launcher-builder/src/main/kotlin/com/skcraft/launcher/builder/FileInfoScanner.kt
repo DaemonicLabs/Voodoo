@@ -12,8 +12,6 @@ import java.io.File
 import java.io.IOException
 import java.util.ArrayList
 import java.util.EnumSet
-import com.google.common.base.Preconditions.checkNotNull
-import com.google.common.base.Strings.emptyToNull
 import com.skcraft.launcher.builder.ClientFileCollector.Companion.getDirectoryBehavior
 import org.apache.commons.io.FilenameUtils.*
 
@@ -31,7 +29,9 @@ class FileInfoScanner(private val mapper: ObjectMapper) : DirectoryWalker() {
             val info = mapper.readValue<FileInfo>(file)
             val feature = info.feature
             if (feature != null) {
-                checkNotNull<String>(emptyToNull(feature.name), "Empty component name found in " + file.absolutePath)
+                if(feature.name.isEmpty()) {
+                    throw IllegalStateException("Empty component name found in ${file.absolutePath}")
+                }
                 val stringPatterns = ArrayList<String>()
                 stringPatterns.add(fnPattern)
                 val patternList = FnPatternList()

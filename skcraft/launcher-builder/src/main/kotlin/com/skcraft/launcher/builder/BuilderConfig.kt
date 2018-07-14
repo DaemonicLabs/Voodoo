@@ -7,7 +7,6 @@
 package com.skcraft.launcher.builder
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.google.common.collect.Lists
 import com.skcraft.launcher.model.modpack.LaunchModifier
 import com.skcraft.launcher.model.modpack.Manifest
 import com.google.common.base.Preconditions.checkNotNull
@@ -22,9 +21,9 @@ class BuilderConfig {
         set(launchModifier) {
             field = launchModifier ?: LaunchModifier()
         }
-    var features: List<FeaturePattern>? = Lists.newArrayList()
+    var features: List<FeaturePattern>? = arrayListOf()
         set(features) {
-            field = features ?: Lists.newArrayList()
+            field = features ?: arrayListOf()
         }
     var userFiles: FnPatternList? = FnPatternList()
         set(userFiles) {
@@ -41,7 +40,9 @@ class BuilderConfig {
     fun registerProperties(applicator: PropertiesApplicator) {
         if (this.features != null) {
             for (feature in this.features!!) {
-                checkNotNull<String>(emptyToNull(feature.feature.name), "Empty feature name found")
+                if(feature.feature.name.isEmpty()) {
+                    throw IllegalArgumentException("Empty feature name found")
+                }
                 applicator.register(feature)
             }
         }

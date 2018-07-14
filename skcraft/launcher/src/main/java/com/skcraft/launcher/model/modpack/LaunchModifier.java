@@ -6,11 +6,11 @@
  */
 package com.skcraft.launcher.model.modpack;
 
-import com.google.common.collect.Lists;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LaunchModifier {
-    private List<String> flags = Lists.newArrayList();
+    private List<String> flags = new ArrayList<>();
 
     @SuppressWarnings("all")
     public LaunchModifier() {
