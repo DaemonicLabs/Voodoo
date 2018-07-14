@@ -8,4 +8,5 @@ include 'bootstrap'
 include 'gui'
 include 'archiver'
 
-include 'launcher-builder'
+include 'skcraft/launcher'
+include 'skcraft/launcher-builder'
