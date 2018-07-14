@@ -1,3 +1,5 @@
+apply plugin: 'kotlin'
+
 dependencies {
     compile project(':skcraft/launcher')
     compile 'org.tukaani:xz:1.0'
