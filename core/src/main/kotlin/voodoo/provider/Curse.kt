@@ -29,9 +29,11 @@ object CurseProviderThing : ProviderBase, KLogging() {
         logger.info { resolved }
         resolved += entry.name
 
+        //TODO: move into appropriate place or remove
+        // this is currently just used to validate that there is no entries getting resolved multiple times
         val count = resolved.count { entry.name == it }
         if(count > 1) {
-            throw Exception("duplicate effort")
+            throw Exception("duplicate effort ${entry.name} entry counted: $count")
         }
 
         resolveDependencies(projectID, fileID, entry, addEntry)
