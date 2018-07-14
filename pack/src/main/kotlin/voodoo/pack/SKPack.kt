@@ -1,12 +1,12 @@
 package voodoo.pack
 
 import blue.endless.jankson.Jankson
+import com.skcraft.launcher.builder.PackageBuilder
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.pack.sk.*
 import voodoo.provider.Provider
 import voodoo.util.download
-import voodoo.util.downloader.logger
 import voodoo.util.readJson
 import voodoo.util.writeJson
 import java.io.File
@@ -148,7 +148,7 @@ object SKPack : AbstractPack() {
                 .withZone(ZoneOffset.UTC)
                 .format(Instant.now())
 
-        com.skcraft.launcher.builder.PackageBuilder.main(
+        PackageBuilder.main(
                 arrayOf(
                         "--version", uniqueVersion,
                         "--input", modpackDir.path,
