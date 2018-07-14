@@ -18,14 +18,8 @@ class ServerExportOptions {
     override fun equals(other: Any?): Boolean {
         if (other === this) return true
         if (other !is ServerExportOptions) return false
-        val other = other as ServerExportOptions?
-        if (!other!!.canEqual(this as Any)) return false
         if (if (this.sourceDir == null) other.sourceDir != null else this.sourceDir != other.sourceDir) return false
         return !if (this.destDir == null) other.destDir != null else this.destDir != other.destDir
-    }
-
-    protected fun canEqual(other: Any): Boolean {
-        return other is ServerExportOptions
     }
 
     override fun hashCode(): Int {

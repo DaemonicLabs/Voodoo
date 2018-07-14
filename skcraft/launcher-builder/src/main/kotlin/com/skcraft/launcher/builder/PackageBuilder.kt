@@ -12,7 +12,13 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.ObjectWriter
+import com.fasterxml.jackson.module.kotlin.KotlinModule
+import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
+import com.google.common.base.Preconditions.checkNotNull
 import com.google.common.base.Strings
+import com.google.common.base.Strings.emptyToNull
 import com.google.common.collect.Lists
 import com.google.common.io.ByteStreams
 import com.google.common.io.CharStreams
@@ -24,20 +30,12 @@ import com.skcraft.launcher.model.minecraft.Library
 import com.skcraft.launcher.model.minecraft.VersionManifest
 import com.skcraft.launcher.model.modpack.Manifest
 import com.skcraft.launcher.util.Environment
-import com.skcraft.launcher.util.HttpRequest
 import com.skcraft.launcher.util.SimpleLogFormatter
 import java.io.*
-import java.net.URL
-import java.util.LinkedHashSet
-import java.util.Properties
+import java.util.*
 import java.util.jar.JarFile
 import java.util.logging.Level
-import java.util.regex.Matcher
 import java.util.regex.Pattern
-import java.util.zip.ZipEntry
-import com.google.common.base.Preconditions.checkNotNull
-import com.google.common.base.Strings.emptyToNull
-import com.skcraft.launcher.util.HttpRequest.url
 
 /**
  * Builds packages for the launcher.
@@ -111,7 +109,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
         }
         this.loaderLibraries.addAll(collected)
         val version = manifest.versionManifest
-        collected.addAll(version.libraries)
+        collected.addAll(version.libraries!!)
         version.libraries = collected
     }
 
@@ -143,7 +141,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                 val libraries = profile.versionInfo.libraries
                 if (libraries != null) {
                     for (library in libraries) {
-                        if (!version.libraries.contains(library)) {
+                        if (version.libraries?.contains(library) != true) {
                             loaderLibraries.add(library)
                         }
                     }
@@ -160,8 +158,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                 if (filePath != null && libraryPath != null) {
                     val libraryEntry = BuilderUtils.getZipEntry(jarFile, filePath)
                     if (libraryEntry != null) {
-                        val library = Library()
-                        library.name = libraryPath
+                        val library = Library(name = libraryPath)
                         val extractPath = File(librariesDir, library.getPath(Environment.getInstance()))
                         Files.createParentDirs(extractPath)
                         ByteStreams.copy(closer.register(jarFile.getInputStream(libraryEntry)), Files.newOutputStreamSupplier(extractPath))
@@ -202,11 +199,21 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                     for (compressor in Lists.reverse(compressors)) {
                         pathname = compressor.transformPathname(pathname)
                     }
-                    val url = URL(baseUrl + pathname)
+                    val url = baseUrl + pathname
                     val tempFile = File.createTempFile("launcherlib", null)
                     try {
                         log.info("Downloading library " + library.name + " from " + url + "...")
-                        HttpRequest.get(url).execute().expectResponseCode(200).saveContent(tempFile)
+//                        HttpRequest.get(URL(url)).execute().expectResponseCode(200).saveContent(tempFile)
+                        val (request, response, result) = url.httpGet().response()
+                        when (result) {
+                            is Result.Success -> {
+                                log.info("writing to $tempFile")
+                                tempFile.writeBytes(result.value)
+                            }
+                            is Result.Failure -> {
+                                throw IOException("Did not get expected response code, got ${response.statusCode} for $url")
+                            }
+                        }
                     } catch (e: IOException) {
                         log.info("Could not get file from " + url + ": " + e.message)
                         continue
@@ -253,9 +260,19 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
             manifest.versionManifest = versionManifest
             log.info("Loaded version manifest from " + path.absolutePath)
         } else {
-            val url = url(String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion))
+//            val url = url(String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion))
+            val url = String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion)
             log.info("Fetching version manifest from $url...")
-            manifest.versionManifest = HttpRequest.get(url).execute().expectResponseCode(200).returnContent().asJson<VersionManifest>(VersionManifest::class.java)
+//            manifest.versionManifest = HttpRequest.get(url).execute().expectResponseCode(200).returnContent().asJson<VersionManifest>(VersionManifest::class.java)
+            val (request, response, result) = url.httpGet().responseString()
+            manifest.versionManifest = when (result) {
+                is Result.Success -> {
+                    mapper.readValue(result.value)
+                }
+                is Result.Failure -> {
+                    throw Exception("cannot HTTP GET $url")
+                }
+            }
         }
     }
 
@@ -323,6 +340,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
             // Initialize
             SimpleLogFormatter.configureGlobalLogger()
             val mapper = ObjectMapper()
+                    .registerModule(KotlinModule())
             mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT)
             val manifest = Manifest()
             manifest.minimumVersion = Manifest.MIN_PROTOCOL_VERSION

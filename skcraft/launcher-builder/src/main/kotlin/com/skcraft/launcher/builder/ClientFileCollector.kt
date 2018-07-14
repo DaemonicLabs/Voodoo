@@ -42,7 +42,6 @@ class ClientFileCollector
         if (file.name.endsWith(FileInfoScanner.FILE_SUFFIX) || file.name.endsWith(URL_FILE_SUFFIX)) {
             return
         }
-        val entry = FileInstall()
         val hash = Files.hash(file, hf).toString()
         val to = FilenameUtils.separatorsToUnix(FilenameUtils.normalize(relPath))
         // url.txt override file
@@ -56,10 +55,12 @@ class ClientFileCollector
             location = hash.substring(0, 2) + "/" + hash.substring(2, 4) + "/" + hash
         }
         val destPath = File(destDir, location)
-        entry.hash = hash
-        entry.location = location
-        entry.to = to
-        entry.size = file.length()
+        val entry = FileInstall(
+                hash = hash,
+                location = location,
+                to = to,
+                size = file.length()
+        )
         applicator.apply(entry)
         destPath.parentFile.mkdirs()
         ClientFileCollector.log.info(String.format("Adding %s from %s...", relPath, file.absolutePath))

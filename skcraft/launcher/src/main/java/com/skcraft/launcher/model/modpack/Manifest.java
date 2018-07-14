@@ -10,7 +10,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Strings;
-import com.skcraft.launcher.Instance;
 import com.skcraft.launcher.LauncherUtils;
 import com.skcraft.launcher.model.minecraft.VersionManifest;
 import java.net.MalformedURLException;
@@ -72,10 +71,6 @@ public class Manifest extends BaseManifest {
         if (gameVersion != null) {
             setGameVersion(gameVersion);
         }
-    }
-
-    public void update(Instance instance) {
-        instance.setLaunchModifier(getLaunchModifier());
     }
 
     @SuppressWarnings("all")
