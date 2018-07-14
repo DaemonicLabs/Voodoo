@@ -21,21 +21,24 @@ import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
 
-fun getDependenciesCall(entryName: String, modpack: ModPack): List<Entry> {
+private fun ModPack.getDependenciesCall(entryName: String): List<Entry> {
+    val modpack = this
     val entry = modpack.entriesMapping[entryName]?.first ?: return emptyList()
     var result = listOf(entry)
     for ((depType, entryList) in entry.dependencies) {
         if (depType == DependencyType.EMBEDDED) continue
         for (depName in entryList) {
-            result += getDependencies(depName, modpack)
+            result += this.getDependencies(depName)
         }
     }
     return result
 }
 
-val getDependencies = ::getDependenciesCall.memoize()
+private val ModPack.getDependencies: (entryName: String) -> List<Entry>
+    get() = ::getDependenciesCall.memoize()
 
-fun resolveFeatureDependencies(entry: Entry, modpack: ModPack) {
+private fun ModPack.resolveFeatureDependencies(entry: Entry) {
+    val modpack = this
     val entryFeature = entry.feature ?: return
     val featureName =/* entryFeature.name.blankOr ?:*/ entry.name
     // find feature with matching name
@@ -138,8 +141,7 @@ fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean = false, 
     // recalculate all dependencies
     val resolved: MutableSet<String> = mutableSetOf()
     do {
-        val unresolved: List<Triple<Entry, File, JsonObject>> = entriesMapping.filter { (_, triple) ->
-            val (entry, _, _) = triple
+        val unresolved: List<Triple<Entry, File, JsonObject>> = entriesMapping.filter { (name, _) ->
             !resolved.contains(name)
         }.map { it.value }
         logger.info("resolved: $resolved")
@@ -160,14 +162,13 @@ fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean = false, 
                 resolved += entry.name
             }
         }
-    } while (entriesMapping.any { (name, triple) ->
-                val (entry, _, _) = triple
+    } while (entriesMapping.any { (name, _) ->
                 !resolved.contains(name)
             })
 
     features.clear()
     entriesMapping.forEach { name, (entry, file, jsonObj) ->
-        resolveFeatureDependencies(entry, this)
+        this.resolveFeatureDependencies(entry)
     }
 
     // resolve features
@@ -175,7 +176,7 @@ fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean = false, 
         logger.info("processed feature ${feature.properties.name}")
         for (name in feature.entries) {
             logger.info("processing feature entry $name")
-            val dependencies = getDependencies(name, this)
+            val dependencies = this.getDependencies(name)
             dependencies
                     .filter {
                         logger.info("testing ${it.name}")

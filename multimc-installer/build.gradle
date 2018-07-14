@@ -37,9 +37,10 @@ shadowJar {
 
 dependencies {
     compile project(':core')
-    compile project(':core/sk')
     compile project(':core/multimc')
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
+
+    compile group: 'commons-codec', name: 'commons-codec', version: '+'
 }
 
 shadowJar {

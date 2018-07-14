@@ -6,6 +6,7 @@ import voodoo.forge.Forge
 import voodoo.pack.sk.*
 import voodoo.provider.Provider
 import voodoo.util.download
+import voodoo.util.downloader.logger
 import voodoo.util.readJson
 import voodoo.util.writeJson
 import java.io.File
@@ -80,7 +81,7 @@ object SKPack : AbstractPack() {
             targetFiles[entry.name] = file // file.relativeTo(skSrcFolder)
         }
 
-        logger.info { targetFiles }
+//        logger.info { targetFiles.map { it.toString() }.joinToString("/n") }
 
         // write features
         val features = mutableListOf<SKFeatureComposite>()

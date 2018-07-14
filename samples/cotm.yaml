@@ -141,8 +141,8 @@ root:
   - charset-immersion
   - foamfix-for-minecraft
   - simplelogic
-  - Unlimited chisel Works
-  - Unlimited chisel Works - Botany
+  - unlimited-chisel-works
+  - unlimited-chisel-works-botany
 
   - embers
   - ender-storage-1-8
@@ -210,7 +210,7 @@ root:
   - waystones
   - aether-legacy
   - corpse-complex
-  - Thaumic Inventory Scanning (thaumcraft Addon)
+  - thaumcraft-inventory-scanning
   - peckish
   - electroblobs-wizardry
   - reliquary-v1-3
