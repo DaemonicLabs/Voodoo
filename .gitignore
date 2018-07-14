@@ -10,8 +10,5 @@ run/
 /editor/
 /test/
 
-launcher/
-launcher-builder
-
 _site/
 Gemfile\.lock
