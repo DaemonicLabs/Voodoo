@@ -12,7 +12,7 @@ buildscript {
 plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.3'
     id "org.jetbrains.kotlin.jvm" version "1.2.51" //TODO: move to buildscript and use kotlin version in properties file (or +)
-    id "io.gitlab.arturbosch.detekt" version "1.0.0.RC7-3"
+    id "org.sonarqube" version "2.6.2"
     id 'idea'
 }
 
@@ -27,14 +27,6 @@ println """
 idea {
     module {
         excludeDirs += [file("run")]
-    }
-}
-
-detekt {
-    version = "1.0.0.RC7-3"
-    defaultProfile {
-//        input = file("src/main/kotlin")
-        filters = ".*/resources/.*,.*/build/.*"
     }
 }
 
@@ -72,6 +64,11 @@ subprojects {
         }
     }
 
+    if(name == 'Jankson') {
+        sonarqube {
+            skipProject = true
+        }
+    }
     if(name != "Jankson") {
         sourceSets {
             main.kotlin.srcDirs += "$buildDir/generated-src"

@@ -32,9 +32,6 @@ class MainView : View("Hello Voodoo TornadoFX") {
 
         }
     }
-    init {
-        Companion.root = root
-    }
 }
 
 
