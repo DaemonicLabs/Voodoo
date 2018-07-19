@@ -15,7 +15,7 @@ run {
 
 dependencies {
     compile project(':core')
-    compile project(':core/multimc')
+    compile project(':core:multimc')
     compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
 }
 

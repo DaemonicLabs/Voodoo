@@ -1,7 +1,7 @@
 dependencies {
     compile project(':util')
-    compile project(':util/dir')
-    compile project(':util/jenkins')
+    compile project(':util:dir')
+    compile project(':util:jenkins')
     compile project(':Jankson')
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '+'
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'

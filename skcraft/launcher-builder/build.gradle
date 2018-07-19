@@ -1,5 +1,5 @@
 dependencies {
-    compile project(':skcraft/launcher')
+    compile project(':skcraft:launcher')
     compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+'
     compile 'org.tukaani:xz:1.0'
     compile 'org.apache.commons:commons-compress:1.9'
