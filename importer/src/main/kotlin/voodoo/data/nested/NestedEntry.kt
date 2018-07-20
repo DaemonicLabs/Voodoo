@@ -73,7 +73,7 @@ data class NestedEntry(
         val DEFAULT = NestedEntry()
     }
 
-    fun flatten(parentFile: File): List<Entry> {
+    suspend fun flatten(parentFile: File): List<Entry> {
         flatten("", parentFile)
         return this.entries.map { it ->
             Entry(it.provider,
@@ -116,7 +116,7 @@ data class NestedEntry(
         }
     }
 
-    private fun flatten(indent: String, parentFile: File) {
+    private suspend fun flatten(indent: String, parentFile: File) {
         var parent = parentFile
         val toDelete = mutableListOf<NestedEntry>()
         include?.let {
@@ -129,9 +129,9 @@ data class NestedEntry(
                 if (prop is KMutableProperty<*>) {
                     val includeValue = prop.get(includeEntry)
                     val thisValue = prop.get(this)
-                    val DEFAULTValue = prop.get(DEFAULT)
+                    val defValue = prop.get(DEFAULT)
 
-                    if (thisValue == DEFAULTValue) {
+                    if (thisValue == defValue) {
                         println("setting ${prop.name}")
                         prop.setter.call(this, includeValue)
                     }

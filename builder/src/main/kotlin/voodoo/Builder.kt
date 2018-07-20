@@ -5,6 +5,7 @@ import blue.endless.jankson.JsonObject
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.builder.resolve
 import voodoo.data.Side
@@ -44,7 +45,6 @@ object Builder : KLogging() {
                 .registerSerializer(Entry.Companion::toJson)
                 .registerSerializer(LockPack.Companion::toJson)
                 .registerSerializer(LockEntry.Companion::toJson)
-//            .registerSerializer(EntryFeature.Companion::toJson)
                 .build()
 
         val arguments = Arguments(ArgParser(args))
@@ -63,13 +63,15 @@ object Builder : KLogging() {
                 logger.info("name: $name entry: $entry")
             }
 
-            modpack.resolve(
-                    parentFolder,
-                    jankson,
-                    updateAll = updateAll,
-                    updateDependencies = updateDependencies,
-                    updateEntries = entries
-            )
+            runBlocking {
+                modpack.resolve(
+                        parentFolder,
+                        jankson,
+                        updateAll = updateAll,
+                        updateDependencies = updateDependencies,
+                        updateEntries = entries
+                )
+            }
 
             modpack.versionsMapping.forEach { name, (lockEntry, file) ->
                 logger.info("saving: $name , file: $file , entry: $lockEntry")
@@ -88,7 +90,6 @@ object Builder : KLogging() {
                     }
                 } else folder
 
-//                lockEntry.side = Side.BOTH
                 targetFolder.mkdirs()
 
                 val defaultJson = lockEntry.toDefaultJson(jankson.marshaller)
@@ -99,11 +100,6 @@ object Builder : KLogging() {
 
                 targetFile.writeText(delta.toJson(true, true).replace("\t", "  "))
             }
-
-//            if (!nosave) {
-//                println("saving changes...")
-////                inFile.writeJson(modpack)
-//            }
 
             logger.info("Creating locked pack...")
             val lockedPack = modpack.lock()
@@ -117,7 +113,6 @@ object Builder : KLogging() {
                 val lockJson = jankson.toJson(lockedPack) as JsonObject
                 val delta = lockJson.getDelta(defaultJson)
                 file.writeText(delta.toJson(true, true).replace("\t", "  "))
-//                file.writeJson(lockedPack) //TOD: use jankson
             }
         }
     }
@@ -129,11 +124,6 @@ object Builder : KLogging() {
         val targetFile by parser.storing("--output", "-o",
                 help = "output file json") { File(this) }
                 .default<File?>(null)
-
-        //TODO: should be moved to a `update` task
-//        val nosave by parser.flagging("--nosave",
-//                help = "do not save inputfile after resolve")
-//                .default(true)
 
         val stdout by parser.flagging("--stdout", "-s",
                 help = "print output")
