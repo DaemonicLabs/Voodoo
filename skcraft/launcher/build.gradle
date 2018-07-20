@@ -1,6 +1,5 @@
 dependencies {
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '+'
-    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
+    compile project(':base')
     compile 'commons-lang:commons-lang:2.6'
     compile 'commons-io:commons-io:1.2'
     compile 'com.google.guava:guava:15.0'

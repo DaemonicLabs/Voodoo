@@ -1,6 +1,6 @@
 rootProject.name = 'voodoo'
 
-include 'core', 'core:multimc', 'Jankson'
+include 'base', 'core', 'core:multimc', 'Jankson'
 include 'util', 'util:dir', 'util:jenkins'
 include 'importer', 'builder', 'pack', 'tester', 'voodoo', 'tome'
 include 'multimc-installer', 'server-installer'
