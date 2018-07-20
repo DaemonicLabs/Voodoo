@@ -7,5 +7,5 @@ dependencies {
     compile 'com.beust:jcommander:1.32'
     compile 'com.google.code.findbugs:jsr305:3.0.0'
 
-    compile "org.jetbrains.kotlin:kotlin-stdlib:1.2.51"
+    compile "org.jetbrains.kotlin:kotlin-stdlib"
 }

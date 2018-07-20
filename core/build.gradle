@@ -1,4 +1,6 @@
 dependencies {
+    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.2.51'
+    compile group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: '+'
     compile project(':util')
     compile project(':util:dir')
     compile project(':util:jenkins')

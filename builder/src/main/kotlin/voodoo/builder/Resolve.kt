@@ -37,7 +37,7 @@ private fun ModPack.getDependenciesCall(entryName: String): List<Entry> {
 private val ModPack.getDependencies: (entryName: String) -> List<Entry>
     get() = ::getDependenciesCall.memoize()
 
-private fun ModPack.resolveFeatureDependencies(entry: Entry) {
+private suspend fun ModPack.resolveFeatureDependencies(entry: Entry) {
     val modpack = this
     val entryFeature = entry.feature ?: return
     val featureName =/* entryFeature.name.blankOr ?:*/ entry.name
@@ -67,7 +67,7 @@ private fun ModPack.resolveFeatureDependencies(entry: Entry) {
     logger.debug("processed ${entry.name}")
 }
 
-private fun ModPack.processFeature(feature: SKFeature) {
+private suspend fun ModPack.processFeature(feature: SKFeature) {
     logger.info("processing feature: $feature")
     var processedEntries = emptyList<String>()
     var processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
@@ -100,7 +100,7 @@ private fun ModPack.processFeature(feature: SKFeature) {
 /**
  * ensure entries are loaded before calling resolve
  */
-fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean = false, updateDependencies: Boolean = false, updateEntries: List<String>) {
+suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean = false, updateDependencies: Boolean = false, updateEntries: List<String>) {
     this.loadEntries(folder, jankson)
     this.loadLockEntry(folder, jankson)
 
@@ -167,9 +167,14 @@ fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean = false, 
             })
 
     features.clear()
-    entriesMapping.forEach { name, (entry, file, jsonObj) ->
+
+    for((name, triple) in entriesMapping) {
+        val (entry, file, jsonObj) = triple
         this.resolveFeatureDependencies(entry)
     }
+//    entriesMapping.forEach { name, (entry, file, jsonObj) ->
+//        this.resolveFeatureDependencies(entry)
+//    }
 
     // resolve features
     for (feature in features) {

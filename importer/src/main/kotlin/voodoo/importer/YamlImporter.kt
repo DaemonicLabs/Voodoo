@@ -2,6 +2,9 @@ package voodoo.importer
 
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
 import voodoo.data.flat.Entry
 import voodoo.data.flat.EntryFeature
 import voodoo.data.flat.ModPack
@@ -11,6 +14,7 @@ import voodoo.registerSerializer
 import voodoo.registerTypeAdapter
 import voodoo.util.readYaml
 import java.io.File
+import java.nio.file.Path
 
 /**
  * Created by nikky on 01/07/18.
@@ -31,7 +35,8 @@ object YamlImporter : AbstractImporter() {
         jankson.marshaller
     }
 
-    override fun import(source: String, target: File): Pair<ModPack?, MutableMap<String, LockEntry>?> {
+    override suspend fun import(source: String, target: File): Pair<ModPack?, MutableMap<String, LockEntry>?> {
+        logger.info(source)
         val yamlFile = File(source).absoluteFile
         logger.info("reading: $yamlFile")
         val nestedPack = yamlFile.readYaml<NestedPack>()
@@ -47,7 +52,7 @@ object YamlImporter : AbstractImporter() {
             val folder = srcDir.resolve(entry.folder)
             folder.mkdirs()
             val filename = entry.name.replace("\\W+".toRegex(), "")
-            val targetFile = folder.resolve("${filename}.entry.hjson")
+            val targetFile = folder.resolve("$filename.entry.hjson")
             val json = jankson.marshaller.serialize(entry)//.toJson(true, true)
             if (json is JsonObject) {
                 val defaultJson = entry.toDefaultJson(jankson.marshaller)

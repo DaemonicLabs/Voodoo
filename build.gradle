@@ -11,7 +11,8 @@ buildscript {
 
 plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.3'
-    id "org.jetbrains.kotlin.jvm" version "1.2.51" //TODO: move to buildscript and use kotlin version in properties file (or +)
+    id "org.jetbrains.kotlin.jvm" version "1.2.51"
+    //TODO: move to buildscript and use kotlin version in properties file (or +)
     id "org.sonarqube" version "2.6.2"
     id 'idea'
 }
@@ -34,12 +35,8 @@ repositories {
     mavenCentral()
 }
 
-subprojects {
+allprojects {
     apply plugin: "kotlin"
-    apply plugin: 'org.jetbrains.dokka'
-    group = group
-    version = version
-
     sourceCompatibility = 1.8
     targetCompatibility = 1.8
 
@@ -49,14 +46,26 @@ subprojects {
             languageVersion = "1.2"
         }
     }
+    kotlin {
+        experimental {
+            coroutines 'enable'
+        }
+    }
 
     repositories {
         mavenCentral()
         jcenter()
         maven { url = 'http://repo.maven.apache.org/maven2' }
-        maven { url = 'https://jitpack.io' }
         maven { url = 'http://jcenter.bintray.com' }
+        maven { url = 'https://jitpack.io' }
     }
+}
+
+subprojects {
+    apply plugin: "kotlin"
+    apply plugin: 'org.jetbrains.dokka'
+    group = group
+    version = version
 
     idea {
         module {
@@ -64,12 +73,12 @@ subprojects {
         }
     }
 
-    if(name == 'Jankson') {
+    if (name == 'Jankson') {
         sonarqube {
             skipProject = true
         }
     }
-    if(name != "Jankson") {
+    if (name != "Jankson") {
         sourceSets {
             main.kotlin.srcDirs += "$buildDir/generated-src"
         }
@@ -107,18 +116,5 @@ subprojects {
     dokka {
         outputFormat = 'gfm'
         outputDirectory = "${parent.projectDir}/docs/dokka"
-    }
-}
-dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-}
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 }

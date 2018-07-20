@@ -13,7 +13,7 @@ import java.io.File
  * Created by nikky on 18/03/18.
  * @author Nikky
  */
-val yamlMapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
+val yamlMapper: ObjectMapper = ObjectMapper(YAMLFactory()) // Enable YAML parsing
         .registerModule(KotlinModule()) // Enable Kotlin support
         .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
         .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)

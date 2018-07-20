@@ -21,5 +21,3 @@ dependencies {
     // https://mvnrepository.com/artifact/com.github.spullara.mustache.java/compiler
     compile group: 'com.github.spullara.mustache.java', name: 'compiler', version: '+'
 }
-
-

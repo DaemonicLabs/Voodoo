@@ -3,10 +3,12 @@ package voodoo
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.importer.CurseImporter
 import voodoo.importer.YamlImporter
 import java.io.File
+import java.util.concurrent.CompletableFuture.runAsync
 import kotlin.system.exitProcess
 
 /**
@@ -34,7 +36,7 @@ object Import : KLogging() {
 
             //TODO: import as ModPack and NestedPack ?
 
-            val (nestedPack, versions) = tester.import(source = source, target = target)
+            val (nestedPack, versions) = runBlocking { tester.import(source = source, target = target) }
 //            nestedPack?.let {
 //                target.writeYaml(it)
 //

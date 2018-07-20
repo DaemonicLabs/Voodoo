@@ -38,7 +38,7 @@ object CurseImporter : AbstractImporter() {
 //            .registerSerializer(EntryFeature.Companion::toJson)
             .build()
 
-    override fun import(source: String, target: File): Pair<ModPack?, MutableMap<String, LockEntry>?> {
+    override suspend fun import(source: String, target: File): Pair<ModPack?, MutableMap<String, LockEntry>?> {
         val name = target.nameWithoutExtension
         val zipFile = directories.cacheHome.resolve("$name.zip")
         zipFile.deleteRecursively()
