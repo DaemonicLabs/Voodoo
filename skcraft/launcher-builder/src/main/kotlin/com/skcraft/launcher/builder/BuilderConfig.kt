@@ -40,7 +40,7 @@ class BuilderConfig {
     fun registerProperties(applicator: PropertiesApplicator) {
         if (this.features != null) {
             for (feature in this.features!!) {
-                if(feature.feature.name.isEmpty()) {
+                if(feature.feature.name.isNullOrEmpty()) {
                     throw IllegalArgumentException("Empty feature name found")
                 }
                 applicator.register(feature)
