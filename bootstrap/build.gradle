@@ -40,7 +40,7 @@ if(project.hasProperty('target')) {
     } else if (project.target == "hex") {
         moduleName = "hex"
         fileRegex = /^hex(-[^-]*)?(?!-fat)\\.jar$/
-        shadowJar.baseName = "bootstrap-multimc-installer"
+        shadowJar.baseName = "bootstrap-hex"
     } else if (project.target == "archiver") {
         moduleName = "archiver"
         fileRegex = /^[Aa]rchiver(-[^-]*)?\\.jar$/
