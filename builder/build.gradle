@@ -15,7 +15,5 @@ run {
 
 dependencies {
     compile project(':core')
-    compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+'
-    compile group: 'com.github.kittinunf.fuel', name: 'fuel-jackson', version: '+'
-    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
+    compile project(':base:cmd')
 }

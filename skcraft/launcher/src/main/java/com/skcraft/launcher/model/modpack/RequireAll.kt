@@ -14,7 +14,7 @@ class RequireAll(
     constructor(vararg feature: Feature) : this(feature.toMutableList())
 
     override fun matches(): Boolean {
-        for (feature in features!!) {
+        for (feature in features) {
             if (!feature.isSelected) {
                 return false
             }

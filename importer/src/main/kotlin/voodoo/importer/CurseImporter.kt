@@ -38,7 +38,7 @@ object CurseImporter : AbstractImporter() {
 //            .registerSerializer(EntryFeature.Companion::toJson)
             .build()
 
-    override suspend fun import(source: String, target: File): Pair<ModPack?, MutableMap<String, LockEntry>?> {
+    override suspend fun import(source: String, target: File) {
         val name = target.nameWithoutExtension
         val zipFile = directories.cacheHome.resolve("$name.zip")
         zipFile.deleteRecursively()
@@ -161,7 +161,5 @@ object CurseImporter : AbstractImporter() {
         lockFile.writeText(lockJson.toJson(false, true).replace("\t", "    "))
 
         //TODO: create srcDir with single entries and version-locked files and ModPack
-
-        return Pair(null, null)
     }
 }

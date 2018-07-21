@@ -3,7 +3,7 @@ package voodoo.pack
 import blue.endless.jankson.Jankson
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
-import voodoo.util.DownloadVoodoo
+import voodoo.util.jenkins.DownloadVoodoo
 import voodoo.util.packToZip
 import java.io.File
 import kotlin.system.exitProcess

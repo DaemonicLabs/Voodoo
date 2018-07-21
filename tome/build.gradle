@@ -14,9 +14,8 @@ run {
 }
 
 dependencies {
-    compile project(':core')
+    compile project(':base:cmd')
     compile project(':builder')
-    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
 
     // https://mvnrepository.com/artifact/com.github.spullara.mustache.java/compiler
     compile group: 'com.github.spullara.mustache.java', name: 'compiler', version: '+'

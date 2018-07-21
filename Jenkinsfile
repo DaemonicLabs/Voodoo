@@ -38,10 +38,10 @@ pipeline {
 	        steps {
 	            sh './gradlew :bootstrap:clean'
 	            sh './gradlew :bootstrap:minify -Ptarget=voodoo'
-	            sh './gradlew :bootstrap:minify -Ptarget=multimc-installer'
+	            sh './gradlew :bootstrap:minify -Ptarget=hex'
 	            sh './gradlew :bootstrap:minify -Ptarget=archiver'
 	            archive 'bootstrap/build/libs/*voodoo*'
-	            archive 'bootstrap/build/libs/*multimc-installer*'
+	            archive 'bootstrap/build/libs/*hex*'
 	            archive 'bootstrap/build/libs/*archiver*'
 	        }
 	    }

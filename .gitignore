@@ -12,3 +12,5 @@ run/
 
 _site/
 Gemfile\.lock
+
+dependency-graph\.png

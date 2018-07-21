@@ -151,14 +151,8 @@ class Library(
         override fun equals(other: Any?): Boolean {
             if (other === this) return true
             if (other !is OS) return false
-            val other = other as OS?
-            if (!other!!.canEqual(this as Any)) return false
-            val `this$platform` = this.platform
-            val `other$platform` = other.platform
-            if (if (`this$platform` == null) `other$platform` != null else `this$platform` != `other$platform`) return false
-            val `this$version` = this.version
-            val `other$version` = other.version
-            return if (if (`this$version` == null) `other$version` != null else `this$version` != `other$version`) false else true
+            if (if (this.platform == null) other.platform != null else this.platform != other.platform) return false
+            return !if (this.version == null) other.version != null else this.version != other.version
         }
 
         protected fun canEqual(other: Any): Boolean {

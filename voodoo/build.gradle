@@ -21,8 +21,6 @@ shadowJar {
 }
 
 dependencies {
-    compile project(':core')
-    compile project(':util')
     compile project(':builder')
     compile project(':pack')
     compile project(':importer')

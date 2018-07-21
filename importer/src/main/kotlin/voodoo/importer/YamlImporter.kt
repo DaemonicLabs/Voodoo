@@ -28,14 +28,13 @@ object YamlImporter : AbstractImporter() {
             .registerTypeAdapter(Entry.Companion::fromJson)
             .registerTypeAdapter(EntryFeature.Companion::fromJson)
             .registerSerializer(Entry.Companion::toJson)
-//            .registerSerializer(EntryFeature.Companion::toJson)
             .build()
 
     init {
         jankson.marshaller
     }
 
-    override suspend fun import(source: String, target: File): Pair<ModPack?, MutableMap<String, LockEntry>?> {
+    override suspend fun import(source: String, target: File) {
         logger.info(source)
         val yamlFile = File(source).absoluteFile
         logger.info("reading: $yamlFile")
@@ -73,8 +72,6 @@ object YamlImporter : AbstractImporter() {
         val defaultJson = modpack.toDefaultJson(jankson.marshaller)
         val delta = json.getDelta(defaultJson)
         packFile.writeText(delta.toJson(true, true))
-
-        return Pair(null, null)
     }
 
 }

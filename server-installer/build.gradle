@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "net.sf.proguard:proguard-gradle:6.0.1"
+        classpath group: 'net.sf.proguard', name: 'proguard-gradle', version: project.proguard_version
     }
 }
 
@@ -28,11 +28,8 @@ shadowJar {
 }
 
 dependencies {
-    compile project(':core')
+    compile project(':base:cmd')
     compile project(':builder')
-    compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+'
-    compile group: 'com.github.kittinunf.fuel', name: 'fuel-jackson', version: '+'
-    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
 }
 
 task minify(type: ProGuardTask, dependsOn: 'shadowJar') {

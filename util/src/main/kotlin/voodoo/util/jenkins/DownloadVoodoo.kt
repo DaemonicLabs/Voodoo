@@ -1,15 +1,15 @@
-package voodoo.util
+package voodoo.util.jenkins
 
+import awaitByteArrayResponse
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
-import voodoo.util.jenkins.JenkinsConstants.VERSION
-import voodoo.util.jenkins.JenkinsServer
+import voodoo.util.UtilConstants.VERSION
 import java.io.File
 
 object DownloadVoodoo : KLogging() {
 
-    fun downloadVoodoo(
+    suspend fun downloadVoodoo(
             component: String,
             bootstrap: Boolean = true,
             fat: Boolean = false,
@@ -42,7 +42,7 @@ object DownloadVoodoo : KLogging() {
         if (!targetFile.exists()) {
             val (_, _, result) = url.httpGet()
                     .header("User-Agent" to userAgent)
-                    .response()
+                    .awaitByteArrayResponse()
             when (result) {
                 is Result.Success -> {
                     tmpFile.writeBytes(result.value)

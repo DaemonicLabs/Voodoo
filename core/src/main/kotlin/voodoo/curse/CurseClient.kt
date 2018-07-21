@@ -1,8 +1,6 @@
 package voodoo.curse
 
-import aballano.kotlinmemoization.memoize
 import awaitStringResponse
-import awaitStringResult
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
@@ -23,7 +21,6 @@ import voodoo.util.equalsIgnoreCase
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
-import java.util.concurrent.CompletableFuture.runAsync
 
 /**
  * Created by nikky on 30/01/18.

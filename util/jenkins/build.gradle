@@ -1,8 +1,0 @@
-dependencies {
-    compile project(':base')
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '+'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '+'
-    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
-    compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+'
-    compile group: 'io.github.microutils', name: 'kotlin-logging', version: '+'
-}

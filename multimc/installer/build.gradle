@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "net.sf.proguard:proguard-gradle:6.0.1"
+        classpath group: 'net.sf.proguard', name: 'proguard-gradle', version: project.proguard_version
     }
 }
 
@@ -15,6 +15,7 @@ plugins {
 
 apply plugin: 'com.github.johnrengelman.shadow'
 
+archivesBaseName = 'hex'
 mainClassName = "voodoo.Hex"
 
 def runDir = parent.project.file("run").path
@@ -36,9 +37,8 @@ shadowJar {
 }
 
 dependencies {
-    compile project(':core')
-    compile project(':core:multimc')
-    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
+    compile project(':base:cmd')
+    compile project(':multimc')
 
     compile group: 'commons-codec', name: 'commons-codec', version: '+'
 }
@@ -55,11 +55,13 @@ task minify(type: ProGuardTask, dependsOn: 'shadowJar') {
     libraryjars "${System.getProperty('java.home')}/lib/jce.jar"
 
     injars  shadowJar
-    outjars "build/libs/${project.name}${version != 'unspecified' ? "-$version" : ""}.jar"
+    outjars "build/libs/${archivesBaseName}${version != 'unspecified' ? "-$version" : ""}.jar"
 
     printmapping 'build/libs/out.map'
 
-    optimizations '*'
+    dontobfuscate()
+
+    optimizations '!code/simplification/arithmetic,!field/*,!class/merging/*,!code/allocation/variable'
 
     keepclasseswithmembers 'public class * { \
         public static void main(java.lang.String[]); \

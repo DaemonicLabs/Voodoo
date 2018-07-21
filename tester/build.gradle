@@ -6,16 +6,12 @@ mainClassName = "voodoo.Test"
 
 def runDir = parent.project.file("run").path
 
-def runArgs = ["mmc", "cotm.lock.json"]
-
 run {
     workingDir = runDir
-    args = runArgs
 }
 
 dependencies {
-    compile project(':core')
-    compile project(':core:multimc')
-    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
+    compile project(':base:cmd')
+    compile project(':multimc')
 }
 

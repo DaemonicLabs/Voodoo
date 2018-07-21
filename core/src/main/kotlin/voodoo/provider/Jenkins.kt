@@ -1,6 +1,7 @@
 package voodoo.provider
 
 import aballano.kotlinmemoization.memoize
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.core.CoreConstants.VERSION
 import voodoo.data.flat.Entry
@@ -79,13 +80,13 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
 
     private val build = { jobName: String, url: String, buildNumber: Int ->
         logger.info("get build $buildNumber")
-        job(jobName, url).getBuildByNumber(buildNumber, useragent)!!
+        runBlocking { job(jobName, url).getBuildByNumber(buildNumber, useragent)!! }
     }.memoize()
 
     private val job = { jobName: String, url: String ->
         val server = server(url)
         logger.info("get jenkins job $jobName")
-        server.getJob(jobName, useragent) ?: throw Exception("no such job: '$jobName' on $url")
+        runBlocking { server.getJob(jobName, useragent) ?: throw Exception("no such job: '$jobName' on $url") }
     }.memoize()
 
     private val server = { url: String ->
