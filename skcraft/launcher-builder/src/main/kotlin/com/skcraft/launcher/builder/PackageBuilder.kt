@@ -105,7 +105,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
             }
         }
         this.loaderLibraries.addAll(collected)
-        val version = manifest.versionManifest
+        val version = manifest.versionManifest!!
         collected.addAll(version.libraries!!)
         version.libraries = collected
     }
@@ -126,24 +126,24 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                 val version = manifest.versionManifest
                 // Copy tweak class arguments
                 val args = profile.versionInfo.minecraftArguments
-                val existingArgs = Strings.nullToEmpty(version.minecraftArguments)
+                val existingArgs = Strings.nullToEmpty(version?.minecraftArguments)
                 val m = TWEAK_CLASS_ARG.matcher(args)
                 while (m.find()) {
-                    version.minecraftArguments = existingArgs + " " + m.group()
+                    version?.minecraftArguments = existingArgs + " " + m.group()
                     log.info("Adding " + m.group() + " to launch arguments")
                 }
 
                 // Add libraries
                 val libraries = profile.versionInfo.libraries
                 for (library in libraries) {
-                    if (version.libraries?.contains(library) != true) {
+                    if (version?.libraries?.contains(library) != true) {
                         loaderLibraries.add(library)
                     }
                 }
 
                 // Copy main class
                 val mainClass = profile.versionInfo.mainClass
-                version.mainClass = mainClass
+                version?.mainClass = mainClass
                 log.info("Using $mainClass as the main class")
 
                 // Extract the library
@@ -152,7 +152,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                 val libraryEntry = BuilderUtils.getZipEntry(jarFile, filePath)
                 if (libraryEntry != null) {
                     val library = Library(name = libraryPath)
-                    val extractPath = File(librariesDir, library.getPath(Environment.getInstance()))
+                    val extractPath = File(librariesDir, library.getPath(Environment.instance))
                     Files.createParentDirs(extractPath)
                     ByteStreams.copy(closer.register(jarFile.getInputStream(libraryEntry)), Files.newOutputStreamSupplier(extractPath))
                 } else {
@@ -172,7 +172,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
     fun downloadLibraries(librariesDir: File?) {
         logSection("Downloading libraries...")
         // TODO: Download libraries for different environments -- As of writing, this is not an issue
-        val env = Environment.getInstance()
+        val env = Environment.instance
         for (library in loaderLibraries) {
             val outputPath = File(librariesDir, library.getPath(env))
             if (!outputPath.exists()) {
@@ -232,10 +232,10 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
     }
 
     private fun validateManifest() {
-        if (manifest.name.isEmpty()) {
+        if (manifest.name.isNullOrEmpty()) {
             throw IllegalStateException("Package name is not defined")
         }
-        if (manifest.gameVersion.isEmpty()) {
+        if (manifest.gameVersion.isNullOrEmpty()) {
             throw IllegalStateException("Game version is not defined")
         }
     }
@@ -250,7 +250,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
     }
 
     @Throws(IOException::class, InterruptedException::class)
-    fun readVersionManifest(path: File?) {
+    private fun readVersionManifest(path: File?) {
         logSection("Reading version manifest...")
         if (path!!.exists()) {
             val versionManifest = read<VersionManifest>(path)
@@ -337,8 +337,9 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
             val mapper = ObjectMapper()
                     .registerModule(KotlinModule())
             mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT)
-            val manifest = Manifest()
-            manifest.minimumVersion = Manifest.MIN_PROTOCOL_VERSION
+            val manifest = Manifest(
+                    minimumVersion = Manifest.MIN_PROTOCOL_VERSION
+            )
             val builder = PackageBuilder(mapper, manifest)
             builder.isPrettyPrint = options.isPrettyPrinting
             // From config

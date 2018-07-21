@@ -29,7 +29,7 @@ class FileInfoScanner(private val mapper: ObjectMapper) : DirectoryWalker() {
             val info = mapper.readValue<FileInfo>(file)
             val feature = info.feature
             if (feature != null) {
-                if(feature.name.isEmpty()) {
+                if(feature.name.isNullOrEmpty()) {
                     throw IllegalStateException("Empty component name found in ${file.absolutePath}")
                 }
                 val stringPatterns = ArrayList<String>()
