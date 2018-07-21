@@ -1,5 +1,6 @@
 package voodoo.util.jenkins
 
+import awaitStringResponse
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -21,12 +22,12 @@ class JenkinsServer(val url: String) {
 
     fun getUrl(job: String) = url + "/job/" + job.replace("/", "/job/")
 
-    fun getJob(job: String, userAgent: String): Job? {
+    suspend fun getJob(job: String, userAgent: String): Job? {
         val requestURL = getUrl(job) + "/api/json"
         val (_, _, result) = requestURL
                 .httpGet()
                 .header("User-Agent" to userAgent)
-                .responseString()
+                .awaitStringResponse()
         return when (result) {
             is Result.Success -> {
                 mapper.readValue(result.value)

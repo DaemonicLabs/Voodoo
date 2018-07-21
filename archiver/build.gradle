@@ -24,18 +24,9 @@ shadowJar {
 }
 
 dependencies {
+    compile project(':base:cmd')
     compile project(':util')
     compile project(':core')
-    compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+' //for JVM
-    compile group: 'com.github.kittinunf.fuel', name: 'fuel-jackson', version: '+' //for JVM
-    compile group: 'org.apache.commons', name: 'commons-compress', version: '+'
-    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '+'
-    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
-    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '+'
-    compile group: 'com.github.aballano', name: 'MnemoniK', version: '+'
-    compile group: 'io.github.microutils', name: 'kotlin-logging', version: '+'
-    compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'
-    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
 }
 
 build.dependsOn(shadowJar)

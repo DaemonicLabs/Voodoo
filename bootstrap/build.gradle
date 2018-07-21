@@ -5,7 +5,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath "net.sf.proguard:proguard-gradle:6.0.1"
+        classpath group: 'net.sf.proguard', name: 'proguard-gradle', version: project.proguard_version
     }
 }
 
@@ -19,8 +19,8 @@ mainClassName = "voodoo.BootstrapKt"
 version = project.version
 
 dependencies {
-    compile project(':util:dir')
-    compile project(':util:jenkins')
+    compile project(':base:cmd')
+    compile project(':util')
 }
 
 shadowJar {
@@ -37,9 +37,9 @@ if(project.hasProperty('target')) {
         moduleName = "voodoo"
         fileRegex = /^[Vv]oodoo(-[^-]*)?(?!-fat)\\.jar$/
         shadowJar.baseName = "bootstrap-voodoo"
-    } else if (project.target == "multimc-installer") {
-        moduleName = "multimc-installer"
-        fileRegex = /^multimc-installer(-[^-]*)?(?!-fat)\\.jar$/
+    } else if (project.target == "hex") {
+        moduleName = "hex"
+        fileRegex = /^hex(-[^-]*)?(?!-fat)\\.jar$/
         shadowJar.baseName = "bootstrap-multimc-installer"
     } else if (project.target == "archiver") {
         moduleName = "archiver"
@@ -73,7 +73,10 @@ task minify(type: ProGuardTask, dependsOn: 'shadowJar') {
     printmapping 'build/libs/out.map'
 
 //    optimizations '!code/allocation/variable'
-    optimizations '*'
+//    optimizations '*'
+
+    dontobfuscate()
+    optimizations '!code/simplification/arithmetic,!field/*,!class/merging/*,!code/allocation/variable'
 
     keepclasseswithmembers 'public class * { \
         public static void main(java.lang.String[]); \

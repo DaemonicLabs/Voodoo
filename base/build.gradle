@@ -1,4 +1,7 @@
 dependencies {
-    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: '1.2.51'
+    compile group: 'org.jetbrains.kotlin', name: 'kotlin-stdlib', version: project.kotlin_version
     compile group: 'org.jetbrains.kotlinx', name: 'kotlinx-coroutines-core', version: '+'
+
+    compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+'
+    compile group: 'com.github.kittinunf.fuel', name: 'fuel-coroutines', version: '+'
 }

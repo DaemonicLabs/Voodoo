@@ -3,7 +3,7 @@ package voodoo.pack
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
 import voodoo.data.lock.LockPack
-import voodoo.util.DownloadVoodoo
+import voodoo.util.jenkins.DownloadVoodoo
 import java.io.File
 
 /**

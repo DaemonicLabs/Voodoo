@@ -1,5 +1,6 @@
 package voodoo.util.jenkins
 
+import awaitStringResponse
 import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -19,11 +20,11 @@ data class Build(
         val url: String
 ) {
     companion object : KLogging()
-    fun details(userAgent: String): BuildWithDetails? {
+    suspend fun details(userAgent: String): BuildWithDetails? {
         val (_, _, result) = "$url/api/json"
                 .httpGet()
                 .header("User-Agent" to userAgent)
-                .responseString()
+                .awaitStringResponse()
         return when(result) {
             is Result.Success -> {
                 mapper.readValue(result.value)

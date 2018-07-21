@@ -36,17 +36,7 @@ object Import : KLogging() {
 
             //TODO: import as ModPack and NestedPack ?
 
-            val (nestedPack, versions) = runBlocking { tester.import(source = source, target = target) }
-//            nestedPack?.let {
-//                target.writeYaml(it)
-//
-//                versions?.let {
-//                    val flatpack = Flatten.flattenPack(nestedPack, target.absoluteFile.parentFile)
-//                    flatpack.versions.putAll(it)
-//                    flatpack.writeVersionCache()
-//                }
-//            }
-
+            runBlocking { tester.import(source = source, target = target) }
 
             println("import successful")
         }

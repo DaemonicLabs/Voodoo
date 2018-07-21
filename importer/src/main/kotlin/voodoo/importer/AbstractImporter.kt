@@ -14,7 +14,7 @@ import java.io.File
 abstract class AbstractImporter : KLogging() {
     abstract val label: String
 
-    abstract suspend fun import(source: String, target: File): Pair<ModPack?, MutableMap<String, LockEntry>?>
+    abstract suspend fun import(source: String, target: File)
 
     val directories = Directories.get(moduleName = "import")
 }

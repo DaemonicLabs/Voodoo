@@ -6,12 +6,14 @@
 
 package voodoo
 
+import awaitByteArrayResponse
 import bootstrap.FILE_REGEX
 import bootstrap.JENKINS_JOB
 import bootstrap.JENKINS_URL
 import bootstrap.MODULE_NAME
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.bootstrap.BootstrapConstants.VERSION
 import voodoo.util.Directories
@@ -23,7 +25,9 @@ import kotlin.system.exitProcess
 fun main(args: Array<String>) {
     try {
         Bootstrap.cleanup()
-        Bootstrap.launch(args)
+        runBlocking {
+            Bootstrap.launch(args)
+        }
     } catch (t: Throwable) {
         Bootstrap.logger.error("Error", t)
         exitProcess(-1)
@@ -49,7 +53,7 @@ object Bootstrap : KLogging() {
     private const val job = JENKINS_JOB
     private const val fileNameRegex = FILE_REGEX
 
-    private fun download(): File {
+    private suspend fun download(): File {
         val userAgent = "voodoo/$VERSION"
         val server = JenkinsServer(jenkinsUrl)
         val job = server.getJob(job, userAgent)!!
@@ -62,7 +66,7 @@ object Bootstrap : KLogging() {
             logger.debug(it.fileName)
             re.matches(it.fileName)
         }
-        if(artifact == null) {
+        if (artifact == null) {
             logger.error("did not find {} in {}", fileNameRegex, build.artifacts)
             throw Exception()
         }
@@ -72,7 +76,7 @@ object Bootstrap : KLogging() {
         if (!targetFile.exists()) {
             val (_, _, result) = url.httpGet()
                     .header("User-Agent" to userAgent)
-                    .response()
+                    .awaitByteArrayResponse()
             when (result) {
                 is Result.Success -> {
                     tmpFile.writeBytes(result.value)
@@ -88,7 +92,7 @@ object Bootstrap : KLogging() {
     }
 
     @Throws(Throwable::class)
-    fun launch(originalArgs: Array<String>) {
+    suspend fun launch(originalArgs: Array<String>) {
         logger.info("Downloading the $MODULE_NAME binary...")
         val file = download()
 

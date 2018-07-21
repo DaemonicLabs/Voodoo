@@ -14,12 +14,10 @@ run {
 }
 
 dependencies {
+    compile project(':base:cmd')
     compile project(':core')
-    compile project(':core:multimc')
+    compile project(':multimc')
     compile project(':builder')
     compile project(':skcraft:launcher-builder')
-    compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+'
-    compile group: 'com.github.kittinunf.fuel', name: 'fuel-jackson', version: '+'
-    compile group: 'com.xenomachina', name: 'kotlin-argparser', version: '+'
 }
 

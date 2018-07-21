@@ -4,18 +4,20 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "net.sf.proguard:proguard-gradle:6.0.1"
-        classpath "org.jetbrains.dokka:dokka-gradle-plugin:0.9.17"
+        classpath group: 'org.jetbrains.dokka', name: 'dokka-gradle-plugin', version: '0.9.17'
+        classpath group: 'com.vanniktech', name: 'gradle-dependency-graph-generator-plugin', version: '+'
+        classpath group: 'org.jetbrains.kotlin', name: 'kotlin-gradle-plugin', version: project.kotlin_version
     }
 }
 
 plugins {
     id 'com.github.johnrengelman.shadow' version '2.0.3'
-    id "org.jetbrains.kotlin.jvm" version "1.2.51"
-    //TODO: move to buildscript and use kotlin version in properties file (or +)
+    id "com.vanniktech.dependency.graph.generator" version "0.5.0"
     id "org.sonarqube" version "2.6.2"
     id 'idea'
 }
+
+apply plugin: 'project-report'
 
 println """
 *******************************************

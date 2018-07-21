@@ -1,12 +1,16 @@
 rootProject.name = 'voodoo'
 
-include 'base', 'core', 'core:multimc', 'Jankson'
-include 'util', 'util:dir', 'util:jenkins'
+include 'base', 'base:cmd'
+include 'core'
+include 'multimc', 'multimc:installer'
+include 'util'
 include 'importer', 'builder', 'pack', 'tester', 'voodoo', 'tome'
-include 'multimc-installer', 'server-installer'
+include 'server-installer'
 include 'bootstrap'
 include 'gui'
 include 'archiver'
+
+include 'Jankson'
 
 include 'skcraft:launcher'
 include 'skcraft:launcher-builder'
