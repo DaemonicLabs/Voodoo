@@ -20,10 +20,10 @@ import java.io.File
 object UpdateJsonProviderThing : ProviderBase, KLogging() {
     override val name = "UpdateJson Provider"
 
-    val mapper = jacksonObjectMapper() // Enable YAML parsing
+    private val mapper = jacksonObjectMapper() // Enable YAML parsing
             .registerModule(KotlinModule()) // Enable Kotlin support
 
-    val getUpdateJson = { url: String ->
+    private val getUpdateJson = { url: String ->
         val (request, response, result) = url.httpGet()
                 .responseString()
         when (result) {
@@ -34,7 +34,7 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
         }
     }.memoize()
 
-    override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
+    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         val json = getUpdateJson(entry.updateJson)!!
         if (entry.name.isBlank()) {
             entry.name = entry.updateJson.substringAfterLast('/').substringBeforeLast('.')
@@ -61,16 +61,16 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
         )
     }
 
-    override fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File> {
+    override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File> {
         return Provider.DIRECT.base.download(entry, targetFolder, cacheDir)
     }
 
-    override fun getProjectPage(entry: LockEntry): String {
+    override suspend fun getProjectPage(entry: LockEntry): String {
         val json = getUpdateJson(entry.updateJson)!!
         return json.homepage
     }
 
-    override fun getVersion(entry: LockEntry): String {
+    override suspend fun getVersion(entry: LockEntry): String {
         return entry.jsonVersion
     }
 }

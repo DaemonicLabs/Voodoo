@@ -16,7 +16,7 @@ echo "packaging $1"
 echo
 
 
-$DIR/gradlew -p "$DIR" :voodoo:run --args "pack sk $pack.lock.json"
+$DIR/gradlew -p "$DIR" :voodoo:run --args "pack sk $pack/$pack.lock.json"
 if [ ! $? -eq 0 ]; then
     echo "Error Packing $pack"
     exit 1

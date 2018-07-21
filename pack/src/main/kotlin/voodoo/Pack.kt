@@ -4,6 +4,7 @@ import blue.endless.jankson.Jankson
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.data.UserFiles
 import voodoo.data.flat.Entry
@@ -50,6 +51,7 @@ object Pack : KLogging() {
 
         arguments.run {
 
+            logger.info("loading $modpackLockFile")
             val jsonObject = jankson.load(modpackLockFile)
             val modpack: LockPack = jankson.fromJson(jsonObject)
             val rootFolder = modpackLockFile.absoluteFile.parentFile
@@ -69,7 +71,9 @@ object Pack : KLogging() {
                 }
             }
 
-            packer.download(rootFolder = rootFolder, modpack = modpack, target = targetArg, clean = true, jankson = jankson)
+            runBlocking {
+                packer.download(rootFolder = rootFolder, modpack = modpack, target = targetArg, clean = true, jankson = jankson)
+            }
         }
     }
 

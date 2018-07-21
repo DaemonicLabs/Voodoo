@@ -11,6 +11,10 @@ import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.InvalidArgumentException
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.newFixedThreadPoolContext
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KotlinLogging
 import voodoo.curse.CurseClient
 import voodoo.curse.Murmur2Hash
@@ -40,17 +44,17 @@ fun main(vararg args: String) = mainBody {
 
         logger.info("${feed.count()} AddOns to be downloaded")
         logger.info("starting $threadCount workers")
-        val executor = Executors.newFixedThreadPool(threadCount)
-        for (addOn in feed) {
-            val worker = Runnable {
+        val mtContext = newFixedThreadPoolContext(threadCount, "mtPool")
+        val jobs = feed.map { addOn ->
+            async(mtContext) {
                 println("Getting AddOn ${addOn.id} ${addOn.name}")
                 val destDir = File(outputDir, addOn.id.toString())
                 val files = CurseClient.getAllFilesForAddon(addOn.id, PROXY_URL)
                 for (file in files) {
                     var finishedFile = false
                     var failCount = 0
-                    start@do {
-                        if(++failCount > 5) {
+                    start@ do {
+                        if (++failCount > 5) {
                             throw Exception("failed addon: ${addOn.id} file: ${file.id}")
                         }
                         val destFile = File(destDir, "${file.id}/${file.fileNameOnDisk}")
@@ -96,8 +100,7 @@ fun main(vararg args: String) = mainBody {
                         } else {
                             logger.info("skipping downloading ${file.fileName} (is cached)")
                         }
-                    } while(!finishedFile)
-
+                    } while (!finishedFile)
 
                     // changelog
                     if (doChangelog) {
@@ -117,14 +120,11 @@ fun main(vararg args: String) = mainBody {
 
                 }
             }
-            executor.execute(worker)
         }
-        executor.shutdown()
-        while (!executor.isTerminated) {
-            Thread.sleep(10)
+        runBlocking {
+            jobs.forEach { it.await() }
+            println("Finished all threads")
         }
-        println("Finished all threads")
-
     }
 }
 

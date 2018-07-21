@@ -1,5 +1,9 @@
 package voodoo.server
 
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
@@ -60,17 +64,22 @@ object Server {
             }
         }
 
-        // download entries
-        for ((name, pair) in modpack.entriesMapping) {
-            logger.info("entry: $name")
-            val (entry, relEntryFile) = pair
-            val relativeFolder = relEntryFile.parentFile
-            if (entry.side == Side.CLIENT) continue
-            val provider = Provider.valueOf(entry.provider).base
-            val targetFolder = serverDir.resolve(relativeFolder)
-            logger.info("${relEntryFile.path} - ${relativeFolder.path} - ${targetFolder.path}")
-            val (url, file) = provider.download(entry, targetFolder, cacheDir)
+
+        val jobs = modpack.entriesMapping.map { (name, pair) ->
+            launch {
+                delay(100)
+                logger.info("entry: $name")
+                val (entry, relEntryFile) = pair
+                val relativeFolder = relEntryFile.parentFile
+                if (entry.side == Side.CLIENT) return@launch
+                val provider = Provider.valueOf(entry.provider).base
+                val targetFolder = serverDir.resolve(relativeFolder)
+                logger.info("${relEntryFile.path} - ${relativeFolder.path} - ${targetFolder.path}")
+                val (url, file) = provider.download(entry, targetFolder, cacheDir)
+            }
+
         }
+        runBlocking { jobs.forEach { it.join() } }
 
         // download forge
         val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)

@@ -2,6 +2,7 @@ package voodoo.gui.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import javafx.beans.property.*
+import kotlinx.coroutines.experimental.runBlocking
 import tornadofx.*
 import voodoo.data.Side
 import voodoo.data.curse.DependencyType
@@ -406,115 +407,6 @@ class NestedEntryWrapper(
     val entriesProperty = SimpleListProperty<NestedEntryWrapper>(entry.entries.map { NestedEntryWrapper(it, this) }.observable())
     var entries: MutableList<NestedEntryWrapper> by entriesProperty
 
-
-    // OLD CODE
-
-//    @JsonIgnore
-//    val nameProperty = SimpleStringProperty(entry.name)
-//    var name by nameProperty
-//
-//    @JsonIgnore
-//    val folderProperty = SimpleStringProperty(entry.folder)
-//    var folder by folderProperty
-//
-//    @JsonIgnore
-//    val commentProperty = SimpleStringProperty(entry.comment)
-//    var comment by commentProperty
-//
-//    @JsonIgnore
-//    val descriptionProperty = SimpleStringProperty(entry.description)
-//    var description by descriptionProperty
-//
-//    //TODO: use a FeatureWrapper for EntryFeature
-//    @JsonIgnore
-//    val featureProperty = SimpleObjectProperty(entry.feature)
-//    var feature by featureProperty
-//
-//    @JsonIgnore
-//    val sideProperty = SimpleObjectProperty(entry.side)
-//    var side by sideProperty
-//
-//    @JsonIgnore
-//    val websiteUrlProperty = SimpleStringProperty(entry.websiteUrl)
-//    var websiteUrl by websiteUrlProperty
-//
-//    @JsonIgnore
-//    val dependenciesProperty = SimpleMapProperty(entry.dependencies.observable())
-//    var dependencies by dependenciesProperty
-//
-//    @JsonIgnore
-//    val packageTypeProperty = SimpleObjectProperty<PackageType>(entry.packageType)
-//    var packageType by packageTypeProperty
-//
-//    @JsonIgnore
-//    val versionProperty = SimpleStringProperty(entry.version)
-//    var version by versionProperty
-//
-//    @JsonIgnore
-//    val fileNameProperty = SimpleStringProperty(entry.fileName)
-//    var fileName: String? by fileNameProperty
-//
-//    @JsonIgnore
-//    val fileNameRegexProperty = SimpleStringProperty(entry.fileNameRegex)
-//    var fileNameRegex by fileNameRegexProperty
-//
-//    @JsonIgnore
-//    val validMcVersionsProperty = SimpleListProperty<String>(entry.validMcVersions.observable())
-//    var validMcVersions by validMcVersionsProperty
-//
-//    @JsonIgnore
-//    val curseMetaUrlProperty = SimpleStringProperty(entry.curseMetaUrl)
-//    var curseMetaUrl by curseMetaUrlProperty
-//
-//    @JsonIgnore
-//    val curseReleaseTypesProperty = SimpleSetProperty<FileType>(entry.curseReleaseTypes.observable())
-//    var curseReleaseTypes by curseReleaseTypesProperty
-//
-//    @JsonIgnore
-//    val curseOptionalDependenciesProperty = SimpleBooleanProperty(entry.curseOptionalDependencies)
-//    var curseOptionalDependencies by curseOptionalDependenciesProperty
-//
-//    @JsonIgnore
-//    val urlProperty = SimpleStringProperty(entry.url)
-//    var url by urlProperty
-//
-//    @JsonIgnore
-//    val useUrlTxtProperty = SimpleBooleanProperty(entry.useUrlTxt)
-//    var useUrlTxt by useUrlTxtProperty
-//
-//    @JsonIgnore
-//    val jenkinsUrlProperty = SimpleStringProperty(entry.jenkinsUrl)
-//    var jenkinsUrl by jenkinsUrlProperty
-//
-//    @JsonIgnore
-//    val jobProperty = SimpleStringProperty(entry.job)
-//    var job by jobProperty
-//
-//    @JsonIgnore
-//    val buildNumberProperty = SimpleIntegerProperty(entry.buildNumber)
-//    var buildNumber by buildNumberProperty
-//
-//    @JsonIgnore
-//    val fileSrcProperty = SimpleStringProperty(entry.fileSrc)
-//    var fileSrc by fileSrcProperty
-//
-//    @JsonIgnore
-//    val updateJsonProperty = SimpleStringProperty(entry.updateJson)
-//    var updateJson by updateJsonProperty
-//
-//    @JsonIgnore
-//    val updateChannelProperty = SimpleObjectProperty<UpdateChannel>(entry.updateChannel)
-//    var updateChannel by updateChannelProperty
-//
-//    @JsonIgnore
-//    val templateProperty = SimpleStringProperty(entry.template)
-//    var template by templateProperty
-//
-//    // load NestedEntryWrapper
-//    @JsonIgnore
-//    val entriesProperty = SimpleListProperty<NestedEntryWrapper>(entry.entries.map { NestedEntryWrapper(it, this) }.observable())
-//    var entries by entriesProperty
-
     // Extra properties
 
     @JsonIgnore
@@ -525,7 +417,9 @@ class NestedEntryWrapper(
 
     @JsonIgnore
     val thumbnailProperty = object : SimpleStringProperty() {
-        override fun get(): String = providerObj.base.getThumbnail(flatEntry)
+        override fun get(): String = runBlocking {
+            providerObj.base.getThumbnail(flatEntry)
+        }
     }
 //                    .takeUnless { it.isBlank() }
 //                    ?: "https://edb-cdn2-prod-tqgiyve.stackpathdns.com/teams/logos/56b9239c-ca95-11e7-b012-0ec39221f676.png"
@@ -697,18 +591,6 @@ class NestedEntryModel : ItemViewModel<NestedEntryWrapper>() {
     val updateChannelOverride = bind(NestedEntryWrapper::updateChannelOverrideProperty)
     val templateOverride = bind(NestedEntryWrapper::templateOverrideProperty)
     val entriesOverride = bind(NestedEntryWrapper::entriesOverrideProperty)
-
-
-//    val forceRebuild = bind(NestedEntryWrapper::forceRebuildProperty)
-
-//    override fun onCommit(commits: List<Commit>) {
-//        commits.findChanged(name)?.let { println("Name changed from ${it.first} to ${it.second}")}
-//        commits.findChanged(provider)?.let { println("Provider changed from ${it.first} to ${it.second}")}
-//        commits.findChanged(side)?.let { println("Side changed from ${it.first} to ${it.second}")}
-//        commits.findChanged(id)?.let { println("ID changed from ${it.first} to ${it.second}")}
-//
-//        onCommit()
-//    }
 
     private fun <T> List<Commit>.findChanged(ref: Property<T>): Pair<T, T>? {
         val commit = find { it.property == ref && it.changed }

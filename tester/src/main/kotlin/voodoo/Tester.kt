@@ -3,6 +3,7 @@ package voodoo
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.tester.MultiMCTester
@@ -31,7 +32,7 @@ object Tester : KLogging() {
                 }
             }
 
-            tester.execute(modpack = modpack, clean = clean)
+            runBlocking { tester.execute(modpack = modpack, clean = clean) }
         }
     }
 

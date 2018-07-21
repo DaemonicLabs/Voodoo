@@ -1,6 +1,9 @@
 package voodoo.pack
 
 import blue.endless.jankson.Jankson
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.runBlocking
 import voodoo.data.Side
 import voodoo.data.curse.CurseFile
 import voodoo.data.curse.CurseManifest
@@ -12,6 +15,8 @@ import voodoo.provider.Provider
 import voodoo.util.packToZip
 import voodoo.util.writeJson
 import java.io.File
+import java.util.concurrent.CompletableFuture.runAsync
+import kotlin.coroutines.experimental.buildSequence
 
 /**
  * Created by nikky on 30/03/18.
@@ -21,7 +26,7 @@ import java.io.File
 object CursePack : AbstractPack() {
     override val label = "SK Packer"
 
-    override fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
+    override suspend fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
         val cacheDir = directories.cacheHome
         val workspaceDir = File(".curse")
         val modpackDir = workspaceDir.resolve(with(modpack) { "$name-$version" })
@@ -64,7 +69,7 @@ object CursePack : AbstractPack() {
         val curseMods = mutableListOf<CurseFile>()
 
         // download entries
-        for ( (name, pair) in modpack.entriesMapping) {
+        for ((name, pair) in modpack.entriesMapping) {
             val (entry, entryFile) = pair
             val folder = entryFile.absoluteFile.parentFile
             val required = modpack.features.none { feature ->
@@ -87,55 +92,63 @@ object CursePack : AbstractPack() {
 
         // generate modlist
         val modListFile = modpackDir.resolve("modlist.html")
-        val html = "<ul>\n" + modpack.entries.joinToString("") { entry ->
-            val provider = Provider.valueOf(entry.provider).base
-            if (entry.side == Side.SERVER) return@joinToString ""
-            val projectPage = provider.getProjectPage(entry)
-            val authors = provider.getAuthors(entry)
-            val authorString = if(authors.isNotEmpty()) " (by ${authors.joinToString(", ")})" else ""
 
-            when {
-                projectPage.isNotEmpty() -> return@joinToString "<li><a href=\"$projectPage\">${entry.name} $authorString</a></li>\n"
-                entry.url.isNotBlank() -> return@joinToString "<li>direct: <a href=\"${entry.url}\">${entry.name} $authorString</a></li>\n"
-                else -> {
-                    val source = if(entry.fileSrc.isNotBlank()) "file://"+entry.fileSrc else "unknown"
-                    return@joinToString "<li>${entry.name} $authorString (source: $source)</li>\n"
+        val parts = modpack.entries.map { entry ->
+            async {
+                delay(1000)
+                val provider = Provider.valueOf(entry.provider).base
+                if (entry.side == Side.SERVER) {
+                    return@async ""
+                }
+                val projectPage = provider.getProjectPage(entry)
+                val authors = provider.getAuthors(entry)
+                val authorString = if (authors.isNotEmpty()) " (by ${authors.joinToString(", ")})" else ""
+
+                return@async when {
+                    projectPage.isNotEmpty() -> "<li><a href=\"$projectPage\">${entry.name} $authorString</a></li>\n"
+                    entry.url.isNotBlank() -> "<li>direct: <a href=\"${entry.url}\">${entry.name} $authorString</a></li>\n"
+                    else -> {
+                        val source = if (entry.fileSrc.isNotBlank()) "file://" + entry.fileSrc else "unknown"
+                        "<li>${entry.name} $authorString (source: $source)</li>\n"
+                    }
                 }
             }
-        }  + "\n</ul>\n"
+        }
 
+        runBlocking {
+            val html = "<ul>\n" + parts.map { it.await() }.joinToString("") + "\n</ul>\n"
 
+            if (modListFile.exists()) modListFile.delete()
+            modListFile.createNewFile()
+            modListFile.writeText(html)
 
-        if (modListFile.exists()) modListFile.delete()
-        modListFile.createNewFile()
-        modListFile.writeText(html)
+            val curseManifest = CurseManifest(
+                    name = modpack.title,
+                    version = modpack.version,
+                    author = modpack.authors.joinToString(", "),
+                    minecraft = CurseMinecraft(
+                            version = modpack.mcVersion,
+                            modLoaders = listOf(
+                                    CurseModLoader(
+                                            id = "forge-$forgeVersion",
+                                            primary = true
+                                    )
+                            )
+                    ),
+                    manifestType = "minecraftModpack",
+                    manifestVersion = 1,
+                    files = curseMods,
+                    overrides = "overrides"
+            )
+            val manifestFile = modpackDir.resolve("manifest.json")
+            manifestFile.writeJson(curseManifest)
 
-        val curseManifest = CurseManifest(
-                name = modpack.title,
-                version = modpack.version,
-                author = modpack.authors.joinToString(", "),
-                minecraft = CurseMinecraft(
-                        version = modpack.mcVersion,
-                        modLoaders = listOf(
-                                CurseModLoader(
-                                        id = "forge-$forgeVersion",
-                                        primary = true
-                                )
-                        )
-                ),
-                manifestType = "minecraftModpack",
-                manifestVersion = 1,
-                files = curseMods,
-                overrides = "overrides"
-        )
-        val manifestFile = modpackDir.resolve("manifest.json")
-        manifestFile.writeJson(curseManifest)
+            val cursePackFile = workspaceDir.resolve(with(modpack) { "$name-$version.zip" })
 
-        val cursePackFile = workspaceDir.resolve(with(modpack) { "$name-$version.zip" })
+            packToZip(modpackDir.toPath(), cursePackFile.toPath())
 
-        packToZip(modpackDir.toPath(), cursePackFile.toPath())
-
-        logger.info("packed ${modpack.name} -> $cursePackFile")
+            logger.info("packed ${modpack.name} -> $cursePackFile")
+        }
     }
 
 }

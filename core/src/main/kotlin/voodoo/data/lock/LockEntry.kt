@@ -4,6 +4,7 @@ import blue.endless.jankson.JsonObject
 import blue.endless.jankson.impl.Marshaller
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
+import kotlinx.coroutines.experimental.runBlocking
 import voodoo.data.Side
 import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.getReified
@@ -51,22 +52,22 @@ data class LockEntry(
     private fun providerBase(): ProviderBase = Provider.valueOf(provider).base
 
     @JsonIgnore
-    fun version(): String = providerBase().getVersion(this)
+    fun version(): String = runBlocking { providerBase().getVersion(this@LockEntry) }
 
     @JsonIgnore
-    fun license(): String = providerBase().getLicense(this)
+    fun license(): String = runBlocking { providerBase().getLicense(this@LockEntry) }
 
     @JsonIgnore
-    fun thumbnail(): String = providerBase().getThumbnail(this)
+    fun thumbnail(): String = runBlocking { providerBase().getThumbnail(this@LockEntry) }
 
     @JsonIgnore
-    fun authors(): String = providerBase().getAuthors(this).joinToString(", ")
+    fun authors(): String = runBlocking { providerBase().getAuthors(this@LockEntry).joinToString(", ") }
 
     @JsonIgnore
-    fun projectPage(): String = providerBase().getProjectPage(this)
+    fun projectPage(): String = runBlocking { providerBase().getProjectPage(this@LockEntry) }
 
     @JsonIgnore
-    fun releaseDate(): Instant? = providerBase().getReleaseDate(this)
+    fun releaseDate(): Instant? = runBlocking { providerBase().getReleaseDate(this@LockEntry) }
 
     @JsonIgnore
     fun isCurse(): Boolean = provider == Provider.CURSE.name

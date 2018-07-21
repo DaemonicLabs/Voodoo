@@ -3,7 +3,6 @@ package voodoo.tester
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
-import voodoo.pack.AbstractTester
 import voodoo.provider.Provider
 import voodoo.util.blankOr
 import voodoo.util.downloader
@@ -19,7 +18,7 @@ import java.io.File
 object MultiMCTester : AbstractTester() {
     override val label = "MultiMC Tester"
 
-    override fun execute(modpack: LockPack, clean: Boolean) {
+    override suspend fun execute(modpack: LockPack, clean: Boolean) {
         val folder = "voodoo_test_${modpack.name}"
         val title = "${modpack.title.blankOr ?: modpack.name} Voodoo Test"
 

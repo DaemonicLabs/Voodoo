@@ -27,7 +27,7 @@ data class LockPack(
         val launch: Launch = Launch(),
         var userFiles: UserFiles = UserFiles(),
         var localDir: String = "local",
-        var sourceDir: String = name,
+        var sourceDir: String = name, //"src-$name",
         val features: List<SKFeature> = emptyList()
 ) {
     @JsonIgnore

@@ -2,6 +2,7 @@ package voodoo.gui.model
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import javafx.beans.property.*
+import kotlinx.coroutines.experimental.runBlocking
 import tornadofx.*
 import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
@@ -129,8 +130,10 @@ class FlatEntryWrapper(entry: Entry, val modpack: ModPack) {
 
     val providerObj = voodoo.provider.Provider.valueOf(provider)
     val thumbnailProperty = SimpleStringProperty(
-            providerObj.base.getThumbnail(entry)
+            runBlocking {
+                providerObj.base.getThumbnail(entry)
                     .takeUnless { it.isBlank() } ?: "https://edb-cdn2-prod-tqgiyve.stackpathdns.com/teams/logos/56b9239c-ca95-11e7-b012-0ec39221f676.png"
+            }
     )
     val thumbnail by thumbnailProperty
 

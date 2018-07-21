@@ -23,7 +23,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
     override val name = "Curse Provider"
     val resolved = mutableListOf<String>()
 
-    override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
+    override suspend  fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         val (projectID, fileID, path) = findFile(entry, modpack.mcVersion, entry.curseMetaUrl)
 
         logger.info { resolved }
@@ -53,30 +53,30 @@ object CurseProviderThing : ProviderBase, KLogging() {
         )
     }
 
-    override fun getAuthors(entry: LockEntry): List<String> {
+    override suspend fun getAuthors(entry: LockEntry): List<String> {
         return CurseClient.getAuthors(entry.projectID, entry.curseMetaUrl)
     }
 
-    override fun getProjectPage(entry: LockEntry): String {
+    override suspend fun getProjectPage(entry: LockEntry): String {
         return "https://minecraft.curseforge.com/projects/${entry.projectID}"
         //CurseClient.getProjectPage(entry.projectID, modpack.curseMetaUrl)
     }
 
-    override fun getVersion(entry: LockEntry): String {
+    override suspend fun getVersion(entry: LockEntry): String {
         val addonFile = getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)
         return addonFile?.fileName ?: ""
     }
 
-    override fun getLicense(entry: LockEntry): String {
+    override suspend fun getLicense(entry: LockEntry): String {
         return "https://minecraft.curseforge.com/projects/${entry.fileID}/license"
     }
 
-    override fun getThumbnail(entry: LockEntry): String {
+    override suspend fun getThumbnail(entry: LockEntry): String {
         val addon = CurseClient.getAddon(entry.projectID, entry.curseMetaUrl)
         return addon?.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
     }
 
-    override fun getThumbnail(entry: Entry): String {
+    override suspend fun getThumbnail(entry: Entry): String {
         val addon = CurseClient.getAddonBySlug(entry.name, entry.curseMetaUrl)
         return addon?.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
     }
@@ -86,7 +86,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
 //        return addon.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
 //    }
 
-    private fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, addEntry: (Entry) -> Unit) {
+    private suspend fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, addEntry: (Entry) -> Unit) {
         val addon = getAddon(addonId, entry.curseMetaUrl)!!
         val addonFile = getAddonFile(addonId, fileId, entry.curseMetaUrl)!!
         val dependencies = addonFile.dependencies ?: return
@@ -145,7 +145,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
 
     val isOptional = CurseProviderThing::isOptionalCall.memoize()
 
-    override fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
+    override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
         val addonFile = getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)
         if (addonFile == null) {
             logger.error("cannot download ${entry.projectID}:${entry.fileID}")
@@ -156,7 +156,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
         return Pair(addonFile.downloadURL, targetFile)
     }
 
-    override fun getReleaseDate(entry: LockEntry): Instant? {
+    override suspend fun getReleaseDate(entry: LockEntry): Instant? {
         val addonFile = getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)
         return when(addonFile) {
             null -> return null

@@ -1,10 +1,10 @@
 dependencies {
     compile project(':base')
-    compile 'commons-lang:commons-lang:2.6'
-    compile 'commons-io:commons-io:1.2'
-    compile 'com.google.guava:guava:15.0'
-    compile 'com.beust:jcommander:1.32'
-    compile 'com.google.code.findbugs:jsr305:3.0.0'
-
-    compile "org.jetbrains.kotlin:kotlin-stdlib"
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '+'
+    compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
+    compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
+    compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile group: 'com.google.guava', name: 'guava', version: '15.0'
+    compile group: 'com.beust', name: 'jcommander', version: '1.32'
+    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
 }

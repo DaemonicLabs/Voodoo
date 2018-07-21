@@ -1,4 +1,4 @@
-package voodoo.pack
+package voodoo.tester
 
 import mu.KLogging
 import voodoo.data.lock.LockPack
@@ -12,7 +12,7 @@ import voodoo.util.Directories
 abstract class AbstractTester : KLogging() {
     abstract val label: String
 
-    abstract fun execute(modpack: LockPack, clean: Boolean = true)
+    abstract suspend fun execute(modpack: LockPack, clean: Boolean = true)
 
     val directories = Directories.get(moduleName = "pack")
 }

@@ -14,7 +14,7 @@ import java.io.File
 object ServerPack : AbstractPack() {
     override val label = "Server SKPack"
 
-    override fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
+    override suspend fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
         val targetDir = File(target ?: ".server")
         val modpackDir = targetDir.resolve(modpack.name)
 

@@ -37,7 +37,7 @@ private fun ModPack.getDependenciesCall(entryName: String): List<Entry> {
 private val ModPack.getDependencies: (entryName: String) -> List<Entry>
     get() = ::getDependenciesCall.memoize()
 
-private suspend fun ModPack.resolveFeatureDependencies(entry: Entry) {
+private fun ModPack.resolveFeatureDependencies(entry: Entry) {
     val modpack = this
     val entryFeature = entry.feature ?: return
     val featureName =/* entryFeature.name.blankOr ?:*/ entry.name
@@ -67,7 +67,7 @@ private suspend fun ModPack.resolveFeatureDependencies(entry: Entry) {
     logger.debug("processed ${entry.name}")
 }
 
-private suspend fun ModPack.processFeature(feature: SKFeature) {
+private fun ModPack.processFeature(feature: SKFeature) {
     logger.info("processing feature: $feature")
     var processedEntries = emptyList<String>()
     var processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
@@ -128,11 +128,11 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
         }.forEach { name, (_, _) ->
             versionsMapping.remove(name)
         }
-        //entries = entries.filter { !it.transient }
     }
 
     fun addEntry(entry: Entry) {
         val filename = entry.name.replace("\\W+".toRegex(), "")
+        //TODO: pass location to lambda instead of hardcoded
         val file = srcDir.resolve("mods").resolve("$filename.entry.hjson")
         val jsonObj = jankson.toJson(entry) as JsonObject
         this.addEntry(entry, file, jsonObj, jankson, dependency = true)
