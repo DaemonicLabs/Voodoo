@@ -22,7 +22,7 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
 
-    override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry? {
+    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry? {
         val job = job(entry.job, entry.jenkinsUrl)
         val buildNumber = job.lastSuccessfulBuild?.number
         return if (buildNumber == null) null
@@ -40,7 +40,7 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
         )
     }
 
-    override fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
+    override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
         val build = build(entry.job, entry.jenkinsUrl, entry.buildNumber)
         val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)
         val url = build.url + "artifact/" + artifact.relativePath
@@ -49,21 +49,21 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
         return Pair(url, targetFile)
     }
 
-    override fun getAuthors(entry: LockEntry): List<String> {
+    override suspend fun getAuthors(entry: LockEntry): List<String> {
         return listOf(entry.job.substringBeforeLast('/').substringBeforeLast('/').substringAfterLast('/'))
     }
 
-    override fun getProjectPage(entry: LockEntry): String {
+    override suspend fun getProjectPage(entry: LockEntry): String {
         val server = server(entry.jenkinsUrl)
         return server.getUrl(entry.job)
     }
 
-    override fun getVersion(entry: LockEntry): String {
+    override suspend fun getVersion(entry: LockEntry): String {
         val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)
         return artifact.fileName
     }
 
-    override fun getReleaseDate(entry: LockEntry): Instant? {
+    override suspend fun getReleaseDate(entry: LockEntry): Instant? {
         val build = build(entry.job, entry.jenkinsUrl, entry.buildNumber)
         return build.timestamp.toInstant()
     }

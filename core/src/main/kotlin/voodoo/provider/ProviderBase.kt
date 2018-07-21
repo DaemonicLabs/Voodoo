@@ -22,7 +22,7 @@ enum class Provider(val base: ProviderBase) {
 
 interface ProviderBase {
     val name: String
-    fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry? {
+    suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry? {
         println("[$name] resolve ${entry.name}")
         return null
     }
@@ -36,37 +36,33 @@ interface ProviderBase {
      * @param targetFolder provided target folder/location
      * @param cacheDir prepared cache directory
      */
-    fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File>
+    suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File>
 
-    fun getAuthors(entry: LockEntry): List<String> {
+    suspend fun getAuthors(entry: LockEntry): List<String> {
         return emptyList()
     }
 
-    fun getProjectPage(entry: LockEntry): String {
+    suspend fun getProjectPage(entry: LockEntry): String {
         return ""
     }
 
-    fun getVersion(entry: LockEntry): String {
+    suspend fun getVersion(entry: LockEntry): String {
         return ""
     }
 
-    fun getLicense(entry: LockEntry): String {
+    suspend fun getLicense(entry: LockEntry): String {
         return ""
     }
 
-    fun getThumbnail(entry: LockEntry): String {
+    suspend fun getThumbnail(entry: LockEntry): String {
         return ""
     }
 
-    fun getThumbnail(entry: Entry): String {
+    suspend fun getThumbnail(entry: Entry): String {
         return ""
     }
-//
-//    fun getThumbnail(entry: NestedEntry): String {
-//        return ""
-//    }
 
-    fun getReleaseDate(entry: LockEntry): Instant? {
+    suspend fun getReleaseDate(entry: LockEntry): Instant? {
         return null
     }
 

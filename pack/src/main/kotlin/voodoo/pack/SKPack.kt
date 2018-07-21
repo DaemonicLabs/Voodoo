@@ -13,6 +13,7 @@ import java.io.File
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 30/03/18.
@@ -23,7 +24,7 @@ object SKPack : AbstractPack() {
 
     override val label = "SK Packer"
 
-    override fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
+    override suspend fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
         val cacheDir = directories.cacheHome
         val workspaceDir = rootFolder.resolve("workspace").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.name)
@@ -31,9 +32,13 @@ object SKPack : AbstractPack() {
         val skSrcFolder = modpackDir.resolve("src")
         logger.info("cleaning modpack directory $skSrcFolder")
         skSrcFolder.deleteRecursively()
-        logger.info("copying files into src")
+        logger.info("copying files into src ${modpack.sourceDir}")
         val packSrc = rootFolder.resolve(modpack.sourceDir)
+        if(skSrcFolder.startsWith(packSrc)) {
+            throw IllegalStateException("cannot copy parent folder '$packSrc' into subfolder '$skSrcFolder'")
+        }
         if (packSrc.exists()) {
+            logger.debug("cp -r $packSrc $skSrcFolder")
             packSrc.copyRecursively(skSrcFolder, overwrite = true)
             skSrcFolder.walkBottomUp().forEach {
                 if (it.name.endsWith(".entry.hjson") || it.name.endsWith(".lock.json"))
@@ -68,7 +73,8 @@ object SKPack : AbstractPack() {
 
         // download entries
         val targetFiles = mutableMapOf<String, File>()
-        modpack.entriesMapping.forEach { name, (entry, relEntryFile) ->
+        for((name, pair) in modpack.entriesMapping) {
+            val (entry, relEntryFile) = pair
             val provider = Provider.valueOf(entry.provider).base
 
             val folder = skSrcFolder.resolve(relEntryFile).parentFile
@@ -80,8 +86,6 @@ object SKPack : AbstractPack() {
             }
             targetFiles[entry.name] = file // file.relativeTo(skSrcFolder)
         }
-
-//        logger.info { targetFiles.map { it.toString() }.joinToString("/n") }
 
         // write features
         val features = mutableListOf<SKFeatureComposite>()

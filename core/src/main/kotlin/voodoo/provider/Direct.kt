@@ -16,7 +16,7 @@ import java.net.URL
 object DirectProviderThing : ProviderBase, KLogging() {
     override val name = "Direct Provider"
 
-    override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
+    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         return LockEntry(
                 provider = entry.provider,
                 name = entry.name,
@@ -28,7 +28,7 @@ object DirectProviderThing : ProviderBase, KLogging() {
         )
     }
 
-    override fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
+    override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
         val fileName = entry.fileName ?: entry.url.substringAfterLast('/')
         val targetFile = targetFolder.resolve(fileName)
         val url = URL(entry.url)
@@ -36,7 +36,7 @@ object DirectProviderThing : ProviderBase, KLogging() {
         return Pair(entry.url, targetFile)
     }
 
-    override fun getVersion(entry: LockEntry): String {
+    override suspend fun getVersion(entry: LockEntry): String {
         return entry.url.substringBeforeLast('.').substringAfterLast('/')
     }
 }

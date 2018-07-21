@@ -5,6 +5,7 @@ dependencies {
     compile group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '+'
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: '+'
     compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: '+'
+    compile group: 'com.github.kittinunf.fuel', name: 'fuel-coroutines', version: '+'
 
     compile group: 'io.github.microutils', name: 'kotlin-logging', version: '+'
     compile group: 'org.slf4j', name: 'slf4j-simple', version: '+'

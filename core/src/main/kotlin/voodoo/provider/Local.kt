@@ -14,7 +14,7 @@ import java.io.File
 object LocalProviderThing : ProviderBase, KLogging() {
     override val name = "Local Provider"
 
-    override fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
+    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         return LockEntry(
                 provider = entry.provider,
                 name = entry.name,
@@ -24,14 +24,14 @@ object LocalProviderThing : ProviderBase, KLogging() {
         )
     }
 
-    override fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File> {
+    override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File> {
         val fileSrc = File(entry.parent.localDir, entry.fileSrc)
         val targetFile = targetFolder.resolve(fileSrc.name)
         fileSrc.copyTo(targetFile, overwrite = true)
         return Pair(null, targetFile)
     }
 
-    override fun getVersion(entry: LockEntry): String {
+    override suspend fun getVersion(entry: LockEntry): String {
         return entry.fileSrc.substringBeforeLast('.').substringAfterLast('/')
     }
 }
