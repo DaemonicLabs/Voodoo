@@ -1,0 +1,15 @@
+title: "The Official LimboCon Modpack."
+name: limbocon
+mcVersion: "1.12.2"
+forge: recommended
+authors:
+- canitzp
+- Ristelle
+version: 1.0.0
+sourceDir: src
+root:
+  validMcVersions: ["1.12.2"]
+  curseOptionalDependencies: false
+  curseReleaseTypes: [beta, release]
+  entries:
+  - actually-additions

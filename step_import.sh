@@ -19,6 +19,9 @@ echo
 echo "importing $pack"
 echo
 
+pwd
+echo "import yaml '../samples/$pack.yaml' $pack"
+
 $DIR/gradlew -p "$DIR" :voodoo:run --args "import yaml '../samples/$pack.yaml' $pack"
 if [ ! $? -eq 0 ]; then
     echo "Error importing $pack from yaml"

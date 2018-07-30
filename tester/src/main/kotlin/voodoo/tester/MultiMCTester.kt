@@ -36,6 +36,7 @@ object MultiMCTester : AbstractTester() {
         val iconFile = File("multimc").resolve("${modpack.name}.icon.png")
         val minecraftDir = MMCUtil.installEmptyPack(title, folder, icon = iconFile, mcVersion = modpack.mcVersion, forgeBuild = modpack.forge)
 
+        minecraftDir.mkdirs()
         val modsDir = minecraftDir.resolve("mods")
         modsDir.deleteRecursively()
 
@@ -73,7 +74,7 @@ object MultiMCTester : AbstractTester() {
 
         for ( (name, pair) in modpack.entriesMapping) {
             val (entry, entryFile) = pair
-            val folder = entryFile.absoluteFile.parentFile
+            val folder = minecraftDir.resolve(entryFile).absoluteFile.parentFile
             if (entry.side == Side.SERVER) continue
             val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.name) }
             if (!matchedFeatureList.isEmpty()) {
