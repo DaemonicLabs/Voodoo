@@ -113,7 +113,7 @@ class BuilderOptions {
         if (if (this.librariesDir == null) other.librariesDir != null else this.librariesDir != other.librariesDir) return false
         if (if (this.librariesLocation == null) other.librariesLocation != null else this.librariesLocation != other.librariesLocation) return false
         if (if (this.objectsLocation == null) other.objectsLocation != null else this.objectsLocation != other.objectsLocation) return false
-        return if (this.isPrettyPrinting != other.isPrettyPrinting) false else true
+        return this.isPrettyPrinting == other.isPrettyPrinting
     }
 
     protected fun canEqual(other: Any): Boolean {
