@@ -27,22 +27,13 @@ pipeline {
 	            archiveArtifacts artifacts:  'server-installer/build/libs/*jar'
 	        }
 	    }
-	    stage("archiver") {
-	        steps {
-	            sh './gradlew :archiver:clean'
-	            sh './gradlew :archiver:build'
-	            archiveArtifacts artifacts:  'archiver/build/libs/*jar'
-	        }
-	    }
 	    stage("bootstrap") {
 	        steps {
 	            sh './gradlew :bootstrap:clean'
 	            sh './gradlew :bootstrap:minify -Ptarget=voodoo'
 	            sh './gradlew :bootstrap:minify -Ptarget=hex'
-	            sh './gradlew :bootstrap:minify -Ptarget=archiver'
 	            archiveArtifacts artifacts:  'bootstrap/build/libs/*voodoo*'
 	            archiveArtifacts artifacts:  'bootstrap/build/libs/*hex*'
-	            archiveArtifacts artifacts:  'bootstrap/build/libs/*archiver*'
 	        }
 	    }
 	}
