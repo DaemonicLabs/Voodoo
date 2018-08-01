@@ -9,10 +9,10 @@ we call it Awesome Pack
 title: Awesome Pack
 ```
 
-every pack also needs a simple name, preferably without spaces
+every pack also needs a id, preferably lowercase and without spaces
 
 ```yaml
-name: awesomePack
+id: awesomepack
 ```
 
 we know its gonna be for 1.12.2
@@ -81,7 +81,7 @@ lets take a simple sample like this
 ```yaml
 root:
   provider: CURSE
-  validMcVersions: [1.12.1, '1.12']
+  validMcVersions: [ 1.12.1, '1.12' ]
   curseOptionalDependencies: false
   curseReleaseTypes: [ alpha, beta, release ]
   entries:
@@ -105,22 +105,21 @@ in this case we use alpha-release on a broad scope but specify the RFTools mods 
 
 so you have seen we can refer to mods by just their url slug.. which is usually the project name on curse lowercased and spaces replaced with `-`,
 
+but what if we want to specify more info ?
+the short form is gonna be expanded to the `id`
 
 ```yaml
 - opencomputers
-```
 
-but what if we want to specify more info ?
-the short form is gonna be expanded to something like this
+# is equivalent to
 
-```yaml
-- name: opencomputers
+- id: opencomputers
 ```
 
 so you can add more properties
 
 ```yaml
-- name: opencomputers
+- id: opencomputers
   version: 1.2.3
 ```
 
@@ -144,15 +143,16 @@ Direct Entries require a url along with the name.. so a short notation is not po
   entries:
 
   - url: https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar
-    name: Nutrition
+    id: Nutrition
 
   - url: https://centerofthemultiverse.net/launcher/mirror/BetterBuildersWands-1.12-0.11.1.245+69d0d70.jar
     name: Better Builder's Wands
+    id: better-builder-wands
 ```
 
 ### Jenkins
 
-Kinda self explainging.. jenkins needs the base url and the name of the job
+Kinda self explaining.. jenkins needs the base url and the name of the job
 also supported but now shows is the `jenkinsFileNameRegex` it has a sane default but maybe you need to match a
 different file or make sure your generated docs are not used as mod jar? then use that
 
@@ -162,14 +162,19 @@ different file or make sure your generated docs are not used as mod jar? then us
   entries:
 
   - job: elytra/MagicArsenal/master
+    id: magic-arsenal
     name: Magic Arsenal
 
   - job: elytra/FruitPhone/1.12.2
-    name: FruitPhone
+    id: fuit-phone
 
-  - job: elytra/ProbeDataProvider/1.12
+  - id: elytra/ProbeDataProvider/1.12
     name: ProbeDataProvider
+    
+  - elytra/MatterLink/master
 ```
+if a key `job` cannot be found then `id` will be used, which makes it possible to use a even shorter notation
+`id` is ALWAYS required
 
 ### Local
 
@@ -190,6 +195,7 @@ root:
   entries:
 
   - provider: LOCAL
+    id: some-mod
     name: SomeMod
     fileSrc: someMod/build/libs/SomeMod-1.0.jar
 
@@ -239,7 +245,7 @@ Backup Solution and universal chatbridge
     - colorchat
     - shadowfacts-forgelin
 
-    - job: elytra/MatterLink/master
+    - id: elytra/MatterLink/master
       name: MatterLink
         dependencies:
           REQUIRED:
@@ -298,10 +304,10 @@ the default value is to show no preference
 finally we can not only download mods.. but also resource packs
 
 ```yaml
-- name: unity
+- id: unity
   fileName: Unity.zip
 
-- name: Slice
+- id: Slice
   provider: LOCAL
   folder: resourcepacks
   fileSrc: ressourcepacks/Slice.zip

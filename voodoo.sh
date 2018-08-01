@@ -24,6 +24,9 @@ echo
 echo "importing $1"
 echo
 
+rm src/**/*.lock.json
+rm src/**/*.entry.hjson
+
 java -jar "$DIR/voodoo/build/libs/voodoo.jar" import yaml "$DIR/samples/$pack.yaml" .
 if [ ! $? -eq 0 ]; then
     echo "Error importing $pack"

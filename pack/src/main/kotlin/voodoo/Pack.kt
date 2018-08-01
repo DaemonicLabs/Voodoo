@@ -6,6 +6,7 @@ import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
+import voodoo.builder.resolve
 import voodoo.data.UserFiles
 import voodoo.data.flat.Entry
 import voodoo.data.flat.EntryFeature

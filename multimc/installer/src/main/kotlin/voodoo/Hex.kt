@@ -3,6 +3,7 @@ package voodoo
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
+import com.sun.jna.platform.KeyboardUtils
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
 import kotlinx.coroutines.experimental.launch
@@ -15,7 +16,9 @@ import voodoo.mmc.MMCUtil.selectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.*
+import java.awt.event.KeyEvent
 import java.io.File
+import kotlin.system.exitProcess
 
 
 /**
@@ -66,10 +69,18 @@ object Hex : KLogging() {
             pack
         }
 
+        var forceDisplay = false
         if (oldpack != null) {
             if (oldpack.version == modpack.version) {
-                logger.info("no update required ?")
+                logger.info("no update required ? hold shift to force a update")
+                Thread.sleep(1000)
 //                return //TODO: make dialog close continue when no update is required ?
+                if(KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
+                    forceDisplay = true
+                } else {
+                    exitProcess(0)
+                }
+
             }
         }
 
@@ -87,9 +98,12 @@ object Hex : KLogging() {
         } else {
             mapOf<String, Boolean>()
         }
-        val features = selectFeatures(modpack.features, defaults, modpack.title.blankOr
-                ?: modpack.name, modpack.version)
+        val (features, reinstall) = selectFeatures(modpack.features, defaults, modpack.title.blankOr
+                ?: modpack.name, modpack.version, forceDisplay = forceDisplay, updating = oldpack != null)
         featureJson.writeJson(features)
+        if(reinstall) {
+            minecraftDir.deleteRecursively()
+        }
 
         val objectsUrl = packUrl.substringBeforeLast('/') + "/" + modpack.objectsLocation
 

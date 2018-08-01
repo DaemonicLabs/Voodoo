@@ -24,11 +24,15 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
 
 
     override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry? {
+        if(entry.job.isBlank()) {
+            entry.job = entry.id
+        }
         val job = job(entry.job, entry.jenkinsUrl)
         val buildNumber = job.lastSuccessfulBuild?.number
         return if (buildNumber == null) null
         else LockEntry(
                 provider = entry.provider,
+                id = entry.id,
                 name = entry.name,
                 //folder = entry.folder,
                 useUrlTxt = entry.useUrlTxt,
@@ -42,12 +46,20 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
     }
 
     override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
+        if(entry.job.isBlank()) {
+            entry.job = entry.id
+        }
+
         val build = build(entry.job, entry.jenkinsUrl, entry.buildNumber)
         val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)
         val url = build.url + "artifact/" + artifact.relativePath
         val targetFile = targetFolder.resolve(entry.fileName ?: artifact.fileName)
         targetFile.download(url, cacheDir.resolve("JENKINS").resolve(entry.job).resolve(entry.buildNumber.toString()))
         return Pair(url, targetFile)
+    }
+
+    override suspend fun generateName(entry: LockEntry): String {
+        return "${entry.job} ${entry.buildNumber}"
     }
 
     override suspend fun getAuthors(entry: LockEntry): List<String> {

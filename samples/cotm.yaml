@@ -1,7 +1,7 @@
 #===========#
 # Pack Info #
 #===========#
-name: cotm
+id: cotm
 title: Center of the Multiverse
 authors: ["AnsuzThuriaz", "Falkreon", "NikkyAi"]
 version: 2.1.8.11
@@ -126,7 +126,7 @@ root:
 
   # CrazyPants
   # ender-io
-  - name: ender-io
+  - id: ender-io
     version: 5.0.26
 
   # asie
@@ -238,11 +238,11 @@ root:
 
   # Nutrition
     - url: https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar
-      name: Nutrition
+      id: Nutrition
 
   # Correlated 2
     - url: https://centerofthemultiverse.net/launcher/mirror/Correlated-1.12.2-2.1.120.jar
-      name: Correlated
+      id: Correlated
 
   # Jenkins Downloads
   - provider: JENKINS
@@ -251,40 +251,40 @@ root:
 
     # b0undrybreaker
     - job: elytra/FriendshipBracelet/master
-      name: Friendship Bracelet
+      id: Friendship Bracelet
 
     # Falkreon
     - job: elytra/Thermionics/master
-      name: Thermionics
+      id: Thermionics
 
     - job: elytra/ThermionicsWorld/master
-      name: ThermionicsWorld
+      id: ThermionicsWorld
 
     - job: elytra/Engination/master
-      name: Engination
+      id: Engination
 
     - job: elytra/MagicArsenal/master
-      name: Magic Arsenal
+      id: Magic Arsenal
 
     # unascribed
     - job: elytra/GlassHearts/1.12.1
-      name: GlassHearts
+      id: GlassHearts
 
     - job: elytra/FruitPhone/1.12.2
-      name: FruitPhone
+      id: FruitPhone
       dependencies:
         REQUIRED:
           - ProbeDataProvider
 
     - job: elytra/ProbeDataProvider/1.12
-      name: ProbeDataProvider
+      id: ProbeDataProvider
 
     #- job: Correlated2-Dev - Job is private, mirroring now
-    #  name: Correlated
+    #  id: Correlated
 
     # Darkevilmac
     - job: elytra/ArchitectureCraft/1.12
-      name: ArchitectureCraft
+      id: ArchitectureCraft
 
 
 #============#
@@ -301,7 +301,7 @@ root:
     - provider: JENKINS
       jenkinsUrl: https://ci.elytradev.com
       job: elytra/MatterLink/master
-      name: MatterLink
+      id: MatterLink
       dependencies:
         REQUIRED:
           - shadowfacts-forgelin
@@ -315,13 +315,13 @@ root:
       selected: false
     entries:
 
-    - name: laggoggles
+    - id: laggoggles
       description: "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
 
-    - name: sampler
+    - id: sampler
       description: "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
 
-    - name: openeye
+    - id: openeye
       description: "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
 
 #============#
@@ -342,7 +342,7 @@ root:
     - custom-main-menu
     - default-options
     - fullscreen-windowed-borderless-for-minecraft
-    - mod-name-tooltip
+    - mod-id-tooltip
     - reauth
     - cleanview
     - crafting-tweaks
@@ -360,37 +360,37 @@ root:
         recommendation: starred
       entries:
 
-        - name: journeymap
+        - id: journeymap
           description: "Mod-compatible mini-map."
 
-        - name: mage
+        - id: mage
           description: "Configurable graphics enhancements. Highly recomended."
 
-        - name: neat
+        - id: neat
           description: "Simple health and unit frames."
 
-        - name: client-tweaks
+        - id: client-tweaks
           description: "Various client related fixes and tweaks, all in a handy menu."
 
-        - name: mouse-tweaks
+        - id: mouse-tweaks
           description: "Add extra mouse gestures for inventories and crafting grids."
 
-        - name: thaumic-jei
+        - id: thaumic-jei
           description: "JEI Integration for Thaumcraft."
 
-        - name: jei-bees
+        - id: jei-bees
           description: "JEI Integration for Forestry/Gendustry Bees."
 
-        - name: just-enough-harvestcraft
+        - id: just-enough-harvestcraft
           description: "JEI Integration for Pam's HarvestCraft."
 
-        - name: just-enough-resources-jer
+        - id: just-enough-resources-jer
           description: "JEI Integration that gives drop-rates for mobs, dungeonloot, etc."
 
-        - name: vise
+        - id: vise
           description: "More granular control over UI/HUD elements."
 
-        - name: smooth-font
+        - id: smooth-font
           description: "It smoothes fonts."
 
     # OPT-IN
@@ -398,43 +398,43 @@ root:
         selected: false
       entries:
 
-        - name: item-scroller
+        - id: item-scroller
           description: "Alternative to MouseTweaks."
 
-        - name: xaeros-minimap
+        - id: xaeros-minimap
           description: "Lightweight alternative to JourneyMap."
 
-        - name: minemenu
+        - id: minemenu
           description: "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
 
-        - name: itemzoom
+        - id: itemzoom
           description: "Check this if you like to get a closer look at item textures."
 
-        - name: light-level-overlay-reloaded
+        - id: light-level-overlay-reloaded
           description: "Smol light-level overlay if you aren't using Dynamic Surroundings."
 
-        - name: durability-show
+        - id: durability-show
           description: "Toggle-able item/tool/armor durability HUD. Duplicates with RPG-HUD."
 
-        - name: fancy-block-particles
+        - id: fancy-block-particles
           description: "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps. (Defaults set to be less intrusive.)"
 
-        - name: dynamic-surroundings
+        - id: dynamic-surroundings
           description: "Caution: Resource heavy. Quite nice, has a lot of configurable features that add immersive sound/visual effects. Includes light-level overlay. (Defaults set to remove some sounds and generally be better.)"
 
-        - name: rpg-hud
+        - id: rpg-hud
           description: "Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)"
 
-        - name: better-foliage
+        - id: better-foliage
           description: "Improves the fauna in the world. Very heavy, but very pretty. (Sane defaults set.)"
 
-        - name: keyboard-wizard
+        - id: keyboard-wizard
           description: "Visual keybind manager."
 
-        - name: chunk-animator
+        - id: chunk-animator
           description: "Configurable chunk pop-in animator."
 
-        - name: faster-ladder-climbing
+        - id: faster-ladder-climbing
           description: "Helps you control ladder climb speed and allows you to go a bit faster."
 
 #================#
@@ -442,14 +442,14 @@ root:
 #================#
 
     # unity Resource Pack
-        - name: unity
-          filename: Unity.zip
+        - id: unity
+          fileid: Unity.zip
           description: "Multi-mod compatible resource pack. Very nice, but does have some broken textures here and there."
 
     # Slice
         - provider: DIRECT
           entries:
-          - name: Slice
+          - id: Slice
             description: "Custom client font based off of Chicago. Made by Falkreon."
             folder: resourcepacks
             url: https://centerofthemultiverse.net/launcher/mirror/Slice.zip

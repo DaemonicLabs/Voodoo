@@ -20,7 +20,7 @@ object Forge : KLogging() {
 //
 //        val entry = Entry(
 //                provider = "DIRECT",
-//                name = "Minecraft Forge",
+//                id = "Minecraft Forge",
 //                url = url,
 //                fileName = filename
 ////                    packageType = PackageType.LOADER,

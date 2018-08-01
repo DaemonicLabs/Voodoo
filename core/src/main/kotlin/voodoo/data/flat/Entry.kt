@@ -22,7 +22,8 @@ import voodoo.util.equalsIgnoreCase
 data class Entry(
         //@JsonInclude(JsonInclude.Include.ALWAYS)
         val provider: String,
-        var name: String = "",
+        var id: String,
+        var name: String = "",  // TODO add `by provider.getDisplayname(this)`
         var folder: String = "mods",
         var comment: String = "",
         var description: String = "",
@@ -65,9 +66,10 @@ data class Entry(
 
     fun toDefaultJson(marshaller: Marshaller): JsonObject {
         return (marshaller.serialize(
-                Entry(provider = this.provider)
+                Entry(provider = this.provider, id = this.id)
         ) as JsonObject).apply {
             this.remove("provider")
+            this.remove("id")
             if (feature != null)
                 this["feature"] = EntryFeature.toDefaultJson(feature, marshaller)
         }
@@ -78,6 +80,7 @@ data class Entry(
             val jsonObj = JsonObject()
             with(entry) {
                 jsonObj["provider"] = marshaller.serialize(provider)
+                jsonObj["id"] = marshaller.serialize(id)
                 jsonObj["name"] = marshaller.serialize(name)
                 jsonObj["comment"] = marshaller.serialize(comment)
                 jsonObj["description"] = marshaller.serialize(description)
@@ -122,12 +125,14 @@ data class Entry(
         }
 
         fun fromJson(jsonObj: JsonObject): Entry {
-            val provider: String = jsonObj.getReified("provider")!!
-            return with(Entry(provider = provider)) {
+            val provider: String = jsonObj.getReified("provider") ?: throw NullPointerException("missing field: provider")
+            val id: String = jsonObj.getReified("id") ?: throw NullPointerException("missing field: id")
+            return with(Entry(provider = provider, id = id)) {
                 Entry(
                         provider = provider,
+                        id = id,
                         name = jsonObj.getReified("name") ?: name,
-                        // TODO:  folder
+                        folder = jsonObj.getReified("folder") ?: folder,
                         comment = jsonObj.getReified("comment") ?: comment,
                         description = jsonObj.getReified("description") ?: description,
                         feature = jsonObj.getReified("feature") ?: feature,
@@ -172,7 +177,7 @@ data class Entry(
                         updateChannel = jsonObj.getReified("updateChannel") ?: updateChannel,
                         template = jsonObj.getReified("template") ?: template
                 ).apply {
-                    //jsonObj.getReified<String>("name")?.let { name = it }
+                    //jsonObj.getReified<String>("id")?.let { id = it }
                 }
             }
         }

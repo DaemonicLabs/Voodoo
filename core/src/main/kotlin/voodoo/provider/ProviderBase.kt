@@ -23,7 +23,7 @@ enum class Provider(val base: ProviderBase) {
 interface ProviderBase {
     val name: String
     suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry? {
-        println("[$name] resolve ${entry.name}")
+        println("[$name] resolve ${entry.id}")
         return null
     }
 
@@ -37,6 +37,8 @@ interface ProviderBase {
      * @param cacheDir prepared cache directory
      */
     suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File>
+
+    suspend fun generateName(entry: LockEntry): String
 
     suspend fun getAuthors(entry: LockEntry): List<String> {
         return emptyList()
@@ -65,6 +67,7 @@ interface ProviderBase {
     suspend fun getReleaseDate(entry: LockEntry): Instant? {
         return null
     }
+
 
 
 }

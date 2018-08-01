@@ -89,7 +89,7 @@ object CurseClient : KLogging() {
                 logger.error { request }
                 logger.error { response }
                 logger.error { result }
-                throw Exception("failed getting id-name pairs")
+                throw Exception("failed getting id-id pairs")
             }
         }
     }
@@ -213,7 +213,7 @@ object CurseClient : KLogging() {
 
     suspend fun findFile(entry: Entry, mcVersion: String, proxyUrl: String = PROXY_URL): Triple<Int, Int, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
-        val slug = entry.name //TODO: maybe make into separate property
+        val slug = entry.id //TODO: maybe make into separate property
         val version = entry.version
         val releaseTypes = entry.curseReleaseTypes
         var addonId = -1

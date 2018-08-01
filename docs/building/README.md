@@ -42,7 +42,9 @@ this step needs to be executed any time you change the yaml input file
 # assuming sourceDir is 'src'
 rm src/**/*.lock.json
 rm src/**/*.entry.hjson
-voodoo import yaml awesomepack.yaml .
+mkdir -p awesomepack/ # you can also use . to import the pack into the current working directory
+voodoo import yaml awesomepack.yaml awesomepack/
+cd awesomepack/
 ```
 
 ### Locking

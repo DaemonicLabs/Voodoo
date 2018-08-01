@@ -59,6 +59,7 @@ allprojects {
         jcenter()
         maven { url = 'http://repo.maven.apache.org/maven2' }
         maven { url = 'http://jcenter.bintray.com' }
+        maven { url = "https://dl.bintray.com/s1m0nw1/KtsRunner" }
         maven { url = 'https://jitpack.io' }
     }
 }
