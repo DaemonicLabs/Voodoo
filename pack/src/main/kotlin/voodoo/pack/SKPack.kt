@@ -99,7 +99,8 @@ object SKPack : AbstractPack() {
                         it
                 }
 
-                feature.files.include += targetFile.path.replace('\\', '/')
+                feature.files.include += targetFile.relativeTo(skSrcFolder).path
+                        .replace('\\', '/')
                         .replace("[", "\\[")
                         .replace("]", "\\]")
                 logger.info("includes = ${feature.files.include}")
