@@ -25,7 +25,6 @@ dependencies {
     compile project(':pack')
     compile project(':importer')
     compile project(':tester')
-    compile project(':tome')
 }
 
 build.dependsOn(shadowJar)

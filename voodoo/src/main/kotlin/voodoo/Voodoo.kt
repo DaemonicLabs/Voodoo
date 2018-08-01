@@ -14,7 +14,6 @@ object Voodoo : KLogging() {
             "build" to Builder::main,
             "pack" to Pack::main,
             "test" to Tester::main,
-            "tome" to Tome::main,
             "version" to { _ ->
                 println(FULL_VERSION)
             }

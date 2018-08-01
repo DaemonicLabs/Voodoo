@@ -41,10 +41,6 @@ if(project.hasProperty('target')) {
         moduleName = "hex"
         fileRegex = /^hex(-[^-]*)?(?!-fat)\\.jar$/
         shadowJar.baseName = "bootstrap-hex"
-    } else if (project.target == "archiver") {
-        moduleName = "archiver"
-        fileRegex = /^[Aa]rchiver(-[^-]*)?\\.jar$/
-        shadowJar.baseName = "bootstrap-archiver"
     } else {
         throw new InvalidUserDataException("invalid target property")
     }
