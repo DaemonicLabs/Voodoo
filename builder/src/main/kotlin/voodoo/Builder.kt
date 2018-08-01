@@ -47,7 +47,9 @@ object Builder : KLogging() {
                 .registerSerializer(LockEntry.Companion::toJson)
                 .build()
 
-        val arguments = Arguments(ArgParser(args))
+        val parser = ArgParser(args)
+        val arguments = Arguments(parser)
+        parser.force()
 
         arguments.run {
 
@@ -60,7 +62,7 @@ object Builder : KLogging() {
             modpack.loadEntries(parentFolder, jankson)
 
             modpack.entriesMapping.forEach { name, (entry, file, jsonObject) ->
-                logger.info("name: $name entry: $entry")
+                logger.info("id: $name entry: $entry")
             }
 
             runBlocking {
@@ -107,7 +109,7 @@ object Builder : KLogging() {
             if (stdout) {
                 print(lockedPack.json)
             } else {
-                val file = targetFile ?: parentFolder.resolve("${lockedPack.name}.lock.json")
+                val file = targetFile ?: parentFolder.resolve("${lockedPack.id}.lock.json")
                 logger.info("Writing lock file... $targetFile")
                 val defaultJson = JsonObject()
                 val lockJson = jankson.toJson(lockedPack) as JsonObject

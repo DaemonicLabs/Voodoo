@@ -26,6 +26,7 @@ import kotlin.reflect.full.memberProperties
 data class NestedEntry(
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var provider: String = "",
+        var id: String = "",
         var name: String = "",
         var folder: String = "mods",
         var comment: String = "",
@@ -67,7 +68,7 @@ data class NestedEntry(
         @JsonCreator
         fun fromString(stringValue: String): NestedEntry {
             logger
-            return NestedEntry(provider = Provider.CURSE.name).apply { name = stringValue }
+            return NestedEntry(provider = Provider.CURSE.name).apply { id = stringValue }
         }
         
         val DEFAULT = NestedEntry()
@@ -77,6 +78,7 @@ data class NestedEntry(
         flatten("", parentFile)
         return this.entries.map { it ->
             Entry(it.provider,
+                    id = it.id,
                     name = it.name,
                     folder = it.folder,
                     comment = it.comment,
@@ -147,7 +149,7 @@ data class NestedEntry(
             // set properties of entry from `this` or DEFAULT
 
 //            if ((entry.provider == DEFAULT.provider || entry.provider.isBlank()) && provider != DEFAULT.provider) entry.provider = provider
-//            if (entry.name == DEFAULT.name && name != DEFAULT.name) entry.name = name
+//            if (entry.id == DEFAULT.id && id != DEFAULT.id) entry.id = id
 //            if (entry.folder == DEFAULT.folder && folder != DEFAULT.folder) entry.folder = folder
 //            if (entry.comment == DEFAULT.comment && comment != DEFAULT.comment) entry.comment = comment
 //            if (entry.description == DEFAULT.description && description != DEFAULT.description) entry.description = description

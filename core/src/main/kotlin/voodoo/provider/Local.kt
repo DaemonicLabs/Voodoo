@@ -17,6 +17,7 @@ object LocalProviderThing : ProviderBase, KLogging() {
     override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         return LockEntry(
                 provider = entry.provider,
+                id = entry.id,
                 name = entry.name,
                 //folder = entry.folder,
                 side = entry.side,
@@ -33,5 +34,9 @@ object LocalProviderThing : ProviderBase, KLogging() {
 
     override suspend fun getVersion(entry: LockEntry): String {
         return entry.fileSrc.substringBeforeLast('.').substringAfterLast('/')
+    }
+
+    override suspend fun generateName(entry: LockEntry): String {
+        return entry.fileSrc.substringBeforeLast('/')
     }
 }

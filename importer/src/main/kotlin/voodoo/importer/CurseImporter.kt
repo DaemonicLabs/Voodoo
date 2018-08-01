@@ -79,8 +79,8 @@ object CurseImporter : AbstractImporter() {
             val addon = CurseClient.getAddon(it.projectID, PROXY_URL)!!
             val addonFile = CurseClient.getAddonFile(it.projectID, it.fileID, PROXY_URL)!!
             val nestedEntry = NestedEntry(
-//                    provider = Provider.CURSE.name,
-                    name = addon.slug,
+//                    provider = Provider.CURSE.id,
+                    id = addon.slug,
                     version = addonFile.fileName
             )
 
@@ -89,7 +89,7 @@ object CurseImporter : AbstractImporter() {
             val entry = Entry(
                     provider = Provider.CURSE.name,
                     curseReleaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
-                    name = addon.slug,
+                    id = addon.slug,
                     fileName = addonFile.fileName,
                     validMcVersions = addonFile.gameVersion.toSet()
             )
@@ -104,7 +104,7 @@ object CurseImporter : AbstractImporter() {
 
             val lockEntry = LockEntry(
                     provider = "CURSE",
-                    name = nestedEntry.name,
+                    id = nestedEntry.id,
                     //folder = path, //maybe use entry.folder only if its non-default
                     useUrlTxt = true,
                     projectID = projectID,
@@ -136,13 +136,13 @@ object CurseImporter : AbstractImporter() {
                 sourceDir = overridesFolder.relativeTo(File(name)).path,
                 root = NestedEntry(
                         validMcVersions = validMcVersions - manifest.minecraft.version,
-                        provider = "CURSE",
+                        provider = Provider.CURSE.name,
                         curseReleaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
                         entries = entries
                 )
         )
 
-        val filename = manifest.name.replace("\\W+".toRegex(), "")
+        val filename = manifest.name.replace("[^\\w-]+".toRegex(), "")
         val packFile = target.resolve("$filename.pack.hjson")
         val lockFile = target.resolve("$filename.lock.json")
 

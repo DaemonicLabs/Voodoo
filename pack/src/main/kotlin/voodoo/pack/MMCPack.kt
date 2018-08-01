@@ -15,16 +15,16 @@ object MMCPack : AbstractPack() {
         val targetDir = File(target ?: ".multimc")
         val definitionsDir = File("multimc").apply { mkdirs() }
         val cacheDir = directories.cacheHome.resolve("mmc")
-        val instanceDir = cacheDir.resolve(modpack.name)
+        val instanceDir = cacheDir.resolve(modpack.id)
         instanceDir.deleteRecursively()
 
-        val iconFile = definitionsDir.resolve("${modpack.name}.icon.png")
+        val iconFile = definitionsDir.resolve("${modpack.id}.icon.png")
         val preLaunchCommand = "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
-        val minecraftDir = MMCUtil.installEmptyPack(modpack.title, modpack.name, icon = iconFile, instanceDir = instanceDir, preLaunchCommand = preLaunchCommand)
+        val minecraftDir = MMCUtil.installEmptyPack(modpack.title, modpack.id, icon = iconFile, instanceDir = instanceDir, preLaunchCommand = preLaunchCommand)
 
         logger.info("tmp dir: $instanceDir")
 
-        val urlFile = definitionsDir.resolve("${modpack.name}.url.txt")
+        val urlFile = definitionsDir.resolve("${modpack.id}.url.txt")
         if (!urlFile.exists()) {
             logger.error("no file '${urlFile.absolutePath}' found")
             exitProcess(3)
@@ -43,7 +43,7 @@ object MMCPack : AbstractPack() {
         )
 
         targetDir.mkdirs()
-        val instanceZip = targetDir.resolve(modpack.name + ".zip")
+        val instanceZip = targetDir.resolve(modpack.id + ".zip")
 
         instanceZip.delete()
         packToZip(instanceDir.toPath(), instanceZip.toPath())

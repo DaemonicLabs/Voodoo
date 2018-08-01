@@ -23,8 +23,8 @@ data class LockEntry(
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var provider: String = "",
         @JsonInclude(JsonInclude.Include.ALWAYS)
+        var id: String = "",
         var name: String = "",
-        //var folder: String = "mods",
         var fileName: String? = null,
         var side: Side = Side.BOTH,
         // CURSE
@@ -50,6 +50,9 @@ data class LockEntry(
 
     @JsonIgnore
     private fun providerBase(): ProviderBase = Provider.valueOf(provider).base
+
+    @JsonIgnore
+    fun name(): String = name.takeIf { it.isNotBlank() } ?: runBlocking { providerBase().generateName(this@LockEntry) }
 
     @JsonIgnore
     fun version(): String = runBlocking { providerBase().getVersion(this@LockEntry) }
@@ -82,7 +85,7 @@ data class LockEntry(
     fun isJson(): Boolean = provider == Provider.JSON.name
 
     @JsonIgnore
-    fun sLocal(): Boolean = provider == Provider.LOCAL.name
+    fun isLocal(): Boolean = provider == Provider.LOCAL.name
 
 
     companion object {
@@ -91,6 +94,7 @@ data class LockEntry(
             return with(LockEntry()) {
                 LockEntry(
                         provider = jsonObject.getReified("provider") ?: provider,
+                        id = jsonObject.getReified("id") ?: id,
                         name = jsonObject.getReified("name") ?: name,
                         //folder = jsonObject.getReified("folder") ?: folder,
                         fileName = jsonObject.getReified("fileName") ?: fileName,
@@ -115,6 +119,7 @@ data class LockEntry(
             val jsonObject = JsonObject()
             with(lockEntry) {
                 jsonObject["provider"] = marshaller.serialize(provider)
+                jsonObject["id"] = marshaller.serialize(id)
                 jsonObject["name"] = marshaller.serialize(name)
                 //jsonObject["folder"] = marshaller.serialize(folder)
                 jsonObject["fileName"] = marshaller.serialize(fileName)
@@ -148,12 +153,12 @@ data class LockEntry(
         }
     }
 
-
     fun toDefaultJson(marshaller: Marshaller): JsonObject {
         return (marshaller.serialize(
                 LockEntry(provider = this.provider)
         ) as JsonObject).apply {
             this.remove("provider")
+            this.remove("id")
             this.remove("name")
         }
     }

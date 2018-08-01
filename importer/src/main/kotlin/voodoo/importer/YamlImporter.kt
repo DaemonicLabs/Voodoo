@@ -2,19 +2,13 @@ package voodoo.importer
 
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
 import voodoo.data.flat.Entry
 import voodoo.data.flat.EntryFeature
-import voodoo.data.flat.ModPack
-import voodoo.data.lock.LockEntry
 import voodoo.data.nested.NestedPack
 import voodoo.registerSerializer
 import voodoo.registerTypeAdapter
 import voodoo.util.readYaml
 import java.io.File
-import java.nio.file.Path
 
 /**
  * Created by nikky on 01/07/18.
@@ -50,7 +44,9 @@ object YamlImporter : AbstractImporter() {
             entry.validMcVersions += nestedPack.mcVersion
             val folder = srcDir.resolve(entry.folder)
             folder.mkdirs()
-            val filename = entry.name.replace("\\W+".toRegex(), "")
+            val filename = entry.id
+                    .replace('/', '-')
+                    .replace("[^\\w-]+".toRegex(), "")
             val targetFile = folder.resolve("$filename.entry.hjson")
             val json = jankson.marshaller.serialize(entry)//.toJson(true, true)
             if (json is JsonObject) {
@@ -59,12 +55,12 @@ object YamlImporter : AbstractImporter() {
                 targetFile.writeText(delta.toJson(true, true).replace("\t", "  "))
             }
 
-            //TODO: merge features into list ?
+            // TODO: merge features into list ?
             // remove from Entry ?
             // leave comment about feature ?
         }
 
-        val filename = nestedPack.name.replace("\\W+".toRegex(), "")
+        val filename = nestedPack.id.replace("[^\\w-]+".toRegex(), "")
         val packFile = target.resolve("$filename.pack.hjson")
         val modpack = nestedPack.flatten()
 

@@ -26,7 +26,7 @@ import java.io.File
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class ModPack(
         @JsonInclude(JsonInclude.Include.ALWAYS)
-        var name: String,
+        var id: String,
         var title: String = "",
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var version: String = "1.0",
@@ -49,7 +49,7 @@ data class ModPack(
         fun toJson(modpack: ModPack, marshaller: Marshaller): JsonObject {
             val jsonObject = JsonObject()
             with(modpack) {
-                jsonObject["name"] = marshaller.serialize(name)
+                jsonObject["id"] = marshaller.serialize(id)
                 jsonObject["title"] = marshaller.serialize(title)
                 jsonObject["version"] = marshaller.serialize(version)
                 jsonObject["authors"] = marshaller.serialize(authors)
@@ -65,10 +65,10 @@ data class ModPack(
 
         fun fromJson(jsonObj: JsonObject): ModPack {
 
-            val name: String = jsonObj.getReified("name")!!
+            val name: String = jsonObj.getReified("id")!!
             return with(ModPack(name)) {
                 ModPack(
-                        name = name,
+                        id = name,
                         title = jsonObj . getReified ("title") ?: title,
                         version = jsonObj.getReified("version") ?: version,
                         authors = jsonObj.getList("authors") ?: authors,
@@ -106,8 +106,8 @@ data class ModPack(
     val features: MutableList<SKFeature> = mutableListOf()
 
     fun toDefaultJson(marshaller: Marshaller): JsonObject {
-        return (marshaller.serialize(ModPack(name)) as JsonObject).apply {
-            this.remove("name")
+        return (marshaller.serialize(ModPack(id)) as JsonObject).apply {
+            this.remove("id")
         }
     }
 
@@ -115,26 +115,26 @@ data class ModPack(
     val versionsMapping: MutableMap<String, Pair<LockEntry, File>> = mutableMapOf()
 
     fun addEntry(entry: Entry, file: File, jsonObj: JsonObject, jankson: Jankson, dependency: Boolean = false) {
-        if (entry.name.isBlank()) {
+        if (entry.id.isBlank()) {
             logger.error("invalid: $entry")
             return
         }
 
-        val duplTriple = entriesMapping[entry.name]
+        val duplTriple = entriesMapping[entry.id]
         if (duplTriple == null) {
-            logger.info("new entry $entry.name")
+            logger.info("new entry ${entry.id}")
             var tmpFile = file
             var tmpObj = jsonObj
             if(dependency) {
                 entry.transient = true
-                val filename = entry.name.replace("\\W+".toRegex(), "")
+                val filename = entry.id.replace("[^\\w-]+".toRegex(), "")
                 tmpFile = file.absoluteFile.parentFile.resolve("$filename.entry.hjson")
                 val json = jankson.toJson(entry) as JsonObject
                 val defaultJson = entry.toDefaultJson(jankson.marshaller)
                 tmpObj = json.getDelta(defaultJson)
             }
 
-            entriesMapping[entry.name] = Triple(entry, tmpFile, tmpObj)
+            entriesMapping[entry.id] = Triple(entry, tmpFile, tmpObj)
         } else {
             val (existingEntry, existingFile, existingJsonObj) = duplTriple
 
@@ -142,7 +142,7 @@ data class ModPack(
                 return
             }
 
-            logger.info("duplicate entry $entry.name")
+            logger.info("duplicate entry $entry.id")
 
             if(!dependency && !existingEntry.transient) {
                 throw IllegalStateException("duplicate entries: $existingFile and $file")
@@ -174,7 +174,8 @@ data class ModPack(
                 }
     }
 
-    fun loadLockEntry(folder: File, jankson: Jankson) {
+    //TODO: call from LockPack ?
+    fun loadLockEntries(folder: File, jankson: Jankson) {
         val srcDir = folder.resolve(sourceDir)
         srcDir.walkTopDown()
                 .filter {
@@ -183,13 +184,13 @@ data class ModPack(
                 .forEach {
                     val entryJsonObj = jankson.load(it)
                     val lockEntry: LockEntry = jankson.fromJson(entryJsonObj)
-                    versionsMapping[lockEntry.name] = Pair(lockEntry, it)
+                    versionsMapping[lockEntry.id] = Pair(lockEntry, it)
                 }
     }
 
     fun lock(): LockPack {
         return LockPack(
-                name = name,
+                id = id,
                 title = title,
                 version = version,
                 authors = authors,

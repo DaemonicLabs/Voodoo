@@ -7,7 +7,6 @@ include 'util'
 include 'importer', 'builder', 'pack', 'tester', 'voodoo', 'tome'
 include 'server-installer'
 include 'bootstrap'
-include 'gui'
 include 'archiver'
 
 include 'Jankson'

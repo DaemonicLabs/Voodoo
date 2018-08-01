@@ -37,20 +37,19 @@ private fun ModPack.getDependenciesCall(entryName: String): List<Entry> {
 private val ModPack.getDependencies: (entryName: String) -> List<Entry>
     get() = ::getDependenciesCall.memoize()
 
-private fun ModPack.resolveFeatureDependencies(entry: Entry) {
+private fun ModPack.resolveFeatureDependencies(entry: Entry, defaultName: String) {
     val modpack = this
     val entryFeature = entry.feature ?: return
-    val featureName =/* entryFeature.name.blankOr ?:*/ entry.name
-    // find feature with matching name
+    val featureName = entry.name.takeIf { it.isNotBlank() } ?: defaultName
+    // find feature with matching id
     var feature = modpack.features.find { f -> f.properties.name == featureName }
 
-    //TODO: merge existing features with matching name
+    //TODO: merge existing features with matching id
     if (feature == null) {
         var description = entryFeature.description
         if (description.isEmpty()) description = entry.description
         feature = SKFeature(
-                entries = setOf(entry.name),
-//                processedEntries = emptyList(),
+                entries = setOf(entry.id),
                 files = entryFeature.files,
                 properties = FeatureProperties(
                         name = featureName,
@@ -62,9 +61,8 @@ private fun ModPack.resolveFeatureDependencies(entry: Entry) {
         modpack.processFeature(feature)
         modpack.features += feature
         entry.optional = true
-//            entry.dependenciesDirty = true
     }
-    logger.debug("processed ${entry.name}")
+    logger.debug("processed ${entry.id}")
 }
 
 private fun ModPack.processFeature(feature: SKFeature) {
@@ -102,8 +100,7 @@ private fun ModPack.processFeature(feature: SKFeature) {
  */
 suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean = false, updateDependencies: Boolean = false, updateEntries: List<String>) {
     this.loadEntries(folder, jankson)
-    this.loadLockEntry(folder, jankson)
-
+    this.loadLockEntries(folder, jankson)
 
     val srcDir = folder.resolve(sourceDir)
 
@@ -117,21 +114,21 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
                 logger.error("entry $entryName not found")
                 exitProcess(-1)
             }
-            versionsMapping.remove(entry.name)
+            versionsMapping.remove(entry.id)
         }
     }
 
     if (updateDependencies || updateAll) {
         // remove all transient entries
-        versionsMapping.filter { (name, _) ->
-            entriesMapping[name]?.first?.transient ?: true
+        versionsMapping.filter { (id, _) ->
+            entriesMapping[id]?.first?.transient ?: true
         }.forEach { name, (_, _) ->
             versionsMapping.remove(name)
         }
     }
 
     fun addEntry(entry: Entry) {
-        val filename = entry.name.replace("\\W+".toRegex(), "")
+        val filename = entry.id.replace("[^\\w-]+".toRegex(), "")
         //TODO: pass location to lambda instead of hardcoded
         val file = srcDir.resolve("mods").resolve("$filename.entry.hjson")
         val jsonObj = jankson.toJson(entry) as JsonObject
@@ -146,20 +143,25 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
         }.map { it.value }
         logger.info("resolved: $resolved")
         unresolved.forEach { (entry, file, _) ->
-            logger.info("resolving: ${entry.name}")
+            logger.info("resolving: ${entry.id}")
             val provider = Provider.valueOf(entry.provider).base
 
             provider.resolve(entry, this, ::addEntry)?.let { lockEntry ->
-                val existingLockEntry = versionsMapping[lockEntry.name]?.first
+                val existingLockEntry = versionsMapping[lockEntry.id]?.first
 
-                if (existingLockEntry == null) {
+                val actualLockEntry = if (existingLockEntry == null) {
                     val filename = file.nameWithoutExtension
                     val lockFile = file.absoluteFile.parentFile.resolve("$filename.lock.json")
-                    versionsMapping[lockEntry.name] = Pair(lockEntry, lockFile)
+                    versionsMapping[lockEntry.id] = Pair(lockEntry, lockFile)
+                    lockEntry
                 } else {
                     logger.info("existing lockEntry: $existingLockEntry")
+                    existingLockEntry
                 }
-                resolved += entry.name
+
+                actualLockEntry.name = actualLockEntry.name()
+
+                resolved += entry.id
             }
         }
     } while (entriesMapping.any { (name, _) ->
@@ -168,36 +170,36 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
 
     features.clear()
 
-    for((name, triple) in entriesMapping) {
+    for ((name, triple) in entriesMapping) {
         val (entry, file, jsonObj) = triple
-        this.resolveFeatureDependencies(entry)
+        this.resolveFeatureDependencies(entry, versionsMapping[entry.id]!!.first.name())
     }
-//    entriesMapping.forEach { name, (entry, file, jsonObj) ->
+//    entriesMapping.forEach { id, (entry, file, jsonObj) ->
 //        this.resolveFeatureDependencies(entry)
 //    }
 
     // resolve features
     for (feature in features) {
         logger.info("processed feature ${feature.properties.name}")
-        for (name in feature.entries) {
-            logger.info("processing feature entry $name")
-            val dependencies = this.getDependencies(name)
+        for (id in feature.entries) {
+            logger.info("processing feature entry $id")
+            val dependencies = this.getDependencies(id)
             dependencies
                     .filter {
-                        logger.info("testing ${it.name}")
-                        it.optional && !feature.entries.contains(it.name)
+                        logger.info("testing ${it.id}")
+                        it.optional && !feature.entries.contains(it.id)
                     }
                     .forEach {
-                        if (!feature.entries.contains(it.name)) {
-                            feature.entries += it.name
+                        if (!feature.entries.contains(it.id)) {
+                            feature.entries += it.id
                             logger.info("includes = ${feature.files.include}")
                         }
                     }
         }
         println { feature.entries.first() }
-        val first = entriesMapping.values.firstOrNull { it.first.name == feature.entries.first() }
+        val first = entriesMapping.values.firstOrNull { it.first.id == feature.entries.first() }
         println { first }
-        val mainEntry = entriesMapping.values.firstOrNull { it.first.name == feature.entries.first() }!!.first
+        val mainEntry = entriesMapping.values.firstOrNull { it.first.id == feature.entries.first() }!!.first
         feature.properties.description = mainEntry.description
 
         logger.info("processed feature $feature")
@@ -208,9 +210,9 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
 //    }
 
     val directories = Directories.get(moduleName = "history")
-    val historyPath = directories.dataHome.resolve(this.name)
+    val historyPath = directories.dataHome.resolve(this.id)
     historyPath.mkdirs()
-    val historyFile = historyPath.resolve("$name-$version.pack.hjson")
+    val historyFile = historyPath.resolve("$id-$version.pack.hjson")
     logger.info("adding modpack to history -> $historyFile")
     val historyJson = jankson.toJson(this)
     historyFile.writeText(historyJson.toJson(true, true))

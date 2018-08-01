@@ -19,6 +19,7 @@ object DirectProviderThing : ProviderBase, KLogging() {
     override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         return LockEntry(
                 provider = entry.provider,
+                id = entry.id,
                 name = entry.name,
                 //folder = entry.folder,
                 useUrlTxt = entry.useUrlTxt,
@@ -34,6 +35,10 @@ object DirectProviderThing : ProviderBase, KLogging() {
         val url = URL(entry.url)
         targetFile.download(entry.url, cacheDir.resolve("DIRECT").resolve(url.host + url.path.substringBeforeLast('/')))
         return Pair(entry.url, targetFile)
+    }
+
+    override suspend fun generateName(entry: LockEntry): String {
+        return entry.id
     }
 
     override suspend fun getVersion(entry: LockEntry): String {

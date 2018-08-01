@@ -27,13 +27,13 @@ object CurseProviderThing : ProviderBase, KLogging() {
         val (projectID, fileID, path) = findFile(entry, modpack.mcVersion, entry.curseMetaUrl)
 
         logger.info { resolved }
-        resolved += entry.name
+        resolved += entry.id
 
         //TODO: move into appropriate place or remove
         // this is currently just used to validate that there is no entries getting resolved multiple times
-        val count = resolved.count { entry.name == it }
+        val count = resolved.count { entry.id == it }
         if(count > 1) {
-            throw Exception("duplicate effort ${entry.name} entry counted: $count")
+            throw Exception("duplicate effort ${entry.id} entry counted: $count")
         }
 
         resolveDependencies(projectID, fileID, entry, addEntry)
@@ -42,8 +42,9 @@ object CurseProviderThing : ProviderBase, KLogging() {
 
         return LockEntry(
                 provider = entry.provider,
-                curseMetaUrl = entry.curseMetaUrl,
+                id = entry.id,
                 name = entry.name,
+                curseMetaUrl = entry.curseMetaUrl,
                 //folder = path, //maybe use entry.folder only if its non-default
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
@@ -51,6 +52,11 @@ object CurseProviderThing : ProviderBase, KLogging() {
                 projectID = projectID,
                 fileID = fileID
         )
+    }
+
+    override suspend fun generateName(entry: LockEntry): String {
+        val addon = CurseClient.getAddon(entry.projectID, entry.curseMetaUrl)
+        return addon?.name ?: entry.id
     }
 
     override suspend fun getAuthors(entry: LockEntry): List<String> {
@@ -77,12 +83,12 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     override suspend fun getThumbnail(entry: Entry): String {
-        val addon = CurseClient.getAddonBySlug(entry.name, entry.curseMetaUrl)
+        val addon = CurseClient.getAddonBySlug(entry.id, entry.curseMetaUrl)
         return addon?.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
     }
 
 //    override fun getThumbnail(entry: NestedEntry): String {
-//        val addon = CurseClient.getAddonByName(entry.name, entry.curseMetaUrl)!!
+//        val addon = CurseClient.getAddonByName(entry.id, entry.curseMetaUrl)!!
 //        return addon.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
 //    }
 
@@ -91,7 +97,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
         val addonFile = getAddonFile(addonId, fileId, entry.curseMetaUrl)!!
         val dependencies = addonFile.dependencies ?: return
 
-        logger.info("dependencies of ${entry.name} ${addonFile.dependencies}")
+        logger.info("dependencies of ${entry.id} ${addonFile.dependencies}")
         logger.info(entry.toString())
 
         for ((depAddonId, depType) in dependencies) {
@@ -102,16 +108,15 @@ object CurseProviderThing : ProviderBase, KLogging() {
             var dependsSet = entry.dependencies[depType]?.toSet() ?: setOf<String>()
             logger.info("get dependency $depType = $dependsSet + ${depAddon.slug}")
             if (!dependsSet.contains(depAddon.slug)) {
-                logger.info("${entry.name} adding dependency ${depAddon.name}")
+                logger.info("${entry.id} adding dependency ${depAddon.id}")
                 dependsSet += depAddon.slug
             }
             entry.dependencies[depType] = dependsSet.toList()
             logger.info("set dependency $depType = $dependsSet")
 
             if (depType == DependencyType.REQUIRED || (entry.curseOptionalDependencies && depType == DependencyType.OPTIONAL)) {
-                val depEntry = Entry(provider = Provider.CURSE.name).apply {
-                    //id = depAddon.id,
-                    name = depAddon.slug
+                val depEntry = Entry(provider = Provider.CURSE.name, id = depAddon.slug).apply {
+                    name = entry.name
                     side = entry.side
                     transient = true
                     curseReleaseTypes = entry.curseReleaseTypes
@@ -127,7 +132,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     private fun isOptionalCall(entry: Entry, modpack: ModPack): Boolean {
-        ProviderBase.logger.info("test optional of ${entry.name}")
+        ProviderBase.logger.info("test optional of ${entry.id}")
 //        logger.info(entry.toString())
         return entry.transient || entry.optional
 //        for ((depType, entryList) in entry.provides) {
@@ -135,7 +140,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
 //            if (entryList.isEmpty()) return false
 //            ProviderBase.logger.info("type: $depType list: $entryList")
 //            for (entryName in entryList) {
-//                val providerEntry = modpack.entries.firstOrNull { it.name == entryName }!!
+//                val providerEntry = modpack.entries.firstOrNull { it.id == entryName }!!
 //                val tmpResult = isOptional(providerEntry, modpack)
 //                if (!tmpResult) return false
 //            }

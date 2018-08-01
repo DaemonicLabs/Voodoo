@@ -15,8 +15,6 @@ import voodoo.provider.Provider
 import voodoo.util.packToZip
 import voodoo.util.writeJson
 import java.io.File
-import java.util.concurrent.CompletableFuture.runAsync
-import kotlin.coroutines.experimental.buildSequence
 
 /**
  * Created by nikky on 30/03/18.
@@ -29,7 +27,7 @@ object CursePack : AbstractPack() {
     override suspend fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
         val cacheDir = directories.cacheHome
         val workspaceDir = File(".curse")
-        val modpackDir = workspaceDir.resolve(with(modpack) { "$name-$version" })
+        val modpackDir = workspaceDir.resolve(with(modpack) { "$id-$version" })
         val srcFolder = modpackDir.resolve("overrides")
 
         if (clean) {
@@ -73,7 +71,7 @@ object CursePack : AbstractPack() {
             val (entry, entryFile) = pair
             val folder = entryFile.absoluteFile.parentFile
             val required = modpack.features.none { feature ->
-                feature.entries.any { it == entry.name }
+                feature.entries.any { it == entry.id }
             }
 
             val provider = Provider.valueOf(entry.provider).base
@@ -143,11 +141,11 @@ object CursePack : AbstractPack() {
             val manifestFile = modpackDir.resolve("manifest.json")
             manifestFile.writeJson(curseManifest)
 
-            val cursePackFile = workspaceDir.resolve(with(modpack) { "$name-$version.zip" })
+            val cursePackFile = workspaceDir.resolve(with(modpack) { "$id-$version.zip" })
 
             packToZip(modpackDir.toPath(), cursePackFile.toPath())
 
-            logger.info("packed ${modpack.name} -> $cursePackFile")
+            logger.info("packed ${modpack.id} -> $cursePackFile")
         }
     }
 

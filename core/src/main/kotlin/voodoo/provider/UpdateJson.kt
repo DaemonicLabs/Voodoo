@@ -36,8 +36,8 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
 
     override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         val json = getUpdateJson(entry.updateJson)!!
-        if (entry.name.isBlank()) {
-            entry.name = entry.updateJson.substringAfterLast('/').substringBeforeLast('.')
+        if (entry.id.isBlank()) {
+            entry.id = entry.updateJson.substringAfterLast('/').substringBeforeLast('.')
         }
         val key = modpack.mcVersion + when (entry.updateChannel) {
             UpdateChannel.RECOMMENDED -> "-recommended"
@@ -50,6 +50,7 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
         val url = entry.template.replace("{version}", version)
         return LockEntry(
                 provider = entry.provider,
+                id = entry.id,
                 name = entry.name,
                 //folder = entry.folder,
                 useUrlTxt = entry.useUrlTxt,
@@ -63,6 +64,10 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
 
     override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File> {
         return Provider.DIRECT.base.download(entry, targetFolder, cacheDir)
+    }
+
+    override suspend fun generateName(entry: LockEntry): String {
+        return entry.id
     }
 
     override suspend fun getProjectPage(entry: LockEntry): String {

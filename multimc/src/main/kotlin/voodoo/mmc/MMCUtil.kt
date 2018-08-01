@@ -158,7 +158,7 @@ object MMCUtil : KLogging() {
             sortedMapOf()
 
         cfg["InstanceType"] = "OneSix"
-        cfg["name"] = name
+        cfg["id"] = name
         cfg["iconKey"] = iconKey
 
         if (preLaunchCommand != null) {
@@ -171,26 +171,36 @@ object MMCUtil : KLogging() {
         return minecraftDir
     }
 
-    fun selectFeatures(features: List<FeatureProperties>, defaults: Map<String, Boolean>, name: String, version: String): Map<String, Boolean> {
-        if (features.isEmpty()) {
+    fun selectFeatures(
+            features: List<FeatureProperties>,
+            previousSelection: Map<String, Boolean>,
+            name: String, version: String,
+            forceDisplay: Boolean,
+            updating: Boolean
+    ): Pair<Map<String, Boolean>, Boolean> {
+        if (features.isEmpty() && !forceDisplay) {
             logger.info("no selectable features")
-            return mapOf()
+            return Pair(mapOf(), false)
         }
 
         UIManager.setLookAndFeel(
                 UIManager.getSystemLookAndFeelClassName()
         )
 
+        logger.debug { features }
+        logger.debug { previousSelection }
+
         val toggleButtons = features.associateBy({
             it.name
         }, {
-            JToggleButton(it.name, defaults[it.name] ?: it.selected)
+            JToggleButton(it.name, previousSelection[it.name] ?: it.selected)
                     .apply {
                         horizontalAlignment = SwingConstants.RIGHT
                     }
         })
 
         var success = false
+        var reinstall = false
 
 //        logger.info { UIManager.getDefaults()/*.filterValues { it is Icon }.map { (k, v) -> "$k = $v\n" }*/ }
 
@@ -202,14 +212,9 @@ object MMCUtil : KLogging() {
                 val panel = JPanel()
                 panel.layout = GridBagLayout()
 
-                for ((row, feature) in features.sortedBy { it.name }.withIndex()) {
-
-                    val toggle = toggleButtons[feature.name]!!.apply {
-                        alignmentX = Component.RIGHT_ALIGNMENT
-//                        this.foreground = Color.MAGENTA
-                        this.background = Color.CYAN
-                    }
-                    panel.add(toggle,
+                val setter = features.mapIndexed { row, feature ->
+                    val indicator = JCheckBox("", toggleButtons[feature.name]!!.isSelected)
+                    panel.add(indicator,
                             GridBagConstraints().apply {
                                 gridx = 0
                                 gridy = row
@@ -221,18 +226,43 @@ object MMCUtil : KLogging() {
                             }
                     )
 
+                    val toggle = toggleButtons[feature.name]!!.apply {
+                        alignmentX = Component.RIGHT_ALIGNMENT
+                        toolTipText = feature.name
+                    }
+
+                    fun select(selected: Boolean) {
+                        toggle.isSelected = selected
+                        indicator.isSelected = selected
+                    }
+                    toggle.addItemListener {
+                        select(toggle.isSelected)
+                    }
+                    indicator.addItemListener {
+                        select(indicator.isSelected)
+                    }
+
+                    panel.add(toggle,
+                            GridBagConstraints().apply {
+                                gridx = 1
+                                gridy = row
+                                weightx = 0.001
+                                weighty = 0.001
+                                anchor = GridBagConstraints.LINE_START
+                                fill = GridBagConstraints.BOTH
+                                ipady = 4
+                            }
+                    )
 
                     val recommendation = when (feature.recommendation) {
                         Recommendation.starred -> {
                             val orange = Color(0xFFd09b0d.toInt())
-//                            toggle.foreground = orange
                             JLabel("★").apply {
                                 foreground = orange
                                 toolTipText = "Recommended"
                             }
                         }
                         Recommendation.avoid -> {
-//                            toggle.foreground = Color.RED
                             JLabel("⚠️").apply {
                                 foreground = Color.RED
                                 toolTipText = "Avoid"
@@ -253,7 +283,6 @@ object MMCUtil : KLogging() {
                             }
                     )
 
-
                     if (!feature.description.isBlank()) {
                         val descriptionText = JLabel("<html>${feature.description}</html>")
                         panel.add(descriptionText,
@@ -268,20 +297,92 @@ object MMCUtil : KLogging() {
                                 }
                         )
                     }
-                }
+                    feature.name to ::select
+                }.toMap()
 
                 add(panel, BorderLayout.CENTER)
                 val buttonPane = JPanel(GridBagLayout())
-                val button = JButton("OK")
-                button.addActionListener {
-                    isVisible = false
-                    success = true
-                    dispose()
+
+                val buttonResetDefault = JButton("Reset to Default").apply {
+                    addActionListener {
+                        setter.forEach { (name, function) ->
+                            val selected = features.find { it.name == name }!!.selected
+                            function(selected)
+                        }
+                    }
                 }
+                buttonPane.add(buttonResetDefault, GridBagConstraints().apply {
+                    gridx = 0
+                    weightx = 1.0
+                    anchor = GridBagConstraints.LINE_START
+                    fill = GridBagConstraints.HORIZONTAL
+                    ipady = 4
+                    insets = Insets(4, 0, 0, 0)
+                })
+                val buttonResetLast = JButton("Reset to Last").apply {
+                    isEnabled = previousSelection.isNotEmpty()
+                    addActionListener {
+                        setter.forEach { (name, function) ->
+                            val selected = features.find { it.name == name }!!.selected
+                            function(previousSelection[name] ?: selected)
+                        }
+                    }
+                }
+                buttonPane.add(buttonResetLast, GridBagConstraints().apply {
+                    gridx = 1
+                    weightx = 1.0
+                    anchor = GridBagConstraints.LINE_START
+                    fill = GridBagConstraints.HORIZONTAL
+                    ipady = 4
+                    insets = Insets(4, 0, 0, 0)
+                })
+                val buttonForceReinstall = JButton("Force Reinstall").apply {
+                    isEnabled = false
+                    toolTipText = "enable with checkbox"
+                    addActionListener {
+                        reinstall = true
+                        success = true
+                        dispose()
+                    }
+                }
+                buttonPane.add(buttonForceReinstall, GridBagConstraints().apply {
+                    gridx = 2
+                    weightx = 1.0
+                    anchor = GridBagConstraints.LINE_START
+                    fill = GridBagConstraints.HORIZONTAL
+                    ipady = 4
+                    insets = Insets(4, 0, 0, 0)
+                })
+                val checkForceReinstall = JCheckBox().apply {
+                    isEnabled = updating
+                    addItemListener {
+                        buttonForceReinstall.isEnabled = isSelected
+                    }
+                }
+                buttonPane.add(checkForceReinstall, GridBagConstraints().apply {
+                    gridx = 3
+                    weightx = 0.1
+                    anchor = GridBagConstraints.LINE_END
+                    fill = GridBagConstraints.HORIZONTAL
+                    ipady = 4
+                    insets = Insets(4, 0, 0, 0)
+                })
+
+                val okText = if (updating) "Update" else "Install"
+                val button = JButton(okText).apply {
+                    addActionListener {
+                        isVisible = false
+                        success = true
+                        dispose()
+                    }
+                }
+
                 buttonPane.add(button, GridBagConstraints().apply {
                     gridx = 0
-                    weightx = 0.7
-                    anchor = GridBagConstraints.LINE_END
+                    gridy = 1
+//                    weightx = 6.0
+                    gridwidth = 4
+                    anchor = GridBagConstraints.LINE_START
                     fill = GridBagConstraints.HORIZONTAL
                     ipady = 4
                     insets = Insets(4, 0, 0, 0)
@@ -309,13 +410,17 @@ object MMCUtil : KLogging() {
                 }
             }
 
-            fun getValue(): Map<String, Boolean> {
-                isVisible = true
-                dispose()
-                return features.associateBy({ it.name }, { toggleButtons[it.name]!!.isSelected })
-            }
+//            fun getValue(): Pair<Map<String, Boolean>, Boolean> {
+//                isVisible = true
+//                dispose()
+//                return features.associateBy({ it.id }, { toggleButtons[it.id]!!.isSelected }) to force
+//            }
         }
         logger.info("created dialog")
-        return dialog.getValue()
+//        return dialog.getValue()
+
+        dialog.isVisible = true
+        dialog.dispose()
+        return features.associateBy({ it.name }, { toggleButtons[it.name]!!.isSelected }) to reinstall
     }
 }

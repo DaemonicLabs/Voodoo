@@ -18,7 +18,7 @@ import java.io.File
  */
 
 data class LockPack(
-        val name: String = "",
+        val id: String = "",
         val title: String = "",
         val version: String = "1.0",
         val authors: List<String> = emptyList(),
@@ -27,7 +27,7 @@ data class LockPack(
         val launch: Launch = Launch(),
         var userFiles: UserFiles = UserFiles(),
         var localDir: String = "local",
-        var sourceDir: String = name, //"src-$name",
+        var sourceDir: String = id, //"src-$id",
         val features: List<SKFeature> = emptyList()
 ) {
     @JsonIgnore
@@ -40,6 +40,7 @@ data class LockPack(
     }
 
     fun scanEntries() {
+        // TODO: call loadEntries
         //TODO: walk folders and get all LockEntries
     }
 
@@ -47,7 +48,7 @@ data class LockPack(
         fun fromJson(jsonObject: JsonObject): LockPack {
             return with(LockPack()) {
                 LockPack(
-                        name = jsonObject.getReified("name") ?: name,
+                        id = jsonObject.getReified("id") ?: id,
                         title = jsonObject.getReified("title") ?: title,
                         version = jsonObject.getReified("version") ?: version,
                         authors = jsonObject.getList("authors") ?: authors,
@@ -64,7 +65,7 @@ data class LockPack(
         fun toJson(lockpack: LockPack, marshaller: Marshaller): JsonObject {
             val jsonObject = JsonObject()
             with(lockpack) {
-                jsonObject["name"] = marshaller.serialize(name)
+                jsonObject["id"] = marshaller.serialize(id)
                 jsonObject["title"] = marshaller.serialize(title)
                 jsonObject["version"] = marshaller.serialize(version)
                 jsonObject["authors"] = marshaller.serialize(authors)
@@ -92,8 +93,8 @@ data class LockPack(
                 .forEach {
                     val entryJsonObj = jankson.load(it)
                     val lockEntry: LockEntry = jankson.fromJson(entryJsonObj)
-                    entriesMapping[lockEntry.name] = Pair(lockEntry, it.relativeTo(srcDir))
-//                    logger.info("loaded ${lockEntry.name} ${it.relativeTo(srcDir).path}")
+                    entriesMapping[lockEntry.id] = Pair(lockEntry, it.relativeTo(srcDir))
+//                    logger.info("loaded ${lockEntry.id} ${it.relativeTo(srcDir).path}")
                 }
     }
 }

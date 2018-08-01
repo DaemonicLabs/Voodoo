@@ -13,7 +13,6 @@ import java.io.File
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 30/03/18.
@@ -27,7 +26,7 @@ object SKPack : AbstractPack() {
     override suspend fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
         val cacheDir = directories.cacheHome
         val workspaceDir = rootFolder.resolve("workspace").absoluteFile
-        val modpackDir = workspaceDir.resolve(modpack.name)
+        val modpackDir = workspaceDir.resolve(modpack.id)
 
         val skSrcFolder = modpackDir.resolve("src")
         logger.info("cleaning modpack directory $skSrcFolder")
@@ -84,7 +83,7 @@ object SKPack : AbstractPack() {
                 val urlTxtFile = folder.resolve(file.name + ".url.txt")
                 urlTxtFile.writeText(url)
             }
-            targetFiles[entry.name] = file // file.relativeTo(skSrcFolder)
+            targetFiles[entry.id] = file // file.relativeTo(skSrcFolder)
         }
 
         // write features
@@ -106,6 +105,13 @@ object SKPack : AbstractPack() {
                 logger.info("includes = ${feature.files.include}")
             }
 
+            if(feature.properties.name.isBlank()) {
+//                feature.properties.name = modpack.entries.find {it.id == feature.}
+            }
+
+            logger.info ("entries: ${feature.entries}")
+            logger.info ( "properties: ${feature.properties}")
+
             features += SKFeatureComposite(
                     properties = feature.properties,
                     files = feature.files
@@ -115,7 +121,7 @@ object SKPack : AbstractPack() {
 
 
         val skmodpack = SKModpack(
-                name = modpack.name,
+                name = modpack.id,
                 title = modpack.title,
                 gameVersion = modpack.mcVersion,
                 userFiles = modpack.userFiles,
@@ -126,7 +132,7 @@ object SKPack : AbstractPack() {
         modpackPath.writeJson(skmodpack)
 
         // add to workspace.json
-        logger.info("adding {} to workpace.json", modpack.name)
+        logger.info("adding {} to workpace.json", modpack.id)
         val workspaceMetaFolder = workspaceDir.resolve(".modpacks")
         workspaceMetaFolder.mkdirs()
         val workspacePath = workspaceMetaFolder.resolve("workspace.json")
@@ -135,7 +141,7 @@ object SKPack : AbstractPack() {
         } else {
             SKWorkspace()
         }
-        workspace.packs += SKLocation(modpack.name)
+        workspace.packs += SKLocation(modpack.id)
 
         workspacePath.writeJson(workspace)
 
@@ -145,7 +151,7 @@ object SKPack : AbstractPack() {
             workspaceDir.resolve("_upload")
         }
 
-        val manifestDest = targetDir.resolve("${modpack.name}.json")
+        val manifestDest = targetDir.resolve("${modpack.id}.json")
 
         val uniqueVersion = "${modpack.version}." + DateTimeFormatter
                 .ofPattern("yyyyMMddHHmm")
@@ -169,12 +175,12 @@ object SKPack : AbstractPack() {
             SKPackages()
         }
 
-        val packFragment = packages.packages.find { it.name == modpack.name }
+        val packFragment = packages.packages.find { it.name == modpack.id }
                 ?: SkPackageFragment(
                         title = modpack.title,
-                        name = modpack.name,
+                        name = modpack.id,
                         version = uniqueVersion,
-                        location = "${modpack.name}.json"
+                        location = "${modpack.id}.json"
                 ).apply { packages.packages += this }
         packFragment.version = uniqueVersion
         packagesFile.writeJson(packages)

@@ -1,7 +1,7 @@
-# Short Name / folder name
-name: awesomePack
+# Short id / folder id
+id: awesomePack
 
-# Display Name
+# Display id
 title: Awesome Pack
 
 # Minecraft Version
@@ -37,26 +37,26 @@ root:
     entries:
 
     - url: https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar
-      name: Nutrition
+      id: Nutrition
 
     - url: https://centerofthemultiverse.net/launcher/mirror/BetterBuildersWands-1.12-0.11.1.245+69d0d70.jar
-      name: Better Builder's Wands
+      id: Better Builder's Wands
 
   - provider: JENKINS
     jenkinsUrl: https://ci.elytradev.com
     entries:
 
     - job: elytra/MagicArsenal/master
-      name: Magic Arsenal
+      id: Magic Arsenal
 
     - job: elytra/FruitPhone/1.12.2
-      name: FruitPhone
+      id: FruitPhone
       dependencies:
         REQUIRED:
           - ProbeDataProvider
 
     - job: elytra/ProbeDataProvider/1.12
-      name: ProbeDataProvider
+      id: ProbeDataProvider
 
   - side: SERVER
     entries:
@@ -69,7 +69,7 @@ root:
     - provider: JENKINS
       jenkinsUrl: https://ci.elytradev.com
       job: elytra/MatterLink/master
-      name: MatterLink
+      id: MatterLink
       dependencies:
         REQUIRED:
           - shadowfacts-forgelin
@@ -88,7 +88,7 @@ root:
     - custom-main-menu
     - default-options
     - fullscreen-windowed-borderless-for-minecraft
-    - mod-name-tooltip
+    - mod-id-tooltip
     - neat
     - reauth
     - cleanview
@@ -100,45 +100,45 @@ root:
         recommendation: starred
       entries:
 
-        - name: journeymap
+        - id: journeymap
           description: "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
 
-        - name: mage
+        - id: mage
           description: "Configurable graphics enhancements. Highly recomended."
 
-        - name: neat
+        - id: neat
           description: "Simple health and unit frames."
 
-        - name: client-tweaks
+        - id: client-tweaks
           description: "Various client related fixes and tweaks, all in a handy menu."
 
-        - name: mouse-tweaks
+        - id: mouse-tweaks
           description: "Add extra mouse gestures for inventories and crafting grids."
 
     - feature:
         selected: false
       entries:
 
-        - name: item-scroller
+        - id: item-scroller
           description: "Alternative to MouseTweaks."
 
-        - name: fancy-block-particles
+        - id: fancy-block-particles
          description: "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps. (Defaults set to be less intrusive.)"
 
-        - name: keyboard-wizard
+        - id: keyboard-wizard
           description: "Visual keybind manager."
 
 
     - feature:
         selected: false
       entries:
-      - name: unity
-        fileName: Unity.zip
+      - id: unity
+        fileid: Unity.zip
         description: "A nice, traditional-style resourcepack with support for many of our mods. Does have some minor visual bugs and is a tad heavy. Remember to apply from the main menu, and not in game!"
 
       - provider: DIRECT
         entries:
-        - name: Slice
+        - id: Slice
           folder: resourcepacks
           url: https://centerofthemultiverse.net/launcher/mirror/Slice.zip
           description: Resource pack to replace system font with something better.

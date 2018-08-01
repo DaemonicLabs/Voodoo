@@ -14,7 +14,7 @@ data class NestedPack(
         /**
          * Name of the Pack
          */
-        var name: String,
+        var id: String,
         var title: String = "",
         var version: String = "1.0",
         val authors: List<String> = emptyList(),
@@ -22,8 +22,8 @@ data class NestedPack(
         var mcVersion: String = "",
         var userFiles: UserFiles = UserFiles(),
         var root: NestedEntry = NestedEntry(Provider.CURSE.name),
-        var versionCache: File = File(".voodoo/", name),
-        var featureCache: File = File(".voodoo/", name),
+        var versionCache: File = File(".voodoo/", id),
+        var featureCache: File = File(".voodoo/", id),
         var localDir: String = "local",
         var sourceDir: String = "src"
 ) {
@@ -31,7 +31,7 @@ data class NestedPack(
 
     fun flatten(): ModPack {
         return ModPack(
-                name = name,
+                id = id,
                 title = title,
                 version = version,
                 authors = authors,
