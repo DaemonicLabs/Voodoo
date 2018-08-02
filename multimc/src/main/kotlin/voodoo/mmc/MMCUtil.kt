@@ -212,7 +212,7 @@ object MMCUtil : KLogging() {
                 val panel = JPanel()
                 panel.layout = GridBagLayout()
 
-                val setter = features.mapIndexed { row, feature ->
+                val setter = features.sortedBy { it.name }.mapIndexed { row, feature ->
                     val indicator = JCheckBox("", toggleButtons[feature.name]!!.isSelected)
                     panel.add(indicator,
                             GridBagConstraints().apply {
