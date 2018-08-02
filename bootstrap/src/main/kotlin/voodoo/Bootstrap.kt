@@ -36,8 +36,12 @@ fun main(args: Array<String>) {
 
 object Bootstrap : KLogging() {
 
+    private const val jenkinsUrl = JENKINS_URL
+    private const val jobKey = JENKINS_JOB
+    private const val fileNameRegex = FILE_REGEX
+
     private val directories: Directories = Directories.get(moduleName = "$MODULE_NAME-bootstrap")
-    private val binariesDir: File = directories.cacheHome
+    private val binariesDir: File = directories.cacheHome.resolve(jobKey.replace('/', '_'))
 
     fun cleanup() {
         val files = binariesDir.listFiles { pathname -> pathname.name.endsWith(".tmp") }
@@ -48,10 +52,6 @@ object Bootstrap : KLogging() {
             }
         }
     }
-
-    private const val jenkinsUrl = JENKINS_URL
-    private const val jobKey = JENKINS_JOB
-    private const val fileNameRegex = FILE_REGEX
 
     private suspend fun download(): File {
         val userAgent = "voodoo/$VERSION"
@@ -71,15 +71,17 @@ object Bootstrap : KLogging() {
             throw Exception()
         }
         val url = build.url + "artifact/" + artifact.relativePath
-        val tmpFile = binariesDir.resolve(jobKey.replace('/', '_')).resolve("$MODULE_NAME-$buildNumber.tmp")
-        val targetFile = binariesDir.resolve(jobKey.replace('/', '_')).resolve("$MODULE_NAME-$buildNumber.jar")
+        val tmpFile = binariesDir.resolve("$MODULE_NAME-$buildNumber.tmp")
+        val targetFile = binariesDir.resolve("$MODULE_NAME-$buildNumber.jar")
         if (!targetFile.exists()) {
             val (_, _, result) = url.httpGet()
                     .header("User-Agent" to userAgent)
                     .awaitByteArrayResponse()
             when (result) {
                 is Result.Success -> {
+                    tmpFile.parentFile.mkdirs()
                     tmpFile.writeBytes(result.value)
+                    targetFile.parentFile.mkdirs()
                     tmpFile.renameTo(targetFile)
                 }
                 is Result.Failure -> {
