@@ -30,24 +30,23 @@ suspend fun File.download(url: String, cacheDir: File, useragent: String = downl
     logger.debug("cacheFile $cacheFile")
     if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
     if (!cacheFile.exists() || !cacheFile.isFile) {
-        var redirect: Boolean
         var nextUrl = url
         do {
             val (request, response, result) = nextUrl.replace(" ", "%20")
                     .httpGet().header("User-Agent" to useragent)
                     .allowRedirects(false)
                     .awaitByteArrayResponse()
-            when (result) {
+            val isRedirect = when (result) {
                 is Result.Success -> {
                     cacheDir.mkdirs()
                     cacheFile.parentFile.mkdirs()
                     cacheFile.writeBytes(result.value)
-                    redirect = false
+                    false
                 }
                 is Result.Failure -> {
-                    redirect = response.isStatusRedirection
-                    if (redirect) {
+                    if (response.isStatusRedirection) {
                         nextUrl = response.headers["Location"]?.firstOrNull() ?: throw IllegalStateException("missing Location header")
+                        true
                     } else {
                         logger.error("invalid statusCode {} from {}", response.statusCode, fixedUrl)
                         logger.error("connection url: {}", request.url)
@@ -57,7 +56,7 @@ suspend fun File.download(url: String, cacheDir: File, useragent: String = downl
                     }
                 }
             }
-        } while (redirect)
+        } while (isRedirect)
     }
 
     try {
