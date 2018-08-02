@@ -5,13 +5,6 @@ PWD=$(pwd)
 
 cd $DIR
 
-$DIR/gradlew :server-installer:build
-
-if [ ! $? -eq 0 ]; then
-    echo "Error building server-installer"
-    exit 1
-fi
-
 pack=$1
 
 [ ! -e run ] && mkdir run
@@ -20,21 +13,27 @@ cd run
 [ ! -e "$pack" ] && mkdir "$pack"
 cd "$pack"
 
-[ ! -e ".server" ] && mkdir ".server"
-cd ".server"
+rm -rf "$PWD/.server/$pack"
+pwd
+echo
+echo packing $pack server
+echo
 
-[ ! -e "$pack" ] && mkdir "$pack"
-cd "$pack"
+$DIR/gradlew -p "$DIR" :voodoo:run --args "pack server $pack/$pack.lock.json -o '.server'"
+if [ ! $? -eq 0 ]; then
+    echo "Error packing $pack server"
+    exit 1
+fi
+
+cd "$PWD/.server/$pack"
 
 echo
 echo "installing $1 server"
 echo
 
-pwd
+cd "$DIR/run/.server/$pack"
 
-rm -rf run/
-
-java -jar "$DIR/server-installer/build/libs/server-installer-fat.jar" run
+$DIR/gradlew -p "$DIR" :server-installer:run --args ".server/$pack/run --file '.server/$pack/pack.lock.json'"
 if [ ! $? -eq 0 ]; then
     echo "Error Installing $pack"
     exit 1

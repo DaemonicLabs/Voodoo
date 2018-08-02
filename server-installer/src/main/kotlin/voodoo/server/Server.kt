@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit
 object Server {
     val directories = Directories.get(moduleName = "server-installer")
 
-
     suspend fun install(rootFolder: File, modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean, cleanConfig: Boolean) {
         val cacheDir = directories.cacheHome
 
@@ -52,7 +51,6 @@ object Server {
             logger.warn("minecraft directory $srcDir does not exist")
         }
 
-        //TODO: move to server package
         for (file in serverDir.walkTopDown()) {
             when {
                 file.name == "_CLIENT" -> file.deleteRecursively()
@@ -64,21 +62,18 @@ object Server {
         }
 
 
-        val jobs = modpack.entriesMapping.map { (name, pair) ->
-            launch {
-                delay(100)
-                logger.info("entry: $name")
-                val (entry, relEntryFile) = pair
-                val relativeFolder = relEntryFile.parentFile
-                if (entry.side == Side.CLIENT) return@launch
-                val provider = Provider.valueOf(entry.provider).base
-                val targetFolder = serverDir.resolve(relativeFolder)
-                logger.info("${relEntryFile.path} - ${relativeFolder.path} - ${targetFolder.path}")
-                val (url, file) = provider.download(entry, targetFolder, cacheDir)
-            }
-
+        modpack.entriesMapping.map { (name, pair) ->
+            delay(100)
+            logger.info("stared job $name")
+            logger.info("entry: $name")
+            val (entry, relEntryFile) = pair
+            val relativeFolder = relEntryFile.parentFile
+            if (entry.side == Side.CLIENT) return@map
+            val provider = Provider.valueOf(entry.provider).base
+            val targetFolder = serverDir.resolve(relativeFolder)
+            logger.info("${relEntryFile.path} - ${relativeFolder.path} - ${targetFolder.path}")
+            val (url, file) = provider.download(entry, targetFolder, cacheDir)
         }
-        runBlocking { jobs.forEach { it.join() } }
 
         // download forge
         val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
