@@ -32,7 +32,7 @@ object MMCPack : AbstractPack() {
         urlFile.copyTo(instanceDir.resolve("voodoo.url.txt"))
 
         val multimcInstaller = instanceDir.resolve("mmc-installer.jar")
-        val installer = DownloadVoodoo.downloadVoodoo(component = "multimc-installer", bootstrap = true,  fat = false, binariesDir = directories.cacheHome)
+        val installer = DownloadVoodoo.downloadVoodoo(component = "bootstrap-hex", bootstrap = true,  fat = false, binariesDir = directories.cacheHome)
         installer.copyTo(multimcInstaller)
 
         val packignore = instanceDir.resolve(".packignore")
