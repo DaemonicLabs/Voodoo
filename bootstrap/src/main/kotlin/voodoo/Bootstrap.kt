@@ -50,13 +50,13 @@ object Bootstrap : KLogging() {
     }
 
     private const val jenkinsUrl = JENKINS_URL
-    private const val job = JENKINS_JOB
+    private const val jobKey = JENKINS_JOB
     private const val fileNameRegex = FILE_REGEX
 
     private suspend fun download(): File {
         val userAgent = "voodoo/$VERSION"
         val server = JenkinsServer(jenkinsUrl)
-        val job = server.getJob(job, userAgent)!!
+        val job = server.getJob(jobKey, userAgent)!!
         val build = job.lastSuccessfulBuild?.details(userAgent)!!
         val buildNumber = build.number
         logger.info("lastSuccessfulBuild: $buildNumber")
@@ -71,8 +71,8 @@ object Bootstrap : KLogging() {
             throw Exception()
         }
         val url = build.url + "artifact/" + artifact.relativePath
-        val tmpFile = File(binariesDir, "$MODULE_NAME-$buildNumber.tmp")
-        val targetFile = File(binariesDir, "$MODULE_NAME-$buildNumber.jar")
+        val tmpFile = binariesDir.resolve(jobKey.replace('/', '_')).resolve("$MODULE_NAME-$buildNumber.tmp")
+        val targetFile = binariesDir.resolve(jobKey.replace('/', '_')).resolve("$MODULE_NAME-$buildNumber.jar")
         if (!targetFile.exists()) {
             val (_, _, result) = url.httpGet()
                     .header("User-Agent" to userAgent)
