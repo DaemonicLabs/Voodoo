@@ -14,8 +14,8 @@ object MMCPack : AbstractPack() {
     override suspend fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
         val targetDir = File(target ?: ".multimc")
         val definitionsDir = File("multimc").apply { mkdirs() }
-        val cacheDir = directories.cacheHome.resolve("mmc")
-        val instanceDir = cacheDir.resolve(modpack.id)
+        val cacheDir = directories.cacheHome
+        val instanceDir = cacheDir.resolve("MMC").resolve(modpack.id)
         instanceDir.deleteRecursively()
 
         val iconFile = definitionsDir.resolve("${modpack.id}.icon.png")

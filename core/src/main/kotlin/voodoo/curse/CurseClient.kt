@@ -80,6 +80,9 @@ object CurseClient : KLogging() {
         val (request, response, result) = url.httpPost()
                 .body(mapper.writeValueAsBytes(graphQlRequest))
                 .header("User-Agent" to useragent, "Content-Type" to "application/json")
+                .apply {
+                    httpHeaders["Content-Type"] = "application/json"
+                }
                 .awaitStringResponse()
         return when (result) {
             is Result.Success -> {
@@ -89,7 +92,7 @@ object CurseClient : KLogging() {
                 logger.error { request }
                 logger.error { response }
                 logger.error { result }
-                throw Exception("failed getting id-id pairs")
+                throw Exception("failed getting name-id pairs")
             }
         }
     }
@@ -129,10 +132,6 @@ object CurseClient : KLogging() {
         }
     }
 
-//    suspend fun getAddonFile(addonId: Int, fileId: Int, proxyUrl: String)  {
-//        CurseClient::getAddonFileCall.memoize()
-//    }
-
     suspend fun getAllFilesForAddon(addonId: Int, proxyUrl: String): List<AddonFile> {
         val url = "${proxyUrl}/addon/$addonId/files"
 
@@ -147,8 +146,6 @@ object CurseClient : KLogging() {
             else -> throw Exception("failed getting cursemeta data")
         }
     }
-
-//    val getAllFilesForAddon = CurseClient::getAllFilesForAddonCall.memoize()
 
     suspend fun getAddon(addonId: Int, proxyUrl: String): Addon? {
         val url = "$proxyUrl/addon/$addonId"
@@ -167,8 +164,6 @@ object CurseClient : KLogging() {
             }
         }
     }
-
-//    val getAddon = CurseClient::getAddonCall.memoize()
 
     suspend fun getFileChangelog(addonId: Int, fileId: Int, proxyUrl: String): String {
         val url = "${proxyUrl}/addon/$addonId/file/$fileId/changelog"
@@ -210,6 +205,44 @@ object CurseClient : KLogging() {
         return slugIdMap[slug]
                 ?.let { getAddon(it, proxyUrl) }
     }
+
+    /*
+    data class CurseMetaDbEntry(
+            val id: Int,
+            val game: Int,
+            val name: String,
+            val category: String,
+            val downloads: Int,
+            val score: Double
+    )
+
+    //    var nameIdMap: MutableMap<String, Int> = mutableMapOf()
+//        private set
+    private var slugIdMap: MutableMap<String, Int> = mutableMapOf()
+
+    suspend fun getAddonBySlug(slug: String, proxyUrl: String = PROXY_URL): Addon? {
+        val id = slugIdMap.getOrPut(slug) {
+            val (request, response, result) = "https://staging_cursemeta.dries007.net/api/v0/db/slug".httpGet(listOf("slug" to slug))
+                    .header("User-Agent" to useragent)
+                    .awaitStringResponse()
+            val mapping: Map<String, CurseMetaDbEntry> = when(result) {
+                is Result.Success -> {
+                    mapper.readValue(result.value)
+                }
+                is Result.Failure -> {
+                    logger.error("invalid statusCode {} from {}", response.statusCode, "https://staging_cursemeta.dries007.net/api/v0/db/slug")
+                    logger.error("connection url: {}", request.url)
+                    logger.error("content: {}", result.component1())
+                    logger.error("error: {}", result.error.toString())
+                    throw Exception("failed getting cursemeta slug data")
+                }
+            }
+            mapping["slug"]?.id ?: return null
+        }
+
+        return getAddon(id, proxyUrl)
+    }
+     */
 
     suspend fun findFile(entry: Entry, mcVersion: String, proxyUrl: String = PROXY_URL): Triple<Int, Int, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
