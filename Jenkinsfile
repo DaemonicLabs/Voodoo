@@ -4,6 +4,7 @@ pipeline {
 	    stage("init") {
 	        steps {
 	            sh 'git submodule update --init --recursive'
+	            sh './gradlew clean'
 	        }
 	    }
 	    stage("voodoo") {
