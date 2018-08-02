@@ -6,11 +6,8 @@ mainClassName = "voodoo.Pack"
 
 def runDir = parent.project.file("run").path
 
-def runArgs = ["openpack.lock.json", "sk"]
-
 run {
     workingDir = runDir
-    args = runArgs
 }
 
 dependencies {
