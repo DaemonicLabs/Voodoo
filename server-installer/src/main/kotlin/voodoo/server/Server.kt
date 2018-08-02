@@ -22,7 +22,7 @@ object Server {
     val directories = Directories.get(moduleName = "server-installer")
 
 
-    fun install(rootFolder: File, modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean, cleanConfig: Boolean) {
+    suspend fun install(rootFolder: File, modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean, cleanConfig: Boolean) {
         val cacheDir = directories.cacheHome
 
         if (clean) {

@@ -63,6 +63,7 @@ object Pack : KLogging() {
                 "sk" -> SKPack
                 "mmc" -> MMCPack
                 "mmc-static" -> MMCStaticPack
+                "mmc-fat" -> MMCFatPack
                 "server" -> ServerPack
                 "curse" -> CursePack
 
@@ -80,7 +81,7 @@ object Pack : KLogging() {
 
     private class Arguments(parser: ArgParser) {
         val methode by parser.positional("METHODE",
-                help = "format to package into") { this.toLowerCase()}
+                help = "format to package into") { this.toLowerCase() }
                 .default("")
 
         val modpackLockFile by parser.positional("FILE",

@@ -5,6 +5,7 @@ import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.InvalidArgumentException
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.data.UserFiles
 import voodoo.data.flat.EntryFeature
@@ -48,8 +49,8 @@ object Install : KLogging() {
         parser.force()
 
         parsedArgs.run {
-            logger.info ("target dir: $targetDir")
-            logger.info ("pack file: $packFile")
+            logger.info("target dir: $targetDir")
+            logger.info("pack file: $packFile")
             logger.info("cleanConfig: $cleanConfig")
 
             val jsonObject = jankson.load(packFile)
@@ -57,7 +58,9 @@ object Install : KLogging() {
             val rootFolder = packFile.absoluteFile.parentFile
             modpack.loadEntries(rootFolder, jankson)
 
-            Server.install(rootFolder, modpack, targetDir, skipForge, clean, cleanConfig)
+            runBlocking {
+                Server.install(rootFolder, modpack, targetDir, skipForge, clean, cleanConfig)
+            }
         }
     }
 
@@ -65,7 +68,7 @@ object Install : KLogging() {
         val targetDir by parser.positional("TARGET",
                 help = "output folder") { File(this).absoluteFile }
                 .addValidator {
-                    if(value.exists() && !value.isDirectory) {
+                    if (value.exists() && !value.isDirectory) {
                         throw InvalidArgumentException("$value exists and is not a directory")
                     }
                 }
