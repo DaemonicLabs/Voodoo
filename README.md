@@ -53,6 +53,7 @@ https://elytra.github.io/Voodoo
 - [Setup](docs/setup)
 - [Building](docs/building)
 - [Testing](docs/testing)
+- [Server](docs/server)
 
 ## Get it
 
