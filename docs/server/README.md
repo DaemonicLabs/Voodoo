@@ -35,4 +35,9 @@ cd ~/server/upload/awesomepack
 java -jar server-installer.jar ~/server/run/awesomepack
 ```
 
+the forge installer has been executed and the executable jar has been copied to `forge.jar`
 now the minecraft server can be safely restarted
+
+```bash
+java -jar forge.jar
+```
