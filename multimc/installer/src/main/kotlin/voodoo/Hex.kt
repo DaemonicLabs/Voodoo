@@ -45,7 +45,7 @@ object Hex : KLogging() {
     fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
 
         val urlFile = instanceDir.resolve("voodoo.url.txt")
-        val packUrl = urlFile.readText()
+        val packUrl = urlFile.readText().trim()
         val (_, _, result) = packUrl.httpGet()
 //                .header("User-Agent" to useragent)
                 .responseString()
