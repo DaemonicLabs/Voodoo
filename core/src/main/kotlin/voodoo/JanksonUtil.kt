@@ -37,3 +37,15 @@ inline fun <reified T : Any> JsonObject.getList(key: String): List<T>? {
         }
     }
 }
+inline fun <reified V: Any> JsonObject.getMap(key: String): Map<String, V>? {
+    return this[key]?.let { obj ->
+        when (obj) {
+            is JsonObject -> {
+                obj.keys.associate { key ->
+                    key to (obj.getReified<V>(key) ?: throw NullPointerException("cannot parse ${obj[key]}"))
+                }
+            }
+            else -> null
+        }
+    }
+}

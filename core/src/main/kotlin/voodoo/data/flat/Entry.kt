@@ -10,8 +10,10 @@ import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
 import voodoo.data.provider.UpdateChannel
 import voodoo.getList
+import voodoo.getMap
 import voodoo.getReified
 import voodoo.util.equalsIgnoreCase
+import voodoo.util.json
 
 /**
  * Created by nikky on 28/03/18.
@@ -31,6 +33,7 @@ data class Entry(
         var side: Side = Side.BOTH,
         var websiteUrl: String = "",
         var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+        var replaceDependencies: Map<String, String> = mapOf(),
         //@JsonInclude(JsonInclude.Include.ALWAYS)
 //        var optional: Boolean = feature != null,
         var packageType: PackageType = PackageType.MOD,
@@ -88,6 +91,7 @@ data class Entry(
                 jsonObj["side"] = marshaller.serialize(side)
                 jsonObj["websiteUrl"] = marshaller.serialize(websiteUrl)
                 jsonObj["dependencies"] = marshaller.serialize(dependencies)
+                jsonObj["replaceDependencies"] = marshaller.serialize(replaceDependencies)
 //                jsonObj["optional"] = marshaller.serialize(optional)
                 jsonObj["packageType"] = marshaller.serialize(packageType)
                 jsonObj["transient"] = marshaller.serialize(transient)
@@ -151,6 +155,7 @@ data class Entry(
                             }
                         } ?: dependencies,
                         //jsonObj.getReified("dependencies") ?: dependencies,
+                        replaceDependencies = jsonObj.getMap<String>("replaceDependencies") ?: replaceDependencies,
 //                        optional = jsonObj.getReified("optional") ?: optional,
                         packageType = jsonObj.getReified("packageType") ?: packageType,
                         transient = jsonObj.getReified("transient") ?: transient,

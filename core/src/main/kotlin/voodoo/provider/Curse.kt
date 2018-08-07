@@ -64,7 +64,8 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     override suspend fun getProjectPage(entry: LockEntry): String {
-        return "https://minecraft.curseforge.com/projects/${entry.projectID}"
+        val addon = CurseClient.getAddon(entry.projectID, entry.curseMetaUrl)
+        return "https://minecraft.curseforge.com/projects/${addon?.slug ?: entry.projectID}"
         //CurseClient.getProjectPage(entry.projectID, modpack.curseMetaUrl)
     }
 
@@ -102,13 +103,24 @@ object CurseProviderThing : ProviderBase, KLogging() {
 
         for ((depAddonId, depType) in dependencies) {
             logger.info("resolve Dep $depAddonId")
-            val depAddon = getAddon(depAddonId, entry.curseMetaUrl) ?: continue
+            val depAddon = getAddon(depAddonId, entry.curseMetaUrl) ?: throw Exception("could not retrieve addon for id: $depAddonId")
 
 //            val depends = entry.dependencies
             var dependsSet = entry.dependencies[depType]?.toSet() ?: setOf<String>()
             logger.info("get dependency $depType = $dependsSet + ${depAddon.slug}")
             if (!dependsSet.contains(depAddon.slug)) {
-                logger.info("${entry.id} adding dependency ${depAddon.id}")
+                val replacementSlug = entry.replaceDependencies[depAddon.slug]
+                if(replacementSlug != null) {
+                    if(replacementSlug.isNotBlank()) {
+                        logger.info("${entry.id} adding replaced dependency ${depAddon.id} ${depAddon.slug} -> $replacementSlug")
+                        dependsSet += replacementSlug
+                    } else {
+                        logger.info("ignoring dependency ${depAddon.id} ${depAddon.slug}")
+                    }
+                    continue
+                }
+
+                logger.info("${entry.id} adding dependency ${depAddon.id}  ${depAddon.slug}")
                 dependsSet += depAddon.slug
             }
             entry.dependencies[depType] = dependsSet.toList()
@@ -153,7 +165,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
     override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
         val addonFile = getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)
         if (addonFile == null) {
-            logger.error("cannot download ${entry.projectID}:${entry.fileID}")
+            logger.error("cannot download ${entry.id} ${entry.projectID}:${entry.fileID}")
             exitProcess(3)
         }
         val targetFile = targetFolder.resolve(entry.fileName ?: addonFile.fileNameOnDisk)
