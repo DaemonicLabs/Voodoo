@@ -20,9 +20,10 @@ object MultiMCTester : AbstractTester() {
 
     override suspend fun execute(modpack: LockPack, clean: Boolean) {
         val folder = "voodoo_test_${modpack.id}"
-        val title = "${modpack.title.blankOr ?: modpack.id} Voodoo Test"
+        val title = "${modpack.title.blankOr ?: modpack.id} Test Instance"
 
         val cacheDir = directories.cacheHome
+        val mmcConfigDir = File("multimc")
         val multimcDir = MMCUtil.findDir()
         val instanceDir = multimcDir.resolve("instances").resolve(folder)
 
@@ -33,7 +34,7 @@ object MultiMCTester : AbstractTester() {
 
         instanceDir.mkdirs()
 
-        val iconFile = File("multimc").resolve("${modpack.id}.icon.png")
+        val iconFile = mmcConfigDir.resolve("${modpack.id}.icon.png")
         val minecraftDir = MMCUtil.installEmptyPack(title, folder, icon = iconFile, mcVersion = modpack.mcVersion, forgeBuild = modpack.forge)
 
         minecraftDir.mkdirs()
