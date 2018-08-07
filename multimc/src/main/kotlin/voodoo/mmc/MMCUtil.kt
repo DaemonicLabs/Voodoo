@@ -1,12 +1,19 @@
 package voodoo.mmc
 
+import blue.endless.jankson.Jankson
+import blue.endless.jankson.JsonObject
+import blue.endless.jankson.impl.Marshaller
 import com.sun.jna.Platform
 import mu.KLogging
 import voodoo.data.Recommendation
 import voodoo.data.sk.FeatureProperties
 import voodoo.forge.Forge
+import voodoo.fromJson
+import voodoo.getReified
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
+import voodoo.registerSerializer
+import voodoo.registerTypeAdapter
 import voodoo.util.Directories
 import voodoo.util.readJson
 import voodoo.util.writeJson
@@ -24,12 +31,53 @@ import kotlin.system.exitProcess
 object MMCUtil : KLogging() {
     private val directories = Directories.get(moduleName = "multimc")
     private val cacheHome = directories.cacheHome
+    val configHome = Directories.get().configHome
+
+    private val jankson = Jankson.Builder()
+            .registerTypeAdapter { jsonObj ->
+                with(MMCConfiguration()) {
+                    MMCConfiguration(
+                        binary = jsonObj.getReified("binary") ?: this.binary,
+                        path = jsonObj.getReified<String>("path")?.let { File(System.getProperty("user.home")).resolve(it) } ?: this.path
+                    )
+                }
+            }
+            .registerSerializer { mmcConfig: MMCConfiguration, marshaller: Marshaller ->
+                val jsonObj = JsonObject()
+                jsonObj["binary"] = marshaller.serialize(mmcConfig.binary)
+                jsonObj["path"] = marshaller.serialize(mmcConfig.path.toRelativeString(File(System.getProperty("user.home"))))
+                jsonObj
+            }
+            .build()
+
+    data class MMCConfiguration(
+            val binary: String = "multimc",
+            val path: File = File(System.getProperty("user.home") + "/.local/share/multimc")
+    )
+    val mmcConfig: MMCConfiguration
+
+    init {
+        val mmcConfigurationFile = configHome.resolve("multimc.hjson")
+        logger.info("loading multimc config $mmcConfigurationFile")
+        mmcConfig = when {
+            mmcConfigurationFile.exists() -> {
+                val jsonObj = jankson.load(mmcConfigurationFile)
+                jankson.fromJson(jsonObj)
+            }
+            else -> MMCConfiguration()
+        }
+
+        val json = jankson.marshaller.serialize(mmcConfig)//.toJson(true, true)
+        if (json is JsonObject) {
+            val defaultJson = JsonObject() //jankson.marshaller.serialize(MMCConfiguration()) as JsonObject
+            val delta = json.getDelta(defaultJson)
+            mmcConfigurationFile.parentFile.mkdirs()
+            mmcConfigurationFile.writeText(delta.toJson(true, true).replace("\t", "  "))
+        }
+    }
 
     fun startInstance(name: String) {
-        val workingDir = cacheHome.resolve(name).apply { mkdirs() }
-
-        ProcessBuilder("multimc", "--launch", name)
-                .directory(workingDir)
+          ProcessBuilder(mmcConfig.binary, "--launch", name)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 .redirectError(ProcessBuilder.Redirect.INHERIT)
                 .start()
@@ -37,26 +85,30 @@ object MMCUtil : KLogging() {
         logger.info("started multimc instance $name")
     }
 
+
     /**
      * Finds the MultiMC data loccation
      */
-    fun findDir(): File = when {
-        Platform.isWindows() -> {
-            val location = "where multimc".runCommand()
-            val multimcFile = File(location)
-            multimcFile.parentFile ?: run {
-                logger.error { multimcFile }
-                logger.error("Cannot find MultiMC on PATH")
-                logger.error("make sure to add the multimc install location to the PATH")
-                logger.error("go to `Control Panel\\All Control Panel Items\\System`" +
-                        " >> Advanced system settings" +
-                        " >> Environment Variables")
-                logger.info("once added restart the shell and try to execute `multimc`")
-                exitProcess(1)
+    fun findDir(): File {
+
+        return when {
+            Platform.isWindows() -> {
+                val location = "where ${mmcConfig.binary}".runCommand()
+                val multimcFile = File(location)
+                multimcFile.parentFile ?: run {
+                    logger.error { multimcFile }
+                    logger.error("Cannot find MultiMC on PATH")
+                    logger.error("make sure to add the multimc install location to the PATH")
+                    logger.error("go to `Control Panel\\All Control Panel Items\\System`" +
+                            " >> Advanced system settings" +
+                            " >> Environment Variables")
+                    logger.info("once added restart the shell and try to execute `multimc`")
+                    exitProcess(1)
+                }
             }
+            Platform.isLinux() -> File(System.getProperty("user.home")).resolve(mmcConfig.path)
+            else -> throw Exception("unsupported platform, on OSX please contact NikkyAi to implement this or OR")
         }
-        Platform.isLinux() -> File(System.getProperty("user.home") + "/.local/share/multimc")
-        else -> throw Exception("unsupported platform")
     }
 
     fun String.runCommandWithRedirct(workingDir: File = cacheHome) {
@@ -106,7 +158,7 @@ object MMCUtil : KLogging() {
      */
     fun installEmptyPack(name: String, folder: String,
                          icon: File? = null, mcVersion: String? = null, forgeBuild: Int? = null,
-                         instanceDir: File = MMCUtil.findDir().resolve("instances").resolve(folder),
+                         instanceDir: File = with(MMCUtil.findDir()) { this.resolve(readCfg(this.resolve("multimc.cfg"))["InstanceDir"] ?: "instances").resolve(folder) },
                          preLaunchCommand: String? = null): File {
         instanceDir.mkdirs()
 
@@ -158,7 +210,7 @@ object MMCUtil : KLogging() {
             sortedMapOf()
 
         cfg["InstanceType"] = "OneSix"
-        cfg["id"] = name
+        cfg["name"] = name
         cfg["iconKey"] = iconKey
 
         if (preLaunchCommand != null) {
