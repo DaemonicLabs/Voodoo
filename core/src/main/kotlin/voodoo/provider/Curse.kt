@@ -26,7 +26,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
     override suspend  fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         val (projectID, fileID, path) = findFile(entry, modpack.mcVersion, entry.curseMetaUrl)
 
-        logger.info { resolved }
+        logger.info ("resolved: $resolved")
         resolved += entry.id
 
         //TODO: move into appropriate place or remove
@@ -64,9 +64,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     override suspend fun getProjectPage(entry: LockEntry): String {
-        val addon = CurseClient.getAddon(entry.projectID, entry.curseMetaUrl)
-        return "https://minecraft.curseforge.com/projects/${addon?.slug ?: entry.projectID}"
-        //CurseClient.getProjectPage(entry.projectID, modpack.curseMetaUrl)
+        return CurseClient.getProjectPage(entry.projectID, entry.curseMetaUrl)
     }
 
     override suspend fun getVersion(entry: LockEntry): String {
@@ -75,7 +73,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     override suspend fun getLicense(entry: LockEntry): String {
-        return "https://minecraft.curseforge.com/projects/${entry.fileID}/license"
+        return getProjectPage(entry) + "/license"
     }
 
     override suspend fun getThumbnail(entry: LockEntry): String {

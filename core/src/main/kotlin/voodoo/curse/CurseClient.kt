@@ -35,8 +35,6 @@ object CurseClient : KLogging() {
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
 //            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
 
-    var nameIdMap: Map<String, Int> = runBlocking { initNameIdMap() }
-        private set
     var slugIdMap: Map<String, Int> = runBlocking { initSlugIdMap() }
         private set
 
@@ -48,7 +46,6 @@ object CurseClient : KLogging() {
 
     data class IdNamePair(
             val id: Int,
-            val name: String,
             val slug: String
     )
 
@@ -70,7 +67,6 @@ object CurseClient : KLogging() {
                     |{
                     |  addons {
                     |    id
-                    |    name
                     |    slug
                     |  }
                     |}
@@ -101,16 +97,6 @@ object CurseClient : KLogging() {
         val grapqhQlResult = graphQLRequest()
         return grapqhQlResult.data.addons.groupBy(
                 { it.slug },
-                { it.id }).mapValues {
-            //(slug, list) ->
-            it.value.first()
-        }
-    }
-
-    private suspend fun initNameIdMap(): Map<String, Int> {
-        val grapqhQlResult = graphQLRequest()
-        return grapqhQlResult.data.addons.groupBy(
-                { it.name },
                 { it.id }).mapValues {
             //(slug, list) ->
             it.value.first()
@@ -180,21 +166,6 @@ object CurseClient : KLogging() {
         }
     }
 
-//    val getFileChangelog = CurseClient::getFileChangelogCall.memoize()
-
-    @Deprecated("use slugs instead")
-    suspend fun getAddonByName(name: String, proxyUrl: String = PROXY_URL): Addon? {
-        nameIdMap.entries.firstOrNull { it.key.equalsIgnoreCase(name) }
-                ?.value
-                ?.let { getAddon(it, proxyUrl) }
-                ?.let {
-                    return it
-                }
-        nameIdMap = initNameIdMap()
-        return nameIdMap[name]
-                ?.let { getAddon(it, proxyUrl) }
-    }
-
     suspend fun getAddonBySlug(slug: String, proxyUrl: String = PROXY_URL): Addon? {
         slugIdMap[slug]
                 ?.let { getAddon(it, proxyUrl) }
@@ -205,44 +176,6 @@ object CurseClient : KLogging() {
         return slugIdMap[slug]
                 ?.let { getAddon(it, proxyUrl) }
     }
-
-    /*
-    data class CurseMetaDbEntry(
-            val id: Int,
-            val game: Int,
-            val name: String,
-            val category: String,
-            val downloads: Int,
-            val score: Double
-    )
-
-    //    var nameIdMap: MutableMap<String, Int> = mutableMapOf()
-//        private set
-    private var slugIdMap: MutableMap<String, Int> = mutableMapOf()
-
-    suspend fun getAddonBySlug(slug: String, proxyUrl: String = PROXY_URL): Addon? {
-        val id = slugIdMap.getOrPut(slug) {
-            val (request, response, result) = "https://staging_cursemeta.dries007.net/api/v0/db/slug".httpGet(listOf("slug" to slug))
-                    .header("User-Agent" to useragent)
-                    .awaitStringResponse()
-            val mapping: Map<String, CurseMetaDbEntry> = when(result) {
-                is Result.Success -> {
-                    mapper.readValue(result.value)
-                }
-                is Result.Failure -> {
-                    logger.error("invalid statusCode {} from {}", response.statusCode, "https://staging_cursemeta.dries007.net/api/v0/db/slug")
-                    logger.error("connection url: {}", request.url)
-                    logger.error("content: {}", result.component1())
-                    logger.error("error: {}", result.error.toString())
-                    throw Exception("failed getting cursemeta slug data")
-                }
-            }
-            mapping["slug"]?.id ?: return null
-        }
-
-        return getAddon(id, proxyUrl)
-    }
-     */
 
     suspend fun findFile(entry: Entry, mcVersion: String, proxyUrl: String = PROXY_URL): Triple<Int, Int, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
@@ -370,7 +303,7 @@ object CurseClient : KLogging() {
 
     suspend fun getProjectPage(projectID: Int, proxyUrl: String): String {
         val addon = getAddon(projectID, proxyUrl)!!
-        return addon.webSiteURL
+        return "https://minecraft.curseforge.com/projects/${addon.slug}"
     }
 }
 
