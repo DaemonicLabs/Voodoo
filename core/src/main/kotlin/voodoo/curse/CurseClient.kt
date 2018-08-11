@@ -182,7 +182,7 @@ object CurseClient : KLogging() {
         val slug = entry.id //TODO: maybe make into separate property
         val version = entry.version
         val releaseTypes = entry.curseReleaseTypes
-        var addonId = -1
+        var addonId = entry.curseProjectID
         val fileNameRegex = entry.fileNameRegex
 
         val addon = if (addonId < 0) {
@@ -199,6 +199,11 @@ object CurseClient : KLogging() {
         }
 
         addonId = addon.id
+
+        if (entry.curseFileID > 0) {
+            val file = getAddonFile(addonId = addonId, fileId = entry.curseFileID, proxyUrl = proxyUrl)!!
+            return Triple(addonId, file.id, addon.categorySection.path)
+        }
 
         val re = Regex(fileNameRegex)
 

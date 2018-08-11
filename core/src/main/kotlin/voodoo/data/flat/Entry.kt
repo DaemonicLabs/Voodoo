@@ -50,6 +50,8 @@ data class Entry(
         var curseMetaUrl: String = PROXY_URL,
         var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
         var curseOptionalDependencies: Boolean = false,
+        var curseProjectID: Int = -1,
+        var curseFileID: Int = -1,
         // DIRECT
         var url: String = "",
         var useUrlTxt: Boolean = true,

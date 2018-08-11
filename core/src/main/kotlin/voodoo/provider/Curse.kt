@@ -23,16 +23,16 @@ object CurseProviderThing : ProviderBase, KLogging() {
     override val name = "Curse Provider"
     val resolved = mutableListOf<String>()
 
-    override suspend  fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
+    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
         val (projectID, fileID, path) = findFile(entry, modpack.mcVersion, entry.curseMetaUrl)
 
-        logger.info ("resolved: $resolved")
+        logger.info("resolved: $resolved")
         resolved += entry.id
 
         //TODO: move into appropriate place or remove
         // this is currently just used to validate that there is no entries getting resolved multiple times
         val count = resolved.count { entry.id == it }
-        if(count > 1) {
+        if (count > 1) {
             throw Exception("duplicate effort ${entry.id} entry counted: $count")
         }
 
@@ -101,15 +101,16 @@ object CurseProviderThing : ProviderBase, KLogging() {
 
         for ((depAddonId, depType) in dependencies) {
             logger.info("resolve Dep $depAddonId")
-            val depAddon = getAddon(depAddonId, entry.curseMetaUrl) ?: throw Exception("could not retrieve addon for id: $depAddonId")
+            val depAddon = getAddon(depAddonId, entry.curseMetaUrl)
+                    ?: throw Exception("could not retrieve addon for id: $depAddonId")
 
 //            val depends = entry.dependencies
             var dependsSet = entry.dependencies[depType]?.toSet() ?: setOf<String>()
             logger.info("get dependency $depType = $dependsSet + ${depAddon.slug}")
             if (!dependsSet.contains(depAddon.slug)) {
                 val replacementSlug = entry.replaceDependencies[depAddon.slug]
-                if(replacementSlug != null) {
-                    if(replacementSlug.isNotBlank()) {
+                if (replacementSlug != null) {
+                    if (replacementSlug.isNotBlank()) {
                         logger.info("${entry.id} adding replaced dependency ${depAddon.id} ${depAddon.slug} -> $replacementSlug")
                         dependsSet += replacementSlug
                     } else {
@@ -173,7 +174,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
 
     override suspend fun getReleaseDate(entry: LockEntry): Instant? {
         val addonFile = getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)
-        return when(addonFile) {
+        return when (addonFile) {
             null -> return null
             else -> {
                 addonFile.fileDate.toInstant()
