@@ -47,6 +47,8 @@ data class NestedEntry(
         var curseMetaUrl: String = CurseConstancts.PROXY_URL,
         var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
         var curseOptionalDependencies: Boolean = false,
+        var curseProjectID: Int = -1,
+        var curseFileID: Int = -1,
         //  DIRECT
         var url: String = "",
         var useUrlTxt: Boolean = true,
@@ -100,6 +102,8 @@ data class NestedEntry(
                     curseMetaUrl = it.curseMetaUrl,
                     curseReleaseTypes = it.curseReleaseTypes,
                     curseOptionalDependencies = it.curseOptionalDependencies,
+                    curseProjectID = curseProjectID,
+                    curseFileID = curseFileID,
                     // DIRECT
                     url = it.url,
                     useUrlTxt = it.useUrlTxt,// JENKINS
