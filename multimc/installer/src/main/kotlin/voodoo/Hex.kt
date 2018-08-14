@@ -85,10 +85,13 @@ object Hex : KLogging() {
         }
 
         val forgePrefix = "net.minecraftforge:forge:"
-        val (_, _, forgeVersion) = modpack.versionManifest.libraries.find {
+        var (_, _, forgeVersion) = modpack.versionManifest.libraries.find {
             it.name.startsWith(forgePrefix)
         }?.name.let { it ?: "::" }.split(':')
-
+        logger.info("forge version is $forgeVersion")
+        while (forgeVersion.count { it == '-' } > 1) {
+            forgeVersion = forgeVersion.substringBeforeLast("-")
+        }
         logger.info("forge version is $forgeVersion")
 
         // read user input
