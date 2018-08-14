@@ -105,7 +105,7 @@ object CurseImporter : AbstractImporter() {
             val lockEntry = LockEntry(
                     provider = "CURSE",
                     id = nestedEntry.id,
-                    //folder = path, //maybe use entry.folder only if its non-default
+                    //rootFolder = path, //maybe use entry.rootFolder only if its non-default
                     useUrlTxt = true,
                     projectID = projectID,
                     fileID = fileID

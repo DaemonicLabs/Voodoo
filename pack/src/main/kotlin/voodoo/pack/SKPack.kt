@@ -23,18 +23,18 @@ object SKPack : AbstractPack() {
 
     override val label = "SK Packer"
 
-    override suspend fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
+    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
         val cacheDir = directories.cacheHome
-        val workspaceDir = rootFolder.resolve("workspace").absoluteFile
+        val workspaceDir = modpack.rootFolder.resolve("workspace").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.id)
 
         val skSrcFolder = modpackDir.resolve("src")
         logger.info("cleaning modpack directory $skSrcFolder")
         skSrcFolder.deleteRecursively()
-        logger.info("copying files into src ${modpack.sourceDir}")
-        val packSrc = rootFolder.resolve(modpack.sourceDir)
+        logger.info("copying files into src ${modpack.sourceFolder}")
+        val packSrc = modpack.sourceFolder
         if(skSrcFolder.startsWith(packSrc)) {
-            throw IllegalStateException("cannot copy parent folder '$packSrc' into subfolder '$skSrcFolder'")
+            throw IllegalStateException("cannot copy parent rootFolder '$packSrc' into subfolder '$skSrcFolder'")
         }
         if (packSrc.exists()) {
             logger.debug("cp -r $packSrc $skSrcFolder")

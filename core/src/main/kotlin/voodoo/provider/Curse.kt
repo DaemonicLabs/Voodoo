@@ -45,7 +45,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
                 id = entry.id,
                 name = entry.name,
                 curseMetaUrl = entry.curseMetaUrl,
-                //folder = path, //maybe use entry.folder only if its non-default
+                //rootFolder = path, //maybe use entry.rootFolder only if its non-default
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
                 side = entry.side,

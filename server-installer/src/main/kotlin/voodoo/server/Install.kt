@@ -59,14 +59,14 @@ object Install : KLogging() {
             modpack.loadEntries(rootFolder, jankson)
 
             runBlocking {
-                Server.install(rootFolder, modpack, targetDir, skipForge, clean, cleanConfig)
+                Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
             }
         }
     }
 
     private class Arguments(parser: ArgParser) {
         val targetDir by parser.positional("TARGET",
-                help = "output folder") { File(this).absoluteFile }
+                help = "output rootFolder") { File(this).absoluteFile }
                 .addValidator {
                     if (value.exists() && !value.isDirectory) {
                         throw InvalidArgumentException("$value exists and is not a directory")

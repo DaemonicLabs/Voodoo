@@ -138,7 +138,7 @@ data class Entry(
                         provider = provider,
                         id = id,
                         name = jsonObj.getReified("name") ?: name,
-                        folder = jsonObj.getReified("folder") ?: folder,
+                        folder = jsonObj.getReified("rootFolder") ?: folder,
                         comment = jsonObj.getReified("comment") ?: comment,
                         description = jsonObj.getReified("description") ?: description,
                         feature = jsonObj.getReified("feature") ?: feature,

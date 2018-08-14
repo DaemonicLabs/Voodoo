@@ -96,7 +96,7 @@ data class LockEntry(
                         provider = jsonObject.getReified("provider") ?: provider,
                         id = jsonObject.getReified("id") ?: id,
                         name = jsonObject.getReified("name") ?: name,
-                        //folder = jsonObject.getReified("folder") ?: folder,
+                        //rootFolder = jsonObject.getReified("rootFolder") ?: rootFolder,
                         fileName = jsonObject.getReified("fileName") ?: fileName,
                         side = jsonObject.getReified("side") ?: side,
                         curseMetaUrl = jsonObject.getReified("curseMetaUrl") ?: curseMetaUrl,
@@ -121,7 +121,7 @@ data class LockEntry(
                 jsonObject["provider"] = marshaller.serialize(provider)
                 jsonObject["id"] = marshaller.serialize(id)
                 jsonObject["name"] = marshaller.serialize(name)
-                //jsonObject["folder"] = marshaller.serialize(folder)
+                //jsonObject["rootFolder"] = marshaller.serialize(rootFolder)
                 jsonObject["fileName"] = marshaller.serialize(fileName)
                 jsonObject["side"] = marshaller.serialize(side)
                 jsonObject["fileNameRegex"] = marshaller.serialize(fileNameRegex)

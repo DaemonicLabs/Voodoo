@@ -52,7 +52,7 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
                 provider = entry.provider,
                 id = entry.id,
                 name = entry.name,
-                //folder = entry.folder,
+                //rootFolder = entry.rootFolder,
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
                 side = entry.side,

@@ -24,7 +24,7 @@ import java.io.File
 object CursePack : AbstractPack() {
     override val label = "SK Packer"
 
-    override suspend fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
+    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
         val cacheDir = directories.cacheHome
         val workspaceDir = File(".curse")
         val modpackDir = workspaceDir.resolve(with(modpack) { "$id-$version" })
@@ -36,7 +36,7 @@ object CursePack : AbstractPack() {
         }
         if (!srcFolder.exists()) {
             logger.info("copying files into overrides")
-            val mcDir = File(modpack.sourceDir)
+            val mcDir = modpack.sourceFolder
             if (mcDir.exists()) {
                 mcDir.copyRecursively(srcFolder, overwrite = true)
             } else {
@@ -91,7 +91,8 @@ object CursePack : AbstractPack() {
         // generate modlist
         val modListFile = modpackDir.resolve("modlist.html")
 
-        val parts = modpack.entries.map { entry ->
+        val parts = modpack.entriesMapping.map { (name, pair) ->
+            val (entry, file) = pair
             async {
                 delay(1000)
                 val provider = Provider.valueOf(entry.provider).base

@@ -42,7 +42,7 @@ object MultiMCTester : AbstractTester() {
         modsDir.deleteRecursively()
 
         downloader.logger.info("copying files into minecraft dir")
-        val minecraftSrcDir = File(modpack.sourceDir)
+        val minecraftSrcDir = modpack.sourceFolder
         if (minecraftSrcDir.exists()) {
             minecraftSrcDir.copyRecursively(minecraftDir, overwrite = true)
         }

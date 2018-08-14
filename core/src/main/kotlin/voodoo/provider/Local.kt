@@ -19,15 +19,16 @@ object LocalProviderThing : ProviderBase, KLogging() {
                 provider = entry.provider,
                 id = entry.id,
                 name = entry.name,
-                //folder = entry.folder,
+                //rootFolder = entry.rootFolder,
                 side = entry.side,
                 fileSrc = entry.fileSrc
         )
     }
 
     override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File> {
-        val fileSrc = File(entry.parent.localDir, entry.fileSrc)
+        val fileSrc = entry.parent.localFolder.resolve(entry.fileSrc)
         val targetFile = targetFolder.resolve(fileSrc.name)
+        logger.info(fileSrc.absolutePath)
         fileSrc.copyTo(targetFile, overwrite = true)
         return Pair(null, targetFile)
     }
