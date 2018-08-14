@@ -156,7 +156,7 @@ data class NestedEntry(
 
 //            if ((entry.provider == DEFAULT.provider || entry.provider.isBlank()) && provider != DEFAULT.provider) entry.provider = provider
 //            if (entry.id == DEFAULT.id && id != DEFAULT.id) entry.id = id
-//            if (entry.folder == DEFAULT.folder && folder != DEFAULT.folder) entry.folder = folder
+//            if (entry.rootFolder == DEFAULT.rootFolder && rootFolder != DEFAULT.rootFolder) entry.rootFolder = rootFolder
 //            if (entry.comment == DEFAULT.comment && comment != DEFAULT.comment) entry.comment = comment
 //            if (entry.description == DEFAULT.description && description != DEFAULT.description) entry.description = description
 //            if (entry.feature == DEFAULT.feature && feature != DEFAULT.feature) entry.feature = feature

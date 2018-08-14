@@ -14,7 +14,7 @@ import java.io.File
 object ServerPack : AbstractPack() {
     override val label = "Server SKPack"
 
-    override suspend fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
+    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
         val targetDir = File(target ?: ".server")
         val modpackDir = targetDir.resolve(modpack.id)
 
@@ -25,7 +25,7 @@ object ServerPack : AbstractPack() {
 
         modpackDir.mkdirs()
 
-        val localDir = rootFolder.resolve(modpack.localDir)
+        val localDir = modpack.localFolder
         logger.info("local: $localDir")
         if (localDir.exists()) {
             val targetLocalDir = modpackDir.resolve("local")
@@ -37,7 +37,7 @@ object ServerPack : AbstractPack() {
             localDir.copyRecursively(targetLocalDir, true)
         }
 
-        val sourceDir = rootFolder.resolve(modpack.sourceDir)
+        val sourceDir = modpack.sourceFolder //rootFolder.resolve(modpack.rootFolder).resolve(modpack.sourceDir)
         logger.info("mcDir: $sourceDir")
         if (sourceDir.exists()) {
             val targetSourceDir = modpackDir.resolve("src")

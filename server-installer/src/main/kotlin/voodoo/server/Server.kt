@@ -21,7 +21,7 @@ import java.util.concurrent.TimeUnit
 object Server {
     val directories = Directories.get(moduleName = "server-installer")
 
-    suspend fun install(rootFolder: File, modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean, cleanConfig: Boolean) {
+    suspend fun install(modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean, cleanConfig: Boolean) {
         val cacheDir = directories.cacheHome
 
         if (clean) {
@@ -36,7 +36,7 @@ object Server {
         serverDir.resolve("mods").deleteRecursively()
 
         logger.info("copying files into server dir")
-        val srcDir = rootFolder.resolve(modpack.sourceDir)
+        val srcDir = modpack.sourceFolder
         if (srcDir.exists()) {
             srcDir.copyRecursively(serverDir, overwrite = true)
 

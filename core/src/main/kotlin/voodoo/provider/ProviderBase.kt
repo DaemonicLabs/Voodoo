@@ -33,7 +33,7 @@ interface ProviderBase {
      * downloads a entry
      *
      * @param entry the entry oyu are working on
-     * @param targetFolder provided target folder/location
+     * @param targetFolder provided target rootFolder/location
      * @param cacheDir prepared cache directory
      */
     suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File>

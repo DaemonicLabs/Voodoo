@@ -30,20 +30,6 @@ data class LockPack(
         var sourceDir: String = id, //"src-$id",
         val features: List<SKFeature> = emptyList()
 ) {
-    @JsonIgnore
-    var entries: List<LockEntry> = emptyList()
-
-    init {
-        scanEntries()
-
-        entries.forEach { it.parent = this }
-    }
-
-    fun scanEntries() {
-        // TODO: call loadEntries
-        //TODO: walk folders and get all LockEntries
-    }
-
     companion object {
         fun fromJson(jsonObject: JsonObject): LockPack {
             return with(LockPack()) {
@@ -82,18 +68,28 @@ data class LockPack(
     }
 
     @JsonIgnore
+    lateinit var rootFolder: File
+        private set
+
+    val sourceFolder: File
+        get() = rootFolder.resolve(sourceDir)
+    val localFolder: File
+        get() = rootFolder.resolve(localDir)
+
+    @JsonIgnore
     val entriesMapping: MutableMap<String, Pair<LockEntry, File>> = mutableMapOf()
 
-    fun loadEntries(folder: File, jankson: Jankson) {
-        val srcDir = folder.resolve(sourceDir)
-        srcDir.walkTopDown()
+    fun loadEntries(rootFolder: File = this.rootFolder, jankson: Jankson) {
+        this.rootFolder = rootFolder
+        sourceFolder.walkTopDown()
                 .filter {
                     it.isFile && it.name.endsWith(".lock.json")
                 }
                 .forEach {
                     val entryJsonObj = jankson.load(it)
                     val lockEntry: LockEntry = jankson.fromJson(entryJsonObj)
-                    entriesMapping[lockEntry.id] = Pair(lockEntry, it.relativeTo(srcDir))
+                    lockEntry.parent = this
+                    entriesMapping[lockEntry.id] = Pair(lockEntry, it.relativeTo(sourceFolder))
 //                    logger.info("loaded ${lockEntry.id} ${it.relativeTo(srcDir).path}")
                 }
     }

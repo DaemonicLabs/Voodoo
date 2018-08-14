@@ -11,7 +11,7 @@ import java.io.File
 object MMCFatPack : AbstractPack() {
     override val label = "MultiMC Packer (frozen pack)"
 
-    override suspend fun download(rootFolder: File, modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
+    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
         val targetDir = File(target ?: ".multimc")
         val cacheDir = directories.cacheHome
         val instanceDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id)
@@ -28,7 +28,7 @@ object MMCFatPack : AbstractPack() {
         modsDir.deleteRecursively()
 
         downloader.logger.info("copying files into minecraft dir")
-        val minecraftSrcDir = File(modpack.sourceDir)
+        val minecraftSrcDir = modpack.sourceFolder
         if (minecraftSrcDir.exists()) {
             minecraftSrcDir.copyRecursively(minecraftDir, overwrite = true)
         }

@@ -56,7 +56,6 @@ object Tester : KLogging() {
             val jsonObject = jankson.load(modpackLockFile)
             val modpack: LockPack = jankson.fromJson(jsonObject)
             val rootFolder = modpackLockFile.absoluteFile.parentFile
-
             modpack.loadEntries(rootFolder, jankson)
 
             val tester = when (methode) {
@@ -81,7 +80,7 @@ object Tester : KLogging() {
                 help = "input pack .lock.json") { File(this) }
 
         val clean by parser.flagging("--clean", "-c",
-                help = "clean output folder before packaging")
+                help = "clean output rootFolder before packaging")
                 .default(true)
     }
 }

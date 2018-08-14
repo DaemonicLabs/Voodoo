@@ -56,7 +56,6 @@ object Pack : KLogging() {
             val jsonObject = jankson.load(modpackLockFile)
             val modpack: LockPack = jankson.fromJson(jsonObject)
             val rootFolder = modpackLockFile.absoluteFile.parentFile
-
             modpack.loadEntries(rootFolder, jankson)
 
             val packer = when (methode) {
@@ -74,7 +73,7 @@ object Pack : KLogging() {
             }
 
             runBlocking {
-                packer.download(rootFolder = rootFolder, modpack = modpack, target = targetArg, clean = true, jankson = jankson)
+                packer.download(modpack = modpack, target = targetArg, clean = true, jankson = jankson)
             }
         }
     }
@@ -88,11 +87,11 @@ object Pack : KLogging() {
                 help = "input pack .lock.json") { File(this) }
 
         val targetArg by parser.storing("--output", "-o",
-                help = "output folder")
+                help = "output rootFolder")
                 .default<String?>(null)
 
 //        val clean by parser.flagging("--clean", "-c",
-//                help = "clean output folder before packaging")
+//                help = "clean output rootFolder before packaging")
 //                .default(true)
     }
 }

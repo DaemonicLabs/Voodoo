@@ -8,6 +8,9 @@ cd $DIR
 [ ! -e run ] && mkdir run
 cd run
 
+[ ! -e "$pack" ] && mkdir "$pack"
+cd "$pack"
+
 echo
 echo "testing $1 on multimc"
 echo
