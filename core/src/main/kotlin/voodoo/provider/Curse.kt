@@ -102,7 +102,10 @@ object CurseProviderThing : ProviderBase, KLogging() {
         for ((depAddonId, depType) in dependencies) {
             logger.info("resolve Dep $depAddonId")
             val depAddon = getAddon(depAddonId, entry.curseMetaUrl)
-                    ?: throw Exception("could not retrieve addon for id: $depAddonId")
+            if (depAddon==null) {
+                logger.error("broken dependency type: '$depType' id: '$depAddonId' of entry: '${entry.id}'")
+                continue
+            }
 
 //            val depends = entry.dependencies
             var dependsSet = entry.dependencies[depType]?.toSet() ?: setOf<String>()
