@@ -137,7 +137,7 @@ object CurseClient : KLogging() {
         val url = "$proxyUrl/addon/$addonId"
 
         logger.debug("get $url")
-        val (_, _, result) = url.httpGet()
+        val (request, response, result) = url.httpGet()
                 .header("User-Agent" to useragent)
                 .awaitStringResponse()
         return when (result) {
@@ -145,7 +145,10 @@ object CurseClient : KLogging() {
                 mapper.readValue(result.value)
             }
             is Result.Failure -> {
-                logger.error(result.error.toString())
+                logger.error { request }
+                logger.error { response }
+                logger.error { result.error }
+                logger.error("failed getting '$url'")
                 null
             }
         }
