@@ -92,8 +92,16 @@ object CurseProviderThing : ProviderBase, KLogging() {
 //    }
 
     private suspend fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, addEntry: (Entry) -> Unit) {
-        val addon = getAddon(addonId, entry.curseMetaUrl)!!
-        val addonFile = getAddonFile(addonId, fileId, entry.curseMetaUrl)!!
+        val addon = getAddon(addonId, entry.curseMetaUrl)
+        if(addon == null) {
+            logger.error("addon $addonId could not be resolved, entry: $entry")
+            return
+        }
+        val addonFile = getAddonFile(addonId, fileId, entry.curseMetaUrl)
+        if(addonFile == null) {
+            logger.error("addon file $addonId:$fileId could not be resolved, entry: $entry")
+            return
+        }
         val dependencies = addonFile.dependencies ?: return
 
         logger.info("dependencies of ${entry.id} ${addonFile.dependencies}")
