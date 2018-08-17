@@ -11,6 +11,8 @@ cd run
 [ ! -e "$pack" ] && mkdir "$pack"
 cd "$pack"
 
+rm src/**/*.lock.json
+
 echo
 echo "building $1"
 echo

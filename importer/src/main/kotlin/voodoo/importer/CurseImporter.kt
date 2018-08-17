@@ -42,20 +42,6 @@ object CurseImporter : AbstractImporter() {
         val zipFile = directories.cacheHome.resolve("$name.zip")
         zipFile.deleteRecursively()
         zipFile.download(source, directories.cacheHome.resolve("IMPORT"))
-//        val (request, response, result) = source.httpGet().response()
-//        when (result) {
-//            is Result.Success -> {
-//                zipFile.parentFile.mkdirs()
-//                zipFile.writeBytes(result.value)
-//            }
-//            is Result.Failure -> {
-//                logger.error("invalid statusCode {} from {}", response.statusCode, source)
-//                logger.error("connection url: {}", request.url)
-//                logger.error("content: {}", result.component1())
-//                logger.error("error: {}", result.error.toString())
-//                exitProcess(1)
-//            }
-//        }
 
         val extractFolder = directories.cacheHome.resolve(target.nameWithoutExtension)
         unzip(zipFile.absolutePath, extractFolder.absolutePath)
