@@ -38,6 +38,7 @@ object CurseImporter : AbstractImporter() {
 
     override suspend fun import(source: String, target: File) {
         val name = target.nameWithoutExtension
+        val id = target.nameWithoutExtension
         val zipFile = directories.cacheHome.resolve("$name.zip")
         zipFile.deleteRecursively()
         zipFile.download(source, directories.cacheHome.resolve("IMPORT"))
@@ -141,7 +142,7 @@ object CurseImporter : AbstractImporter() {
                 )
         )
 
-        val filename = manifest.name.replace("[^\\w-]+".toRegex(), "")
+        val filename = target.nameWithoutExtension // manifest.name.replace("[^\\w-]+".toRegex(), "")
         val packFile = target.resolve("$filename.pack.hjson")
         val lockFile = target.resolve("$filename.lock.json")
 
