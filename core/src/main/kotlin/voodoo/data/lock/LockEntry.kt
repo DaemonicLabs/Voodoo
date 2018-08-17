@@ -122,7 +122,7 @@ data class LockEntry(
                 jsonObject["id"] = marshaller.serialize(id)
                 jsonObject["name"] = marshaller.serialize(name)
                 //jsonObject["rootFolder"] = marshaller.serialize(rootFolder)
-                jsonObject["fileName"] = marshaller.serialize(fileName)
+                if(fileName != null) jsonObject["fileName"] = marshaller.serialize(fileName)
                 jsonObject["side"] = marshaller.serialize(side)
                 jsonObject["fileNameRegex"] = marshaller.serialize(fileNameRegex)
                 when {
