@@ -84,7 +84,9 @@ object CurseImporter : AbstractImporter() {
                     version = addonFile.fileName
             )
 
-            validMcVersions += addonFile.gameVersion
+            if(addonFile.gameVersion.none { validMcVersions.contains(it) }) {
+                validMcVersions += addonFile.gameVersion
+            }
 
             val entry = Entry(
                     provider = Provider.CURSE.name,

@@ -95,12 +95,12 @@ object CurseProviderThing : ProviderBase, KLogging() {
         val addon = getAddon(addonId, entry.curseMetaUrl)
         if(addon == null) {
             logger.error("addon $addonId could not be resolved, entry: $entry")
-            return
+            addon!!
         }
         val addonFile = getAddonFile(addonId, fileId, entry.curseMetaUrl)
         if(addonFile == null) {
             logger.error("addon file $addonId:$fileId could not be resolved, entry: $entry")
-            return
+            addonFile!!
         }
         val dependencies = addonFile.dependencies ?: return
 
