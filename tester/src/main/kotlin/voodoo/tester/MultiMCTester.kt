@@ -49,6 +49,8 @@ object MultiMCTester : AbstractTester() {
 
         for (file in minecraftDir.walkTopDown()) {
             when {
+                file.name.endsWith(".lock.json") -> file.delete()
+                file.name.endsWith(".entry.hjson") -> file.delete()
                 file.name == "_CLIENT" -> {
                     file.copyRecursively(file.parentFile, overwrite = true)
                     file.deleteRecursively()
