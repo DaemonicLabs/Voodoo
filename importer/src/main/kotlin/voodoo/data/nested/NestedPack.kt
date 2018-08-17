@@ -22,8 +22,6 @@ data class NestedPack(
         var mcVersion: String = "",
         var userFiles: UserFiles = UserFiles(),
         var root: NestedEntry = NestedEntry(Provider.CURSE.name),
-        var versionCache: File = File(".voodoo/", id),
-        var featureCache: File = File(".voodoo/", id),
         var localDir: String = "local",
         var sourceDir: String = "src"
 ) {
