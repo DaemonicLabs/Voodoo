@@ -2,15 +2,12 @@ package voodoo.importer
 
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.FileType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.EntryFeature
-import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
@@ -18,6 +15,7 @@ import voodoo.provider.Provider
 import voodoo.registerSerializer
 import voodoo.registerTypeAdapter
 import voodoo.util.UnzipUtility.unzip
+import voodoo.util.download
 import voodoo.util.readJson
 import voodoo.util.writeYaml
 import java.io.File
@@ -42,20 +40,21 @@ object CurseImporter : AbstractImporter() {
         val name = target.nameWithoutExtension
         val zipFile = directories.cacheHome.resolve("$name.zip")
         zipFile.deleteRecursively()
-        val (request, response, result) = source.httpGet().response()
-        when (result) {
-            is Result.Success -> {
-                zipFile.parentFile.mkdirs()
-                zipFile.writeBytes(result.value)
-            }
-            is Result.Failure -> {
-                logger.error("invalid statusCode {} from {}", response.statusCode, source)
-                logger.error("connection url: {}", request.url)
-                logger.error("content: {}", result.component1())
-                logger.error("error: {}", result.error.toString())
-                exitProcess(1)
-            }
-        }
+        zipFile.download(source, directories.cacheHome.resolve("IMPORT"))
+//        val (request, response, result) = source.httpGet().response()
+//        when (result) {
+//            is Result.Success -> {
+//                zipFile.parentFile.mkdirs()
+//                zipFile.writeBytes(result.value)
+//            }
+//            is Result.Failure -> {
+//                logger.error("invalid statusCode {} from {}", response.statusCode, source)
+//                logger.error("connection url: {}", request.url)
+//                logger.error("content: {}", result.component1())
+//                logger.error("error: {}", result.error.toString())
+//                exitProcess(1)
+//            }
+//        }
 
         val extractFolder = directories.cacheHome.resolve(target.nameWithoutExtension)
         unzip(zipFile.absolutePath, extractFolder.absolutePath)
