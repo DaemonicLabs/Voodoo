@@ -102,8 +102,8 @@ data class NestedEntry(
                     curseMetaUrl = it.curseMetaUrl,
                     curseReleaseTypes = it.curseReleaseTypes,
                     curseOptionalDependencies = it.curseOptionalDependencies,
-                    curseProjectID = curseProjectID,
-                    curseFileID = curseFileID,
+                    curseProjectID = it.curseProjectID,
+                    curseFileID = it.curseFileID,
                     // DIRECT
                     url = it.url,
                     useUrlTxt = it.useUrlTxt,// JENKINS
