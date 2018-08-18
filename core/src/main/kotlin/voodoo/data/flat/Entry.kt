@@ -106,6 +106,8 @@ data class Entry(
                         jsonObj["curseMetaUrl"] = marshaller.serialize(curseMetaUrl)
                         jsonObj["curseReleaseTypes"] = marshaller.serialize(curseReleaseTypes)
                         jsonObj["curseOptionalDependencies"] = marshaller.serialize(curseOptionalDependencies)
+                        if(curseProjectID > 0) jsonObj["curseProjectID"] = marshaller.serialize(curseProjectID)
+                        if(curseFileID > 0) jsonObj["curseFileID"] = marshaller.serialize(curseFileID)
                     }
                     provider.equalsIgnoreCase("DIRECT") -> {
                         jsonObj["url"] = marshaller.serialize(url)
@@ -170,6 +172,8 @@ data class Entry(
                         curseReleaseTypes = jsonObj.getList<FileType>("curseReleaseTypes")?.toSet() ?: curseReleaseTypes,
                         curseOptionalDependencies = jsonObj.getReified("curseOptionalDependencies")
                                 ?: curseOptionalDependencies,
+                        curseProjectID = jsonObj.getReified("curseProjectID") ?: curseProjectID,
+                        curseFileID = jsonObj.getReified("curseFileID") ?: curseFileID,
                         // DIRECT
                         url = jsonObj.getReified("url") ?: url,
                         useUrlTxt = jsonObj.getReified("useUrlTxt") ?: useUrlTxt,
