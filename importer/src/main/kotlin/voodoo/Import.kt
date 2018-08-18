@@ -54,6 +54,8 @@ object Import : KLogging() {
                 help = "input url/file")
 
         val target by parser.positional("OUTPUT",
-                help = "output file/rootFolder") { File(this) }
+                help = "output file/rootFolder")
+                { File(this) }
+                .default(File("."))
     }
 }
