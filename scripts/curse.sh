@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 PWD=$(pwd)
 
 cd $DIR
@@ -17,16 +17,11 @@ pack=$1
 [ ! -e run ] && mkdir run
 cd run
 
-[ ! -e "$pack" ] && mkdir "$pack"
-cd "$pack"
-
-rm -rf .server
-
 echo
-echo "packaging $1 server"
+echo "packaging $1 voodoo.data.curse"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" pack server $pack.lock.json
+java -jar "$DIR/voodoo/build/libs/voodoo.jar" pack $pack.lock.json curse
 if [ ! $? -eq 0 ]; then
     echo "Error Packing $pack"
     exit 1

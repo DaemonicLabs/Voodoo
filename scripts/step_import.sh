@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 pack=$1
 url=$2
@@ -19,9 +19,10 @@ echo
 echo "importing $pack"
 echo
 
-rm -rf $pack
+pwd
+echo "import yaml '../samples/$pack.yaml' $pack"
 
-$DIR/gradlew -p "$DIR"  :voodoo:run --args "import curse $url $pack"
+$DIR/gradlew -p "$DIR" :voodoo:run --args "import yaml '../samples/$pack.yaml' $pack"
 if [ ! $? -eq 0 ]; then
     echo "Error importing $pack from yaml"
     exit 1
