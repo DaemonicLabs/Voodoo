@@ -12,7 +12,9 @@ import mu.KLogging
 import mu.KotlinLogging
 import voodoo.util.UtilConstants.VERSION
 import java.io.File
+import java.net.URI
 import java.net.URL
+import java.net.URLEncoder
 import kotlin.system.exitProcess
 
 /**
@@ -24,15 +26,17 @@ object downloader : KLogging() {
 }
 
 suspend fun File.download(url: String, cacheDir: File, useragent: String = downloader.useragent, logger: KLogger = downloader.logger) {
-    val fixedUrl = url.replace(" ", "%20")
-    logger.info("downloading $fixedUrl -> $this")
+    val fixedUrl = url.encoded
+    logger.info("downloading $url -> $this")
     val cacheFile = cacheDir.resolve(this.name)
     logger.debug("cacheFile $cacheFile")
     if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
     if (!cacheFile.exists() || !cacheFile.isFile) {
         var nextUrl = url
         do {
-            val (request, response, result) = nextUrl.replace(" ", "%20")
+            nextUrl = nextUrl.encoded
+            logger.info { nextUrl }
+            val (request, response, result) = nextUrl //.encode()
                     .httpGet().header("User-Agent" to useragent)
                     .allowRedirects(false)
                     .awaitByteArrayResponse()
@@ -52,7 +56,7 @@ suspend fun File.download(url: String, cacheDir: File, useragent: String = downl
                         logger.error("connection url: {}", request.url)
                         logger.error("content: {}", result.component1())
                         logger.error("error: {}", result.error.toString())
-                        exitProcess(1)
+                        throw IllegalStateException(result.error.toString())
                     }
                 }
             }
@@ -69,3 +73,9 @@ suspend fun File.download(url: String, cacheDir: File, useragent: String = downl
             cacheFile.copyTo(this, overwrite = true)
     }
 }
+
+val String.encoded: String
+    get() = this
+            .replace(" ", "%20")
+            .replace("[", "%5B")
+            .replace("]", "%5D")
