@@ -177,13 +177,12 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
         logSection("Downloading libraries...")
         // TODO: Download libraries for different environments -- As of writing, this is not an issue
 
-        //TODO. test if this will fix library issues
-//        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
-//        val jobs = mutableListOf<Job>()
+        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
+        val jobs = mutableListOf<Job>()
 
         val env = Environment.instance
         for (library in loaderLibraries) {
-//            jobs += async(context = pool) {
+            jobs += async(context = pool) {
                 val outputPath = File(librariesDir, library.getPath(env))
                 if (!outputPath.exists()) {
                     Files.createParentDirs(outputPath)
@@ -238,11 +237,11 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                         log.warning("!! Failed to download the library " + library.name + " -- this means your copy of the libraries will lack this file")
                     }
                 }
-//            }
+            }
         }
 
-//        log.info("waiting for library jobs to finish")
-//        runBlocking { jobs.forEach { it.join() } }
+        log.info("waiting for library jobs to finish")
+        runBlocking { jobs.forEach { it.join() } }
     }
 
     private fun validateManifest() {

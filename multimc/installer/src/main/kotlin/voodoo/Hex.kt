@@ -18,6 +18,7 @@ import voodoo.mmc.data.PackComponent
 import voodoo.util.*
 import java.awt.event.KeyEvent
 import java.io.File
+import java.lang.IllegalStateException
 import kotlin.system.exitProcess
 
 
@@ -88,7 +89,11 @@ object Hex : KLogging() {
         var (_, _, forgeVersion) = modpack.versionManifest.libraries.find {
             it.name.startsWith(forgePrefix)
         }?.name.let { it ?: "::" }.split(':')
-        logger.info("forge version is $forgeVersion")
+        logger.info("forge version is '$forgeVersion'")
+        if(forgeVersion.isBlank()) {
+            logger.error("could not parse forge version in modpack")
+            exitProcess(2)
+        }
         while (forgeVersion.count { it == '-' } > 1) {
             forgeVersion = forgeVersion.substringBeforeLast("-")
         }
