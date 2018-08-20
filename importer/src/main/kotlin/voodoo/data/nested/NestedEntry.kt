@@ -14,8 +14,10 @@ import voodoo.data.provider.UpdateChannel
 import voodoo.provider.Provider
 import voodoo.util.readYaml
 import java.io.File
+import java.lang.IllegalStateException
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
+import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 28/03/18.
@@ -132,7 +134,6 @@ data class NestedEntry(
             val includeFile = parentFile.resolve(it)
             val includeEntry = includeFile.readYaml<NestedEntry>()
 
-
             for (prop in NestedEntry::class.memberProperties) {
                 if (prop is KMutableProperty<*>) {
                     val includeValue = prop.get(includeEntry)
@@ -217,12 +218,19 @@ data class NestedEntry(
             }
 
             entry.flatten("$indent|  ", parent)
-            if (entry.entries.isNotEmpty()) {
+            if (entry.entries.isNotEmpty() || entry.id.isBlank() || !entry.include.isNullOrEmpty()) {
                 toDelete += entry
             }
+
             entry.entries.forEach { entries += it }
-            entry.entries = listOf()
+            entry.entries = emptyList()
         }
         entries = entries.filter { !toDelete.contains(it) }
+        entries.forEach { entry ->
+            if(entry.id.isEmpty()) {
+                logger.error { entry }
+                throw IllegalStateException("entries with blank id must not persist")
+            }
+        }
     }
 }

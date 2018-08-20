@@ -2,6 +2,7 @@ package voodoo.importer
 
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
+import kotlinx.coroutines.*
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.data.curse.CurseManifest
@@ -15,10 +16,13 @@ import voodoo.provider.Provider
 import voodoo.registerSerializer
 import voodoo.registerTypeAdapter
 import voodoo.util.UnzipUtility.unzip
+import voodoo.util.blankOr
 import voodoo.util.download
 import voodoo.util.readJson
 import voodoo.util.writeYaml
 import java.io.File
+import java.io.FileFilter
+import java.util.*
 import kotlin.system.exitProcess
 
 /**
@@ -36,92 +40,150 @@ object CurseImporter : AbstractImporter() {
 //            .registerSerializer(EntryFeature.Companion::toJson)
             .build()
 
-    override suspend fun import(source: String, target: File) {
-        val name = target.nameWithoutExtension
-        val id = target.nameWithoutExtension
-        val zipFile = directories.cacheHome.resolve("$name.zip")
-        zipFile.deleteRecursively()
-        zipFile.download(source, directories.cacheHome.resolve("IMPORT"))
+    override suspend fun import(source: String, target: File, name: String?) {
+        val tmpName = name.blankOr ?: UUID.randomUUID().toString()
 
-        val extractFolder = directories.cacheHome.resolve(target.nameWithoutExtension)
+        val cacheHome = directories.cacheHome.resolve("IMPORT")
+        val zipFile = cacheHome.resolve("$tmpName.zip")
+        zipFile.deleteRecursively()
+        zipFile.download(source, directories.cacheHome.resolve("DIRECT"))
+
+        val extractFolder = cacheHome.resolve(tmpName)
         unzip(zipFile.absolutePath, extractFolder.absolutePath)
 
         val manifest = extractFolder.resolve("manifest.json").readJson<CurseManifest>()
 
         val validMcVersions = mutableSetOf<String>()
 
-        val overridesFolder = File(name).resolve(manifest.overrides)
+        val overrides = "src"
+        val local = "local"
+        val overridesFolder = target.resolve(overrides)
         overridesFolder.deleteRecursively()
         overridesFolder.mkdirs()
 
         extractFolder.resolve(manifest.overrides).copyRecursively(overridesFolder)
 
-        //TODO: copy content of mods into local and add local entries
-
         val modsFolder = overridesFolder.resolve("mods")
+        val localFolder = target.resolve(local)
+        val localEntries = mutableListOf<NestedEntry>()
 
-        val entries = manifest.files.map {
-            logger.info { it }
-            val addon = CurseClient.getAddon(it.projectID, PROXY_URL)!!
-            val addonFile = CurseClient.getAddonFile(it.projectID, it.fileID, PROXY_URL)!!
-            val nestedEntry = NestedEntry(
-//                    provider = Provider.CURSE.id,
-                    id = addon.slug,
-                    version = addonFile.fileName
-            )
-
-            if(addonFile.gameVersion.none { validMcVersions.contains(it) }) {
-                validMcVersions += addonFile.gameVersion
+        logger.info("listing $modsFolder")
+        modsFolder.listFiles { file ->
+            logger.debug("testing $file")
+            when {
+                !file.isFile -> false
+                file.name.endsWith(".entry.hjson") -> false
+                file.name.endsWith(".entry.lock.json") -> false
+                else -> true
             }
-
-            val entry = Entry(
-                    provider = Provider.CURSE.name,
-                    curseReleaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
-                    id = addon.slug,
-                    fileName = addonFile.fileName,
-                    validMcVersions = addonFile.gameVersion.toSet()
+        }.forEach { file ->
+            if(!file.isFile) return@forEach
+            val relative = file.relativeTo(modsFolder)
+            val targetFile = localFolder.resolve(relative)
+            targetFile.parentFile.mkdirs()
+            file.copyTo(targetFile, overwrite = true)
+            logger.info("adding local entry for ${relative.path}")
+            localEntries += NestedEntry(
+                    id = file.nameWithoutExtension,
+                    fileSrc = relative.path,
+                    folder = file.parentFile.relativeTo(overridesFolder).path
             )
-            val json = YamlImporter.jankson.toJson(entry)//.toJson(true, true)
-            if (json is JsonObject) {
-                val defaultJson = entry.toDefaultJson(YamlImporter.jankson.marshaller)
-                val delta = json.getDelta(defaultJson)
-                modsFolder.resolve("${addon.slug}.entry.hjson").writeText(delta.toJson(true, true).replace("\t", "  "))
-            }
-
-            val (projectID, fileID, path) = CurseClient.findFile(entry, manifest.minecraft.version, PROXY_URL)
-
-            val lockEntry = LockEntry(
-                    provider = "CURSE",
-                    id = nestedEntry.id,
-                    //rootFolder = path, //maybe use entry.rootFolder only if its non-default
-                    useUrlTxt = true,
-                    projectID = projectID,
-                    fileID = fileID
-            )
-            val lockJson = YamlImporter.jankson.toJson(lockEntry)//.toJson(true, true)
-            if (lockJson is JsonObject) {
-                val defaultJson = lockEntry.toDefaultJson(YamlImporter.jankson.marshaller)
-                val delta = lockJson.getDelta(defaultJson)
-                modsFolder.resolve("${addon.slug}.lock.json").writeText(delta.toJson(true, true).replace("\t", "  "))
-            }
-            overridesFolder.resolve(path).apply { mkdirs() }.resolve("${addon.slug}.lock.json").writeText(
-                    jankson.toJson(lockEntry).toJson(true, true).replace("\t", "    ")
-            )
-
-            nestedEntry
+            file.delete()
         }
 
+        val entries = mutableListOf<NestedEntry>()
+
+        if(localEntries.isNotEmpty()) {
+            entries += NestedEntry(
+                    provider = Provider.LOCAL.name,
+                    entries = localEntries
+            )
+        }
+
+        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
+        val jobs = mutableListOf<Job>()
+
+        //TODO: process in parallel
+        for(file in manifest.files) {
+            jobs += async(context = pool) {
+                logger.info { file }
+                val addon = CurseClient.getAddon(file.projectID, PROXY_URL)!!
+                val addonFile = CurseClient.getAddonFile(file.projectID, file.fileID, PROXY_URL)!!
+                val nestedEntry = NestedEntry(
+                        id = addon.slug,
+                        version = addonFile.fileName
+                )
+
+                if (addonFile.gameVersion.none { version -> validMcVersions.contains(version) }) {
+                    validMcVersions += addonFile.gameVersion
+                }
+
+                val entry = Entry(
+                        provider = Provider.CURSE.name,
+                        curseReleaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
+                        id = addon.slug,
+                        fileName = addonFile.fileName,
+                        validMcVersions = addonFile.gameVersion.toSet()
+                )
+                val json = YamlImporter.jankson.toJson(entry)//.toJson(true, true)
+
+                val (projectID, fileID, path) = CurseClient.findFile(entry, manifest.minecraft.version, PROXY_URL)
+
+                if (json is JsonObject) {
+                    val defaultJson = entry.toDefaultJson(YamlImporter.jankson.marshaller)
+                    val delta = json.getDelta(defaultJson)
+                    overridesFolder.resolve(path).apply { mkdirs() }
+                            .resolve("${addon.slug}.entry.hjson").writeText(
+                                    delta.toJson(true, true).replace("\t", "  ")
+                            )
+                }
+
+
+                val lockEntry = LockEntry(
+                        provider = "CURSE",
+                        id = nestedEntry.id,
+                        useUrlTxt = true,
+                        projectID = projectID,
+                        fileID = fileID
+                )
+                val lockJson = YamlImporter.jankson.toJson(lockEntry)//.toJson(true, true)
+                if (lockJson is JsonObject) {
+                    val defaultJson = lockEntry.toDefaultJson(YamlImporter.jankson.marshaller)
+                    val delta = lockJson.getDelta(defaultJson)
+                    overridesFolder.resolve(path).apply { mkdirs() }.resolve("${addon.slug}.entry.lock.json").writeText(
+                            delta.toJson(true, true).replace("\t", "    ")
+                    )
+                }
+
+                entries += nestedEntry
+            }
+            delay(10)
+        }
+
+        delay(10)
+        logger.info("waiting for jobs to finish")
+        runBlocking { jobs.forEach { it.join() } }
+
+        val include = "include.yaml"
+        include.takeIf { target.resolve(it).exists() }?.let {
+            NestedEntry(
+                    include = it
+            )
+        }?.also {
+            entries.add(0, it)
+        }
 
         val forge = manifest.minecraft.modLoaders
                 .find { it.id.startsWith("forge-") }?.id?.substringAfterLast('.')
         val nestedPack = NestedPack(
-                name,
+                name ?: manifest.name.replace("[^\\w-]+".toRegex(), ""),
                 authors = listOf(manifest.author),
                 title = manifest.name,
                 version = manifest.version,
                 forge = forge ?: "recommended",
                 mcVersion = manifest.minecraft.version,
-                sourceDir = overridesFolder.relativeTo(File(name)).path,
+                sourceDir = overridesFolder.relativeTo(target).path,
+                localDir = local,
                 root = NestedEntry(
                         validMcVersions = validMcVersions - manifest.minecraft.version,
                         provider = Provider.CURSE.name,
@@ -130,10 +192,11 @@ object CurseImporter : AbstractImporter() {
                 )
         )
 
-        val filename = target.nameWithoutExtension // manifest.name.replace("[^\\w-]+".toRegex(), "")
+        val filename = name.blankOr ?: manifest.name.replace("[^\\w-]+".toRegex(), "")
         val packFile = target.resolve("$filename.pack.hjson")
         val lockFile = target.resolve("$filename.lock.json")
 
+        logger.info("writing to $filename.yaml")
         target.resolve("$filename.yaml").writeYaml(nestedPack)
 
         val modpack = nestedPack.flatten()
@@ -149,5 +212,8 @@ object CurseImporter : AbstractImporter() {
         lockFile.writeText(lockJson.toJson(false, true).replace("\t", "    "))
 
         //TODO: create srcDir with single entries and version-locked files and ModPack
+
+        extractFolder.deleteRecursively()
+        zipFile.delete()
     }
 }

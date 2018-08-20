@@ -28,7 +28,7 @@ object YamlImporter : AbstractImporter() {
         jankson.marshaller
     }
 
-    override suspend fun import(source: String, target: File) {
+    override suspend fun import(source: String, target: File, name: String?) {
         logger.info(source)
         val yamlFile = File(source).absoluteFile
         logger.info("reading: $yamlFile")

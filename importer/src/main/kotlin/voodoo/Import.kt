@@ -39,7 +39,7 @@ object Import : KLogging() {
 
             //TODO: import as ModPack and NestedPack ?
 
-            runBlocking { tester.import(source = source, target = target) }
+            runBlocking { tester.import(source = source, target = target, name = name) }
 
             println("import successful")
         }
@@ -55,7 +55,11 @@ object Import : KLogging() {
 
         val target by parser.positional("OUTPUT",
                 help = "output file/rootFolder")
-                { File(this) }
+        { File(this) }
                 .default(File("."))
+
+        val name by parser.positional("NAME",
+                help = "pack name/id")
+                .default<String?>(null)
     }
 }
