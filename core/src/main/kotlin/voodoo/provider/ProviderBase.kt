@@ -22,7 +22,7 @@ enum class Provider(val base: ProviderBase) {
 
 interface ProviderBase {
     val name: String
-    suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry? {
+    suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry, String) -> Unit): LockEntry? {
         println("[$name] resolve ${entry.id}")
         return null
     }

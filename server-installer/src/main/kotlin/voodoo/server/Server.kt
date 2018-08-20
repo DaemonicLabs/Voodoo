@@ -1,8 +1,6 @@
 package voodoo.server
 
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.delay
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
@@ -19,7 +17,7 @@ import java.util.concurrent.TimeUnit
  */
 
 object Server {
-    val directories = Directories.get(moduleName = "server-installer")
+    val directories = Directories.get()
 
     suspend fun install(modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean, cleanConfig: Boolean) {
         val cacheDir = directories.cacheHome

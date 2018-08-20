@@ -6,8 +6,8 @@ import com.github.kittinunf.result.Result
 import com.sun.jna.platform.KeyboardUtils
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
 import voodoo.data.sk.SKPack
@@ -27,7 +27,7 @@ import kotlin.system.exitProcess
  */
 
 object Hex : KLogging() {
-    private val directories = Directories.get(moduleName = "hex")
+    private val directories = Directories.get()
 
     @JvmStatic
     fun main(vararg args: String) = mainBody {

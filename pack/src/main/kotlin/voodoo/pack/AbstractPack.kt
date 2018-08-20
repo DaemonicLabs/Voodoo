@@ -16,5 +16,5 @@ abstract class AbstractPack : KLogging() {
 
     abstract suspend fun download(modpack: LockPack, target: String?, clean: Boolean = true, jankson: Jankson)
 
-    val directories = Directories.get(moduleName = "pack")
+    val directories = Directories.get()
 }

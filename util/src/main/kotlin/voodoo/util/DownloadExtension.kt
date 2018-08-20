@@ -1,21 +1,13 @@
 package voodoo.util
 
-import awaitByteArrayResponse
-import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.core.*
-import com.github.kittinunf.fuel.core.requests.retrieveBoundaryInfo
-import com.github.kittinunf.fuel.httpDownload
+import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponse
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogger
 import mu.KLogging
-import mu.KotlinLogging
 import voodoo.util.UtilConstants.VERSION
 import java.io.File
-import java.net.URI
-import java.net.URL
-import java.net.URLEncoder
-import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 30/03/18.

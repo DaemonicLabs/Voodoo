@@ -1,9 +1,9 @@
 package voodoo.util.jenkins
 
-import awaitStringResponse
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponse
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
@@ -27,7 +27,7 @@ class JenkinsServer(val url: String) {
         val (_, _, result) = requestURL
                 .httpGet()
                 .header("User-Agent" to userAgent)
-                .awaitStringResponse()
+                .awaitByteArrayResponse()
         return when (result) {
             is Result.Success -> {
                 mapper.readValue(result.value)

@@ -23,7 +23,7 @@ class LaunchModifier {
         val PRIME = 59
         var result = 1
         val `$flags` = this.flags
-        result = result * PRIME + (`$flags`?.hashCode() ?: 43)
+        result = result * PRIME + `$flags`.hashCode()
         return result
     }
 

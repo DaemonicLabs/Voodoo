@@ -1,14 +1,15 @@
 package voodoo.curse
 
-import awaitStringResponse
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponse
+import com.github.kittinunf.fuel.coroutines.awaitStringResponse
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import org.apache.commons.compress.compressors.CompressorStreamFactory
 import voodoo.core.CoreConstants.VERSION
@@ -17,7 +18,7 @@ import voodoo.data.curse.AddonFile
 import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.data.curse.feed.CurseFeed
 import voodoo.data.flat.Entry
-import voodoo.util.equalsIgnoreCase
+import voodoo.memoizeSuspend
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
@@ -103,7 +104,8 @@ object CurseClient : KLogging() {
         }
     }
 
-    suspend fun getAddonFile(addonId: Int, fileId: Int, proxyUrl: String): AddonFile? {
+    val getAddonFile = ::getAddonFileCall.memoizeSuspend()
+    suspend fun getAddonFileCall(addonId: Int, fileId: Int, proxyUrl: String): AddonFile? {
         val url = "${proxyUrl}/addon/$addonId/file/$fileId"
 
         logger.debug("get $url")
@@ -118,7 +120,8 @@ object CurseClient : KLogging() {
         }
     }
 
-    suspend fun getAllFilesForAddon(addonId: Int, proxyUrl: String): List<AddonFile> {
+    val getAllFilesForAddon = ::getAllFilesForAddonCall.memoizeSuspend()
+    suspend fun getAllFilesForAddonCall(addonId: Int, proxyUrl: String): List<AddonFile> {
         val url = "${proxyUrl}/addon/$addonId/files"
 
         logger.debug("get $url")
@@ -133,7 +136,8 @@ object CurseClient : KLogging() {
         }
     }
 
-    suspend fun getAddon(addonId: Int, proxyUrl: String): Addon? {
+    val getAddon = ::getAddonCall.memoizeSuspend()
+    suspend fun getAddonCall(addonId: Int, proxyUrl: String): Addon? {
         val url = "$proxyUrl/addon/$addonId"
 
         logger.debug("get $url")
@@ -204,7 +208,7 @@ object CurseClient : KLogging() {
         addonId = addon.id
 
         if (entry.curseFileID > 0) {
-            val file = getAddonFile(addonId = addonId, fileId = entry.curseFileID, proxyUrl = proxyUrl)!!
+            val file = getAddonFile(addonId, entry.curseFileID, proxyUrl)!!
             return Triple(addonId, file.id, addon.categorySection.path)
         }
 
@@ -269,14 +273,14 @@ object CurseClient : KLogging() {
         return Triple(addonId, file.id, addon.categorySection.path)
     }
 
-    fun getFeed(hourly: Boolean = false): List<Addon> {
+    suspend fun getFeed(hourly: Boolean = false): List<Addon> {
         logger.info("downloading voodoo.data.curse feed")
         val type = if (hourly) "hourly" else "complete"
         val url = "$FEED_URL/$type.json.bz2"
         logger.info("get $url")
         val (request, response, result) = url.httpGet()
                 .header("User-Agent" to useragent)
-                .response()
+                .awaitByteArrayResponse()
         when (result) {
             is Result.Success -> {
                 val bis = ByteArrayInputStream(result.value)
