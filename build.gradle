@@ -28,11 +28,6 @@ println """
 *******************************************
 """
 
-repositories {
-    mavenCentral()
-    maven { url = "http://dl.bintray.com/kotlin/kotlin-eap" }
-}
-
 allprojects {
     apply plugin: "kotlin"
     sourceCompatibility = 1.8
