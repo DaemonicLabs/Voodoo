@@ -16,5 +16,7 @@ dependencies {
     compile project(':multimc')
     compile project(':builder')
     compile project(':skcraft:launcher-builder')
+
+    compile group: 'org.jetbrains.kotlinx', name: 'kotlinx-html-jvm', version: '+'
 }
 

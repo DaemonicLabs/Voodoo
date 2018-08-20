@@ -2,6 +2,8 @@ package voodoo.pack
 
 import blue.endless.jankson.Jankson
 import kotlinx.coroutines.*
+import kotlinx.html.*
+import kotlinx.html.stream.appendHTML
 import voodoo.data.Side
 import voodoo.data.curse.CurseFile
 import voodoo.data.curse.CurseManifest
@@ -13,6 +15,8 @@ import voodoo.provider.Provider
 import voodoo.util.packToZip
 import voodoo.util.writeJson
 import java.io.File
+import java.io.StringWriter
+import javax.management.Query.div
 
 /**
  * Created by nikky on 30/03/18.
@@ -89,41 +93,52 @@ object CursePack : AbstractPack() {
                     }
                 }
             }
-            SKPack.logger.info("started job: download '$name'")
-            delay(10)
+            logger.info("started job: download '$name'")
+            delay(100)
         }
 
-        delay(10)
+        delay(100)
         logger.info("waiting for jobs to finish")
         runBlocking { jobs.forEach { it.join() } }
 
         // generate modlist
         val modListFile = modpackDir.resolve("modlist.html")
 
-        val parts = modpack.entriesMapping.map { (name, pair) ->
-            val (entry, file) = pair
+        val sw = StringWriter()
+        sw.appendHTML().html {
+            body {
+                ul {
+                    for ((name, pair) in modpack.entriesMapping.toSortedMap()) {
+                        val (entry, file) = pair
 
-                val provider = Provider.valueOf(entry.provider).base
-                if (entry.side == Side.SERVER) {
-                    return@map ""
-                }
-                val projectPage = provider.getProjectPage(entry)
-                val authors = provider.getAuthors(entry)
-                val authorString = if (authors.isNotEmpty()) " (by ${authors.joinToString(", ")})" else ""
+                        val provider = Provider.valueOf(entry.provider).base
+                        if (entry.side == Side.SERVER) {
+                            continue
+                        }
+                        val projectPage = runBlocking { provider.getProjectPage(entry) }
+                        val authors = runBlocking { provider.getAuthors(entry) }
+                        val authorString = if (authors.isNotEmpty()) " (by ${authors.joinToString(", ")})" else ""
 
-                return@map when {
-                    projectPage.isNotEmpty() -> "<li><a href=\"$projectPage\">${entry.name} $authorString</a></li>\n"
-                    entry.url.isNotBlank() -> "<li>direct: <a href=\"${entry.url}\">${entry.name} $authorString</a></li>\n"
-                    else -> {
-                        val source = if (entry.fileSrc.isNotBlank()) "file://" + entry.fileSrc else "unknown"
-                        "<li>${entry.name} $authorString (source: $source)</li>\n"
+                        li {
+                            when {
+                                projectPage.isNotEmpty() -> a(href = projectPage) { +"${entry.name} $authorString" }
+                                entry.url.isNotBlank() -> {
+                                    +"direct: "
+                                    a(href = entry.url, target = ATarget.blank) { +"${entry.name} $authorString" }
+                                }
+                                else -> {
+                                    val source = if (entry.fileSrc.isNotBlank()) "file://" + entry.fileSrc else "unknown"
+                                    +"${entry.name} $authorString (source: $source)"
+                                }
+                            }
+                        }
                     }
                 }
-
+            }
         }
 
         runBlocking {
-            val html = "<ul>\n" + parts.joinToString("") + "\n</ul>\n"
+            val html = sw.toString()
 
             if (modListFile.exists()) modListFile.delete()
             modListFile.createNewFile()
