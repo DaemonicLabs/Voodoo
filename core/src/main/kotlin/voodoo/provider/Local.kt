@@ -19,7 +19,6 @@ object LocalProviderThing : ProviderBase, KLogging() {
                 provider = entry.provider,
                 id = entry.id,
                 name = entry.name,
-                //rootFolder = entry.rootFolder,
                 side = entry.side,
                 fileSrc = entry.fileSrc
         )
