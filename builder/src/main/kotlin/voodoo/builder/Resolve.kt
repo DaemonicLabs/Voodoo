@@ -1,6 +1,5 @@
 package voodoo.builder
 
-import aballano.kotlinmemoization.memoize
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
 import mu.KotlinLogging
@@ -9,6 +8,7 @@ import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.sk.FeatureProperties
 import voodoo.data.sk.SKFeature
+import voodoo.memoize
 import voodoo.provider.Provider
 import voodoo.util.Directories
 import java.io.File
@@ -127,10 +127,9 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
         }
     }
 
-    fun addEntry(entry: Entry) {
+    fun addEntry(entry: Entry, path: String = "mods") {
         val filename = entry.id.replace("[^\\w-]+".toRegex(), "")
-        //TODO: pass location to lambda instead of hardcoded
-        val file = srcDir.resolve("mods").resolve("$filename.entry.hjson")
+        val file = srcDir.resolve(path).resolve("$filename.entry.hjson")
         val jsonObj = jankson.toJson(entry) as JsonObject
         this.addEntry(entry, file, jsonObj, jankson, dependency = true)
     }
@@ -209,11 +208,12 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
 //        logger.info("feature: $it")
 //    }
 
-    val directories = Directories.get(moduleName = "history")
-    val historyPath = directories.dataHome.resolve(this.id)
-    historyPath.mkdirs()
-    val historyFile = historyPath.resolve("$id-$version.pack.hjson")
-    logger.info("adding modpack to history -> $historyFile")
-    val historyJson = jankson.toJson(this)
-    historyFile.writeText(historyJson.toJson(true, true))
+    //TODO: rethink history, since packs are now mainly file based
+//    val directories = Directories.get()
+//    val historyPath = directories.dataHome.resolve(this.id)
+//    historyPath.mkdirs()
+//    val historyFile = historyPath.resolve("$id-$version.pack.hjson")
+//    logger.info("adding modpack to history -> $historyFile")
+//    val historyJson = jankson.toJson(this)
+//    historyFile.writeText(historyJson.toJson(true, true))
 }

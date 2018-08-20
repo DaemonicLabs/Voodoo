@@ -1,12 +1,12 @@
 package voodoo.provider
 
-import aballano.kotlinmemoization.memoize
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.core.CoreConstants.VERSION
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
+import voodoo.memoize
 import voodoo.util.download
 import voodoo.util.jenkins.JenkinsServer
 import java.io.File
@@ -23,7 +23,7 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
 
-    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry? {
+    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry, String) -> Unit): LockEntry? {
         if(entry.job.isBlank()) {
             entry.job = entry.id
         }

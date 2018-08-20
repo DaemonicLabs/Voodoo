@@ -4,7 +4,7 @@ import blue.endless.jankson.Jankson
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.data.UserFiles
 import voodoo.data.flat.Entry
@@ -17,7 +17,6 @@ import voodoo.data.sk.FeatureProperties
 import voodoo.data.sk.Launch
 import voodoo.data.sk.SKFeature
 import voodoo.tester.MultiMCTester
-import voodoo.util.readJson
 import java.io.File
 import kotlin.system.exitProcess
 

@@ -1,12 +1,12 @@
 package voodoo.forge
 
-import aballano.kotlinmemoization.tuples.Quadruple
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
+import voodoo.data.Quadruple
 
 /**
  * Created by nikky on 30/12/17.

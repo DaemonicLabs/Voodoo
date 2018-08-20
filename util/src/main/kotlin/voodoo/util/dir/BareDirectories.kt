@@ -32,7 +32,6 @@ class BareDirectories(private val appName: String) : Directories {
                 .apply {
                     if (!hasUsedRuntimeDir) {
                         hasUsedRuntimeDir = true
-//                        Directories.deleteOnExit(f)
                         deleteDirectoryOnExit()
                     }
                     mkdirs()
@@ -40,7 +39,7 @@ class BareDirectories(private val appName: String) : Directories {
     }
 
     private val home: File by lazy {
-        File(System.getProperty("user.home"), "." + appName)
+        File(System.getProperty("user.home"), ".$appName")
     }
 
 }

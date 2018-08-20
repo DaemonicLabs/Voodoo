@@ -4,7 +4,7 @@ import blue.endless.jankson.JsonObject
 import blue.endless.jankson.impl.Marshaller
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import voodoo.data.Side
 import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.getReified

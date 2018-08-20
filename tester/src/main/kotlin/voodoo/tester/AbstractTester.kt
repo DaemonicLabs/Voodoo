@@ -14,5 +14,5 @@ abstract class AbstractTester : KLogging() {
 
     abstract suspend fun execute(modpack: LockPack, clean: Boolean = true)
 
-    val directories = Directories.get(moduleName = "pack")
+    val directories = Directories.get()
 }

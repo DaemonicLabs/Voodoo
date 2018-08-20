@@ -1,6 +1,5 @@
 package voodoo.provider
 
-import aballano.kotlinmemoization.memoize
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -11,6 +10,7 @@ import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import voodoo.data.provider.UpdateChannel
+import voodoo.memoize
 import java.io.File
 
 /**
@@ -34,7 +34,7 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
         }
     }.memoize()
 
-    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
+    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry, String) -> Unit): LockEntry {
         val json = getUpdateJson(entry.updateJson)!!
         if (entry.id.isBlank()) {
             entry.id = entry.updateJson.substringAfterLast('/').substringBeforeLast('.')

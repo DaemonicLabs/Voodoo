@@ -1,6 +1,6 @@
 package voodoo.util.jenkins
 
-import awaitByteArrayResponse
+import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponse
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging

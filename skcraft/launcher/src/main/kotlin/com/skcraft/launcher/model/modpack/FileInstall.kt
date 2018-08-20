@@ -7,27 +7,20 @@
 package com.skcraft.launcher.model.modpack
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import com.google.common.hash.Hashing
 
 import com.google.common.base.Preconditions.checkNotNull
 
 class FileInstall(
         var version: String? = null,
-        var hash: String? = null,
-        var location: String? = null,
-        var to: String? = null,
+        var hash: String,
+        var location: String,
+        var to: String,
         var size: Long = 0,
         var isUserFile: Boolean = false
 ) : ManifestEntry() {
-    
-
-    val impliedVersion: String
-        @JsonIgnore
-        get() = checkNotNull<String>(if (version != null) version else hash)
-
     val targetPath: String
         @JsonIgnore
-        get() = checkNotNull<String>(if (this.to != null) this.to else location)
+        get() = this.to
 
     override fun toString(): String {
         return "FileInstall(version=" + this.version + ", hash=" + this.hash + ", location=" + this.location + ", to=" + this.to + ", size=" + this.size + ", userFile=" + this.isUserFile + ")"
@@ -38,9 +31,9 @@ class FileInstall(
         if (other !is FileInstall) return false
         if (!other.canEqual(this as Any)) return false
         if (if (this.version == null) other.version != null else this.version != other.version) return false
-        if (if (this.hash == null) other.hash != null else this.hash != other.hash) return false
-        if (if (this.location == null) other.location != null else this.location != other.location) return false
-        if (if (this.to == null) other.to != null else this.to != other.to) return false
+        if (this.hash != other.hash) return false
+        if (this.location != other.location) return false
+        if (this.to != other.to) return false
         if (this.size != other.size) return false
         return this.isUserFile == other.isUserFile
     }
@@ -53,15 +46,11 @@ class FileInstall(
         val PRIME = 59
         var result = 1
         result = result * PRIME + (version?.hashCode() ?: 43)
-        result = result * PRIME + (hash?.hashCode() ?: 43)
-        result = result * PRIME + (location?.hashCode() ?: 43)
-        result = result * PRIME + (to?.hashCode() ?: 43)
+        result = result * PRIME + hash.hashCode()
+        result = result * PRIME + location.hashCode()
+        result = result * PRIME + to.hashCode()
         result = result * PRIME + (size.ushr(32) xor size).toInt()
         result = result * PRIME + if (this.isUserFile) 79 else 97
         return result
-    }
-
-    companion object {
-        private val hf = Hashing.sha1()
     }
 }

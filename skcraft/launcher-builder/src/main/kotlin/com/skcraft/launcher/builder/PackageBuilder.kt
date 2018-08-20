@@ -28,6 +28,10 @@ import com.skcraft.launcher.model.minecraft.VersionManifest
 import com.skcraft.launcher.model.modpack.Manifest
 import com.skcraft.launcher.util.Environment
 import com.skcraft.launcher.util.SimpleLogFormatter
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.coroutines.runBlocking
 import java.io.*
 import java.util.*
 import java.util.jar.JarFile
@@ -172,63 +176,72 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
     fun downloadLibraries(librariesDir: File?) {
         logSection("Downloading libraries...")
         // TODO: Download libraries for different environments -- As of writing, this is not an issue
+
+        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
+        val jobs = mutableListOf<Job>()
+
         val env = Environment.instance
         for (library in loaderLibraries) {
-            val outputPath = File(librariesDir, library.getPath(env))
-            if (!outputPath.exists()) {
-                Files.createParentDirs(outputPath)
-                var found = false
-                // Gather a list of repositories to download from
-                val sources = arrayListOf<String>() //Lists.newArrayList<String>()
-                library.baseUrl?.let {
-                    sources.add(it)
-                }
-                sources.addAll(mavenRepos!!)
-                // Try each repository
-                for (baseUrl in sources) {
-                    var pathname = library.getPath(env)
-                    // Some repositories compress their files
-                    val compressors = BuilderUtils.getCompressors(baseUrl)
-                    for (compressor in compressors.reversed()) {
-                        pathname = compressor.transformPathname(pathname)
+            jobs += async(context = pool) {
+                val outputPath = File(librariesDir, library.getPath(env))
+                if (!outputPath.exists()) {
+                    Files.createParentDirs(outputPath)
+                    var found = false
+                    // Gather a list of repositories to download from
+                    val sources = arrayListOf<String>() //Lists.newArrayList<String>()
+                    library.baseUrl?.let {
+                        sources.add(it)
                     }
-                    val url = baseUrl + pathname
-                    val tempFile = File.createTempFile("launcherlib", null)
-                    try {
-                        log.info("Downloading library " + library.name + " from " + url + "...")
-//                        HttpRequest.get(URL(url)).execute().expectResponseCode(200).saveContent(tempFile)
-                        val (_, response, result) = url.httpGet().response()
-                        when (result) {
-                            is Result.Success -> {
-                                log.info("writing to $tempFile")
-                                tempFile.writeBytes(result.value)
-                            }
-                            is Result.Failure -> {
-                                throw IOException("Did not get expected response code, got ${response.statusCode} for $url")
-                            }
+                    sources.addAll(mavenRepos!!)
+                    // Try each repository
+                    for (baseUrl in sources) {
+                        var pathname = library.getPath(env)
+                        // Some repositories compress their files
+                        val compressors = BuilderUtils.getCompressors(baseUrl)
+                        for (compressor in compressors.reversed()) {
+                            pathname = compressor.transformPathname(pathname)
                         }
-                    } catch (e: IOException) {
-                        log.info("Could not get file from " + url + ": " + e.message)
-                        continue
-                    }
+                        val url = baseUrl + pathname
+                        val tempFile = File.createTempFile("launcherlib", null)
+                        try {
+                            log.info("Downloading library " + library.name + " from " + url + "...")
+//                        HttpRequest.get(URL(url)).execute().expectResponseCode(200).saveContent(tempFile)
+                            val (_, response, result) = url.httpGet().response()
+                            when (result) {
+                                is Result.Success -> {
+                                    log.info("writing to $tempFile")
+                                    tempFile.writeBytes(result.value)
+                                }
+                                is Result.Failure -> {
+                                    throw IOException("Did not get expected response code, got ${response.statusCode} for $url")
+                                }
+                            }
+                        } catch (e: IOException) {
+                            log.info("Could not get file from " + url + ": " + e.message)
+                            continue
+                        }
 
-                    // Decompress (if needed) and write to file
-                    val closer = Closer.create()
-                    var inputStream: InputStream = closer.register(FileInputStream(tempFile))
-                    inputStream = closer.register(BufferedInputStream(inputStream))
-                    for (compressor in compressors) {
-                        inputStream = closer.register(compressor.createInputStream(inputStream))
+                        // Decompress (if needed) and write to file
+                        val closer = Closer.create()
+                        var inputStream: InputStream = closer.register(FileInputStream(tempFile))
+                        inputStream = closer.register(BufferedInputStream(inputStream))
+                        for (compressor in compressors) {
+                            inputStream = closer.register(compressor.createInputStream(inputStream))
+                        }
+                        ByteStreams.copy(inputStream, closer.register(FileOutputStream(outputPath)))
+                        tempFile.delete()
+                        found = true
+                        break
                     }
-                    ByteStreams.copy(inputStream, closer.register(FileOutputStream(outputPath)))
-                    tempFile.delete()
-                    found = true
-                    break
-                }
-                if (!found) {
-                    log.warning("!! Failed to download the library " + library.name + " -- this means your copy of the libraries will lack this file")
+                    if (!found) {
+                        log.warning("!! Failed to download the library " + library.name + " -- this means your copy of the libraries will lack this file")
+                    }
                 }
             }
         }
+
+        log.info("waiting for library jobs to finish")
+        runBlocking { jobs.forEach { it.join() } }
     }
 
     private fun validateManifest() {

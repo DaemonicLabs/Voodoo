@@ -2,6 +2,7 @@ package voodoo.pack
 
 import blue.endless.jankson.Jankson
 import com.skcraft.launcher.builder.PackageBuilder
+import kotlinx.coroutines.*
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.pack.sk.*
@@ -33,7 +34,7 @@ object SKPack : AbstractPack() {
         skSrcFolder.deleteRecursively()
         logger.info("copying files into src ${modpack.sourceFolder}")
         val packSrc = modpack.sourceFolder
-        if(skSrcFolder.startsWith(packSrc)) {
+        if (skSrcFolder.startsWith(packSrc)) {
             throw IllegalStateException("cannot copy parent rootFolder '$packSrc' into subfolder '$skSrcFolder'")
         }
         if (packSrc.exists()) {
@@ -42,7 +43,7 @@ object SKPack : AbstractPack() {
             skSrcFolder.walkBottomUp().forEach {
                 if (it.name.endsWith(".entry.hjson") || it.name.endsWith(".lock.json"))
                     it.delete()
-                if(it.isDirectory && it.listFiles().isEmpty()) {
+                if (it.isDirectory && it.listFiles().isEmpty()) {
                     it.delete()
                 }
             }
@@ -61,65 +62,81 @@ object SKPack : AbstractPack() {
         logger.info("cleaning loaders $loadersFolder")
         loadersFolder.deleteRecursively()
 
+        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
+        val jobs = mutableListOf<Job>()
+
         // download forge
         val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
         val forgeFile = loadersFolder.resolve(forgeFileName)
-        forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
-
+        jobs += async(context = pool) {
+            forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
+        }
         val modsFolder = skSrcFolder.resolve("mods")
         logger.info("cleaning mods $modsFolder")
         modsFolder.deleteRecursively()
 
+
         // download entries
         val targetFiles = mutableMapOf<String, File>()
-        for((name, pair) in modpack.entriesMapping) {
-            val (entry, relEntryFile) = pair
-            val provider = Provider.valueOf(entry.provider).base
+        for ((name, pair) in modpack.entriesMapping) {
+            jobs += async(context = pool) {
+                val (entry, relEntryFile) = pair
+                val provider = Provider.valueOf(entry.provider).base
 
-            val folder = skSrcFolder.resolve(relEntryFile).parentFile
+                val folder = skSrcFolder.resolve(relEntryFile).parentFile
 
-            val (url, file) = provider.download(entry, folder, cacheDir)
-            if (url != null && entry.useUrlTxt) {
-                val urlTxtFile = folder.resolve(file.name + ".url.txt")
-                urlTxtFile.writeText(url)
+                val (url, file) = provider.download(entry, folder, cacheDir)
+                if (url != null && entry.useUrlTxt) {
+                    val urlTxtFile = folder.resolve(file.name + ".url.txt")
+                    urlTxtFile.writeText(url)
+                }
+                targetFiles[entry.id] = file // file.relativeTo(skSrcFolder
             }
-            targetFiles[entry.id] = file // file.relativeTo(skSrcFolder)
+            logger.info("started job: download '$name'")
+            delay(10)
         }
 
         // write features
         val features = mutableListOf<SKFeatureComposite>()
         for (feature in modpack.features) {
-            for (name in feature.entries) {
-                logger.info(name)
+            jobs += async(context = pool) {
+                for (name in feature.entries) {
+                    logger.info(name)
 
-                val targetFile = targetFiles[name]!!.let {
-                    if (it.parentFile.name == "_SERVER" || it.parentFile.name == "_CLIENT") {
-                        it.parentFile.parentFile.resolve(it.name)
-                    } else
-                        it
+                    val targetFile = targetFiles[name]!!.let {
+                        if (it.parentFile.name == "_SERVER" || it.parentFile.name == "_CLIENT") {
+                            it.parentFile.parentFile.resolve(it.name)
+                        } else
+                            it
+                    }
+
+                    feature.files.include += targetFile.relativeTo(skSrcFolder).path
+                            .replace('\\', '/')
+                            .replace("[", "\\[")
+                            .replace("]", "\\]")
+                    logger.info("includes = ${feature.files.include}")
                 }
 
-                feature.files.include += targetFile.relativeTo(skSrcFolder).path
-                        .replace('\\', '/')
-                        .replace("[", "\\[")
-                        .replace("]", "\\]")
-                logger.info("includes = ${feature.files.include}")
-            }
-
-            if(feature.properties.name.isBlank()) {
+                if (feature.properties.name.isBlank()) {
 //                feature.properties.name = modpack.entries.find {it.id == feature.}
+                }
+
+                logger.info("entries: ${feature.entries}")
+                logger.info("properties: ${feature.properties}")
+
+                features += SKFeatureComposite(
+                        properties = feature.properties,
+                        files = feature.files
+                )
+                logger.info("processed feature $feature")
             }
-
-            logger.info ("entries: ${feature.entries}")
-            logger.info ( "properties: ${feature.properties}")
-
-            features += SKFeatureComposite(
-                    properties = feature.properties,
-                    files = feature.files
-            )
-            logger.info("processed feature $feature")
+            logger.info("started job: feature '${feature.properties.name}'")
+            delay(10)
         }
 
+        delay(10)
+        logger.info("waiting for jobs to finish")
+        runBlocking { jobs.forEach { it.join() } }
 
         val skmodpack = SKModpack(
                 name = modpack.id,
@@ -186,5 +203,4 @@ object SKPack : AbstractPack() {
         packFragment.version = uniqueVersion
         packagesFile.writeJson(packages)
     }
-
 }

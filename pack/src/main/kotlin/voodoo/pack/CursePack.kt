@@ -1,9 +1,7 @@
 package voodoo.pack
 
 import blue.endless.jankson.Jankson
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.*
 import voodoo.data.Side
 import voodoo.data.curse.CurseFile
 import voodoo.data.curse.CurseManifest
@@ -55,6 +53,9 @@ object CursePack : AbstractPack() {
         logger.info("cleaning loaders $loadersFolder")
         loadersFolder.deleteRecursively()
 
+        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
+        val jobs = mutableListOf<Job>()
+
         // download forge
         val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
 //        val forgeFile = loadersFolder.resolve(forgeFileName)
@@ -69,41 +70,48 @@ object CursePack : AbstractPack() {
         // download entries
         for ((name, pair) in modpack.entriesMapping) {
             val (entry, entryFile) = pair
-            val folder = entryFile.absoluteFile.parentFile
-            val required = modpack.features.none { feature ->
-                feature.entries.any { it == entry.id }
-            }
-
-            val provider = Provider.valueOf(entry.provider).base
             if (entry.side == Side.SERVER) continue
-            if (entry.provider == Provider.CURSE.name) {
-                curseMods += CurseFile(entry.projectID, entry.fileID, required).apply { println("added voodoo.data.curse file $this") }
-            } else {
-                val targetFolder = srcFolder.resolve(folder)
-                val (url, file) = provider.download(entry, targetFolder, cacheDir)
-                if (!required) {
-                    val optionalFile = file.parentFile.resolve(file.name + ".disabled")
-                    file.renameTo(optionalFile)
+            jobs += async(context = pool) {
+                val folder = entryFile.absoluteFile.parentFile
+                val required = modpack.features.none { feature ->
+                    feature.entries.any { it == entry.id }
+                }
+
+                val provider = Provider.valueOf(entry.provider).base
+                if (entry.provider == Provider.CURSE.name) {
+                    curseMods += CurseFile(entry.projectID, entry.fileID, required).apply { println("added voodoo.data.curse file $this") }
+                } else {
+                    val targetFolder = srcFolder.resolve(folder)
+                    val (url, file) = provider.download(entry, targetFolder, cacheDir)
+                    if (!required) {
+                        val optionalFile = file.parentFile.resolve(file.name + ".disabled")
+                        file.renameTo(optionalFile)
+                    }
                 }
             }
+            SKPack.logger.info("started job: download '$name'")
+            delay(10)
         }
+
+        delay(10)
+        logger.info("waiting for jobs to finish")
+        runBlocking { jobs.forEach { it.join() } }
 
         // generate modlist
         val modListFile = modpackDir.resolve("modlist.html")
 
         val parts = modpack.entriesMapping.map { (name, pair) ->
             val (entry, file) = pair
-            async {
-                delay(1000)
+
                 val provider = Provider.valueOf(entry.provider).base
                 if (entry.side == Side.SERVER) {
-                    return@async ""
+                    return@map ""
                 }
                 val projectPage = provider.getProjectPage(entry)
                 val authors = provider.getAuthors(entry)
                 val authorString = if (authors.isNotEmpty()) " (by ${authors.joinToString(", ")})" else ""
 
-                return@async when {
+                return@map when {
                     projectPage.isNotEmpty() -> "<li><a href=\"$projectPage\">${entry.name} $authorString</a></li>\n"
                     entry.url.isNotBlank() -> "<li>direct: <a href=\"${entry.url}\">${entry.name} $authorString</a></li>\n"
                     else -> {
@@ -111,11 +119,11 @@ object CursePack : AbstractPack() {
                         "<li>${entry.name} $authorString (source: $source)</li>\n"
                     }
                 }
-            }
+
         }
 
         runBlocking {
-            val html = "<ul>\n" + parts.map { it.await() }.joinToString("") + "\n</ul>\n"
+            val html = "<ul>\n" + parts.joinToString("") + "\n</ul>\n"
 
             if (modListFile.exists()) modListFile.delete()
             modListFile.createNewFile()

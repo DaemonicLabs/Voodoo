@@ -60,7 +60,7 @@ class Manifest(
         if (if (this.gameVersion == null) other.gameVersion != null else this.gameVersion != other.gameVersion) return false
         if (if (this.launchModifier == null) other.launchModifier != null else this.launchModifier != other.launchModifier) return false
         if (if (this.features == null) other.features != null else this.features != other.features) return false
-        if (if (this.tasks == null) other.tasks != null else this.tasks != other.tasks) return false
+        if (this.tasks != other.tasks) return false
         return !if (this.versionManifest == null) other.versionManifest != null else this.versionManifest != other.versionManifest
     }
 
@@ -78,7 +78,7 @@ class Manifest(
         result = result * PRIME + (gameVersion?.hashCode() ?: 43)
         result = result * PRIME + (launchModifier?.hashCode() ?: 43)
         result = result * PRIME + (features?.hashCode() ?: 43)
-        result = result * PRIME + (tasks?.hashCode() ?: 43)
+        result = result * PRIME + tasks.hashCode()
         result = result * PRIME + (versionManifest?.hashCode() ?: 43)
         return result
     }

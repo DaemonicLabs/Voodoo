@@ -1,6 +1,7 @@
 package voodoo.pack
 
 import blue.endless.jankson.Jankson
+import kotlinx.coroutines.*
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
@@ -64,22 +65,33 @@ object MMCFatPack : AbstractPack() {
             minecraftDir.deleteRecursively()
         }
 
+        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
+        val jobs = mutableListOf<Job>()
+
         for ((name, pair) in modpack.entriesMapping) {
             val (entry, entryFile) = pair
-
             if (entry.side == Side.SERVER) continue
-            val folder = minecraftDir.resolve(entryFile).absoluteFile.parentFile
 
-            val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
-            val selected = !matchedFeatureList.isEmpty() && matchedFeatureList.any { features[it.properties.name] ?: false }
+            jobs += async(context = pool) {
+                val folder = minecraftDir.resolve(entryFile).absoluteFile.parentFile
 
-            val provider = Provider.valueOf(entry.provider).base
-            val targetFolder = minecraftDir.resolve(folder)
-            val (url, file) = provider.download(entry, targetFolder, cacheDir)
-            if(!selected) {
-                file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
+                val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
+                val selected = !matchedFeatureList.isEmpty() && matchedFeatureList.any {
+                    features[it.properties.name] ?: false
+                }
+
+                val provider = Provider.valueOf(entry.provider).base
+                val targetFolder = minecraftDir.resolve(folder)
+                val (url, file) = provider.download(entry, targetFolder, cacheDir)
+                if (!selected) {
+                    file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
+                }
             }
         }
+
+        delay(10)
+        CursePack.logger.info("waiting for jobs to finish")
+        runBlocking { jobs.forEach { it.join() } }
 
         for (file in minecraftDir.walkTopDown()) {
             when {

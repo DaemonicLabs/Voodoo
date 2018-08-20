@@ -16,5 +16,5 @@ abstract class AbstractImporter : KLogging() {
 
     abstract suspend fun import(source: String, target: File)
 
-    val directories = Directories.get(moduleName = "import")
+    val directories = Directories.get()
 }

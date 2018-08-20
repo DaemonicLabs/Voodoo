@@ -2,6 +2,7 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
+        maven { url = "http://dl.bintray.com/kotlin/kotlin-eap" }
     }
     dependencies {
         classpath group: 'org.jetbrains.dokka', name: 'dokka-gradle-plugin', version: '0.9.17'
@@ -27,14 +28,9 @@ println """
 *******************************************
 """
 
-idea {
-    module {
-        excludeDirs += [file("run")]
-    }
-}
-
 repositories {
     mavenCentral()
+    maven { url = "http://dl.bintray.com/kotlin/kotlin-eap" }
 }
 
 allprojects {
@@ -45,7 +41,7 @@ allprojects {
     compileKotlin {
         kotlinOptions {
             jvmTarget = "1.8"
-            languageVersion = "1.2"
+//            languageVersion = "1.3"
         }
     }
     kotlin {
@@ -57,31 +53,30 @@ allprojects {
     repositories {
         mavenCentral()
         jcenter()
+        maven { url = "http://dl.bintray.com/kotlin/kotlin-eap" }
         maven { url = 'http://repo.maven.apache.org/maven2' }
         maven { url = 'http://jcenter.bintray.com' }
         maven { url = "https://dl.bintray.com/s1m0nw1/KtsRunner" }
-        maven { url = 'https://jitpack.io' }
+//        maven { url = 'https://jitpack.io' }
     }
-}
-
-subprojects {
-    apply plugin: "kotlin"
-    apply plugin: 'org.jetbrains.dokka'
-    group = group
-    version = version
 
     idea {
         module {
             excludeDirs += [file("run")]
         }
     }
+}
 
+subprojects {
     if (name == 'Jankson') {
         sonarqube {
             skipProject = true
         }
-    }
-    if (name != "Jankson") {
+    } else if (name != "Jankson") {
+        apply plugin: "kotlin"
+        group = group
+        version = version
+        apply plugin: 'org.jetbrains.dokka'
         sourceSets {
             main.kotlin.srcDirs += "$buildDir/generated-src"
         }
@@ -114,10 +109,11 @@ subprojects {
         if (System.env.BUILD_NUMBER) {
             version = System.env.BUILD_NUMBER
         }
+
+        dokka {
+            outputFormat = 'gfm'
+            outputDirectory = "${parent.projectDir}/docs/dokka"
+        }
     }
 
-    dokka {
-        outputFormat = 'gfm'
-        outputDirectory = "${parent.projectDir}/docs/dokka"
-    }
 }

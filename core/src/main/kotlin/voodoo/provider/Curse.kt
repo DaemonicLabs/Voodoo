@@ -1,6 +1,5 @@
 package voodoo.provider
 
-import aballano.kotlinmemoization.memoize
 import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
@@ -10,6 +9,7 @@ import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
+import voodoo.memoize
 import voodoo.util.download
 import java.io.File
 import java.time.Instant
@@ -23,7 +23,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
     override val name = "Curse Provider"
     val resolved = mutableListOf<String>()
 
-    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry) -> Unit): LockEntry {
+    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry, String) -> Unit): LockEntry {
         val (projectID, fileID, path) = findFile(entry, modpack.mcVersion, entry.curseMetaUrl)
 
         logger.info("resolved: $resolved")
@@ -91,7 +91,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
 //        return addon.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
 //    }
 
-    private suspend fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, addEntry: (Entry) -> Unit) {
+    private suspend fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, addEntry: (Entry, String) -> Unit) {
         val addon = getAddon(addonId, entry.curseMetaUrl)
         if(addon == null) {
             logger.error("addon $addonId could not be resolved, entry: $entry")
@@ -110,7 +110,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
         for ((depAddonId, depType) in dependencies) {
             logger.info("resolve Dep $depAddonId")
             val depAddon = getAddon(depAddonId, entry.curseMetaUrl)
-            if (depAddon==null) {
+            if (depAddon == null) {
                 logger.error("broken dependency type: '$depType' id: '$depAddonId' of entry: '${entry.id}'")
                 continue
             }
@@ -144,7 +144,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
                     curseReleaseTypes = entry.curseReleaseTypes
                     curseOptionalDependencies = entry.curseOptionalDependencies
                 }
-                addEntry(depEntry)
+                addEntry(depEntry, depAddon.categorySection.path)
                 logger.info("added $depType dependency ${depAddon.name} of ${addon.name}")
             } else {
                 continue
