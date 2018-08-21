@@ -120,7 +120,7 @@ object CurseImporter : AbstractImporter() {
 
                 val entry = Entry(
                         provider = Provider.CURSE.name,
-                        curseReleaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
+                        curseReleaseTypes = sortedSetOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
                         id = addon.slug,
                         fileName = addonFile.fileName,
                         validMcVersions = addonFile.gameVersion.toSet()
@@ -187,7 +187,7 @@ object CurseImporter : AbstractImporter() {
                 root = NestedEntry(
                         validMcVersions = validMcVersions - manifest.minecraft.version,
                         provider = Provider.CURSE.name,
-                        curseReleaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
+                        curseReleaseTypes = sortedSetOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
                         entries = entries
                 )
         )
