@@ -15,6 +15,7 @@ import voodoo.provider.Provider
 import voodoo.util.readYaml
 import java.io.File
 import java.lang.IllegalStateException
+import java.util.*
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 import kotlin.system.exitProcess
@@ -47,7 +48,7 @@ data class NestedEntry(
         var validMcVersions: Set<String> = setOf(),
         //  CURSE
         var curseMetaUrl: String = CurseConstancts.PROXY_URL,
-        var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
+        var curseReleaseTypes: SortedSet<FileType> = sortedSetOf(FileType.RELEASE, FileType.BETA),
         var curseOptionalDependencies: Boolean = false,
         var curseProjectID: Int = -1,
         var curseFileID: Int = -1,

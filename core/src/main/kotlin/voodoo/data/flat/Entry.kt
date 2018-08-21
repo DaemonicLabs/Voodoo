@@ -13,7 +13,7 @@ import voodoo.getList
 import voodoo.getMap
 import voodoo.getReified
 import voodoo.util.equalsIgnoreCase
-import voodoo.util.json
+import java.util.*
 
 /**
  * Created by nikky on 28/03/18.
@@ -48,7 +48,7 @@ data class Entry(
         var validMcVersions: Set<String> = setOf(),
         // CURSE
         var curseMetaUrl: String = PROXY_URL,
-        var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
+        var curseReleaseTypes: SortedSet<FileType> = sortedSetOf(FileType.RELEASE, FileType.BETA),
         var curseOptionalDependencies: Boolean = false,
         var curseProjectID: Int = -1,
         var curseFileID: Int = -1,
@@ -169,7 +169,7 @@ data class Entry(
                         validMcVersions = jsonObj.getList<String>("validMcVersions")?.toSet() ?: validMcVersions,
                         //CURSE
                         curseMetaUrl = jsonObj.getReified("curseMetaUrl") ?: curseMetaUrl,
-                        curseReleaseTypes = jsonObj.getList<FileType>("curseReleaseTypes")?.toSet() ?: curseReleaseTypes,
+                        curseReleaseTypes = jsonObj.getList<FileType>("curseReleaseTypes")?.toSortedSet() ?: curseReleaseTypes,
                         curseOptionalDependencies = jsonObj.getReified("curseOptionalDependencies")
                                 ?: curseOptionalDependencies,
                         curseProjectID = jsonObj.getReified("curseProjectID") ?: curseProjectID,
