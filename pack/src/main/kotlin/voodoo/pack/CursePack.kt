@@ -75,7 +75,7 @@ object CursePack : AbstractPack() {
         for ((name, pair) in modpack.entriesMapping) {
             val (entry, entryFile) = pair
             if (entry.side == Side.SERVER) continue
-            jobs += async(context = pool) {
+            jobs += launch(context = pool) {
                 val folder = entryFile.absoluteFile.parentFile
                 val required = modpack.features.none { feature ->
                     feature.entries.any { it == entry.id }

@@ -72,7 +72,7 @@ object MMCFatPack : AbstractPack() {
             val (entry, entryFile) = pair
             if (entry.side == Side.SERVER) continue
 
-            jobs += async(context = pool) {
+            jobs += launch(context = pool) {
                 val folder = minecraftDir.resolve(entryFile).absoluteFile.parentFile
 
                 val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }

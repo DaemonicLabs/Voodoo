@@ -105,5 +105,12 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
         logger.info("get jenkins server $url")
         JenkinsServer(url)
     }.memoize()
+
+    override fun report(entry: LockEntry): String {
+        return """${super.report(entry)}
+            |job ${entry.job}
+            |build ${entry.buildNumber}
+        """.trimMargin()
+    }
 }
 

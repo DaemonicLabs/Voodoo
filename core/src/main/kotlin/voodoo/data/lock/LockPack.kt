@@ -79,6 +79,7 @@ data class LockPack(
     @JsonIgnore
     val entriesMapping: MutableMap<String, Pair<LockEntry, File>> = mutableMapOf()
 
+
     fun loadEntries(rootFolder: File = this.rootFolder, jankson: Jankson) {
         this.rootFolder = rootFolder
         sourceFolder.walkTopDown()
@@ -93,4 +94,12 @@ data class LockPack(
 //                    logger.info("loaded ${lockEntry.id} ${it.relativeTo(srcDir).path}")
                 }
     }
+
+    val report: String
+        get() = """# $title
+            |ID: $id
+            |version $version
+            |MC Version $mcVersion
+            |Authors ${authors.joinToString(", ")}
+        """.trimMargin()
 }

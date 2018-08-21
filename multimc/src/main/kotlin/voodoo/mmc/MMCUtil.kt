@@ -77,7 +77,7 @@ object MMCUtil : KLogging() {
     }
 
     fun startInstance(name: String) {
-          ProcessBuilder(mmcConfig.binary, "--launch", name)
+          val process = ProcessBuilder(mmcConfig.binary, "--launch", name)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 .redirectError(ProcessBuilder.Redirect.INHERIT)
                 .start()
@@ -86,12 +86,13 @@ object MMCUtil : KLogging() {
     }
 
 
+    var dir: File? = null
+        private set
     /**
      * Finds the MultiMC data loccation
      */
     fun findDir(): File {
-
-        return when {
+        dir = dir ?: when {
             Platform.isWindows() -> {
                 val location = "where ${mmcConfig.binary}".runCommand()
                 val multimcFile = File(location)
@@ -109,6 +110,7 @@ object MMCUtil : KLogging() {
             Platform.isLinux() -> File(System.getProperty("user.home")).resolve(mmcConfig.path)
             else -> throw Exception("unsupported platform, on OSX please contact NikkyAi to implement this or OR")
         }
+        return dir!!
     }
 
     fun String.runCommandWithRedirct(workingDir: File = cacheHome) {
@@ -166,7 +168,10 @@ object MMCUtil : KLogging() {
         minecraftDir.mkdirs()
 
         val iconKey = if (icon != null && icon.exists()) {
-            val iconName = "icon_$folder"
+            var iconName = "icon_$folder"
+            val iconsDir =  with(MMCUtil.findDir()) { this.resolve(readCfg(this.resolve("multimc.cfg"))["IconsDir"] ?: "icons") }
+            var iconFile = iconsDir.resolve("$iconName.png")
+            icon.copyTo(iconFile, overwrite = true)
 //            val iconName = "icon"
             icon.copyTo(instanceDir.resolve("$iconName.png"), overwrite = true)
             iconName

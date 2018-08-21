@@ -68,6 +68,7 @@ interface ProviderBase {
         return null
     }
 
-
-
+    fun report(entry: LockEntry): String = """## ${entry.name()}
+        |version ${entry.version()}
+    """.trimMargin()
 }
