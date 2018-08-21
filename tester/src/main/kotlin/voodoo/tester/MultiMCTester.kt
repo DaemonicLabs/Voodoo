@@ -111,6 +111,7 @@ object MultiMCTester : AbstractTester() {
             }
         }
 
+//        MMCUtil.startInstance(title)
         MMCUtil.startInstance(folder)
     }
 

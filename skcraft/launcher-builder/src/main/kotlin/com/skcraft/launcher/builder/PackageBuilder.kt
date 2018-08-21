@@ -29,7 +29,7 @@ import com.skcraft.launcher.model.modpack.Manifest
 import com.skcraft.launcher.util.Environment
 import com.skcraft.launcher.util.SimpleLogFormatter
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.runBlocking
 import java.io.*
@@ -182,7 +182,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
 
         val env = Environment.instance
         for (library in loaderLibraries) {
-            jobs += async(context = pool) {
+            jobs += launch(context = pool) {
                 val outputPath = File(librariesDir, library.getPath(env))
                 if (!outputPath.exists()) {
                     Files.createParentDirs(outputPath)

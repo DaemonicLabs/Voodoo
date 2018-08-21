@@ -105,7 +105,7 @@ object CurseImporter : AbstractImporter() {
 
         //TODO: process in parallel
         for(file in manifest.files) {
-            jobs += async(context = pool) {
+            jobs += launch(context = pool) {
                 logger.info { file }
                 val addon = CurseClient.getAddon(file.projectID, PROXY_URL)!!
                 val addonFile = CurseClient.getAddonFile(file.projectID, file.fileID, PROXY_URL)!!
