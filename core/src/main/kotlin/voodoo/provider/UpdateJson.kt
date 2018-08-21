@@ -78,6 +78,13 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
     override suspend fun getVersion(entry: LockEntry): String {
         return entry.jsonVersion
     }
+
+
+    override fun report(entry: LockEntry): String {
+        return """${super.report(entry)}
+            |update channel ${entry.jsonVersion}
+        """.trimMargin()
+    }
 }
 
 data class UpdateJson(

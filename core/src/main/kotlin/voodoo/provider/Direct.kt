@@ -44,4 +44,10 @@ object DirectProviderThing : ProviderBase, KLogging() {
     override suspend fun getVersion(entry: LockEntry): String {
         return entry.url.substringBeforeLast('.').substringAfterLast('/')
     }
+
+//    override fun report(entry: LockEntry): String {
+//        return """${super.report(entry)}
+//            |
+//        """.trimMargin()
+//    }
 }

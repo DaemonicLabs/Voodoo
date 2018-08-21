@@ -19,8 +19,10 @@ import voodoo.data.sk.FeatureFiles
 import voodoo.data.sk.FeatureProperties
 import voodoo.data.sk.Launch
 import voodoo.data.sk.SKFeature
+import voodoo.provider.Provider
 import voodoo.util.json
 import java.io.File
+import java.io.StringWriter
 
 /**
  * Created by nikky on 28/03/18.
@@ -116,6 +118,22 @@ object Builder : KLogging() {
                 val delta = lockJson.getDelta(defaultJson)
                 file.writeText(delta.toJson(true, true).replace("\t", "  "))
             }
+
+            //TODO: generate modlist
+
+            val sw = StringWriter()
+            sw.append(lockedPack.report)
+            sw.append("\n")
+
+            modpack.versionsMapping.toSortedMap().forEach { name, pair ->
+                val (entry, file) = pair
+                val provider = Provider.valueOf(entry.provider).base
+                sw.append("\n\n")
+                sw.append(provider.report(entry))
+            }
+
+            val modlist = (targetFile ?: File(".")).absoluteFile.parentFile.resolve("modlist.md")
+            modlist.writeText(sw.toString().replace("\n", "  \n"))
         }
     }
 

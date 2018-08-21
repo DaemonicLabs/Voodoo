@@ -1,5 +1,6 @@
 package voodoo.provider
 
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
@@ -191,5 +192,13 @@ object CurseProviderThing : ProviderBase, KLogging() {
                 addonFile.fileDate.toInstant()
             }
         }
+    }
+
+    override fun report(entry: LockEntry): String {
+        val addon = runBlocking { getAddon(entry.projectID, entry.curseMetaUrl)!! }
+        val addonFile = runBlocking { getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)!! }
+        return """${super.report(entry)}
+            |author ${addon.authors.joinToString { it.name }}
+        """.trimMargin()
     }
 }

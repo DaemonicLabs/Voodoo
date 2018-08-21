@@ -68,7 +68,7 @@ object SKPack : AbstractPack() {
         // download forge
         val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
         val forgeFile = loadersFolder.resolve(forgeFileName)
-        jobs += async(context = pool) {
+        jobs += launch(context = pool) {
             forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
         }
         val modsFolder = skSrcFolder.resolve("mods")
@@ -79,7 +79,7 @@ object SKPack : AbstractPack() {
         // download entries
         val targetFiles = mutableMapOf<String, File>()
         for ((name, pair) in modpack.entriesMapping) {
-            jobs += async(context = pool) {
+            jobs += launch(context = pool) {
                 val (entry, relEntryFile) = pair
                 val provider = Provider.valueOf(entry.provider).base
 
@@ -99,7 +99,7 @@ object SKPack : AbstractPack() {
         // write features
         val features = mutableListOf<SKFeatureComposite>()
         for (feature in modpack.features) {
-            jobs += async(context = pool) {
+            jobs += launch(context = pool) {
                 for (name in feature.entries) {
                     logger.info(name)
 
