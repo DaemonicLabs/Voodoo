@@ -48,7 +48,7 @@ data class Entry(
         var validMcVersions: Set<String> = setOf(),
         // CURSE
         var curseMetaUrl: String = PROXY_URL,
-        var curseReleaseTypes: SortedSet<FileType> = sortedSetOf(FileType.RELEASE, FileType.BETA),
+        var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
         var curseOptionalDependencies: Boolean = false,
         var curseProjectID: Int = -1,
         var curseFileID: Int = -1,
@@ -104,7 +104,7 @@ data class Entry(
                 when {
                     provider.equalsIgnoreCase("CURSE") -> {
                         jsonObj["curseMetaUrl"] = marshaller.serialize(curseMetaUrl)
-                        jsonObj["curseReleaseTypes"] = marshaller.serialize(curseReleaseTypes)
+                        jsonObj["curseReleaseTypes"] = marshaller.serialize(curseReleaseTypes.toSortedSet())
                         jsonObj["curseOptionalDependencies"] = marshaller.serialize(curseOptionalDependencies)
                         if(curseProjectID > 0) jsonObj["curseProjectID"] = marshaller.serialize(curseProjectID)
                         if(curseFileID > 0) jsonObj["curseFileID"] = marshaller.serialize(curseFileID)
