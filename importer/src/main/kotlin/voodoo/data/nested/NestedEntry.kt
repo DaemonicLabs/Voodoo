@@ -48,7 +48,7 @@ data class NestedEntry(
         var validMcVersions: Set<String> = setOf(),
         //  CURSE
         var curseMetaUrl: String = CurseConstancts.PROXY_URL,
-        var curseReleaseTypes: SortedSet<FileType> = sortedSetOf(FileType.RELEASE, FileType.BETA),
+        var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
         var curseOptionalDependencies: Boolean = false,
         var curseProjectID: Int = -1,
         var curseFileID: Int = -1,
