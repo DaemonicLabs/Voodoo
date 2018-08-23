@@ -121,6 +121,7 @@ object Builder : KLogging() {
 
             //TODO: generate modlist
 
+            logger.info("writing modlist")
             val sw = StringWriter()
             sw.append(lockedPack.report)
             sw.append("\n")
