@@ -14,6 +14,7 @@ import java.io.File
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 /**
  * Created by nikky on 30/03/18.
@@ -96,9 +97,14 @@ object SKPack : AbstractPack() {
             delay(10)
         }
 
+        delay(10)
+        logger.info("waiting for jobs to finish")
+        runBlocking { jobs.forEach { it.join() } }
+
         // write features
-        val features = mutableListOf<SKFeatureComposite>()
+        val features = Collections.synchronizedList(mutableListOf<SKFeatureComposite>())
         for (feature in modpack.features) {
+            logger.info("processing feature: ${feature.properties.name}")
             jobs += launch(context = pool) {
                 for (name in feature.entries) {
                     logger.info(name)
