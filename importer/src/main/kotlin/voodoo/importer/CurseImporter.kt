@@ -21,9 +21,7 @@ import voodoo.util.download
 import voodoo.util.readJson
 import voodoo.util.writeYaml
 import java.io.File
-import java.io.FileFilter
 import java.util.*
-import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 13/06/18.
@@ -164,17 +162,12 @@ object CurseImporter : AbstractImporter() {
         logger.info("waiting for jobs to finish")
         runBlocking { jobs.forEach { it.join() } }
 
-        val include = "include.yaml"
-        include.takeIf { target.resolve(it).exists() }?.let {
-            NestedEntry(
-                    include = it
-            )
-        }?.also {
-            entries.add(0, it)
-        }
-
         val forge = manifest.minecraft.modLoaders
                 .find { it.id.startsWith("forge-") }?.id?.substringAfterLast('.')
+
+        val mainFilename = name.blankOr ?: manifest.name.replace("[^\\w-]+".toRegex(), "")
+        val entriesFilename = mainFilename + "_entries.yaml"
+
         val nestedPack = NestedPack(
                 name ?: manifest.name.replace("[^\\w-]+".toRegex(), ""),
                 authors = listOf(manifest.author),
@@ -185,19 +178,24 @@ object CurseImporter : AbstractImporter() {
                 sourceDir = overridesFolder.relativeTo(target).path,
                 localDir = local,
                 root = NestedEntry(
-                        validMcVersions = validMcVersions - manifest.minecraft.version,
-                        provider = Provider.CURSE.name,
-                        curseReleaseTypes = sortedSetOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
-                        entries = entries
+                        include = entriesFilename
                 )
         )
+        val rootEntry = NestedEntry(
+                validMcVersions = validMcVersions - manifest.minecraft.version,
+                provider = Provider.CURSE.name,
+                curseReleaseTypes = sortedSetOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
+                entries = entries
+        )
 
-        val filename = name.blankOr ?: manifest.name.replace("[^\\w-]+".toRegex(), "")
-        val packFile = target.resolve("$filename.pack.hjson")
-        val lockFile = target.resolve("$filename.lock.json")
 
-        logger.info("writing to $filename.yaml")
-        target.resolve("$filename.yaml").writeYaml(nestedPack)
+        logger.info("writing to $mainFilename.yaml")
+        target.resolve("$mainFilename.yaml").writeYaml(nestedPack)
+        logger.info("writing to $entriesFilename")
+        target.resolve(entriesFilename).writeYaml(rootEntry)
+
+        val packFile = target.resolve("$mainFilename.pack.hjson")
+        val lockFile = target.resolve("$mainFilename.lock.json")
 
         val modpack = nestedPack.flatten()
 
