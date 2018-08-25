@@ -34,8 +34,7 @@ object MultiMCTester : AbstractTester() {
 
         instanceDir.mkdirs()
 
-        val iconFile = mmcConfigDir.resolve("${modpack.id}.icon.png")
-        val minecraftDir = MMCUtil.installEmptyPack(title, folder, icon = iconFile, mcVersion = modpack.mcVersion, forgeBuild = modpack.forge)
+        val minecraftDir = MMCUtil.installEmptyPack(title, folder, icon = modpack.iconFile, mcVersion = modpack.mcVersion, forgeBuild = modpack.forge)
 
         minecraftDir.mkdirs()
         val modsDir = minecraftDir.resolve("mods")

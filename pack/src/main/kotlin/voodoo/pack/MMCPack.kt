@@ -18,9 +18,8 @@ object MMCPack : AbstractPack() {
         val instanceDir = cacheDir.resolve("MMC").resolve(modpack.id)
         instanceDir.deleteRecursively()
 
-        val iconFile = definitionsDir.resolve("${modpack.id}.icon.png")
         val preLaunchCommand = "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
-        val minecraftDir = MMCUtil.installEmptyPack(modpack.title, modpack.id, icon = iconFile, instanceDir = instanceDir, preLaunchCommand = preLaunchCommand)
+        val minecraftDir = MMCUtil.installEmptyPack(modpack.title, modpack.id, icon = modpack.iconFile, instanceDir = instanceDir, preLaunchCommand = preLaunchCommand)
 
         logger.info("tmp dir: $instanceDir")
 

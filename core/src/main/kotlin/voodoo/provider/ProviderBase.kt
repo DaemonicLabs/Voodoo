@@ -69,6 +69,6 @@ interface ProviderBase {
     }
 
     fun report(entry: LockEntry): String = """## ${entry.name()}
-        |version ${entry.version()}
+        |version `${entry.version()}`
     """.trimMargin()
 }

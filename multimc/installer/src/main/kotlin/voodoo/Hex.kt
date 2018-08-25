@@ -6,7 +6,9 @@ import com.github.kittinunf.result.Result
 import com.sun.jna.platform.KeyboardUtils
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
@@ -19,6 +21,7 @@ import voodoo.util.*
 import java.awt.event.KeyEvent
 import java.io.File
 import java.lang.IllegalStateException
+import java.util.*
 import kotlin.system.exitProcess
 
 
@@ -115,11 +118,13 @@ object Hex : KLogging() {
 
         val objectsUrl = packUrl.substringBeforeLast('/') + "/" + modpack.objectsLocation
 
-        val oldTaskList = oldpack?.tasks?.toMutableList() ?: mutableListOf()
+        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
+        val jobs = mutableListOf<Job>()
+        val oldTaskList =  Collections.synchronizedList(oldpack?.tasks?.toMutableList() ?: mutableListOf())
 
         // iterate new tasks
-        val jobs = modpack.tasks.map { task ->
-            launch {
+        for (task in modpack.tasks) {
+            jobs += launch(context=pool) {
                 val oldTask = oldTaskList.find { it.to == task.to }
 
                 val whenTask = task.`when`
