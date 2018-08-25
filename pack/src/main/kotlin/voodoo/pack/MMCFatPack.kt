@@ -21,8 +21,7 @@ object MMCFatPack : AbstractPack() {
 
         instanceDir.mkdirs()
 
-        val iconFile = File("multimc").resolve("${modpack.id}.icon.png")
-        val minecraftDir = MMCUtil.installEmptyPack(title, modpack.id, icon = iconFile, instanceDir = instanceDir, mcVersion = modpack.mcVersion, forgeBuild = modpack.forge)
+        val minecraftDir = MMCUtil.installEmptyPack(title, modpack.id, icon = modpack.iconFile, instanceDir = instanceDir, mcVersion = modpack.mcVersion, forgeBuild = modpack.forge)
 
         minecraftDir.mkdirs()
         val modsDir = minecraftDir.resolve("mods")

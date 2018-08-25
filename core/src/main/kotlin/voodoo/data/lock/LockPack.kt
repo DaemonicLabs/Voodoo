@@ -21,6 +21,7 @@ data class LockPack(
         val id: String = "",
         val title: String = "",
         val version: String = "1.0",
+        val icon: String = "icon.png",
         val authors: List<String> = emptyList(),
         val mcVersion: String = "",
         val forge: Int = -1,
@@ -37,6 +38,7 @@ data class LockPack(
                         id = jsonObject.getReified("id") ?: id,
                         title = jsonObject.getReified("title") ?: title,
                         version = jsonObject.getReified("version") ?: version,
+                        icon = jsonObject.getReified("icon") ?: icon,
                         authors = jsonObject.getList("authors") ?: authors,
                         mcVersion = jsonObject.getReified("mcVersion") ?: mcVersion,
                         forge = jsonObject.getReified("forge") ?: forge,
@@ -54,6 +56,7 @@ data class LockPack(
                 jsonObject["id"] = marshaller.serialize(id)
                 jsonObject["title"] = marshaller.serialize(title)
                 jsonObject["version"] = marshaller.serialize(version)
+                jsonObject["icon"] = marshaller.serialize(icon)
                 jsonObject["authors"] = marshaller.serialize(authors)
                 jsonObject["mcVersion"] = marshaller.serialize(mcVersion)
                 jsonObject["forge"] = marshaller.serialize(forge)
@@ -75,6 +78,8 @@ data class LockPack(
         get() = rootFolder.resolve(sourceDir)
     val localFolder: File
         get() = rootFolder.resolve(localDir)
+    val iconFile: File
+        get() = rootFolder.resolve(icon)
 
     @JsonIgnore
     val entriesMapping: MutableMap<String, Pair<LockEntry, File>> = mutableMapOf()
@@ -101,5 +106,6 @@ data class LockPack(
             |version $version
             |MC Version $mcVersion
             |Authors ${authors.joinToString(", ")}
+            |Icon <img src="$icon" alt="icon" width="200"/>
         """.trimMargin()
 }

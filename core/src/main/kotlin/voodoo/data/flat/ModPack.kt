@@ -30,6 +30,7 @@ data class ModPack(
         var title: String = "",
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var version: String = "1.0",
+        var icon: String = "icon.png",
         val authors: List<String> = emptyList(),
         var mcVersion: String = "",
         var forge: String = "recommended",
@@ -52,6 +53,7 @@ data class ModPack(
                 jsonObject["id"] = marshaller.serialize(id)
                 jsonObject["title"] = marshaller.serialize(title)
                 jsonObject["version"] = marshaller.serialize(version)
+                jsonObject["icon"] = marshaller.serialize(icon)
                 jsonObject["authors"] = marshaller.serialize(authors)
                 jsonObject["mcVersion"] = marshaller.serialize(mcVersion)
                 jsonObject["forge"] = marshaller.serialize(forge)
@@ -71,6 +73,7 @@ data class ModPack(
                         id = name,
                         title = jsonObj . getReified ("title") ?: title,
                         version = jsonObj.getReified("version") ?: version,
+                        icon = jsonObj.getReified("icon") ?: icon,
                         authors = jsonObj.getList("authors") ?: authors,
                         mcVersion = jsonObj.getReified("mcVersion") ?: mcVersion,
                         forge = jsonObj.getReified("forge") ?: forge,
@@ -193,6 +196,7 @@ data class ModPack(
                 id = id,
                 title = title,
                 version = version,
+                icon = icon,
                 authors = authors,
                 mcVersion = mcVersion,
                 forge = Forge.getForgeBuild(forge, mcVersion),
