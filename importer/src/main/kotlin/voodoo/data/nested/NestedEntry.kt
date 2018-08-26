@@ -46,6 +46,7 @@ data class NestedEntry(
         var fileName: String? = null,
         var fileNameRegex: String? = null,
         var validMcVersions: Set<String> = setOf(),
+        var enabled: Boolean = true,
         //  CURSE
         var curseMetaUrl: String = CurseConstancts.PROXY_URL,
         var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
@@ -76,13 +77,22 @@ data class NestedEntry(
             logger
             return NestedEntry(provider = Provider.CURSE.name).apply { id = stringValue }
         }
-        
+
         val DEFAULT = NestedEntry()
     }
 
     suspend fun flatten(parentFile: File): List<Entry> {
         flatten("", parentFile)
-        return this.entries.map { it ->
+
+        //remove duplicate entries
+        val ids = mutableSetOf<String>()
+        entries.forEach {
+            if(it.id in ids) {
+                entries -= it
+            } else
+                ids += it.id
+        }
+        return this.entries.filter { it.enabled }.map { it ->
             Entry(it.provider,
                     id = it.id,
                     name = it.name,
@@ -142,7 +152,6 @@ data class NestedEntry(
                     val defValue = prop.get(DEFAULT)
 
                     if (thisValue == defValue) {
-                        println("setting ${prop.name}")
                         prop.setter.call(this, includeValue)
                     }
                 }
@@ -228,7 +237,7 @@ data class NestedEntry(
         }
         entries = entries.filter { !toDelete.contains(it) }
         entries.forEach { entry ->
-            if(entry.id.isEmpty()) {
+            if (entry.id.isEmpty()) {
                 logger.error { entry }
                 throw IllegalStateException("entries with blank id must not persist")
             }
