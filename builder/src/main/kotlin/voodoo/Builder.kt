@@ -126,8 +126,7 @@ object Builder : KLogging() {
             sw.append(lockedPack.report)
             sw.append("\n")
 
-            modpack.versionsMapping.toSortedMap().forEach { name, pair ->
-                val (entry, file) = pair
+            modpack.versionsMapping.values.sortedBy { it.first.name().toLowerCase() }.forEach { (entry, file) ->
                 val provider = Provider.valueOf(entry.provider).base
                 sw.append("\n\n")
                 sw.append(provider.report(entry))

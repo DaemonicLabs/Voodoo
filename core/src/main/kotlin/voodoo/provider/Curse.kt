@@ -194,12 +194,13 @@ object CurseProviderThing : ProviderBase, KLogging() {
         }
     }
 
-    override fun report(entry: LockEntry): String {
+    override fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> {
         val addon = runBlocking { getAddon(entry.projectID, entry.curseMetaUrl)!! }
         val addonFile = runBlocking { getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)!! }
-        return """${super.report(entry)}
-            |release type `${addonFile.releaseType}`
-            |author ${ addon.authors.sortedBy { it.name.toUpperCase() }.joinToString { it.name } }
-        """.trimMargin()
+
+        val data = super.reportData(entry)
+        data += "release type" to "`${addonFile.releaseType}`"
+        data += "author" to "`${addon.authors.sortedBy { it.name.toUpperCase() }.joinToString { it.name }}`"
+        return data
     }
 }

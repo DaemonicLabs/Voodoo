@@ -10,6 +10,7 @@ import voodoo.data.sk.SKFeature
 import voodoo.fromJson
 import voodoo.getList
 import voodoo.getReified
+import voodoo.markdownTable
 import java.io.File
 
 /**
@@ -50,6 +51,7 @@ data class LockPack(
                 )
             }
         }
+
         fun toJson(lockpack: LockPack, marshaller: Marshaller): JsonObject {
             val jsonObject = JsonObject()
             with(lockpack) {
@@ -101,11 +103,12 @@ data class LockPack(
     }
 
     val report: String
-        get() = """# $title
-            |ID: $id
-            |version $version
-            |MC Version $mcVersion
-            |Authors ${authors.joinToString(", ")}
-            |Icon <img src="$icon" alt="icon" width="200"/>
-        """.trimMargin()
+        get() = "# $title\n" +
+                markdownTable(header = "field" to "value", content = listOf(
+                        "ID" to "`$id`",
+                        "version" to "`$version`",
+                        "MC Version" to "`$mcVersion`",
+                        "Authors" to "`${authors.joinToString(", ")}`",
+                        "Icon" to "<img src=\"$icon\" alt=\"icon\" width=\"200\"/>"
+                ))
 }

@@ -106,11 +106,11 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
         JenkinsServer(url)
     }.memoize()
 
-    override fun report(entry: LockEntry): String {
-        return """${super.report(entry)}
-            |job ${entry.job}
-            |build ${entry.buildNumber}
-        """.trimMargin()
+    override fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> {
+        val data = super.reportData(entry)
+        data += "job" to "`${entry.job}`"
+        data += "build" to "`${entry.buildNumber}`"
+        return data
     }
 }
 
