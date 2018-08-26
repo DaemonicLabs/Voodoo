@@ -113,6 +113,4 @@ to compile a minimalistic MMC pack that selfupdates \
 `java -jar voodoo.jar pack mmc cotm.lock.json` \
 this expects a file `multimc/${packname}.url.txt` that points at the previously uploaded
 skcraft data \
-more specifically the json file of the pack \
-eg: `https://centerofthemultiverse.net/launcher/cotm.json` in `cotm.url.txt`
-optionally you can provide `multimc/$packname.icon.png` and the resulting pack will have a less default look
+more specifically the json file of the pack

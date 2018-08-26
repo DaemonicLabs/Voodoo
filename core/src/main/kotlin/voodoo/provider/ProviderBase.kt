@@ -4,6 +4,7 @@ import mu.KLogging
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
+import voodoo.markdownTable
 import java.io.File
 import java.time.Instant
 
@@ -68,7 +69,11 @@ interface ProviderBase {
         return null
     }
 
-    fun report(entry: LockEntry): String = """## ${entry.name()}
-        |version `${entry.version()}`
-    """.trimMargin()
+    fun report(entry: LockEntry): String = "## ${entry.name()}\n" +
+            markdownTable(header = "field" to "value", content = reportData(entry))
+
+    fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> = mutableListOf(
+            "provider" to "`${entry.provider}`",
+            "version" to "`${entry.version()}`"
+    )
 }

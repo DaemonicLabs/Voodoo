@@ -79,11 +79,10 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
         return entry.jsonVersion
     }
 
-
-    override fun report(entry: LockEntry): String {
-        return """${super.report(entry)}
-            |update channel ${entry.jsonVersion}
-        """.trimMargin()
+    override fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> {
+        val data = super.reportData(entry)
+        data += "update channel" to "`${entry.jsonVersion}`"
+        return data
     }
 }
 
