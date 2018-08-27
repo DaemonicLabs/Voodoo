@@ -108,8 +108,8 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
 
     override fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> {
         val data = super.reportData(entry)
-        data += "job" to "`${entry.job}`"
-        data += "build" to "`${entry.buildNumber}`"
+        data += "Job" to "`${entry.job}`"
+        data += "Build" to "`${entry.buildNumber}`"
         return data
     }
 }

@@ -133,7 +133,7 @@ object Builder : KLogging() {
             }
 
             val modlist = (targetFile ?: File(".")).absoluteFile.parentFile.resolve("modlist.md")
-            modlist.writeText(sw.toString().replace("\n", "  \n"))
+            modlist.writeText(sw.toString())
         }
     }
 

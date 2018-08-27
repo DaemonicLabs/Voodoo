@@ -199,8 +199,8 @@ object CurseProviderThing : ProviderBase, KLogging() {
         val addonFile = runBlocking { getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)!! }
 
         val data = super.reportData(entry)
-        data += "release type" to "`${addonFile.releaseType}`"
-        data += "author" to "`${addon.authors.sortedBy { it.name.toUpperCase() }.joinToString { it.name }}`"
+        data += "Release Type" to "`${addonFile.releaseType}`"
+        data += "Author" to "`${addon.authors.sortedBy { it.name.toUpperCase() }.joinToString { it.name }}`"
         return data
     }
 }

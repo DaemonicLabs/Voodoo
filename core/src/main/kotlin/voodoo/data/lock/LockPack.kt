@@ -11,6 +11,7 @@ import voodoo.fromJson
 import voodoo.getList
 import voodoo.getReified
 import voodoo.markdownTable
+import voodoo.util.blankOr
 import java.io.File
 
 /**
@@ -102,13 +103,14 @@ data class LockPack(
                 }
     }
 
+    fun title() = title.blankOr ?: id
+
     val report: String
-        get() = "# $title\n" +
-                markdownTable(header = "field" to "value", content = listOf(
+        get() = markdownTable(header = "Title" to this.title(), content = listOf(
                         "ID" to "`$id`",
-                        "version" to "`$version`",
+                        "Pack Version" to "`$version`",
                         "MC Version" to "`$mcVersion`",
-                        "Authors" to "`${authors.joinToString(", ")}`",
-                        "Icon" to "<img src=\"$icon\" alt=\"icon\" width=\"200\"/>"
+                        "Author" to "`${authors.joinToString(", ")}`",
+                        "Icon" to "<img src=\"$icon\" alt=\"icon\" style=\"max-height: 128px;\"/>"
                 ))
 }
