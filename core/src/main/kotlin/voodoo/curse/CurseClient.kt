@@ -66,7 +66,7 @@ object CurseClient : KLogging() {
         val graphQlRequest = GraphQLRequest(
                 query = """
                     |{
-                    |  addons {
+                    |  addons(gameID: 432) {
                     |    id
                     |    slug
                     |  }
