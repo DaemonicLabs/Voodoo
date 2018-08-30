@@ -59,6 +59,7 @@ task minify(type: ProGuardTask, dependsOn: 'shadowJar') {
 
     printmapping 'build/libs/out.map'
 
+    ignorewarnings()
     dontobfuscate()
 
     optimizations '!code/simplification/arithmetic,!field/*,!class/merging/*,!code/allocation/variable'
@@ -99,6 +100,9 @@ task minify(type: ProGuardTask, dependsOn: 'shadowJar') {
     dontwarn 'java.awt.*'
     keep 'class com.sun.jna.* { *; }'
     keepclassmembers 'class * extends com.sun.jna.* { public *; }'
+
+    // Coroutines
+    dontwarn 'kotlinx.coroutines.*'
 
     // apache commons compress
     dontwarn 'org.apache.commons.compress.compressors.**'
