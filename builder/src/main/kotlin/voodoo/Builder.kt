@@ -10,6 +10,8 @@ import mu.KLogging
 import voodoo.builder.resolve
 import voodoo.data.Side
 import voodoo.data.UserFiles
+import voodoo.data.curse.FileID
+import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
 import voodoo.data.flat.EntryFeature
 import voodoo.data.flat.ModPack
@@ -23,6 +25,7 @@ import voodoo.provider.Provider
 import voodoo.util.json
 import java.io.File
 import java.io.StringWriter
+import java.lang.IllegalStateException
 
 /**
  * Created by nikky on 28/03/18.
@@ -43,10 +46,14 @@ object Builder : KLogging() {
                 .registerTypeAdapter(SKFeature.Companion::fromJson)
                 .registerTypeAdapter(FeatureProperties.Companion::fromJson)
                 .registerTypeAdapter(FeatureFiles.Companion::fromJson)
+                .registerPrimitiveTypeAdapter(ProjectID.Companion::fromJson)
+                .registerPrimitiveTypeAdapter(FileID.Companion::fromJson)
                 .registerSerializer(ModPack.Companion::toJson)
                 .registerSerializer(Entry.Companion::toJson)
                 .registerSerializer(LockPack.Companion::toJson)
                 .registerSerializer(LockEntry.Companion::toJson)
+                .registerSerializer(ProjectID.Companion::toJson)
+                .registerSerializer(FileID.Companion::toJson)
                 .build()
 
         val parser = ArgParser(args)
@@ -75,6 +82,16 @@ object Builder : KLogging() {
                         updateDependencies = updateDependencies,
                         updateEntries = entries
                 )
+            }
+
+            //TODO: remove
+            logger.info { modpack.versionsMapping.values.map { it.first }.filter{it.provider == "CURSE"}.map { Triple(it.id, it.projectID, it.fileID) }}
+            modpack.versionsMapping.forEach { name, (lockEntry, file) ->
+                val provider = Provider.valueOf(lockEntry.provider).base
+                if(!provider.validate(lockEntry)){
+                    logger.error { lockEntry }
+                    throw IllegalStateException("entry did not validate")
+                }
             }
 
             modpack.versionsMapping.forEach { name, (lockEntry, file) ->

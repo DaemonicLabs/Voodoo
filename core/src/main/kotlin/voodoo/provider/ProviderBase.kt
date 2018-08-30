@@ -75,4 +75,12 @@ interface ProviderBase {
             "Provider" to "`${entry.provider}`",
             "Version" to "`${entry.version()}`"
     )
+
+    fun validate(lockEntry: LockEntry): Boolean {
+        if(lockEntry.id.isEmpty()) {
+            logger.error("invalid id of $lockEntry")
+            return false
+        }
+        return true
+    }
 }

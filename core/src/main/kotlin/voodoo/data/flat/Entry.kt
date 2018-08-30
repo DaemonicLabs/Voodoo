@@ -4,10 +4,8 @@ import blue.endless.jankson.JsonObject
 import blue.endless.jankson.impl.Marshaller
 import com.fasterxml.jackson.annotation.JsonIgnore
 import voodoo.data.Side
+import voodoo.data.curse.*
 import voodoo.data.curse.CurseConstancts.PROXY_URL
-import voodoo.data.curse.DependencyType
-import voodoo.data.curse.FileType
-import voodoo.data.curse.PackageType
 import voodoo.data.provider.UpdateChannel
 import voodoo.getList
 import voodoo.getMap
@@ -50,8 +48,8 @@ data class Entry(
         var curseMetaUrl: String = PROXY_URL,
         var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
         var curseOptionalDependencies: Boolean = false,
-        var curseProjectID: Int = -1,
-        var curseFileID: Int = -1,
+        var curseProjectID: ProjectID = ProjectID.INVALID,
+        var curseFileID: FileID = FileID.INVALID,
         // DIRECT
         var url: String = "",
         var useUrlTxt: Boolean = true,
@@ -106,8 +104,8 @@ data class Entry(
                         jsonObj["curseMetaUrl"] = marshaller.serialize(curseMetaUrl)
                         jsonObj["curseReleaseTypes"] = marshaller.serialize(curseReleaseTypes.toSortedSet())
                         jsonObj["curseOptionalDependencies"] = marshaller.serialize(curseOptionalDependencies)
-                        if(curseProjectID > 0) jsonObj["curseProjectID"] = marshaller.serialize(curseProjectID)
-                        if(curseFileID > 0) jsonObj["curseFileID"] = marshaller.serialize(curseFileID)
+                        if(curseProjectID.valid) jsonObj["curseProjectID"] = marshaller.serialize(curseProjectID)
+                        if(curseFileID.valid) jsonObj["curseFileID"] = marshaller.serialize(curseFileID)
                     }
                     provider.equalsIgnoreCase("DIRECT") -> {
                         jsonObj["url"] = marshaller.serialize(url)

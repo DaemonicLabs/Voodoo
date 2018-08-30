@@ -3,7 +3,7 @@ package voodoo.data.curse
 import java.util.*
 
 data class Addon(
-        val id: Int,
+        val id: ProjectID,
         val name: String,
         val authors: List<Author> = emptyList(),
         val attachments: List<Attachment>? = emptyList(),

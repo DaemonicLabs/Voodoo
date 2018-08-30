@@ -36,12 +36,7 @@ allprojects {
     compileKotlin {
         kotlinOptions {
             jvmTarget = "1.8"
-//            languageVersion = "1.3"
-        }
-    }
-    kotlin {
-        experimental {
-            coroutines 'enable'
+            freeCompilerArgs = ['-XXLanguage:+InlineClasses']
         }
     }
 

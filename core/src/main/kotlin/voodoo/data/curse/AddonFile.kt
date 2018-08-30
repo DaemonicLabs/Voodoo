@@ -3,7 +3,7 @@ package voodoo.data.curse
 import java.util.*
 
 data class AddonFile(
-        val id: Int,
+        val id: FileID,
         val fileName: String,
         val fileNameOnDisk: String,
         val fileDate: Date,
