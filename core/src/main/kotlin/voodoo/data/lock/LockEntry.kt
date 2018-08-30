@@ -7,6 +7,8 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import kotlinx.coroutines.runBlocking
 import voodoo.data.Side
 import voodoo.data.curse.CurseConstancts.PROXY_URL
+import voodoo.data.curse.FileID
+import voodoo.data.curse.ProjectID
 import voodoo.getReified
 import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
@@ -29,8 +31,8 @@ data class LockEntry(
         var side: Side = Side.BOTH,
         // CURSE
         var curseMetaUrl: String = PROXY_URL,
-        var projectID: Int = -1,
-        var fileID: Int = -1,
+        var projectID: ProjectID = ProjectID.INVALID,
+        var fileID: FileID = FileID.INVALID,
         // DIRECT
         var url: String = "",
         var useUrlTxt: Boolean = true,

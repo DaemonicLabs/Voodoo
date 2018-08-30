@@ -16,6 +16,8 @@ import voodoo.core.CoreConstants.VERSION
 import voodoo.data.curse.Addon
 import voodoo.data.curse.AddonFile
 import voodoo.data.curse.CurseConstancts.PROXY_URL
+import voodoo.data.curse.FileID
+import voodoo.data.curse.ProjectID
 import voodoo.data.curse.feed.CurseFeed
 import voodoo.data.flat.Entry
 import voodoo.memoizeSuspend
@@ -36,7 +38,7 @@ object CurseClient : KLogging() {
             .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
 //            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
 
-    var slugIdMap: Map<String, Int> = runBlocking { initSlugIdMap() }
+    var slugIdMap: Map<String, ProjectID> = runBlocking { initSlugIdMap() }
         private set
 
     data class GraphQLRequest(
@@ -94,34 +96,41 @@ object CurseClient : KLogging() {
         }
     }
 
-    private suspend fun initSlugIdMap(): Map<String, Int> {
+    private suspend fun initSlugIdMap(): Map<String, ProjectID> {
         val grapqhQlResult = graphQLRequest()
         return grapqhQlResult.data.addons.groupBy(
                 { it.slug },
                 { it.id }).mapValues {
             //(slug, list) ->
-            it.value.first()
+            ProjectID( it.value.first() )
         }
     }
 
     val getAddonFile = ::getAddonFileCall.memoizeSuspend()
-    suspend fun getAddonFileCall(addonId: Int, fileId: Int, proxyUrl: String): AddonFile? {
+    suspend fun getAddonFileCall(addonId: ProjectID, fileId: FileID, proxyUrl: String): AddonFile? {
         val url = "${proxyUrl}/addon/$addonId/file/$fileId"
 
         logger.debug("get $url")
-        val (_, _, result) = url.httpGet()
+        val (request, response, result) = url.httpGet()
                 .header("User-Agent" to useragent)
+                .apply { logger.trace { cUrlString() } }
                 .awaitStringResponse()
         return when (result) {
             is Result.Success -> {
                 mapper.readValue(result.value)
             }
-            else -> null
+            is Result.Failure -> {
+                logger.error { request }
+                logger.error { response }
+                logger.error { result }
+                logger.error("cannot resolve file $addonId:$fileId urL: $url")
+                null
+            }
         }
     }
 
     val getAllFilesForAddon = ::getAllFilesForAddonCall.memoizeSuspend()
-    suspend fun getAllFilesForAddonCall(addonId: Int, proxyUrl: String): List<AddonFile> {
+    suspend fun getAllFilesForAddonCall(addonId: ProjectID, proxyUrl: String): List<AddonFile> {
         val url = "${proxyUrl}/addon/$addonId/files"
 
         logger.debug("get $url")
@@ -132,12 +141,15 @@ object CurseClient : KLogging() {
             is Result.Success -> {
                 mapper.readValue(result.value)
             }
-            else -> throw Exception("failed getting cursemeta data")
+            is Result.Failure -> {
+                logger.error ("url: $url")
+                throw Exception("failed getting cursemeta data")
+            }
         }
     }
 
     val getAddon = ::getAddonCall.memoizeSuspend()
-    suspend fun getAddonCall(addonId: Int, proxyUrl: String): Addon? {
+    suspend fun getAddonCall(addonId: ProjectID, proxyUrl: String): Addon? {
         val url = "$proxyUrl/addon/$addonId"
 
         logger.debug("get $url")
@@ -158,7 +170,7 @@ object CurseClient : KLogging() {
         }
     }
 
-    suspend fun getFileChangelog(addonId: Int, fileId: Int, proxyUrl: String): String {
+    suspend fun getFileChangelog(addonId: ProjectID, fileId: Int, proxyUrl: String): String {
         val url = "${proxyUrl}/addon/$addonId/file/$fileId/changelog"
 
         logger.debug("get $url")
@@ -184,7 +196,7 @@ object CurseClient : KLogging() {
                 ?.let { getAddon(it, proxyUrl) }
     }
 
-    suspend fun findFile(entry: Entry, mcVersion: String, proxyUrl: String = PROXY_URL): Triple<Int, Int, String> {
+    suspend fun findFile(entry: Entry, mcVersion: String, proxyUrl: String = PROXY_URL): Triple<ProjectID, FileID, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
         val slug = entry.id //TODO: maybe make into separate property
         val version = entry.version
@@ -192,7 +204,7 @@ object CurseClient : KLogging() {
         var addonId = entry.curseProjectID
         val fileNameRegex = entry.fileNameRegex
 
-        val addon = if (addonId < 0) {
+        val addon = if (!addonId.valid) {
             slug.takeUnless { it.isBlank() }
                     ?.let { getAddonBySlug(it, proxyUrl) }
         } else {
@@ -201,13 +213,13 @@ object CurseClient : KLogging() {
 
         if (addon == null) {
             logger.error("no addon matching the parameters found for '$entry'")
-            System.exit(-1)
-            return Triple(-1, -1, "")
+            kotlin.system.exitProcess(-1)
+            return Triple(ProjectID.INVALID, FileID.INVALID, "")
         }
 
         addonId = addon.id
 
-        if (entry.curseFileID > 0) {
+        if (entry.curseFileID.valid) {
             val file = getAddonFile(addonId, entry.curseFileID, proxyUrl)!!
             return Triple(addonId, file.id, addon.categorySection.path)
         }
@@ -267,8 +279,8 @@ object CurseClient : KLogging() {
                     "files: $filesUrl mc version: $mcVersions version: $version \n" +
                     "$addon")
             logger.error("no file matching the parameters found for ${addon.name}")
-            System.exit(-1)
-            return Triple(addonId, -1, "")
+            kotlin.system.exitProcess(-1)
+            return Triple(addonId, FileID.INVALID, "")
         }
         return Triple(addonId, file.id, addon.categorySection.path)
     }
@@ -308,12 +320,12 @@ object CurseClient : KLogging() {
         }
     }
 
-    suspend fun getAuthors(projectID: Int, proxyUrl: String = PROXY_URL): List<String> {
+    suspend fun getAuthors(projectID: ProjectID, proxyUrl: String = PROXY_URL): List<String> {
         val addon = getAddon(projectID, proxyUrl)!!
         return addon.authors.map { it.name }
     }
 
-    suspend fun getProjectPage(projectID: Int, proxyUrl: String): String {
+    suspend fun getProjectPage(projectID: ProjectID, proxyUrl: String): String {
         val addon = getAddon(projectID, proxyUrl)!!
         return "https://minecraft.curseforge.com/projects/${addon.slug}"
     }

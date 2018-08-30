@@ -3,6 +3,7 @@ package voodoo.builder
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
 import mu.KotlinLogging
+import voodoo.Builder
 import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
@@ -12,6 +13,7 @@ import voodoo.memoize
 import voodoo.provider.Provider
 import voodoo.util.Directories
 import java.io.File
+import java.lang.IllegalStateException
 import kotlin.system.exitProcess
 
 /**
@@ -148,6 +150,11 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
             provider.resolve(entry, this, ::addEntry)?.let { lockEntry ->
                 val existingLockEntry = versionsMapping[lockEntry.id]?.first
 
+                if(!provider.validate(lockEntry)) {
+                    Builder.logger.error { lockEntry }
+                    throw IllegalStateException("entry did not validate")
+                }
+
                 val actualLockEntry = if (existingLockEntry == null) {
                     val filename = file.nameWithoutExtension
                     val lockFile = file.absoluteFile.parentFile.resolve("$filename.lock.json")
@@ -157,6 +164,10 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
                     logger.info("existing lockEntry: $existingLockEntry")
                     existingLockEntry
                 }
+                if(!provider.validate(actualLockEntry)) {
+                Builder.logger.error { actualLockEntry }
+                throw IllegalStateException("actual entry did not validate")
+            }
 
                 actualLockEntry.name = actualLockEntry.name()
 

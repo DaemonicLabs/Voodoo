@@ -8,6 +8,8 @@ import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.builder.resolve
 import voodoo.data.UserFiles
+import voodoo.data.curse.FileID
+import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
 import voodoo.data.flat.EntryFeature
 import voodoo.data.flat.ModPack
@@ -41,10 +43,14 @@ object Pack : KLogging() {
                 .registerTypeAdapter(SKFeature.Companion::fromJson)
                 .registerTypeAdapter(FeatureProperties.Companion::fromJson)
                 .registerTypeAdapter(FeatureFiles.Companion::fromJson)
+                .registerPrimitiveTypeAdapter(ProjectID.Companion::fromJson)
+                .registerPrimitiveTypeAdapter(FileID.Companion::fromJson)
                 .registerSerializer(ModPack.Companion::toJson)
                 .registerSerializer(Entry.Companion::toJson)
                 .registerSerializer(LockPack.Companion::toJson)
                 .registerSerializer(LockEntry.Companion::toJson)
+                .registerSerializer(ProjectID.Companion::toJson)
+                .registerSerializer(FileID.Companion::toJson)
 //            .registerSerializer(EntryFeature.Companion::toJson)
                 .build()
 

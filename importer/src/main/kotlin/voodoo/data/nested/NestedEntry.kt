@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonInclude
 import mu.KLogging
 import voodoo.data.Side
-import voodoo.data.curse.CurseConstancts
-import voodoo.data.curse.DependencyType
-import voodoo.data.curse.FileType
-import voodoo.data.curse.PackageType
+import voodoo.data.curse.*
 import voodoo.data.flat.Entry
 import voodoo.data.flat.EntryFeature
 import voodoo.data.provider.UpdateChannel
@@ -51,8 +48,8 @@ data class NestedEntry(
         var curseMetaUrl: String = CurseConstancts.PROXY_URL,
         var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
         var curseOptionalDependencies: Boolean = false,
-        var curseProjectID: Int = -1,
-        var curseFileID: Int = -1,
+        var curseProjectID: ProjectID = ProjectID.INVALID,
+        var curseFileID: FileID = FileID.INVALID,
         //  DIRECT
         var url: String = "",
         var useUrlTxt: Boolean = true,

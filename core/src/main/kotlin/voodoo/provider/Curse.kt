@@ -7,6 +7,8 @@ import voodoo.curse.CurseClient.findFile
 import voodoo.curse.CurseClient.getAddon
 import voodoo.curse.CurseClient.getAddonFile
 import voodoo.data.curse.DependencyType
+import voodoo.data.curse.FileID
+import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
@@ -14,6 +16,8 @@ import voodoo.memoize
 import voodoo.util.download
 import java.io.File
 import java.time.Instant
+import java.util.*
+import kotlin.IllegalStateException
 import kotlin.system.exitProcess
 
 /**
@@ -22,7 +26,7 @@ import kotlin.system.exitProcess
  */
 object CurseProviderThing : ProviderBase, KLogging() {
     override val name = "Curse Provider"
-    val resolved = mutableListOf<String>()
+    val resolved = Collections.synchronizedList(mutableListOf<String>())
 
     override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry, String) -> Unit): LockEntry {
         val (projectID, fileID, path) = findFile(entry, modpack.mcVersion, entry.curseMetaUrl)
@@ -41,6 +45,15 @@ object CurseProviderThing : ProviderBase, KLogging() {
 
         entry.optional = isOptional(entry, modpack)
 
+        if(!projectID.valid) {
+            logger.error("invalid project id for $entry")
+            throw IllegalStateException("invalid project id for $entry")
+        }
+        if(!fileID.valid) {
+            logger.error("invalid file id for $entry")
+            throw IllegalStateException("invalid file id for $entry")
+        }
+
         return LockEntry(
                 provider = entry.provider,
                 id = entry.id,
@@ -52,7 +65,11 @@ object CurseProviderThing : ProviderBase, KLogging() {
                 side = entry.side,
                 projectID = projectID,
                 fileID = fileID
-        )
+        ).apply {
+            if (!validate(this)) {
+                throw IllegalStateException("did not pass validation")
+            }
+        }
     }
 
     override suspend fun generateName(entry: LockEntry): String {
@@ -92,7 +109,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
 //        return addon.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
 //    }
 
-    private suspend fun resolveDependencies(addonId: Int, fileId: Int, entry: Entry, addEntry: (Entry, String) -> Unit) {
+    private suspend fun resolveDependencies(addonId: ProjectID, fileId: FileID, entry: Entry, addEntry: (Entry, String) -> Unit) {
         val addon = getAddon(addonId, entry.curseMetaUrl)
         if(addon == null) {
             logger.error("addon $addonId could not be resolved, entry: $entry")
@@ -195,6 +212,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     override fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> {
+        logger.info { entry }
         val addon = runBlocking { getAddon(entry.projectID, entry.curseMetaUrl)!! }
         val addonFile = runBlocking { getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)!! }
 
@@ -202,5 +220,20 @@ object CurseProviderThing : ProviderBase, KLogging() {
         data += "Release Type" to "`${addonFile.releaseType}`"
         data += "Author" to "`${addon.authors.sortedBy { it.name.toUpperCase() }.joinToString { it.name }}`"
         return data
+    }
+
+    override fun validate(lockEntry: LockEntry): Boolean {
+        if(!super.validate(lockEntry)) {
+            return false
+        }
+        if(!lockEntry.projectID.valid) {
+            logger.warn("invalid project id")
+            return false
+        }
+        if(!lockEntry.fileID.valid) {
+            logger.warn("invalid file id")
+            return false
+        }
+        return true
     }
 }

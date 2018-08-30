@@ -214,4 +214,6 @@ object CurseImporter : AbstractImporter() {
         extractFolder.deleteRecursively()
         zipFile.delete()
     }
+
+    //TODO: options filename, src-folder/overrides,
 }
