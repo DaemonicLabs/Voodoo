@@ -8,6 +8,8 @@ import com.xenomachina.argparser.mainBody
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.data.UserFiles
+import voodoo.data.curse.FileID
+import voodoo.data.curse.ProjectID
 import voodoo.data.flat.EntryFeature
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
@@ -16,6 +18,7 @@ import voodoo.data.sk.FeatureProperties
 import voodoo.data.sk.Launch
 import voodoo.data.sk.SKFeature
 import voodoo.fromJson
+import voodoo.registerPrimitiveTypeAdapter
 import voodoo.registerSerializer
 import voodoo.registerTypeAdapter
 import java.io.File
@@ -38,6 +41,10 @@ object Install : KLogging() {
             .registerTypeAdapter(FeatureFiles.Companion::fromJson)
             .registerSerializer(LockPack.Companion::toJson)
             .registerSerializer(LockEntry.Companion::toJson)
+            .registerSerializer(ProjectID.Companion::toJson)
+            .registerSerializer(FileID.Companion::toJson)
+            .registerPrimitiveTypeAdapter(ProjectID.Companion::fromJson)
+            .registerPrimitiveTypeAdapter(FileID.Companion::fromJson)
 //            .registerSerializer(EntryFeature.Companion::toJson)
             .build()
 
