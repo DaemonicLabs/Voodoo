@@ -68,6 +68,7 @@ task minify(type: ProGuardTask, dependsOn: 'shadowJar') {
 
     printmapping 'build/libs/out.map'
 
+    ignorewarnings()
 //    optimizations '!code/allocation/variable'
 //    optimizations '*'
 
@@ -105,6 +106,9 @@ task minify(type: ProGuardTask, dependsOn: 'shadowJar') {
 
     //Kotlin Reflect
     keep 'class kotlin.reflect.** { *; }'
+
+    // Coroutines
+    dontwarn 'kotlinx.coroutines.*'
 
     // JNA
     dontwarn 'java.awt.*'

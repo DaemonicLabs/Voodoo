@@ -39,6 +39,7 @@ task minify(type: ProGuardTask, dependsOn: 'shadowJar') {
     injars  shadowJar
     outjars "build/libs/${project.name}${version != 'unspecified' ? "-$version" : ""}.jar"
 
+    ignorewarnings()
     printmapping 'build/libs/out.map'
 
     optimizations '*'
@@ -76,6 +77,9 @@ task minify(type: ProGuardTask, dependsOn: 'shadowJar') {
     keep 'class kotlin.reflect.** { *; }'
 //    keep 'class kotlin.reflect.jvm.internal.** { *; }'
     dontwarn 'kotlin.reflect.jvm.internal.**'
+
+    // Coroutines
+    dontwarn 'kotlinx.coroutines.*'
 
     // JNA
     dontwarn 'java.awt.*'
