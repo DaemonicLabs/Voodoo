@@ -7,11 +7,12 @@ import voodoo.Builder
 import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
+import voodoo.data.flat.findByid
+import voodoo.data.flat.set
 import voodoo.data.sk.FeatureProperties
 import voodoo.data.sk.SKFeature
 import voodoo.memoize
 import voodoo.provider.Provider
-import voodoo.util.Directories
 import java.io.File
 import java.lang.IllegalStateException
 import kotlin.system.exitProcess
@@ -23,9 +24,9 @@ import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
 
-private fun ModPack.getDependenciesCall(entryName: String): List<Entry> {
+private fun ModPack.getDependenciesCall(entryId: String): List<Entry> {
     val modpack = this
-    val entry = modpack.entriesMapping[entryName]?.first ?: return emptyList()
+    val entry = modpack.entriesSet.findByid(entryId) ?: return emptyList()
     var result = listOf(entry)
     for ((depType, entryList) in entry.dependencies) {
         if (depType == DependencyType.EMBEDDED) continue
@@ -73,18 +74,18 @@ private fun ModPack.processFeature(feature: SKFeature) {
     var processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
     while (processableEntries.isNotEmpty()) {
         processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
-        for (entry_name in processableEntries) {
-            logger.info("searching $entry_name")
-            val entry = entriesMapping[entry_name]?.first
+        for (entry_id in processableEntries) {
+            logger.info("searching $entry_id")
+            val entry = entriesSet.findByid(entry_id)
             if (entry == null) {
-                logger.warn("$entry_name not in entries")
-                processedEntries += entry_name
+                logger.warn("$entry_id not in entries")
+                processedEntries += entry_id
                 continue
             }
             var depNames = entry.dependencies.values.flatten()
             logger.info("depNames: $depNames")
             depNames = depNames.filter { d ->
-                entriesMapping.any { (name, triple) -> name == d && triple.first.optional }
+                entriesSet.any { entry -> entry.id == d && entry.optional }
             }
             logger.info("filtered dependency names: $depNames")
             for (dep in depNames) {
@@ -92,7 +93,7 @@ private fun ModPack.processFeature(feature: SKFeature) {
                     feature.entries += dep
                 }
             }
-            processedEntries += entry_name
+            processedEntries += entry_id
         }
     }
 }
@@ -107,84 +108,79 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
     val srcDir = folder.resolve(sourceDir)
 
     if (updateAll) {
-        versionsMapping.clear()
+        lockEntrySet.clear()
 //        versions.clear()
     } else {
-        for (entryName in updateEntries) {
-            val entry = entriesMapping[entryName]?.first
+        for (entryId in updateEntries) {
+            val entry = entriesSet.findByid(entryId)
             if (entry == null) {
-                logger.error("entry $entryName not found")
+                logger.error("entry $entryId not found")
                 exitProcess(-1)
             }
-            versionsMapping.remove(entry.id)
+            lockEntrySet.removeIf { it.id == entry.id }
         }
     }
 
     if (updateDependencies || updateAll) {
         // remove all transient entries
-        versionsMapping.filter { (id, _) ->
-            entriesMapping[id]?.first?.transient ?: true
-        }.forEach { name, (_, _) ->
-            versionsMapping.remove(name)
+        lockEntrySet.removeIf { (id, _) ->
+            entriesSet.findByid(id)?.transient ?: true
         }
     }
 
     fun addEntry(entry: Entry, path: String = "mods") {
         val filename = entry.id.replace("[^\\w-]+".toRegex(), "")
         val file = srcDir.resolve(path).resolve("$filename.entry.hjson")
-        val jsonObj = jankson.toJson(entry) as JsonObject
-        this.addEntry(entry, file, jsonObj, jankson, dependency = true)
+        this.addEntry(entry, file, dependency = true)
     }
 
     // recalculate all dependencies
     val resolved: MutableSet<String> = mutableSetOf()
     do {
-        val unresolved: List<Triple<Entry, File, JsonObject>> = entriesMapping.filter { (name, _) ->
-            !resolved.contains(name)
-        }.map { it.value }
+        val unresolved: List<Entry> = entriesSet.filter { entry ->
+            !resolved.contains(entry.id)
+        }
+        logger.info("unresolved: ${unresolved.map { it.id }}")
         logger.info("resolved: $resolved")
-        unresolved.forEach { (entry, file, _) ->
+        unresolved.forEach { entry ->
             logger.info("resolving: ${entry.id}")
             val provider = Provider.valueOf(entry.provider).base
 
             provider.resolve(entry, this.mcVersion, ::addEntry).let { lockEntry ->
-                val existingLockEntry = versionsMapping[lockEntry.id]?.first
+                val existingLockEntry = lockEntrySet.findByid(lockEntry.id)
 
-                if(!provider.validate(lockEntry)) {
+                if (!provider.validate(lockEntry)) {
                     Builder.logger.error { lockEntry }
                     throw IllegalStateException("entry did not validate")
                 }
 
                 val actualLockEntry = if (existingLockEntry == null) {
-                    val filename = file.nameWithoutExtension
-                    val lockFile = file.absoluteFile.parentFile.resolve("$filename.lock.json")
-                    versionsMapping[lockEntry.id] = Pair(lockEntry, lockFile)
+                    val filename = entry.file.nameWithoutExtension
+                    lockEntry.file = entry.file.absoluteFile.parentFile.resolve("$filename.lock.json")
+                    lockEntrySet[lockEntry.id] = lockEntry
                     lockEntry
                 } else {
                     logger.info("existing lockEntry: $existingLockEntry")
                     existingLockEntry
                 }
-                if(!provider.validate(actualLockEntry)) {
-                Builder.logger.error { actualLockEntry }
-                throw IllegalStateException("actual entry did not validate")
-            }
+                if (!provider.validate(actualLockEntry)) {
+                    Builder.logger.error { actualLockEntry }
+                    throw IllegalStateException("actual entry did not validate")
+                }
 
                 actualLockEntry.name = actualLockEntry.name()
 
                 resolved += entry.id
             }
         }
-    } while (entriesMapping.any { (name, _) ->
-                !resolved.contains(name)
-            })
+    } while (unresolved.isNotEmpty())
 
     features.clear()
 
-    for ((name, triple) in entriesMapping) {
-        val (entry, file, jsonObj) = triple
-        this.resolveFeatureDependencies(entry, versionsMapping[entry.id]!!.first.name())
+    for (entry in entriesSet) {
+        this.resolveFeatureDependencies(entry, lockEntrySet.findByid(entry.id)!!.name())
     }
-//    entriesMapping.forEach { id, (entry, file, jsonObj) ->
+//    entriesSet.forEach { id, (entry, file, jsonObj) ->
 //        this.resolveFeatureDependencies(entry)
 //    }
 
@@ -207,9 +203,7 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
                     }
         }
         println { feature.entries.first() }
-        val first = entriesMapping.values.firstOrNull { it.first.id == feature.entries.first() }
-        println { first }
-        val mainEntry = entriesMapping.values.firstOrNull { it.first.id == feature.entries.first() }!!.first
+        val mainEntry = entriesSet.findByid(feature.entries.first())!!
         feature.properties.description = mainEntry.description
 
         logger.info("processed feature $feature")

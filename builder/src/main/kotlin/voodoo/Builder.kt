@@ -70,8 +70,8 @@ object Builder : KLogging() {
 
             modpack.loadEntries(parentFolder, jankson)
 
-            modpack.entriesMapping.forEach { name, (entry, file, jsonObject) ->
-                logger.info("id: $name entry: $entry")
+            modpack.entriesSet.forEach { entry ->
+                logger.info("id: ${entry.id} entry: $entry")
             }
 
             runBlocking {
@@ -85,8 +85,8 @@ object Builder : KLogging() {
             }
 
             //TODO: remove
-            logger.info { modpack.versionsMapping.values.map { it.first }.filter{it.provider == "CURSE"}.map { Triple(it.id, it.projectID, it.fileID) }}
-            modpack.versionsMapping.forEach { name, (lockEntry, file) ->
+            logger.info { modpack.lockEntrySet.filter{it.provider == "CURSE"}.map { Triple(it.id, it.projectID, it.fileID) }}
+            modpack.lockEntrySet.forEach { lockEntry ->
                 val provider = Provider.valueOf(lockEntry.provider).base
                 if(!provider.validate(lockEntry)){
                     logger.error { lockEntry }
@@ -94,33 +94,7 @@ object Builder : KLogging() {
                 }
             }
 
-            modpack.versionsMapping.forEach { name, (lockEntry, file) ->
-                logger.info("saving: $name , file: $file , entry: $lockEntry")
-
-                val folder = file.absoluteFile.parentFile
-
-                val targetFolder = if (folder.toPath().none { it.toString() == "_CLIENT" || it.toString() == "_SERVER" }) {
-                    when (lockEntry.side) {
-                        Side.CLIENT -> {
-                            folder.resolve("_CLIENT")
-                        }
-                        Side.SERVER -> {
-                            folder.resolve("_SERVER")
-                        }
-                        Side.BOTH -> folder
-                    }
-                } else folder
-
-                targetFolder.mkdirs()
-
-                val defaultJson = lockEntry.toDefaultJson(jankson.marshaller)
-                val lockJson = jankson.toJson(lockEntry) as JsonObject
-                val delta = lockJson.getDelta(defaultJson)
-
-                val targetFile = targetFolder.resolve(file.name)
-
-                targetFile.writeText(delta.toJson(true, true).replace("\t", "  "))
-            }
+            modpack.writeLockEntries(parentFolder, jankson)
 
             logger.info("Creating locked pack...")
             val lockedPack = modpack.lock()
@@ -143,7 +117,7 @@ object Builder : KLogging() {
             sw.append(lockedPack.report)
             sw.append("\n")
 
-            modpack.versionsMapping.values.sortedBy { it.first.name().toLowerCase() }.forEach { (entry, file) ->
+            modpack.lockEntrySet.sortedBy { it.name().toLowerCase() }.forEach { entry ->
                 val provider = Provider.valueOf(entry.provider).base
                 sw.append("\n\n")
                 sw.append(provider.report(entry))

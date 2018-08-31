@@ -13,6 +13,7 @@ import voodoo.getReified
 import voodoo.provider.Provider
 import voodoo.provider.ProviderBase
 import voodoo.util.equalsIgnoreCase
+import java.io.File
 import java.time.Instant
 
 /**
@@ -49,6 +50,9 @@ data class LockEntry(
 ) {
     @JsonIgnore
     lateinit var parent: LockPack
+
+    @JsonIgnore
+    lateinit var file: File
 
     @JsonIgnore
     fun provider(): ProviderBase = Provider.valueOf(provider).base

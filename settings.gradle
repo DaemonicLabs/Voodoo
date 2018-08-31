@@ -5,7 +5,7 @@ include 'core'
 include 'multimc', 'multimc:installer'
 include 'util'
 include 'fuel-coroutines'
-include 'importer', 'builder', 'pack', 'tester', 'voodoo'
+include 'importer', 'builder', 'pack', 'pack-test', 'voodoo'
 include 'server-installer'
 include 'bootstrap'
 
