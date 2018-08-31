@@ -8,7 +8,6 @@ import com.xenomachina.argparser.mainBody
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.builder.resolve
-import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
@@ -70,7 +69,7 @@ object Builder : KLogging() {
 
             modpack.loadEntries(parentFolder, jankson)
 
-            modpack.entriesSet.forEach { entry ->
+            modpack.entrySet.forEach { entry ->
                 logger.info("id: ${entry.id} entry: $entry")
             }
 
@@ -94,10 +93,13 @@ object Builder : KLogging() {
                 }
             }
 
-            modpack.writeLockEntries(parentFolder, jankson)
-
             logger.info("Creating locked pack...")
             val lockedPack = modpack.lock()
+            lockedPack.rootFolder = parentFolder
+            lockedPack.entrySet.clear()
+            lockedPack.entrySet += modpack.lockEntrySet
+
+            lockedPack.writeLockEntries(jankson)
 
             if (stdout) {
                 print(lockedPack.json)

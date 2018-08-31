@@ -10,6 +10,7 @@ import voodoo.util.download
 import voodoo.util.downloader.logger
 import java.io.File
 import java.util.concurrent.TimeUnit
+import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 06/05/18.
@@ -33,8 +34,8 @@ object Server {
         }
         serverDir.resolve("mods").deleteRecursively()
 
-        logger.info("copying files into server dir")
         val srcDir = modpack.sourceFolder
+        logger.info("copying files into server dir $srcDir -> $serverDir")
         if (srcDir.exists()) {
             srcDir.copyRecursively(serverDir, overwrite = true)
 
@@ -60,16 +61,13 @@ object Server {
         }
 
 
-        modpack.entriesMapping.map { (name, pair) ->
+        modpack.entrySet.map {entry ->
             delay(100)
-            logger.info("stared job $name")
-            logger.info("entry: $name")
-            val (entry, relEntryFile) = pair
-            val relativeFolder = relEntryFile.parentFile
+            logger.info("started job ${entry.name()}")
             if (entry.side == Side.CLIENT) return@map
             val provider = Provider.valueOf(entry.provider).base
-            val targetFolder = serverDir.resolve(relativeFolder)
-            logger.info("${relEntryFile.path} - ${relativeFolder.path} - ${targetFolder.path}")
+            val targetFolder = serverDir.resolve(entry.file).absoluteFile.parentFile
+            logger.info("downloading to - ${targetFolder.path}")
             val (url, file) = provider.download(entry, targetFolder, cacheDir)
         }
 

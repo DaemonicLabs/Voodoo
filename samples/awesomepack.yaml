@@ -1,5 +1,5 @@
 # Short id / folder id
-id: awesomePack
+id: awesomepack
 
 # Display id
 title: Awesome Pack
@@ -19,7 +19,7 @@ authors:
 version: 1.0
 
 # minecraft src dir
-sourceDir: .minecraft
+sourceDir: src
 
 root:
   provider: CURSE
@@ -32,15 +32,13 @@ root:
   - baubles
   - wearable-backpacks
   - jei
+  - better-builders-wands
 
   - provider: DIRECT
     entries:
 
     - url: https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar
-      id: Nutrition
-
-    - url: https://centerofthemultiverse.net/launcher/mirror/BetterBuildersWands-1.12-0.11.1.245+69d0d70.jar
-      id: Better Builder's Wands
+      id: nutrition
 
   - provider: JENKINS
     jenkinsUrl: https://ci.elytradev.com
@@ -76,7 +74,7 @@ root:
 
   - side: CLIENT
     entries:
-    - "IKWID (I Know What I'm Doing)"
+    - i-know-what-im-doing
     - wawla-what-are-we-looking-at
     - waila-harvestability
     - jei-integration
@@ -88,7 +86,7 @@ root:
     - custom-main-menu
     - default-options
     - fullscreen-windowed-borderless-for-minecraft
-    - mod-id-tooltip
+    - mod-name-tooltip
     - neat
     - reauth
     - cleanview
@@ -118,27 +116,26 @@ root:
     - feature:
         selected: false
       entries:
+      - id: item-scroller
+        description: "Alternative to MouseTweaks."
 
-        - id: item-scroller
-          description: "Alternative to MouseTweaks."
+      - id: fancy-block-particles
+        description: "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps. (Defaults set to be less intrusive.)"
 
-        - id: fancy-block-particles
-         description: "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps. (Defaults set to be less intrusive.)"
-
-        - id: keyboard-wizard
-          description: "Visual keybind manager."
+      - id: keyboard-wizard
+        description: "Visual keybind manager."
 
 
     - feature:
         selected: false
       entries:
       - id: unity
-        fileid: Unity.zip
+        filename: Unity.zip
         description: "A nice, traditional-style resourcepack with support for many of our mods. Does have some minor visual bugs and is a tad heavy. Remember to apply from the main menu, and not in game!"
 
       - provider: DIRECT
         entries:
-        - id: Slice
+        - id: slice
           folder: resourcepacks
           url: https://centerofthemultiverse.net/launcher/mirror/Slice.zip
           description: Resource pack to replace system font with something better.

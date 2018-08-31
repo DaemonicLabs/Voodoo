@@ -16,7 +16,6 @@ import voodoo.util.packToZip
 import voodoo.util.writeJson
 import java.io.File
 import java.io.StringWriter
-import javax.management.Query.div
 
 /**
  * Created by nikky on 30/03/18.
@@ -72,11 +71,10 @@ object CursePack : AbstractPack() {
         val curseMods = mutableListOf<CurseFile>()
 
         // download entries
-        for ((name, pair) in modpack.entriesMapping) {
-            val (entry, entryFile) = pair
+        for (entry in modpack.entrySet) {
             if (entry.side == Side.SERVER) continue
             jobs += launch(context = pool) {
-                val folder = entryFile.absoluteFile.parentFile
+                val folder = entry.file.absoluteFile.parentFile
                 val required = modpack.features.none { feature ->
                     feature.entries.any { it == entry.id }
                 }
@@ -93,7 +91,7 @@ object CursePack : AbstractPack() {
                     }
                 }
             }
-            logger.info("started job: download '$name'")
+            logger.info("started job: download '${entry.id}'")
             delay(100)
         }
 
@@ -108,9 +106,7 @@ object CursePack : AbstractPack() {
         sw.appendHTML().html {
             body {
                 ul {
-                    for ((name, pair) in modpack.entriesMapping.toSortedMap()) {
-                        val (entry, file) = pair
-
+                    for (entry in modpack.entrySet.sortedBy { it.name() }) {
                         val provider = Provider.valueOf(entry.provider).base
                         if (entry.side == Side.SERVER) {
                             continue

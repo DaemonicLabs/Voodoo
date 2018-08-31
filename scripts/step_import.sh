@@ -9,6 +9,8 @@ cd $DIR
 [ ! -e run ] && mkdir run
 cd run
 
+[ ! -e "$DIR/samples/$pack.yaml" ] && echo "pack does not exist" && exit -1
+
 [ ! -e "$pack" ] && mkdir "$pack"
 cd "$pack"
 
@@ -21,6 +23,7 @@ echo
 
 pwd
 echo "import yaml '../samples/$pack.yaml' $pack"
+
 
 $DIR/gradlew -p "$DIR" :voodoo:run --args "import yaml '../samples/$pack.yaml' $pack"
 if [ ! $? -eq 0 ]; then

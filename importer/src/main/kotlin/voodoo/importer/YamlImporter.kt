@@ -42,7 +42,7 @@ object YamlImporter : AbstractImporter() {
         val nestedPack = yamlFile.readYaml<NestedPack>()
 
         val modpack = nestedPack.flatten()
-        modpack.entriesSet += nestedPack.root.flatten(yamlFile.parentFile)
+        modpack.entrySet += nestedPack.root.flatten(yamlFile.parentFile)
 
         val srcDir = target.resolve(nestedPack.sourceDir)
 //        val modsDir = srcDir.resolve("mods")

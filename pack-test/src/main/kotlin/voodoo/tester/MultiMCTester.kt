@@ -79,11 +79,10 @@ object MultiMCTester : AbstractTester() {
             minecraftDir.deleteRecursively()
         }
 
-        for ((name, pair) in modpack.entriesMapping) {
-            val (entry, entryFile) = pair
+        for (entry in modpack.entrySet) {
 
             if (entry.side == Side.SERVER) continue
-            val folder = minecraftDir.resolve(entryFile).absoluteFile.parentFile
+            val folder = minecraftDir.resolve(entry.file).absoluteFile.parentFile
 
             val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
             if (!matchedFeatureList.isEmpty()) {

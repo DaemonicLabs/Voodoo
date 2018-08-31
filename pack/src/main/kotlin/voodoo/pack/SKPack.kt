@@ -79,12 +79,11 @@ object SKPack : AbstractPack() {
 
         // download entries
         val targetFiles = mutableMapOf<String, File>()
-        for ((name, pair) in modpack.entriesMapping) {
+        for (entry in modpack.entrySet) {
             jobs += launch(context = pool) {
-                val (entry, relEntryFile) = pair
                 val provider = Provider.valueOf(entry.provider).base
 
-                val folder = skSrcFolder.resolve(relEntryFile).parentFile
+                val folder = skSrcFolder.resolve(entry.file).parentFile
 
                 val (url, file) = provider.download(entry, folder, cacheDir)
                 if (url != null && entry.useUrlTxt) {
@@ -93,7 +92,7 @@ object SKPack : AbstractPack() {
                 }
                 targetFiles[entry.id] = file // file.relativeTo(skSrcFolder
             }
-            logger.info("started job: download '$name'")
+            logger.info("started job: download '${entry.id}'")
             delay(10)
         }
 

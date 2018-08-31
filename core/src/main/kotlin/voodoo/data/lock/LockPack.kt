@@ -4,7 +4,10 @@ import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
 import blue.endless.jankson.impl.Marshaller
 import com.fasterxml.jackson.annotation.JsonIgnore
+import voodoo.data.Side
 import voodoo.data.UserFiles
+import voodoo.data.flat.ModPack
+import voodoo.data.flat.findByid
 import voodoo.data.sk.Launch
 import voodoo.data.sk.SKFeature
 import voodoo.fromJson
@@ -75,7 +78,7 @@ data class LockPack(
 
     @JsonIgnore
     lateinit var rootFolder: File
-        private set
+//        private set
 
     val sourceFolder: File
         get() = rootFolder.resolve(sourceDir)
@@ -85,22 +88,54 @@ data class LockPack(
         get() = rootFolder.resolve(icon)
 
     @JsonIgnore
-    val entriesMapping: MutableMap<String, Pair<LockEntry, File>> = mutableMapOf()
+    val entrySet: MutableSet<LockEntry> = mutableSetOf()
 
 
     fun loadEntries(rootFolder: File = this.rootFolder, jankson: Jankson) {
         this.rootFolder = rootFolder
-        sourceFolder.walkTopDown()
+        val srcDir = rootFolder.resolve(sourceDir)
+        srcDir.walkTopDown()
                 .filter {
                     it.isFile && it.name.endsWith(".lock.json")
                 }
                 .forEach {
+                    val relFile = it.relativeTo(srcDir)
                     val entryJsonObj = jankson.load(it)
                     val lockEntry: LockEntry = jankson.fromJson(entryJsonObj)
-                    lockEntry.parent = this
-                    entriesMapping[lockEntry.id] = Pair(lockEntry, it.relativeTo(sourceFolder))
-//                    logger.info("loaded ${lockEntry.id} ${it.relativeTo(srcDir).path}")
+                    lockEntry.file = relFile
+                    entrySet[lockEntry.id] = lockEntry
                 }
+    }
+
+
+    fun writeLockEntries(jankson: Jankson) {
+        entrySet.forEach { lockEntry ->
+            ModPack.logger.info("saving: ${lockEntry.id} , file: ${lockEntry.file} , entry: $lockEntry")
+
+            val folder = sourceFolder.resolve(lockEntry.file).absoluteFile.parentFile
+
+            val targetFolder = if (folder.toPath().none { it.toString() == "_CLIENT" || it.toString() == "_SERVER" }) {
+                when (lockEntry.side) {
+                    Side.CLIENT -> {
+                        folder.resolve("_CLIENT")
+                    }
+                    Side.SERVER -> {
+                        folder.resolve("_SERVER")
+                    }
+                    Side.BOTH -> folder
+                }
+            } else folder
+
+            targetFolder.mkdirs()
+
+            val defaultJson = lockEntry.toDefaultJson(jankson.marshaller)
+            val lockJson = jankson.toJson(lockEntry) as JsonObject
+            val delta = lockJson.getDelta(defaultJson)
+
+            val targetFile = targetFolder.resolve(lockEntry.file.name)
+
+            targetFile.writeText(delta.toJson(true, true).replace("\t", "  "))
+        }
     }
 
     fun title() = title.blankOr ?: id
@@ -113,4 +148,12 @@ data class LockPack(
                         "Author" to "`${authors.joinToString(", ")}`",
                         "Icon" to "<img src=\"$icon\" alt=\"icon\" style=\"max-height: 128px;\"/>"
                 ))
+}
+
+
+operator fun MutableSet<LockEntry>.set(id: String, entry: LockEntry) {
+    this.findByid(id)?.let {
+        this -= it
+    }
+    this += entry
 }

@@ -10,6 +10,7 @@ import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
+import voodoo.data.lock.set
 import voodoo.data.sk.Launch
 import voodoo.data.sk.SKFeature
 import voodoo.forge.Forge
@@ -17,6 +18,7 @@ import voodoo.fromJson
 import voodoo.getList
 import voodoo.getReified
 import java.io.File
+import kotlin.system.exitProcess
 
 
 /**
@@ -116,7 +118,7 @@ data class ModPack(
     }
 
     //TODO: move file into ModPack ad LockPack as lateinit
-    val entriesSet: MutableSet<Entry> = mutableSetOf()
+    val entrySet: MutableSet<Entry> = mutableSetOf()
     val lockEntrySet: MutableSet<LockEntry> = mutableSetOf()
 
     fun addEntry(entry: Entry, file: File, dependency: Boolean = false) {
@@ -125,13 +127,17 @@ data class ModPack(
             return
         }
 
+        if(!file.isAbsolute) {
+            logger.warn("file $file must be absolute")
+            exitProcess(-1)
+        }
         entry.file = file
 
-        val existingEntry = entriesSet.find { it.id == entry.id }
+        val existingEntry = entrySet.find { it.id == entry.id }
         if (existingEntry == null) {
             logger.info("new entry ${entry.id}")
 
-            entriesSet += entry
+            entrySet += entry
         } else {
             if (entry == existingEntry) {
                 return
@@ -163,7 +169,7 @@ data class ModPack(
                 .forEach { file ->
                     val entryJsonObj = jankson.load(file)
                     val entry: Entry = jankson.fromJson(entryJsonObj)
-                    addEntry(entry, file, false)
+                    addEntry(entry, file.absoluteFile, false)
                 }
     }
 
@@ -175,21 +181,22 @@ data class ModPack(
                     it.isFile && it.name.endsWith(".lock.json")
                 }
                 .forEach {
+                    val relFile = it.relativeTo(srcDir)
                     val entryJsonObj = jankson.load(it)
                     val lockEntry: LockEntry = jankson.fromJson(entryJsonObj)
-                    lockEntry.file = it
+                    lockEntry.file = relFile
                     lockEntrySet[lockEntry.id] = lockEntry
                 }
     }
 
     fun writeEntries(folder: File, jankson: Jankson) {
-        entriesSet.forEach { entry ->
+        entrySet.forEach { entry ->
             val folder = folder.resolve(sourceDir).resolve(entry.folder)
             //TODO: calculate filename in Entry
             val filename = entry.id
                     .replace('/', '-')
                     .replace("[^\\w-]+".toRegex(), "")
-            val targetFile = folder.resolve("$filename.entry.hjson")
+            val targetFile = folder.resolve("$filename.entry.hjson").absoluteFile
             //TODO: only override folder if it was uninitialized before
             entry.file = targetFile
             entry.serialize(jankson)
@@ -200,7 +207,7 @@ data class ModPack(
         lockEntrySet.forEach { lockEntry ->
             logger.info("saving: ${lockEntry.id} , file: ${lockEntry.file} , entry: $lockEntry")
 
-            val folder = lockEntry.file.absoluteFile.parentFile
+            val folder = folder.resolve(lockEntry.file).absoluteFile.parentFile
 
             val targetFolder = if (folder.toPath().none { it.toString() == "_CLIENT" || it.toString() == "_SERVER" }) {
                 when (lockEntry.side) {
@@ -245,12 +252,6 @@ data class ModPack(
 
 }
 
-operator fun MutableSet<LockEntry>.set(id: String, entry: LockEntry) {
-    this.findByid(id)?.let {
-        this -= it
-    }
-    this += entry
-}
 
 fun MutableSet<Entry>.findByid(id: String) = this.find { it.id == id }
 fun MutableSet<LockEntry>.findByid(id: String) = this.find { it.id == id }

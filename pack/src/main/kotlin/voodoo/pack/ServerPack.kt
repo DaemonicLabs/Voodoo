@@ -15,20 +15,19 @@ object ServerPack : AbstractPack() {
     override val label = "Server SKPack"
 
     override suspend fun download(modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
-        val targetDir = File(target ?: ".server")
-        val modpackDir = targetDir.resolve(modpack.id)
+        val serverDir = File(target ?: "server_${modpack.id}")
 
         if (clean) {
-            logger.info("cleaning server directory $modpackDir")
-            modpackDir.deleteRecursively()
+            logger.info("cleaning server directory $serverDir")
+            serverDir.deleteRecursively()
         }
 
-        modpackDir.mkdirs()
+        serverDir.mkdirs()
 
         val localDir = modpack.localFolder
         logger.info("local: $localDir")
         if (localDir.exists()) {
-            val targetLocalDir = modpackDir.resolve("local")
+            val targetLocalDir = serverDir.resolve("local")
             modpack.localDir = targetLocalDir.name
 
             if (targetLocalDir.exists()) targetLocalDir.deleteRecursively()
@@ -40,7 +39,7 @@ object ServerPack : AbstractPack() {
         val sourceDir = modpack.sourceFolder //rootFolder.resolve(modpack.rootFolder).resolve(modpack.sourceDir)
         logger.info("mcDir: $sourceDir")
         if (sourceDir.exists()) {
-            val targetSourceDir = modpackDir.resolve("src")
+            val targetSourceDir = serverDir.resolve("src")
             modpack.sourceDir = targetSourceDir.name
 
             if (targetSourceDir.exists()) targetSourceDir.deleteRecursively()
@@ -63,7 +62,7 @@ object ServerPack : AbstractPack() {
             }
         }
 
-        val packFile = modpackDir.resolve("pack.lock.json")
+        val packFile = serverDir.resolve("pack.lock.json")
 
         val defaultJson = JsonObject() //TODO: get default pack ?
         val lockJson = jankson.toJson(modpack) as JsonObject
@@ -74,9 +73,9 @@ object ServerPack : AbstractPack() {
         logger.info("packaging installer jar")
         val installer = DownloadVoodoo.downloadVoodoo(component = "server-installer", bootstrap = false, fat = false, binariesDir = directories.cacheHome)
 
-        val serverInstaller = modpackDir.resolve("server-installer.jar")
+        val serverInstaller = serverDir.resolve("server-installer.jar")
         installer.copyTo(serverInstaller)
 
-        logger.info("server package ready: ${modpackDir.absolutePath}")
+        logger.info("server package ready: ${serverDir.absolutePath}")
     }
 }

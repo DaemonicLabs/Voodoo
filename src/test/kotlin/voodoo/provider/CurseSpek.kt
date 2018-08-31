@@ -24,7 +24,7 @@ object CurseSpek : Spek({
                     title = "Curse Spek",
                     mcVersion = "1.12.2"
             ).apply {
-                entriesSet += Entry(
+                entrySet += Entry(
                         provider = Provider.CURSE.name,
                         id = "rftools-dimensions",
                         folder = "mods"

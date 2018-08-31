@@ -8,6 +8,8 @@ cd $DIR
 [ ! -e run ] && mkdir run
 cd run
 
+[ ! -e "$DIR/run/$pack/$pack.lock.json" ] && echo "pack does not exist" && exit -1
+
 [ ! -e "$pack" ] && mkdir "$pack"
 cd "$pack"
 
