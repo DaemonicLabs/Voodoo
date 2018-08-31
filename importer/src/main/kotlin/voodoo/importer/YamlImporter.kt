@@ -40,36 +40,18 @@ object YamlImporter : AbstractImporter() {
         val yamlFile = File(source).absoluteFile
         logger.info("reading: $yamlFile")
         val nestedPack = yamlFile.readYaml<NestedPack>()
-        val entries = nestedPack.root.flatten(yamlFile.parentFile)
+
+        val modpack = nestedPack.flatten()
+        modpack.entriesSet += nestedPack.root.flatten(yamlFile.parentFile)
 
         val srcDir = target.resolve(nestedPack.sourceDir)
 //        val modsDir = srcDir.resolve("mods")
 
 //        modsDir.mkdirs()
-
-        entries.forEach { entry ->
-            entry.validMcVersions += nestedPack.mcVersion
-            val folder = srcDir.resolve(entry.folder)
-            folder.mkdirs()
-            val filename = entry.id
-                    .replace('/', '-')
-                    .replace("[^\\w-]+".toRegex(), "")
-            val targetFile = folder.resolve("$filename.entry.hjson")
-            val json = jankson.marshaller.serialize(entry)//.toJson(true, true)
-            if (json is JsonObject) {
-                val defaultJson = entry.toDefaultJson(jankson.marshaller)
-                val delta = json.getDelta(defaultJson)
-                targetFile.writeText(delta.toJson(true, true).replace("\t", "  "))
-            }
-
-            // TODO: merge features into list ?
-            // remove from Entry ?
-            // leave comment about feature ?
-        }
+        modpack.writeEntries(target, jankson)
 
         val filename = nestedPack.id.replace("[^\\w-]+".toRegex(), "")
         val packFile = target.resolve("$filename.pack.hjson")
-        val modpack = nestedPack.flatten()
 
         val json = jankson.toJson(modpack) as JsonObject
         val defaultJson = modpack.toDefaultJson(jankson.marshaller)

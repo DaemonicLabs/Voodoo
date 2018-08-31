@@ -1,5 +1,6 @@
 package voodoo.data.flat
 
+import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
 import blue.endless.jankson.impl.Marshaller
 import com.fasterxml.jackson.annotation.JsonIgnore
@@ -11,6 +12,7 @@ import voodoo.getList
 import voodoo.getMap
 import voodoo.getReified
 import voodoo.util.equalsIgnoreCase
+import java.io.File
 import java.util.*
 
 /**
@@ -66,6 +68,19 @@ data class Entry(
 ) {
     @JsonIgnore
     var optional: Boolean = feature != null
+
+    @JsonIgnore
+    lateinit var file: File
+
+    fun serialize(jankson: Jankson) {
+        file.absoluteFile.parentFile.mkdirs()
+        val json = jankson.marshaller.serialize(this)//.toJson(true, true)
+        if (json is JsonObject) {
+            val defaultJson = this.toDefaultJson(jankson.marshaller)
+            val delta = json.getDelta(defaultJson)
+            file.writeText(delta.toJson(true, true).replace("\t", "  "))
+        }
+    }
 
     fun toDefaultJson(marshaller: Marshaller): JsonObject {
         return (marshaller.serialize(
