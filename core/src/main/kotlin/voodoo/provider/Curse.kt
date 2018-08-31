@@ -28,6 +28,10 @@ object CurseProviderThing : ProviderBase, KLogging() {
     override val name = "Curse Provider"
     val resolved = Collections.synchronizedList(mutableListOf<String>())
 
+    override fun reset() {
+        resolved.clear()
+    }
+
     override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: (Entry, String) -> Unit): LockEntry {
         val (projectID, fileID, path) = findFile(entry, mcVersion, entry.curseMetaUrl)
 

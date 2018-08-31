@@ -1,33 +1,27 @@
 #!/usr/bin/env bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
-PWD=$(pwd)
 
 cd $DIR
-
-$DIR/gradlew :voodoo:build
-
-if [ ! $? -eq 0 ]; then
-    echo "Error building voodoo"
-    exit 1
-fi
 
 pack=$1
 
 [ ! -e run ] && mkdir run
 cd run
 
+[ ! -e "$DIR/run/$pack/$pack.lock.json" ] && echo "pack does not exist" && exit -1
+
+rm -rf ".server/$pack"
+
 [ ! -e "$pack" ] && mkdir "$pack"
 cd "$pack"
 
-rm -rf .server
-
 echo
-echo "packaging $1 server"
+echo packing $pack server
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" pack server $pack.lock.json
+$DIR/gradlew -p "$DIR" :voodoo:run --args "pack server $pack/$pack.lock.json -o '$DIR/run/.server/$pack'"
 if [ ! $? -eq 0 ]; then
-    echo "Error Packing $pack"
+    echo "Error packing $pack server"
     exit 1
 fi

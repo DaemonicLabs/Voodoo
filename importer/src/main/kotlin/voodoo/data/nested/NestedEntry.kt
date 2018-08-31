@@ -138,8 +138,8 @@ data class NestedEntry(
         var parent = parentFile
         val toDelete = mutableListOf<NestedEntry>()
         include?.let {
-            println("loading $include")
             val includeFile = parentFile.resolve(it)
+            logger.info("loading $includeFile")
             val includeEntry = includeFile.readYaml<NestedEntry>()
 
             for (prop in NestedEntry::class.memberProperties) {
@@ -154,7 +154,7 @@ data class NestedEntry(
                 }
             }
             parent = includeFile.parentFile
-            println("loaded $includeFile")
+            logger.info("loaded $includeFile")
             include = null
         }
 
