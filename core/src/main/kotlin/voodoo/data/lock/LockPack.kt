@@ -7,7 +7,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
-import voodoo.data.flat.findByid
 import voodoo.data.sk.Launch
 import voodoo.data.sk.SKFeature
 import voodoo.fromJson
@@ -103,7 +102,7 @@ data class LockPack(
                     val entryJsonObj = jankson.load(it)
                     val lockEntry: LockEntry = jankson.fromJson(entryJsonObj)
                     lockEntry.file = relFile
-                    entrySet[lockEntry.id] = lockEntry
+                    addOrMerge(lockEntry) { dupl, newEntry -> newEntry}
                 }
     }
 
@@ -148,12 +147,22 @@ data class LockPack(
                         "Author" to "`${authors.joinToString(", ")}`",
                         "Icon" to "<img src=\"$icon\" alt=\"icon\" style=\"max-height: 128px;\"/>"
                 ))
-}
 
+    fun findEntryById(id: String) = entrySet.find { it.id == id }
 
-operator fun MutableSet<LockEntry>.set(id: String, entry: LockEntry) {
-    this.findByid(id)?.let {
-        this -= it
+    operator fun MutableSet<LockEntry>.set(id: String, entry: LockEntry) {
+        findEntryById(id)?.let {
+            this -= it
+        }
+        this += entry
     }
-    this += entry
+
+    fun addOrMerge(entry: LockEntry, mergeOp: (LockEntry, LockEntry) -> LockEntry): LockEntry {
+        val result = findEntryById(entry.id)?.let {
+            entrySet -= it
+            mergeOp(it, entry)
+        } ?: entry
+        entrySet += result
+        return result
+    }
 }

@@ -23,6 +23,9 @@ enum class Provider(val base: ProviderBase) {
 
 interface ProviderBase {
     val name: String
+
+    fun reset() {}
+
     suspend fun resolve(entry: Entry, mcVersion: String, addEntry: (Entry, String) -> Unit): LockEntry {
         println("[$name] resolve ${entry.id}")
         throw NotImplementedError("unable to resolve")

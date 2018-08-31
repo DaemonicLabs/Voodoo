@@ -10,7 +10,6 @@ import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
-import voodoo.data.lock.set
 import voodoo.data.sk.Launch
 import voodoo.data.sk.SKFeature
 import voodoo.forge.Forge
@@ -133,30 +132,26 @@ data class ModPack(
         }
         entry.file = file
 
-        val existingEntry = entrySet.find { it.id == entry.id }
-        if (existingEntry == null) {
-            logger.info("new entry ${entry.id}")
-
-            entrySet += entry
-        } else {
-            if (entry == existingEntry) {
-                return
+        addOrMerge(entry) { existingEntry, newEntry ->
+            if (newEntry == existingEntry) {
+                return@addOrMerge newEntry
             }
-
-            logger.info("duplicate entry $entry.id")
+            logger.info("duplicate entry $newEntry.id")
 
             if (!dependency && !existingEntry.transient) {
                 throw IllegalStateException("duplicate entries: ${existingEntry.file} and ${existingEntry.file}")
             }
 
             // TODO: make some util code to merge Entries and their JsonObj
-            existingEntry.side += entry.side
+            existingEntry.side += newEntry.side
             if (existingEntry.feature == null) {
-                existingEntry.feature = entry.feature
+                existingEntry.feature = newEntry.feature
             }
             if (existingEntry.description.isBlank()) {
-                existingEntry.description = entry.description
+                existingEntry.description = newEntry.description
             }
+
+            existingEntry
         }
     }
 
@@ -185,7 +180,7 @@ data class ModPack(
                     val entryJsonObj = jankson.load(it)
                     val lockEntry: LockEntry = jankson.fromJson(entryJsonObj)
                     lockEntry.file = relFile
-                    lockEntrySet[lockEntry.id] = lockEntry
+                    addOrMerge(lockEntry) { dupl, newEntry -> newEntry}
                 }
     }
 
@@ -250,8 +245,22 @@ data class ModPack(
         )
     }
 
+    fun findEntryById(id: String) = entrySet.find { it.id == id }
+    fun addOrMerge(entry: Entry, mergeOp: (Entry, Entry) -> Entry): Entry {
+        val result = entrySet.find { it.id == entry.id }?.let {
+            entrySet -= it
+            mergeOp(it, entry)
+        } ?: entry
+        entrySet += result
+        return result
+    }
+    fun findLockEntryById(id: String) = lockEntrySet.find { it.id == id }
+    fun addOrMerge(entry: LockEntry, mergeOp: (LockEntry, LockEntry) -> LockEntry): LockEntry {
+        val result = lockEntrySet.find { it.id == entry.id }?.let {
+            lockEntrySet -= it
+            mergeOp(it, entry)
+        } ?: entry
+        lockEntrySet += result
+        return result
+    }
 }
-
-
-fun MutableSet<Entry>.findByid(id: String) = this.find { it.id == id }
-fun MutableSet<LockEntry>.findByid(id: String) = this.find { it.id == id }

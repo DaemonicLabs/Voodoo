@@ -6,8 +6,6 @@ import voodoo.Builder
 import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
-import voodoo.data.flat.findByid
-import voodoo.data.lock.set
 import voodoo.data.sk.FeatureProperties
 import voodoo.data.sk.SKFeature
 import voodoo.memoize
@@ -25,7 +23,7 @@ private val logger = KotlinLogging.logger {}
 
 private fun ModPack.getDependenciesCall(entryId: String): List<Entry> {
     val modpack = this
-    val entry = modpack.entrySet.findByid(entryId) ?: return emptyList()
+    val entry = modpack.findEntryById(entryId) ?: return emptyList()
     var result = listOf(entry)
     for ((depType, entryList) in entry.dependencies) {
         if (depType == DependencyType.EMBEDDED) continue
@@ -75,7 +73,7 @@ private fun ModPack.processFeature(feature: SKFeature) {
         processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
         for (entry_id in processableEntries) {
             logger.info("searching $entry_id")
-            val entry = entrySet.findByid(entry_id)
+            val entry = findEntryById(entry_id)
             if (entry == null) {
                 logger.warn("$entry_id not in entries")
                 processedEntries += entry_id
@@ -111,7 +109,7 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
 //        versions.clear()
     } else {
         for (entryId in updateEntries) {
-            val entry = entrySet.findByid(entryId)
+            val entry = findEntryById(entryId)
             if (entry == null) {
                 logger.error("entry $entryId not found")
                 exitProcess(-1)
@@ -123,7 +121,7 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
     if (updateDependencies || updateAll) {
         // remove all transient entries
         lockEntrySet.removeIf { (id, _) ->
-            entrySet.findByid(id)?.transient ?: true
+            findEntryById(id)?.transient ?: true
         }
     }
 
@@ -146,7 +144,7 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
             val provider = Provider.valueOf(entry.provider).base
 
             provider.resolve(entry, this.mcVersion, ::addEntry).let { lockEntry ->
-                val existingLockEntry = lockEntrySet.findByid(lockEntry.id)
+                val existingLockEntry = findLockEntryById(lockEntry.id)
 
                 if (!provider.validate(lockEntry)) {
                     Builder.logger.error { lockEntry }
@@ -157,7 +155,7 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
                     val filename = entry.file.nameWithoutExtension
                     //TODO: fix mismatched filesystem root
                     lockEntry.file = entry.file.parentFile.resolve("$filename.lock.json").relativeTo(srcDir.absoluteFile)
-                    lockEntrySet[lockEntry.id] = lockEntry
+                    addOrMerge(lockEntry) { old, new -> new }
                     lockEntry
                 } else {
                     logger.info("existing lockEntry: $existingLockEntry")
@@ -178,7 +176,7 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
     features.clear()
 
     for (entry in entrySet) {
-        this.resolveFeatureDependencies(entry, lockEntrySet.findByid(entry.id)!!.name())
+        this.resolveFeatureDependencies(entry, findLockEntryById(entry.id)!!.name())
     }
 //    entrySet.forEach { id, (entry, file, jsonObj) ->
 //        this.resolveFeatureDependencies(entry)
@@ -203,7 +201,7 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
                     }
         }
         println { feature.entries.first() }
-        val mainEntry = entrySet.findByid(feature.entries.first())!!
+        val mainEntry = findEntryById(feature.entries.first())!!
         feature.properties.description = mainEntry.description
 
         logger.info("processed feature $feature")
