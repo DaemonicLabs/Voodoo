@@ -5,6 +5,7 @@ import blue.endless.jankson.JsonArray
 import blue.endless.jankson.JsonElement
 import blue.endless.jankson.JsonObject
 import blue.endless.jankson.impl.Marshaller
+import java.io.File
 
 /**
  * Created by nikky on 01/07/18.
@@ -12,6 +13,8 @@ import blue.endless.jankson.impl.Marshaller
  */
 
 inline fun <reified T : Any> Jankson.fromJson(obj: JsonObject): T = this.fromJson(obj, T::class.java)
+
+inline fun <reified T : Any> Jankson.fromJson(file: File): T = this.fromJson(this.load(file), T::class.java)
 
 inline fun <reified T : Any> Jankson.Builder.registerTypeAdapter(noinline adapter: (JsonObject) -> T) = this.registerTypeAdapter(T::class.java, adapter)
 

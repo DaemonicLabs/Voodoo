@@ -14,7 +14,7 @@ import java.io.File
 object LocalProviderThing : ProviderBase, KLogging() {
     override val name = "Local Provider"
 
-    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry, String) -> Unit): LockEntry {
+    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: (Entry, String) -> Unit): LockEntry {
         return LockEntry(
                 provider = entry.provider,
                 id = entry.id,

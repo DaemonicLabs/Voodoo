@@ -7,6 +7,12 @@ pipeline {
 	            sh './gradlew clean'
 	        }
 	    }
+	    stage("test") {
+	        steps {
+	            sh './gradlew clean'
+	            sh './gradlew test'
+	        }
+	    }
 	    stage("voodoo") {
 	        steps {
 	            sh './gradlew :voodoo:clean'
