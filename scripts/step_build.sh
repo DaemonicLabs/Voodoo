@@ -8,10 +8,13 @@ cd $DIR
 [ ! -e run ] && mkdir run
 cd run
 
+[ ! -e "$DIR/run/$pack/$pack.hjson" ] && echo "pack does not exist" && exit -1
+
 [ ! -e "$pack" ] && mkdir "$pack"
 cd "$pack"
 
 rm src/**/*.lock.json
+
 
 echo
 echo "building $1"

@@ -69,6 +69,9 @@ data class Entry(
     @JsonIgnore
     var optional: Boolean = feature != null
 
+    /**
+     * abssolute file
+     */
     @JsonIgnore
     lateinit var file: File
 

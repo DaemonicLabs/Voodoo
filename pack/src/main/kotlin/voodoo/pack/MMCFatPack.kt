@@ -67,12 +67,11 @@ object MMCFatPack : AbstractPack() {
         val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
         val jobs = mutableListOf<Job>()
 
-        for ((name, pair) in modpack.entriesMapping) {
-            val (entry, entryFile) = pair
+        for (entry in modpack.entrySet) {
             if (entry.side == Side.SERVER) continue
 
             jobs += launch(context = pool) {
-                val folder = minecraftDir.resolve(entryFile).absoluteFile.parentFile
+                val folder = minecraftDir.resolve(entry.file).absoluteFile.parentFile
 
                 val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
                 val selected = !matchedFeatureList.isEmpty() && matchedFeatureList.any {

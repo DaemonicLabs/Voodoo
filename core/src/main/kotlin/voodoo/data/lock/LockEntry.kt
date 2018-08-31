@@ -51,6 +51,9 @@ data class LockEntry(
     @JsonIgnore
     lateinit var parent: LockPack
 
+    /**
+     * relative to src folder
+     */
     @JsonIgnore
     lateinit var file: File
 
