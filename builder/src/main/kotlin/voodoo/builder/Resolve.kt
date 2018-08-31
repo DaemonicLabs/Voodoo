@@ -100,7 +100,7 @@ private fun ModPack.processFeature(feature: SKFeature) {
 /**
  * ensure entries are loaded before calling resolve
  */
-suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean = false, updateDependencies: Boolean = false, updateEntries: List<String>) {
+suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean = false, updateDependencies: Boolean = false, updateEntries: List<String> = listOf()) {
     this.loadEntries(folder, jankson)
     this.loadLockEntries(folder, jankson)
 
@@ -147,7 +147,7 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
             logger.info("resolving: ${entry.id}")
             val provider = Provider.valueOf(entry.provider).base
 
-            provider.resolve(entry, this, ::addEntry)?.let { lockEntry ->
+            provider.resolve(entry, this.mcVersion, ::addEntry).let { lockEntry ->
                 val existingLockEntry = versionsMapping[lockEntry.id]?.first
 
                 if(!provider.validate(lockEntry)) {

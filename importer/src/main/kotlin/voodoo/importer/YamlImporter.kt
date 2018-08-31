@@ -2,9 +2,12 @@ package voodoo.importer
 
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
+import voodoo.data.curse.FileID
+import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
 import voodoo.data.flat.EntryFeature
 import voodoo.data.nested.NestedPack
+import voodoo.registerPrimitiveTypeAdapter
 import voodoo.registerSerializer
 import voodoo.registerTypeAdapter
 import voodoo.util.readYaml
@@ -22,6 +25,10 @@ object YamlImporter : AbstractImporter() {
             .registerTypeAdapter(Entry.Companion::fromJson)
             .registerTypeAdapter(EntryFeature.Companion::fromJson)
             .registerSerializer(Entry.Companion::toJson)
+            .registerSerializer(ProjectID.Companion::toJson)
+            .registerSerializer(FileID.Companion::toJson)
+            .registerPrimitiveTypeAdapter(ProjectID.Companion::fromJson)
+            .registerPrimitiveTypeAdapter(FileID.Companion::fromJson)
             .build()
 
     init {

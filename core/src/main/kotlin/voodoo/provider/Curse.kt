@@ -28,8 +28,8 @@ object CurseProviderThing : ProviderBase, KLogging() {
     override val name = "Curse Provider"
     val resolved = Collections.synchronizedList(mutableListOf<String>())
 
-    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry, String) -> Unit): LockEntry {
-        val (projectID, fileID, path) = findFile(entry, modpack.mcVersion, entry.curseMetaUrl)
+    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: (Entry, String) -> Unit): LockEntry {
+        val (projectID, fileID, path) = findFile(entry, mcVersion, entry.curseMetaUrl)
 
         logger.info("resolved: $resolved")
         resolved += entry.id
@@ -43,7 +43,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
 
         resolveDependencies(projectID, fileID, entry, addEntry)
 
-        entry.optional = isOptional(entry, modpack)
+        entry.optional = isOptional(entry)
 
         if(!projectID.valid) {
             logger.error("invalid project id for $entry")
@@ -171,7 +171,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
         }
     }
 
-    private fun isOptionalCall(entry: Entry, modpack: ModPack): Boolean {
+    private fun isOptionalCall(entry: Entry): Boolean {
         ProviderBase.logger.info("test optional of ${entry.id}")
 //        logger.info(entry.toString())
         return entry.transient || entry.optional

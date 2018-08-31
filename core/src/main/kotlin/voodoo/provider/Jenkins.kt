@@ -10,6 +10,7 @@ import voodoo.memoize
 import voodoo.util.download
 import voodoo.util.jenkins.JenkinsServer
 import java.io.File
+import java.lang.IllegalStateException
 import java.time.Instant
 
 /**
@@ -23,14 +24,13 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
 
-    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry, String) -> Unit): LockEntry? {
+    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: (Entry, String) -> Unit): LockEntry {
         if(entry.job.isBlank()) {
             entry.job = entry.id
         }
         val job = job(entry.job, entry.jenkinsUrl)
-        val buildNumber = job.lastSuccessfulBuild?.number
-        return if (buildNumber == null) null
-        else LockEntry(
+        val buildNumber = job.lastSuccessfulBuild?.number ?: throw IllegalStateException("buildnumber not set")
+        return LockEntry(
                 provider = entry.provider,
                 id = entry.id,
                 name = entry.name,

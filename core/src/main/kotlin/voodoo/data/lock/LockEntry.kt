@@ -51,28 +51,28 @@ data class LockEntry(
     lateinit var parent: LockPack
 
     @JsonIgnore
-    private fun providerBase(): ProviderBase = Provider.valueOf(provider).base
+    fun provider(): ProviderBase = Provider.valueOf(provider).base
 
     @JsonIgnore
-    fun name(): String = name.takeIf { it.isNotBlank() } ?: runBlocking { providerBase().generateName(this@LockEntry) }
+    fun name(): String = name.takeIf { it.isNotBlank() } ?: runBlocking { provider().generateName(this@LockEntry) }
 
     @JsonIgnore
-    fun version(): String = runBlocking { providerBase().getVersion(this@LockEntry) }
+    fun version(): String = runBlocking { provider().getVersion(this@LockEntry) }
 
     @JsonIgnore
-    fun license(): String = runBlocking { providerBase().getLicense(this@LockEntry) }
+    fun license(): String = runBlocking { provider().getLicense(this@LockEntry) }
 
     @JsonIgnore
-    fun thumbnail(): String = runBlocking { providerBase().getThumbnail(this@LockEntry) }
+    fun thumbnail(): String = runBlocking { provider().getThumbnail(this@LockEntry) }
 
     @JsonIgnore
-    fun authors(): String = runBlocking { providerBase().getAuthors(this@LockEntry).joinToString(", ") }
+    fun authors(): String = runBlocking { provider().getAuthors(this@LockEntry).joinToString(", ") }
 
     @JsonIgnore
-    fun projectPage(): String = runBlocking { providerBase().getProjectPage(this@LockEntry) }
+    fun projectPage(): String = runBlocking { provider().getProjectPage(this@LockEntry) }
 
     @JsonIgnore
-    fun releaseDate(): Instant? = runBlocking { providerBase().getReleaseDate(this@LockEntry) }
+    fun releaseDate(): Instant? = runBlocking { provider().getReleaseDate(this@LockEntry) }
 
     @JsonIgnore
     fun isCurse(): Boolean = provider == Provider.CURSE.name

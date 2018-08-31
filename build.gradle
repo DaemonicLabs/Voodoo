@@ -58,11 +58,11 @@ allprojects {
 }
 
 subprojects {
-    if (name == 'Jankson') {
+    if (name == 'Jankson' || name == 'launcher-builder' || name == 'launcher') {
         sonarqube {
             skipProject = true
         }
-    } else if (name != "Jankson") {
+    } else {
         apply plugin: "kotlin"
         group = group
         version = version
@@ -99,6 +99,39 @@ subprojects {
         if (System.env.BUILD_NUMBER) {
             version = System.env.BUILD_NUMBER
         }
+
+        // SPEK
+
+        repositories {
+            maven { url "https://dl.bintray.com/spekframework/spek-dev" }
+        }
+        dependencies {
+            testImplementation (group: 'org.spekframework.spek2', name: 'spek-dsl-jvm', version: spek_version)  {
+                exclude group: 'org.jetbrains.kotlin'
+            }
+            testRuntimeOnly (group: 'org.spekframework.spek2', name: 'spek-runner-junit5', version: spek_version) {
+                // exclude group: 'org.junit.platform'
+                exclude group: 'org.jetbrains.kotlin'
+            }
+            testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
+
+            // spek requires kotlin-reflect, can be omitted if already in the classpath
+            testRuntimeOnly "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
+        }
+
+        test {
+            useJUnitPlatform {
+                includeEngines 'spek2'
+            }
+        }
+
+        compileTestKotlin {
+            kotlinOptions {
+                jvmTarget = "1.8"
+            }
+        }
+
+        //DOKKA
 
         dokka {
             outputFormat = 'gfm'

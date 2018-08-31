@@ -34,12 +34,12 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
         }
     }.memoize()
 
-    override suspend fun resolve(entry: Entry, modpack: ModPack, addEntry: (Entry, String) -> Unit): LockEntry {
+    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: (Entry, String) -> Unit): LockEntry {
         val json = getUpdateJson(entry.updateJson)!!
         if (entry.id.isBlank()) {
             entry.id = entry.updateJson.substringAfterLast('/').substringBeforeLast('.')
         }
-        val key = modpack.mcVersion + when (entry.updateChannel) {
+        val key = mcVersion + when (entry.updateChannel) {
             UpdateChannel.RECOMMENDED -> "-recommended"
             UpdateChannel.LATEST -> "-latest"
         }
