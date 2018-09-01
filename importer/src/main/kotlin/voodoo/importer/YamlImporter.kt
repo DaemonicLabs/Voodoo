@@ -50,7 +50,7 @@ object YamlImporter : AbstractImporter() {
 //        modsDir.mkdirs()
         modpack.writeEntries(target, jankson)
 
-        val filename = nestedPack.id.replace("[^\\w-]+".toRegex(), "")
+        val filename =  name ?: nestedPack.id.replace("[^\\w-]+".toRegex(), "")
         val packFile = target.resolve("$filename.pack.hjson")
 
         val json = jankson.toJson(modpack) as JsonObject

@@ -17,10 +17,8 @@ buildscript {
 
 plugins {
     application
-    "project-report"
     id("idea")
-//    kotlin("jvm") version "1.3-M2"
-//    kotlin("jvm") version kotlin_version
+    id("project-report")
     id("com.github.johnrengelman.shadow") version "2.0.3"
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
 }
