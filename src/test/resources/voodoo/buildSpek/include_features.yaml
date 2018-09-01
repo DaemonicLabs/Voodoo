@@ -1,0 +1,26 @@
+feature:
+  selected: true
+  recommendation: starred
+entries:
+- id: FoamFix
+  provider: DIRECT
+  url: https://asie.pl/files/mods/FoamFix/foamfix-0.9.9.1-1.12.2-anarchy.jar
+  description: "Foamfix (Anarchy)!"
+  name: FoamFix
+- side: CLIENT
+  entries:
+  - betterfps
+  - feature:
+      recommendation: starred
+      selected: true
+    entries:
+    - id: toast-control
+      description: "Removes Minecraft annoying Toasts."
+      name: Toast Control
+    - id: journeymap
+      description: "Minimap"
+  - feature:
+      selected: false
+    entries:
+    - id: worldeditcui-forge-edition-2
+      description: "If you don't know what this is, I suggest not ticking it."
