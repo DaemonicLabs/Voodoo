@@ -13,7 +13,7 @@ run {
 }
 
 shadowJar {
-    classifier = ''
+    classifier = null
 }
 
 dependencies {

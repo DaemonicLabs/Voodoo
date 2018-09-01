@@ -7,17 +7,11 @@ pipeline {
 	            sh './gradlew clean'
 	        }
 	    }
-	    stage("test") {
-	        steps {
-	            sh './gradlew clean'
-	            sh './gradlew test'
-	        }
-	    }
 	    stage("voodoo") {
 	        steps {
-	            sh './gradlew :voodoo:clean'
-	            sh './gradlew :voodoo:build'
-	            archiveArtifacts artifacts:  'voodoo/build/libs/*jar'
+	            sh './gradlew clean'
+	            sh './gradlew build'
+	            archiveArtifacts artifacts:  'build/libs/*jar'
 	        }
 	    }
 	    stage("multimc-installer") {
