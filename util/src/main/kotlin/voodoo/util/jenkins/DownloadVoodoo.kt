@@ -12,7 +12,6 @@ object DownloadVoodoo : KLogging() {
     suspend fun downloadVoodoo(
             component: String,
             bootstrap: Boolean = true,
-            fat: Boolean = false,
             url: String = "https://ci.elytradev.com",
             job: String = "elytra/Voodoo/rewrite", //TODO: switch to master once merged
             binariesDir: File
@@ -37,8 +36,8 @@ object DownloadVoodoo : KLogging() {
             throw Exception()
         }
         val url = build.url + "artifact/" + artifact.relativePath
-        val tmpFile = File(binariesDir, "$moduleName-$buildNumber${if(fat) "-fat" else ""}.tmp")
-        val targetFile = File(binariesDir, "$moduleName-$buildNumber${if(fat) "-fat" else ""}.jar")
+        val tmpFile = File(binariesDir, "$moduleName-$buildNumber.tmp")
+        val targetFile = File(binariesDir, "$moduleName-$buildNumber.jar")
         if (!targetFile.exists()) {
             val (_, _, result) = url.httpGet()
                     .header("User-Agent" to userAgent)
