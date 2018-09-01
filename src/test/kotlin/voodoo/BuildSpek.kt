@@ -24,15 +24,17 @@ object BuildSpek : Spek({
         val mainFile by memoized {
             rootFolder.resolve("testpack.yaml")
         }
-        val includeFile by memoized {
-            rootFolder.resolve("include.yaml")
+        val includeFiles by memoized {
+            listOf("include_features.yaml", "include_server.yaml").map {rootFolder.resolve(it)}
         }
 
         it("main yaml exists") {
             assert(mainFile.isFile)
         }
         it("include yaml file exists") {
-            assert(includeFile.isFile)
+            includeFiles.forEach {
+                assert(it.isFile) { "$it does not exist" }
+            }
         }
 
         val packFile by memoized {
