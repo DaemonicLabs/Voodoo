@@ -1,14 +1,3 @@
-import proguard.gradle.ProGuardTask
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath group: 'net.sf.proguard', name: 'proguard-gradle', version: project.proguard_version
-    }
-}
-
 plugins {
     id 'application'
 }
@@ -24,94 +13,10 @@ run {
 }
 
 shadowJar {
-    classifier = 'fat'
+    classifier = ''
 }
 
 dependencies {
     compile project(':base:cmd')
     compile project(':builder')
 }
-
-task minify(type: ProGuardTask, dependsOn: 'shadowJar') {
-    libraryjars "${System.getProperty('java.home')}/lib/rt.jar"
-    libraryjars "${System.getProperty('java.home')}/lib/jce.jar"
-
-    injars  shadowJar
-    outjars "build/libs/${project.name}${version != 'unspecified' ? "-$version" : ""}.jar"
-
-    ignorewarnings()
-    printmapping 'build/libs/out.map'
-
-    optimizations '*'
-
-    keepclasseswithmembers 'public class * { \
-        public static void main(java.lang.String[]); \
-    }'
-
-    assumenosideeffects 'class kotlin.jvm.internal.Intrinsics { \
-        static void checkParameterIsNotNull(java.lang.Object, java.lang.String); \
-    }'
-
-    // Jackson
-    keepattributes '*Annotation*'
-    keepattributes 'EnclosingMethod'
-    keepattributes 'Signature'
-    keepnames 'class com.fasterxml.jackson.** {  *; }'
-    dontwarn 'com.fasterxml.jackson.databind.**'
-    keep 'class org.codehaus.** { *; }'
-    keepclassmembers 'public final enum org.codehaus.jackson.annotate.JsonAutoDetect$Visibility { \
-       public static final org.codehaus.jackson.annotate.JsonAutoDetect$Visibility *; }'
-    keepclassmembers 'enum * { \
-        public static **[] values(); \
-        public static ** valueOf(java.lang.String); \
-    }'
-
-    // Kotlin
-    keep 'class org.jetbrains.annotations.** { *; }'
-    keepclassmembers 'class ** { \
-        @org.jetbrains.annotations.ReadOnly public *; \
-    }'
-    keep 'class kotlin.Metadata { *; }'
-
-    //Kotlin Reflect
-    keep 'class kotlin.reflect.** { *; }'
-//    keep 'class kotlin.reflect.jvm.internal.** { *; }'
-    dontwarn 'kotlin.reflect.jvm.internal.**'
-
-    // Coroutines
-    dontwarn 'kotlinx.coroutines.*'
-
-    // JNA
-    dontwarn 'java.awt.*'
-    keep 'class com.sun.jna.* { *; }'
-    keepclassmembers 'class * extends com.sun.jna.* { public *; }'
-
-    // apache commons compress
-    dontwarn 'org.apache.commons.compress.compressors.**'
-    dontwarn 'org.apache.commons.compress.archivers.**'
-
-    //KLogging
-    keep 'class mu.** { *; }'
-
-    // Logging
-    keep 'class ch.qos.** { *; }'
-    keep 'class org.slf4j.** { *; }'
-    keepattributes '*Annotation*'
-    dontwarn 'ch.qos.logback.core.net.*'
-
-    // Voodoo
-    keepattributes 'LineNumberTable'
-    keep 'public class voodoo.** {\
-        *;\
-    }'
-
-//    keepnames 'class * { *; }'
-}
-
-configure(minify) {
-    group = 'build'
-    description = 'Optimize JAR'
-}
-
-build.dependsOn(minify)
-
