@@ -22,7 +22,7 @@ runShadow {
 }
 
 shadowJar {
-    classifier = ''
+    classifier = null
 }
 
 dependencies {
