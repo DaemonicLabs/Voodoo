@@ -2,9 +2,7 @@ package voodoo
 
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
-import com.xenomachina.argparser.ArgParser
-import com.xenomachina.argparser.default
-import com.xenomachina.argparser.mainBody
+import com.xenomachina.argparser.*
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.builder.resolve
@@ -24,7 +22,6 @@ import voodoo.provider.Provider
 import voodoo.util.json
 import java.io.File
 import java.io.StringWriter
-import java.lang.IllegalStateException
 
 /**
  * Created by nikky on 28/03/18.
@@ -33,28 +30,28 @@ import java.lang.IllegalStateException
 
 object Builder : KLogging() {
     val jankson = Jankson.builder()
-        .registerTypeAdapter(ModPack.Companion::fromJson)
-        .registerTypeAdapter(Entry.Companion::fromJson)
-        .registerTypeAdapter(LockPack.Companion::fromJson)
-        .registerTypeAdapter(LockEntry.Companion::fromJson)
-        .registerTypeAdapter(EntryFeature.Companion::fromJson)
-        .registerTypeAdapter(UserFiles.Companion::fromJson)
-        .registerTypeAdapter(Launch.Companion::fromJson)
-        .registerTypeAdapter(SKFeature.Companion::fromJson)
-        .registerTypeAdapter(FeatureProperties.Companion::fromJson)
-        .registerTypeAdapter(FeatureFiles.Companion::fromJson)
-        .registerSerializer(ModPack.Companion::toJson)
-        .registerSerializer(Entry.Companion::toJson)
-        .registerSerializer(LockPack.Companion::toJson)
-        .registerSerializer(LockEntry.Companion::toJson)
-        .registerSerializer(ProjectID.Companion::toJson)
-        .registerSerializer(FileID.Companion::toJson)
-        .registerPrimitiveTypeAdapter(ProjectID.Companion::fromJson)
-        .registerPrimitiveTypeAdapter(FileID.Companion::fromJson)
-        .build()
+            .registerTypeAdapter(ModPack.Companion::fromJson)
+            .registerTypeAdapter(Entry.Companion::fromJson)
+            .registerTypeAdapter(LockPack.Companion::fromJson)
+            .registerTypeAdapter(LockEntry.Companion::fromJson)
+            .registerTypeAdapter(EntryFeature.Companion::fromJson)
+            .registerTypeAdapter(UserFiles.Companion::fromJson)
+            .registerTypeAdapter(Launch.Companion::fromJson)
+            .registerTypeAdapter(SKFeature.Companion::fromJson)
+            .registerTypeAdapter(FeatureProperties.Companion::fromJson)
+            .registerTypeAdapter(FeatureFiles.Companion::fromJson)
+            .registerSerializer(ModPack.Companion::toJson)
+            .registerSerializer(Entry.Companion::toJson)
+            .registerSerializer(LockPack.Companion::toJson)
+            .registerSerializer(LockEntry.Companion::toJson)
+            .registerSerializer(ProjectID.Companion::toJson)
+            .registerSerializer(FileID.Companion::toJson)
+            .registerPrimitiveTypeAdapter(ProjectID.Companion::fromJson)
+            .registerPrimitiveTypeAdapter(FileID.Companion::fromJson)
+            .build()
 
     @JvmStatic
-    fun main(vararg args: String) = mainBody {
+    fun main(vararg args: String) = runBlocking {
         val parser = ArgParser(args)
         val arguments = Arguments(parser)
         parser.force()
@@ -73,21 +70,17 @@ object Builder : KLogging() {
                 logger.info("id: ${entry.id} entry: $entry")
             }
 
-            runBlocking {
-                modpack.resolve(
-                        parentFolder,
-                        jankson,
-                        updateAll = updateAll,
-                        updateDependencies = updateDependencies,
-                        updateEntries = entries
-                )
-            }
+            modpack.resolve(
+                    parentFolder,
+                    jankson,
+                    updateAll = updateAll,
+                    updateDependencies = updateDependencies,
+                    updateEntries = entries
+            )
 
-            //TODO: remove
-            logger.info { modpack.lockEntrySet.filter{it.provider == "CURSE"}.map { Triple(it.id, it.projectID, it.fileID) }}
             modpack.lockEntrySet.forEach { lockEntry ->
                 val provider = Provider.valueOf(lockEntry.provider).base
-                if(!provider.validate(lockEntry)){
+                if (!provider.validate(lockEntry)) {
                     logger.error { lockEntry }
                     throw IllegalStateException("entry did not validate")
                 }
@@ -129,29 +122,28 @@ object Builder : KLogging() {
             modlist.writeText(sw.toString())
         }
     }
-
-    private class Arguments(parser: ArgParser) {
-        val packFile by parser.positional("FILE",
-                help = "input pack json") { File(this) }
-
-        val targetFile by parser.storing("--output", "-o",
-                help = "output file json") { File(this) }
-                .default<File?>(null)
-
-        val stdout by parser.flagging("--stdout", "-s",
-                help = "print output")
-                .default(false)
-
-        val updateDependencies by parser.flagging("--updateDependencies", "-d",
-                help = "update all dependencies")
-                .default(false)
-
-        val updateAll by parser.flagging("--updateAll", "-u",
-                help = "update all entries, implies updating dependencies")
-                .default(false)
-
-        val entries by parser.adding(
-                "-E", help = "entries to update")
-    }
 }
 
+private class Arguments(parser: ArgParser) {
+    val packFile by parser.positional("FILE",
+            help = "input pack json") { File(this) }
+
+    val targetFile by parser.storing("--output", "-o",
+            help = "output file json") { File(this) }
+            .default<File?>(null)
+
+    val stdout by parser.flagging("--stdout", "-s",
+            help = "print output")
+            .default(false)
+
+    val updateDependencies by parser.flagging("--updateDependencies", "-d",
+            help = "update all dependencies")
+            .default(false)
+
+    val updateAll by parser.flagging("--updateAll", "-u",
+            help = "update all entries, implies updating dependencies")
+            .default(false)
+
+    val entries by parser.adding(
+            "-E", help = "entries to update")
+}

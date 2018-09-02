@@ -2,6 +2,9 @@ package voodoo.pack
 
 import blue.endless.jankson.Jankson
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.toList
+import kotlinx.coroutines.channels.use
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
 import voodoo.data.Side
@@ -68,7 +71,7 @@ object CursePack : AbstractPack() {
         logger.info("cleaning mods $modsFolder")
         modsFolder.deleteRecursively()
 
-        val curseMods = mutableListOf<CurseFile>()
+        val curseModsChannel = Channel<CurseFile>(Channel.CONFLATED)
 
         // download entries
         for (entry in modpack.entrySet) {
@@ -81,7 +84,15 @@ object CursePack : AbstractPack() {
 
                 val provider = Provider.valueOf(entry.provider).base
                 if (entry.provider == Provider.CURSE.name) {
-                    curseMods += CurseFile(entry.projectID, entry.fileID, required).apply { println("added voodoo.data.curse file $this") }
+                    curseModsChannel.send(
+                            CurseFile(
+                                    entry.projectID,
+                                    entry.fileID,
+                                    required
+                            ).apply {
+                                println("added voodoo.data.curse file $this")
+                            }
+                    )
                 } else {
                     val targetFolder = srcFolder.resolve(folder)
                     val (url, file) = provider.download(entry, targetFolder, cacheDir)
@@ -97,7 +108,10 @@ object CursePack : AbstractPack() {
 
         delay(100)
         logger.info("waiting for jobs to finish")
-        runBlocking { jobs.forEach { it.join() } }
+        curseModsChannel.use {
+            jobs.joinAll()
+        }
+        val curseMods = curseModsChannel.toList()
 
         // generate modlist
         val modListFile = modpackDir.resolve("modlist.html")
@@ -133,40 +147,38 @@ object CursePack : AbstractPack() {
             }
         }
 
-        runBlocking {
-            val html = sw.toString()
+        val html = sw.toString()
 
-            if (modListFile.exists()) modListFile.delete()
-            modListFile.createNewFile()
-            modListFile.writeText(html)
+        if (modListFile.exists()) modListFile.delete()
+        modListFile.createNewFile()
+        modListFile.writeText(html)
 
-            val curseManifest = CurseManifest(
-                    name = modpack.title,
-                    version = modpack.version,
-                    author = modpack.authors.joinToString(", "),
-                    minecraft = CurseMinecraft(
-                            version = modpack.mcVersion,
-                            modLoaders = listOf(
-                                    CurseModLoader(
-                                            id = "forge-$forgeVersion",
-                                            primary = true
-                                    )
-                            )
-                    ),
-                    manifestType = "minecraftModpack",
-                    manifestVersion = 1,
-                    files = curseMods,
-                    overrides = "overrides"
-            )
-            val manifestFile = modpackDir.resolve("manifest.json")
-            manifestFile.writeJson(curseManifest)
+        val curseManifest = CurseManifest(
+                name = modpack.title,
+                version = modpack.version,
+                author = modpack.authors.joinToString(", "),
+                minecraft = CurseMinecraft(
+                        version = modpack.mcVersion,
+                        modLoaders = listOf(
+                                CurseModLoader(
+                                        id = "forge-$forgeVersion",
+                                        primary = true
+                                )
+                        )
+                ),
+                manifestType = "minecraftModpack",
+                manifestVersion = 1,
+                files = curseMods,
+                overrides = "overrides"
+        )
+        val manifestFile = modpackDir.resolve("manifest.json")
+        manifestFile.writeJson(curseManifest)
 
-            val cursePackFile = workspaceDir.resolve(with(modpack) { "$id-$version.zip" })
+        val cursePackFile = workspaceDir.resolve(with(modpack) { "$id-$version.zip" })
 
-            packToZip(modpackDir.toPath(), cursePackFile.toPath())
+        packToZip(modpackDir.toPath(), cursePackFile.toPath())
 
-            logger.info("packed ${modpack.id} -> $cursePackFile")
-        }
+        logger.info("packed ${modpack.id} -> $cursePackFile")
     }
 
 }

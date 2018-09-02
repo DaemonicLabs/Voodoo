@@ -20,7 +20,7 @@ echo
 echo packing $pack server
 echo
 
-$DIR/gradlew -p "$DIR" :voodoo:run --args "pack server $pack/$pack.lock.json -o '$DIR/run/.server/$pack'"
+$DIR/gradlew -p "$DIR" :run --args "pack server $pack/$pack.lock.json -o '$DIR/run/.server/$pack'"
 if [ ! $? -eq 0 ]; then
     echo "Error packing $pack server"
     exit 1

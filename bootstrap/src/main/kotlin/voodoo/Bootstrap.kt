@@ -22,12 +22,10 @@ import java.io.File
 import kotlin.system.exitProcess
 
 @Throws(Throwable::class)
-fun main(args: Array<String>) {
+fun main(vararg args: String) = runBlocking {
     try {
         Bootstrap.cleanup()
-        runBlocking {
-            Bootstrap.launch(args)
-        }
+        Bootstrap.launch(*args)
     } catch (t: Throwable) {
         Bootstrap.logger.error("Error", t)
         exitProcess(-1)
@@ -94,7 +92,7 @@ object Bootstrap : KLogging() {
     }
 
     @Throws(Throwable::class)
-    suspend fun launch(originalArgs: Array<String>) {
+    suspend fun launch(vararg originalArgs: String) {
         logger.info("Downloading the $MODULE_NAME binary...")
         val file = download()
 

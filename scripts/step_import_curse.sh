@@ -21,7 +21,7 @@ echo
 
 rm -rf $pack
 
-$DIR/gradlew -p "$DIR"  :voodoo:run --args "import curse $url $pack"
+$DIR/gradlew -p "$DIR"  :run --args "import curse $url $pack"
 if [ ! $? -eq 0 ]; then
     echo "Error importing $pack from curse"
     exit 1

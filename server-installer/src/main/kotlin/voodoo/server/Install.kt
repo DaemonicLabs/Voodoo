@@ -49,7 +49,7 @@ object Install : KLogging() {
             .build()
 
     @JvmStatic
-    fun main(vararg args: String): Unit = mainBody {
+    fun main(vararg args: String): Unit = runBlocking {
 
         val parser = ArgParser(args)
         val parsedArgs = Arguments(parser)
@@ -65,9 +65,7 @@ object Install : KLogging() {
             val rootFolder = packFile.absoluteFile.parentFile
             modpack.loadEntries(rootFolder, jankson)
 
-            runBlocking {
-                Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
-            }
+            Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
         }
     }
 
