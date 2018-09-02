@@ -29,31 +29,30 @@ import kotlin.system.exitProcess
  */
 
 object Pack : KLogging() {
-    @JvmStatic
-    fun main(vararg args: String) = mainBody {
-
-        val jankson = Jankson.builder()
-                .registerTypeAdapter(ModPack.Companion::fromJson)
-                .registerTypeAdapter(Entry.Companion::fromJson)
-                .registerTypeAdapter(LockPack.Companion::fromJson)
-                .registerTypeAdapter(LockEntry.Companion::fromJson)
-                .registerTypeAdapter(EntryFeature.Companion::fromJson)
-                .registerTypeAdapter(UserFiles.Companion::fromJson)
-                .registerTypeAdapter(Launch.Companion::fromJson)
-                .registerTypeAdapter(SKFeature.Companion::fromJson)
-                .registerTypeAdapter(FeatureProperties.Companion::fromJson)
-                .registerTypeAdapter(FeatureFiles.Companion::fromJson)
-                .registerPrimitiveTypeAdapter(ProjectID.Companion::fromJson)
-                .registerPrimitiveTypeAdapter(FileID.Companion::fromJson)
-                .registerSerializer(ModPack.Companion::toJson)
-                .registerSerializer(Entry.Companion::toJson)
-                .registerSerializer(LockPack.Companion::toJson)
-                .registerSerializer(LockEntry.Companion::toJson)
-                .registerSerializer(ProjectID.Companion::toJson)
-                .registerSerializer(FileID.Companion::toJson)
+    val jankson = Jankson.builder()
+            .registerTypeAdapter(ModPack.Companion::fromJson)
+            .registerTypeAdapter(Entry.Companion::fromJson)
+            .registerTypeAdapter(LockPack.Companion::fromJson)
+            .registerTypeAdapter(LockEntry.Companion::fromJson)
+            .registerTypeAdapter(EntryFeature.Companion::fromJson)
+            .registerTypeAdapter(UserFiles.Companion::fromJson)
+            .registerTypeAdapter(Launch.Companion::fromJson)
+            .registerTypeAdapter(SKFeature.Companion::fromJson)
+            .registerTypeAdapter(FeatureProperties.Companion::fromJson)
+            .registerTypeAdapter(FeatureFiles.Companion::fromJson)
+            .registerPrimitiveTypeAdapter(ProjectID.Companion::fromJson)
+            .registerPrimitiveTypeAdapter(FileID.Companion::fromJson)
+            .registerSerializer(ModPack.Companion::toJson)
+            .registerSerializer(Entry.Companion::toJson)
+            .registerSerializer(LockPack.Companion::toJson)
+            .registerSerializer(LockEntry.Companion::toJson)
+            .registerSerializer(ProjectID.Companion::toJson)
+            .registerSerializer(FileID.Companion::toJson)
 //            .registerSerializer(EntryFeature.Companion::toJson)
-                .build()
+            .build()
 
+    @JvmStatic
+    fun main(vararg args: String) = runBlocking {
         val arguments = Arguments(ArgParser(args))
 
         arguments.run {
@@ -78,9 +77,7 @@ object Pack : KLogging() {
                 }
             }
 
-            runBlocking {
-                packer.download(modpack = modpack, target = targetArg, clean = true, jankson = jankson)
-            }
+            packer.download(modpack = modpack, target = targetArg, clean = true, jankson = jankson)
         }
     }
 

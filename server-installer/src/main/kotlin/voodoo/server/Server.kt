@@ -1,6 +1,6 @@
 package voodoo.server
 
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
@@ -60,23 +60,30 @@ object Server {
             }
         }
 
+        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
+        val jobs = mutableListOf<Job>()
 
-        modpack.entrySet.map {entry ->
-            delay(100)
-            logger.info("started job ${entry.name()}")
+        modpack.entrySet.map { entry ->
             if (entry.side == Side.CLIENT) return@map
-            val provider = Provider.valueOf(entry.provider).base
-            val targetFolder = serverDir.resolve(entry.file).absoluteFile.parentFile
-            logger.info("downloading to - ${targetFolder.path}")
-            val (url, file) = provider.download(entry, targetFolder, cacheDir)
+            jobs += launch(context = pool) {
+                val provider = Provider.valueOf(entry.provider).base
+                val targetFolder = serverDir.resolve(entry.file).absoluteFile.parentFile
+                logger.info("downloading to - ${targetFolder.path}")
+                val (url, file) = provider.download(entry, targetFolder, cacheDir)
+            }
+            delay(10)
+            logger.info("started job ${entry.name()}")
         }
 
         // download forge
         val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
         val forgeFile = directories.runtimeDir.resolve(forgeFileName)
-        forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
-
         logger.info("forge: $forgeLongVersion")
+        jobs += launch(context = pool) {
+            forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
+        }
+
+        jobs.joinAll()
 
         // install forge
         if (!skipForge) {

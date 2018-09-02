@@ -20,7 +20,7 @@ object Voodoo : KLogging() {
     )
 
     fun printCommands(cmd: String?) {
-        if(cmd == null) {
+        if (cmd == null) {
             logger.error("no command specified")
         } else {
             logger.error("unknown command $cmd")
@@ -37,18 +37,17 @@ object Voodoo : KLogging() {
         val command = args.getOrNull(0)
         val remainingArgs = args.drop(1).toTypedArray()
 
-        if(command == null) {
+        if (command == null) {
             printCommands(null)
             return
         }
 
         val function = funcs[command.toLowerCase()]
-        if(function == null) {
+        if (function == null) {
             printCommands(command)
             return
         }
 
         function(remainingArgs)
-
     }
 }

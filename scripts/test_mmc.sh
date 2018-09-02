@@ -17,7 +17,7 @@ echo
 echo "testing $1 on multimc"
 echo
 
-$DIR/gradlew -p "$DIR" :voodoo:run --args "test mmc $pack/$pack.lock.json"
+$DIR/gradlew -p "$DIR" :run --args "test mmc $pack/$pack.lock.json"
 if [ ! $? -eq 0 ]; then
     echo "Error Testing $pack in multimc"
     exit 1

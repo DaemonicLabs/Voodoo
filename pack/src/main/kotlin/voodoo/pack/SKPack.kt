@@ -3,6 +3,7 @@ package voodoo.pack
 import blue.endless.jankson.Jankson
 import com.skcraft.launcher.builder.PackageBuilder
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.*
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.pack.sk.*
@@ -77,8 +78,8 @@ object SKPack : AbstractPack() {
         modsFolder.deleteRecursively()
 
 
+        val fileChannel = Channel<Pair<String, File>> (Channel.CONFLATED)
         // download entries
-        val targetFiles = mutableMapOf<String, File>()
         for (entry in modpack.entrySet) {
             jobs += launch(context = pool) {
                 val provider = Provider.valueOf(entry.provider).base
@@ -90,25 +91,29 @@ object SKPack : AbstractPack() {
                     val urlTxtFile = folder.resolve(file.name + ".url.txt")
                     urlTxtFile.writeText(url)
                 }
-                targetFiles[entry.id] = file // file.relativeTo(skSrcFolder
+                println("done: ${entry.id} $file")
+                fileChannel.send(entry.id to file)  // file.relativeTo(skSrcFolder
             }
             logger.info("started job: download '${entry.id}'")
             delay(10)
         }
 
         delay(10)
-        logger.info("waiting for jobs to finish")
-        runBlocking { jobs.forEach { it.join() } }
+        logger.info("waiting for file jobs to finish")
+        fileChannel.use { _ ->
+            jobs.joinAll()
+        }
+        val targetFiles = fileChannel.toMap()
 
+        val featureChannel = Channel<SKFeatureComposite>(Channel.CONFLATED)
         // write features
-        val features = Collections.synchronizedList(mutableListOf<SKFeatureComposite>())
         for (feature in modpack.features) {
             logger.info("processing feature: ${feature.properties.name}")
             jobs += launch(context = pool) {
-                for (name in feature.entries) {
-                    logger.info(name)
+                for (id in feature.entries) {
+                    logger.info(id)
 
-                    val targetFile = targetFiles[name]!!.let {
+                    val targetFile = targetFiles[id]!!.let {
                         if (it.parentFile.name == "_SERVER" || it.parentFile.name == "_CLIENT") {
                             it.parentFile.parentFile.resolve(it.name)
                         } else
@@ -129,9 +134,11 @@ object SKPack : AbstractPack() {
                 logger.info("entries: ${feature.entries}")
                 logger.info("properties: ${feature.properties}")
 
-                features += SKFeatureComposite(
-                        properties = feature.properties,
-                        files = feature.files
+                featureChannel.send(
+                        SKFeatureComposite(
+                                properties = feature.properties,
+                                files = feature.files
+                        )
                 )
                 logger.info("processed feature $feature")
             }
@@ -140,8 +147,12 @@ object SKPack : AbstractPack() {
         }
 
         delay(10)
-        logger.info("waiting for jobs to finish")
-        runBlocking { jobs.forEach { it.join() } }
+        logger.info("waiting for feature jobs to finish")
+
+        featureChannel.use { _ ->
+            jobs.joinAll()
+        }
+        val features = featureChannel.toList()
 
         val skmodpack = SKModpack(
                 name = modpack.id,

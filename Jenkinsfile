@@ -9,8 +9,8 @@ pipeline {
 	    }
 	    stage("voodoo") {
 	        steps {
-	            sh './gradlew clean'
-	            sh './gradlew build'
+	            sh './gradlew :clean'
+	            sh './gradlew :build'
 	            archiveArtifacts artifacts:  'build/libs/*jar'
 	        }
 	    }

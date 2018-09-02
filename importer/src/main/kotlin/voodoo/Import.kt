@@ -18,7 +18,7 @@ import kotlin.system.exitProcess
 
 object Import : KLogging() {
     @JvmStatic
-    fun main(vararg args: String) = mainBody {
+    fun main(vararg args: String) = runBlocking {
         //        logger.info { args.map { it } }
         logger.debug { args.joinToString(" ") }
         val parser = ArgParser(args)
@@ -39,7 +39,7 @@ object Import : KLogging() {
 
             //TODO: import as ModPack and NestedPack ?
 
-            runBlocking { tester.import(source = source, target = target, name = name) }
+            tester.import(source = source, target = target, name = name)
 
             println("import successful")
         }

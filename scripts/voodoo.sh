@@ -5,7 +5,7 @@ PWD=$(pwd)
 
 cd $DIR
 
-$DIR/gradlew :voodoo:build
+$DIR/gradlew :build
 
 if [ ! $? -eq 0 ]; then
     echo "Error building voodoo"
@@ -27,7 +27,7 @@ echo
 rm src/**/*.lock.json
 rm src/**/*.entry.hjson
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" import yaml "$DIR/samples/$pack.yaml" .
+java -jar "$DIR/build/libs/voodoo.jar" import yaml "$DIR/samples/$pack.yaml" .
 if [ ! $? -eq 0 ]; then
     echo "Error importing $pack"
     exit 1
@@ -37,7 +37,7 @@ echo
 echo "building $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" build $pack.pack.hjson -o $pack.lock.json $2
+java -jar "$DIR/build/libs/voodoo.jar" build $pack.pack.hjson -o $pack.lock.json $2
 if [ ! $? -eq 0 ]; then
     echo "Error Building $pack"
     exit 1
@@ -47,7 +47,7 @@ echo
 echo "packaging $1"
 echo
 
-java -jar "$DIR/voodoo/build/libs/voodoo.jar" pack sk $pack.lock.json
+java -jar "$DIR/build/libs/voodoo.jar" pack sk $pack.lock.json
 if [ ! $? -eq 0 ]; then
     echo "Error Packing $pack"
     exit 1

@@ -89,7 +89,7 @@ object MMCFatPack : AbstractPack() {
 
         delay(10)
         CursePack.logger.info("waiting for jobs to finish")
-        runBlocking { jobs.forEach { it.join() } }
+        jobs.joinAll()
 
         for (file in minecraftDir.walkTopDown()) {
             when {
