@@ -118,7 +118,9 @@ data class ModPack(
     }
 
     //TODO: move file into ModPack ad LockPack as lateinit
+    @JsonIgnore
     val entrySet: MutableSet<Entry> = Collections.synchronizedSet(mutableSetOf())
+    @JsonIgnore
     val lockEntrySet: MutableSet<LockEntry> = Collections.synchronizedSet(mutableSetOf())
 
     fun addEntry(entry: Entry, file: File, dependency: Boolean = false) {

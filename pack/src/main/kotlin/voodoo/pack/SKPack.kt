@@ -113,7 +113,7 @@ object SKPack : AbstractPack() {
             jobs.joinAll()
         }
         val targetFiles = deferredFiles.await()
-        logger.info("targetFiles: $targetFiles")
+        logger.debug("targetFiles: $targetFiles")
 
         val featureChannel = Channel<SKFeatureComposite>(Channel.UNLIMITED)
         // write features
