@@ -3,6 +3,7 @@ package voodoo.data.flat
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
 import blue.endless.jankson.impl.Marshaller
+import blue.endless.jankson.impl.SyntaxError
 import com.fasterxml.jackson.annotation.JsonIgnore
 import voodoo.data.Side
 import voodoo.data.curse.*
@@ -171,7 +172,7 @@ data class Entry(
                                         DependencyType.valueOf(key.toUpperCase())
                                     }.toMutableMap()
                                 }
-                                else -> null
+                                else -> throw SyntaxError("${mapObj::class.simpleName} is not allowed in dependencies")
                             }
                         } ?: dependencies,
                         //jsonObj.getReified("dependencies") ?: dependencies,

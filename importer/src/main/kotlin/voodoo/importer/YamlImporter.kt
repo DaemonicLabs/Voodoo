@@ -6,6 +6,7 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
 import voodoo.data.flat.EntryFeature
+import voodoo.data.flat.ModPack
 import voodoo.data.nested.NestedPack
 import voodoo.registerPrimitiveTypeAdapter
 import voodoo.registerSerializer
@@ -27,6 +28,7 @@ object YamlImporter : AbstractImporter() {
             .registerSerializer(Entry.Companion::toJson)
             .registerSerializer(ProjectID.Companion::toJson)
             .registerSerializer(FileID.Companion::toJson)
+            .registerSerializer(ModPack.Companion::toJson)
             .registerPrimitiveTypeAdapter(ProjectID.Companion::fromJson)
             .registerPrimitiveTypeAdapter(FileID.Companion::fromJson)
             .build()
