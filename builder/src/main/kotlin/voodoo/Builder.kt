@@ -3,7 +3,7 @@ package voodoo
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
 import com.xenomachina.argparser.*
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.cancel
 import mu.KLogging
 import voodoo.builder.resolve
 import voodoo.data.UserFiles
@@ -22,6 +22,8 @@ import voodoo.provider.Provider
 import voodoo.util.json
 import java.io.File
 import java.io.StringWriter
+import kotlin.coroutines.coroutineContext
+import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 28/03/18.
@@ -51,12 +53,12 @@ object Builder : KLogging() {
             .build()
 
     @JvmStatic
-    fun main(vararg args: String) = runBlocking {
+    fun main(vararg args: String) = mainBody {
         val parser = ArgParser(args)
         val arguments = Arguments(parser)
         parser.force()
 
-        arguments.run {
+        arguments.runBlockingWith { coroutineContext ->
 
             val jsonObject = jankson.load(packFile)
             val modpack: ModPack = jankson.fromJson(jsonObject)
@@ -70,13 +72,19 @@ object Builder : KLogging() {
                 logger.info("id: ${entry.id} entry: $entry")
             }
 
-            modpack.resolve(
-                    parentFolder,
-                    jankson,
-                    updateAll = updateAll,
-                    updateDependencies = updateDependencies,
-                    updateEntries = entries
-            )
+            try {
+                modpack.resolve(
+                        parentFolder,
+                        jankson,
+                        updateAll = updateAll,
+                        updateDependencies = updateDependencies,
+                        updateEntries = entries
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                coroutineContext.cancel(e)
+                exitProcess(1)
+            }
 
             modpack.lockEntrySet.forEach { lockEntry ->
                 val provider = Provider.valueOf(lockEntry.provider).base

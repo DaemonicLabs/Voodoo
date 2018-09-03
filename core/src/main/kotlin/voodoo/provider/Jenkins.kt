@@ -1,10 +1,10 @@
 package voodoo.provider
 
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.core.CoreConstants.VERSION
 import voodoo.data.flat.Entry
-import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import voodoo.memoize
 import voodoo.util.download
@@ -12,6 +12,7 @@ import voodoo.util.jenkins.JenkinsServer
 import java.io.File
 import java.lang.IllegalStateException
 import java.time.Instant
+import kotlin.reflect.KSuspendFunction2
 
 /**
  * Created by nikky on 30/12/17.
@@ -24,7 +25,7 @@ object JenkinsProviderThing : ProviderBase, KLogging() {
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
 
-    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: (Entry, String) -> Unit): LockEntry {
+    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
         if(entry.job.isBlank()) {
             entry.job = entry.id
         }

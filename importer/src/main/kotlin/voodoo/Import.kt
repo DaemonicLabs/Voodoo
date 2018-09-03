@@ -18,14 +18,14 @@ import kotlin.system.exitProcess
 
 object Import : KLogging() {
     @JvmStatic
-    fun main(vararg args: String) = runBlocking {
+    fun main(vararg args: String) = mainBody {
         //        logger.info { args.map { it } }
         logger.debug { args.joinToString(" ") }
         val parser = ArgParser(args)
         val arguments = Arguments(parser)
         parser.force()
 
-        arguments.run {
+        arguments.runBlockingWith { coroutineContext ->
             logger.info { this.methode }
             val tester = when (methode) {
                 "curse" -> CurseImporter

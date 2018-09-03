@@ -1,12 +1,13 @@
 package voodoo.provider
 
+import kotlinx.coroutines.channels.SendChannel
 import mu.KLogging
 import voodoo.data.flat.Entry
-import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import voodoo.markdownTable
 import java.io.File
 import java.time.Instant
+import kotlin.reflect.KSuspendFunction2
 
 /**
  * Created by nikky on 04/01/18.
@@ -26,7 +27,7 @@ interface ProviderBase {
 
     fun reset() {}
 
-    suspend fun resolve(entry: Entry, mcVersion: String, addEntry: (Entry, String) -> Unit): LockEntry {
+    suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
         println("[$name] resolve ${entry.id}")
         throw NotImplementedError("unable to resolve")
     }

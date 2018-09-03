@@ -4,6 +4,7 @@ import blue.endless.jankson.Jankson
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.builder.resolve
@@ -52,11 +53,10 @@ object Pack : KLogging() {
             .build()
 
     @JvmStatic
-    fun main(vararg args: String) = runBlocking {
+    fun main(vararg args: String) = mainBody {
         val arguments = Arguments(ArgParser(args))
 
-        arguments.run {
-
+        arguments.runBlockingWith { coroutineContext ->
             logger.info("loading $modpackLockFile")
             val jsonObject = jankson.load(modpackLockFile)
             val modpack: LockPack = jankson.fromJson(jsonObject)

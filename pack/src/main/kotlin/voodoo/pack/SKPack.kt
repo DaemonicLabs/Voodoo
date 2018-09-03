@@ -16,6 +16,8 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.*
+import kotlin.coroutines.coroutineContext
+import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 30/03/18.
@@ -70,7 +72,7 @@ object SKPack : AbstractPack() {
         // download forge
         val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
         val forgeFile = loadersFolder.resolve(forgeFileName)
-        jobs += launch(context = pool) {
+        jobs += launch(context = coroutineContext + pool) {
             forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
         }
         val modsFolder = skSrcFolder.resolve("mods")
@@ -78,10 +80,10 @@ object SKPack : AbstractPack() {
         modsFolder.deleteRecursively()
 
 
-        val fileChannel = Channel<Pair<String, File>> (Channel.CONFLATED)
+        val fileChannel = Channel<Pair<String, File>>(Channel.UNLIMITED)
         // download entries
         for (entry in modpack.entrySet) {
-            jobs += launch(context = pool) {
+            jobs += launch(context = coroutineContext + pool) {
                 val provider = Provider.valueOf(entry.provider).base
 
                 val folder = skSrcFolder.resolve(entry.file).parentFile
@@ -91,7 +93,7 @@ object SKPack : AbstractPack() {
                     val urlTxtFile = folder.resolve(file.name + ".url.txt")
                     urlTxtFile.writeText(url)
                 }
-                println("done: ${entry.id} $file")
+//                println("done: ${entry.id} $file")
                 fileChannel.send(entry.id to file)  // file.relativeTo(skSrcFolder
             }
             logger.info("started job: download '${entry.id}'")
@@ -100,25 +102,35 @@ object SKPack : AbstractPack() {
 
         delay(10)
         logger.info("waiting for file jobs to finish")
-        fileChannel.use { _ ->
+
+        val deferredFiles = async {
+            fileChannel.associate {
+                it
+            }
+        }
+
+        fileChannel.consume {
             jobs.joinAll()
         }
-        val targetFiles = fileChannel.toMap()
+        val targetFiles = deferredFiles.await()
+        logger.info("targetFiles: $targetFiles")
 
-        val featureChannel = Channel<SKFeatureComposite>(Channel.CONFLATED)
+        val featureChannel = Channel<SKFeatureComposite>(Channel.UNLIMITED)
         // write features
         for (feature in modpack.features) {
             logger.info("processing feature: ${feature.properties.name}")
-            jobs += launch(context = pool) {
+            jobs += launch(context = coroutineContext + pool) {
                 for (id in feature.entries) {
                     logger.info(id)
 
-                    val targetFile = targetFiles[id]!!.let {
-                        if (it.parentFile.name == "_SERVER" || it.parentFile.name == "_CLIENT") {
-                            it.parentFile.parentFile.resolve(it.name)
-                        } else
-                            it
-                    }
+                    val targetFile = targetFiles[id]?.let {targetFile ->
+                        targetFile.parentFile.let {parent ->
+                            if (parent.name == "_SERVER" || parent.name == "_CLIENT") {
+                                parent.parentFile.resolve(targetFile.name)
+                            } else
+                                targetFile
+                        }
+                    }!!
 
                     feature.files.include += targetFile.relativeTo(skSrcFolder).path
                             .replace('\\', '/')
@@ -149,10 +161,16 @@ object SKPack : AbstractPack() {
         delay(10)
         logger.info("waiting for feature jobs to finish")
 
-        featureChannel.use { _ ->
+        val deferredFeatures = async {
+            featureChannel.map {
+                it
+            }.toList()
+        }
+
+        featureChannel.consume {
             jobs.joinAll()
         }
-        val features = featureChannel.toList()
+        val features = deferredFeatures.await()
 
         val skmodpack = SKModpack(
                 name = modpack.id,

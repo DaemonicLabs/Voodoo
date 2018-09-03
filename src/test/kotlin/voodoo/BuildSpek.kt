@@ -38,7 +38,7 @@ object BuildSpek : Spek({
         }
 
         val packFile by memoized {
-            runBlocking { YamlImporter.import(source = mainFile.path, target = rootFolder, name = "lockpack") }
+            runBlocking(context = exceptionHandler) { YamlImporter.import(source = mainFile.path, target = rootFolder, name = "lockpack") }
             rootFolder.resolve("lockpack.pack.hjson")
         }
 
@@ -62,7 +62,7 @@ object BuildSpek : Spek({
             }
             context ("building pack") {
                 val lockEntries by memoized {
-                    runBlocking {
+                    runBlocking(context = exceptionHandler) {
                         modpack.resolve(
                                 rootFolder,
                                 Builder.jankson,
@@ -76,7 +76,6 @@ object BuildSpek : Spek({
                 it("validate lockentries") {
                     println("start test lockentries")
                     lockEntries.forEach { entry ->
-                        println("${entry.id}: ${entry.name()}")
                         assert(entry.provider().validate(entry)) { "$entry failed validation" }
                     }
                 }

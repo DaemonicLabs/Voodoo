@@ -17,6 +17,7 @@ import voodoo.fromJson
 import voodoo.getList
 import voodoo.getReified
 import java.io.File
+import java.util.*
 import kotlin.system.exitProcess
 
 
@@ -117,8 +118,8 @@ data class ModPack(
     }
 
     //TODO: move file into ModPack ad LockPack as lateinit
-    val entrySet: MutableSet<Entry> = mutableSetOf()
-    val lockEntrySet: MutableSet<LockEntry> = mutableSetOf()
+    val entrySet: MutableSet<Entry> = Collections.synchronizedSet(mutableSetOf())
+    val lockEntrySet: MutableSet<LockEntry> = Collections.synchronizedSet(mutableSetOf())
 
     fun addEntry(entry: Entry, file: File, dependency: Boolean = false) {
         if (entry.id.isBlank()) {
@@ -126,7 +127,7 @@ data class ModPack(
             return
         }
 
-        if(!file.isAbsolute) {
+        if (!file.isAbsolute) {
             logger.warn("file $file must be absolute")
             exitProcess(-1)
         }
@@ -142,7 +143,7 @@ data class ModPack(
                 throw IllegalStateException("duplicate entries: ${existingEntry.file} and ${existingEntry.file}")
             }
 
-            // TODO: make some util code to merge Entries and their JsonObj
+            // TODO: make some util code to merge Entries
             existingEntry.side += newEntry.side
             if (existingEntry.feature == null) {
                 existingEntry.feature = newEntry.feature
@@ -180,7 +181,7 @@ data class ModPack(
                     val entryJsonObj = jankson.load(it)
                     val lockEntry: LockEntry = jankson.fromJson(entryJsonObj)
                     lockEntry.file = relFile
-                    addOrMerge(lockEntry) { dupl, newEntry -> newEntry}
+                    addOrMerge(lockEntry) { dupl, newEntry -> newEntry }
                 }
     }
 
@@ -247,20 +248,25 @@ data class ModPack(
 
     fun findEntryById(id: String) = entrySet.find { it.id == id }
     fun addOrMerge(entry: Entry, mergeOp: (Entry, Entry) -> Entry): Entry {
-        val result = entrySet.find { it.id == entry.id }?.let {
-            entrySet -= it
-            mergeOp(it, entry)
-        } ?: entry
-        entrySet += result
-        return result
+        synchronized(entrySet) {
+            val result = entrySet.find { it.id == entry.id }?.let {
+                entrySet -= it
+                mergeOp(it, entry)
+            } ?: entry
+            entrySet += result
+            return result
+        }
     }
+
     fun findLockEntryById(id: String) = lockEntrySet.find { it.id == id }
-    fun addOrMerge(entry: LockEntry, mergeOp: (LockEntry, LockEntry) -> LockEntry): LockEntry {
-        val result = lockEntrySet.find { it.id == entry.id }?.let {
-            lockEntrySet -= it
-            mergeOp(it, entry)
-        } ?: entry
-        lockEntrySet += result
-        return result
+    fun addOrMerge(entry: LockEntry, mergeOp: (LockEntry?, LockEntry) -> LockEntry): LockEntry {
+        synchronized(lockEntrySet) {
+            val result = lockEntrySet.find { it.id == entry.id }?.let {
+                lockEntrySet -= it
+                mergeOp(it, entry)
+            } ?: mergeOp(null, entry)
+            lockEntrySet += result
+            return result
+        }
     }
 }
