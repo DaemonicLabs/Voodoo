@@ -3,6 +3,7 @@ package voodoo.pack
 import blue.endless.jankson.Jankson
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.channels.toList
 import kotlinx.coroutines.channels.use
 import kotlinx.html.*
@@ -19,6 +20,7 @@ import voodoo.util.packToZip
 import voodoo.util.writeJson
 import java.io.File
 import java.io.StringWriter
+import kotlin.coroutines.coroutineContext
 
 /**
  * Created by nikky on 30/03/18.
@@ -76,21 +78,21 @@ object CursePack : AbstractPack() {
         // download entries
         for (entry in modpack.entrySet) {
             if (entry.side == Side.SERVER) continue
-            jobs += launch(context = pool) {
+            jobs += launch(context = coroutineContext + pool) {
                 val folder = entry.file.absoluteFile.parentFile
                 val required = modpack.features.none { feature ->
                     feature.entries.any { it == entry.id }
                 }
 
                 val provider = Provider.valueOf(entry.provider).base
-                if (entry.provider == Provider.CURSE.name) {
+                if (entry.provider() == Provider.CURSE) {
                     curseModsChannel.send(
                             CurseFile(
                                     entry.projectID,
                                     entry.fileID,
                                     required
-                            ).apply {
-                                println("added voodoo.data.curse file $this")
+                            ).also {
+                                println("added curse file $it")
                             }
                     )
                 } else {
@@ -108,7 +110,7 @@ object CursePack : AbstractPack() {
 
         delay(100)
         logger.info("waiting for jobs to finish")
-        curseModsChannel.use {
+        curseModsChannel.consume {
             jobs.joinAll()
         }
         val curseMods = curseModsChannel.toList()

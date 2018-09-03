@@ -116,7 +116,7 @@ object ImportYamlSpek : Spek({
 
         context("importing yaml") {
             val lockFile by memoized {
-                runBlocking { YamlImporter.import(source = mainFile.path, target = rootFolder) }
+                runBlocking(context = exceptionHandler) { YamlImporter.import(source = mainFile.path, target = rootFolder) }
                 rootFolder.resolve("$id.pack.hjson")
             }
             it("lockfile exists") {
@@ -138,7 +138,7 @@ object ImportYamlSpek : Spek({
 
             context("flatten") {
                 val entries by memoized {
-                    runBlocking {
+                    runBlocking(context = exceptionHandler) {
                         nestedPack.root.flatten(rootFolder)
                     }
                 }

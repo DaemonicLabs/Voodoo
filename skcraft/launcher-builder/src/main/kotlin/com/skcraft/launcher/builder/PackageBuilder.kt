@@ -32,11 +32,13 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.runBlocking
+import voodoo.exceptionHandler
 import java.io.*
 import java.util.*
 import java.util.jar.JarFile
 import java.util.logging.Level
 import java.util.regex.Pattern
+import kotlin.coroutines.coroutineContext
 
 /**
  * Builds packages for the launcher.
@@ -182,7 +184,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
 
         val env = Environment.instance
         for (library in loaderLibraries) {
-            jobs += launch(context = pool) {
+            jobs += launch(context = exceptionHandler + pool) {
                 val outputPath = File(librariesDir, library.getPath(env))
                 if (!outputPath.exists()) {
                     Files.createParentDirs(outputPath)

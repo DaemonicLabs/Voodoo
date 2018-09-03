@@ -8,6 +8,7 @@ import voodoo.mmc.MMCUtil
 import voodoo.provider.Provider
 import voodoo.util.*
 import java.io.File
+import kotlin.coroutines.coroutineContext
 
 object MMCFatPack : AbstractPack() {
     override val label = "MultiMC Packer (frozen pack)"
@@ -70,7 +71,7 @@ object MMCFatPack : AbstractPack() {
         for (entry in modpack.entrySet) {
             if (entry.side == Side.SERVER) continue
 
-            jobs += launch(context = pool) {
+            jobs += launch(context = coroutineContext + pool) {
                 val folder = minecraftDir.resolve(entry.file).absoluteFile.parentFile
 
                 val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }

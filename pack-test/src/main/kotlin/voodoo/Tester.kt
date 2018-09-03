@@ -51,10 +51,10 @@ object Tester : KLogging() {
             .build()
 
     @JvmStatic
-    fun main(vararg args: String) = runBlocking {
+    fun main(vararg args: String) = mainBody {
         val arguments = Arguments(ArgParser(args))
 
-        arguments.run {
+        arguments.runBlockingWith {
 
             logger.info("loading $modpackLockFile")
             val jsonObject = jankson.load(modpackLockFile)

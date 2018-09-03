@@ -1,10 +1,11 @@
 package voodoo.provider
 
+import kotlinx.coroutines.channels.SendChannel
 import mu.KLogging
 import voodoo.data.flat.Entry
-import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import java.io.File
+import kotlin.reflect.KSuspendFunction2
 
 /**
  * Created by nikky on 30/12/17.
@@ -14,7 +15,7 @@ import java.io.File
 object LocalProviderThing : ProviderBase, KLogging() {
     override val name = "Local Provider"
 
-    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: (Entry, String) -> Unit): LockEntry {
+    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
         return LockEntry(
                 provider = entry.provider,
                 id = entry.id,

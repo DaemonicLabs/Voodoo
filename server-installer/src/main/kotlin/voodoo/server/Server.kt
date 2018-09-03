@@ -10,6 +10,7 @@ import voodoo.util.download
 import voodoo.util.downloader.logger
 import java.io.File
 import java.util.concurrent.TimeUnit
+import kotlin.coroutines.coroutineContext
 import kotlin.system.exitProcess
 
 /**
@@ -65,7 +66,7 @@ object Server {
 
         modpack.entrySet.map { entry ->
             if (entry.side == Side.CLIENT) return@map
-            jobs += launch(context = pool) {
+            jobs += launch(context = coroutineContext + pool) {
                 val provider = Provider.valueOf(entry.provider).base
                 val targetFolder = serverDir.resolve(entry.file).absoluteFile.parentFile
                 logger.info("downloading to - ${targetFolder.path}")
@@ -79,7 +80,7 @@ object Server {
         val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
         val forgeFile = directories.runtimeDir.resolve(forgeFileName)
         logger.info("forge: $forgeLongVersion")
-        jobs += launch(context = pool) {
+        jobs += launch(context = coroutineContext + pool) {
             forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
         }
 

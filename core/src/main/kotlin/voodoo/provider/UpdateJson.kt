@@ -5,13 +5,14 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
+import kotlinx.coroutines.channels.SendChannel
 import mu.KLogging
 import voodoo.data.flat.Entry
-import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import voodoo.data.provider.UpdateChannel
 import voodoo.memoize
 import java.io.File
+import kotlin.reflect.KSuspendFunction2
 
 /**
  * Created by nikky on 30/12/17.
@@ -34,7 +35,7 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
         }
     }.memoize()
 
-    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: (Entry, String) -> Unit): LockEntry {
+    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
         val json = getUpdateJson(entry.updateJson)!!
         if (entry.id.isBlank()) {
             entry.id = entry.updateJson.substringAfterLast('/').substringBeforeLast('.')

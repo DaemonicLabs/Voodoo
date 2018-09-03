@@ -22,6 +22,7 @@ import voodoo.util.readJson
 import voodoo.util.writeYaml
 import java.io.File
 import java.util.*
+import kotlin.coroutines.coroutineContext
 
 /**
  * Created by nikky on 13/06/18.
@@ -103,7 +104,7 @@ object CurseImporter : AbstractImporter() {
 
         //TODO: process in parallel
         for(file in manifest.files) {
-            jobs += launch(context = pool) {
+            jobs += launch(context = coroutineContext + pool) {
                 logger.info { file }
                 val addon = CurseClient.getAddon(file.projectID, PROXY_URL)!!
                 val addonFile = CurseClient.getAddonFile(file.projectID, file.fileID, PROXY_URL)!!

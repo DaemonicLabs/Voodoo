@@ -1,5 +1,7 @@
 package voodoo.provider
 
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
@@ -10,7 +12,6 @@ import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
-import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import voodoo.memoize
 import voodoo.util.download
@@ -18,6 +19,8 @@ import java.io.File
 import java.time.Instant
 import java.util.*
 import kotlin.IllegalStateException
+import kotlin.coroutines.coroutineContext
+import kotlin.reflect.KSuspendFunction2
 import kotlin.system.exitProcess
 
 /**
@@ -32,17 +35,23 @@ object CurseProviderThing : ProviderBase, KLogging() {
         resolved.clear()
     }
 
-    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: (Entry, String) -> Unit): LockEntry {
+    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
         val (projectID, fileID, path) = findFile(entry, mcVersion, entry.curseMetaUrl)
 
-        logger.info("resolved: $resolved")
-        resolved += entry.id
-
+        synchronized(resolved) {
+            logger.info("resolved: ${resolved.count()} unique entries")
+            resolved += entry.id
+        }
         //TODO: move into appropriate place or remove
         // this is currently just used to validate that there is no entries getting resolved multiple times
-        val count = resolved.count { entry.id == it }
-        if (count > 1) {
-            throw Exception("duplicate effort ${entry.id} entry counted: $count")
+
+        synchronized(resolved) {
+            val count = resolved.count { entry.id == it }
+            if (count > 1) {
+                logger.error("duplicate effort ${entry.id} entry counted: $count")
+                coroutineContext.cancel()
+                throw IllegalStateException("duplicate effort ${entry.id} entry counted: $count")
+            }
         }
 
         resolveDependencies(projectID, fileID, entry, addEntry)
@@ -113,7 +122,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
 //        return addon.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
 //    }
 
-    private suspend fun resolveDependencies(addonId: ProjectID, fileId: FileID, entry: Entry, addEntry: (Entry, String) -> Unit) {
+    private suspend fun resolveDependencies(addonId: ProjectID, fileId: FileID, entry: Entry, addEntry: SendChannel<Pair<Entry, String>>) {
         val addon = getAddon(addonId, entry.curseMetaUrl)
         if(addon == null) {
             logger.error("addon $addonId could not be resolved, entry: $entry")
@@ -166,7 +175,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
                     curseReleaseTypes = entry.curseReleaseTypes
                     curseOptionalDependencies = entry.curseOptionalDependencies
                 }
-                addEntry(depEntry, depAddon.categorySection.path)
+                addEntry.send(depEntry to depAddon.categorySection.path)
                 logger.info("added $depType dependency ${depAddon.name} of ${addon.name}")
             } else {
                 continue

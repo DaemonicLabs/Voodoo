@@ -8,6 +8,7 @@ import voodoo.Builder
 import voodoo.builder.resolve
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
+import voodoo.exceptionHandler
 import voodoo.util.Directories
 import java.io.File
 
@@ -47,7 +48,7 @@ object CurseSpek : Spek({
 
         context("build pack") {
             val versionsMapping by memoized {
-                runBlocking {
+                runBlocking(context = exceptionHandler) {
                     Provider.CURSE.base.reset()
                     modpack.resolve(rootFolder, Builder.jankson, updateAll = true)
                 }
@@ -63,11 +64,11 @@ object CurseSpek : Spek({
                     val targetFolder = rootFolder.resolve("install")
                     val deferredFiles =
                             versionsMapping.map { entry ->
-                                async {
+                                async(context = exceptionHandler) {
                                     entry.provider().download(entry, targetFolder, cacheDir)
                                 }
                             }
-                    runBlocking { deferredFiles.map { it.await() } }
+                    runBlocking(context = exceptionHandler) { deferredFiles.map { it.await() } }
                 }
                 it("files were downloaded") {
                     filePairs.forEach { (url, file) ->
