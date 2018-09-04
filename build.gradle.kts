@@ -162,7 +162,7 @@ application {
     mainClassName = "voodoo.Voodoo"
 }
 
-val runDir = file("run")
+val runDir = rootProject.file("run")
 
 val run by tasks.getting(JavaExec::class) {
     workingDir = runDir
