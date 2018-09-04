@@ -9,9 +9,6 @@ package com.skcraft.launcher.model.modpack
 import com.fasterxml.jackson.annotation.JsonBackReference
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-//import com.skcraft.launcher.install.InstallLog;
-//import com.skcraft.launcher.install.Installer;
-//import com.skcraft.launcher.install.UpdateCache;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "type", defaultImpl = FileInstall::class)
 @JsonSubTypes(JsonSubTypes.Type(value = FileInstall::class, name = "file"))

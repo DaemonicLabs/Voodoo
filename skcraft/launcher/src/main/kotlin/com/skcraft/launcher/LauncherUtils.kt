@@ -6,7 +6,6 @@
  */
 package com.skcraft.launcher
 
-import com.google.common.io.Closer
 import java.io.*
 import java.net.MalformedURLException
 import java.net.URL
@@ -19,23 +18,16 @@ object LauncherUtils {
 
     @Throws(IOException::class)
     fun loadProperties(clazz: Class<*>, name: String, extraProperty: String): Properties {
-        val closer = Closer.create()
         val prop = Properties()
-        try {
-            var `in`: InputStream? = closer.register(clazz.getResourceAsStream(name))
-            if (`in` != null) {
-                prop.load(`in`)
-                val extraPath = System.getProperty(extraProperty)
-                if (extraPath != null) {
-                    log.info("Loading extra properties for " + clazz.canonicalName + ":" + name + " from " + extraPath + "...")
-                    `in` = closer.register(BufferedInputStream(closer.register(FileInputStream(extraPath))))
-                    prop.load(`in`)
+        clazz.getResourceAsStream(name).use { input ->
+            prop.load(input)
+            val extraPath = System.getProperty(extraProperty)
+            if (extraPath != null) {
+                log.info("Loading extra properties for " + clazz.canonicalName + ":" + name + " from " + extraPath + "...")
+                File(extraPath).bufferedReader().use { input ->
+                    prop.load(input)
                 }
-            } else {
-                throw FileNotFoundException()
             }
-        } finally {
-            closer.close()
         }
         return prop
     }

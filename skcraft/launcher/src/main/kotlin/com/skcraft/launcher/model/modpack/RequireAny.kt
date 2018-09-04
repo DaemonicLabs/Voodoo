@@ -7,7 +7,6 @@
 package com.skcraft.launcher.model.modpack
 
 import java.util.ArrayList
-import java.util.Arrays
 
 class RequireAny(
         private var features: MutableList<Feature> = ArrayList()
@@ -16,7 +15,7 @@ class RequireAny(
 
     override fun matches(): Boolean {
         for (feature in features) {
-            if (feature.isSelected) {
+            if (feature.selected) {
                 return true
             }
         }

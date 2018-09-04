@@ -8,26 +8,4 @@ package com.skcraft.launcher.model.modpack
 
 class LaunchModifier {
     val flags: List<String> = emptyList()
-
-    override fun equals(other: Any?): Boolean {
-        if (other === this) return true
-        if (other !is LaunchModifier) return false
-        return flags == other.flags
-    }
-
-    protected fun canEqual(other: Any): Boolean {
-        return other is LaunchModifier
-    }
-
-    override fun hashCode(): Int {
-        val PRIME = 59
-        var result = 1
-        val `$flags` = this.flags
-        result = result * PRIME + `$flags`.hashCode()
-        return result
-    }
-
-    override fun toString(): String {
-        return "LaunchModifier(flags=" + this.flags + ")"
-    }
 }

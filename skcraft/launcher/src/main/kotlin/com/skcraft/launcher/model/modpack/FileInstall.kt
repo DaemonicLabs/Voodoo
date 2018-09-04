@@ -8,8 +8,6 @@ package com.skcraft.launcher.model.modpack
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 
-import com.google.common.base.Preconditions.checkNotNull
-
 class FileInstall(
         var version: String? = null,
         var hash: String,

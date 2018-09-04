@@ -14,11 +14,6 @@ import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import com.google.common.base.Strings
-import com.google.common.io.ByteStreams
-import com.google.common.io.CharStreams
-import com.google.common.io.Closer
-import com.google.common.io.Files
 import com.skcraft.launcher.LauncherUtils
 import com.skcraft.launcher.model.loader.InstallProfile
 import com.skcraft.launcher.model.minecraft.Library
@@ -27,13 +22,13 @@ import com.skcraft.launcher.model.modpack.Manifest
 import com.skcraft.launcher.util.Environment
 import com.skcraft.launcher.util.SimpleLogFormatter
 import com.xenomachina.argparser.ArgParser
-import com.xenomachina.argparser.SystemExitException
 import com.xenomachina.argparser.mainBody
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.runBlocking
 import voodoo.exceptionHandler
+import voodoo.util.copyInputStreamToFile
 import java.io.*
 import java.util.*
 import java.util.jar.JarFile
@@ -70,11 +65,9 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
 
     init {
         isPrettyPrint = false // Set writer
-        Closer.create().use { closer ->
-            mavenRepos = mapper.readValue<List<String>>(
-                    closer.register(
-                            LauncherUtils::class.java.getResourceAsStream("maven_repos.json")
-                    ),
+        mavenRepos = LauncherUtils::class.java.getResourceAsStream("maven_repos.json").use {
+            mapper.readValue<List<String>>(
+                    it,
                     object : TypeReference<List<String>>() {}
             )
         }
@@ -120,20 +113,17 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
     @Throws(IOException::class)
     private fun processLoader(loaderLibraries: LinkedHashSet<Library>, file: File, librariesDir: File?) {
         log.info("Installing " + file.name + "...")
-        val jarFile = JarFile(file)
-        val closer = Closer.create()
-        try {
+       JarFile(file).use { jarFile ->
             val profileEntry = BuilderUtils.getZipEntry(jarFile, "install_profile.json")
             if (profileEntry != null) {
-                val stream = jarFile.getInputStream(profileEntry)
                 // Read file
-                var data = CharStreams.toString(closer.register(InputStreamReader(stream)))
+                var data = jarFile.getInputStream(profileEntry).bufferedReader().use { it.readText() }
                 data = data.replace(",\\s*\\}".toRegex(), "}") // Fix issues with trailing commas
                 val profile = mapper.readValue<InstallProfile>(data, InstallProfile::class.java)
                 val version = manifest.versionManifest
                 // Copy tweak class arguments
                 val args = profile.versionInfo.minecraftArguments
-                val existingArgs = Strings.nullToEmpty(version?.minecraftArguments)
+                val existingArgs = version?.minecraftArguments ?: ""
                 val m = TWEAK_CLASS_ARG.matcher(args)
                 while (m.find()) {
                     version?.minecraftArguments = existingArgs + " " + m.group()
@@ -160,8 +150,10 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                 if (libraryEntry != null) {
                     val library = Library(name = libraryPath)
                     val extractPath = File(librariesDir, library.getPath(Environment.instance))
-                    Files.createParentDirs(extractPath)
-                    ByteStreams.copy(closer.register(jarFile.getInputStream(libraryEntry)), Files.newOutputStreamSupplier(extractPath))
+                    extractPath.parentFile.mkdirs()
+                    jarFile.getInputStream(libraryEntry).use { input ->
+                        extractPath.copyInputStreamToFile(input)
+                    }
                 } else {
                     log.warning("Could not find the file \'" + filePath + "\' in " + file.absolutePath + ", which means that this mod loader will not work correctly")
                 }
@@ -169,9 +161,6 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
             } else {
                 log.warning("The file at " + file.absolutePath + " did not appear to have an install_profile.json file inside -- is it actually an installer for a mod loader?")
             }
-        } finally {
-            closer.close()
-            jarFile.close()
         }
     }
 
@@ -188,7 +177,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
             jobs += launch(context = exceptionHandler + pool) {
                 val outputPath = File(librariesDir, library.getPath(env))
                 if (!outputPath.exists()) {
-                    Files.createParentDirs(outputPath)
+                    outputPath.parentFile.mkdirs()
                     var found = false
                     // Gather a list of repositories to download from
                     val sources = arrayListOf<String>() //Lists.newArrayList<String>()
@@ -225,13 +214,14 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                         }
 
                         // Decompress (if needed) and write to file
-                        val closer = Closer.create()
-                        var inputStream: InputStream = closer.register(FileInputStream(tempFile))
-                        inputStream = closer.register(BufferedInputStream(inputStream))
-                        for (compressor in compressors) {
-                            inputStream = closer.register(compressor.createInputStream(inputStream))
+                        tempFile.inputStream().buffered().use { inputStream: InputStream ->
+                            val input = compressors.fold(inputStream) { input, compressor ->
+                                input.use {
+                                    compressor.createInputStream(it)
+                                }
+                            }
+                            outputPath.copyInputStreamToFile(input)
                         }
-                        ByteStreams.copy(inputStream, closer.register(FileOutputStream(outputPath)))
                         tempFile.delete()
                         found = true
                         break
