@@ -7,6 +7,7 @@ import kotlinx.coroutines.channels.*
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.pack.sk.*
+import voodoo.pool
 import voodoo.provider.Provider
 import voodoo.util.download
 import voodoo.util.readJson
@@ -15,9 +16,7 @@ import java.io.File
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import java.util.*
 import kotlin.coroutines.coroutineContext
-import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 30/03/18.
@@ -66,13 +65,12 @@ object SKPack : AbstractPack() {
         logger.info("cleaning loaders $loadersFolder")
         loadersFolder.deleteRecursively()
 
-        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
         val jobs = mutableListOf<Job>()
 
         // download forge
         val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
         val forgeFile = loadersFolder.resolve(forgeFileName)
-        jobs += launch(context = coroutineContext + pool) {
+        jobs += launch(context = coroutineContext) {
             forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
         }
         val modsFolder = skSrcFolder.resolve("mods")
@@ -119,7 +117,7 @@ object SKPack : AbstractPack() {
         // write features
         for (feature in modpack.features) {
             logger.info("processing feature: ${feature.properties.name}")
-            jobs += launch(context = coroutineContext + pool) {
+            jobs += launch(context = coroutineContext) {
                 for (id in feature.entries) {
                     logger.info(id)
 
@@ -211,12 +209,10 @@ object SKPack : AbstractPack() {
                 .format(Instant.now())
 
         PackageBuilder.main(
-                arrayOf(
-                        "--version", uniqueVersion,
-                        "--input", modpackDir.path,
-                        "--output", targetDir.path,
-                        "--manifest-dest", manifestDest.path
-                )
+                "--version", uniqueVersion,
+                "--input", modpackDir.path,
+                "--output", targetDir.path,
+                "--manifest-dest", manifestDest.path
         )
 
         //regenerate packages.json

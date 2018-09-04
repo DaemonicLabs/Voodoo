@@ -6,145 +6,47 @@
  */
 package com.skcraft.launcher.builder
 
-import com.beust.jcommander.Parameter
-import com.beust.jcommander.ParameterException
+import com.xenomachina.argparser.ArgParser
+import com.xenomachina.argparser.default
 import java.io.File
 
-class BuilderOptions {
+class BuilderOptions(parser: ArgParser) {
     // Configuration
     // Override config
-    @Parameter(names = ["--name"])
-    var name: String? = null
-    @Parameter(names = ["--title"])
-    var title: String? = null
-    @Parameter(names = ["--mc-version"])
-    var gameVersion: String? = null
+    val name by parser.storing("--name", help = "")
+            .default<String?>(null)
+    val title: String? by parser.storing("--title", help = "")
+            .default<String?>(null)
+    val gameVersion: String? by parser.storing("--mc-version", help = "")
+            .default<String?>(null)
     // Required
-    @Parameter(names = ["--version"], required = true)
-    var version: String? = null
-    @Parameter(names = ["--manifest-dest"], required = true)
-    var manifestPath: File? = null
+    val version: String by parser.storing("--version", help = "")
+    val manifestPath: File by parser.storing("--manifest-dest", help = "") { File(this) }
     // Overall paths
-    @Parameter(names = ["--input", "-i"])
-    var inputPath: File? = null
-    @Parameter(names = ["--output", "-o"])
-    var outputPath: File? = null
+    val inputPath: File? by parser.storing("--input", "-i", help = "") { File(this) }
+            .default<File?>(null)
+    val outputPath: File? by parser.storing("--output", "-o", help = "") { File(this) }
+            .default<File?>(null)
     // Input paths
-    @Parameter(names = ["--config"])
-    var configPath: File? = null
-    @Parameter(names = ["--version-file"])
-    var versionManifestPath: File? = null
-    @Parameter(names = ["--files"])
-    var filesDir: File? = null
-    @Parameter(names = ["--loaders"])
-    var loadersDir: File? = null
+    val configPath by parser.storing("--config", help = "") { File(this) }
+            .default { File(inputPath!!, DEFAULT_CONFIG_FILENAME) }
+    val versionManifestPath by parser.storing("--version-file", help = "") { File(this) }
+            .default { File(inputPath!!, DEFAULT_VERSION_FILENAME) }
+    val filesDir by parser.storing("--files", help = "") { File(this) }
+            .default { File(inputPath!!, DEFAULT_SRC_DIRNAME) }
+    val loadersDir by parser.storing("--loaders", help = "") { File(this) }
+            .default { File(inputPath!!, DEFAULT_LOADERS_DIRNAME) }
     // Output paths
-    @Parameter(names = ["--objects-dest"])
-    var objectsDir: File? = null
-    @Parameter(names = ["--libraries-dest"])
-    var librariesDir: File? = null
-    @Parameter(names = ["--libs-url"])
-    var librariesLocation: String? = "libraries"
-    @Parameter(names = ["--objects-url"])
-    var objectsLocation: String? = "objects"
+
+    val objectsDir by parser.storing("--objects-dest", help = "") { File(this) }
+            .default { File(outputPath!!, objectsLocation) }
+    val librariesDir by parser.storing("--libraries-dest", help = "") { File(this) }
+            .default { File(outputPath!!, librariesLocation) }
+    val librariesLocation: String by parser.storing("--libs-url", help = "").default("libraries")
+    val objectsLocation: String by parser.storing("--objects-url", help = "").default("objects")
     // Misc
-    @Parameter(names = ["--pretty-print"])
-    var isPrettyPrinting: Boolean = false
-
-    @Throws(ParameterException::class)
-    fun choosePaths() {
-        if (configPath == null) {
-            requireInputPath("--config")
-            configPath = File(inputPath, DEFAULT_CONFIG_FILENAME)
-        }
-        if (versionManifestPath == null) {
-            requireInputPath("--version")
-            versionManifestPath = File(inputPath, DEFAULT_VERSION_FILENAME)
-        }
-        if (filesDir == null) {
-            requireInputPath("--files")
-            filesDir = File(inputPath, DEFAULT_SRC_DIRNAME)
-        }
-        if (loadersDir == null) {
-            requireInputPath("--loaders")
-            loadersDir = File(inputPath, DEFAULT_LOADERS_DIRNAME)
-        }
-        if (objectsDir == null) {
-            requireOutputPath("--objects-dest")
-            objectsDir = File(outputPath, objectsLocation)
-        }
-        if (librariesDir == null) {
-            requireOutputPath("--libs-dest")
-            librariesDir = File(outputPath, librariesLocation)
-        }
-    }
-
-    @Throws(ParameterException::class)
-    private fun requireOutputPath(name: String) {
-        if (outputPath == null) {
-            throw ParameterException("Because $name was not specified, --output needs to be specified as the output directory and then $name will be default to a pre-set path within the output directory")
-        }
-    }
-
-    @Throws(ParameterException::class)
-    private fun requireInputPath(name: String) {
-        if (inputPath == null) {
-            throw ParameterException("Because $name was not specified, --input needs to be specified as the project directory and then $name will be default to a pre-set path within the project directory")
-        }
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other === this) return true
-        if (other !is BuilderOptions) return false
-        val other = other as BuilderOptions?
-        if (!other!!.canEqual(this as Any)) return false
-        if (if (this.name == null) other.name != null else this.name != other.name) return false
-        if (if (this.title == null) other.title != null else this.title != other.title) return false
-        if (if (this.gameVersion == null) other.gameVersion != null else this.gameVersion != other.gameVersion) return false
-        if (if (this.version == null) other.version != null else this.version != other.version) return false
-        if (if (this.manifestPath == null) other.manifestPath != null else this.manifestPath != other.manifestPath) return false
-        if (if (this.inputPath == null) other.inputPath != null else this.inputPath != other.inputPath) return false
-        if (if (this.outputPath == null) other.outputPath != null else this.outputPath != other.outputPath) return false
-        if (if (this.configPath == null) other.configPath != null else this.configPath != other.configPath) return false
-        if (if (this.versionManifestPath == null) other.versionManifestPath != null else this.versionManifestPath != other.versionManifestPath) return false
-        if (if (this.filesDir == null) other.filesDir != null else this.filesDir != other.filesDir) return false
-        if (if (this.loadersDir == null) other.loadersDir != null else this.loadersDir != other.loadersDir) return false
-        if (if (this.objectsDir == null) other.objectsDir != null else this.objectsDir != other.objectsDir) return false
-        if (if (this.librariesDir == null) other.librariesDir != null else this.librariesDir != other.librariesDir) return false
-        if (if (this.librariesLocation == null) other.librariesLocation != null else this.librariesLocation != other.librariesLocation) return false
-        if (if (this.objectsLocation == null) other.objectsLocation != null else this.objectsLocation != other.objectsLocation) return false
-        return this.isPrettyPrinting == other.isPrettyPrinting
-    }
-
-    protected fun canEqual(other: Any): Boolean {
-        return other is BuilderOptions
-    }
-
-    override fun hashCode(): Int {
-        val PRIME = 59
-        var result = 1
-        result = result * PRIME + (name?.hashCode() ?: 43)
-        result = result * PRIME + (title?.hashCode() ?: 43)
-        result = result * PRIME + (gameVersion?.hashCode() ?: 43)
-        result = result * PRIME + (version?.hashCode() ?: 43)
-        result = result * PRIME + (manifestPath?.hashCode() ?: 43)
-        result = result * PRIME + (inputPath?.hashCode() ?: 43)
-        result = result * PRIME + (outputPath?.hashCode() ?: 43)
-        result = result * PRIME + (configPath?.hashCode() ?: 43)
-        result = result * PRIME + (versionManifestPath?.hashCode() ?: 43)
-        result = result * PRIME + (filesDir?.hashCode() ?: 43)
-        result = result * PRIME + (loadersDir?.hashCode() ?: 43)
-        result = result * PRIME + (objectsDir?.hashCode() ?: 43)
-        result = result * PRIME + (librariesDir?.hashCode() ?: 43)
-        result = result * PRIME + (librariesLocation?.hashCode() ?: 43)
-        result = result * PRIME + (objectsLocation?.hashCode() ?: 43)
-        result = result * PRIME + if (this.isPrettyPrinting) 79 else 97
-        return result
-    }
-
-    override fun toString(): String {
-        return "BuilderOptions(name=" + this.name + ", title=" + this.title + ", gameVersion=" + this.gameVersion + ", version=" + this.version + ", manifestPath=" + this.manifestPath + ", inputPath=" + this.inputPath + ", outputPath=" + this.outputPath + ", configPath=" + this.configPath + ", versionManifestPath=" + this.versionManifestPath + ", filesDir=" + this.filesDir + ", loadersDir=" + this.loadersDir + ", objectsDir=" + this.objectsDir + ", librariesDir=" + this.librariesDir + ", librariesLocation=" + this.librariesLocation + ", objectsLocation=" + this.objectsLocation + ", prettyPrinting=" + this.isPrettyPrinting + ")"
-    }
+    val isPrettyPrinting by parser.flagging("--pretty-print", help = "")
+            .default(false)
 
     companion object {
         const val DEFAULT_CONFIG_FILENAME = "modpack.json"

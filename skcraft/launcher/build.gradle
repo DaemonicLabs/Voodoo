@@ -1,8 +1,8 @@
 dependencies {
     compile project(':core')
+    compile project(':base:cmd')
     compile group: 'commons-lang', name: 'commons-lang', version: '2.6'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
     compile group: 'com.google.guava', name: 'guava', version: '15.0'
-    compile group: 'com.beust', name: 'jcommander', version: '1.32'
     compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.0'
 }

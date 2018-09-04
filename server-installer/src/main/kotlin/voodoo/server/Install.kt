@@ -5,8 +5,8 @@ import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.InvalidArgumentException
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
-import kotlinx.coroutines.runBlocking
 import mu.KLogging
+import voodoo.*
 import voodoo.data.UserFiles
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
@@ -17,10 +17,6 @@ import voodoo.data.sk.FeatureFiles
 import voodoo.data.sk.FeatureProperties
 import voodoo.data.sk.Launch
 import voodoo.data.sk.SKFeature
-import voodoo.fromJson
-import voodoo.registerPrimitiveTypeAdapter
-import voodoo.registerSerializer
-import voodoo.registerTypeAdapter
 import java.io.File
 
 /**
@@ -49,13 +45,13 @@ object Install : KLogging() {
             .build()
 
     @JvmStatic
-    fun main(vararg args: String): Unit = runBlocking {
+    fun main(vararg args: String): Unit = mainBody {
 
         val parser = ArgParser(args)
         val parsedArgs = Arguments(parser)
         parser.force()
 
-        parsedArgs.run {
+        parsedArgs.runBlockingWith(context = exceptionHandler) {
             logger.info("target dir: $targetDir")
             logger.info("pack file: $packFile")
             logger.info("cleanConfig: $cleanConfig")
