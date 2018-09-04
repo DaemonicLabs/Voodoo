@@ -79,11 +79,11 @@ object Hex : KLogging() {
                 logger.info("no update required ? hold shift to force a update")
                 Thread.sleep(1000)
 //                return //TODO: make dialog close continue when no update is required ?
-                if(kit.getLockingKeyState(KeyEvent.VK_SHIFT)) {
-                    forceDisplay = true
-                } else {
-                    exitProcess(0)
-                }
+//                if(kit.getLockingKeyState(KeyEvent.VK_CAPS_LOCK)) {
+//                    forceDisplay = true
+//                } else {
+//                    exitProcess(0)
+//                }
 
             }
         }

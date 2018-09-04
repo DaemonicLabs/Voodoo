@@ -18,38 +18,31 @@ enum class OSType {
 
 object Platform {
     val osType: OSType
+
     init {
         val osName = System.getProperty("os.name")
-        if (osName.startsWith("Linux")) {
-            if ("dalvik" == System.getProperty("java.vm.name").toLowerCase()) {
-                osType = OSType.ANDROID
-                // Native libraries on android must be bundled with the APK
-                System.setProperty("jna.nounpack", "true")
-            } else {
-                osType = OSType.LINUX
+        osType = when {
+            osName.startsWith("Linux") -> {
+                when (System.getProperty("java.vm.name").toLowerCase()) {
+                    "dalvik" -> {
+                        // Native libraries on android must be bundled with the APK
+                        System.setProperty("jna.nounpack", "true")
+                        OSType.ANDROID
+                    }
+                    else -> OSType.LINUX
+                }
             }
-        } else if (osName.startsWith("AIX")) {
-            osType = OSType.AIX
-        } else if (osName.startsWith("Mac") || osName.startsWith("Darwin")) {
-            osType = OSType.MAC
-        } else if (osName.startsWith("Windows CE")) {
-            osType = OSType.WINDOWSCE
-        } else if (osName.startsWith("Windows")) {
-            osType = OSType.WINDOWS
-        } else if (osName.startsWith("Solaris") || osName.startsWith("SunOS")) {
-            osType = OSType.SOLARIS
-        } else if (osName.startsWith("FreeBSD")) {
-            osType = OSType.FREEBSD
-        } else if (osName.startsWith("OpenBSD")) {
-            osType = OSType.OPENBSD
-        } else if (osName.equals("gnu", ignoreCase = true)) {
-            osType = OSType.GNU
-        } else if (osName.equals("gnu/kfreebsd", ignoreCase = true)) {
-            osType = OSType.KFREEBSD
-        } else if (osName.equals("netbsd", ignoreCase = true)) {
-            osType = OSType.NETBSD
-        } else {
-            osType = OSType.UNSPECIFIED
+            osName.startsWith("AIX") -> OSType.AIX
+            osName.startsWith("Mac") || osName.startsWith("Darwin") -> OSType.MAC
+            osName.startsWith("Windows CE") -> OSType.WINDOWSCE
+            osName.startsWith("Windows") -> OSType.WINDOWS
+            osName.startsWith("Solaris") || osName.startsWith("SunOS") -> OSType.SOLARIS
+            osName.startsWith("FreeBSD") -> OSType.FREEBSD
+            osName.startsWith("OpenBSD") -> OSType.OPENBSD
+            osName.equals("gnu", ignoreCase = true) -> OSType.GNU
+            osName.equals("gnu/kfreebsd", ignoreCase = true) -> OSType.KFREEBSD
+            osName.equals("netbsd", ignoreCase = true) -> OSType.NETBSD
+            else -> OSType.UNSPECIFIED
         }
     }
 
