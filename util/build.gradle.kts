@@ -12,10 +12,6 @@ dependencies {
 //    compil(e group = "com.github.kittinunf.fuel", name = "fuel-coroutines", version = fuel_version)
     compile(project(":fuel-coroutines"))
 
-    // dir
-    compile(group = "net.java.dev.jna", name = "jna", version = "+")
-    compile(group = "net.java.dev.jna", name = "jna-platform", version = "+")
-
     compile(group = "io.github.microutils", name = "kotlin-logging", version = "+")
     compile(group = "org.slf4j", name = "slf4j-simple", version = "+")
 }

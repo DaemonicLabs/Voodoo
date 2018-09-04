@@ -1,6 +1,5 @@
 package voodoo.util
 
-import com.sun.jna.Platform
 import mu.KLogging
 import voodoo.util.dir.BareDirectories
 import voodoo.util.dir.MacDirectories
@@ -85,15 +84,15 @@ interface Directories {
                     logger.info("Using bare directories, as requested")
                     BareDirectories(cleanAppName)
                 }
-                Platform.isLinux() || Platform.isX11() || Platform.isSolaris() || Platform.isAIX() -> {
+                Platform.isLinux || Platform.isX11 || Platform.isSolaris || Platform.isAIX -> {
                     logger.info("Using XDG directories")
                     XDGDirectories(cleanAppName)
                 }
-                Platform.isMac() -> {
+                Platform.isMac -> {
                     logger.info("Using Mac Library directories")
                     MacDirectories(appName.replace('/', '_'));
                 }
-                Platform.isWindows() -> {
+                Platform.isWindows -> {
                     logger.info("Using Windows directories")
                     WindowsDirectories(appName.replace('/', '_').replace(" ", ""))
                 }

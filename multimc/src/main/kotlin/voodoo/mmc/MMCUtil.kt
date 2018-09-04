@@ -3,7 +3,6 @@ package voodoo.mmc
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
 import blue.endless.jankson.impl.Marshaller
-import com.sun.jna.Platform
 import mu.KLogging
 import voodoo.data.Recommendation
 import voodoo.data.sk.FeatureProperties
@@ -15,6 +14,7 @@ import voodoo.mmc.data.PackComponent
 import voodoo.registerSerializer
 import voodoo.registerTypeAdapter
 import voodoo.util.Directories
+import voodoo.util.Platform
 import voodoo.util.readJson
 import voodoo.util.writeJson
 import java.awt.*
@@ -93,7 +93,7 @@ object MMCUtil : KLogging() {
      */
     fun findDir(): File {
         dir = dir ?: when {
-            Platform.isWindows() -> {
+            Platform.isWindows -> {
                 val location = "where ${mmcConfig.binary}".runCommand()
                 val multimcFile = File(location)
                 multimcFile.parentFile ?: run {
@@ -107,8 +107,11 @@ object MMCUtil : KLogging() {
                     exitProcess(1)
                 }
             }
-            Platform.isLinux() -> File(System.getProperty("user.home")).resolve(mmcConfig.path)
-            else -> throw Exception("unsupported platform, on OSX please contact NikkyAi to implement this or OR")
+            Platform.isLinux -> File(System.getProperty("user.home")).resolve(mmcConfig.path)
+            else -> {
+                logger.warn("unsupported platform, on OSX please contact NikkyAi to implement this or OR make a PR")
+                File(System.getProperty("user.home")).resolve(mmcConfig.path)
+            }
         }
         return dir!!
     }
