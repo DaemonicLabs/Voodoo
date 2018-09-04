@@ -6,7 +6,6 @@
  */
 package com.skcraft.launcher.builder
 
-import com.google.common.io.Files
 import com.skcraft.launcher.util.SimpleLogFormatter
 import com.xenomachina.argparser.ArgParser
 import java.io.File
@@ -34,7 +33,7 @@ class ServerCopyExport(private val destDir: File) : DirectoryWalker() {
         val dest = File(destDir, relPath)
         log.info("Copying " + file.absolutePath + " to " + dest.absolutePath)
         dest.parentFile.mkdirs()
-        Files.copy(file, dest)
+        file.copyRecursively(dest)
     }
 
     companion object {

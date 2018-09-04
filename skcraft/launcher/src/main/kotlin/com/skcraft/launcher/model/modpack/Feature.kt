@@ -10,15 +10,12 @@ import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonValue
 import com.fasterxml.jackson.annotation.ObjectIdGenerators
-import com.google.common.base.Strings
 
 @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "name")
-class Feature : Comparable<Feature> {
-
-    var name: String? = null
-    var description: String? = null
+class Feature(val name: String,
+              val description: String,
+              val selected: Boolean) : Comparable<Feature> {
     var recommendation: Recommendation? = null
-    var isSelected: Boolean = false
 
     enum class Recommendation {
         STARRED, AVOID;
@@ -37,33 +34,5 @@ class Feature : Comparable<Feature> {
         }
     }
 
-    constructor() {}
-
-    constructor(name: String, description: String, selected: Boolean) {
-        this.name = name
-        this.description = description
-        this.isSelected = selected
-    }
-
-    constructor(feature: Feature) {
-        name = feature.name
-        description = feature.description
-        isSelected = feature.isSelected
-    }
-
-    override fun hashCode(): Int {
-        return super.hashCode()
-    }
-
-    override fun equals(other: Any?): Boolean {
-        return super.equals(other)
-    }
-
-    override fun compareTo(o: Feature): Int {
-        return Strings.nullToEmpty(name).compareTo(Strings.nullToEmpty(o.name))
-    }
-
-    override fun toString(): String {
-        return "Feature(name=" + this.name + ", description=" + this.description + ", recommendation=" + this.recommendation + ", selected=" + this.isSelected + ")"
-    }
+    override fun compareTo(other: Feature): Int = name.compareTo(other.name)
 }

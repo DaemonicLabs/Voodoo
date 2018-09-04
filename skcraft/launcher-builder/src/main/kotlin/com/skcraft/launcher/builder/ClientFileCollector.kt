@@ -6,14 +6,13 @@
  */
 package com.skcraft.launcher.builder
 
-import com.google.common.hash.Hashing
-import com.google.common.io.Files
 import com.skcraft.launcher.model.modpack.FileInstall
 import com.skcraft.launcher.model.modpack.Manifest
 import org.apache.commons.io.FilenameUtils
+import voodoo.util.toHex
 import java.io.File
 import java.io.IOException
-import java.nio.charset.Charset
+import java.security.MessageDigest
 
 /**
  * Walks a path and adds hashed path versions to the given
@@ -28,8 +27,6 @@ class ClientFileCollector
  * @param destDir    the destination directory to copy the hashed objects
  */
 (private val manifest: Manifest, private val applicator: PropertiesApplicator, private val destDir: File) : DirectoryWalker() {
-    private val hf = Hashing.sha1()
-
     init {
     }
 
@@ -42,14 +39,16 @@ class ClientFileCollector
         if (file.name.endsWith(FileInfoScanner.FILE_SUFFIX) || file.name.endsWith(URL_FILE_SUFFIX)) {
             return
         }
-        val hash = Files.hash(file, hf).toString()
+        val sha1 = MessageDigest.getInstance("SHA-1")
+        val bytes = file.readBytes()
+        val hash = sha1.digest(bytes).toHex()
         val to = FilenameUtils.separatorsToUnix(FilenameUtils.normalize(relPath))
         // url.txt override file
         val urlFile = File(file.absoluteFile.parentFile, file.name + URL_FILE_SUFFIX)
         val location: String
         var copy = true
         if (urlFile.exists() && !System.getProperty("com.skcraft.builder.ignoreURLOverrides", "false").equals("true", ignoreCase = true)) {
-            location = Files.readFirstLine(urlFile, Charset.defaultCharset())
+            location = urlFile.readLines().first()
             copy = false
         } else {
             location = hash.substring(0, 2) + "/" + hash.substring(2, 4) + "/" + hash
@@ -65,7 +64,7 @@ class ClientFileCollector
         destPath.parentFile.mkdirs()
         ClientFileCollector.log.info(String.format("Adding %s from %s...", relPath, file.absolutePath))
         if (copy) {
-            Files.copy(file, destPath)
+            file.copyTo(destPath, overwrite = true)
         }
         manifest.tasks.add(entry)
     }
