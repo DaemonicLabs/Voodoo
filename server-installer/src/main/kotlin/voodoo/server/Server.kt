@@ -4,6 +4,7 @@ import kotlinx.coroutines.*
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
+import voodoo.pool
 import voodoo.provider.Provider
 import voodoo.util.Directories
 import voodoo.util.download
@@ -11,7 +12,6 @@ import voodoo.util.downloader.logger
 import java.io.File
 import java.util.concurrent.TimeUnit
 import kotlin.coroutines.coroutineContext
-import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 06/05/18.
@@ -61,12 +61,11 @@ object Server {
             }
         }
 
-        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
         val jobs = mutableListOf<Job>()
 
-        modpack.entrySet.map { entry ->
-            if (entry.side == Side.CLIENT) return@map
-            jobs += launch(context = coroutineContext + pool) {
+        for (entry in modpack.entrySet) {
+            if (entry.side == Side.CLIENT) continue
+            jobs += launch(context = coroutineContext) {
                 val provider = Provider.valueOf(entry.provider).base
                 val targetFolder = serverDir.resolve(entry.file).absoluteFile.parentFile
                 logger.info("downloading to - ${targetFolder.path}")

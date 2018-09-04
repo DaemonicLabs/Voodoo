@@ -6,9 +6,9 @@
  */
 package com.skcraft.launcher.builder
 
-import com.beust.jcommander.JCommander
 import com.google.common.io.Files
 import com.skcraft.launcher.util.SimpleLogFormatter
+import com.xenomachina.argparser.ArgParser
 import java.io.File
 import java.io.IOException
 
@@ -44,12 +44,13 @@ class ServerCopyExport(private val destDir: File) : DirectoryWalker() {
         @JvmStatic
         fun main(args: Array<String>) {
             SimpleLogFormatter.configureGlobalLogger()
-            val options = ServerExportOptions()
-            JCommander(options, *args)
-            log.info("From: " + options.sourceDir!!.absolutePath)
-            log.info("To: " + options.destDir!!.absolutePath)
-            val task = ServerCopyExport(options.destDir!!)
-            task.walk(options.sourceDir!!)
+            val parser = ArgParser(args)
+            val options = ServerExportOptions(parser)
+            parser.force()
+            log.info("From: " + options.sourceDir.absolutePath)
+            log.info("To: " + options.destDir.absolutePath)
+            val task = ServerCopyExport(options.destDir)
+            task.walk(options.sourceDir)
         }
     }
 }

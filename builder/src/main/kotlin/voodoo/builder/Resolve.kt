@@ -134,7 +134,7 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
 //    val resolved: MutableSet<String> = mutableSetOf()
     var unresolved: Set<Entry> = this.entrySet.toSet()
     val resolved = Collections.synchronizedSet(mutableSetOf<String>())
-    val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
+//    val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
     do {
         val newEntriesChannel = Channel<Pair<Entry, String>>(Channel.UNLIMITED)
 
@@ -143,7 +143,7 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
 
         val jobs = mutableListOf<Job>()
         for (entry in unresolved) {
-            jobs += kotlinx.coroutines.launch(context = coroutineContext + pool) {
+            jobs += kotlinx.coroutines.launch(context = coroutineContext) {
                 logger.info("resolving: ${entry.id}")
                 val provider = Provider.valueOf(entry.provider).base
 
@@ -181,7 +181,7 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
             }
         }
 
-        val newEntries = async(context = coroutineContext + pool) {
+        val newEntries = async(context = coroutineContext) {
             val newEntries2 = mutableSetOf<Entry>()
             for ((entry, path) in newEntriesChannel) {
                 logger.info("channel received: ${entry.id}")

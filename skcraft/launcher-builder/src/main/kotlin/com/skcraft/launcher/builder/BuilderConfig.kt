@@ -9,8 +9,6 @@ package com.skcraft.launcher.builder
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.skcraft.launcher.model.modpack.LaunchModifier
 import com.skcraft.launcher.model.modpack.Manifest
-import com.google.common.base.Preconditions.checkNotNull
-import com.google.common.base.Strings.emptyToNull
 
 class BuilderConfig {
     var name: String? = null
@@ -47,38 +45,5 @@ class BuilderConfig {
             }
         }
         applicator.userFiles = this.userFiles
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other === this) return true
-        if (other !is BuilderConfig) return false
-        val other = other as BuilderConfig?
-        if (!other!!.canEqual(this as Any)) return false
-        if (if (this.name == null) other.name != null else this.name != other.name) return false
-        if (if (this.title == null) other.title != null else this.title != other.title) return false
-        if (if (this.gameVersion == null) other.gameVersion != null else this.gameVersion != other.gameVersion) return false
-        if (if (this.launchModifier == null) other.launchModifier != null else this.launchModifier != other.launchModifier) return false
-        if (if (this.features == null) other.features != null else this.features != other.features) return false
-        return !if (this.userFiles == null) other.userFiles != null else this.userFiles != other.userFiles
-    }
-
-    protected fun canEqual(other: Any): Boolean {
-        return other is BuilderConfig
-    }
-
-    override fun hashCode(): Int {
-        val PRIME = 59
-        var result = 1
-        result = result * PRIME + (name?.hashCode() ?: 43)
-        result = result * PRIME + (title?.hashCode() ?: 43)
-        result = result * PRIME + (gameVersion?.hashCode() ?: 43)
-        result = result * PRIME + (launchModifier?.hashCode() ?: 43)
-        result = result * PRIME + (features?.hashCode() ?: 43)
-        result = result * PRIME + (userFiles?.hashCode() ?: 43)
-        return result
-    }
-
-    override fun toString(): String {
-        return "BuilderConfig(name=" + this.name + ", title=" + this.title + ", gameVersion=" + this.gameVersion + ", launchModifier=" + this.launchModifier + ", features=" + this.features + ", userFiles=" + this.userFiles + ")"
     }
 }

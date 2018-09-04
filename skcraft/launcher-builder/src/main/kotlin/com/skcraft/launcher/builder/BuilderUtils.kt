@@ -6,10 +6,8 @@
 
 package com.skcraft.launcher.builder
 
-import com.beust.jcommander.internal.Lists
 import org.apache.commons.compress.compressors.CompressorStreamFactory
 
-import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.zip.ZipEntry
@@ -40,9 +38,10 @@ object BuilderUtils {
 
     fun getCompressors(repoUrl: String): List<Compressor> {
         return if (repoUrl.matches("^https?://files.minecraftforge.net/maven/".toRegex())) {
-            Lists.newArrayList(
+            arrayListOf(
                     Compressor("xz", CompressorStreamFactory.XZ),
-                    Compressor("pack", CompressorStreamFactory.PACK200))
+                    Compressor("pack", CompressorStreamFactory.PACK200)
+            )
         } else {
             emptyList<Compressor>()
         }

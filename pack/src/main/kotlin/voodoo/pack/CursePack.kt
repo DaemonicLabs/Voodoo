@@ -8,12 +8,14 @@ import kotlinx.coroutines.channels.toList
 import kotlinx.coroutines.channels.use
 import kotlinx.html.*
 import kotlinx.html.stream.appendHTML
+import kotlinx.html.stream.createHTML
 import voodoo.data.Side
 import voodoo.data.curse.CurseFile
 import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.CurseMinecraft
 import voodoo.data.curse.CurseModLoader
 import voodoo.data.lock.LockPack
+import voodoo.exceptionHandler
 import voodoo.forge.Forge
 import voodoo.provider.Provider
 import voodoo.util.packToZip
@@ -61,7 +63,6 @@ object CursePack : AbstractPack() {
         logger.info("cleaning loaders $loadersFolder")
         loadersFolder.deleteRecursively()
 
-        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
         val jobs = mutableListOf<Job>()
 
         // download forge
@@ -78,7 +79,7 @@ object CursePack : AbstractPack() {
         // download entries
         for (entry in modpack.entrySet) {
             if (entry.side == Side.SERVER) continue
-            jobs += launch(context = coroutineContext + pool) {
+            jobs += launch(context = coroutineContext) {
                 val folder = entry.file.absoluteFile.parentFile
                 val required = modpack.features.none { feature ->
                     feature.entries.any { it == entry.id }
@@ -118,8 +119,7 @@ object CursePack : AbstractPack() {
         // generate modlist
         val modListFile = modpackDir.resolve("modlist.html")
 
-        val sw = StringWriter()
-        sw.appendHTML().html {
+        val html = createHTML().html {
             body {
                 ul {
                     for (entry in modpack.entrySet.sortedBy { it.name() }) {
@@ -127,8 +127,8 @@ object CursePack : AbstractPack() {
                         if (entry.side == Side.SERVER) {
                             continue
                         }
-                        val projectPage = runBlocking { provider.getProjectPage(entry) }
-                        val authors = runBlocking { provider.getAuthors(entry) }
+                        val projectPage = runBlocking(context = exceptionHandler) { provider.getProjectPage(entry) }
+                        val authors = runBlocking(context = exceptionHandler) { provider.getAuthors(entry) }
                         val authorString = if (authors.isNotEmpty()) " (by ${authors.joinToString(", ")})" else ""
 
                         li {
@@ -148,8 +148,6 @@ object CursePack : AbstractPack() {
                 }
             }
         }
-
-        val html = sw.toString()
 
         if (modListFile.exists()) modListFile.delete()
         modListFile.createNewFile()

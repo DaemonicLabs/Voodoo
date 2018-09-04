@@ -6,8 +6,6 @@
  */
 package com.skcraft.launcher.builder
 
-import com.beust.jcommander.JCommander
-import com.beust.jcommander.ParameterException
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -28,6 +26,9 @@ import com.skcraft.launcher.model.minecraft.VersionManifest
 import com.skcraft.launcher.model.modpack.Manifest
 import com.skcraft.launcher.util.Environment
 import com.skcraft.launcher.util.SimpleLogFormatter
+import com.xenomachina.argparser.ArgParser
+import com.xenomachina.argparser.SystemExitException
+import com.xenomachina.argparser.mainBody
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.newFixedThreadPoolContext
@@ -320,13 +321,6 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
         private val log = java.util.logging.Logger.getLogger(PackageBuilder::class.java.name)
         private val TWEAK_CLASS_ARG = Pattern.compile("--tweakClass\\s+([^\\s]+)")
 
-        private fun parseArgs(args: Array<String>): BuilderOptions {
-            val options = BuilderOptions()
-            JCommander(options, *args)
-            options.choosePaths()
-            return options
-        }
-
         /**
          * Build a package given the arguments.
          *
@@ -336,16 +330,10 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
          */
         @Throws(IOException::class, InterruptedException::class)
         @JvmStatic
-        fun main(args: Array<String>) {
-            val options: BuilderOptions
-            try {
-                options = parseArgs(args)
-            } catch (e: ParameterException) {
-                JCommander().usage()
-                System.err.println("error: " + e.message)
-                System.exit(1)
-                return
-            }
+        fun main(vararg args: String) = mainBody {
+            val parser = ArgParser(args)
+            val options = BuilderOptions(parser)
+            parser.force()
 
             // Initialize
             SimpleLogFormatter.configureGlobalLogger()
