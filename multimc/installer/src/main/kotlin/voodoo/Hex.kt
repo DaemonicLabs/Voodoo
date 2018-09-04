@@ -3,7 +3,6 @@ package voodoo
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import com.sun.jna.platform.KeyboardUtils
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
 import kotlinx.coroutines.Job
@@ -18,9 +17,9 @@ import voodoo.mmc.MMCUtil.selectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.*
+import java.awt.Toolkit
 import java.awt.event.KeyEvent
 import java.io.File
-import java.lang.IllegalStateException
 import java.util.*
 import kotlin.system.exitProcess
 
@@ -32,6 +31,7 @@ import kotlin.system.exitProcess
 
 object Hex : KLogging() {
     private val directories = Directories.get()
+    val kit = Toolkit.getDefaultToolkit();
 
     @JvmStatic
     fun main(vararg args: String) = mainBody {
@@ -79,7 +79,7 @@ object Hex : KLogging() {
                 logger.info("no update required ? hold shift to force a update")
                 Thread.sleep(1000)
 //                return //TODO: make dialog close continue when no update is required ?
-                if(KeyboardUtils.isPressed(KeyEvent.VK_SHIFT)) {
+                if(kit.getLockingKeyState(KeyEvent.VK_SHIFT)) {
                     forceDisplay = true
                 } else {
                     exitProcess(0)

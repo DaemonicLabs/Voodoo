@@ -1,7 +1,5 @@
 package voodoo.util.dir
 
-import com.sun.jna.platform.win32.KnownFolders
-import com.sun.jna.platform.win32.Shell32Util
 import voodoo.util.Directories
 import voodoo.util.Directories.Companion.deleteDirectoryOnExit
 
@@ -43,7 +41,7 @@ class WindowsDirectories(private val appName: String) : Directories {
     }
 
     private val home: File by lazy {
-        File(Shell32Util.getKnownFolderPath(KnownFolders.FOLDERID_RoamingAppData), appName)
+        File(System.getenv("APPDATA"), appName)
     }
 
 }
