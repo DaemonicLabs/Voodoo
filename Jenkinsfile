@@ -37,5 +37,18 @@ pipeline {
 	            archiveArtifacts artifacts:  'bootstrap/build/libs/*hex*'
 	        }
 	    }
+	    stage('Deploy') {
+            when {
+                branch 'rewrite'
+            }
+            steps {
+                withCredentials([file(credentialsId: 'privateGradleNoSnapshotShadow', variable: 'PRIVATEGRADLE')]) {
+                    sh '''
+                        cp "$PRIVATEGRADLE" private.gradle
+                        ./gradlew publish
+                    '''
+                }
+            }
+        }
 	}
 }

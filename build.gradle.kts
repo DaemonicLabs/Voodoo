@@ -75,7 +75,7 @@ allprojects {
     // fix jar names
     base {
         val buildNumber = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: ""
-        val baseName = if(project == rootProject)
+        val baseName = if (project == rootProject)
             rootProject.name.toLowerCase()
         else
             path.substringAfter(':').split(':').joinToString("-") { it.toLowerCase() }
@@ -146,12 +146,16 @@ allprojects {
 
     // publishing
 
-    if(project != project(":bootstrap")) {
+    if (project != project(":bootstrap")) {
         apply {
             plugin("maven-publish")
         }
 
-        if(project != project(":Jankson")) {
+        rootProject.file("private.gradle")
+                .takeIf { it.exists() }
+                ?.let { apply(from = it) }
+
+        if (project != project(":Jankson")) {
             val major: String by project
             val minor: String by project
             val patch: String by project
@@ -163,18 +167,17 @@ allprojects {
             from(sourceSets["main"].allSource)
         }
 
+        val branch = System.getenv("GIT_BRANCH")
+                ?.takeUnless { it == "master" }
+                ?.let { ".$it" }
+                ?: ""
         publishing {
             publications {
                 create("default", MavenPublication::class.java) {
                     from(components["java"])
                     artifact(sourcesJar.get())
-                    groupId = "com.github.NikkyAi.Voodoo"
+                    groupId = "com.github.NikkyAi.Voodoo$branch"
                     artifactId = artifactId.toLowerCase()
-                }
-            }
-            repositories {
-                maven {
-                    url = uri("${rootProject.buildDir}/repository")
                 }
             }
         }

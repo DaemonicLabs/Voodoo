@@ -10,9 +10,12 @@ import voodoo.data.flat.ModPack
  */
 data class NestedPack(
         /**
-         * Name of the Pack
+         * unique identifier
          */
         var id: String,
+        /**
+         * display name
+         */
         var title: String = "",
         var version: String = "1.0",
         var icon: String = "icon.png",
