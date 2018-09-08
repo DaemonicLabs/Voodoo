@@ -14,6 +14,7 @@ object Voodoo : KLogging() {
             "build" to Builder::main,
             "pack" to Pack::main,
             "test" to Tester::main,
+            "idea" to Idea::main,
             "version" to { _ ->
                 println(FULL_VERSION)
             }
@@ -35,6 +36,7 @@ object Voodoo : KLogging() {
     @JvmStatic
     fun main(vararg args: String) {
         val command = args.getOrNull(0)
+        logger.info(args.joinToString())
         val remainingArgs = args.drop(1).toTypedArray()
 
         if (command == null) {

@@ -14,7 +14,7 @@ val run by tasks.getting(JavaExec::class) {
     workingDir = runDir
 }
 
+apply(from = rootProject.file("cmd.gradle.kts"))
 dependencies {
-    compile (project(":core"))
-    compile (project(":base:cmd"))
+    compile(project(":core"))
 }

@@ -14,25 +14,18 @@ application {
 }
 version = project.version
 
+apply(from = rootProject.file("base.gradle.kts"))
 dependencies {
-    compile(project(":base:cmd"))
     compile(project(":util"))
-}
-
-val shadowJar by tasks.getting(ShadowJar::class) {
-    classifier = ""
-}
-
-val build by tasks.getting(Task::class) {
-    dependsOn(shadowJar)
 }
 
 var moduleName = ""
 var fileRegex = ""
+var fileName = "unconfigured"
 
 if (project.hasProperty("target")) {
-    val target: String by properties
-    val (_moduleName, _fileRegex, baseName) = when (target) {
+    val target: String by project
+    val (_moduleName, _fileRegex, _baseName) = when (target) {
         "voodoo" -> Triple(
                 "voodoo",
                 """^[Vv]oodoo(-[^-]*)?(?!-fat)\\.jar$""",
@@ -47,8 +40,22 @@ if (project.hasProperty("target")) {
     }
     moduleName = _moduleName
     fileRegex = _fileRegex
-    shadowJar.baseName = baseName
+    fileName = _baseName
 }
+
+val buildNumber = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: ""
+base {
+    archivesBaseName = "$fileName$buildNumber"
+}
+val shadowJar by tasks.getting(ShadowJar::class) {
+    classifier = ""
+    archiveName = "$baseName.$extension"
+}
+
+val build by tasks.getting(Task::class) {
+    dependsOn(shadowJar)
+}
+
 
 val compileKotlin by tasks.getting(KotlinCompile::class) {
     doFirst {

@@ -14,6 +14,7 @@ import kotlin.reflect.KSuspendFunction2
  * @author Nikky
  */
 
+//TODO: use sealed classes
 enum class Provider(val base: ProviderBase) {
     CURSE(CurseProviderThing),
     DIRECT(DirectProviderThing),
@@ -24,6 +25,8 @@ enum class Provider(val base: ProviderBase) {
 
 interface ProviderBase {
     val name: String
+    val id: String
+    get() = Provider.values().find { it.base == this }!!.name
 
     fun reset() {}
 

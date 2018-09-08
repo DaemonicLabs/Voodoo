@@ -12,8 +12,10 @@ val run by tasks.getting(JavaExec::class) {
     workingDir = runDir
 }
 
+val kotlin_version: String by project
+
+apply(from = rootProject.file("base.gradle.kts"))
 dependencies {
-    compile(project(":base:cmd"))
     compile(project(":core"))
     compile(project(":multimc"))
     compile(project(":builder"))

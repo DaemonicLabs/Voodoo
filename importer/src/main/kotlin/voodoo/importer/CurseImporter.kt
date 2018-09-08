@@ -12,6 +12,8 @@ import voodoo.data.flat.EntryFeature
 import voodoo.data.lock.LockEntry
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
+import voodoo.dsl.Wrapper
+import voodoo.provider.CurseProviderThing
 import voodoo.provider.Provider
 import voodoo.registerSerializer
 import voodoo.registerTypeAdapter
@@ -76,7 +78,7 @@ object CurseImporter : AbstractImporter() {
                 else -> true
             }
         }.forEach { file ->
-            if(!file.isFile) return@forEach
+            if (!file.isFile) return@forEach
             val relative = file.relativeTo(modsFolder)
             val targetFile = localFolder.resolve(relative)
             targetFile.parentFile.mkdirs()
@@ -92,7 +94,7 @@ object CurseImporter : AbstractImporter() {
 
         val entries = mutableListOf<NestedEntry>()
 
-        if(localEntries.isNotEmpty()) {
+        if (localEntries.isNotEmpty()) {
             entries += NestedEntry(
                     provider = Provider.LOCAL.name,
                     entries = localEntries
@@ -103,7 +105,7 @@ object CurseImporter : AbstractImporter() {
         val jobs = mutableListOf<Job>()
 
         //TODO: process in parallel
-        for(file in manifest.files) {
+        for (file in manifest.files) {
             jobs += launch(context = coroutineContext + pool) {
                 logger.info { file }
                 val addon = CurseClient.getAddon(file.projectID, PROXY_URL)!!
@@ -178,9 +180,7 @@ object CurseImporter : AbstractImporter() {
                 mcVersion = manifest.minecraft.version,
                 sourceDir = overridesFolder.relativeTo(target).path,
                 localDir = local,
-                root = NestedEntry(
-                        include = entriesFilename
-                )
+                root = NestedEntry(include = entriesFilename)
         )
         val rootEntry = NestedEntry(
                 validMcVersions = validMcVersions - manifest.minecraft.version,

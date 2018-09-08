@@ -12,10 +12,8 @@ import voodoo.provider.Provider
 import voodoo.util.readYaml
 import java.io.File
 import java.lang.IllegalStateException
-import java.util.*
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
-import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 28/03/18.
@@ -34,7 +32,7 @@ data class NestedEntry(
         var feature: EntryFeature? = null,
         var side: Side = Side.BOTH,
         var websiteUrl: String = "",
-        var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+//        var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
         var replaceDependencies: Map<String, String> = mapOf(),
         var packageType: PackageType = PackageType.MOD,
