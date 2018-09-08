@@ -3,8 +3,6 @@ package voodoo.data.nested
 import mu.KLogging
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
-import voodoo.provider.Provider
-import java.io.File
 
 /**
  * Created by nikky on 28/03/18.
@@ -22,7 +20,7 @@ data class NestedPack(
         var forge: String = "recommended",
         var mcVersion: String = "",
         var userFiles: UserFiles = UserFiles(),
-        var root: NestedEntry = NestedEntry(Provider.CURSE.name),
+        var root: NestedEntry = NestedEntry(),
         var localDir: String = "local",
         var sourceDir: String = "src"
 ) {

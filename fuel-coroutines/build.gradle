@@ -1,5 +1,0 @@
-dependencies {
-    compile project(':base')
-
-    compile group: 'com.github.kittinunf.fuel', name: 'fuel', version: project.fuel_version
-}

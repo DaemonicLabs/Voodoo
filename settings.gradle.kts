@@ -1,11 +1,18 @@
-rootProject.name = "voodoo"
+pluginManagement {
+    resolutionStrategy {
+    }
+    repositories {
+        maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap") }
+        gradlePluginPortal()
+    }
+}
+rootProject.name = "Voodoo"
 
-include("base", "base:cmd")
 include("core")
 include("multimc", "multimc:installer")
 include("util")
 include("fuel-coroutines")
-include("importer", "builder", "pack", "pack-test", "voodoo")
+include("importer", "builder", "pack", "pack-test")
 include("server-installer")
 include("bootstrap")
 
