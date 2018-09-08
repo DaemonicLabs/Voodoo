@@ -151,10 +151,6 @@ allprojects {
             plugin("maven-publish")
         }
 
-        rootProject.file("private.gradle")
-                .takeIf { it.exists() }
-                ?.let { apply(from = it) }
-
         if (project != project(":Jankson")) {
             val major: String by project
             val minor: String by project
@@ -171,6 +167,7 @@ allprojects {
                 ?.takeUnless { it == "master" }
                 ?.let { ".$it" }
                 ?: ""
+
         publishing {
             publications {
                 create("default", MavenPublication::class.java) {
@@ -181,6 +178,10 @@ allprojects {
                 }
             }
         }
+
+        rootProject.file("private.gradle")
+                .takeIf { it.exists() }
+                ?.let { apply(from = it) }
     }
 
 }
