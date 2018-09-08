@@ -151,6 +151,8 @@ allprojects {
             plugin("maven-publish")
         }
 
+        group = "com.github.NikkyAi.Voodoo"
+
         if(project != project(":Jankson")) {
             val major: String by project
             val minor: String by project
@@ -158,16 +160,17 @@ allprojects {
             version = "${major}.${minor}.${patch}"
         }
 
+        val sourcesJar by tasks.registering(Jar::class) {
+            classifier = "sources"
+            from(sourceSets["main"].allSource)
+        }
+
         publishing {
             publications {
                 create("default", MavenPublication::class.java) {
                     from(components["java"])
-                    groupId = if(project == rootProject) {
-//                        artifactId = project.name.toLowerCase()
-                        "com.github.NikkyAi"
-                    } else {
-                        "com.github.NikkyAi.Voodoo"
-                    }
+                    artifact(sourcesJar.get())
+                    artifactId = artifactId.toLowerCase()
                 }
             }
             repositories {
