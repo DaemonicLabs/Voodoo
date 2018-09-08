@@ -151,8 +151,6 @@ allprojects {
             plugin("maven-publish")
         }
 
-        group = "com.github.NikkyAi.Voodoo"
-
         if(project != project(":Jankson")) {
             val major: String by project
             val minor: String by project
@@ -170,6 +168,7 @@ allprojects {
                 create("default", MavenPublication::class.java) {
                     from(components["java"])
                     artifact(sourcesJar.get())
+                    groupId = "com.github.NikkyAi.Voodoo"
                     artifactId = artifactId.toLowerCase()
                 }
             }
