@@ -114,3 +114,20 @@ to compile a minimalistic MMC pack that selfupdates \
 this expects a file `multimc/${packname}.url.txt` that points at the previously uploaded
 skcraft data \
 more specifically the json file of the pack
+
+## Maven
+
+Voodoo is available on the elytradev maven
+
+
+```kotlin
+repositories {
+    maven { setUrl("https://repo.elytradev.com") }
+}
+dependencies {
+    compile(group = "moe.nikky.voodoo", name = "voodoo", version = "+")
+}
+```
+
+for builds not on master add the branhc name to the groupId
+eg. `moe.nikky.voodoo-rewrite`

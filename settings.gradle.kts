@@ -6,7 +6,7 @@ pluginManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name = "Voodoo"
+rootProject.name = "voodoo"
 
 include("core")
 include("multimc", "multimc:installer")

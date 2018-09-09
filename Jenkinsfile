@@ -4,6 +4,7 @@ pipeline {
 	    stage("init") {
 	        steps {
 	            sh 'git submodule update --init --recursive'
+                sh 'rm private.gradle'
 	            sh './gradlew clean'
 	        }
 	    }
@@ -39,7 +40,6 @@ pipeline {
 	    }
 	    stage('Deploy') {
             steps {
-                sh 'rm private.gradle'
                 withCredentials([file(credentialsId: 'privateGradlePublish', variable: 'PRIVATEGRADLE')]) {
                     sh '''
                         cp "$PRIVATEGRADLE" private.gradle

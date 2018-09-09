@@ -31,6 +31,7 @@ val noConstants = listOf(
         project(":skcraft:launcher-builder"),
         project(":fuel-coroutines")
 )
+val buildNumber = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: ""
 allprojects {
     configurations.all {
         resolutionStrategy.eachDependency {
@@ -73,12 +74,11 @@ allprojects {
     }
 
     // fix jar names
+    val baseName = if (project == rootProject)
+        rootProject.name.toLowerCase()
+    else
+        path.substringAfter(':').split(':').joinToString("-") { it.toLowerCase() }
     base {
-        val buildNumber = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: ""
-        val baseName = if (project == rootProject)
-            rootProject.name.toLowerCase()
-        else
-            path.substringAfter(':').split(':').joinToString("-") { it.toLowerCase() }
         archivesBaseName = "$baseName$buildNumber"
     }
 
@@ -145,7 +145,6 @@ allprojects {
     }
 
     // publishing
-
     if (project != project(":bootstrap")) {
         apply {
             plugin("maven-publish")
@@ -155,9 +154,9 @@ allprojects {
             val major: String by project
             val minor: String by project
             val patch: String by project
-            val build = System.getenv("BUILD_NUMBER")?.let { ".$it" } ?: ""
-            version = "$major.$minor.$patch$build"
+            version = "$major.$minor.$patch"
         }
+        version = "$version$buildNumber"
 
         val sourcesJar by tasks.registering(Jar::class) {
             classifier = "sources"
@@ -166,7 +165,7 @@ allprojects {
 
         val branch = System.getenv("GIT_BRANCH")
                 ?.takeUnless { it == "master" }
-                ?.let { ".$it" }
+                ?.let { "-$it" }
                 ?: ""
 
         publishing {
@@ -174,8 +173,8 @@ allprojects {
                 create("default", MavenPublication::class.java) {
                     from(components["java"])
                     artifact(sourcesJar.get())
-                    groupId = "com.github.elytra.Voodoo$branch"
-                    artifactId = artifactId.toLowerCase()
+                    groupId = "moe.nikky.voodoo$branch"
+                    artifactId = baseName
                 }
             }
         }
