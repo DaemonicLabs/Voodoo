@@ -155,7 +155,8 @@ allprojects {
             val major: String by project
             val minor: String by project
             val patch: String by project
-            version = "${major}.${minor}.${patch}"
+            val build = System.getenv("BUILD_NUMBER")?.let { ".$it" } ?: ""
+            version = "$major.$minor.$patch$build"
         }
 
         val sourcesJar by tasks.registering(Jar::class) {
@@ -179,9 +180,9 @@ allprojects {
             }
         }
 
-//        rootProject.file("private.gradle")
-//                .takeIf { it.exists() }
-//                ?.let { apply(from = it) }
+        rootProject.file("private.gradle")
+                .takeIf { it.exists() }
+                ?.let { apply(from = it) }
     }
 
 }
