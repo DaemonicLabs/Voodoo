@@ -173,15 +173,15 @@ allprojects {
                 create("default", MavenPublication::class.java) {
                     from(components["java"])
                     artifact(sourcesJar.get())
-                    groupId = "com.github.NikkyAi.Voodoo$branch"
+                    groupId = "com.github.elytra.Voodoo$branch"
                     artifactId = artifactId.toLowerCase()
                 }
             }
         }
 
-        rootProject.file("private.gradle")
-                .takeIf { it.exists() }
-                ?.let { apply(from = it) }
+//        rootProject.file("private.gradle")
+//                .takeIf { it.exists() }
+//                ?.let { apply(from = it) }
     }
 
 }
