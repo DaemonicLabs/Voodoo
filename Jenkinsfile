@@ -38,10 +38,8 @@ pipeline {
 	        }
 	    }
 	    stage('Deploy') {
-            when {
-                branch 'rewrite'
-            }
             steps {
+                sh 'rm private.gradle'
                 withCredentials([file(credentialsId: 'privateGradlePublish', variable: 'PRIVATEGRADLE')]) {
                     sh '''
                         cp "$PRIVATEGRADLE" private.gradle
