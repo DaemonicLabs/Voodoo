@@ -3,13 +3,9 @@ package voodoo
 import kotlinx.coroutines.runBlocking
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import voodoo.builder.resolve
 import voodoo.data.Side
 import voodoo.data.curse.FileType
-import voodoo.data.flat.ModPack
 import voodoo.data.nested.NestedPack
-import voodoo.dsl.*
-import voodoo.importer.YamlImporter
 import voodoo.provider.CurseProviderThing
 import voodoo.provider.JenkinsProviderThing
 import java.io.*

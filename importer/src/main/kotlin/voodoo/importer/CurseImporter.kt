@@ -12,8 +12,6 @@ import voodoo.data.flat.EntryFeature
 import voodoo.data.lock.LockEntry
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
-import voodoo.dsl.Wrapper
-import voodoo.provider.CurseProviderThing
 import voodoo.provider.Provider
 import voodoo.registerSerializer
 import voodoo.registerTypeAdapter

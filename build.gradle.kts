@@ -211,6 +211,7 @@ dependencies {
     testRuntimeOnly(kotlin("reflect"))
 
 
+    compile(project(":core:dsl"))
     compile(project(":builder"))
     compile(project(":pack"))
     compile(project(":importer"))
