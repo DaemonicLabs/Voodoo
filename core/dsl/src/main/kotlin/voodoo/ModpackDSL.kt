@@ -1,4 +1,4 @@
-package voodoo.dsl
+package voodoo
 
 import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType

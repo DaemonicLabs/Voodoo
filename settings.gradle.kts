@@ -8,7 +8,7 @@ pluginManagement {
 }
 rootProject.name = "voodoo"
 
-include("core")
+include("core", "core:dsl")
 include("multimc", "multimc:installer")
 include("util")
 include("fuel-coroutines")
