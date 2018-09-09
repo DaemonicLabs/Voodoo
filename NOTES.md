@@ -1,3 +1,20 @@
+# maven and restrucure
+
+groupId: `moe.nikky.voodoo-branch`
+artifactId: ppath seperated by `-`
+
+goals:
+
+- depend only on DSL artifact
+- reuse utility functions for common tasks
+  - flatten
+  - build/resolve
+  - download
+  - deploy
+
+
+
+
 # Entry lists separation and Redesign
 
 planned i to keep the nested yaml format
