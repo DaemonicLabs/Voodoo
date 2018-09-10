@@ -1,8 +1,7 @@
 package voodoo.provider
 
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
@@ -19,8 +18,6 @@ import java.io.File
 import java.time.Instant
 import java.util.*
 import kotlin.IllegalStateException
-import kotlin.coroutines.coroutineContext
-import kotlin.reflect.KSuspendFunction2
 import kotlin.system.exitProcess
 
 /**
@@ -29,7 +26,7 @@ import kotlin.system.exitProcess
  */
 object CurseProviderThing : ProviderBase, KLogging() {
     override val name = "Curse Provider"
-    val resolved = Collections.synchronizedList(mutableListOf<String>())
+    private val resolved = Collections.synchronizedList(mutableListOf<String>())
 
     override fun reset() {
         resolved.clear()
@@ -48,8 +45,6 @@ object CurseProviderThing : ProviderBase, KLogging() {
         synchronized(resolved) {
             val count = resolved.count { entry.id == it }
             if (count > 1) {
-                logger.error("duplicate effort ${entry.id} entry counted: $count")
-                coroutineContext.cancel()
                 throw IllegalStateException("duplicate effort ${entry.id} entry counted: $count")
             }
         }
@@ -124,15 +119,9 @@ object CurseProviderThing : ProviderBase, KLogging() {
 
     private suspend fun resolveDependencies(addonId: ProjectID, fileId: FileID, entry: Entry, addEntry: SendChannel<Pair<Entry, String>>) {
         val addon = getAddon(addonId, entry.curseMetaUrl)
-        if(addon == null) {
-            logger.error("addon $addonId could not be resolved, entry: $entry")
-            addon!!
-        }
+                ?: throw IllegalStateException("addon $addonId could not be resolved, entry: $entry")
         val addonFile = getAddonFile(addonId, fileId, entry.curseMetaUrl)
-        if(addonFile == null) {
-            logger.error("addon file $addonId:$fileId could not be resolved, entry: $entry")
-            addonFile!!
-        }
+                ?: throw IllegalStateException("addon file $addonId:$fileId could not be resolved, entry: $entry")
         val dependencies = addonFile.dependencies ?: return
 
         logger.info("dependencies of ${entry.id} ${addonFile.dependencies}")

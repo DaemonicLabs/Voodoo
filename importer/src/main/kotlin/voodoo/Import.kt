@@ -3,12 +3,10 @@ package voodoo
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
-import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.importer.CurseImporter
 import voodoo.importer.YamlImporter
 import java.io.File
-import java.util.concurrent.CompletableFuture.runAsync
 import kotlin.system.exitProcess
 
 /**

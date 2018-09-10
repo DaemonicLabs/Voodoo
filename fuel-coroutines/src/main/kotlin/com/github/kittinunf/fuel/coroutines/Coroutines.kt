@@ -9,12 +9,12 @@ import com.github.kittinunf.fuel.core.Response
 import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.github.kittinunf.fuel.core.response
 import com.github.kittinunf.result.Result
-import kotlinx.coroutines.CommonPool
-import kotlinx.coroutines.suspendCancellableCoroutine
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.experimental.CommonPool
+import kotlinx.coroutines.experimental.suspendCancellableCoroutine
+import kotlinx.coroutines.experimental.withContext
 import java.nio.charset.Charset
-import kotlin.coroutines.CoroutineContext
-import kotlin.coroutines.resume
+import kotlin.coroutines.experimental.CoroutineContext
+import kotlin.coroutines.experimental.resume
 
 private suspend fun <T : Any, U : Deserializable<T>> Request.await(
         deserializable: U, scope: CoroutineContext

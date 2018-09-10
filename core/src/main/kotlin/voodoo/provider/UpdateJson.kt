@@ -5,14 +5,13 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.experimental.channels.SendChannel
 import mu.KLogging
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import voodoo.data.provider.UpdateChannel
 import voodoo.memoize
 import java.io.File
-import kotlin.reflect.KSuspendFunction2
 
 /**
  * Created by nikky on 30/12/17.

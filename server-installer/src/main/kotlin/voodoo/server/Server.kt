@@ -1,6 +1,6 @@
 package voodoo.server
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.experimental.*
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
@@ -11,7 +11,7 @@ import voodoo.util.download
 import voodoo.util.downloader.logger
 import java.io.File
 import java.util.concurrent.TimeUnit
-import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.experimental.coroutineContext
 
 /**
  * Created by nikky on 06/05/18.

@@ -21,6 +21,6 @@ dependencies {
     compile(project(":builder"))
     compile(project(":skcraft:launcher-builder"))
 
-    compile(group = "org.jetbrains.kotlinx", name = "kotlinx-html-jvm", version = "+")
+    compile(group = "org.jetbrains.kotlinx", name = "kotlinx-html-jvm", version = "0.6.11")
 }
 

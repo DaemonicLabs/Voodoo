@@ -2,8 +2,8 @@ package voodoo.pack
 
 import blue.endless.jankson.Jankson
 import com.skcraft.launcher.builder.PackageBuilder
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.channels.*
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.pack.sk.*
@@ -16,7 +16,7 @@ import java.io.File
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
-import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.experimental.coroutineContext
 
 /**
  * Created by nikky on 30/03/18.

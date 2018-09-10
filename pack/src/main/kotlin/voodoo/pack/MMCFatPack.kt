@@ -1,14 +1,14 @@
 package voodoo.pack
 
 import blue.endless.jankson.Jankson
-import kotlinx.coroutines.*
+import kotlinx.coroutines.experimental.*
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
 import voodoo.provider.Provider
 import voodoo.util.*
 import java.io.File
-import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.experimental.coroutineContext
 
 object MMCFatPack : AbstractPack() {
     override val label = "MultiMC Packer (frozen pack)"

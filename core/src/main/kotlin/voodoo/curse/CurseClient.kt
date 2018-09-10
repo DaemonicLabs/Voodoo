@@ -1,15 +1,15 @@
 package voodoo.curse
 
+import awaitByteArrayResponse
+import awaitStringResponse
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.module.kotlin.KotlinModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponse
-import com.github.kittinunf.fuel.coroutines.awaitStringResponse
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.result.Result
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import org.apache.commons.compress.compressors.CompressorStreamFactory
 import voodoo.core.CoreConstants.VERSION
@@ -20,7 +20,6 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.curse.feed.CurseFeed
 import voodoo.data.flat.Entry
-import voodoo.memoizeSuspend
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
@@ -30,16 +29,15 @@ import java.io.InputStreamReader
  * @author Nikky
  */
 object CurseClient : KLogging() {
-    val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10"
-    val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
+    const val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10"
+    const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
     val mapper = jacksonObjectMapper() // Enable Json parsing
             .registerModule(KotlinModule()) // Enable Kotlin support
-            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)
+            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_PROPERTIES, true)!!
 //            .configure(MapperFeature.ACCEPT_CASE_INSENSITIVE_ENUMS, true)
 
-    var slugIdMap: Map<String, ProjectID> = runBlocking { initSlugIdMap() }
-        private set
+    private var slugIdMap: Map<String, ProjectID> = runBlocking { initSlugIdMap() }
 
     data class GraphQLRequest(
             val query: String,
@@ -102,12 +100,17 @@ object CurseClient : KLogging() {
                 { it.slug },
                 { it.id }).mapValues {
             //(slug, list) ->
-            ProjectID( it.value.first() )
+            ProjectID(it.value.first())
         }
     }
 
-    val getAddonFile = ::getAddonFileCall.memoizeSuspend()
-    suspend fun getAddonFileCall(addonId: ProjectID, fileId: FileID, proxyUrl: String): AddonFile? {
+//    val getAddonFile = ::getAddonFileCall.memoizeSuspend()
+    private val getAddonFileCache: MutableMap<Triple<ProjectID, FileID, String>, AddonFile?> = HashMap(1 shl 0)
+    suspend fun getAddonFile(addonId: ProjectID, fileId: FileID, proxyUrl: String): AddonFile? {
+        val a = Triple(addonId, fileId, proxyUrl)
+        return getAddonFileCache.getOrPut(a) { getAddonFileCall(addonId, fileId, proxyUrl) }
+    }
+    private suspend fun getAddonFileCall(addonId: ProjectID, fileId: FileID, proxyUrl: String): AddonFile? {
         val url = "${proxyUrl}/addon/$addonId/file/$fileId"
 
         logger.debug("get $url")
@@ -129,8 +132,13 @@ object CurseClient : KLogging() {
         }
     }
 
-    val getAllFilesForAddon = ::getAllFilesForAddonCall.memoizeSuspend()
-    suspend fun getAllFilesForAddonCall(addonId: ProjectID, proxyUrl: String): List<AddonFile> {
+//    val getAllFilesForAddon = ::getAllFilesForAddonCall.memoizeSuspend()
+    private val getAllFilesForAddonCache: MutableMap<Pair<ProjectID, String>, List<AddonFile>> = HashMap(1 shl 0)
+    suspend fun getAllFilesForAddon(addonId: ProjectID, proxyUrl: String): List<AddonFile> {
+        val a = addonId to proxyUrl
+        return getAllFilesForAddonCache.getOrPut(a) { getAllFilesForAddonCall(addonId, proxyUrl) }
+    }
+    private suspend fun getAllFilesForAddonCall(addonId: ProjectID, proxyUrl: String): List<AddonFile> {
         val url = "${proxyUrl}/addon/$addonId/files"
 
         logger.debug("get $url")
@@ -142,14 +150,19 @@ object CurseClient : KLogging() {
                 mapper.readValue(result.value)
             }
             is Result.Failure -> {
-                logger.error ("url: $url")
+                logger.error("url: $url")
                 throw Exception("failed getting cursemeta data")
             }
         }
     }
 
-    val getAddon = ::getAddonCall.memoizeSuspend()
-    suspend fun getAddonCall(addonId: ProjectID, proxyUrl: String): Addon? {
+    //    val getAddon = ::getAddonCall.memoizeSuspend()
+    private val getAddonCache: MutableMap<Pair<ProjectID, String>, Addon?> = HashMap(1 shl 0)
+    suspend fun getAddon(addonId: ProjectID, proxyUrl: String): Addon? {
+        val a = addonId to proxyUrl
+        return getAddonCache.getOrPut(a) { getAddonCall(addonId, proxyUrl) }
+    }
+    private suspend fun getAddonCall(addonId: ProjectID, proxyUrl: String): Addon? {
         val url = "$proxyUrl/addon/$addonId"
 
         logger.debug("get $url")

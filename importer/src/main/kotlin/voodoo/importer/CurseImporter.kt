@@ -2,7 +2,7 @@ package voodoo.importer
 
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
-import kotlinx.coroutines.*
+import kotlinx.coroutines.experimental.*
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.data.curse.CurseManifest
@@ -22,7 +22,7 @@ import voodoo.util.readJson
 import voodoo.util.writeYaml
 import java.io.File
 import java.util.*
-import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.experimental.coroutineContext
 
 /**
  * Created by nikky on 13/06/18.

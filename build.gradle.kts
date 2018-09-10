@@ -1,15 +1,18 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.api.publish.maven.MavenPom
+import org.jetbrains.kotlin.gradle.dsl.Coroutines
 
 plugins {
-    kotlin("jvm") version "1.3-M2"
+    kotlin("jvm") version "1.2.61"
+//    kotlin("jvm") version "1.3-M2"
     application
     `maven-publish`
     id("idea")
     id("project-report")
     id("com.github.johnrengelman.shadow") version "2.0.3"
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
+    id("org.jmailen.kotlinter") version "1.17.0"
 }
 
 println("""
@@ -25,24 +28,25 @@ val runnableProjects = listOf(
         project(":server-installer") to "voodoo.server.Install"
 )
 val noConstants = listOf(
-        project(":Jankson"),
         project(":skcraft"),
         project(":skcraft:launcher"),
-        project(":skcraft:launcher-builder"),
-        project(":fuel-coroutines")
+        project(":skcraft:launcher-builder")
+//        project(":fuel-coroutines"),
 )
-val buildNumber = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: ""
+val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: ""
+val kotlin_version: String by project
 allprojects {
     configurations.all {
         resolutionStrategy.eachDependency {
             if (requested.group == "org.jetbrains.kotlin") {
-                useVersion("1.3-M2")
+                useVersion(kotlin_version)
                 because("We use kotlin EAP 1.3")
             }
         }
     }
     apply {
         plugin("kotlin")
+        plugin("org.jmailen.kotlinter")
         plugin("idea")
     }
     java {
@@ -50,11 +54,14 @@ allprojects {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
+    kotlin { // configure<org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension>
+        experimental.coroutines = Coroutines.ENABLE
+    }
     val compileKotlin by tasks.getting(KotlinCompile::class) {
         // Customise the “compileKotlin” task.
         kotlinOptions {
             jvmTarget = "1.8"
-            freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
+//            freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
         }
     }
 
@@ -65,6 +72,7 @@ allprojects {
         maven { setUrl("http://repo.maven.apache.org/maven2") }
         maven { setUrl("http://jcenter.bintray.com") }
         maven { setUrl("https://dl.bintray.com/s1m0nw1/KtsRunner") }
+        maven { setUrl("https://jitpack.io") }
     }
 
     idea {
@@ -79,15 +87,19 @@ allprojects {
     else
         path.substringAfter(':').split(':').joinToString("-") { it.toLowerCase() }
     base {
-        archivesBaseName = "$baseName$buildNumber"
+        archivesBaseName = "$baseName$versionSuffix"
     }
 
     if (project !in noConstants) {
         val major: String by project
         val minor: String by project
         val patch: String by project
-        kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated-src")
-        val compileKotlin by tasks.getting(KotlinCompile::class) {
+        sourceSets {
+            getByName("main").java.srcDirs("$buildDir/generated-src")
+        }
+        //TODO: use with 1.3 again
+//        kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated-src")
+        compileKotlin.apply {
             doFirst {
                 val folder = if (project != rootProject) "voodoo/${project.name}" else "voodoo" //TODO: try to use native project path
                 val name = project.name.split("/").last().capitalize().split("-").joinToString("") { it.capitalize() }
@@ -106,10 +118,8 @@ allprojects {
                     ))
                 }
             }
-            Unit
         }
 
-        //TODO: add shadow configuration
         runnableProjects.find { it.first == project }?.let { (_, mainClass) ->
             apply {
                 plugin("application")
@@ -150,17 +160,21 @@ allprojects {
             plugin("maven-publish")
         }
 
-        if (project != project(":Jankson")) {
-            val major: String by project
-            val minor: String by project
-            val patch: String by project
-            version = "$major.$minor.$patch"
-        }
-        version = "$version$buildNumber"
+        val major: String by project
+        val minor: String by project
+        val patch: String by project
+        version = "$major.$minor.$patch$versionSuffix"
 
         val sourcesJar by tasks.registering(Jar::class) {
             classifier = "sources"
             from(sourceSets["main"].allSource)
+        }
+
+        //fails due to Jankson
+        val javadoc by tasks.getting(Javadoc::class) {}
+        val javadocJar by tasks.registering(Jar::class) {
+            classifier = "javadoc"
+            from(javadoc)
         }
 
         val branch = System.getenv("GIT_BRANCH")
@@ -173,6 +187,7 @@ allprojects {
                 create("default", MavenPublication::class.java) {
                     from(components["java"])
                     artifact(sourcesJar.get())
+                    artifact(javadocJar.get())
                     groupId = "moe.nikky.voodoo$branch"
                     artifactId = baseName
                 }
@@ -194,7 +209,7 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
+    implementation(kotlin("stdlib-jdk8", kotlin_version))
 //    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = kotlin_version)
 
     testImplementation(group = "org.spekframework.spek2", name = "spek-dsl-jvm", version = spek_version)
@@ -208,7 +223,7 @@ dependencies {
 
     // spek requires kotlin-reflect, can be omitted if already in the classpath
 //    testRuntimeOnly(group = "org.jetbrains.kotlin", name = "kotlin-reflect", version = kotlin_version)
-    testRuntimeOnly(kotlin("reflect"))
+    testRuntimeOnly(kotlin("reflect", kotlin_version))
 
 
     compile(project(":core:dsl"))

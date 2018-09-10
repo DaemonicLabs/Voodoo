@@ -6,6 +6,7 @@ import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
 import voodoo.data.provider.UpdateChannel
 import voodoo.provider.*
+import java.io.File
 import kotlin.reflect.KMutableProperty0
 import kotlin.reflect.KProperty
 
@@ -21,7 +22,8 @@ abstract class Wrapper<P : ProviderBase>(
         entry.provider = provider.id
     }
 
-    val flatten = entry::flatten
+    suspend fun flatten(parent: File) = entry.flatten(parent)
+//    val flatten = entry::flatten
 
     var folder by ref(entry::folder)
     var comment by ref(entry::comment)
@@ -88,7 +90,7 @@ var Wrapper<DirectProviderThing>.useUrlTxt: Boolean
     }
 
 //JENKINS
-infix fun <P: JenkinsProviderThing> SpecificEntry<P>.job(s: String): SpecificEntry<P> {
+infix fun SpecificEntry<JenkinsProviderThing>.job(s: String): SpecificEntry<JenkinsProviderThing> {
     return this.apply { entry.job = s }
 }
 var Wrapper<JenkinsProviderThing>.jenkinsUrl: String
@@ -146,7 +148,7 @@ class GroupingEntry<R : ProviderBase>(
 
 @VodooDSL
 class EntriesList<out P : ProviderBase>(val parent: P) {
-    var entries: List<Wrapper<*>> = listOf()
+    val entries: MutableList<Wrapper<*>> = mutableListOf()
 }
 
 class ReferenceDelegate<T>(val get: () -> T, val set: (value: T) -> Unit) {
@@ -163,7 +165,7 @@ fun <T> ref(prop: KMutableProperty0<T>): ReferenceDelegate<T> {
     return ReferenceDelegate(prop::get, prop::set)
 }
 
-fun <T : ProviderBase> root(provider: T, function: GroupingEntry<T>.() -> Unit): NestedEntry {
+fun <T : ProviderBase> rootEntry(provider: T, function: GroupingEntry<T>.() -> Unit): NestedEntry {
     val entry = NestedEntry()
     val env = GroupingEntry(entry = entry, provider = provider)
     env.function()
@@ -173,10 +175,10 @@ fun <T : ProviderBase> root(provider: T, function: GroupingEntry<T>.() -> Unit):
 /**
  * Create new EntryList as subentries to `this`
  */
-fun <T : ProviderBase> GroupingEntry<T>.entries(function: EntriesList<T>.() -> Unit) {
+fun <T : ProviderBase> GroupingEntry<T>.entriesBlock(function: EntriesList<T>.() -> Unit) {
     EntriesList(provider).apply {
         function()
-        this@entries.entry.entries += entries.map { it.entry }
+        this@entriesBlock.entry.entries += entries.map { it.entry }
     }
 }
 

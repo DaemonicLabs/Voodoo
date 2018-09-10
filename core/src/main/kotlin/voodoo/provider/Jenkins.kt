@@ -1,7 +1,7 @@
 package voodoo.provider
 
-import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.core.CoreConstants.VERSION
 import voodoo.data.flat.Entry
@@ -12,7 +12,6 @@ import voodoo.util.jenkins.JenkinsServer
 import java.io.File
 import java.lang.IllegalStateException
 import java.time.Instant
-import kotlin.reflect.KSuspendFunction2
 
 /**
  * Created by nikky on 30/12/17.
