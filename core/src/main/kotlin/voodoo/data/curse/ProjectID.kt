@@ -2,8 +2,10 @@ package voodoo.data.curse
 
 import blue.endless.jankson.JsonPrimitive
 import blue.endless.jankson.impl.Marshaller
+import com.fasterxml.jackson.annotation.JsonCreator
 
-inline class ProjectID(val value: Int) {
+//TODO: inline
+data class ProjectID(val value: Int) {
     override fun toString(): String {
         return value.toString()
     }
@@ -13,6 +15,17 @@ inline class ProjectID(val value: Int) {
 
     companion object {
         val INVALID = ProjectID(-1)
+
+        //TODO: remove in 1.3
+        @JsonCreator
+        @JvmStatic
+        fun fromString(id: String?): ProjectID? {
+            return if (id == null)
+                null
+            else {
+                id.toIntOrNull()?.let { ProjectID(it) }
+            }
+        }
 
         fun fromJson(jsonObj: Any) =
                 ProjectID(

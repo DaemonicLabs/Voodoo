@@ -3,7 +3,7 @@ package voodoo
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
 import com.xenomachina.argparser.*
-import kotlinx.coroutines.cancel
+import kotlinx.coroutines.experimental.cancel
 import mu.KLogging
 import voodoo.builder.resolve
 import voodoo.data.UserFiles
@@ -22,7 +22,7 @@ import voodoo.provider.Provider
 import voodoo.util.json
 import java.io.File
 import java.io.StringWriter
-import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.experimental.coroutineContext
 import kotlin.system.exitProcess
 
 /**

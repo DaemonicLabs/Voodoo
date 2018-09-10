@@ -1,13 +1,12 @@
 package voodoo.provider
 
-import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.experimental.channels.SendChannel
 import mu.KLogging
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import voodoo.util.download
 import java.io.File
 import java.net.URL
-import kotlin.reflect.KSuspendFunction2
 
 /**
  * Created by nikky on 30/12/17.

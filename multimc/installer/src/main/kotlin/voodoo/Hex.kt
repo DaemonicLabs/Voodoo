@@ -5,10 +5,10 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newFixedThreadPoolContext
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.newFixedThreadPoolContext
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
 import voodoo.data.sk.SKPack
@@ -18,7 +18,6 @@ import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.*
 import java.awt.Toolkit
-import java.awt.event.KeyEvent
 import java.io.File
 import java.util.*
 import kotlin.system.exitProcess
@@ -44,9 +43,9 @@ object Hex : KLogging() {
 
     }
 
-    fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
+    private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
 
-    fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
+    private fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
 
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         val packUrl = urlFile.readText().trim()

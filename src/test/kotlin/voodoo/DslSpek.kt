@@ -1,6 +1,6 @@
 package voodoo
 
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.experimental.runBlocking
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.data.Side
@@ -32,13 +32,13 @@ object DslSpek : Spek({
                     authors = listOf("dude", "and", "friends"),
                     //TODO: type = {recommended, latest} | buildnumber, make sealed class
                     forge = "recommended",
-                    root = root(CurseProviderThing) {
+                    root = rootEntry(CurseProviderThing) {
                         optionals = false
                         releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
 
                         //TODO: use type URL ?
                         metaUrl = "https://curse.nikky.moe"
-                        entries {
+                        entriesBlock {
                             id("botania") optionals false
 
                             id("rf-tools") {
@@ -47,7 +47,7 @@ object DslSpek : Spek({
 
                             entry(JenkinsProviderThing) {
                                 side = Side.SERVER
-                            }.entries {
+                            }.entriesBlock {
                                 id("matterlink") job "elytra/matterlink/master"
                                 id("elytra/btfu/master")
                             }

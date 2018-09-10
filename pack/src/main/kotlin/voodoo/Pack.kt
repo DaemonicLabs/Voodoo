@@ -4,10 +4,7 @@ import blue.endless.jankson.Jankson
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.runBlocking
 import mu.KLogging
-import voodoo.builder.resolve
 import voodoo.data.UserFiles
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID

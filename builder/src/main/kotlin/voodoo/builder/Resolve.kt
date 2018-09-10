@@ -1,8 +1,9 @@
 package voodoo.builder
 
 import blue.endless.jankson.Jankson
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.*
+import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.channels.Channel
+import kotlinx.coroutines.experimental.channels.consume
 import mu.KotlinLogging
 import voodoo.Builder
 import voodoo.data.curse.DependencyType
@@ -14,8 +15,7 @@ import voodoo.memoize
 import voodoo.provider.Provider
 import java.io.File
 import java.util.*
-import kotlin.IllegalStateException
-import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.experimental.coroutineContext
 import kotlin.system.exitProcess
 
 /**
@@ -143,12 +143,11 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
 
         val jobs = mutableListOf<Job>()
         for (entry in unresolved) {
-            jobs += kotlinx.coroutines.launch(context = coroutineContext) {
+            jobs += launch(context = coroutineContext) {
                 logger.info("resolving: ${entry.id}")
                 val provider = Provider.valueOf(entry.provider).base
 
                 val lockEntry = provider.resolve(entry, this@resolve.mcVersion, newEntriesChannel)
-
 
                 if (!provider.validate(lockEntry)) {
                     Builder.logger.error { lockEntry }
@@ -230,7 +229,7 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
     entrySet.filter {
         findLockEntryById(it.id) == null
     }.run {
-        if(isNotEmpty()) throw IllegalStateException("unresolved entries: ${this}")
+        if (isNotEmpty()) throw IllegalStateException("unresolved entries: ${this}")
     }
 
     for (entry in entrySet) {

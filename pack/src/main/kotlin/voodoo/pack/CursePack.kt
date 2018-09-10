@@ -1,13 +1,11 @@
 package voodoo.pack
 
 import blue.endless.jankson.Jankson
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consume
-import kotlinx.coroutines.channels.toList
-import kotlinx.coroutines.channels.use
+import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.channels.Channel
+import kotlinx.coroutines.experimental.channels.consume
+import kotlinx.coroutines.experimental.channels.toList
 import kotlinx.html.*
-import kotlinx.html.stream.appendHTML
 import kotlinx.html.stream.createHTML
 import voodoo.data.Side
 import voodoo.data.curse.CurseFile
@@ -21,8 +19,7 @@ import voodoo.provider.Provider
 import voodoo.util.packToZip
 import voodoo.util.writeJson
 import java.io.File
-import java.io.StringWriter
-import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.experimental.coroutineContext
 
 /**
  * Created by nikky on 30/03/18.

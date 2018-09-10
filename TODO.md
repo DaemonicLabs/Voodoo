@@ -5,6 +5,15 @@ https://github.com/korlibs/korte
 - liquid templating
 - markdown or html -> user choice
 
+# cursemods enum
+
+generate 
+```kotlin
+enum class CurseMods(id: Int) {
+    SomeMod(1234),
+    OtherMod(6543)
+}
+```
 # config tweaks
 
 move more deployment options into the modpack configuration
@@ -32,6 +41,8 @@ sort out windows file locking issues
 curse-server zip export
 
 # coroutines
+
+replace fuel with ktor-http-client-cio
 
 ## Actors
 - use Actors instead of synchronized mutable lists

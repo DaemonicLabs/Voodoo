@@ -6,14 +6,14 @@
 
 package voodoo
 
+import awaitByteArrayResponse
 import bootstrap.FILE_REGEX
 import bootstrap.JENKINS_JOB
 import bootstrap.JENKINS_URL
 import bootstrap.MODULE_NAME
-import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponse
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.bootstrap.BootstrapConstants.VERSION
 import voodoo.util.Directories

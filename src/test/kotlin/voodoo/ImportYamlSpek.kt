@@ -2,7 +2,7 @@ package voodoo
 
 import blue.endless.jankson.JsonObject
 import com.fasterxml.jackson.module.kotlin.readValue
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.experimental.runBlocking
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.data.flat.Entry

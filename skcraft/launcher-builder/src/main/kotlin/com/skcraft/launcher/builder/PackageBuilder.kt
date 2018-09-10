@@ -23,10 +23,10 @@ import com.skcraft.launcher.util.Environment
 import com.skcraft.launcher.util.SimpleLogFormatter
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.newFixedThreadPoolContext
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.newFixedThreadPoolContext
+import kotlinx.coroutines.experimental.runBlocking
 import voodoo.exceptionHandler
 import voodoo.util.copyInputStreamToFile
 import java.io.*
@@ -34,7 +34,7 @@ import java.util.*
 import java.util.jar.JarFile
 import java.util.logging.Level
 import java.util.regex.Pattern
-import kotlin.coroutines.coroutineContext
+import kotlin.coroutines.experimental.coroutineContext
 
 /**
  * Builds packages for the launcher.
