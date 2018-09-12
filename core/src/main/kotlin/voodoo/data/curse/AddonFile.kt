@@ -1,7 +1,9 @@
 package voodoo.data.curse
 
+import kotlinx.serialization.Serializable
 import java.util.*
 
+@Serializable
 data class AddonFile(
         val id: FileID,
         val fileName: String,

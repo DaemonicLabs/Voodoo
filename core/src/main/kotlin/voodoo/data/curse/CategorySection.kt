@@ -1,5 +1,8 @@
 package voodoo.data.curse
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class CategorySection(
         val id: Int,
         val gameID: Int,

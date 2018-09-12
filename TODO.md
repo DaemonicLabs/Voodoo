@@ -42,7 +42,8 @@ curse-server zip export
 
 # coroutines
 
-replace fuel with ktor-http-client-cio
+replace fuel with ktor-http client
+replace Jackson with kotlinx-serialization
 
 ## Actors
 - use Actors instead of synchronized mutable lists

@@ -13,13 +13,12 @@ import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.CurseMinecraft
 import voodoo.data.curse.CurseModLoader
 import voodoo.data.lock.LockPack
-import voodoo.exceptionHandler
 import voodoo.forge.Forge
 import voodoo.provider.Provider
+import voodoo.util.ExceptionHelper
 import voodoo.util.packToZip
 import voodoo.util.writeJson
 import java.io.File
-import kotlin.coroutines.experimental.coroutineContext
 
 /**
  * Created by nikky on 30/03/18.
@@ -62,10 +61,7 @@ object CursePack : AbstractPack() {
 
         val jobs = mutableListOf<Job>()
 
-        // download forge
-        val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.getForgeUrl(modpack.forge.toString(), modpack.mcVersion)
-//        val forgeFile = loadersFolder.resolve(forgeFileName)
-//        forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
+        val (_, _, _, forgeVersion) = Forge.resolveVersion(modpack.forge.toString(), modpack.mcVersion)
 
         val modsFolder = srcFolder.resolve("mods")
         logger.info("cleaning mods $modsFolder")
@@ -74,43 +70,46 @@ object CursePack : AbstractPack() {
         val curseModsChannel = Channel<CurseFile>(Channel.CONFLATED)
 
         // download entries
-        for (entry in modpack.entrySet) {
-            if (entry.side == Side.SERVER) continue
-            jobs += launch(context = coroutineContext) {
-                val folder = entry.file.absoluteFile.parentFile
-                val required = modpack.features.none { feature ->
-                    feature.entries.any { it == entry.id }
-                }
+        coroutineScope {
+            for (entry in modpack.entrySet) {
+                if (entry.side == Side.SERVER) continue
+                jobs += launch(context = coroutineContext) {
+                    val folder = entry.file.absoluteFile.parentFile
+                    val required = modpack.features.none { feature ->
+                        feature.entries.any { it == entry.id }
+                    }
 
-                val provider = Provider.valueOf(entry.provider).base
-                if (entry.provider() == Provider.CURSE) {
-                    curseModsChannel.send(
+                    val provider = Provider.valueOf(entry.provider).base
+                    if (entry.provider() == Provider.CURSE) {
+                        curseModsChannel.send(
                             CurseFile(
-                                    entry.projectID,
-                                    entry.fileID,
-                                    required
+                                entry.projectID,
+                                entry.fileID,
+                                required
                             ).also {
                                 println("added curse file $it")
                             }
-                    )
-                } else {
-                    val targetFolder = srcFolder.resolve(folder)
-                    val (url, file) = provider.download(entry, targetFolder, cacheDir)
-                    if (!required) {
-                        val optionalFile = file.parentFile.resolve(file.name + ".disabled")
-                        file.renameTo(optionalFile)
+                        )
+                    } else {
+                        val targetFolder = srcFolder.resolve(folder)
+                        val (url, file) = provider.download(entry, targetFolder, cacheDir)
+                        if (!required) {
+                            val optionalFile = file.parentFile.resolve(file.name + ".disabled")
+                            file.renameTo(optionalFile)
+                        }
                     }
                 }
+                logger.info("started job: download '${entry.id}'")
+                delay(100)
             }
-            logger.info("started job: download '${entry.id}'")
+
             delay(100)
+            logger.info("waiting for jobs to finish")
+            curseModsChannel.consume {
+                jobs.joinAll()
+            }
         }
 
-        delay(100)
-        logger.info("waiting for jobs to finish")
-        curseModsChannel.consume {
-            jobs.joinAll()
-        }
         val curseMods = curseModsChannel.toList()
 
         // generate modlist
@@ -124,8 +123,9 @@ object CursePack : AbstractPack() {
                         if (entry.side == Side.SERVER) {
                             continue
                         }
-                        val projectPage = runBlocking(context = exceptionHandler) { provider.getProjectPage(entry) }
-                        val authors = runBlocking(context = exceptionHandler) { provider.getAuthors(entry) }
+                        val projectPage =
+                            runBlocking(context = ExceptionHelper.context) { provider.getProjectPage(entry) }
+                        val authors = runBlocking(context = ExceptionHelper.context) { provider.getAuthors(entry) }
                         val authorString = if (authors.isNotEmpty()) " (by ${authors.joinToString(", ")})" else ""
 
                         li {
@@ -136,7 +136,8 @@ object CursePack : AbstractPack() {
                                     a(href = entry.url, target = ATarget.blank) { +"${entry.name} $authorString" }
                                 }
                                 else -> {
-                                    val source = if (entry.fileSrc.isNotBlank()) "file://" + entry.fileSrc else "unknown"
+                                    val source =
+                                        if (entry.fileSrc.isNotBlank()) "file://" + entry.fileSrc else "unknown"
                                     +"${entry.name} $authorString (source: $source)"
                                 }
                             }
@@ -151,22 +152,22 @@ object CursePack : AbstractPack() {
         modListFile.writeText(html)
 
         val curseManifest = CurseManifest(
-                name = modpack.title,
-                version = modpack.version,
-                author = modpack.authors.joinToString(", "),
-                minecraft = CurseMinecraft(
-                        version = modpack.mcVersion,
-                        modLoaders = listOf(
-                                CurseModLoader(
-                                        id = "forge-$forgeVersion",
-                                        primary = true
-                                )
-                        )
-                ),
-                manifestType = "minecraftModpack",
-                manifestVersion = 1,
-                files = curseMods,
-                overrides = "overrides"
+            name = modpack.title,
+            version = modpack.version,
+            author = modpack.authors.joinToString(", "),
+            minecraft = CurseMinecraft(
+                version = modpack.mcVersion,
+                modLoaders = listOf(
+                    CurseModLoader(
+                        id = "forge-$forgeVersion",
+                        primary = true
+                    )
+                )
+            ),
+            manifestType = "minecraftModpack",
+            manifestVersion = 1,
+            files = curseMods,
+            overrides = "overrides"
         )
         val manifestFile = modpackDir.resolve("manifest.json")
         manifestFile.writeJson(curseManifest)
@@ -177,5 +178,4 @@ object CursePack : AbstractPack() {
 
         logger.info("packed ${modpack.id} -> $cursePackFile")
     }
-
 }

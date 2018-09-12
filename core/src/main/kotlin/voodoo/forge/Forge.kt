@@ -16,7 +16,7 @@ object Forge : KLogging() {
     var data: ForgeData = getForgeData()
 
 //    fun getForge(forgeVersion: String, mcVersion: String/*, spongeEntry: Entry?*/): Pair<Entry, String> {
-//        val (url, filename, longVersion, version) = getForgeUrl(forgeVersion, mcVersion)
+//        val (url, filename, longVersion, version) = resolveVersion(forgeVersion, mcVersion)
 //
 //        val entry = Entry(
 //                provider = "DIRECT",
@@ -43,7 +43,7 @@ object Forge : KLogging() {
         }
     }
 
-    fun getForgeUrl(version: String, mcVersion: String): Quadruple<String, String, String, String> {
+    fun resolveVersion(version: String, mcVersion: String): Quadruple<String, String, String, String> {
         var versionStr: String
         if (version.equals("recommended", true) || version.equals("latest", true)) {
             val promoVersion = "$mcVersion-${version.toLowerCase()}"

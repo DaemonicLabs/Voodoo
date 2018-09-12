@@ -6,24 +6,26 @@
  */
 package com.skcraft.launcher
 
+import mu.KLogging
 import java.io.*
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.Properties
 import java.util.regex.Pattern
 
-object LauncherUtils {
-    private val log = java.util.logging.Logger.getLogger(LauncherUtils::class.java.name)
+object LauncherUtils : KLogging() {
     private val absoluteUrlPattern = Pattern.compile("^[A-Za-z0-9\\-]+://.*$")
 
     @Throws(IOException::class)
     fun loadProperties(clazz: Class<*>, name: String, extraProperty: String): Properties {
         val prop = Properties()
+        logger.info("loading $name from $clazz")
+//        log.info(clazz.getResourceAsStream(name).bufferedReader().use { it.readText() })
         clazz.getResourceAsStream(name).use { input ->
             prop.load(input)
             val extraPath = System.getProperty(extraProperty)
             if (extraPath != null) {
-                log.info("Loading extra properties for " + clazz.canonicalName + ":" + name + " from " + extraPath + "...")
+                logger.info("Loading extra properties for " + clazz.canonicalName + ":" + name + " from " + extraPath + "...")
                 File(extraPath).bufferedReader().use { input ->
                     prop.load(input)
                 }

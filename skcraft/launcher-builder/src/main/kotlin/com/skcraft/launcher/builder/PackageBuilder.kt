@@ -27,14 +27,15 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext
 import kotlinx.coroutines.experimental.runBlocking
-import voodoo.exceptionHandler
+import mu.KLogging
+import voodoo.util.Directories
+import voodoo.util.ExceptionHelper
 import voodoo.util.copyInputStreamToFile
+import voodoo.util.download
 import java.io.*
 import java.util.*
 import java.util.jar.JarFile
-import java.util.logging.Level
 import java.util.regex.Pattern
-import kotlin.coroutines.experimental.coroutineContext
 
 /**
  * Builds packages for the launcher.
@@ -48,7 +49,11 @@ class PackageBuilder
  */
 @Throws(IOException::class)
 constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
-    private val properties: Properties = LauncherUtils.loadProperties(LauncherUtils::class.java, "launcher.properties", "com.skcraft.launcher.propertiesFile")
+    private val properties: Properties = LauncherUtils.loadProperties(
+        LauncherUtils::class.java,
+        "launcher.properties",
+        "com.skcraft.launcher.propertiesFile"
+    )
     private var writer: ObjectWriter? = null
     private val applicator: PropertiesApplicator = PropertiesApplicator(manifest)
     var isPrettyPrint = false
@@ -67,8 +72,8 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
         isPrettyPrint = false // Set writer
         mavenRepos = LauncherUtils::class.java.getResourceAsStream("maven_repos.json").use {
             mapper.readValue<List<String>>(
-                    it,
-                    object : TypeReference<List<String>>() {}
+                it,
+                object : TypeReference<List<String>>() {}
             )
         }
     }
@@ -99,9 +104,8 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                 try {
                     processLoader(collected, file, librariesDir)
                 } catch (e: IOException) {
-                    log.log(Level.WARNING, "Failed to add the loader at " + file.absolutePath, e)
+                    logger.warn("Failed to add the loader at ${file.absolutePath}", e)
                 }
-
             }
         }
         this.loaderLibraries.addAll(collected)
@@ -112,8 +116,8 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
 
     @Throws(IOException::class)
     private fun processLoader(loaderLibraries: LinkedHashSet<Library>, file: File, librariesDir: File?) {
-        log.info("Installing " + file.name + "...")
-       JarFile(file).use { jarFile ->
+        logger.info("Installing ${file.name}...")
+        JarFile(file).use { jarFile ->
             val profileEntry = BuilderUtils.getZipEntry(jarFile, "install_profile.json")
             if (profileEntry != null) {
                 // Read file
@@ -127,7 +131,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                 val m = TWEAK_CLASS_ARG.matcher(args)
                 while (m.find()) {
                     version?.minecraftArguments = existingArgs + " " + m.group()
-                    log.info("Adding " + m.group() + " to launch arguments")
+                    logger.info("Adding ${m.group()} to launch arguments")
                 }
 
                 // Add libraries
@@ -141,7 +145,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                 // Copy main class
                 val mainClass = profile.versionInfo.mainClass
                 version?.mainClass = mainClass
-                log.info("Using $mainClass as the main class")
+                logger.info("Using $mainClass as the main class")
 
                 // Extract the library
                 val filePath = profile.installData.filePath
@@ -155,11 +159,10 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                         extractPath.copyInputStreamToFile(input)
                     }
                 } else {
-                    log.warning("Could not find the file \'" + filePath + "\' in " + file.absolutePath + ", which means that this mod loader will not work correctly")
+                    logger.warn("Could not find the file '$filePath' in ${file.absolutePath}, which means that this mod loader will not work correctly")
                 }
-
             } else {
-                log.warning("The file at " + file.absolutePath + " did not appear to have an install_profile.json file inside -- is it actually an installer for a mod loader?")
+                logger.warn("The file at ${file.absolutePath} did not appear to have an install_profile.json file inside -- is it actually an installer for a mod loader?")
             }
         }
     }
@@ -169,72 +172,79 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
         logSection("Downloading libraries...")
         // TODO: Download libraries for different environments -- As of writing, this is not an issue
 
+        val directories = Directories.get(moduleName = "sklauncher")
+        val cache = directories.cacheHome
         val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
-        val jobs = mutableListOf<Job>()
 
         val env = Environment.instance
-        for (library in loaderLibraries) {
-            jobs += launch(context = exceptionHandler + pool) {
-                val outputPath = File(librariesDir, library.getPath(env))
-                if (!outputPath.exists()) {
-                    outputPath.parentFile.mkdirs()
-                    var found = false
-                    // Gather a list of repositories to download from
-                    val sources = arrayListOf<String>() //Lists.newArrayList<String>()
-                    library.baseUrl?.let {
-                        sources.add(it)
-                    }
-                    sources.addAll(mavenRepos!!)
-                    // Try each repository
-                    for (baseUrl in sources) {
-                        var pathname = library.getPath(env)
-                        // Some repositories compress their files
-                        val compressors = BuilderUtils.getCompressors(baseUrl)
-                        for (compressor in compressors.reversed()) {
-                            pathname = compressor.transformPathname(pathname)
+        runBlocking {
+            val jobs = mutableListOf<Job>()
+            for (library in loaderLibraries) {
+                jobs += launch(context = ExceptionHelper.context + pool) {
+                    val outputPath = File(librariesDir, library.getPath(env))
+                    if (!outputPath.exists()) {
+                        outputPath.parentFile.mkdirs()
+                        var found = false
+                        // Gather a list of repositories to download from
+                        val sources = arrayListOf<String>() //Lists.newArrayList<String>()
+                        library.baseUrl?.let {
+                            sources.add(it)
                         }
-                        val url = baseUrl + pathname
-                        val tempFile = File.createTempFile("launcherlib", null)
-                        try {
-                            log.info("Downloading library " + library.name + " from " + url + "...")
+                        sources.addAll(mavenRepos!!)
+                        // Try each repository
+                        for (baseUrl in sources) {
+                            var pathname = library.getPath(env)
+                            // Some repositories compress their files
+                            val compressors = BuilderUtils.getCompressors(baseUrl)
+                            for (compressor in compressors.reversed()) {
+                                pathname = compressor.transformPathname(pathname)
+                            }
+                            val url = baseUrl + pathname
+                            val tempFile = File.createTempFile("launcherlib", null)
+                            try {
+                                logger.info("Downloading library " + library.name + " from " + url + "...")
+                                tempFile.download(url, cache)
 //                        HttpRequest.get(URL(url)).execute().expectResponseCode(200).saveContent(tempFile)
-                            val (_, response, result) = url.httpGet().response()
-                            when (result) {
-                                is Result.Success -> {
-                                    log.info("writing to $tempFile")
-                                    tempFile.writeBytes(result.value)
-                                }
-                                is Result.Failure -> {
-                                    throw IOException("Did not get expected response code, got ${response.statusCode} for $url")
-                                }
+//                            val (_, response, result) = url.httpGet().response()
+//                            when (result) {
+//                                is Result.Success -> {
+//                                    logger.info("writing to $tempFile")
+//                                    tempFile.writeBytes(result.value)
+//                                }
+//                                is Result.Failure -> {
+//                                    throw IOException("Did not get expected response code, got ${response.statusCode} for $url")
+//                                }
+//                            }
+                            } catch (e: IOException) {
+                                logger.info("Could not get file from " + url + ": " + e.message)
+                                continue
                             }
-                        } catch (e: IOException) {
-                            log.info("Could not get file from " + url + ": " + e.message)
-                            continue
-                        }
 
-                        // Decompress (if needed) and write to file
-                        tempFile.inputStream().buffered().use { inputStream: InputStream ->
-                            val input = compressors.fold(inputStream) { input, compressor ->
-                                input.use {
-                                    compressor.createInputStream(it)
+                            logger.info("downloaded to $tempFile")
+                            // Decompress (if needed) and write to file
+                            val closeables = mutableListOf<Closeable>()
+                            tempFile.inputStream().use { inputStream: InputStream ->
+                                closeables += inputStream
+                                val input = compressors.fold(inputStream) { input, compressor ->
+                                    compressor.createInputStream(input).also { closeables += it }
                                 }
+                                outputPath.copyInputStreamToFile(input)
+                                closeables.forEach { it.close() }
                             }
-                            outputPath.copyInputStreamToFile(input)
+                            tempFile.delete()
+                            found = true
+                            break
                         }
-                        tempFile.delete()
-                        found = true
-                        break
-                    }
-                    if (!found) {
-                        log.warning("!! Failed to download the library " + library.name + " -- this means your copy of the libraries will lack this file")
+                        if (!found) {
+                            logger.warn("!! Failed to download the library " + library.name + " -- this means your copy of the libraries will lack this file")
+                        }
                     }
                 }
             }
-        }
 
-        log.info("waiting for library jobs to finish")
-        runBlocking { jobs.forEach { it.join() } }
+            logger.info("waiting for library jobs to finish")
+            jobs.forEach { it.join() }
+        }
     }
 
     private fun validateManifest() {
@@ -261,10 +271,10 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
         if (path!!.exists()) {
             val versionManifest = read<VersionManifest>(path)
             manifest.versionManifest = versionManifest
-            log.info("Loaded version manifest from " + path.absolutePath)
+            logger.info("Loaded version manifest from " + path.absolutePath)
         } else {
             val url = String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion)
-            log.info("Fetching version manifest from $url...")
+            logger.info("Fetching version manifest from $url...")
             val (_, response, result) = url.httpGet().responseString()
             manifest.versionManifest = when (result) {
                 is Result.Success -> {
@@ -288,7 +298,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
         validateManifest()
         path.absoluteFile.parentFile.mkdirs()
         writer!!.writeValue(path, manifest)
-        log.info("Wrote manifest to " + path.absolutePath)
+        logger.info("Wrote manifest to " + path.absolutePath)
     }
 
     @Throws(IOException::class)
@@ -304,11 +314,9 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
         } catch (e: IllegalAccessException) {
             throw IOException("Failed to create " + V::class.java.canonicalName, e)
         }
-
     }
 
-    companion object {
-        private val log = java.util.logging.Logger.getLogger(PackageBuilder::class.java.name)
+    companion object : KLogging() {
         private val TWEAK_CLASS_ARG = Pattern.compile("--tweakClass\\s+([^\\s]+)")
 
         /**
@@ -328,10 +336,10 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
             // Initialize
             SimpleLogFormatter.configureGlobalLogger()
             val mapper = ObjectMapper()
-                    .registerModule(KotlinModule())
+                .registerModule(KotlinModule())
             mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT)
             val manifest = Manifest(
-                    minimumVersion = Manifest.MIN_PROTOCOL_VERSION
+                minimumVersion = Manifest.MIN_PROTOCOL_VERSION
             )
             val builder = PackageBuilder(mapper, manifest)
             builder.isPrettyPrint = options.isPrettyPrinting
@@ -351,12 +359,12 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
             builder.downloadLibraries(options.librariesDir)
             builder.writeManifest(options.manifestPath!!)
             logSection("Done")
-            log.info("Now upload the contents of " + options.outputPath + " to your web server or CDN!")
+            logger.info("Now upload the contents of " + options.outputPath + " to your web server or CDN!")
         }
 
         private fun logSection(name: String) {
-            log.info("")
-            log.info("--- $name ---")
+            logger.info("")
+            logger.info("--- $name ---")
         }
     }
 }

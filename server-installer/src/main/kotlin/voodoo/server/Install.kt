@@ -17,6 +17,8 @@ import voodoo.data.sk.FeatureFiles
 import voodoo.data.sk.FeatureProperties
 import voodoo.data.sk.Launch
 import voodoo.data.sk.SKFeature
+import voodoo.util.ExceptionHelper
+import voodoo.util.runBlockingWith
 import java.io.File
 
 /**
@@ -51,7 +53,7 @@ object Install : KLogging() {
         val parsedArgs = Arguments(parser)
         parser.force()
 
-        parsedArgs.runBlockingWith(context = exceptionHandler) {
+        parsedArgs.runBlockingWith(context = ExceptionHelper.context) {
             logger.info("target dir: $targetDir")
             logger.info("pack file: $packFile")
             logger.info("cleanConfig: $cleanConfig")

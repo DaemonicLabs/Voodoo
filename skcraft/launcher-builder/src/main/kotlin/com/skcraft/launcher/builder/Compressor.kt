@@ -6,12 +6,14 @@
 
 package com.skcraft.launcher.builder
 
+import kotlinx.coroutines.experimental.runBlocking
 import org.apache.commons.compress.compressors.CompressorException
 import org.apache.commons.compress.compressors.CompressorStreamFactory
 
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
+import kotlin.coroutines.experimental.coroutineContext
 
 class Compressor(private val extension: String, private val format: String) {
 

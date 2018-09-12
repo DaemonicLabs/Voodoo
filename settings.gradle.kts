@@ -1,11 +1,17 @@
-pluginManagement {
-    resolutionStrategy {
-    }
-    repositories {
-        maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap") }
-        gradlePluginPortal()
-    }
-}
+//pluginManagement {
+//    resolutionStrategy {
+//        eachPlugin {
+//            if (requested.id.id == "serialization-plugin") {
+//                useModule("org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:${requested.version}")
+//            }
+//        }
+//    }
+//    repositories {
+////        maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap") }
+//        maven { setUrl("https://kotlin.bintray.com/kotlinx") }
+//        gradlePluginPortal()
+//    }
+//}
 rootProject.name = "voodoo"
 
 include("core", "core:dsl")

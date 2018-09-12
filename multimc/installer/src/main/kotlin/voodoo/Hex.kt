@@ -118,90 +118,90 @@ object Hex : KLogging() {
         val objectsUrl = packUrl.substringBeforeLast('/') + "/" + modpack.objectsLocation
 
         val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
-        val jobs = mutableListOf<Job>()
         val oldTaskList =  Collections.synchronizedList(oldpack?.tasks?.toMutableList() ?: mutableListOf())
 
-        // iterate new tasks
-        for (task in modpack.tasks) {
-            jobs += launch(context=pool) {
-                val oldTask = oldTaskList.find { it.to == task.to }
+        runBlocking {
+            val jobs = mutableListOf<Job>()
+            for (task in modpack.tasks) {
+                jobs += launch(context=pool) {
+                    val oldTask = oldTaskList.find { it.to == task.to }
 
-                val whenTask = task.`when`
-                if (whenTask != null) {
-                    val download = when (whenTask.`if`) {
-                        TaskIf.requireAny -> {
-                            whenTask.features.any { features[it] ?: false }
+                    val whenTask = task.`when`
+                    if (whenTask != null) {
+                        val download = when (whenTask.`if`) {
+                            TaskIf.requireAny -> {
+                                whenTask.features.any { features[it] ?: false }
+                            }
                         }
-                    }
-                    if (!download) {
-                        logger.info("${whenTask.features} is disabled, skipping download")
-                        return@launch
-                    }
-                }
-
-
-                val url = if (task.location.startsWith("http")) {
-                    task.location
-                } else {
-                    "$objectsUrl/${task.location}"
-                }
-                val target = minecraftDir.resolve(task.to)
-                val chunkedHash = task.hash.chunked(6).joinToString("/")
-                val cacheFolder = directories.cacheHome.resolve(chunkedHash)
-
-                if (target.exists()) {
-                    if (oldTask != null) {
-                        // file exists already and existed in the last version
-
-                        if (task.userFile && oldTask.userFile) {
-                            logger.info("task ${task.to} is a userfile, will not be modified")
-                            oldTask.let { oldTaskList.remove(it) }
+                        if (!download) {
+                            logger.info("${whenTask.features} is disabled, skipping download")
                             return@launch
                         }
-                        if (oldTask.hash == task.hash && target.isFile && target.sha1Hex() == task.hash) {
-                            logger.info("task ${task.to} file did not change and sha1 hash matches")
-                            oldTask.let { oldTaskList.remove(it) }
-                            return@launch
+                    }
+
+
+                    val url = if (task.location.startsWith("http")) {
+                        task.location
+                    } else {
+                        "$objectsUrl/${task.location}"
+                    }
+                    val target = minecraftDir.resolve(task.to)
+                    val chunkedHash = task.hash.chunked(6).joinToString("/")
+                    val cacheFolder = directories.cacheHome.resolve(chunkedHash)
+
+                    if (target.exists()) {
+                        if (oldTask != null) {
+                            // file exists already and existed in the last version
+
+                            if (task.userFile && oldTask.userFile) {
+                                logger.info("task ${task.to} is a userfile, will not be modified")
+                                oldTask.let { oldTaskList.remove(it) }
+                                return@launch
+                            }
+                            if (oldTask.hash == task.hash && target.isFile && target.sha1Hex() == task.hash) {
+                                logger.info("task ${task.to} file did not change and sha1 hash matches")
+                                oldTask.let { oldTaskList.remove(it) }
+                                return@launch
+                            } else {
+                                // mismatching hash.. override file
+                                logger.info("task ${task.to} mismatching hash.. reset and override file")
+                                oldTask.let { oldTaskList.remove(it) }
+                                target.delete()
+                                target.parentFile.mkdirs()
+                                target.download(url, cacheFolder)
+                            }
                         } else {
-                            // mismatching hash.. override file
-                            logger.info("task ${task.to} mismatching hash.. reset and override file")
-                            oldTask.let { oldTaskList.remove(it) }
+                            // file exists but was not in the last version.. reset to make sure
+                            logger.info("task ${task.to} exists but was not in the last version.. reset to make sure")
                             target.delete()
                             target.parentFile.mkdirs()
                             target.download(url, cacheFolder)
                         }
                     } else {
-                        // file exists but was not in the last version.. reset to make sure
-                        logger.info("task ${task.to} exists but was not in the last version.. reset to make sure")
-                        target.delete()
+                        // new file
+                        logger.info("task ${task.to} creating new file")
                         target.parentFile.mkdirs()
                         target.download(url, cacheFolder)
+
+                        oldTask?.let { oldTaskList.remove(it) }
                     }
-                } else {
-                    // new file
-                    logger.info("task ${task.to} creating new file")
-                    target.parentFile.mkdirs()
-                    target.download(url, cacheFolder)
 
-                    oldTask?.let { oldTaskList.remove(it) }
-                }
-
-                if (target.exists()) {
-                    val sha1 = target.sha1Hex()
-                    if (sha1 != task.hash) {
-                        logger.error("hashes do not match for task ${task.to}")
-                        logger.error(sha1)
-                        logger.error(task.hash)
+                    if (target.exists()) {
+                        val sha1 = target.sha1Hex()
+                        if (sha1 != task.hash) {
+                            logger.error("hashes do not match for task ${task.to}")
+                            logger.error(sha1)
+                            logger.error(task.hash)
+                        } else {
+                            logger.trace("task ${task.to} validated")
+                        }
                     } else {
-                        logger.trace("task ${task.to} validated")
+                        logger.error("file $target was not created")
                     }
-                } else {
-                    logger.error("file $target was not created")
                 }
             }
-        }
 
-        runBlocking {
+            // iterate new tasks
             jobs.forEach { it.join() }
         }
 

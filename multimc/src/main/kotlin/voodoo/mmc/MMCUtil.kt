@@ -191,7 +191,7 @@ object MMCUtil : KLogging() {
         if (mcVersion != null) {
             if (forgeBuild != null) {
                 logger.info("forge version for build $forgeBuild")
-                val (_, _, _, forgeVersion) = Forge.getForgeUrl(forgeBuild.toString(), mcVersion)
+                val (_, _, _, forgeVersion) = Forge.resolveVersion(forgeBuild.toString(), mcVersion)
                 logger.info("forge version : $forgeVersion")
                 mmcPack.components = listOf(
                         PackComponent(

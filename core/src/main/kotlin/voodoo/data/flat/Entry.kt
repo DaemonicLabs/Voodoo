@@ -5,6 +5,10 @@ import blue.endless.jankson.JsonObject
 import blue.endless.jankson.impl.Marshaller
 import blue.endless.jankson.impl.SyntaxError
 import com.fasterxml.jackson.annotation.JsonIgnore
+import kotlinx.serialization.*
+import kotlinx.serialization.Optional
+import kotlinx.serialization.json.JSON
+import mu.KLogging
 import voodoo.data.Side
 import voodoo.data.curse.*
 import voodoo.data.curse.CurseConstancts.PROXY_URL
@@ -15,6 +19,7 @@ import voodoo.getReified
 import voodoo.util.equalsIgnoreCase
 import java.io.File
 import java.util.*
+import kotlin.jvm.Transient
 
 /**
  * Created by nikky on 28/03/18.
@@ -22,58 +27,61 @@ import java.util.*
  */
 
 //@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+//@Serializable
 data class Entry(
         //@JsonInclude(JsonInclude.Include.ALWAYS)
         val provider: String,
         var id: String,
-        var name: String = "",  // TODO add `by provider.getDisplayname(this)`
-        var folder: String = "mods",
-        var comment: String = "",
-        var description: String = "",
-        var feature: EntryFeature? = null,
-        var side: Side = Side.BOTH,
-        var websiteUrl: String = "",
-        var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
-        var replaceDependencies: Map<String, String> = mapOf(),
+        @Optional var name: String = "",  // TODO add `by provider.getDisplayname(this)`
+        @Optional var folder: String = "mods",
+        @Optional var comment: String = "",
+        @Optional var description: String = "",
+        @Optional var feature: EntryFeature? = null,
+        @Optional var side: Side = Side.BOTH,
+        @Optional var websiteUrl: String = "",
+        @Optional var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+        @Optional var replaceDependencies: Map<String, String> = mapOf(),
         //@JsonInclude(JsonInclude.Include.ALWAYS)
-//        var optional: Boolean = feature != null,
-        var packageType: PackageType = PackageType.MOD,
-        var transient: Boolean = false, // this entry got added as dependency for something else
-        var version: String = "", //TODO: use regex only ?
-        var fileName: String? = null,
-        var fileNameRegex: String = when {
+//        @Optional var optional: Boolean = feature != null,
+        @Optional var packageType: PackageType = PackageType.MOD,
+        @Optional var transient: Boolean = false, // this entry got added as dependency for something else
+        @Optional var version: String = "", //TODO: use regex only ?
+        @Optional var fileName: String? = null,
+        @Optional var fileNameRegex: String = when {
             provider.equals("CURSE", true) -> ".*(?<!-deobf\\.jar)\$"
             provider.equals("JENKINS", true) -> ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$"
             else -> ".*"
         },
-        var validMcVersions: Set<String> = setOf(),
+        @Optional var validMcVersions: Set<String> = setOf(),
         // CURSE
-        var curseMetaUrl: String = PROXY_URL,
-        var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
-        var curseOptionalDependencies: Boolean = false,
-        var curseProjectID: ProjectID = ProjectID.INVALID,
-        var curseFileID: FileID = FileID.INVALID,
+        @Optional var curseMetaUrl: String = PROXY_URL,
+        @Optional var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
+        @Optional var curseOptionalDependencies: Boolean = false,
+        @Optional var curseProjectID: ProjectID = ProjectID.INVALID,
+        @Optional var curseFileID: FileID = FileID.INVALID,
         // DIRECT
-        var url: String = "",
-        var useUrlTxt: Boolean = true,
+        @Optional var url: String = "",
+        @Optional var useUrlTxt: Boolean = true,
         // JENKINS
-        var jenkinsUrl: String = "",
-        var job: String = "",
-        var buildNumber: Int = -1,
+        @Optional var jenkinsUrl: String = "",
+        @Optional var job: String = "",
+        @Optional var buildNumber: Int = -1,
         // LOCAL
-        var fileSrc: String = "",
+        @Optional var fileSrc: String = "",
         // UPDATE-JSON
-        var updateJson: String = "",
-        var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
-        var template: String = ""
+        @Optional var updateJson: String = "",
+        @Optional var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
+        @Optional var template: String = ""
 ) {
     @JsonIgnore
+    @Transient
     var optional: Boolean = feature != null
 
     /**
      * abssolute file
      */
     @JsonIgnore
+    @Transient
     lateinit var file: File
 
     fun serialize(jankson: Jankson) {
@@ -97,7 +105,19 @@ data class Entry(
         }
     }
 
-    companion object {
+//    @Serializer(forClass = Entry::class)
+    companion object: KLogging() {
+//        override fun load(input: KInput): Entry {
+//            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//        }
+//
+//        override fun save(output: KOutput, obj: Entry) {
+//            output.write
+//            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+//        }
+
+        val json = JSON(indented = true, context = SerialContext())
+
         fun toJson(entry: Entry, marshaller: Marshaller): JsonObject {
             val jsonObj = JsonObject()
             with(entry) {

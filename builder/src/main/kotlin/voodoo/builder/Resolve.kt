@@ -53,14 +53,14 @@ private fun ModPack.resolveFeatureDependencies(entry: Entry, defaultName: String
         var description = entryFeature.description
         if (description.isEmpty()) description = entry.description
         feature = SKFeature(
-                entries = setOf(entry.id),
-                files = entryFeature.files,
-                properties = FeatureProperties(
-                        name = featureName,
-                        selected = entryFeature.selected,
-                        description = description,
-                        recommendation = entryFeature.recommendation
-                )
+            entries = setOf(entry.id),
+            files = entryFeature.files,
+            properties = FeatureProperties(
+                name = featureName,
+                selected = entryFeature.selected,
+                description = description,
+                recommendation = entryFeature.recommendation
+            )
         )
         modpack.processFeature(feature)
         modpack.features += feature
@@ -102,7 +102,13 @@ private fun ModPack.processFeature(feature: SKFeature) {
 /**
  * ensure entries are loaded before calling resolve
  */
-suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean = false, updateDependencies: Boolean = false, updateEntries: List<String> = listOf()) {
+suspend fun ModPack.resolve(
+    folder: File,
+    jankson: Jankson,
+    updateAll: Boolean = false,
+    updateDependencies: Boolean = false,
+    updateEntries: List<String> = listOf()
+) {
     this.loadEntries(folder, jankson)
     this.loadLockEntries(folder, jankson)
 
@@ -129,7 +135,6 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
         }
     }
 
-
     // recalculate all dependencies
 //    val resolved: MutableSet<String> = mutableSetOf()
     var unresolved: Set<Entry> = this.entrySet.toSet()
@@ -142,82 +147,86 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
 //        logger.info("resolved: $resolved")() + 1, "pool")
 
         val jobs = mutableListOf<Job>()
-        for (entry in unresolved) {
-            jobs += launch(context = coroutineContext) {
-                logger.info("resolving: ${entry.id}")
-                val provider = Provider.valueOf(entry.provider).base
+        coroutineScope {
+            for (entry in unresolved) {
+                jobs += launch(context = coroutineContext) {
+                    logger.info("resolving: ${entry.id}")
+                    val provider = Provider.valueOf(entry.provider).base
 
-                val lockEntry = provider.resolve(entry, this@resolve.mcVersion, newEntriesChannel)
+                    val lockEntry = provider.resolve(entry, this@resolve.mcVersion, newEntriesChannel)
 
-                if (!provider.validate(lockEntry)) {
-                    Builder.logger.error { lockEntry }
-                    throw IllegalStateException("entry did not validate")
-                }
-
-                val actualLockEntry = addOrMerge(lockEntry) { old, new ->
-                    if (old == null) {
-                        val filename = entry.file.nameWithoutExtension
-                        new.file = entry.file.parentFile.resolve("$filename.lock.json").relativeTo(srcDir.absoluteFile)
-                        new
-                    } else {
-                        logger.info("existing lockEntry: $old")
-                        old
+                    if (!provider.validate(lockEntry)) {
+                        Builder.logger.error { lockEntry }
+                        throw IllegalStateException("entry did not validate")
                     }
+
+                    val actualLockEntry = addOrMerge(lockEntry) { old, new ->
+                        if (old == null) {
+                            val filename = entry.file.nameWithoutExtension
+                            new.file =
+                                entry.file.parentFile.resolve("$filename.lock.json").relativeTo(srcDir.absoluteFile)
+                            new
+                        } else {
+                            logger.info("existing lockEntry: $old")
+                            old
+                        }
+                    }
+
+                    if (!provider.validate(actualLockEntry)) {
+                        Builder.logger.error { actualLockEntry }
+                        throw IllegalStateException("actual entry did not validate")
+                    }
+
+                    actualLockEntry.name = actualLockEntry.name()
+
+                    resolved += entry.id
+
+                }.also {
+                    logger.info("started job resolve ${entry.id}")
+                    delay(100)
                 }
-
-                if (!provider.validate(actualLockEntry)) {
-                    Builder.logger.error { actualLockEntry }
-                    throw IllegalStateException("actual entry did not validate")
-                }
-
-                actualLockEntry.name = actualLockEntry.name()
-
-                resolved += entry.id
-
-            }.also {
-                logger.info("started job resolve ${entry.id}")
-                delay(100)
             }
-        }
 
-        val newEntries = async(context = coroutineContext) {
-            val newEntries2 = mutableSetOf<Entry>()
-            for ((entry, path) in newEntriesChannel) {
-                logger.info("channel received: ${entry.id}")
+            val newEntries = async(context = coroutineContext) {
+                val newEntries2 = mutableSetOf<Entry>()
+                for ((entry, path) in newEntriesChannel) {
+                    logger.info("channel received: ${entry.id}")
 
-                if (entry.id in resolved) {
-                    logger.info("entry already resolved ${entry.id}")
-                    continue
-                }
-                if (this@resolve.entrySet.any { it.id == entry.id }) {
-                    logger.info("entry already added ${entry.id}")
-                    continue
-                }
-                if (newEntries2.any { it.id == entry.id }) {
-                    logger.info("entry already in queue ${entry.id}")
-                    continue
-                }
+                    if (entry.id in resolved) {
+                        logger.info("entry already resolved ${entry.id}")
+                        continue
+                    }
+                    if (this@resolve.entrySet.any { it.id == entry.id }) {
+                        logger.info("entry already added ${entry.id}")
+                        continue
+                    }
+                    if (newEntries2.any { it.id == entry.id }) {
+                        logger.info("entry already in queue ${entry.id}")
+                        continue
+                    }
 
-                val filename = entry.id.replace("[^\\w-]+".toRegex(), "")
-                //TODO: calculate filename on demand
-                val file = srcDir.resolve(path).resolve("$filename.entry.hjson").absoluteFile
-                this@resolve.addEntry(entry, file, dependency = true)
-                logger.info { "added entry ${entry.id}" }
-                newEntries2 += entry
+                    val filename = entry.id.replace("[^\\w-]+".toRegex(), "")
+                    //TODO: calculate filename on demand
+                    val file = srcDir.resolve(path).resolve("$filename.entry.hjson").absoluteFile
+                    this@resolve.addEntry(entry, file, dependency = true)
+                    logger.info { "added entry ${entry.id}" }
+                    newEntries2 += entry
+                }
+                newEntries2
             }
-            newEntries2
-        }
 
 
-        newEntriesChannel.consume {
-            jobs.joinAll()
-        }
 
-        logger.info("added last step: ${newEntries.await().map { it.id }}")
-        logger.info("resolved last step: ${unresolved.map { it.id }}")
+            newEntriesChannel.consume {
+                jobs.joinAll()
+            }
+
+            logger.info("added last step: ${newEntries.await().map { it.id }}")
+            logger.info("resolved last step: ${unresolved.map { it.id }}")
 
 //        unresolved = newEntries.await()
-        unresolved = entrySet.asSequence().filter { !resolved.contains(it.id) }.toSet()
+            unresolved = entrySet.asSequence().filter { !resolved.contains(it.id) }.toSet()
+        }
     } while (unresolved.isNotEmpty())
 
     val unresolvedIDs = resolved - this.entrySet.map { it.id }
@@ -233,8 +242,10 @@ suspend fun ModPack.resolve(folder: File, jankson: Jankson, updateAll: Boolean =
     }
 
     for (entry in entrySet) {
-        this.resolveFeatureDependencies(entry, findLockEntryById(entry.id)?.name()
-                ?: throw NullPointerException("cannot find lockentry for ${entry.id}"))
+        this.resolveFeatureDependencies(
+            entry, findLockEntryById(entry.id)?.name()
+                ?: throw NullPointerException("cannot find lockentry for ${entry.id}")
+        )
     }
 //    entrySet.forEach { id, (entry, file, jsonObj) ->
 //        this.resolveFeatureDependencies(entry)
