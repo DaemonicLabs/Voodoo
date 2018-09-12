@@ -5,6 +5,10 @@ import blue.endless.jankson.JsonObject
 import blue.endless.jankson.impl.Marshaller
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
+import kotlinx.serialization.*
+import kotlinx.serialization.Optional
+import kotlinx.serialization.internal.PrimitiveDesc
+import kotlinx.serialization.internal.SerialClassDescImpl
 import mu.KLogging
 import voodoo.data.Side
 import voodoo.data.UserFiles
@@ -27,29 +31,65 @@ import kotlin.system.exitProcess
  */
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@Serializable
 data class ModPack(
         @JsonInclude(JsonInclude.Include.ALWAYS)
         var id: String,
-        var title: String = "",
+        @Optional var title: String = "",
         @JsonInclude(JsonInclude.Include.ALWAYS)
-        var version: String = "1.0",
-        var icon: String = "icon.png",
-        val authors: List<String> = emptyList(),
-        var mcVersion: String = "",
-        var forge: String = "recommended",
+        @Optional var version: String = "1.0",
+        @Optional var icon: String = "icon.png",
+        @Optional val authors: List<String> = emptyList(),
+        @Optional var mcVersion: String = "",
+        @Optional var forge: String = "recommended",
         //var forgeBuild: Int = -1,
         @JsonInclude(JsonInclude.Include.ALWAYS)
-        val launch: Launch = Launch(),
+        @Optional val launch: Launch = Launch(),
         @JsonInclude(JsonInclude.Include.ALWAYS)
-        var userFiles: UserFiles = UserFiles(),
+        @Optional var userFiles: UserFiles = UserFiles(),
 
         @JsonInclude(JsonInclude.Include.ALWAYS)
-        var localDir: String = "local",
+        @Optional var localDir: String = "local",
         @JsonInclude(JsonInclude.Include.ALWAYS)
-        var sourceDir: String = "src"
+        @Optional var sourceDir: String = "src"
 ) {
+//    @Serializer(forClass = ModPack::class)
+    companion object : KLogging() { //, KSerializer<ModPack> {
+//        override val serialClassDesc = object: SerialClassDescImpl("voodoo.data.flat.ModPack") {
+//            init {
+//                addElement("id")
+//                addElement("title")
+//                addElement("version")
+//                addElement("icon")
+//            }
+//        }
+//
+//        override fun load(input: KInput): ModPack {
+//            return ModPack(
+//                    id = "test"
+////                    id = input.readStringElementValue(PrimitiveDesc("id"), 0),
+////                    title = input.readStringElementValue(PrimitiveDesc("title"), 1),
+////                    icon = input.readStringElementValue(PrimitiveDesc("icon"), 2)
+//            )
+//        }
+//
+//        override fun save(output: KOutput, obj: ModPack) {
+////            output.writeStringValue(obj.id)
+//            output.writeStringElementValue(PrimitiveDesc("id"), 0, obj.id)
+//
+//            with(ModPack(obj.id)) {
+//                if(this.title != obj.title)
+////                    output.writeStringValue(obj.title)
+//                    output.writeStringElementValue(PrimitiveDesc("title"), 1, obj.title)
+//                if(this.version != obj.version)
+////                    output.writeStringValue(obj.version)
+//                    output.writeStringElementValue(PrimitiveDesc("title"), 2, obj.version)
+//                if(this.icon != obj.icon)
+////                    output.writeStringValue(obj.icon)
+//                    output.writeStringElementValue(PrimitiveDesc("icon"), 2, obj.icon)
+//            }
+//        }
 
-    companion object : KLogging() {
         fun toJson(modpack: ModPack, marshaller: Marshaller): JsonObject {
             val jsonObject = JsonObject()
             with(modpack) {
@@ -69,11 +109,10 @@ data class ModPack(
         }
 
         fun fromJson(jsonObj: JsonObject): ModPack {
-
-            val name: String = jsonObj.getReified("id")!!
-            return with(ModPack(name)) {
+            val id: String = jsonObj.getReified("id")!!
+            return with(ModPack(id)) {
                 ModPack(
-                        id = name,
+                        id = id,
                         title = jsonObj.getReified("title") ?: title,
                         version = jsonObj.getReified("version") ?: version,
                         icon = jsonObj.getReified("icon") ?: icon,
@@ -108,6 +147,7 @@ data class ModPack(
 //        features = featureCache.readJsonOrNull() ?: mutableListOf()
     }
 
+    @Transient
     @JsonIgnore
     val features: MutableList<SKFeature> = mutableListOf()
 
@@ -118,8 +158,10 @@ data class ModPack(
     }
 
     //TODO: move file into ModPack ad LockPack as lateinit
+    @Transient
     @JsonIgnore
     val entrySet: MutableSet<Entry> = Collections.synchronizedSet(mutableSetOf())
+    @Transient
     @JsonIgnore
     val lockEntrySet: MutableSet<LockEntry> = Collections.synchronizedSet(mutableSetOf())
 

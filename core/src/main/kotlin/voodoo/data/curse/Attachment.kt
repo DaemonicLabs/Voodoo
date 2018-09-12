@@ -1,5 +1,8 @@
 package voodoo.data.curse
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class Attachment(
         val id: Int,
         val projectId: Int,

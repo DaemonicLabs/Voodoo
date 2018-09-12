@@ -3,16 +3,29 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.api.publish.maven.MavenPom
 import org.jetbrains.kotlin.gradle.dsl.Coroutines
 
+buildscript {
+    repositories {
+        jcenter()
+        maven { setUrl("https://kotlin.bintray.com/kotlinx") }
+        maven { setUrl("https://plugins.gradle.org/m2/") }
+    }
+//    val kotlin_version: String by project
+    val serialization_version: String by project
+    dependencies {
+//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        classpath("org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:$serialization_version")
+    }
+}
 plugins {
-    kotlin("jvm") version "1.2.61"
-//    kotlin("jvm") version "1.3-M2"
     application
     `maven-publish`
+    kotlin("jvm") version "1.2.61"
+//    kotlin("jvm") version "1.3-M2"
     id("idea")
     id("project-report")
     id("com.github.johnrengelman.shadow") version "2.0.3"
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
-    id("org.jmailen.kotlinter") version "1.17.0"
+//    id("org.jmailen.kotlinter") version "1.17.0"
 }
 
 println("""
@@ -40,13 +53,15 @@ allprojects {
         resolutionStrategy.eachDependency {
             if (requested.group == "org.jetbrains.kotlin") {
                 useVersion(kotlin_version)
-                because("We use kotlin EAP 1.3")
+//                because("We use kotlin EAP 1.3")
             }
         }
     }
     apply {
         plugin("kotlin")
-        plugin("org.jmailen.kotlinter")
+//        plugin("org.jetbrains.kotlin.jvm")
+        plugin("kotlinx-serialization")
+//        plugin("org.jmailen.kotlinter")
         plugin("idea")
     }
     java {
@@ -68,11 +83,14 @@ allprojects {
     repositories {
         mavenCentral()
         jcenter()
-        maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap") }
+//        mavenLocal()
+//        maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap") }
         maven { setUrl("http://repo.maven.apache.org/maven2") }
         maven { setUrl("http://jcenter.bintray.com") }
         maven { setUrl("https://dl.bintray.com/s1m0nw1/KtsRunner") }
         maven { setUrl("https://jitpack.io") }
+        maven { setUrl("https://dl.bintray.com/kotlin/ktor") }
+        maven { setUrl("https://kotlin.bintray.com/kotlinx") }
     }
 
     idea {
@@ -143,9 +161,9 @@ allprojects {
             val shadowJar by tasks.getting(ShadowJar::class) {
                 classifier = ""
                 archiveName = "$baseName.$extension"
-                exclude("**/*.txt")
-                exclude("**/*.xml")
-                exclude("**/*.properties")
+//                exclude("**/*.txt")
+//                exclude("**/*.xml")
+//                exclude("**/*.properties")
             }
 
             val build by tasks.getting(Task::class) {

@@ -14,8 +14,8 @@ val KSCRIPT_CACHE_DIR = File(System.getProperty("user.home")!!, ".kscript")
 data class ProcessResult(val command: String, val exitCode: Int, val stdout: String, val stderr: String) {
     override fun toString(): String {
         return """
-            Exit Code   : ${exitCode}Comand      : ${command}
-            Stdout      : ${stdout}
+            Exit Code   : ${exitCode}Comand      : $command
+            Stdout      : $stdout
             Stderr      : """.trimIndent() + "\n" + stderr
     }
 }
@@ -33,11 +33,9 @@ fun runProcess(vararg cmd: String, wd: File? = null,
 
     try {
         // simplify with https://stackoverflow.com/questions/35421699/how-to-invoke-external-command-from-within-kotlin-code
-        val proc = ProcessBuilder(cmd.asList()).
-                directory(wd).
+        val proc = ProcessBuilder(cmd.asList()).directory(wd).
                 // see https://youtrack.jetbrains.com/issue/KT-20785
-                apply { environment()["KOTLIN_RUNNER"] = "" }.
-                start();
+                apply { environment()["KOTLIN_RUNNER"] = "" }.start();
 
 
         // we need to gobble the streams to prevent that the internal pipes hit their respecitive buffer limits, which
@@ -101,7 +99,7 @@ fun launchIdeaWithKscriptlet(scriptFile: File, libs: List<File>): File {
 
     logger.info("Setting up idea project from ${scriptFile}")
 
-    val tmpProjectDir = scriptFile.run{
+    val tmpProjectDir = scriptFile.run {
         absoluteFile.parentFile
     }.apply { mkdirs() }
     val gradleScript = """
@@ -160,16 +158,16 @@ val wrapper by tasks.getting(Wrapper::class) {
     tmpProjectDir.resolve("src")
             .resolve("main")
             .resolve("kotlin").run {
-        mkdirs()
+                mkdirs()
 
-        // https://stackoverflow.com/questions/17926459/creating-a-symbolic-link-with-java
+                // https://stackoverflow.com/questions/17926459/creating-a-symbolic-link-with-java
 //        createSymLink(File(this, scriptFile.name), scriptFile)
 
-        for (libJar in libs) {
-            val target = tmpProjectDir.resolve("libs")
-            target.mkdirs()
-            libJar.copyTo(target.resolve(libJar.name), overwrite = true)
-        }
+                for (libJar in libs) {
+                    val target = tmpProjectDir.resolve("libs")
+                    target.mkdirs()
+                    libJar.copyTo(target.resolve(libJar.name), overwrite = true)
+                }
 //        // also symlink all includes
 //        includeURLs.distinctBy { it.fileName() }
 //                .forEach {
@@ -181,26 +179,27 @@ val wrapper by tasks.getting(Wrapper::class) {
 //
 //                    createSymLink(File(this, it.fileName()), includeFile)
 //                }
-    }
+            }
 
     return tmpProjectDir
 }
 
 private fun createSymLink(link: File, target: File, overwrite: Boolean = false) {
     try {
-        if(overwrite) link.deleteRecursively()
+        if (overwrite) link.deleteRecursively()
         Files.createSymbolicLink(link.toPath(), target.absoluteFile.toPath());
     } catch (e: IOException) {
         logger.error("Failed to create symbolic link to script. Copying instead...", e)
         target.copyTo(link)
     }
 }
+
 object Idea {
     @JvmStatic
     fun main(vararg args: String) {
         logger.info(args.joinToString())
         val script = File(args[0])
-        if(!script.isFile) {
+        if (!script.isFile) {
             logger.error { "$script is not a file" }
             exitProcess(-1)
         }

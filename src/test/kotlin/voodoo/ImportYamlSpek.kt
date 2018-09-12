@@ -9,6 +9,7 @@ import voodoo.data.flat.Entry
 import voodoo.data.nested.NestedPack
 import voodoo.importer.YamlImporter
 import voodoo.provider.Provider
+import voodoo.util.ExceptionHelper
 import voodoo.util.yamlMapper
 import java.io.File
 import kotlin.test.assertEquals
@@ -116,7 +117,7 @@ object ImportYamlSpek : Spek({
 
         context("importing yaml") {
             val lockFile by memoized {
-                runBlocking(context = exceptionHandler) { YamlImporter.import(source = mainFile.path, target = rootFolder) }
+                runBlocking(context = ExceptionHelper.context) { YamlImporter.import(source = mainFile.path, target = rootFolder) }
                 rootFolder.resolve("$id.pack.hjson")
             }
             it("lockfile exists") {
@@ -138,7 +139,7 @@ object ImportYamlSpek : Spek({
 
             context("flatten") {
                 val entries by memoized {
-                    runBlocking(context = exceptionHandler) {
+                    runBlocking(context = ExceptionHelper.context) {
                         nestedPack.root.flatten(rootFolder)
                     }
                 }

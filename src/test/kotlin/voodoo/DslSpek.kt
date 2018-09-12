@@ -8,6 +8,7 @@ import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedPack
 import voodoo.provider.CurseProviderThing
 import voodoo.provider.JenkinsProviderThing
+import voodoo.util.ExceptionHelper
 import java.io.*
 
 object DslSpek : Spek({
@@ -62,7 +63,7 @@ object DslSpek : Spek({
             nestedPack.flatten()
         }
         val entries by memoized {
-            runBlocking(context = exceptionHandler) {
+            runBlocking(context = ExceptionHelper.context) {
                 nestedPack.root.flatten(File(""))
             }
         }

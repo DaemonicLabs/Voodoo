@@ -1,6 +1,7 @@
 package voodoo.data
 
 import blue.endless.jankson.JsonObject
+import kotlinx.serialization.Serializable
 import mu.KLogging
 import voodoo.getList
 
@@ -8,6 +9,8 @@ import voodoo.getList
  * Created by nikky on 29/03/18.
  * @author Nikky
  */
+
+@Serializable
 data class UserFiles(
         var include: List<String> = listOf("options.txt", "optionsshaders.txt"),
         var exclude: List<String> = emptyList()

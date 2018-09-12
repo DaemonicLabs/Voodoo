@@ -43,7 +43,7 @@ object BuilderUtils {
                     Compressor("pack", CompressorStreamFactory.PACK200)
             )
         } else {
-            emptyList<Compressor>()
+            emptyList()
         }
     }
 

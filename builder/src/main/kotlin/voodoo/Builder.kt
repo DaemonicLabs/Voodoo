@@ -20,9 +20,9 @@ import voodoo.data.sk.Launch
 import voodoo.data.sk.SKFeature
 import voodoo.provider.Provider
 import voodoo.util.json
+import voodoo.util.runBlockingWith
 import java.io.File
 import java.io.StringWriter
-import kotlin.coroutines.experimental.coroutineContext
 import kotlin.system.exitProcess
 
 /**

@@ -6,6 +6,7 @@ import com.xenomachina.argparser.mainBody
 import mu.KLogging
 import voodoo.importer.CurseImporter
 import voodoo.importer.YamlImporter
+import voodoo.util.runBlockingWith
 import java.io.File
 import kotlin.system.exitProcess
 

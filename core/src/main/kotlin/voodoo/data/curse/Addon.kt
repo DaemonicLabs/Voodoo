@@ -1,7 +1,9 @@
 package voodoo.data.curse
 
+import kotlinx.serialization.Serializable
 import java.util.*
 
+@Serializable
 data class Addon(
         val id: ProjectID,
         val name: String,
@@ -31,13 +33,13 @@ data class Addon(
         val slug: String,
         val clientUrl: String,
         val gameVersionLatestFiles: List<GameVersionLatestFile>,
-        val featured: Int,
+//        val featured: Int,
         val popularityScore: Float,
         val gamePopularityRank: Int,
         val fullDescription: String,
         val gameName: String,
         val portalName: String,
-        val sectionName: Section,
+        val sectionName: String, //Section,
         val dateModified: Date,
         val dateCreated: Date,
         val dateReleased: Date,

@@ -2,6 +2,10 @@ package voodoo.importer
 
 import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
+import kotlinx.serialization.SerialContext
+import kotlinx.serialization.UpdateMode
+import kotlinx.serialization.json.JSON
+import kotlinx.serialization.registerSerializer
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
@@ -59,6 +63,16 @@ object YamlImporter : AbstractImporter() {
         val defaultJson = modpack.toDefaultJson(jankson.marshaller)
         val delta = json.getDelta(defaultJson)
         packFile.writeText(delta.toJson(true, true))
+
+        run {
+            val json = JSON(indented = true, context = SerialContext().apply {
+//                registerSerializer(ModPack::class, ModPack.Companion)
+            }, updateMode = UpdateMode.BANNED, nonstrict = true, unquoted = true)
+            val jsonified = json.stringify(modpack)
+            println(jsonified)
+            val reloaded = json.parse<ModPack>(jsonified)
+            println(reloaded)
+        }
     }
 
 }

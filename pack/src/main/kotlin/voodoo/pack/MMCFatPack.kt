@@ -22,7 +22,14 @@ object MMCFatPack : AbstractPack() {
 
         instanceDir.mkdirs()
 
-        val minecraftDir = MMCUtil.installEmptyPack(title, modpack.id, icon = modpack.iconFile, instanceDir = instanceDir, mcVersion = modpack.mcVersion, forgeBuild = modpack.forge)
+        val minecraftDir = MMCUtil.installEmptyPack(
+            title,
+            modpack.id,
+            icon = modpack.iconFile,
+            instanceDir = instanceDir,
+            mcVersion = modpack.mcVersion,
+            forgeBuild = modpack.forge
+        )
 
         minecraftDir.mkdirs()
         val modsDir = minecraftDir.resolve("mods")
@@ -53,9 +60,11 @@ object MMCFatPack : AbstractPack() {
         } else {
             mapOf<String, Boolean>()
         }
-        val (features, reinstall) = MMCUtil.selectFeatures(modpack.features.map { it.properties }, previousSelection,
-                modpack.title.blankOr
-                        ?: modpack.id, modpack.version, forceDisplay = false, updating = featureJson.exists())
+        val (features, reinstall) = MMCUtil.selectFeatures(
+            modpack.features.map { it.properties }, previousSelection,
+            modpack.title.blankOr
+                ?: modpack.id, modpack.version, forceDisplay = false, updating = featureJson.exists()
+        )
         logger.debug("result: features: $features")
         if (!features.isEmpty()) {
             featureJson.createNewFile()
@@ -66,31 +75,35 @@ object MMCFatPack : AbstractPack() {
         }
 
         val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
-        val jobs = mutableListOf<Job>()
 
-        for (entry in modpack.entrySet) {
-            if (entry.side == Side.SERVER) continue
+        coroutineScope {
+            val jobs = mutableListOf<Job>()
 
-            jobs += launch(context = coroutineContext + pool) {
-                val folder = minecraftDir.resolve(entry.file).absoluteFile.parentFile
+            for (entry in modpack.entrySet) {
+                if (entry.side == Side.SERVER) continue
 
-                val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
-                val selected = !matchedFeatureList.isEmpty() && matchedFeatureList.any {
-                    features[it.properties.name] ?: false
-                }
+                jobs += launch(context = coroutineContext + pool) {
+                    val folder = minecraftDir.resolve(entry.file).absoluteFile.parentFile
 
-                val provider = Provider.valueOf(entry.provider).base
-                val targetFolder = minecraftDir.resolve(folder)
-                val (url, file) = provider.download(entry, targetFolder, cacheDir)
-                if (!selected) {
-                    file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
+                    val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
+                    val selected = !matchedFeatureList.isEmpty() && matchedFeatureList.any {
+                        features[it.properties.name] ?: false
+                    }
+
+                    val provider = Provider.valueOf(entry.provider).base
+                    val targetFolder = minecraftDir.resolve(folder)
+                    val (url, file) = provider.download(entry, targetFolder, cacheDir)
+                    if (!selected) {
+                        file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
+                    }
                 }
             }
+
+            delay(10)
+            CursePack.logger.info("waiting for jobs to finish")
+            jobs.joinAll()
         }
 
-        delay(10)
-        CursePack.logger.info("waiting for jobs to finish")
-        jobs.joinAll()
 
         for (file in minecraftDir.walkTopDown()) {
             when {

@@ -6,6 +6,7 @@ import org.spekframework.spek2.style.specification.describe
 import voodoo.builder.resolve
 import voodoo.data.flat.ModPack
 import voodoo.importer.YamlImporter
+import voodoo.util.ExceptionHelper
 import java.io.*
 
 object BuildSpek : Spek({
@@ -38,7 +39,7 @@ object BuildSpek : Spek({
         }
 
         val packFile by memoized {
-            runBlocking(context = exceptionHandler) { YamlImporter.import(source = mainFile.path, target = rootFolder, name = "lockpack") }
+            runBlocking(context = ExceptionHelper.context) { YamlImporter.import(source = mainFile.path, target = rootFolder, name = "lockpack") }
             rootFolder.resolve("lockpack.pack.hjson")
         }
 
@@ -62,7 +63,7 @@ object BuildSpek : Spek({
             }
             context ("building pack") {
                 val lockEntries by memoized {
-                    runBlocking(context = exceptionHandler) {
+                    runBlocking(context = ExceptionHelper.context) {
                         modpack.resolve(
                                 rootFolder,
                                 Builder.jankson,
