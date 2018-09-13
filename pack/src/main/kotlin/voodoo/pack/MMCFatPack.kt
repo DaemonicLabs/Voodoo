@@ -1,6 +1,5 @@
 package voodoo.pack
 
-import blue.endless.jankson.Jankson
 import kotlinx.coroutines.experimental.*
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
@@ -8,12 +7,11 @@ import voodoo.mmc.MMCUtil
 import voodoo.provider.Provider
 import voodoo.util.*
 import java.io.File
-import kotlin.coroutines.experimental.coroutineContext
 
 object MMCFatPack : AbstractPack() {
     override val label = "MultiMC Packer (frozen pack)"
 
-    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
+    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean) {
         val targetDir = File(target ?: ".multimc")
         val cacheDir = directories.cacheHome
         val instanceDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id)

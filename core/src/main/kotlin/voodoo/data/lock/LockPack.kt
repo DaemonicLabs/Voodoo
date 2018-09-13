@@ -1,8 +1,6 @@
 package voodoo.data.lock
 
-import blue.endless.jankson.Jankson
-import blue.endless.jankson.JsonObject
-import blue.endless.jankson.impl.Marshaller
+
 import com.fasterxml.jackson.annotation.JsonIgnore
 import kotlinx.serialization.KOutput
 import kotlinx.serialization.KSerialSaver
@@ -13,13 +11,9 @@ import kotlinx.serialization.list
 import kotlinx.serialization.serializer
 import voodoo.data.Side
 import voodoo.data.UserFiles
-import voodoo.data.curse.Author
 import voodoo.data.flat.ModPack
 import voodoo.data.sk.Launch
 import voodoo.data.sk.SKFeature
-import voodoo.fromJson
-import voodoo.getList
-import voodoo.getReified
 import voodoo.markdownTable
 import voodoo.util.blankOr
 import java.io.File
@@ -82,45 +76,7 @@ data class LockPack(
             }
         }
 
-        fun fromJson(jsonObject: JsonObject): LockPack {
-            return with(LockPack()) {
-                LockPack(
-                    id = jsonObject.getReified("id") ?: id,
-                    title = jsonObject.getReified("title") ?: title,
-                    version = jsonObject.getReified("version") ?: version,
-                    icon = jsonObject.getReified("icon") ?: icon,
-                    authors = jsonObject.getList("authors") ?: authors,
-                    mcVersion = jsonObject.getReified("mcVersion") ?: mcVersion,
-                    forge = jsonObject.getReified("forge") ?: forge,
-                    launch = jsonObject.getReified("launch") ?: launch,
-                    userFiles = jsonObject.getReified("userFiles") ?: userFiles,
-                    localDir = jsonObject.getReified("localDir") ?: localDir,
-                    sourceDir = jsonObject.getReified("sourceDir") ?: sourceDir,
-                    features = jsonObject.getList("features") ?: features
-                )
-            }
-        }
-
-        fun toJson(lockpack: LockPack, marshaller: Marshaller): JsonObject {
-            val jsonObject = JsonObject()
-            with(lockpack) {
-                jsonObject["id"] = marshaller.serialize(id)
-                jsonObject["title"] = marshaller.serialize(title)
-                jsonObject["version"] = marshaller.serialize(version)
-                jsonObject["icon"] = marshaller.serialize(icon)
-                jsonObject["authors"] = marshaller.serialize(authors)
-                jsonObject["mcVersion"] = marshaller.serialize(mcVersion)
-                jsonObject["forge"] = marshaller.serialize(forge)
-                jsonObject["launch"] = marshaller.serialize(launch)
-                jsonObject["userFiles"] = marshaller.serialize(userFiles)
-                jsonObject["localDir"] = marshaller.serialize(localDir)
-                jsonObject["sourceDir"] = marshaller.serialize(sourceDir)
-                jsonObject["features"] = marshaller.serialize(features)
-            }
-            return jsonObject
-        }
-
-        fun loadEntries(srcDir: File) = srcDir.walkTopDown()
+        fun parseFiles(srcDir: File) = srcDir.walkTopDown()
             .filter {
                 it.isFile && it.name.endsWith(".lock.json")
             }
@@ -141,10 +97,10 @@ data class LockPack(
     @JsonIgnore
     val entrySet: MutableSet<LockEntry> = mutableSetOf()
 
-    fun loadEntries(rootFolder: File = this.rootFolder, jankson: Jankson) {
+    fun loadEntries(rootFolder: File = this.rootFolder) {
         this.rootFolder = rootFolder
         val srcDir = rootFolder.resolve(sourceDir)
-        loadEntries(srcDir)
+        LockPack.parseFiles(srcDir)
             .forEach { (lockEntry, file) ->
                 val relFile = file.relativeTo(srcDir)
                 lockEntry.file = relFile
@@ -152,7 +108,7 @@ data class LockPack(
             }
     }
 
-    fun writeLockEntries(jankson: Jankson) {
+    fun writeLockEntries() {
         entrySet.forEach { lockEntry ->
             ModPack.logger.info("saving: ${lockEntry.id} , file: ${lockEntry.file} , entry: $lockEntry")
 

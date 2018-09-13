@@ -1,6 +1,5 @@
 package voodoo.pack
 
-import blue.endless.jankson.Jankson
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.consume
@@ -28,7 +27,7 @@ import java.io.File
 object CursePack : AbstractPack() {
     override val label = "SK Packer"
 
-    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
+    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean) {
         val cacheDir = directories.cacheHome
         val workspaceDir = File(".curse")
         val modpackDir = workspaceDir.resolve(with(modpack) { "$id-$version" })

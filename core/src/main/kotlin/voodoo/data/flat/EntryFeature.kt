@@ -1,7 +1,5 @@
 package voodoo.data.flat
 
-import blue.endless.jankson.JsonObject
-import blue.endless.jankson.impl.Marshaller
 import kotlinx.serialization.KOutput
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
@@ -10,7 +8,6 @@ import kotlinx.serialization.internal.EnumSerializer
 import kotlinx.serialization.serializer
 import voodoo.data.Recommendation
 import voodoo.data.sk.FeatureFiles
-import voodoo.getReified
 
 /**
  * Created by nikky on 29/03/18.
@@ -30,8 +27,9 @@ data class EntryFeature(
     companion object {
         override fun save(output: KOutput, obj: EntryFeature) {
             val elemOutput = output.writeBegin(serialClassDesc)
-            elemOutput.writeStringElementValue(serialClassDesc, 0, obj.name!!)
-            elemOutput.writeBooleanElementValue(serialClassDesc, 1, obj.selected!!)
+            if(obj.name != null)
+                elemOutput.writeStringElementValue(serialClassDesc, 0, obj.name!!)
+            elemOutput.writeBooleanElementValue(serialClassDesc, 1, obj.selected)
             if (obj.description != "")
                 elemOutput.writeStringElementValue(serialClassDesc, 2, obj.description)
             if (obj.recommendation != null) {
@@ -44,34 +42,5 @@ data class EntryFeature(
             }
             output.writeEnd(serialClassDesc)
         }
-
-        fun fromJson(jsonObject: JsonObject) = with(EntryFeature()) {
-            EntryFeature(
-                name = jsonObject.getReified("name") ?: name,
-                selected = jsonObject.getReified("selected") ?: selected,
-                description = jsonObject.getReified("descriptions") ?: description,
-                recommendation = jsonObject.getReified("recommendation") ?: recommendation,
-                files = jsonObject.getReified("files") ?: files
-            )
-        }
-
-        fun toDefaultJson(feature: EntryFeature?, marshaller: Marshaller): JsonObject {
-            return (marshaller.serialize(EntryFeature()) as JsonObject).apply {
-                this.remove("selected")
-            }
-        }
-
-//        fun toJson(feature: EntryFeature, marshaller: Marshaller) : JsonObject {
-//            val jsonObj = JsonObject()
-//            with(feature) {
-//                jsonObj["selected"] = marshaller.serialize(selected)
-//                jsonObj["description"] = marshaller.serialize(description)
-//                jsonObj["recommendation"] = marshaller.serialize(recommendation)
-//                jsonObj["files"] = marshaller.serialize(files)
-//
-//            }
-//            return jsonObj
-//        }
-
     }
 }

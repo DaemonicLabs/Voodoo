@@ -1,6 +1,7 @@
 package voodoo
 
 import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.serialization.json.JSON
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.builder.resolve
@@ -49,10 +50,10 @@ object BuildSpek : Spek({
 
         context("loading pack") {
             val modpack by memoized {
-                Builder.jankson.fromJson<ModPack>(packFile)
+                JSON.unquoted.parse<ModPack>(packFile.readText())
             }
             val entries by memoized {
-                modpack.loadEntries(rootFolder, Builder.jankson)
+                modpack.loadEntries(rootFolder)
                 modpack.entrySet
             }
 
@@ -66,7 +67,6 @@ object BuildSpek : Spek({
                     runBlocking(context = ExceptionHelper.context) {
                         modpack.resolve(
                                 rootFolder,
-                                Builder.jankson,
                                 updateAll = true,
                                 updateDependencies = true
                         )
