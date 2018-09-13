@@ -1,12 +1,11 @@
 package voodoo.server
 
-import blue.endless.jankson.Jankson
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.InvalidArgumentException
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import kotlinx.serialization.json.JSON
 import mu.KLogging
-import voodoo.*
 import voodoo.data.UserFiles
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
@@ -27,25 +26,6 @@ import java.io.File
  */
 
 object Install : KLogging() {
-
-    private val jankson = Jankson.builder()
-            .registerTypeAdapter(LockPack.Companion::fromJson)
-            .registerTypeAdapter(LockEntry.Companion::fromJson)
-            .registerTypeAdapter(EntryFeature.Companion::fromJson)
-            .registerTypeAdapter(UserFiles.Companion::fromJson)
-            .registerTypeAdapter(Launch.Companion::fromJson)
-            .registerTypeAdapter(SKFeature.Companion::fromJson)
-            .registerTypeAdapter(FeatureProperties.Companion::fromJson)
-            .registerTypeAdapter(FeatureFiles.Companion::fromJson)
-            .registerSerializer(LockPack.Companion::toJson)
-            .registerSerializer(LockEntry.Companion::toJson)
-            .registerSerializer(ProjectID.Companion::toJson)
-            .registerSerializer(FileID.Companion::toJson)
-            .registerPrimitiveTypeAdapter(ProjectID.Companion::fromJson)
-            .registerPrimitiveTypeAdapter(FileID.Companion::fromJson)
-//            .registerSerializer(EntryFeature.Companion::toJson)
-            .build()
-
     @JvmStatic
     fun main(vararg args: String): Unit = mainBody {
 
@@ -58,10 +38,9 @@ object Install : KLogging() {
             logger.info("pack file: $packFile")
             logger.info("cleanConfig: $cleanConfig")
 
-            val jsonObject = jankson.load(packFile)
-            val modpack: LockPack = jankson.fromJson(jsonObject)
+            val modpack: LockPack = JSON.unquoted.parse(packFile.readText())
             val rootFolder = packFile.absoluteFile.parentFile
-            modpack.loadEntries(rootFolder, jankson)
+            modpack.loadEntries(rootFolder)
 
             Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
         }

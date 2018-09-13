@@ -1,23 +1,11 @@
 package voodoo
 
-import blue.endless.jankson.Jankson
-import blue.endless.jankson.JsonObject
 import com.xenomachina.argparser.*
 import kotlinx.coroutines.experimental.cancel
+import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.builder.resolve
-import voodoo.data.UserFiles
-import voodoo.data.curse.FileID
-import voodoo.data.curse.ProjectID
-import voodoo.data.flat.Entry
-import voodoo.data.flat.EntryFeature
 import voodoo.data.flat.ModPack
-import voodoo.data.lock.LockEntry
-import voodoo.data.lock.LockPack
-import voodoo.data.sk.FeatureFiles
-import voodoo.data.sk.FeatureProperties
-import voodoo.data.sk.Launch
-import voodoo.data.sk.SKFeature
 import voodoo.provider.Provider
 import voodoo.util.json
 import voodoo.util.runBlockingWith
@@ -31,27 +19,6 @@ import kotlin.system.exitProcess
  */
 
 object Builder : KLogging() {
-    val jankson = Jankson.builder()
-            .registerTypeAdapter(ModPack.Companion::fromJson)
-            .registerTypeAdapter(Entry.Companion::fromJson)
-            .registerTypeAdapter(LockPack.Companion::fromJson)
-            .registerTypeAdapter(LockEntry.Companion::fromJson)
-            .registerTypeAdapter(EntryFeature.Companion::fromJson)
-            .registerTypeAdapter(UserFiles.Companion::fromJson)
-            .registerTypeAdapter(Launch.Companion::fromJson)
-            .registerTypeAdapter(SKFeature.Companion::fromJson)
-            .registerTypeAdapter(FeatureProperties.Companion::fromJson)
-            .registerTypeAdapter(FeatureFiles.Companion::fromJson)
-            .registerSerializer(ModPack.Companion::toJson)
-            .registerSerializer(Entry.Companion::toJson)
-            .registerSerializer(LockPack.Companion::toJson)
-            .registerSerializer(LockEntry.Companion::toJson)
-            .registerSerializer(ProjectID.Companion::toJson)
-            .registerSerializer(FileID.Companion::toJson)
-            .registerPrimitiveTypeAdapter(ProjectID.Companion::fromJson)
-            .registerPrimitiveTypeAdapter(FileID.Companion::fromJson)
-            .build()
-
     @JvmStatic
     fun main(vararg args: String) = mainBody {
         val parser = ArgParser(args)
@@ -60,13 +27,11 @@ object Builder : KLogging() {
 
         arguments.runBlockingWith { coroutineContext ->
 
-            val jsonObject = jankson.load(packFile)
-            val modpack: ModPack = jankson.fromJson(jsonObject)
-            //val modpack = inFile.readYaml<ModPack>()
+            val modpack: ModPack = JSON.unquoted.parse(packFile.readText())
 
             val parentFolder = packFile.absoluteFile.parentFile
 
-            modpack.loadEntries(parentFolder, jankson)
+            modpack.loadEntries(parentFolder)
 
             modpack.entrySet.forEach { entry ->
                 logger.info("id: ${entry.id} entry: $entry")
@@ -74,11 +39,10 @@ object Builder : KLogging() {
 
             try {
                 modpack.resolve(
-                        parentFolder,
-                        jankson,
-                        updateAll = updateAll,
-                        updateDependencies = updateDependencies,
-                        updateEntries = entries
+                    parentFolder,
+                    updateAll = updateAll,
+                    updateDependencies = updateDependencies,
+                    updateEntries = entries
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
@@ -100,17 +64,14 @@ object Builder : KLogging() {
             lockedPack.entrySet.clear()
             lockedPack.entrySet += modpack.lockEntrySet
 
-            lockedPack.writeLockEntries(jankson)
+            lockedPack.writeLockEntries()
 
             if (stdout) {
                 print(lockedPack.json)
             } else {
                 val file = targetFile ?: parentFolder.resolve("${lockedPack.id}.lock.json")
-                logger.info("Writing lock file... $targetFile")
-                val defaultJson = JsonObject()
-                val lockJson = jankson.toJson(lockedPack) as JsonObject
-                val delta = lockJson.getDelta(defaultJson)
-                file.writeText(delta.toJson(true, true).replace("\t", "  "))
+                logger.info("Writing lock file... $file")
+                file.writeText(JSON.unquoted.stringify(lockedPack))
             }
 
             //TODO: generate modlist
@@ -133,25 +94,36 @@ object Builder : KLogging() {
 }
 
 private class Arguments(parser: ArgParser) {
-    val packFile by parser.positional("FILE",
-            help = "input pack json") { File(this) }
+    val packFile by parser.positional(
+        "FILE",
+        help = "input pack json"
+    ) { File(this) }
 
-    val targetFile by parser.storing("--output", "-o",
-            help = "output file json") { File(this) }
-            .default<File?>(null)
+    val targetFile by parser.storing(
+        "--output", "-o",
+        help = "output file json"
+    ) { File(this) }
+        .default<File?>(null)
 
-    val stdout by parser.flagging("--stdout", "-s",
-            help = "print output")
-            .default(false)
+    val stdout by parser.flagging(
+        "--stdout", "-s",
+        help = "print output"
+    )
+        .default(false)
 
-    val updateDependencies by parser.flagging("--updateDependencies", "-d",
-            help = "update all dependencies")
-            .default(false)
+    val updateDependencies by parser.flagging(
+        "--updateDependencies", "-d",
+        help = "update all dependencies"
+    )
+        .default(false)
 
-    val updateAll by parser.flagging("--updateAll", "-u",
-            help = "update all entries, implies updating dependencies")
-            .default(false)
+    val updateAll by parser.flagging(
+        "--updateAll", "-u",
+        help = "update all entries, implies updating dependencies"
+    )
+        .default(false)
 
     val entries by parser.adding(
-            "-E", help = "entries to update")
+        "-E", help = "entries to update"
+    )
 }

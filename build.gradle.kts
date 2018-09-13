@@ -88,7 +88,6 @@ allprojects {
         maven { setUrl("http://repo.maven.apache.org/maven2") }
         maven { setUrl("http://jcenter.bintray.com") }
         maven { setUrl("https://dl.bintray.com/s1m0nw1/KtsRunner") }
-        maven { setUrl("https://jitpack.io") }
         maven { setUrl("https://dl.bintray.com/kotlin/ktor") }
         maven { setUrl("https://kotlin.bintray.com/kotlinx") }
     }

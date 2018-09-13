@@ -1,25 +1,17 @@
 package voodoo.data.flat
 
-import blue.endless.jankson.Jankson
-import blue.endless.jankson.JsonObject
-import blue.endless.jankson.impl.Marshaller
+
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import kotlinx.serialization.*
 import kotlinx.serialization.Optional
-import kotlinx.serialization.internal.PrimitiveDesc
-import kotlinx.serialization.internal.SerialClassDescImpl
 import mu.KLogging
-import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.data.sk.Launch
 import voodoo.data.sk.SKFeature
 import voodoo.forge.Forge
-import voodoo.fromJson
-import voodoo.getList
-import voodoo.getReified
 import java.io.File
 import java.util.*
 import kotlin.system.exitProcess
@@ -87,54 +79,11 @@ data class ModPack(
                 this.write(saver, actual)
             }
         }
-
-        fun toJson(modpack: ModPack, marshaller: Marshaller): JsonObject {
-            val jsonObject = JsonObject()
-            with(modpack) {
-                jsonObject["id"] = marshaller.serialize(id)
-                jsonObject["title"] = marshaller.serialize(title)
-                jsonObject["version"] = marshaller.serialize(version)
-                jsonObject["icon"] = marshaller.serialize(icon)
-                jsonObject["authors"] = marshaller.serialize(authors)
-                jsonObject["mcVersion"] = marshaller.serialize(mcVersion)
-                jsonObject["forge"] = marshaller.serialize(forge)
-                jsonObject["launch"] = marshaller.serialize(launch)
-                jsonObject["userFiles"] = marshaller.serialize(userFiles)
-                jsonObject["localDir"] = marshaller.serialize(localDir)
-                jsonObject["sourceDir"] = marshaller.serialize(sourceDir)
-            }
-            return jsonObject
-        }
-
-        fun fromJson(jsonObj: JsonObject): ModPack {
-            val id: String = jsonObj.getReified("id")!!
-            return with(ModPack(id)) {
-                ModPack(
-                    id = id,
-                    title = jsonObj.getReified("title") ?: title,
-                    version = jsonObj.getReified("version") ?: version,
-                    icon = jsonObj.getReified("icon") ?: icon,
-                    authors = jsonObj.getList("authors") ?: authors,
-                    mcVersion = jsonObj.getReified("mcVersion") ?: mcVersion,
-                    forge = jsonObj.getReified("forge") ?: forge,
-                    launch = jsonObj.getReified("launch") ?: launch,
-                    userFiles = jsonObj.getReified("userFiles") ?: userFiles,
-                    localDir = jsonObj.getReified("localDir") ?: localDir,
-                    sourceDir = jsonObj.getReified("sourceDir") ?: sourceDir
-                )
-            }
-        }
     }
 
     @Transient
     @JsonIgnore
     val features: MutableList<SKFeature> = mutableListOf()
-
-    fun toDefaultJson(marshaller: Marshaller): JsonObject {
-        return (marshaller.serialize(ModPack(id)) as JsonObject).apply {
-            this.remove("id")
-        }
-    }
 
     //TODO: move file into ModPack ad LockPack as lateinit
     @Transient
@@ -179,7 +128,7 @@ data class ModPack(
         }
     }
 
-    fun loadEntries(folder: File, jankson: Jankson) {
+    fun loadEntries(folder: File) {
         val srcDir = folder.resolve(sourceDir)
         srcDir.walkTopDown()
             .filter {
@@ -194,9 +143,9 @@ data class ModPack(
     }
 
     //TODO: call from LockPack ?
-    fun loadLockEntries(folder: File, jankson: Jankson) {
+    fun loadLockEntries(folder: File) {
         val srcDir = folder.resolve(sourceDir)
-        LockPack.loadEntries(srcDir)
+        LockPack.parseFiles(srcDir)
             .forEach { (lockEntry, file) ->
                 val relFile = file.relativeTo(srcDir)
                 lockEntry.file = relFile
@@ -204,7 +153,7 @@ data class ModPack(
             }
     }
 
-    fun writeEntries(folder: File, jankson: Jankson) {
+    fun writeEntries(folder: File) {
         entrySet.forEach { entry ->
             val folder = folder.resolve(sourceDir).resolve(entry.folder)
             //TODO: calculate filename in Entry
@@ -214,7 +163,7 @@ data class ModPack(
             val targetFile = folder.resolve("$filename.entry.hjson").absoluteFile
             //TODO: only override folder if it was uninitialized before
             entry.file = targetFile
-            entry.serialize(jankson)
+            entry.serialize()
         }
     }
 

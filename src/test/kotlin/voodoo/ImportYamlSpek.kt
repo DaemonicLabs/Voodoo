@@ -1,8 +1,8 @@
 package voodoo
 
-import blue.endless.jankson.JsonObject
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.serialization.json.JSON
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.data.flat.Entry
@@ -160,12 +160,9 @@ object ImportYamlSpek : Spek({
                                     .replace('/', '-')
                                     .replace("[^\\w-]+".toRegex(), "")
                             val targetFile = folder.resolve("$filename.entry.hjson")
-                            val json = YamlImporter.jankson.marshaller.serialize(entry)//.toJson(true, true)
-                            if (json is JsonObject) {
-                                val defaultJson = entry.toDefaultJson(YamlImporter.jankson.marshaller)
-                                val delta = json.getDelta(defaultJson)
-                                targetFile.writeText(delta.toJson(true, true).replace("\t", "  "))
-                            }
+
+                            targetFile.writeText(JSON.unquoted.stringify(entry))
+
                             targetFile
                         }
                     }
@@ -182,7 +179,7 @@ object ImportYamlSpek : Spek({
                         //TODO: move into tests for parsing/validating flat entrries
                         val entries2 by memoized {
                             files.map { file ->
-                                YamlImporter.jankson.fromJson<Entry>(file)
+                                Entry.loadEntry(file)
                             }
                         }
                         it("entry id is valid") {

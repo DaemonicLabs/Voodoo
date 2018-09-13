@@ -1,7 +1,5 @@
 package voodoo.data.curse
 
-import blue.endless.jankson.JsonPrimitive
-import blue.endless.jankson.impl.Marshaller
 import com.fasterxml.jackson.annotation.JsonCreator
 import kotlinx.serialization.*
 import kotlinx.serialization.internal.PrimitiveDesc
@@ -38,16 +36,6 @@ class FileID(val value: Int) {
             else {
                 id.toIntOrNull()?.let { FileID(it) }
             }
-        }
-
-        fun fromJson(jsonObj: Any) =
-                FileID(
-                        value = (jsonObj as Long).toInt()
-                )
-
-
-        fun toJson(fileId: FileID, marshaller: Marshaller): JsonPrimitive {
-            return JsonPrimitive(fileId.value)
         }
     }
 }

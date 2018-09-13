@@ -1,6 +1,5 @@
 package voodoo.builder
 
-import blue.endless.jankson.Jankson
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.consume
@@ -15,7 +14,6 @@ import voodoo.memoize
 import voodoo.provider.Provider
 import java.io.File
 import java.util.*
-import kotlin.coroutines.experimental.coroutineContext
 import kotlin.system.exitProcess
 
 /**
@@ -104,13 +102,12 @@ private fun ModPack.processFeature(feature: SKFeature) {
  */
 suspend fun ModPack.resolve(
     folder: File,
-    jankson: Jankson,
     updateAll: Boolean = false,
     updateDependencies: Boolean = false,
     updateEntries: List<String> = listOf()
 ) {
-    this.loadEntries(folder, jankson)
-    this.loadLockEntries(folder, jankson)
+    this.loadEntries(folder)
+    this.loadLockEntries(folder)
 
     val srcDir = folder.resolve(sourceDir)
 

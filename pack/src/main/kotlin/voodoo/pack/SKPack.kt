@@ -1,6 +1,5 @@
 package voodoo.pack
 
-import blue.endless.jankson.Jankson
 import com.skcraft.launcher.builder.PackageBuilder
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.*
@@ -26,7 +25,7 @@ object SKPack : AbstractPack() {
 
     override val label = "SK Packer"
 
-    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
+    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean) {
         val cacheDir = directories.cacheHome
         val workspaceDir = modpack.rootFolder.resolve("workspace").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.id)

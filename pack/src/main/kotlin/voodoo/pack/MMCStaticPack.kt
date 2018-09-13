@@ -1,6 +1,5 @@
 package voodoo.pack
 
-import blue.endless.jankson.Jankson
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
 import voodoo.util.jenkins.DownloadVoodoo
@@ -11,7 +10,7 @@ import kotlin.system.exitProcess
 object MMCStaticPack : AbstractPack() {
     override val label = "MultiMC Static Packer"
 
-    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
+    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean) {
         val targetDir = File(target ?: ".multimc")
         val definitionsDir = File("multimc").apply { mkdirs() }
         val cacheDir = directories.cacheHome.resolve("mmc")

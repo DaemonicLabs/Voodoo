@@ -1,7 +1,6 @@
 package voodoo.pack
 
-import blue.endless.jankson.Jankson
-import blue.endless.jankson.JsonObject
+import kotlinx.serialization.json.JSON
 import voodoo.data.lock.LockPack
 import voodoo.util.jenkins.DownloadVoodoo
 import java.io.File
@@ -14,7 +13,7 @@ import java.io.File
 object ServerPack : AbstractPack() {
     override val label = "Server SKPack"
 
-    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean, jankson: Jankson) {
+    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean) {
         val serverDir = File(target ?: "server_${modpack.id}")
 
         if (clean) {
@@ -63,11 +62,7 @@ object ServerPack : AbstractPack() {
         }
 
         val packFile = serverDir.resolve("pack.lock.json")
-
-        val defaultJson = JsonObject() //TODO: get default pack ?
-        val lockJson = jankson.toJson(modpack) as JsonObject
-        val delta = lockJson.getDelta(defaultJson)
-        packFile.writeText(delta.toJson(true, true).replace("\t", "  "))
+        packFile.writeText(JSON.unquoted.stringify(modpack))
 
 
         logger.info("packaging installer jar")

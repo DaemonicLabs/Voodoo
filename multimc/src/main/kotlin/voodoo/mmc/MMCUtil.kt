@@ -1,18 +1,13 @@
 package voodoo.mmc
 
-import blue.endless.jankson.Jankson
-import blue.endless.jankson.JsonObject
-import blue.endless.jankson.impl.Marshaller
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.Recommendation
 import voodoo.data.sk.FeatureProperties
 import voodoo.forge.Forge
-import voodoo.fromJson
-import voodoo.getReified
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
-import voodoo.registerSerializer
-import voodoo.registerTypeAdapter
 import voodoo.util.Directories
 import voodoo.util.Platform
 import voodoo.util.readJson
@@ -27,67 +22,43 @@ import java.util.concurrent.TimeUnit
 import javax.swing.*
 import kotlin.system.exitProcess
 
-
 object MMCUtil : KLogging() {
     private val directories = Directories.get(moduleName = "multimc")
     private val cacheHome = directories.cacheHome
     val configHome = Directories.get().configHome
 
-    private val jankson = Jankson.Builder()
-            .registerTypeAdapter { jsonObj ->
-                with(MMCConfiguration()) {
-                    MMCConfiguration(
-                        binary = jsonObj.getReified("binary") ?: this.binary,
-                        path = jsonObj.getReified<String>("path")?.let { File(System.getProperty("user.home")).resolve(it) } ?: this.path
-                    )
-                }
-            }
-            .registerSerializer { mmcConfig: MMCConfiguration, marshaller: Marshaller ->
-                val jsonObj = JsonObject()
-                jsonObj["binary"] = marshaller.serialize(mmcConfig.binary)
-                jsonObj["path"] = marshaller.serialize(mmcConfig.path.toRelativeString(File(System.getProperty("user.home"))))
-                jsonObj
-            }
-            .build()
-
+    @Serializable
     data class MMCConfiguration(
-            val binary: String = "multimc",
-            val path: File = File(System.getProperty("user.home") + "/.local/share/multimc")
+        val binary: String = "multimc",
+        val path: File = File(System.getProperty("user.home") + "/.local/share/multimc")
     )
+
     val mmcConfig: MMCConfiguration
 
     init {
         val mmcConfigurationFile = configHome.resolve("multimc.hjson")
         logger.info("loading multimc config $mmcConfigurationFile")
         mmcConfig = when {
-            mmcConfigurationFile.exists() -> {
-                val jsonObj = jankson.load(mmcConfigurationFile)
-                jankson.fromJson(jsonObj)
-            }
+            mmcConfigurationFile.exists() -> JSON.unquoted.parse<MMCConfiguration>(mmcConfigurationFile.readText())
             else -> MMCConfiguration()
         }
 
-        val json = jankson.marshaller.serialize(mmcConfig)//.toJson(true, true)
-        if (json is JsonObject) {
-            val defaultJson = JsonObject() //jankson.marshaller.serialize(MMCConfiguration()) as JsonObject
-            val delta = json.getDelta(defaultJson)
-            mmcConfigurationFile.parentFile.mkdirs()
-            mmcConfigurationFile.writeText(delta.toJson(true, true).replace("\t", "  "))
-        }
+        mmcConfigurationFile.parentFile.mkdirs()
+        mmcConfigurationFile.writeText(JSON.unquoted.stringify(mmcConfig))
     }
 
     fun startInstance(name: String) {
-          val process = ProcessBuilder(mmcConfig.binary, "--launch", name)
-                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                .redirectError(ProcessBuilder.Redirect.INHERIT)
-                .start()
+        val process = ProcessBuilder(mmcConfig.binary, "--launch", name)
+            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+            .redirectError(ProcessBuilder.Redirect.INHERIT)
+            .start()
 
         logger.info("started multimc instance $name")
     }
 
-
     var dir: File? = null
         private set
+
     /**
      * Finds the MultiMC data loccation
      */
@@ -100,9 +71,11 @@ object MMCUtil : KLogging() {
                     logger.error { multimcFile }
                     logger.error("Cannot find MultiMC on PATH")
                     logger.error("make sure to add the multimc install location to the PATH")
-                    logger.error("go to `Control Panel\\All Control Panel Items\\System`" +
+                    logger.error(
+                        "go to `Control Panel\\All Control Panel Items\\System`" +
                             " >> Advanced system settings" +
-                            " >> Environment Variables")
+                            " >> Environment Variables"
+                    )
                     logger.info("once added restart the shell and try to execute `multimc`")
                     exitProcess(1)
                 }
@@ -119,11 +92,11 @@ object MMCUtil : KLogging() {
     fun String.runCommandWithRedirct(workingDir: File = cacheHome) {
         logger.info("running '$this' in $workingDir")
         ProcessBuilder(*split(" ").toTypedArray())
-                .directory(workingDir)
-                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                .redirectError(ProcessBuilder.Redirect.INHERIT)
-                .apply { logger.info { directory() } }
-                .start()
+            .directory(workingDir)
+            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+            .redirectError(ProcessBuilder.Redirect.INHERIT)
+            .apply { logger.info { directory() } }
+            .start()
 //                .waitFor()
     }
 
@@ -131,10 +104,10 @@ object MMCUtil : KLogging() {
         try {
             val parts = this.split("\\s".toRegex())
             val proc = ProcessBuilder(*parts.toTypedArray())
-                    .directory(workingDir)
-                    .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                    .redirectError(ProcessBuilder.Redirect.PIPE)
-                    .start()
+                .directory(workingDir)
+                .redirectOutput(ProcessBuilder.Redirect.PIPE)
+                .redirectError(ProcessBuilder.Redirect.PIPE)
+                .start()
 
             proc.waitFor(60, TimeUnit.MINUTES)
             return proc.inputStream.bufferedReader().readText()
@@ -145,15 +118,15 @@ object MMCUtil : KLogging() {
     }
 
     fun readCfg(cfgFile: File): SortedMap<String, String> =
-            cfgFile.bufferedReader().useLines { lines ->
-                lines.map { Pair(it.substringBefore('='), it.substringAfter('=')) }.toMap().toSortedMap()
-            }
+        cfgFile.bufferedReader().useLines { lines ->
+            lines.map { Pair(it.substringBefore('='), it.substringAfter('=')) }.toMap().toSortedMap()
+        }
 
     fun writeCfg(cfgFile: File, properties: Map<String, String>) {
         cfgFile.createNewFile()
         cfgFile.writeText(
-                properties.map { (key, value) -> "$key=$value" }
-                        .joinToString("\n")
+            properties.map { (key, value) -> "$key=$value" }
+                .joinToString("\n")
         )
     }
 
@@ -161,10 +134,16 @@ object MMCUtil : KLogging() {
      * Prepares a MultiMC instance
      * @return Minecraft Directory
      */
-    fun installEmptyPack(name: String, folder: String,
-                         icon: File? = null, mcVersion: String? = null, forgeBuild: Int? = null,
-                         instanceDir: File = with(MMCUtil.findDir()) { this.resolve(readCfg(this.resolve("multimc.cfg"))["InstanceDir"] ?: "instances").resolve(folder) },
-                         preLaunchCommand: String? = null): File {
+    fun installEmptyPack(
+        name: String, folder: String,
+        icon: File? = null, mcVersion: String? = null, forgeBuild: Int? = null,
+        instanceDir: File = with(MMCUtil.findDir()) {
+            this.resolve(
+                readCfg(this.resolve("multimc.cfg"))["InstanceDir"] ?: "instances"
+            ).resolve(folder)
+        },
+        preLaunchCommand: String? = null
+    ): File {
         instanceDir.mkdirs()
 
         val minecraftDir = instanceDir.resolve(".minecraft")
@@ -172,7 +151,8 @@ object MMCUtil : KLogging() {
 
         val iconKey = if (icon != null && icon.exists()) {
             var iconName = "icon_$folder"
-            val iconsDir =  with(MMCUtil.findDir()) { this.resolve(readCfg(this.resolve("multimc.cfg"))["IconsDir"] ?: "icons") }
+            val iconsDir =
+                with(MMCUtil.findDir()) { this.resolve(readCfg(this.resolve("multimc.cfg"))["IconsDir"] ?: "icons") }
             var iconFile = iconsDir.resolve("$iconName.png")
             icon.copyTo(iconFile, overwrite = true)
 //            val iconName = "icon"
@@ -194,19 +174,19 @@ object MMCUtil : KLogging() {
                 val (_, _, _, forgeVersion) = Forge.resolveVersion(forgeBuild.toString(), mcVersion)
                 logger.info("forge version : $forgeVersion")
                 mmcPack.components = listOf(
-                        PackComponent(
-                                uid = "net.minecraftforge",
-                                version = forgeVersion,
-                                important = true
-                        )
+                    PackComponent(
+                        uid = "net.minecraftforge",
+                        version = forgeVersion,
+                        important = true
+                    )
                 ) + mmcPack.components
             }
             mmcPack.components = listOf(
-                    PackComponent(
-                            uid = "net.minecraft",
-                            version = mcVersion,
-                            important = true
-                    )
+                PackComponent(
+                    uid = "net.minecraft",
+                    version = mcVersion,
+                    important = true
+                )
             ) + mmcPack.components
         }
         mmcPackPath.writeJson(mmcPack)
@@ -232,11 +212,11 @@ object MMCUtil : KLogging() {
     }
 
     fun selectFeatures(
-            features: List<FeatureProperties>,
-            previousSelection: Map<String, Boolean>,
-            name: String, version: String,
-            forceDisplay: Boolean,
-            updating: Boolean
+        features: List<FeatureProperties>,
+        previousSelection: Map<String, Boolean>,
+        name: String, version: String,
+        forceDisplay: Boolean,
+        updating: Boolean
     ): Pair<Map<String, Boolean>, Boolean> {
         if (features.isEmpty() && !forceDisplay) {
             logger.info("no selectable features")
@@ -244,7 +224,7 @@ object MMCUtil : KLogging() {
         }
 
         UIManager.setLookAndFeel(
-                UIManager.getSystemLookAndFeelClassName()
+            UIManager.getSystemLookAndFeelClassName()
         )
 
         logger.debug { features }
@@ -254,9 +234,9 @@ object MMCUtil : KLogging() {
             it.name
         }, {
             JToggleButton(it.name, previousSelection[it.name] ?: it.selected)
-                    .apply {
-                        horizontalAlignment = SwingConstants.RIGHT
-                    }
+                .apply {
+                    horizontalAlignment = SwingConstants.RIGHT
+                }
         })
 
         var success = false
@@ -264,7 +244,8 @@ object MMCUtil : KLogging() {
 
 //        logger.info { UIManager.getDefaults()/*.filterValues { it is Icon }.map { (k, v) -> "$k = $v\n" }*/ }
 
-        val windowTitle = "Features" + if (name.isBlank()) "" else " - $name" + if (version.isBlank()) "" else " - $version"
+        val windowTitle =
+            "Features" + if (name.isBlank()) "" else " - $name" + if (version.isBlank()) "" else " - $version"
         val dialog = object : JDialog(null as Dialog?, windowTitle, true) {
             init {
                 modalityType = Dialog.ModalityType.APPLICATION_MODAL
@@ -275,15 +256,15 @@ object MMCUtil : KLogging() {
                 val setter = features.sortedBy { it.name }.mapIndexed { row, feature ->
                     val indicator = JCheckBox("", toggleButtons[feature.name]!!.isSelected)
                     panel.add(indicator,
-                            GridBagConstraints().apply {
-                                gridx = 0
-                                gridy = row
-                                weightx = 0.001
-                                weighty = 0.001
-                                anchor = GridBagConstraints.LINE_START
-                                fill = GridBagConstraints.BOTH
-                                ipady = 4
-                            }
+                        GridBagConstraints().apply {
+                            gridx = 0
+                            gridy = row
+                            weightx = 0.001
+                            weighty = 0.001
+                            anchor = GridBagConstraints.LINE_START
+                            fill = GridBagConstraints.BOTH
+                            ipady = 4
+                        }
                     )
 
                     val toggle = toggleButtons[feature.name]!!.apply {
@@ -303,15 +284,15 @@ object MMCUtil : KLogging() {
                     }
 
                     panel.add(toggle,
-                            GridBagConstraints().apply {
-                                gridx = 1
-                                gridy = row
-                                weightx = 0.001
-                                weighty = 0.001
-                                anchor = GridBagConstraints.LINE_START
-                                fill = GridBagConstraints.BOTH
-                                ipady = 4
-                            }
+                        GridBagConstraints().apply {
+                            gridx = 1
+                            gridy = row
+                            weightx = 0.001
+                            weighty = 0.001
+                            anchor = GridBagConstraints.LINE_START
+                            fill = GridBagConstraints.BOTH
+                            ipady = 4
+                        }
                     )
 
                     val recommendation = when (feature.recommendation) {
@@ -334,27 +315,27 @@ object MMCUtil : KLogging() {
                     }
 
                     panel.add(recommendation,
-                            GridBagConstraints().apply {
-                                gridx = 2
-                                gridy = row
-                                weightx = 0.001
-                                fill = GridBagConstraints.BOTH
-                                insets = Insets(0, 8, 0, 8)
-                            }
+                        GridBagConstraints().apply {
+                            gridx = 2
+                            gridy = row
+                            weightx = 0.001
+                            fill = GridBagConstraints.BOTH
+                            insets = Insets(0, 8, 0, 8)
+                        }
                     )
 
                     if (!feature.description.isBlank()) {
                         val descriptionText = JLabel("<html>${feature.description}</html>")
                         panel.add(descriptionText,
-                                GridBagConstraints().apply {
-                                    gridx = 3
-                                    gridy = row
-                                    weightx = 1.0
-                                    anchor = GridBagConstraints.LINE_START
-                                    fill = GridBagConstraints.BOTH
-                                    ipady = 8
-                                    insets = Insets(0, 8, 0, 8)
-                                }
+                            GridBagConstraints().apply {
+                                gridx = 3
+                                gridy = row
+                                weightx = 1.0
+                                anchor = GridBagConstraints.LINE_START
+                                fill = GridBagConstraints.BOTH
+                                ipady = 8
+                                insets = Insets(0, 8, 0, 8)
+                            }
                         )
                     }
                     feature.name to ::select
@@ -451,13 +432,13 @@ object MMCUtil : KLogging() {
                 add(buttonPane, BorderLayout.SOUTH)
                 defaultCloseOperation = DISPOSE_ON_CLOSE
                 addWindowListener(
-                        object : WindowAdapter() {
-                            override fun windowClosed(e: WindowEvent) {
-                                logger.info("closing dialog")
-                                if (!success)
-                                    exitProcess(1)
-                            }
+                    object : WindowAdapter() {
+                        override fun windowClosed(e: WindowEvent) {
+                            logger.info("closing dialog")
+                            if (!success)
+                                exitProcess(1)
                         }
+                    }
                 )
                 pack()
                 setLocationRelativeTo(null)
