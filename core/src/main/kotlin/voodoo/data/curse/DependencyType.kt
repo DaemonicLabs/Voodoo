@@ -1,7 +1,12 @@
 package voodoo.data.curse;
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.KInput
+import kotlinx.serialization.KOutput
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.internal.PrimitiveDesc
 import mu.KLogging
+import voodoo.data.Side
 
 enum class DependencyType {
     REQUIRED,

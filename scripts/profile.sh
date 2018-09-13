@@ -5,7 +5,7 @@ PWD=$(pwd)
 
 cd $DIR
 
-$DIR/gradlew :build -x test
+$DIR/gradlew clean :build -x test
 
 if [ ! $? -eq 0 ]; then
     echo "Error building voodoo"

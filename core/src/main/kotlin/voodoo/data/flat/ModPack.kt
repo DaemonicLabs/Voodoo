@@ -24,7 +24,6 @@ import java.io.File
 import java.util.*
 import kotlin.system.exitProcess
 
-
 /**
  * Created by nikky on 28/03/18.
  * @author Nikky
@@ -33,62 +32,61 @@ import kotlin.system.exitProcess
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Serializable
 data class ModPack(
-        @JsonInclude(JsonInclude.Include.ALWAYS)
-        var id: String,
-        @Optional var title: String = "",
-        @JsonInclude(JsonInclude.Include.ALWAYS)
-        @Optional var version: String = "1.0",
-        @Optional var icon: String = "icon.png",
-        @Optional val authors: List<String> = emptyList(),
-        @Optional var mcVersion: String = "",
-        @Optional var forge: String = "recommended",
-        //var forgeBuild: Int = -1,
-        @JsonInclude(JsonInclude.Include.ALWAYS)
-        @Optional val launch: Launch = Launch(),
-        @JsonInclude(JsonInclude.Include.ALWAYS)
-        @Optional var userFiles: UserFiles = UserFiles(),
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    var id: String,
+    @Optional var title: String = "",
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    @Optional var version: String = "1.0",
+    @Optional var icon: String = "icon.png",
+    @Optional val authors: List<String> = emptyList(),
+    @Optional var mcVersion: String = "",
+    @Optional var forge: String = "recommended",
+    //var forgeBuild: Int = -1,
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    @Optional val launch: Launch = Launch(),
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    @Optional var userFiles: UserFiles = UserFiles(),
 
-        @JsonInclude(JsonInclude.Include.ALWAYS)
-        @Optional var localDir: String = "local",
-        @JsonInclude(JsonInclude.Include.ALWAYS)
-        @Optional var sourceDir: String = "src"
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    @Optional var localDir: String = "local",
+    @JsonInclude(JsonInclude.Include.ALWAYS)
+    @Optional var sourceDir: String = "src"
 ) {
-//    @Serializer(forClass = ModPack::class)
-    companion object : KLogging() { //, KSerializer<ModPack> {
-//        override val serialClassDesc = object: SerialClassDescImpl("voodoo.data.flat.ModPack") {
-//            init {
-//                addElement("id")
-//                addElement("title")
-//                addElement("version")
-//                addElement("icon")
-//            }
-//        }
-//
-//        override fun load(input: KInput): ModPack {
-//            return ModPack(
-//                    id = "test"
-////                    id = input.readStringElementValue(PrimitiveDesc("id"), 0),
-////                    title = input.readStringElementValue(PrimitiveDesc("title"), 1),
-////                    icon = input.readStringElementValue(PrimitiveDesc("icon"), 2)
-//            )
-//        }
-//
-//        override fun save(output: KOutput, obj: ModPack) {
-////            output.writeStringValue(obj.id)
-//            output.writeStringElementValue(PrimitiveDesc("id"), 0, obj.id)
-//
-//            with(ModPack(obj.id)) {
-//                if(this.title != obj.title)
-////                    output.writeStringValue(obj.title)
-//                    output.writeStringElementValue(PrimitiveDesc("title"), 1, obj.title)
-//                if(this.version != obj.version)
-////                    output.writeStringValue(obj.version)
-//                    output.writeStringElementValue(PrimitiveDesc("title"), 2, obj.version)
-//                if(this.icon != obj.icon)
-////                    output.writeStringValue(obj.icon)
-//                    output.writeStringElementValue(PrimitiveDesc("icon"), 2, obj.icon)
-//            }
-//        }
+    @Serializer(forClass = ModPack::class)
+    companion object : KLogging() {
+        override fun save(output: KOutput, obj: ModPack) {
+            val elemOutput = output.writeBegin(serialClassDesc)
+            elemOutput.writeStringElementValue(serialClassDesc, 0, obj.id)
+            with(ModPack(obj.id)) {
+                elemOutput.serialize(this.title, obj.title, 1)
+                elemOutput.serialize(this.version, obj.version, 2)
+                elemOutput.serialize(this.icon, obj.icon, 3)
+                elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 4)
+                elemOutput.serialize(this.mcVersion, obj.mcVersion, 5)
+                elemOutput.serialize(this.forge, obj.forge, 6)
+                elemOutput.serializeObj(this.launch, obj.launch, Launch::class.serializer(), 7)
+                elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles::class.serializer(), 8)
+                elemOutput.serialize(this.localDir, obj.localDir, 9)
+                elemOutput.serialize(this.sourceDir, obj.sourceDir, 10)
+            }
+            elemOutput.writeEnd(serialClassDesc)
+        }
+
+        private inline fun <reified T : Any> KOutput.serialize(default: T, actual: T, index: Int) {
+            if (default != actual) {
+                println("serializing element $index $actual")
+                when (actual) {
+                    is String -> this.writeStringElementValue(serialClassDesc, index, actual)
+                    is Int -> this.writeIntElementValue(serialClassDesc, index, actual)
+                }
+            }
+        }
+        private fun <T : Any?> KOutput.serializeObj(default: T, actual: T, saver: KSerialSaver<T>, index: Int) {
+            if (default != actual) {
+                this.writeElement(serialClassDesc, index)
+                this.write(saver, actual)
+            }
+        }
 
         fun toJson(modpack: ModPack, marshaller: Marshaller): JsonObject {
             val jsonObject = JsonObject()
@@ -112,39 +110,20 @@ data class ModPack(
             val id: String = jsonObj.getReified("id")!!
             return with(ModPack(id)) {
                 ModPack(
-                        id = id,
-                        title = jsonObj.getReified("title") ?: title,
-                        version = jsonObj.getReified("version") ?: version,
-                        icon = jsonObj.getReified("icon") ?: icon,
-                        authors = jsonObj.getList("authors") ?: authors,
-                        mcVersion = jsonObj.getReified("mcVersion") ?: mcVersion,
-                        forge = jsonObj.getReified("forge") ?: forge,
-                        launch = jsonObj.getReified("launch") ?: launch,
-                        userFiles = jsonObj.getReified("userFiles") ?: userFiles,
-                        localDir = jsonObj.getReified("localDir") ?: localDir,
-                        sourceDir = jsonObj.getReified("sourceDir") ?: sourceDir
+                    id = id,
+                    title = jsonObj.getReified("title") ?: title,
+                    version = jsonObj.getReified("version") ?: version,
+                    icon = jsonObj.getReified("icon") ?: icon,
+                    authors = jsonObj.getList("authors") ?: authors,
+                    mcVersion = jsonObj.getReified("mcVersion") ?: mcVersion,
+                    forge = jsonObj.getReified("forge") ?: forge,
+                    launch = jsonObj.getReified("launch") ?: launch,
+                    userFiles = jsonObj.getReified("userFiles") ?: userFiles,
+                    localDir = jsonObj.getReified("localDir") ?: localDir,
+                    sourceDir = jsonObj.getReified("sourceDir") ?: sourceDir
                 )
             }
         }
-    }
-
-    init {
-//        if (versionCache.path == featureCache.path) {
-//            versionCache.mkdirs()
-//            featureCache.mkdirs()
-//        }
-//
-//        if (versionCache.isDirectory)
-//            versionCache = versionCache.resolve("versions.json")
-//
-//        logger.info("using version cache: $versionCache")
-//        versions = versionCache.readJsonOrNull() ?: mutableMapOf()
-//
-//        if (featureCache.isDirectory)
-//            featureCache = featureCache.resolve("features.json")
-//
-//        logger.info("using feature cache: $featureCache")
-//        features = featureCache.readJsonOrNull() ?: mutableListOf()
     }
 
     @Transient
@@ -203,30 +182,26 @@ data class ModPack(
     fun loadEntries(folder: File, jankson: Jankson) {
         val srcDir = folder.resolve(sourceDir)
         srcDir.walkTopDown()
-                .filter {
-                    it.isFile && it.name.endsWith(".entry.hjson")
-                }
-                .forEach { file ->
-                    val entryJsonObj = jankson.load(file)
-                    val entry: Entry = jankson.fromJson(entryJsonObj)
-                    addEntry(entry, file.absoluteFile, false)
-                }
+            .filter {
+                it.isFile && it.name.endsWith(".entry.hjson")
+            }
+            .forEach { file ->
+                val entry = Entry.loadEntry(file)
+//                val entryJsonObj = jankson.load(file)
+//                val entry: Entry = jankson.fromJson(entryJsonObj)
+                addEntry(entry, file.absoluteFile, false)
+            }
     }
 
     //TODO: call from LockPack ?
     fun loadLockEntries(folder: File, jankson: Jankson) {
         val srcDir = folder.resolve(sourceDir)
-        srcDir.walkTopDown()
-                .filter {
-                    it.isFile && it.name.endsWith(".lock.json")
-                }
-                .forEach {
-                    val relFile = it.relativeTo(srcDir)
-                    val entryJsonObj = jankson.load(it)
-                    val lockEntry: LockEntry = jankson.fromJson(entryJsonObj)
-                    lockEntry.file = relFile
-                    addOrMerge(lockEntry) { dupl, newEntry -> newEntry }
-                }
+        LockPack.loadEntries(srcDir)
+            .forEach { (lockEntry, file) ->
+                val relFile = file.relativeTo(srcDir)
+                lockEntry.file = relFile
+                addOrMerge(lockEntry) { dupl, newEntry -> newEntry }
+            }
     }
 
     fun writeEntries(folder: File, jankson: Jankson) {
@@ -234,8 +209,8 @@ data class ModPack(
             val folder = folder.resolve(sourceDir).resolve(entry.folder)
             //TODO: calculate filename in Entry
             val filename = entry.id
-                    .replace('/', '-')
-                    .replace("[^\\w-]+".toRegex(), "")
+                .replace('/', '-')
+                .replace("[^\\w-]+".toRegex(), "")
             val targetFile = folder.resolve("$filename.entry.hjson").absoluteFile
             //TODO: only override folder if it was uninitialized before
             entry.file = targetFile
@@ -243,50 +218,20 @@ data class ModPack(
         }
     }
 
-    fun writeLockEntries(folder: File, jankson: Jankson) {
-        lockEntrySet.forEach { lockEntry ->
-            logger.info("saving: ${lockEntry.id} , file: ${lockEntry.file} , entry: $lockEntry")
-
-            val folder = folder.resolve(lockEntry.file).absoluteFile.parentFile
-
-            val targetFolder = if (folder.toPath().none { it.toString() == "_CLIENT" || it.toString() == "_SERVER" }) {
-                when (lockEntry.side) {
-                    Side.CLIENT -> {
-                        folder.resolve("_CLIENT")
-                    }
-                    Side.SERVER -> {
-                        folder.resolve("_SERVER")
-                    }
-                    Side.BOTH -> folder
-                }
-            } else folder
-
-            targetFolder.mkdirs()
-
-            val defaultJson = lockEntry.toDefaultJson(jankson.marshaller)
-            val lockJson = jankson.toJson(lockEntry) as JsonObject
-            val delta = lockJson.getDelta(defaultJson)
-
-            val targetFile = targetFolder.resolve(lockEntry.file.name)
-
-            targetFile.writeText(delta.toJson(true, true).replace("\t", "  "))
-        }
-    }
-
     fun lock(): LockPack {
         return LockPack(
-                id = id,
-                title = title,
-                version = version,
-                icon = icon,
-                authors = authors,
-                mcVersion = mcVersion,
-                forge = Forge.getForgeBuild(forge, mcVersion),
-                launch = launch,
-                userFiles = userFiles,
-                localDir = localDir,
-                sourceDir = sourceDir,
-                features = features
+            id = id,
+            title = title,
+            version = version,
+            icon = icon,
+            authors = authors,
+            mcVersion = mcVersion,
+            forge = Forge.getForgeBuild(forge, mcVersion),
+            launch = launch,
+            userFiles = userFiles,
+            localDir = localDir,
+            sourceDir = sourceDir,
+            features = features
         )
     }
 

@@ -3,6 +3,7 @@ package voodoo.data.nested
 import mu.KLogging
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
+import voodoo.data.sk.Launch
 
 /**
  * Created by nikky on 28/03/18.
@@ -23,6 +24,7 @@ data class NestedPack(
         var forge: String = "recommended",
         var mcVersion: String = "",
         var userFiles: UserFiles = UserFiles(),
+        var launch: Launch = Launch(),
         var root: NestedEntry = NestedEntry(),
         var localDir: String = "local",
         var sourceDir: String = "src"
@@ -39,6 +41,7 @@ data class NestedPack(
                 forge = forge,
                 mcVersion = mcVersion,
                 userFiles = userFiles,
+                launch = launch,
                 localDir = localDir,
                 sourceDir = sourceDir
         )

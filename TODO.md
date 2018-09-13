@@ -1,9 +1,13 @@
 # documentation generator | tome
 
-https://github.com/korlibs/korte
+<s> https://github.com/korlibs/korte
 
 - liquid templating
-- markdown or html -> user choice
+- markdown or html -> user choice</s>
+
+use html-dsl in .kts files
+maybe css-dsl
+search for markdown-dsl
 
 # cursemods enum
 
@@ -14,6 +18,12 @@ enum class CurseMods(id: Int) {
     OtherMod(6543)
 }
 ```
+
+# curse import -> kotlinpoet
+https://github.com/square/kotlinpoet
+
+generate the NestedPack
+
 # config tweaks
 
 move more deployment options into the modpack configuration
