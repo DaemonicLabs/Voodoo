@@ -2,6 +2,7 @@ package voodoo.data.sk
 
 import blue.endless.jankson.JsonObject
 import com.fasterxml.jackson.annotation.JsonInclude
+import kotlinx.serialization.Serializable
 import voodoo.getReified
 
 /**
@@ -9,6 +10,7 @@ import voodoo.getReified
  * @author Nikky
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@Serializable
 data class FeatureFiles(
         var include: List<String> = emptyList(),
         var exclude: List<String> = emptyList()

@@ -4,8 +4,16 @@ import blue.endless.jankson.Jankson
 import blue.endless.jankson.JsonObject
 import blue.endless.jankson.impl.Marshaller
 import com.fasterxml.jackson.annotation.JsonIgnore
+import kotlinx.serialization.KOutput
+import kotlinx.serialization.KSerialSaver
+import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.list
+import kotlinx.serialization.serializer
 import voodoo.data.Side
 import voodoo.data.UserFiles
+import voodoo.data.curse.Author
 import voodoo.data.flat.ModPack
 import voodoo.data.sk.Launch
 import voodoo.data.sk.SKFeature
@@ -21,36 +29,74 @@ import java.io.File
  * @author Nikky
  */
 
+@Serializable
 data class LockPack(
-        val id: String = "",
-        val title: String = "",
-        val version: String = "1.0",
-        val icon: String = "icon.png",
-        val authors: List<String> = emptyList(),
-        val mcVersion: String = "",
-        val forge: Int = -1,
-        val launch: Launch = Launch(),
-        var userFiles: UserFiles = UserFiles(),
-        var localDir: String = "local",
-        var sourceDir: String = id, //"src-$id",
-        val features: List<SKFeature> = emptyList()
+    val id: String = "",
+    @Optional val title: String = "",
+    @Optional val version: String = "1.0",
+    @Optional val icon: String = "icon.png",
+    @Optional val authors: List<String> = emptyList(),
+    val mcVersion: String = "",
+    @Optional val forge: Int = -1,
+    @Optional val launch: Launch = Launch(),
+    @Optional var userFiles: UserFiles = UserFiles(),
+    @Optional var localDir: String = "local",
+    @Optional var sourceDir: String = "src", //id, //"src-$id",
+    @Optional val features: List<SKFeature> = emptyList()
 ) {
+    @Serializer(forClass = LockPack::class)
     companion object {
+        override fun save(output: KOutput, obj: LockPack) {
+            val elemOutput = output.writeBegin(serialClassDesc)
+            elemOutput.writeStringElementValue(serialClassDesc, 0, obj.id)
+            with(LockPack(obj.id)) {
+                elemOutput.serialize(this.title, obj.title, 1)
+                elemOutput.serialize(this.version, obj.version, 2)
+                elemOutput.serialize(this.icon, obj.icon, 3)
+                elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 4)
+                elemOutput.writeStringElementValue(serialClassDesc, 5, obj.mcVersion)
+                elemOutput.serialize(this.forge, obj.forge, 6)
+                elemOutput.serializeObj(this.launch, obj.launch, Launch::class.serializer(), 7)
+                elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles::class.serializer(), 8)
+                elemOutput.serialize(this.localDir, obj.localDir, 9)
+                elemOutput.serialize(this.sourceDir, obj.sourceDir, 10)
+                elemOutput.serializeObj(this.features, obj.features, SKFeature::class.serializer().list, 11)
+            }
+            elemOutput.writeEnd(serialClassDesc)
+        }
+
+        private inline fun <reified T : Any> KOutput.serialize(default: T, actual: T, index: Int) {
+            if (default != actual) {
+                println("serializing element $index $actual")
+                when (actual) {
+                    is String -> this.writeStringElementValue(serialClassDesc, index, actual)
+                    is Int -> this.writeIntElementValue(serialClassDesc, index, actual)
+                }
+            }
+        }
+
+        private fun <T : Any?> KOutput.serializeObj(default: T, actual: T, saver: KSerialSaver<T>, index: Int) {
+            if (default != actual) {
+                this.writeElement(serialClassDesc, index)
+                this.write(saver, actual)
+            }
+        }
+
         fun fromJson(jsonObject: JsonObject): LockPack {
             return with(LockPack()) {
                 LockPack(
-                        id = jsonObject.getReified("id") ?: id,
-                        title = jsonObject.getReified("title") ?: title,
-                        version = jsonObject.getReified("version") ?: version,
-                        icon = jsonObject.getReified("icon") ?: icon,
-                        authors = jsonObject.getList("authors") ?: authors,
-                        mcVersion = jsonObject.getReified("mcVersion") ?: mcVersion,
-                        forge = jsonObject.getReified("forge") ?: forge,
-                        launch = jsonObject.getReified("launch") ?: launch,
-                        userFiles = jsonObject.getReified("userFiles") ?: userFiles,
-                        localDir = jsonObject.getReified("localDir") ?: localDir,
-                        sourceDir = jsonObject.getReified("sourceDir") ?: sourceDir,
-                        features = jsonObject.getList("features") ?: features
+                    id = jsonObject.getReified("id") ?: id,
+                    title = jsonObject.getReified("title") ?: title,
+                    version = jsonObject.getReified("version") ?: version,
+                    icon = jsonObject.getReified("icon") ?: icon,
+                    authors = jsonObject.getList("authors") ?: authors,
+                    mcVersion = jsonObject.getReified("mcVersion") ?: mcVersion,
+                    forge = jsonObject.getReified("forge") ?: forge,
+                    launch = jsonObject.getReified("launch") ?: launch,
+                    userFiles = jsonObject.getReified("userFiles") ?: userFiles,
+                    localDir = jsonObject.getReified("localDir") ?: localDir,
+                    sourceDir = jsonObject.getReified("sourceDir") ?: sourceDir,
+                    features = jsonObject.getList("features") ?: features
                 )
             }
         }
@@ -73,6 +119,12 @@ data class LockPack(
             }
             return jsonObject
         }
+
+        fun loadEntries(srcDir: File) = srcDir.walkTopDown()
+            .filter {
+                it.isFile && it.name.endsWith(".lock.json")
+            }
+            .map { LockEntry.loadEntry(it) to it }
     }
 
     @JsonIgnore
@@ -89,23 +141,16 @@ data class LockPack(
     @JsonIgnore
     val entrySet: MutableSet<LockEntry> = mutableSetOf()
 
-
     fun loadEntries(rootFolder: File = this.rootFolder, jankson: Jankson) {
         this.rootFolder = rootFolder
         val srcDir = rootFolder.resolve(sourceDir)
-        srcDir.walkTopDown()
-                .filter {
-                    it.isFile && it.name.endsWith(".lock.json")
-                }
-                .forEach {
-                    val relFile = it.relativeTo(srcDir)
-                    val entryJsonObj = jankson.load(it)
-                    val lockEntry: LockEntry = jankson.fromJson(entryJsonObj)
-                    lockEntry.file = relFile
-                    addOrMerge(lockEntry) { dupl, newEntry -> newEntry}
-                }
+        loadEntries(srcDir)
+            .forEach { (lockEntry, file) ->
+                val relFile = file.relativeTo(srcDir)
+                lockEntry.file = relFile
+                addOrMerge(lockEntry) { dupl, newEntry -> newEntry }
+            }
     }
-
 
     fun writeLockEntries(jankson: Jankson) {
         entrySet.forEach { lockEntry ->
@@ -126,27 +171,24 @@ data class LockPack(
             } else folder
 
             targetFolder.mkdirs()
-
-            val defaultJson = lockEntry.toDefaultJson(jankson.marshaller)
-            val lockJson = jankson.toJson(lockEntry) as JsonObject
-            val delta = lockJson.getDelta(defaultJson)
-
             val targetFile = targetFolder.resolve(lockEntry.file.name)
 
-            targetFile.writeText(delta.toJson(true, true).replace("\t", "  "))
+            targetFile.writeText(lockEntry.serialize())
         }
     }
 
     fun title() = title.blankOr ?: id
 
     val report: String
-        get() = markdownTable(header = "Title" to this.title(), content = listOf(
-                        "ID" to "`$id`",
-                        "Pack Version" to "`$version`",
-                        "MC Version" to "`$mcVersion`",
-                        "Author" to "`${authors.joinToString(", ")}`",
-                        "Icon" to "<img src=\"$icon\" alt=\"icon\" style=\"max-height: 128px;\"/>"
-                ))
+        get() = markdownTable(
+            header = "Title" to this.title(), content = listOf(
+                "ID" to "`$id`",
+                "Pack Version" to "`$version`",
+                "MC Version" to "`$mcVersion`",
+                "Author" to "`${authors.joinToString(", ")}`",
+                "Icon" to "<img src=\"$icon\" alt=\"icon\" style=\"max-height: 128px;\"/>"
+            )
+        )
 
     fun findEntryById(id: String) = entrySet.find { it.id == id }
 

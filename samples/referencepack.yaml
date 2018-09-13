@@ -8,8 +8,9 @@ title: Awesome Pack
 mcVersion: 1.12.2
 
 # Forge version / build number
-forge: recommended
-
+#forge: recommended
+launch:
+  flags: []
 # Your nNme here
 authors:
  - SomeDude

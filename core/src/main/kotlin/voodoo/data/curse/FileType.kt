@@ -1,6 +1,10 @@
 package voodoo.data.curse;
 
 import com.fasterxml.jackson.annotation.JsonCreator
+import kotlinx.serialization.KInput
+import kotlinx.serialization.KOutput
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.internal.PrimitiveDesc
 
 enum class FileType {
     RELEASE,

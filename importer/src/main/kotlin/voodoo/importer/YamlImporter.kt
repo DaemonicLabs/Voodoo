@@ -67,7 +67,7 @@ object YamlImporter : AbstractImporter() {
         run {
             val json = JSON(indented = true, context = SerialContext().apply {
 //                registerSerializer(ModPack::class, ModPack.Companion)
-            }, updateMode = UpdateMode.BANNED, nonstrict = true, unquoted = true)
+            }, updateMode = UpdateMode.BANNED, nonstrict = true, unquoted = true, indent = "  ")
             val jsonified = json.stringify(modpack)
             println(jsonified)
             val reloaded = json.parse<ModPack>(jsonified)

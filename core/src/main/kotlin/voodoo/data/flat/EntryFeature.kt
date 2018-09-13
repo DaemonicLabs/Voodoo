@@ -2,6 +2,12 @@ package voodoo.data.flat
 
 import blue.endless.jankson.JsonObject
 import blue.endless.jankson.impl.Marshaller
+import kotlinx.serialization.KOutput
+import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.internal.EnumSerializer
+import kotlinx.serialization.serializer
 import voodoo.data.Recommendation
 import voodoo.data.sk.FeatureFiles
 import voodoo.getReified
@@ -12,22 +18,40 @@ import voodoo.getReified
  */
 
 //@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@Serializable
 data class EntryFeature(
-        var name: String? = null,
-        var selected: Boolean = false,
-        var description: String = "",
-        var recommendation: Recommendation? = null,
-        var files: FeatureFiles = FeatureFiles()
+    @Optional var name: String? = null,
+    @Optional var selected: Boolean = false,
+    @Optional var description: String = "",
+    @Optional var recommendation: Recommendation? = null,
+    @Optional var files: FeatureFiles = FeatureFiles()
 ) {
-
+    @Serializer(forClass = EntryFeature::class)
     companion object {
+        override fun save(output: KOutput, obj: EntryFeature) {
+            val elemOutput = output.writeBegin(serialClassDesc)
+            elemOutput.writeStringElementValue(serialClassDesc, 0, obj.name!!)
+            elemOutput.writeBooleanElementValue(serialClassDesc, 1, obj.selected!!)
+            if (obj.description != "")
+                elemOutput.writeStringElementValue(serialClassDesc, 2, obj.description)
+            if (obj.recommendation != null) {
+                elemOutput.writeElement(serialClassDesc, 3)
+                elemOutput.write(EnumSerializer(Recommendation::class), obj.recommendation!!)
+            }
+            if (obj.files != FeatureFiles()) {
+                elemOutput.writeElement(serialClassDesc, 4)
+                elemOutput.write(FeatureFiles::class.serializer(), obj.files)
+            }
+            output.writeEnd(serialClassDesc)
+        }
+
         fun fromJson(jsonObject: JsonObject) = with(EntryFeature()) {
             EntryFeature(
-                    name = jsonObject.getReified("name") ?: name,
-                    selected = jsonObject.getReified("selected") ?: selected,
-                    description = jsonObject.getReified("descriptions") ?: description,
-                    recommendation = jsonObject.getReified("recommendation") ?: recommendation,
-                    files = jsonObject.getReified("files") ?: files
+                name = jsonObject.getReified("name") ?: name,
+                selected = jsonObject.getReified("selected") ?: selected,
+                description = jsonObject.getReified("descriptions") ?: description,
+                recommendation = jsonObject.getReified("recommendation") ?: recommendation,
+                files = jsonObject.getReified("files") ?: files
             )
         }
 
@@ -50,5 +74,4 @@ data class EntryFeature(
 //        }
 
     }
-
 }
