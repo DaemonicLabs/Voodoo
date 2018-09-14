@@ -106,9 +106,7 @@ data class Build(
     suspend fun details(userAgent: String): BuildWithDetails? {
         val url = "$url/api/json"
         return try {
-            val content: String = client.get(url) { header("User-Agent", userAgent) }
-            Jenkins.logger.info("received: $content")
-            return JSON.nonstrict.parse(content)
+            client.get(url) { header("User-Agent", userAgent) }
         } catch(e: Exception) {
             e.printStackTrace()
             Jenkins.logger.error(e.message)
