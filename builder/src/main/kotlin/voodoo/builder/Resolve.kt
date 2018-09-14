@@ -135,9 +135,10 @@ suspend fun ModPack.resolve(
 
     // recalculate all dependencies
 //    val resolved: MutableSet<String> = mutableSetOf()
-    var unresolved: Set<Entry> = this.entrySet.toSet()
+    var unresolved: Set<Entry> = entrySet.toSet()
     val resolved = Collections.synchronizedSet(mutableSetOf<String>())
-    withContext(context = pool) {
+    val accumulatorContext = newSingleThreadContext("AccumulatorContext")
+    coroutineScope {
         do {
             val newEntriesChannel = Channel<Pair<Entry, String>>(Channel.UNLIMITED)
 
@@ -145,7 +146,7 @@ suspend fun ModPack.resolve(
 
             val jobs = mutableListOf<Job>()
             for (entry in unresolved) {
-                jobs += launch {
+                jobs += launch(context = pool) {
                     logger.info("resolving: ${entry.id}")
                     val provider = Provider.valueOf(entry.provider).base
 
@@ -184,32 +185,37 @@ suspend fun ModPack.resolve(
                 }
             }
 
-            val newEntries = async {
-                val newEntries2 = mutableSetOf<Entry>()
-                for ((entry, path) in newEntriesChannel) {
-                    logger.info("channel received: ${entry.id}")
+            val newEntries = async(context = pool) {
+                val accumultator = mutableSetOf<Entry>()
+                suspend fun receive(entry: Entry, path: String) {
+                    withContext(accumulatorContext) {
+                        logger.info("channel received: ${entry.id}")
 
-                    if (entry.id in resolved) {
-                        logger.info("entry already resolved ${entry.id}")
-                        continue
-                    }
-                    if (this@resolve.entrySet.any { it.id == entry.id }) {
-                        logger.info("entry already added ${entry.id}")
-                        continue
-                    }
-                    if (newEntries2.any { it.id == entry.id }) {
-                        logger.info("entry already in queue ${entry.id}")
-                        continue
-                    }
+                        if (entry.id in resolved) {
+                            logger.info("entry already resolved ${entry.id}")
+                            return@withContext
+                        }
+                        if (this@resolve.entrySet.any { it.id == entry.id }) {
+                            logger.info("entry already added ${entry.id}")
+                            return@withContext
+                        }
+                        if (accumultator.any { it.id == entry.id }) {
+                            logger.info("entry already in queue ${entry.id}")
+                            return@withContext
+                        }
 
-                    val filename = entry.id.replace("[^\\w-]+".toRegex(), "")
-                    //TODO: calculate filename on demand
-                    val file = srcDir.resolve(path).resolve("$filename.entry.hjson").absoluteFile
-                    this@resolve.addEntry(entry, file, dependency = true)
-                    logger.info { "added entry ${entry.id}" }
-                    newEntries2 += entry
+                        val filename = entry.id.replace("[^\\w-]+".toRegex(), "")
+                        //TODO: calculate filename on demand
+                        val file = srcDir.resolve(path).resolve("$filename.entry.hjson").absoluteFile
+                        this@resolve.addEntry(entry, file, dependency = true)
+                        logger.info { "added entry ${entry.id}" }
+                        accumultator += entry
+                    }
                 }
-                newEntries2
+                for ((entry, path) in newEntriesChannel) {
+                    receive(entry, path)
+                }
+                accumultator
             }
 
             newEntriesChannel.consume {
