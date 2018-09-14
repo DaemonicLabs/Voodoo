@@ -73,7 +73,6 @@ object BuildSpek : Spek({
                 val lockEntries by memoized {
                     runBlocking {
                         modpack.resolve(
-                            coroutineScope = this,
                             folder = rootFolder,
                             updateAll = true,
                             updateDependencies = true

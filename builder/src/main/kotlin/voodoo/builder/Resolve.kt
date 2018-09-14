@@ -12,6 +12,7 @@ import voodoo.data.sk.FeatureProperties
 import voodoo.data.sk.SKFeature
 import voodoo.memoize
 import voodoo.provider.Provider
+import voodoo.util.pool
 import java.io.File
 import java.util.*
 import kotlin.system.exitProcess
@@ -101,7 +102,6 @@ private fun ModPack.processFeature(feature: SKFeature) {
  * ensure entries are loaded before calling resolve
  */
 suspend fun ModPack.resolve(
-    coroutineScope: CoroutineScope,
     folder: File,
     updateAll: Boolean = false,
     updateDependencies: Boolean = false,
@@ -138,16 +138,16 @@ suspend fun ModPack.resolve(
     var unresolved: Set<Entry> = this.entrySet.toSet()
     val resolved = Collections.synchronizedSet(mutableSetOf<String>())
 //    val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
-    do {
-        val newEntriesChannel = Channel<Pair<Entry, String>>(Channel.UNLIMITED)
+    coroutineScope {
+        do {
+            val newEntriesChannel = Channel<Pair<Entry, String>>(Channel.UNLIMITED)
 
-        logger.info("unresolved: ${unresolved.map { it.id }}")
+            logger.info("unresolved: ${unresolved.map { it.id }}")
 //        logger.info("resolved: $resolved")() + 1, "pool")
 
-        val jobs = mutableListOf<Job>()
-        coroutineScope.apply {
+            val jobs = mutableListOf<Pair <String, Job>>()
             for (entry in unresolved) {
-                jobs += launch(context = coroutineContext) {
+                jobs += entry.id to launch(context = pool) {
                     logger.info("resolving: ${entry.id}")
                     val provider = Provider.valueOf(entry.provider).base
 
@@ -186,7 +186,7 @@ suspend fun ModPack.resolve(
                 }
             }
 
-            val newEntries = async(context = coroutineContext) {
+            val newEntries = async(context = pool) {
                 val newEntries2 = mutableSetOf<Entry>()
                 for ((entry, path) in newEntriesChannel) {
                     logger.info("channel received: ${entry.id}")
@@ -225,9 +225,8 @@ suspend fun ModPack.resolve(
 
 //        unresolved = newEntries.await()
             unresolved = entrySet.asSequence().filter { !resolved.contains(it.id) }.toSet()
-        }
-    } while (unresolved.isNotEmpty())
-
+        } while (unresolved.isNotEmpty())
+    }
     val unresolvedIDs = resolved - this.entrySet.map { it.id }
     logger.info("unresolved ids: $unresolvedIDs")
     logger.info("resolved ids: ${lockEntrySet.map { it.id }}")

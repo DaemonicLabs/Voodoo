@@ -40,7 +40,6 @@ object Builder : KLogging() {
 
                 try {
                     modpack.resolve(
-                        this@runBlocking,
                         parentFolder,
                         updateAll = updateAll,
                         updateDependencies = updateDependencies,
