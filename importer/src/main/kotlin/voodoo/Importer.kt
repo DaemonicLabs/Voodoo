@@ -4,6 +4,7 @@ import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.flat.ModPack
 import voodoo.data.nested.NestedPack
+import voodoo.util.toJson
 import java.io.File
 
 object Importer : KLogging() {
@@ -26,7 +27,7 @@ object Importer : KLogging() {
         modpack.writeEntries(targetFolder)
         val packFile = targetFolder.resolve(targetFileName)
 
-        packFile.writeText(JSON.unquoted.stringify(modpack))
+        packFile.writeText(modpack.toJson)
     }
 
     suspend fun flatten(

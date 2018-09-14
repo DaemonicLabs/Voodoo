@@ -119,11 +119,10 @@ object SKPack : AbstractPack() {
             val targetFiles = deferredFiles.await()
             logger.debug("targetFiles: $targetFiles")
 
-            val featureChannel = Channel<SKFeatureComposite>(Channel.UNLIMITED)
             // write features
-            for (feature in modpack.features) {
-                logger.info("processing feature: ${feature.properties.name}")
-                jobs += launch {
+            val deferredFeatures = modpack.features.map { feature ->
+                async(pool) {
+                    logger.info("processing feature: ${feature.properties.name}")
                     for (id in feature.entries) {
                         logger.info(id)
 
@@ -143,38 +142,21 @@ object SKPack : AbstractPack() {
                         logger.info("includes = ${feature.files.include}")
                     }
 
-                    if (feature.properties.name.isBlank()) {
-    //                feature.properties.name = modpack.entries.find {it.id == feature.}
-                    }
-
                     logger.info("entries: ${feature.entries}")
                     logger.info("properties: ${feature.properties}")
 
-                    featureChannel.send(
-                        SKFeatureComposite(
-                            properties = feature.properties,
-                            files = feature.files
-                        )
-                    )
                     logger.info("processed feature $feature")
+                    SKFeatureComposite(
+                        properties = feature.properties,
+                        files = feature.files
+                    )
                 }
-                logger.info("started job: feature '${feature.properties.name}'")
-                delay(10)
             }
 
             delay(10)
             logger.info("waiting for feature jobs to finish")
 
-            val deferredFeatures = async {
-                featureChannel.map {
-                    it
-                }.toList()
-            }
-
-            featureChannel.consume {
-                jobs.joinAll()
-            }
-            val features = deferredFeatures.await()
+            val features = deferredFeatures.awaitAll()
 
             val skmodpack = SKModpack(
                 name = modpack.id,

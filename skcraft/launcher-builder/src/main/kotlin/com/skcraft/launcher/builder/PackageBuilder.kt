@@ -34,6 +34,7 @@ import voodoo.util.Directories
 import voodoo.util.copyInputStreamToFile
 import voodoo.util.download
 import kotlinx.io.core.Closeable
+import kotlinx.serialization.json.JSON
 import java.io.File
 import java.util.Properties
 import java.util.jar.JarFile
@@ -304,7 +305,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
     }
 
     @Throws(IOException::class)
-    private inline fun <reified V> read(path: File?): V {
+    private inline fun <reified V: Any> read(path: File?): V {
         try {
             return if (path == null) {
                 V::class.java.newInstance()

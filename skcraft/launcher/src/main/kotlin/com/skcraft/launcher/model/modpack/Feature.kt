@@ -7,15 +7,17 @@
 package com.skcraft.launcher.model.modpack
 
 import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonIdentityInfo
 import com.fasterxml.jackson.annotation.JsonValue
-import com.fasterxml.jackson.annotation.ObjectIdGenerators
+import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
 
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator::class, property = "name")
-class Feature(val name: String,
-              val description: String,
-              val selected: Boolean) : Comparable<Feature> {
-    var recommendation: Recommendation? = null
+@Serializable
+class Feature(
+    val name: String,
+    val description: String,
+    val selected: Boolean,
+    @Optional var recommendation: Recommendation? = null
+) : Comparable<Feature> {
 
     enum class Recommendation {
         STARRED, AVOID;

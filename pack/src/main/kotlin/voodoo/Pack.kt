@@ -8,6 +8,7 @@ import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.pack.*
+import voodoo.util.json
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -33,7 +34,7 @@ object Pack : KLogging() {
         runBlocking {
             arguments.run {
                 logger.info("loading $modpackLockFile")
-                val modpack: LockPack = JSON.unquoted.parse(modpackLockFile.readText())
+                val modpack: LockPack = json.parse(modpackLockFile.readText())
                 val rootFolder = modpackLockFile.absoluteFile.parentFile
                 modpack.loadEntries(rootFolder)
 
@@ -52,7 +53,7 @@ object Pack : KLogging() {
     }
 
     fun pack(packFile: File, rootFolder: File, vararg args: String) {
-        val modpack: LockPack = JSON.unquoted.parse(packFile.readText())
+        val modpack: LockPack = json.parse(packFile.readText())
         pack(modpack, rootFolder, *args)
     }
 

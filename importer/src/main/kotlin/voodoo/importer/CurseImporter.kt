@@ -15,6 +15,7 @@ import voodoo.util.UnzipUtility.unzip
 import voodoo.util.blankOr
 import voodoo.util.download
 import voodoo.util.readJson
+import voodoo.util.toJson
 import voodoo.util.writeYaml
 import java.io.File
 import java.util.*
@@ -121,7 +122,7 @@ object CurseImporter : AbstractImporter() {
 
                     overridesFolder.resolve(path).apply { mkdirs() }
                         .resolve("${addon.slug}.entry.hjson").writeText(
-                            JSON.unquoted.stringify(entry)
+                            entry.toJson
                         )
 
                     val lockEntry = LockEntry(
@@ -132,9 +133,7 @@ object CurseImporter : AbstractImporter() {
                         fileID = fileID
                     )
                     overridesFolder.resolve(path).apply { mkdirs() }.resolve("${addon.slug}.lock.hjson")
-                        .writeText(
-                            JSON.unquoted.stringify(lockEntry)
-                        )
+                        .writeText(lockEntry.toJson)
 
 
                     entries += nestedEntry
@@ -182,11 +181,11 @@ object CurseImporter : AbstractImporter() {
 
         val modpack = nestedPack.flatten()
 
-        packFile.writeText(JSON.unquoted.stringify(modpack))
+        packFile.writeText(modpack.toJson)
 
         val lockedPack = modpack.lock()
 
-        lockFile.writeText(JSON.unquoted.stringify(lockedPack))
+        lockFile.writeText(lockedPack.toJson)
 
         //TODO: create srcDir with single entries and version-locked files and ModPack
 

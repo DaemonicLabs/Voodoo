@@ -10,6 +10,7 @@ import voodoo.data.flat.ModPack
 import voodoo.provider.Provider
 import voodoo.util.ExceptionHelper
 import voodoo.util.json
+import voodoo.util.toJson
 import java.io.File
 import java.io.StringWriter
 import kotlin.system.exitProcess
@@ -24,7 +25,7 @@ object BuilderForDSL : KLogging() {
         modpack: ModPack,
         targetFolder: File,
         name: String,
-        targetFileName: String = "$name.entry.lock.hjson",
+        targetFileName: String = "$name.lock.hjson",
         targetFile: File = targetFolder.resolve(targetFileName),
         vararg args: String
     ) = mainBody {
@@ -76,7 +77,7 @@ object BuilderForDSL : KLogging() {
                 lockedPack.writeLockEntries()
 
                 logger.info("Writing lock file... $targetFile")
-                targetFile.writeText(JSON.unquoted.stringify(lockedPack))
+                targetFile.writeText(lockedPack.toJson)
 
                 // generate modlist
 
@@ -101,11 +102,11 @@ object BuilderForDSL : KLogging() {
         packFile: File,
         targetFolder: File,
         name: String,
-        targetFileName: String = "$name.entry.lock.hjson",
+        targetFileName: String = "$name.lock.hjson",
         targetFile: File = targetFolder.resolve(targetFileName),
         vararg args: String
     ) {
-        val modpack: ModPack = JSON.unquoted.parse(packFile.readText())
+        val modpack: ModPack = json.parse(packFile.readText())
         modpack.loadEntries(targetFolder)
         return build(modpack, targetFolder, name, targetFileName, targetFile, args = *args)
     }

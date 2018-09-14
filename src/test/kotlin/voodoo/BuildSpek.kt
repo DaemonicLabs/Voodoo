@@ -8,6 +8,7 @@ import voodoo.builder.resolve
 import voodoo.data.flat.ModPack
 import voodoo.importer.YamlImporter
 import voodoo.util.ExceptionHelper
+import voodoo.util.json
 import java.io.*
 
 object BuildSpek : Spek({
@@ -57,7 +58,7 @@ object BuildSpek : Spek({
 
         context("loading pack") {
             val modpack by memoized {
-                JSON.unquoted.parse<ModPack>(packFile.readText())
+                json.parse<ModPack>(packFile.readText())
             }
             val entries by memoized {
                 modpack.loadEntries(rootFolder)
