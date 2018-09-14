@@ -4,6 +4,7 @@ import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.serialization.json.JSON
 import voodoo.data.nested.NestedPack
 import voodoo.util.readYaml
+import voodoo.util.toJson
 import java.io.File
 
 /**
@@ -33,6 +34,6 @@ object YamlImporter : AbstractImporter() {
         val filename = name ?: nestedPack.id.replace("[^\\w-]+".toRegex(), "")
         val packFile = target.resolve("$filename.pack.hjson")
 
-        packFile.writeText(JSON.unquoted.stringify(modpack))
+        packFile.writeText(modpack.toJson)
     }
 }

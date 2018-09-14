@@ -10,6 +10,7 @@ import voodoo.data.nested.NestedPack
 import voodoo.importer.YamlImporter
 import voodoo.provider.Provider
 import voodoo.util.ExceptionHelper
+import voodoo.util.toJson
 import voodoo.util.yamlMapper
 import java.io.File
 import kotlin.test.assertEquals
@@ -167,7 +168,7 @@ object ImportYamlSpek : Spek({
                                 .replace("[^\\w-]+".toRegex(), "")
                             val targetFile = folder.resolve("$filename.entry.hjson")
 
-                            targetFile.writeText(JSON.unquoted.stringify(entry))
+                            targetFile.writeText(entry.toJson)
 
                             targetFile
                         }

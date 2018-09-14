@@ -9,6 +9,7 @@ import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.tester.MultiMCTester
 import voodoo.util.ExceptionHelper
+import voodoo.util.json
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -26,7 +27,7 @@ object Tester : KLogging() {
             arguments.run {
 
                 logger.info("loading $modpackLockFile")
-                val modpack: LockPack = JSON.unquoted.parse(modpackLockFile.readText())
+                val modpack: LockPack = json.parse(modpackLockFile.readText())
                 val rootFolder = modpackLockFile.absoluteFile.parentFile
                 modpack.loadEntries(rootFolder)
 

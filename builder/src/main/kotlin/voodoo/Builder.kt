@@ -10,6 +10,7 @@ import voodoo.data.flat.ModPack
 import voodoo.provider.Provider
 import voodoo.util.ExceptionHelper
 import voodoo.util.json
+import voodoo.util.toJson
 import java.io.File
 import java.io.StringWriter
 import kotlin.system.exitProcess
@@ -28,7 +29,7 @@ object Builder : KLogging() {
 
         runBlocking {
             arguments.run {
-                val modpack: ModPack = JSON.unquoted.parse(packFile.readText())
+                val modpack: ModPack = json.parse(packFile.readText())
 
                 val parentFolder = packFile.absoluteFile.parentFile
 
@@ -68,11 +69,11 @@ object Builder : KLogging() {
                 lockedPack.writeLockEntries()
 
                 if (stdout) {
-                    print(lockedPack.json)
+                    print(lockedPack.toJson)
                 } else {
                     val file = targetFile ?: parentFolder.resolve("${lockedPack.id}.lock.hjson")
                     logger.info("Writing lock file... $file")
-                    file.writeText(JSON.unquoted.stringify(lockedPack))
+                    file.writeText(json.stringify(lockedPack))
                 }
 
                 //TODO: generate modlist
@@ -90,6 +91,8 @@ object Builder : KLogging() {
 
                 val modlist = (targetFile ?: File(".")).absoluteFile.parentFile.resolve("modlist.md")
                 modlist.writeText(sw.toString())
+
+                logger.info("finished")
             }
         }
     }

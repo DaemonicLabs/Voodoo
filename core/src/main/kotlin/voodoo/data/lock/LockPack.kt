@@ -78,7 +78,7 @@ data class LockPack(
 
         fun parseFiles(srcDir: File) = srcDir.walkTopDown()
             .filter {
-                it.isFile && it.name.endsWith(".entry.lock.hjson")
+                it.isFile && it.name.endsWith(".lock.hjson")
             }
             .map { LockEntry.loadEntry(it) to it }
     }

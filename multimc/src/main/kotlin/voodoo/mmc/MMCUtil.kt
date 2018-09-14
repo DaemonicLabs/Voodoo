@@ -10,7 +10,9 @@ import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
 import voodoo.util.Platform
+import voodoo.util.json
 import voodoo.util.readJson
+import voodoo.util.toJson
 import voodoo.util.writeJson
 import java.awt.*
 import java.awt.event.WindowAdapter
@@ -39,12 +41,12 @@ object MMCUtil : KLogging() {
         val mmcConfigurationFile = configHome.resolve("multimc.hjson")
         logger.info("loading multimc config $mmcConfigurationFile")
         mmcConfig = when {
-            mmcConfigurationFile.exists() -> JSON.unquoted.parse<MMCConfiguration>(mmcConfigurationFile.readText())
+            mmcConfigurationFile.exists() -> json.parse(mmcConfigurationFile.readText())
             else -> MMCConfiguration()
         }
 
         mmcConfigurationFile.parentFile.mkdirs()
-        mmcConfigurationFile.writeText(JSON.unquoted.stringify(mmcConfig))
+        mmcConfigurationFile.writeText(mmcConfig.toJson)
     }
 
     fun startInstance(name: String) {

@@ -3,6 +3,7 @@ package voodoo.pack
 import kotlinx.serialization.json.JSON
 import voodoo.data.lock.LockPack
 import voodoo.util.jenkins.downloadVoodoo
+import voodoo.util.toJson
 import java.io.File
 
 /**
@@ -66,7 +67,7 @@ object ServerPack : AbstractPack() {
         }
 
         val packFile = serverDir.resolve("pack.lock.hjson")
-        packFile.writeText(JSON.unquoted.stringify(modpack))
+        packFile.writeText(modpack.toJson)
 
 
         logger.info("packaging installer jar")

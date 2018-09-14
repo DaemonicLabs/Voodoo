@@ -9,6 +9,7 @@ import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.util.ExceptionHelper
+import voodoo.util.json
 import java.io.File
 
 /**
@@ -29,7 +30,7 @@ object Install : KLogging() {
                 logger.info("pack file: $packFile")
                 logger.info("cleanConfig: $cleanConfig")
 
-                val modpack: LockPack = JSON.unquoted.parse(packFile.readText())
+                val modpack: LockPack = json.parse(packFile.readText())
                 val rootFolder = packFile.absoluteFile.parentFile
                 modpack.loadEntries(rootFolder)
 

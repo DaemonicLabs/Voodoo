@@ -41,11 +41,10 @@ private val ModPack.getDependencies: (entryName: String) -> List<Entry>
     get() = ::getDependenciesCall.memoize()
 
 private fun ModPack.resolveFeatureDependencies(entry: Entry, defaultName: String) {
-    val modpack = this
     val entryFeature = entry.feature ?: return
     val featureName = entry.name.takeIf { it.isNotBlank() } ?: defaultName
     // find feature with matching id
-    var feature = modpack.features.find { f -> f.properties.name == featureName }
+    var feature = features.find { f -> f.properties.name == featureName }
 
     //TODO: merge existing features with matching id
     if (feature == null) {
@@ -61,8 +60,8 @@ private fun ModPack.resolveFeatureDependencies(entry: Entry, defaultName: String
                 recommendation = entryFeature.recommendation
             )
         )
-        modpack.processFeature(feature)
-        modpack.features += feature
+        processFeature(feature)
+        features += feature
         entry.optional = true
     }
     logger.debug("processed ${entry.id}")
