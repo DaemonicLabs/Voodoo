@@ -26,12 +26,12 @@ import kotlin.system.exitProcess
 data class ModPack(
     @JsonInclude(JsonInclude.Include.ALWAYS)
     var id: String,
+    var mcVersion: String,
     @Optional var title: String = "",
     @JsonInclude(JsonInclude.Include.ALWAYS)
     @Optional var version: String = "1.0",
     @Optional var icon: String = "icon.png",
     @Optional val authors: List<String> = emptyList(),
-    @Optional var mcVersion: String = "",
     @Optional var forge: String = "recommended",
     //var forgeBuild: Int = -1,
     @JsonInclude(JsonInclude.Include.ALWAYS)
@@ -49,12 +49,12 @@ data class ModPack(
         override fun save(output: KOutput, obj: ModPack) {
             val elemOutput = output.writeBegin(serialClassDesc)
             elemOutput.writeStringElementValue(serialClassDesc, 0, obj.id)
-            with(ModPack(obj.id)) {
-                elemOutput.serialize(this.title, obj.title, 1)
-                elemOutput.serialize(this.version, obj.version, 2)
-                elemOutput.serialize(this.icon, obj.icon, 3)
-                elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 4)
-                elemOutput.serialize(this.mcVersion, obj.mcVersion, 5)
+            elemOutput.writeStringElementValue(serialClassDesc, 1, obj.mcVersion)
+            with(ModPack(obj.id, obj.mcVersion)) {
+                elemOutput.serialize(this.title, obj.title, 2)
+                elemOutput.serialize(this.version, obj.version, 3)
+                elemOutput.serialize(this.icon, obj.icon, 4)
+                elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 5)
                 elemOutput.serialize(this.forge, obj.forge, 6)
                 elemOutput.serializeObj(this.launch, obj.launch, Launch::class.serializer(), 7)
                 elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles::class.serializer(), 8)
@@ -154,14 +154,10 @@ data class ModPack(
     }
 
     fun writeEntries(rootFolder: File) {
+        val srcDir = rootFolder.resolve(sourceDir)
         entrySet.forEach { entry ->
             //TODO: calculate filename in Entry
-            val filename = entry.id
-                .replace('/', '-')
-                .replace("[^\\w-]+".toRegex(), "")
-            val targetFile = rootFolder.resolve(sourceDir).resolve(entry.folder).resolve("$filename.entry.hjson").absoluteFile
-            //TODO: only override rotFolder if it was uninitialized before
-            entry.file = targetFile
+            entry.setDefaultFile(srcDir)
             entry.serialize()
         }
     }

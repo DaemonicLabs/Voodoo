@@ -26,7 +26,7 @@ echo
 echo "importing $1"
 echo
 
-rm src/**/*.lock.json
+rm src/**/*.lock.hjson
 rm src/**/*.entry.hjson
 
 java -jar "$DIR/build/libs/voodoo.jar" import yaml "$DIR/samples/$pack.yaml"
@@ -36,8 +36,8 @@ echo "building $1"
 echo
 
 
-java -jar "$DIR/build/libs/voodoo.jar" build $pack.pack.hjson -o $pack.lock.json
+java -jar "$DIR/build/libs/voodoo.jar" build $pack.pack.hjson -o $pack.lock.hjson
 while [ $? -eq 0 ]; do
-    rm src/**/*.lock.json
-    java -jar "$DIR/build/libs/voodoo.jar" build $pack.pack.hjson -o $pack.lock.json
+    rm src/**/*.lock.hjson
+    java -jar "$DIR/build/libs/voodoo.jar" build $pack.pack.hjson -o $pack.lock.hjson
 done

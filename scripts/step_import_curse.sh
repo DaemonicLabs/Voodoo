@@ -12,7 +12,7 @@ cd run
 [ ! -e "$pack" ] && mkdir "$pack"
 cd "$pack"
 
-rm src/**/*.lock.json
+rm src/**/*.lock.hjson
 rm src/**/*.entry.hjson
 
 echo

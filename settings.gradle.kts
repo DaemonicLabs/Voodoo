@@ -15,6 +15,7 @@
 rootProject.name = "voodoo"
 
 include("core", "core:dsl")
+include("dsl")
 include("multimc", "multimc:installer")
 include("util")
 //include("fuel-coroutines")

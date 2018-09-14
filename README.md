@@ -38,7 +38,7 @@ Modern Minecraft versions (1.6.+) and Forge are supported
 Uses [SKCraft Launcher](https://github.com/SKCraft/Launcher#skcraft-launcher) Pack Format, but download all files,
 dependencies and configures all file input based on the `yaml` definition
 
-Reproducability: with a modpacks `.lock.json` file you can reproduce the modpack on any platform, server install or local testing
+Reproducability: with a modpacks `.lock.hjson` file you can reproduce the modpack on any platform, server install or local testing
 (given that the urls do not get taken down)
 
 Minimalistic Packs: on all platforms that support it (SK and the multimc-wrapper) mods will be downloaded by the user from the original location,  
@@ -79,19 +79,19 @@ flatten the yaml (this creates the main json) \
 `java -jar voodoo.jar flatten cotm.yaml`
 
 update the pack and write out the lockfile \
-`java -jar voodoo.jar build cotm.json -o cotm.lock.json --force`
+`java -jar voodoo.jar build cotm.json -o cotm.lock.hjson --force`
 
 to update just a few mods in the update step \
-`java -jar voodoo.jar build cotm.json -o cotm.lock.json -E Correlated -E "Magic Arsenal"`
+`java -jar voodoo.jar build cotm.pack.hjson -o cotm.lock.hjson -E Correlated -E "Magic Arsenal"`
 
 compile the pack for sklauncher \
-`java -jar voodoo.jar pack sk cotm.lock.json` \
+`java -jar voodoo.jar pack sk cotm.lock.hjson` \
 now you can just upload the contents of `workspace/_upload`
 
 ## Server Deployment
 
 create a server package \
-`java -jar voodoo.jar pack server cotm.lock.json`
+`java -jar voodoo.jar pack server cotm.lock.hjson`
 
 that creates a server *package* in `.server/`
  1. upload that package to **different** folder on your minecraft server
@@ -107,10 +107,10 @@ this will:
 ## MultiMC Integration / Deployment
 
 To run a test instance use \
-`java -jar voodoo.jar test mmc cotm.lock.json`
+`java -jar voodoo.jar test mmc cotm.lock.hjson`
 
 to compile a minimalistic MMC pack that selfupdates \
-`java -jar voodoo.jar pack mmc cotm.lock.json` \
+`java -jar voodoo.jar pack mmc cotm.lock.hjson` \
 this expects a file `multimc/${packname}.url.txt` that points at the previously uploaded
 skcraft data \
 more specifically the json file of the pack

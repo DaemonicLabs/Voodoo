@@ -1,6 +1,5 @@
 package voodoo.pack
 
-import kotlinx.coroutines.experimental.CoroutineScope
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
 import voodoo.util.jenkins.DownloadVoodoo
@@ -12,7 +11,6 @@ object MMCStaticPack : AbstractPack() {
     override val label = "MultiMC Static Packer"
 
     override suspend fun download(
-        coroutineScope: CoroutineScope,
         modpack: LockPack,
         target: String?,
         clean: Boolean

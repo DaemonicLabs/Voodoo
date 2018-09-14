@@ -40,7 +40,7 @@ object Server {
             srcDir.copyRecursively(serverDir, overwrite = true)
 
             serverDir.walkBottomUp().forEach {
-                if (it.name.endsWith(".entry.hjson") || it.name.endsWith(".lock.json"))
+                if (it.name.endsWith(".entry.hjson") || it.name.endsWith(".lock.hjson"))
                     it.delete()
                 if (it.isDirectory && it.listFiles().isEmpty()) {
                     it.delete()

@@ -27,13 +27,15 @@ import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext
 import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.io.IOException
+import kotlinx.io.InputStream
 import mu.KLogging
 import voodoo.util.Directories
-import voodoo.util.ExceptionHelper
 import voodoo.util.copyInputStreamToFile
 import voodoo.util.download
-import java.io.*
-import java.util.*
+import kotlinx.io.core.Closeable
+import java.io.File
+import java.util.Properties
 import java.util.jar.JarFile
 import java.util.regex.Pattern
 

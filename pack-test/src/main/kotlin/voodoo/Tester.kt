@@ -54,7 +54,7 @@ object Tester : KLogging() {
 
         val modpackLockFile by parser.positional(
             "FILE",
-            help = "input pack .lock.json"
+            help = "input pack .lock.hjson"
         ) { File(this) }
 
         val clean by parser.flagging(

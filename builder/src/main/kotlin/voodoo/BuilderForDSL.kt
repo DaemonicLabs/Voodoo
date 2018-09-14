@@ -19,20 +19,28 @@ import kotlin.system.exitProcess
  * @author Nikky
  */
 
-object Builder : KLogging() {
-    @JvmStatic
-    fun main(vararg args: String) = mainBody {
+object BuilderForDSL : KLogging() {
+    fun build(
+        modpack: ModPack,
+        targetFolder: File,
+        name: String,
+        targetFileName: String = "$name.entry.lock.hjson",
+        targetFile: File = targetFolder.resolve(targetFileName),
+        vararg args: String
+    ) = mainBody {
         val parser = ArgParser(args)
-        val arguments = Arguments(parser)
+        val arguments = ArgumentsForDSL(parser)
         parser.force()
 
         runBlocking {
             arguments.run {
-                val modpack: ModPack = JSON.unquoted.parse(packFile.readText())
-
-                val parentFolder = packFile.absoluteFile.parentFile
-
-                modpack.loadEntries(parentFolder)
+                targetFolder.walkTopDown().asSequence()
+                    .filter {
+                        it.isFile && it.name.endsWith(".lock.hjson")
+                    }
+                    .forEach {
+                        it.delete()
+                    }
 
                 modpack.entrySet.forEach { entry ->
                     logger.info("id: ${entry.id} entry: $entry")
@@ -41,7 +49,7 @@ object Builder : KLogging() {
                 try {
                     modpack.resolve(
                         this@runBlocking,
-                        parentFolder,
+                        targetFolder,
                         updateAll = updateAll,
                         updateDependencies = updateDependencies,
                         updateEntries = entries
@@ -62,21 +70,16 @@ object Builder : KLogging() {
 
                 logger.info("Creating locked pack...")
                 val lockedPack = modpack.lock()
-                lockedPack.rootFolder = parentFolder
+                lockedPack.rootFolder = targetFolder
                 lockedPack.entrySet.clear()
                 lockedPack.entrySet += modpack.lockEntrySet
 
                 lockedPack.writeLockEntries()
 
-                if (stdout) {
-                    print(lockedPack.json)
-                } else {
-                    val file = targetFile ?: parentFolder.resolve("${lockedPack.id}.lock.hjson")
-                    logger.info("Writing lock file... $file")
-                    file.writeText(JSON.unquoted.stringify(lockedPack))
-                }
+                logger.info("Writing lock file... $targetFile")
+                targetFile.writeText(JSON.unquoted.stringify(lockedPack))
 
-                //TODO: generate modlist
+                // generate modlist
 
                 logger.info("writing modlist")
                 val sw = StringWriter()
@@ -94,26 +97,23 @@ object Builder : KLogging() {
             }
         }
     }
+
+    fun build(
+        packFile: File,
+        targetFolder: File,
+        name: String,
+        targetFileName: String = "$name.entry.lock.hjson",
+        targetFile: File = targetFolder.resolve(targetFileName),
+        vararg args: String
+    ) {
+        val modpack: ModPack = JSON.unquoted.parse(packFile.readText())
+        modpack.loadEntries(targetFolder)
+        return build(modpack, targetFolder, name, targetFileName, targetFile, args = *args)
+    }
+
 }
 
-private class Arguments(parser: ArgParser) {
-    val packFile by parser.positional(
-        "FILE",
-        help = "input pack json"
-    ) { File(this) }
-
-    val targetFile by parser.storing(
-        "--output", "-o",
-        help = "output file json"
-    ) { File(this) }
-        .default<File?>(null)
-
-    val stdout by parser.flagging(
-        "--stdout", "-s",
-        help = "print output"
-    )
-        .default(false)
-
+private class ArgumentsForDSL(parser: ArgParser) {
     val updateDependencies by parser.flagging(
         "--updateDependencies", "-d",
         help = "update all dependencies"

@@ -8,7 +8,7 @@ cd $DIR
 [ ! -e run ] && mkdir run
 cd run
 
-[ ! -e "$DIR/run/$pack/$pack.lock.json" ] && echo "pack does not exist" && exit -1
+[ ! -e "$DIR/run/$pack/$pack.lock.hjson" ] && echo "pack does not exist" && exit -1
 
 [ ! -e "$pack" ] && mkdir "$pack"
 cd "$pack"
@@ -18,13 +18,13 @@ echo "packaging $1"
 echo
 
 
-# $DIR/gradlew -p "$DIR" :run --args "pack mmc-fat $pack/$pack.lock.json"
+# $DIR/gradlew -p "$DIR" :run --args "pack mmc-fat $pack/$pack.lock.hjson"
 # if [ ! $? -eq 0 ]; then
 #     echo "Error Packing $pack" fat
 #     exit 1
 # fi
 
-$DIR/gradlew -p "$DIR" :run --args "pack mmc $pack/$pack.lock.json"
+$DIR/gradlew -p "$DIR" :run --args "pack mmc $pack/$pack.lock.hjson"
 if [ ! $? -eq 0 ]; then
     echo "Error Packing $pack"
     exit 1

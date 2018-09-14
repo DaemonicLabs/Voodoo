@@ -33,6 +33,7 @@ class JenkinsServer(val url: String) {
                 mapper.readValue(result.value)
             }
             is Result.Failure -> {
+                logger.error("url: $requestURL")
                 logger.error(result.error.toString())
                 null
             }

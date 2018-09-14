@@ -28,42 +28,41 @@ object CursePack : AbstractPack() {
     override val label = "SK Packer"
 
     override suspend fun download(
-        coroutineScope: CoroutineScope,
         modpack: LockPack,
         target: String?,
         clean: Boolean
     ) {
-        coroutineScope.apply {
-            val cacheDir = directories.cacheHome
-            val workspaceDir = File(".curse")
-            val modpackDir = workspaceDir.resolve(with(modpack) { "$id-$version" })
-            val srcFolder = modpackDir.resolve("overrides")
+        val cacheDir = directories.cacheHome
+        val workspaceDir = File(".curse")
+        val modpackDir = workspaceDir.resolve(with(modpack) { "$id-$version" })
+        val srcFolder = modpackDir.resolve("overrides")
 
-            if (clean) {
-                logger.info("cleaning modpack directory $srcFolder")
-                srcFolder.deleteRecursively()
+        if (clean) {
+            logger.info("cleaning modpack directory $srcFolder")
+            srcFolder.deleteRecursively()
+        }
+        if (!srcFolder.exists()) {
+            logger.info("copying files into overrides")
+            val mcDir = modpack.sourceFolder
+            if (mcDir.exists()) {
+                mcDir.copyRecursively(srcFolder, overwrite = true)
+            } else {
+                logger.warn("minecraft directory $mcDir does not exist")
             }
-            if (!srcFolder.exists()) {
-                logger.info("copying files into overrides")
-                val mcDir = modpack.sourceFolder
-                if (mcDir.exists()) {
-                    mcDir.copyRecursively(srcFolder, overwrite = true)
-                } else {
-                    logger.warn("minecraft directory $mcDir does not exist")
-                }
+        }
+
+        for (file in srcFolder.walkTopDown()) {
+            when {
+                file.name == "_SERVER" -> file.deleteRecursively()
+                file.name == "_CLIENT" -> file.renameTo(file.parentFile)
             }
+        }
 
-            for (file in srcFolder.walkTopDown()) {
-                when {
-                    file.name == "_SERVER" -> file.deleteRecursively()
-                    file.name == "_CLIENT" -> file.renameTo(file.parentFile)
-                }
-            }
+        val loadersFolder = modpackDir.resolve("loaders")
+        logger.info("cleaning loaders $loadersFolder")
+        loadersFolder.deleteRecursively()
 
-            val loadersFolder = modpackDir.resolve("loaders")
-            logger.info("cleaning loaders $loadersFolder")
-            loadersFolder.deleteRecursively()
-
+        coroutineScope {
             val jobs = mutableListOf<Job>()
 
             val (_, _, _, forgeVersion) = Forge.resolveVersion(modpack.forge.toString(), modpack.mcVersion)

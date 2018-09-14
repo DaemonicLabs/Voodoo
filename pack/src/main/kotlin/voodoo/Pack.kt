@@ -8,7 +8,6 @@ import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.pack.*
-import voodoo.util.ExceptionHelper
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -18,6 +17,15 @@ import kotlin.system.exitProcess
  */
 
 object Pack : KLogging() {
+    private val packMap = mapOf(
+        "sk" to SKPack,
+        "mmc" to MMCPack,
+        "mmc-static" to MMCStaticPack,
+        "mmc-fat" to MMCFatPack,
+        "server" to ServerPack,
+        "curse" to CursePack
+    )
+
     @JvmStatic
     fun main(vararg args: String) = mainBody {
         val arguments = Arguments(ArgParser(args))
@@ -29,39 +37,74 @@ object Pack : KLogging() {
                 val rootFolder = modpackLockFile.absoluteFile.parentFile
                 modpack.loadEntries(rootFolder)
 
-                val packer = when (methode) {
-                    "sk" -> SKPack
-                    "mmc" -> MMCPack
-                    "mmc-static" -> MMCStaticPack
-                    "mmc-fat" -> MMCFatPack
-                    "server" -> ServerPack
-                    "curse" -> CursePack
-
-                    else -> {
-                        logger.error("no such packing methode: $methode")
-                        exitProcess(-1)
-                    }
+                val packer = packMap[methode.toLowerCase()] ?: run {
+                    logger.error("no such packing methode: $methode")
+                    exitProcess(-1)
                 }
 
-                packer.download(coroutineScope = this@runBlocking, modpack = modpack, target = targetArg, clean = true)
+                packer.download(
+                    modpack = modpack,
+                    target = targetFolder,
+                    clean = true
+                )
+            }
+        }
+    }
+
+    fun pack(packFile: File, rootFolder: File, vararg args: String) {
+        val modpack: LockPack = JSON.unquoted.parse(packFile.readText())
+        pack(modpack, rootFolder, *args)
+    }
+
+    fun pack(modpack: LockPack, rootFolder: File, vararg args: String) {
+        val arguments = ArgumentsForDSL(ArgParser(args))
+
+        runBlocking {
+            arguments.run {
+                modpack.loadEntries(rootFolder)
+
+                val packer = packMap[methode.toLowerCase()] ?: run {
+                    logger.error("no such packing methode: $methode")
+                    exitProcess(-1)
+                }
+
+                packer.download(
+                    modpack = modpack,
+                    target = targetFolder,
+                    clean = true
+                )
             }
         }
     }
 
     private class Arguments(parser: ArgParser) {
-        val methode by parser.positional("METHODE",
-                help = "format to package into") { this.toLowerCase() }
-                .default("")
+        val methode by parser.positional(
+            "METHODE",
+            help = "format to package into"
+        ) { this.toLowerCase() }
+            .default("")
 
-        val modpackLockFile by parser.positional("FILE",
-                help = "input pack .lock.json") { File(this) }
+        val modpackLockFile by parser.positional(
+            "FILE",
+            help = "input pack .lock.hjson"
+        ) { File(this) }
 
-        val targetArg by parser.storing("--output", "-o",
-                help = "output rootFolder")
-                .default<String?>(null)
+        val targetFolder by parser.storing(
+            "--output", "-o",
+            help = "output rootFolder"
+        ).default<String?>(null)
+    }
 
-//        val clean by parser.flagging("--clean", "-c",
-//                help = "clean output rootFolder before packaging")
-//                .default(true)
+    private class ArgumentsForDSL(parser: ArgParser) {
+        val methode by parser.positional(
+            "METHODE",
+            help = "format to package into"
+        ) { this.toLowerCase() }
+            .default("")
+
+        val targetFolder by parser.storing(
+            "--output", "-o",
+            help = "output rootFolder"
+        ).default<String?>(null)
     }
 }
