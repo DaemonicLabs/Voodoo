@@ -104,7 +104,7 @@ allprojects {
     else
         path.substringAfter(':').split(':').joinToString("-") { it.toLowerCase() }
     base {
-        archivesBaseName = baseName
+        archivesBaseName = "$baseName$versionSuffix"
     }
     val jar by tasks.getting(Jar::class) {
         this.version = ""
@@ -162,7 +162,7 @@ allprojects {
 
             val shadowJar by tasks.getting(ShadowJar::class) {
                 classifier = ""
-                archiveName = "$baseName.$extension"
+                archiveName = "$baseName$versionSuffix.$extension"
 //                exclude("**/*.txt")
 //                exclude("**/*.xml")
 //                exclude("**/*.properties")

@@ -97,7 +97,7 @@ object CursePack : AbstractPack() {
                         )
                     } else {
                         val targetFolder = srcFolder.resolve(folder)
-                        val (url, file) = provider.download(entry, targetFolder, cacheDir)
+                        val (_, file) = provider.download(entry, targetFolder, cacheDir)
                         if (!required) {
                             val optionalFile = file.parentFile.resolve(file.name + ".disabled")
                             file.renameTo(optionalFile)
