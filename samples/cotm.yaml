@@ -7,6 +7,7 @@ authors: ["AnsuzThuriaz", "Falkreon", "NikkyAi"]
 version: 2.1.9
 mcVersion: 1.12.2
 forge: 2756
+icon: icon.png
 sourceDir: src
 
 #================#

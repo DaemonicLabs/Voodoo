@@ -48,7 +48,6 @@ object BuilderForDSL : KLogging() {
 
                 try {
                     modpack.resolve(
-                        this@runBlocking,
                         targetFolder,
                         updateAll = updateAll,
                         updateDependencies = updateDependencies,
