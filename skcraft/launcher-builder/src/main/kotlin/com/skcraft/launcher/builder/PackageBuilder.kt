@@ -180,7 +180,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
         runBlocking {
             val jobs = mutableListOf<Job>()
             for (library in loaderLibraries) {
-                jobs += launch(context = ExceptionHelper.context + pool) {
+                jobs += launch(context = pool) {
                     val outputPath = File(librariesDir, library.getPath(env))
                     if (!outputPath.exists()) {
                         outputPath.parentFile.mkdirs()

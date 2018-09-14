@@ -22,7 +22,7 @@ object Pack : KLogging() {
     fun main(vararg args: String) = mainBody {
         val arguments = Arguments(ArgParser(args))
 
-        runBlocking(ExceptionHelper.context) {
+        runBlocking {
             arguments.run {
                 logger.info("loading $modpackLockFile")
                 val modpack: LockPack = JSON.unquoted.parse(modpackLockFile.readText())

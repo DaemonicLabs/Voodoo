@@ -18,7 +18,7 @@ import java.time.Instant
  * @author Nikky
  */
 
-object JenkinsProviderThing : ProviderBase, KLogging() {
+object JenkinsProvider : ProviderBase, KLogging() {
     override val name = "Jenkins Provider"
 
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"

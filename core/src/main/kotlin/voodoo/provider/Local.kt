@@ -11,7 +11,7 @@ import java.io.File
  * @author Nikky
  */
 
-object LocalProviderThing : ProviderBase, KLogging() {
+object LocalProvider : ProviderBase, KLogging() {
     override val name = "Local Provider"
 
     override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {

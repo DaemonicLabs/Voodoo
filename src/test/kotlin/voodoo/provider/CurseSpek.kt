@@ -48,7 +48,7 @@ object CurseSpek : Spek({
 
         context("build pack") {
             val versionsMapping by memoized {
-                runBlocking(context = ExceptionHelper.context) {
+                runBlocking {
                     Provider.CURSE.base.reset()
                     modpack.resolve(this, rootFolder, updateAll = true)
                 }
@@ -62,7 +62,7 @@ object CurseSpek : Spek({
             context("download") {
                 val filePairs by memoized {
                     val targetFolder = rootFolder.resolve("install")
-                    runBlocking(context = ExceptionHelper.context) {
+                    runBlocking {
                         val deferredFiles =
                                 versionsMapping.map { entry ->
                                     async {

@@ -2,6 +2,7 @@ package voodoo.data.sk
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
 import voodoo.data.Recommendation
 
 /**
@@ -9,6 +10,7 @@ import voodoo.data.Recommendation
  * @author Nikky
  */
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@Serializable
 data class FeatureProperties(
     @Optional var name: String = "",
     @JsonInclude(JsonInclude.Include.ALWAYS)

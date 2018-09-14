@@ -6,9 +6,8 @@ import org.spekframework.spek2.style.specification.describe
 import voodoo.data.Side
 import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedPack
-import voodoo.provider.CurseProviderThing
-import voodoo.provider.JenkinsProviderThing
-import voodoo.util.ExceptionHelper
+import voodoo.provider.CurseProvider
+import voodoo.provider.JenkinsProvider
 import java.io.*
 
 object DslSpek : Spek({
@@ -33,7 +32,7 @@ object DslSpek : Spek({
                     authors = listOf("dude", "and", "friends"),
                     //TODO: type = {recommended, latest} | buildnumber, make sealed class
                     forge = "recommended",
-                    root = rootEntry(CurseProviderThing) {
+                    root = rootEntry(CurseProvider) {
                         optionals = false
                         releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
 
@@ -46,7 +45,7 @@ object DslSpek : Spek({
                                 optionals = false
                             }
 
-                            entry(JenkinsProviderThing) {
+                            entry(JenkinsProvider) {
                                 side = Side.SERVER
                             }.entriesBlock {
                                 id("matterlink") job "elytra/matterlink/master"
@@ -63,7 +62,7 @@ object DslSpek : Spek({
             nestedPack.flatten()
         }
         val entries by memoized {
-            runBlocking(context = ExceptionHelper.context) {
+            runBlocking {
                 nestedPack.root.flatten(File(""))
             }
         }

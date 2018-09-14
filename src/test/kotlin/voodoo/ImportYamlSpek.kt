@@ -117,7 +117,7 @@ object ImportYamlSpek : Spek({
 
         context("importing yaml") {
             val lockFile by memoized {
-                runBlocking(context = ExceptionHelper.context) {
+                runBlocking {
                     YamlImporter.import(
                         coroutineScope = this,
                         source = mainFile.path,
@@ -145,7 +145,7 @@ object ImportYamlSpek : Spek({
 
             context("flatten") {
                 val entries by memoized {
-                    runBlocking(context = ExceptionHelper.context) {
+                    runBlocking {
                         nestedPack.root.flatten(rootFolder)
                     }
                 }
