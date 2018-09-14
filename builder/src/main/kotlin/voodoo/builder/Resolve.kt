@@ -137,13 +137,11 @@ suspend fun ModPack.resolve(
 //    val resolved: MutableSet<String> = mutableSetOf()
     var unresolved: Set<Entry> = this.entrySet.toSet()
     val resolved = Collections.synchronizedSet(mutableSetOf<String>())
-//    val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
     coroutineScope {
         do {
             val newEntriesChannel = Channel<Pair<Entry, String>>(Channel.UNLIMITED)
 
             logger.info("unresolved: ${unresolved.map { it.id }}")
-//        logger.info("resolved: $resolved")() + 1, "pool")
 
             val jobs = mutableListOf<Job>()
             for (entry in unresolved) {

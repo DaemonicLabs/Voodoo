@@ -50,7 +50,7 @@ object CurseSpek : Spek({
             val versionsMapping by memoized {
                 runBlocking {
                     Provider.CURSE.base.reset()
-                    modpack.resolve(this, rootFolder, updateAll = true)
+                    modpack.resolve(rootFolder, updateAll = true)
                 }
                 modpack.lockEntrySet
             }
