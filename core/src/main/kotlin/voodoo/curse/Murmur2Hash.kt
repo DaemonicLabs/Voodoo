@@ -27,7 +27,7 @@ object Murmur2Hash {
     }
 
     @Throws(IOException::class)
-    fun computeFileHash(path: String, normalizeWhitespace: Boolean): Long {
+    fun computeFileHash(path: String, normalizeWhitespace: Boolean = true): Long {
         var ch: FileChannel? = null
         try {
             ch = FileChannel.open(Paths.get(path), StandardOpenOption.READ)
@@ -135,8 +135,8 @@ object Murmur2Hash {
     }
 
     @Throws(IOException::class)
-    fun computeNormalizedLength(input: InputStream, buffer: ByteArray?): Long {
-        var buffer = buffer
+    fun computeNormalizedLength(input: InputStream, initialBuffer: ByteArray? = null): Long {
+        var buffer = initialBuffer
         var len: Long = 0
         if (buffer == null) buffer = ByteArray(BUFFER_SIZE)
 

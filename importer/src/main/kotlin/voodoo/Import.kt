@@ -3,10 +3,11 @@ package voodoo
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.importer.CurseImporter
 import voodoo.importer.YamlImporter
-import voodoo.util.runBlockingWith
+import voodoo.util.ExceptionHelper
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -24,23 +25,25 @@ object Import : KLogging() {
         val arguments = Arguments(parser)
         parser.force()
 
-        arguments.runBlockingWith { coroutineContext ->
-            logger.info { this.methode }
-            val tester = when (methode) {
-                "curse" -> CurseImporter
-                "yaml" -> YamlImporter
+        runBlocking(context = ExceptionHelper.context) {
+            arguments.run {
+                logger.info { this.methode }
+                val importer = when (methode) {
+                    "curse" -> CurseImporter
+                    "yaml" -> YamlImporter
 
-                else -> {
-                    logger.error("no such import methode: '$methode'")
-                    exitProcess(-1)
+                    else -> {
+                        logger.error("no such import methode: '$methode'")
+                        exitProcess(-1)
+                    }
                 }
+
+                //TODO: import as ModPack and NestedPack ?
+
+                importer.import(coroutineScope =this@runBlocking, source = source, target = target, name = name)
+
+                println("import successful")
             }
-
-            //TODO: import as ModPack and NestedPack ?
-
-            tester.import(source = source, target = target, name = name)
-
-            println("import successful")
         }
     }
 

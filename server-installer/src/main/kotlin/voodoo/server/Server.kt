@@ -18,9 +18,9 @@ import java.util.concurrent.TimeUnit
  */
 
 object Server {
-    val directories = Directories.get()
+    private val directories = Directories.get()
 
-    suspend fun install(modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean, cleanConfig: Boolean) {
+    suspend fun install(coroutineScope: CoroutineScope, modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean, cleanConfig: Boolean) {
         val cacheDir = directories.cacheHome
 
         if (clean) {
@@ -60,16 +60,16 @@ object Server {
             }
         }
 
-        coroutineScope {
+        coroutineScope.apply {
             val jobs = mutableListOf<Job>()
 
             for (entry in modpack.entrySet) {
                 if (entry.side == Side.CLIENT) continue
-                jobs += launch(context = coroutineContext) {
+                jobs += launch(context = pool) {
                     val provider = Provider.valueOf(entry.provider).base
                     val targetFolder = serverDir.resolve(entry.file).absoluteFile.parentFile
                     logger.info("downloading to - ${targetFolder.path}")
-                    val (url, file) = provider.download(entry, targetFolder, cacheDir)
+                    val (_, _) = provider.download(entry, targetFolder, cacheDir)
                 }
                 delay(10)
                 logger.info("started job ${entry.name()}")
@@ -82,7 +82,7 @@ object Server {
             )
             val forgeFile = directories.runtimeDir.resolve(forgeFileName)
             logger.info("forge: $forgeLongVersion")
-            jobs += launch(context = coroutineContext + pool) {
+            jobs += launch(context = pool) {
                 forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
             }
 

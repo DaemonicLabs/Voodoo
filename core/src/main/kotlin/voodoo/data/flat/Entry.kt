@@ -74,7 +74,6 @@ data class Entry(
         override fun save(output: KOutput, obj: Entry) {
             println(serialClassDesc)
             val elemOutput = output.writeBegin(serialClassDesc)
-            var i = 0
             elemOutput.writeStringElementValue(serialClassDesc, 0, obj.provider)
             elemOutput.writeStringElementValue(serialClassDesc, 1, obj.id)
             with(Entry(provider = obj.provider, id = obj.id)) {

@@ -3,11 +3,12 @@ package voodoo
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.pack.*
-import voodoo.util.runBlockingWith
+import voodoo.util.ExceptionHelper
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -21,27 +22,29 @@ object Pack : KLogging() {
     fun main(vararg args: String) = mainBody {
         val arguments = Arguments(ArgParser(args))
 
-        arguments.runBlockingWith { coroutineContext ->
-            logger.info("loading $modpackLockFile")
-            val modpack: LockPack = JSON.unquoted.parse(modpackLockFile.readText())
-            val rootFolder = modpackLockFile.absoluteFile.parentFile
-            modpack.loadEntries(rootFolder)
+        runBlocking(ExceptionHelper.context) {
+            arguments.run {
+                logger.info("loading $modpackLockFile")
+                val modpack: LockPack = JSON.unquoted.parse(modpackLockFile.readText())
+                val rootFolder = modpackLockFile.absoluteFile.parentFile
+                modpack.loadEntries(rootFolder)
 
-            val packer = when (methode) {
-                "sk" -> SKPack
-                "mmc" -> MMCPack
-                "mmc-static" -> MMCStaticPack
-                "mmc-fat" -> MMCFatPack
-                "server" -> ServerPack
-                "curse" -> CursePack
+                val packer = when (methode) {
+                    "sk" -> SKPack
+                    "mmc" -> MMCPack
+                    "mmc-static" -> MMCStaticPack
+                    "mmc-fat" -> MMCFatPack
+                    "server" -> ServerPack
+                    "curse" -> CursePack
 
-                else -> {
-                    logger.error("no such packing methode: $methode")
-                    exitProcess(-1)
+                    else -> {
+                        logger.error("no such packing methode: $methode")
+                        exitProcess(-1)
+                    }
                 }
-            }
 
-            packer.download(modpack = modpack, target = targetArg, clean = true)
+                packer.download(coroutineScope = this@runBlocking, modpack = modpack, target = targetArg, clean = true)
+            }
         }
     }
 

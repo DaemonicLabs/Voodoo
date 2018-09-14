@@ -27,7 +27,7 @@ object BuildSpek : Spek({
             rootFolder.resolve("testpack.yaml")
         }
         val includeFiles by memoized {
-            listOf("include_features.yaml", "include_server.yaml").map {rootFolder.resolve(it)}
+            listOf("include_features.yaml", "include_server.yaml").map { rootFolder.resolve(it) }
         }
 
         it("main yaml exists") {
@@ -40,7 +40,14 @@ object BuildSpek : Spek({
         }
 
         val packFile by memoized {
-            runBlocking(context = ExceptionHelper.context) { YamlImporter.import(source = mainFile.path, target = rootFolder, name = "lockpack") }
+            runBlocking(context = ExceptionHelper.context) {
+                YamlImporter.import(
+                    coroutineScope = this,
+                    source = mainFile.path,
+                    target = rootFolder,
+                    name = "lockpack"
+                )
+            }
             rootFolder.resolve("lockpack.pack.hjson")
         }
 
@@ -59,16 +66,17 @@ object BuildSpek : Spek({
 
             it("entries are valid") {
                 entries.forEach { entry ->
-                    assert(entry.id.isNotBlank()) {"id of $entry is blank"}
+                    assert(entry.id.isNotBlank()) { "id of $entry is blank" }
                 }
             }
-            context ("building pack") {
+            context("building pack") {
                 val lockEntries by memoized {
                     runBlocking(context = ExceptionHelper.context) {
                         modpack.resolve(
-                                rootFolder,
-                                updateAll = true,
-                                updateDependencies = true
+                            coroutineScope = this,
+                            folder = rootFolder,
+                            updateAll = true,
+                            updateDependencies = true
                         )
                     }
                     modpack.lockEntrySet

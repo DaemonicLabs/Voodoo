@@ -1,5 +1,6 @@
 package voodoo.pack
 
+import kotlinx.coroutines.experimental.CoroutineScope
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
 import voodoo.util.jenkins.DownloadVoodoo
@@ -10,7 +11,12 @@ import kotlin.system.exitProcess
 object MMCPack : AbstractPack() {
     override val label = "MultiMC Packer"
 
-    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean) {
+    override suspend fun download(
+        coroutineScope: CoroutineScope,
+        modpack: LockPack,
+        target: String?,
+        clean: Boolean
+    ) {
         val targetDir = File(target ?: ".multimc")
         val definitionsDir = File("multimc").apply { mkdirs() }
         val cacheDir = directories.cacheHome

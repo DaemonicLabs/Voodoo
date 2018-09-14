@@ -1,8 +1,10 @@
 package voodoo.util
 
 import kotlinx.coroutines.experimental.CoroutineExceptionHandler
+import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.coroutines.experimental.cancel
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import kotlin.coroutines.experimental.CoroutineContext
 import kotlin.coroutines.experimental.EmptyCoroutineContext
@@ -19,14 +21,3 @@ object ExceptionHelper : KLogging() {
 
 val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
 
-fun <T, R> T.runBlockingWith(context: CoroutineContext = EmptyCoroutineContext, block: suspend T.(CoroutineContext) -> R): R {
-    return kotlinx.coroutines.experimental.runBlocking(context = context + ExceptionHelper.context) {
-        try {
-        block(coroutineContext)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            coroutineContext.cancel(e)
-            exitProcess(1)
-        }
-    }
-}
