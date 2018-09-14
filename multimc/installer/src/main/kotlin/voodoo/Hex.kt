@@ -5,18 +5,30 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.features.defaultRequest
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.request.get
+import io.ktor.client.request.header
 import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext
 import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.serialization.json.JSON
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
+import voodoo.curse.CurseClient
 import voodoo.data.sk.SKPack
 import voodoo.data.sk.task.TaskIf
 import voodoo.mmc.MMCUtil.selectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.*
+import voodoo.util.json.TestKotlinxSerializer
+import voodoo.util.redirect.HttpRedirectFixed
+import voodoo.util.serializer.DateSerializer
 import java.awt.Toolkit
 import java.io.File
 import java.util.*
@@ -36,31 +48,49 @@ object Hex : KLogging() {
     fun main(vararg args: String) = mainBody {
         val arguments = Arguments(ArgParser(args))
 
-        arguments.run {
-
-            install(instanceId, instanceDir, minecraftDir)
+        runBlocking {
+            arguments.run {
+                install(instanceId, instanceDir, minecraftDir)
+            }
         }
+
 
     }
 
     private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
 
-    private fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
+    private val client = HttpClient(CIO) {
+        engine {
+            maxConnectionsCount = 1000 // Maximum number of socket connections.
+            endpoint.apply {
+                maxConnectionsPerRoute = 100 // Maximum number of requests for a specific endpoint route.
+                pipelineMaxSize = 20 // Max number of opened endpoints.
+                keepAliveTime = 5000 // Max number of milliseconds to keep each connection alive.
+                connectTimeout = 5000 // Number of milliseconds to wait trying to connect to the server.
+                connectRetryAttempts = 5 // Maximum number of attempts for retrying a connection.
+            }
+        }
+        defaultRequest {
+            header("User-Agent", CurseClient.useragent)
+        }
+        install(HttpRedirectFixed) {
+            applyUrl { it.encoded }
+        }
+        install(JsonFeature) {
+            serializer = TestKotlinxSerializer()
+        }
+    }
+    private suspend fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
         logger.info("installing into $instanceId")
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         val packUrl = urlFile.readText().trim()
-        val (_, _, result) = packUrl.httpGet()
-//                .header("User-Agent" to useragent)
-                .responseString()
 
-        val modpack: SKPack = when (result) {
-            is Result.Success -> {
-                jsonMapper.readValue(result.value)
-            }
-            is Result.Failure -> {
-                logger.error("${result.error} could not retrieve pack")
-                return
-            }
+        val modpack: SKPack = try {
+            client.get(packUrl)
+        }catch(e: Exception) {
+            logger.error("could not retrieve pack")
+            logger.error(e.message)
+            return
         }
 
         val oldpackFile = instanceDir.resolve("voodoo.modpack.json")
@@ -76,7 +106,7 @@ object Hex : KLogging() {
         if (oldpack != null) {
             if (oldpack.version == modpack.version) {
                 logger.info("no update required ? hold shift to force a update")
-                Thread.sleep(1000)
+                delay(1000)
 //                return //TODO: make dialog close continue when no update is required ?
 //                if(kit.getLockingKeyState(KeyEvent.VK_CAPS_LOCK)) {
 //                    forceDisplay = true
@@ -104,13 +134,13 @@ object Hex : KLogging() {
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val defaults = if (featureJson.exists()) {
-            featureJson.readJson()
+            JSON.indented.parse(featureJson.readText())
         } else {
             mapOf<String, Boolean>()
         }
         val (features, reinstall) = selectFeatures(modpack.features, defaults, modpack.title.blankOr
                 ?: modpack.name, modpack.version, forceDisplay = forceDisplay, updating = oldpack != null)
-        featureJson.writeJson(features)
+        featureJson.writeText(JSON.indented.stringify(features))
         if(reinstall) {
             minecraftDir.deleteRecursively()
         }

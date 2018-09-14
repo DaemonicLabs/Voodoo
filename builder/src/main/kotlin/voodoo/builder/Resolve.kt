@@ -3,6 +3,7 @@ package voodoo.builder
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.consume
+import kotlinx.coroutines.experimental.channels.consumeEach
 import mu.KotlinLogging
 import voodoo.Builder
 import voodoo.data.curse.DependencyType
@@ -136,7 +137,7 @@ suspend fun ModPack.resolve(
 //    val resolved: MutableSet<String> = mutableSetOf()
     var unresolved: Set<Entry> = this.entrySet.toSet()
     val resolved = Collections.synchronizedSet(mutableSetOf<String>())
-    coroutineScope {
+    withContext(context = pool) {
         do {
             val newEntriesChannel = Channel<Pair<Entry, String>>(Channel.UNLIMITED)
 
@@ -144,7 +145,7 @@ suspend fun ModPack.resolve(
 
             val jobs = mutableListOf<Job>()
             for (entry in unresolved) {
-                jobs += launch(context = pool) {
+                jobs += launch {
                     logger.info("resolving: ${entry.id}")
                     val provider = Provider.valueOf(entry.provider).base
 
@@ -183,7 +184,7 @@ suspend fun ModPack.resolve(
                 }
             }
 
-            val newEntries = async(/*context = CommonPool*/) {
+            val newEntries = async {
                 val newEntries2 = mutableSetOf<Entry>()
                 for ((entry, path) in newEntriesChannel) {
                     logger.info("channel received: ${entry.id}")
