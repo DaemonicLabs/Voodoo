@@ -149,19 +149,18 @@ data class ModPack(
             .forEach { (lockEntry, file) ->
                 val relFile = file.relativeTo(srcDir)
                 lockEntry.file = relFile
-                addOrMerge(lockEntry) { dupl, newEntry -> newEntry }
+                addOrMerge(lockEntry) { _, newEntry -> newEntry }
             }
     }
 
-    fun writeEntries(folder: File) {
+    fun writeEntries(rootFolder: File) {
         entrySet.forEach { entry ->
-            val folder = folder.resolve(sourceDir).resolve(entry.folder)
             //TODO: calculate filename in Entry
             val filename = entry.id
                 .replace('/', '-')
                 .replace("[^\\w-]+".toRegex(), "")
-            val targetFile = folder.resolve("$filename.entry.hjson").absoluteFile
-            //TODO: only override folder if it was uninitialized before
+            val targetFile = rootFolder.resolve(sourceDir).resolve(entry.folder).resolve("$filename.entry.hjson").absoluteFile
+            //TODO: only override rotFolder if it was uninitialized before
             entry.file = targetFile
             entry.serialize()
         }

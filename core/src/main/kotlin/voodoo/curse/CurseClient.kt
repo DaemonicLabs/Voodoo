@@ -24,6 +24,7 @@ import voodoo.data.flat.Entry
 import voodoo.util.encoded
 import voodoo.util.json.TestKotlinxSerializer
 import voodoo.util.redirect.HttpRedirectFixed
+import voodoo.util.serializer.DateSerializer
 import java.util.*
 
 /**
@@ -31,19 +32,6 @@ import java.util.*
  * @author Nikky
  */
 object CurseClient : KLogging() {
-    @Serializer(forClass = Date::class)
-    object DateSerializer : KSerializer<Date> {
-        override val serialClassDesc: KSerialClassDesc = SerialClassDescImpl("java.util.Date")
-
-        override fun save(output: KOutput, obj: Date) {
-            output.writeLongValue(obj.time)
-        }
-
-        override fun load(input: KInput): Date {
-            return Date(input.readLongValue())
-        }
-    }
-
     private val context = SerialContext()
     private val json = JSON(context = context)
 //    private val mapper = JsonTreeMapper(context = context)

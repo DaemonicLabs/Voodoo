@@ -27,7 +27,12 @@ import java.util.*
 object CurseImporter : AbstractImporter() {
     override val label = "Curse Importer"
 
-    override suspend fun import(source: String, target: File, name: String?) {
+    override suspend fun import(
+        coroutineScope: CoroutineScope,
+        source: String,
+        target: File,
+        name: String?
+    ) {
         val tmpName = name.blankOr ?: UUID.randomUUID().toString()
 
         val cacheHome = directories.cacheHome.resolve("IMPORT")
@@ -88,11 +93,11 @@ object CurseImporter : AbstractImporter() {
         }
 
         val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
-        runBlocking {
+        coroutineScope.apply {
             val jobs = mutableListOf<Job>()
             //TODO: process in parallel
             for (file in manifest.files) {
-                jobs += launch(context = coroutineContext + pool) {
+                jobs += launch(context = pool) {
                     logger.info { file }
                     val addon = CurseClient.getAddon(file.projectID, PROXY_URL)!!
                     val addonFile = CurseClient.getAddonFile(file.projectID, file.fileID, PROXY_URL)!!

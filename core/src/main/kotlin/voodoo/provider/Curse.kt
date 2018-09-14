@@ -7,6 +7,7 @@ import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
 import voodoo.curse.CurseClient.getAddon
 import voodoo.curse.CurseClient.getAddonFile
+import voodoo.curse.Murmur2Hash
 import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
@@ -33,7 +34,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
     }
 
     override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
-        val (projectID, fileID, path) = findFile(entry, mcVersion, entry.curseMetaUrl)
+        val (projectID, fileID, _) = findFile(entry, mcVersion, entry.curseMetaUrl)
 
         synchronized(resolved) {
             logger.info("resolved: ${resolved.count()} unique entries")
@@ -200,6 +201,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
         }
         val targetFile = targetFolder.resolve(entry.fileName ?: addonFile.fileNameOnDisk)
         targetFile.download(addonFile.downloadURL, cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()))
+        Murmur2Hash.computeFileHash(targetFile.path)
         return Pair(addonFile.downloadURL, targetFile)
     }
 

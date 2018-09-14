@@ -5,36 +5,71 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.features.defaultRequest
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.request.get
+import io.ktor.client.request.header
 import kotlinx.coroutines.experimental.channels.SendChannel
 import mu.KLogging
+import voodoo.curse.CurseClient
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import voodoo.data.provider.UpdateChannel
 import voodoo.memoize
+import voodoo.util.encoded
+import voodoo.util.json.TestKotlinxSerializer
+import voodoo.util.redirect.HttpRedirectFixed
+import voodoo.util.serializer.DateSerializer
 import java.io.File
+import java.lang.Exception
+import java.util.Date
 
 /**
  * Created by nikky on 30/12/17.
  * @author Nikky
  */
 object UpdateJsonProviderThing : ProviderBase, KLogging() {
+    private val client = HttpClient(CIO) {
+        engine {
+            maxConnectionsCount = 1000 // Maximum number of socket connections.
+            endpoint.apply {
+                maxConnectionsPerRoute = 100 // Maximum number of requests for a specific endpoint route.
+                pipelineMaxSize = 20 // Max number of opened endpoints.
+                keepAliveTime = 5000 // Max number of milliseconds to keep each connection alive.
+                connectTimeout = 5000 // Number of milliseconds to wait trying to connect to the server.
+                connectRetryAttempts = 5 // Maximum number of attempts for retrying a connection.
+            }
+        }
+        defaultRequest {
+            //            header("User-Agent", useragent)
+        }
+        install(HttpRedirectFixed) {
+            applyUrl { it.encoded }
+        }
+        install(JsonFeature) {
+            serializer = TestKotlinxSerializer()
+        }
+    }
     override val name = "UpdateJson Provider"
 
     private val mapper = jacksonObjectMapper() // Enable YAML parsing
-            .registerModule(KotlinModule()) // Enable Kotlin support
+        .registerModule(KotlinModule()) // Enable Kotlin support
 
-    private val getUpdateJson = { url: String ->
-        val (request, response, result) = url.httpGet()
-                .responseString()
-        when (result) {
-            is Result.Success -> {
-                mapper.readValue<UpdateJson>(result.value)
-            }
-            else -> null
+    private suspend fun getUpdateJson(url: String): UpdateJson? =
+        try {
+            client.get<UpdateJson>(url)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
         }
-    }.memoize()
 
-    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
+    override suspend fun resolve(
+        entry: Entry,
+        mcVersion: String,
+        addEntry: SendChannel<Pair<Entry, String>>
+    ): LockEntry {
         val json = getUpdateJson(entry.updateJson)!!
         if (entry.id.isBlank()) {
             entry.id = entry.updateJson.substringAfterLast('/').substringBeforeLast('.')
@@ -49,16 +84,16 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
         val version = json.promos[key]!!
         val url = entry.template.replace("{version}", version)
         return LockEntry(
-                provider = entry.provider,
-                id = entry.id,
-                name = entry.name,
-                //rootFolder = entry.rootFolder,
-                useUrlTxt = entry.useUrlTxt,
-                fileName = entry.fileName,
-                side = entry.side,
-                url = url,
-                updateJson = entry.updateJson,
-                jsonVersion = version
+            provider = entry.provider,
+            id = entry.id,
+            name = entry.name,
+            //rootFolder = entry.rootFolder,
+            useUrlTxt = entry.useUrlTxt,
+            fileName = entry.fileName,
+            side = entry.side,
+            url = url,
+            updateJson = entry.updateJson,
+            jsonVersion = version
         )
     }
 
@@ -87,6 +122,6 @@ object UpdateJsonProviderThing : ProviderBase, KLogging() {
 }
 
 data class UpdateJson(
-        val homepage: String = "",
-        val promos: Map<String, String> = emptyMap()
+    val homepage: String = "",
+    val promos: Map<String, String> = emptyMap()
 )

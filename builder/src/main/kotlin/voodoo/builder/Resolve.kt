@@ -101,6 +101,7 @@ private fun ModPack.processFeature(feature: SKFeature) {
  * ensure entries are loaded before calling resolve
  */
 suspend fun ModPack.resolve(
+    coroutineScope: CoroutineScope,
     folder: File,
     updateAll: Boolean = false,
     updateDependencies: Boolean = false,
@@ -144,7 +145,7 @@ suspend fun ModPack.resolve(
 //        logger.info("resolved: $resolved")() + 1, "pool")
 
         val jobs = mutableListOf<Job>()
-        coroutineScope {
+        coroutineScope.apply {
             for (entry in unresolved) {
                 jobs += launch(context = coroutineContext) {
                     logger.info("resolving: ${entry.id}")

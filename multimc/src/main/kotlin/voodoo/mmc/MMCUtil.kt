@@ -53,7 +53,7 @@ object MMCUtil : KLogging() {
             .redirectError(ProcessBuilder.Redirect.INHERIT)
             .start()
 
-        logger.info("started multimc instance $name")
+        logger.info("started multimc instance $name $process")
     }
 
     var dir: File? = null

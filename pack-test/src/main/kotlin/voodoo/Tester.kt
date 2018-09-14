@@ -3,11 +3,12 @@ package voodoo
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
+import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.tester.MultiMCTester
-import voodoo.util.runBlockingWith
+import voodoo.util.ExceptionHelper
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -21,24 +22,27 @@ object Tester : KLogging() {
     fun main(vararg args: String) = mainBody {
         val arguments = Arguments(ArgParser(args))
 
-        arguments.runBlockingWith {
+        runBlocking(context = ExceptionHelper.context){
+            arguments.run {
 
-            logger.info("loading $modpackLockFile")
-            val modpack: LockPack = JSON.unquoted.parse(modpackLockFile.readText())
-            val rootFolder = modpackLockFile.absoluteFile.parentFile
-            modpack.loadEntries(rootFolder)
+                logger.info("loading $modpackLockFile")
+                val modpack: LockPack = JSON.unquoted.parse(modpackLockFile.readText())
+                val rootFolder = modpackLockFile.absoluteFile.parentFile
+                modpack.loadEntries(rootFolder)
 
-            val tester = when (methode) {
-                "mmc" -> MultiMCTester
+                val tester = when (methode) {
+                    "mmc" -> MultiMCTester
 
-                else -> {
-                    logger.error("no such packing methode: $methode")
-                    exitProcess(-1)
+                    else -> {
+                        logger.error("no such packing methode: $methode")
+                        exitProcess(-1)
+                    }
                 }
-            }
 
-            tester.execute(modpack = modpack, clean = clean)
+                tester.execute(modpack = modpack, clean = clean)
+            }
         }
+
     }
 
     private class Arguments(parser: ArgParser) {

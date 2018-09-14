@@ -34,7 +34,7 @@ object CurseSpek : Spek({
                         provider = Provider.CURSE.name,
                         id = "matterlink",
                         folder = "mods"
-                )) { old, new -> new }
+                )) { _, new -> new }
                 writeEntries(rootFolder)
             }
         }
@@ -50,7 +50,7 @@ object CurseSpek : Spek({
             val versionsMapping by memoized {
                 runBlocking(context = ExceptionHelper.context) {
                     Provider.CURSE.base.reset()
-                    modpack.resolve(rootFolder, updateAll = true)
+                    modpack.resolve(this, rootFolder, updateAll = true)
                 }
                 modpack.lockEntrySet
             }

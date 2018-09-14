@@ -117,7 +117,13 @@ object ImportYamlSpek : Spek({
 
         context("importing yaml") {
             val lockFile by memoized {
-                runBlocking(context = ExceptionHelper.context) { YamlImporter.import(source = mainFile.path, target = rootFolder) }
+                runBlocking(context = ExceptionHelper.context) {
+                    YamlImporter.import(
+                        coroutineScope = this,
+                        source = mainFile.path,
+                        target = rootFolder
+                    )
+                }
                 rootFolder.resolve("$id.pack.hjson")
             }
             it("lockfile exists") {
@@ -157,8 +163,8 @@ object ImportYamlSpek : Spek({
                             val folder = srcDir.resolve(entry.folder)
                             folder.mkdirs()
                             val filename = entry.id
-                                    .replace('/', '-')
-                                    .replace("[^\\w-]+".toRegex(), "")
+                                .replace('/', '-')
+                                .replace("[^\\w-]+".toRegex(), "")
                             val targetFile = folder.resolve("$filename.entry.hjson")
 
                             targetFile.writeText(JSON.unquoted.stringify(entry))
@@ -205,7 +211,6 @@ object ImportYamlSpek : Spek({
                 }
             }
         }
-
 
     }
 })

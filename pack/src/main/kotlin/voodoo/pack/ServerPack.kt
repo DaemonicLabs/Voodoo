@@ -1,5 +1,6 @@
 package voodoo.pack
 
+import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.serialization.json.JSON
 import voodoo.data.lock.LockPack
 import voodoo.util.jenkins.DownloadVoodoo
@@ -13,7 +14,12 @@ import java.io.File
 object ServerPack : AbstractPack() {
     override val label = "Server SKPack"
 
-    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean) {
+    override suspend fun download(
+        coroutineScope: CoroutineScope,
+        modpack: LockPack,
+        target: String?,
+        clean: Boolean
+    ) {
         val serverDir = File(target ?: "server_${modpack.id}")
 
         if (clean) {

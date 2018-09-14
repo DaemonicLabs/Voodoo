@@ -25,7 +25,12 @@ object SKPack : AbstractPack() {
 
     override val label = "SK Packer"
 
-    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean) {
+    override suspend fun download(
+        coroutineScope: CoroutineScope,
+        modpack: LockPack,
+        target: String?,
+        clean: Boolean
+    ) {
         val cacheDir = directories.cacheHome
         val workspaceDir = modpack.rootFolder.resolve("workspace").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.id)
@@ -63,16 +68,16 @@ object SKPack : AbstractPack() {
         logger.info("cleaning loaders $loadersFolder")
         loadersFolder.deleteRecursively()
 
-        coroutineScope {
+        coroutineScope.apply {
             val jobs = mutableListOf<Job>()
 
             // download forge
-            val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.resolveVersion(
+            val (forgeUrl, forgeFileName, _, forgeVersion) = Forge.resolveVersion(
                 modpack.forge.toString(),
                 modpack.mcVersion
             )
             val forgeFile = loadersFolder.resolve(forgeFileName)
-            jobs += launch(context = coroutineContext) {
+            jobs += launch(context = pool) {
                 forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
             }
             val modsFolder = skSrcFolder.resolve("mods")
@@ -82,7 +87,7 @@ object SKPack : AbstractPack() {
             val fileChannel = Channel<Pair<String, File>>(Channel.UNLIMITED)
             // download entries
             for (entry in modpack.entrySet) {
-                jobs += launch(context = coroutineContext + pool) {
+                jobs += launch(context = pool) {
                     val provider = Provider.valueOf(entry.provider).base
 
                     val folder = skSrcFolder.resolve(entry.file).parentFile
@@ -92,7 +97,7 @@ object SKPack : AbstractPack() {
                         val urlTxtFile = folder.resolve(file.name + ".url.txt")
                         urlTxtFile.writeText(url)
                     }
-//                println("done: ${entry.id} $file")
+    //                println("done: ${entry.id} $file")
                     fileChannel.send(entry.id to file)  // file.relativeTo(skSrcFolder
                 }
                 logger.info("started job: download '${entry.id}'")
@@ -119,7 +124,7 @@ object SKPack : AbstractPack() {
             // write features
             for (feature in modpack.features) {
                 logger.info("processing feature: ${feature.properties.name}")
-                jobs += launch(context = coroutineContext) {
+                jobs += launch {
                     for (id in feature.entries) {
                         logger.info(id)
 
@@ -140,7 +145,7 @@ object SKPack : AbstractPack() {
                     }
 
                     if (feature.properties.name.isBlank()) {
-//                feature.properties.name = modpack.entries.find {it.id == feature.}
+    //                feature.properties.name = modpack.entries.find {it.id == feature.}
                     }
 
                     logger.info("entries: ${feature.entries}")

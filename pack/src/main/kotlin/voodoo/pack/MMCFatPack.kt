@@ -11,7 +11,12 @@ import java.io.File
 object MMCFatPack : AbstractPack() {
     override val label = "MultiMC Packer (frozen pack)"
 
-    override suspend fun download(modpack: LockPack, target: String?, clean: Boolean) {
+    override suspend fun download(
+        coroutineScope: CoroutineScope,
+        modpack: LockPack,
+        target: String?,
+        clean: Boolean
+    ) {
         val targetDir = File(target ?: ".multimc")
         val cacheDir = directories.cacheHome
         val instanceDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id)
@@ -74,7 +79,7 @@ object MMCFatPack : AbstractPack() {
 
         val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
 
-        coroutineScope {
+        coroutineScope.apply {
             val jobs = mutableListOf<Job>()
 
             for (entry in modpack.entrySet) {

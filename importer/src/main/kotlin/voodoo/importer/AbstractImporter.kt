@@ -1,8 +1,7 @@
 package voodoo.importer
 
+import kotlinx.coroutines.experimental.CoroutineScope
 import mu.KLogging
-import voodoo.data.flat.ModPack
-import voodoo.data.lock.LockEntry
 import voodoo.util.Directories
 import java.io.File
 
@@ -14,7 +13,12 @@ import java.io.File
 abstract class AbstractImporter : KLogging() {
     abstract val label: String
 
-    abstract suspend fun import(source: String, target: File, name: String? = null)
+    abstract suspend fun import(
+        coroutineScope: CoroutineScope,
+        source: String,
+        target: File,
+        name: String? = null
+    )
 
     val directories = Directories.get()
 }

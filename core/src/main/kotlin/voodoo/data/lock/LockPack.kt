@@ -104,7 +104,7 @@ data class LockPack(
             .forEach { (lockEntry, file) ->
                 val relFile = file.relativeTo(srcDir)
                 lockEntry.file = relFile
-                addOrMerge(lockEntry) { dupl, newEntry -> newEntry }
+                addOrMerge(lockEntry) { _, newEntry -> newEntry }
             }
     }
 
