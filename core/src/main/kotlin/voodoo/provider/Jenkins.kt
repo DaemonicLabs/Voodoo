@@ -1,17 +1,24 @@
 package voodoo.provider
 
 import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.core.CoreConstants.VERSION
+import voodoo.data.Quadruple
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import voodoo.memoize
 import voodoo.util.download
+import voodoo.util.jenkins.Artifact
+import voodoo.util.jenkins.Build
+import voodoo.util.jenkins.BuildWithDetails
 import voodoo.util.jenkins.JenkinsServer
+import voodoo.util.jenkins.Job
 import java.io.File
 import java.lang.IllegalStateException
 import java.time.Instant
+import java.util.Collections
 
 /**
  * Created by nikky on 30/12/17.
@@ -81,30 +88,47 @@ object JenkinsProvider : ProviderBase, KLogging() {
         return build.timestamp.toInstant()
     }
 
-    private val artifact = { jobName: String, url: String, buildNumber: Int, fileNameRegex: String ->
+    private val artifactCache: MutableMap<Quadruple<String, String, Int, String>, Artifact> =  Collections.synchronizedMap(hashMapOf())
+    suspend fun artifact(jobName: String, url: String, buildNumber: Int, fileNameRegex: String): Artifact {
+        val a = Quadruple(jobName, url, buildNumber, fileNameRegex)
+        return artifactCache.getOrPut(a) { artifactCall(jobName, url, buildNumber, fileNameRegex) }
+    }
+    private suspend fun artifactCall(jobName: String, url: String, buildNumber: Int, fileNameRegex: String): Artifact {
         val build = build(jobName, url, buildNumber)
         val re = Regex(fileNameRegex)
 
-        build.artifacts.find {
+        return build.artifacts.find {
             re.matches(it.fileName)
         }!!
-    }.memoize()
+    }
 
-    private val build = { jobName: String, url: String, buildNumber: Int ->
+    private val buildCache: MutableMap<Triple<String, String, Int>, BuildWithDetails> =  Collections.synchronizedMap(hashMapOf())
+    suspend fun build(jobName: String, url: String, buildNumber: Int): BuildWithDetails {
+        val a = Triple(jobName, url, buildNumber)
+        return buildCache.getOrPut(a) { buildCall(jobName, url, buildNumber) }
+    }
+    private suspend fun buildCall(jobName: String, url: String, buildNumber: Int): BuildWithDetails {
         logger.info("get build $buildNumber")
-        runBlocking { job(jobName, url).getBuildByNumber(buildNumber, useragent)!! }
-    }.memoize()
+        delay(20)
+        return job(jobName, url).getBuildByNumber(buildNumber, useragent)!!
+    }
 
-    private val job = { jobName: String, url: String ->
+    private val jobCache: MutableMap<Pair<String, String>, Job> = Collections.synchronizedMap(hashMapOf())
+    suspend fun job(jobName: String, url: String): Job {
+        val a = Pair(jobName, url)
+        return jobCache.getOrPut(a) { jobCall(jobName, url) }
+    }
+    private suspend fun jobCall(jobName: String, url: String): Job {
         val server = server(url)
         logger.info("get jenkins job $jobName")
-        runBlocking { server.getJob(jobName, useragent) ?: throw Exception("no such job: '$jobName' on $url") }
-    }.memoize()
+        return server.getJob(jobName, useragent) ?: throw Exception("no such job: '$jobName' on $url")
+    }
 
-    private val server = { url: String ->
+    val server = ::serverCall.memoize()
+    private fun serverCall(url: String): JenkinsServer {
         logger.info("get jenkins server $url")
-        JenkinsServer(url)
-    }.memoize()
+        return JenkinsServer(url)
+    }
 
     override fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> {
         val data = super.reportData(entry)

@@ -62,7 +62,6 @@ data class LockPack(
 
         private inline fun <reified T : Any> KOutput.serialize(default: T, actual: T, index: Int) {
             if (default != actual) {
-                println("serializing element $index $actual")
                 when (actual) {
                     is String -> this.writeStringElementValue(serialClassDesc, index, actual)
                     is Int -> this.writeIntElementValue(serialClassDesc, index, actual)

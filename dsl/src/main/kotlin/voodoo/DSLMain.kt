@@ -10,6 +10,12 @@ fun withDefaultMain(
     root: File = File(System.getProperty("user.dir")),
     block: () -> NestedPack = { throw NotImplementedError() }
 ) {
+    class XY
+    println("classloader is of type:" + Thread.currentThread().contextClassLoader)
+    println("classloader is of type:" + ClassLoader.getSystemClassLoader())
+    println("classloader is of type:" + XY::class.java.classLoader)
+    Thread.currentThread().contextClassLoader = XY::class.java.classLoader
+
     val nestedPack = block()
     val id = nestedPack.id
     val packFileName = "$id.pack.hjson"

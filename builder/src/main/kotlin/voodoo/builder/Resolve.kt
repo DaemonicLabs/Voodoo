@@ -184,7 +184,7 @@ suspend fun ModPack.resolve(
                 }
             }
 
-            val newEntries = async(context = pool) {
+            val newEntries = async(/*context = CommonPool*/) {
                 val newEntries2 = mutableSetOf<Entry>()
                 for ((entry, path) in newEntriesChannel) {
                     logger.info("channel received: ${entry.id}")
@@ -211,8 +211,6 @@ suspend fun ModPack.resolve(
                 }
                 newEntries2
             }
-
-
 
             newEntriesChannel.consume {
                 jobs.joinAll()
@@ -243,9 +241,6 @@ suspend fun ModPack.resolve(
                 ?: throw NullPointerException("cannot find lockentry for ${entry.id}")
         )
     }
-//    entrySet.forEach { id, (entry, file, jsonObj) ->
-//        this.resolveFeatureDependencies(entry)
-//    }
 
     // resolve features
     for (feature in features) {
@@ -265,16 +260,5 @@ suspend fun ModPack.resolve(
         logger.info("processed feature $feature")
     }
 
-//    features.forEach {
-//        logger.info("feature: $it")
-//    }
-
     //TODO: rethink history, since packs are now mainly file based
-//    val directories = Directories.get()
-//    val historyPath = directories.dataHome.resolve(this.id)
-//    historyPath.mkdirs()
-//    val historyFile = historyPath.resolve("$id-$version.pack.hjson")
-//    logger.info("adding modpack to history -> $historyFile")
-//    val historyJson = jankson.toJson(this)
-//    historyFile.writeText(historyJson.toJson(true, true))
 }

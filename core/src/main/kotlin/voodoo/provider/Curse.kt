@@ -216,7 +216,7 @@ object CurseProvider : ProviderBase, KLogging() {
     }
 
     override fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> {
-        logger.info { entry }
+        logger.debug ("reporting for: $entry")
         val addon = runBlocking { getAddon(entry.projectID, entry.curseMetaUrl)!! }
         val addonFile = runBlocking { getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)!! }
 
