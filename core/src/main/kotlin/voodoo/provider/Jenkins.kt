@@ -85,7 +85,7 @@ object JenkinsProvider : ProviderBase, KLogging() {
 
     override suspend fun getReleaseDate(entry: LockEntry): Instant? {
         val build = build(entry.job, entry.jenkinsUrl, entry.buildNumber)
-        return build.timestamp.toInstant()
+        return Instant.ofEpochSecond(build.timestamp)
     }
 
     private val artifactCache: MutableMap<Quadruple<String, String, Int, String>, Artifact> =  Collections.synchronizedMap(hashMapOf())

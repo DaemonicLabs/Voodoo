@@ -2,7 +2,7 @@ package voodoo.pack
 
 import kotlinx.serialization.json.JSON
 import voodoo.data.lock.LockPack
-import voodoo.util.jenkins.DownloadVoodoo
+import voodoo.util.jenkins.downloadVoodoo
 import java.io.File
 
 /**
@@ -70,7 +70,7 @@ object ServerPack : AbstractPack() {
 
 
         logger.info("packaging installer jar")
-        val installer = DownloadVoodoo.downloadVoodoo(component = "server-installer", bootstrap = false, binariesDir = directories.cacheHome)
+        val installer = downloadVoodoo(component = "server-installer", bootstrap = false, binariesDir = directories.cacheHome)
 
         val serverInstaller = serverDir.resolve("server-installer.jar")
         installer.copyTo(serverInstaller)
