@@ -26,6 +26,7 @@ object MMCPack : AbstractPack() {
         val preLaunchCommand = "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
         val minecraftDir = MMCUtil.installEmptyPack(modpack.title, modpack.id, icon = modpack.iconFile, instanceDir = instanceDir, preLaunchCommand = preLaunchCommand)
 
+        logger.info("created pack in $minecraftDir")
         logger.info("tmp dir: $instanceDir")
 
         val urlFile = definitionsDir.resolve("${modpack.id}.url.txt")

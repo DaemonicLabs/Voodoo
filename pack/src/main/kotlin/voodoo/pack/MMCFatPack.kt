@@ -95,7 +95,7 @@ object MMCFatPack : AbstractPack() {
 
                     val provider = Provider.valueOf(entry.provider).base
                     val targetFolder = minecraftDir.resolve(folder)
-                    val (url, file) = provider.download(entry, targetFolder, cacheDir)
+                    val (_, file) = provider.download(entry, targetFolder, cacheDir)
                     if (!selected) {
                         file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
                     }
