@@ -2,7 +2,7 @@ package voodoo.pack
 
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
-import voodoo.util.jenkins.DownloadVoodoo
+import voodoo.util.jenkins.downloadVoodoo
 import voodoo.util.packToZip
 import java.io.File
 import kotlin.system.exitProcess
@@ -34,7 +34,7 @@ object MMCStaticPack : AbstractPack() {
         urlFile.copyTo(instanceDir.resolve("voodoo.url.txt"))
 
         val multimcInstaller = instanceDir.resolve("mmc-installer.jar")
-        val installer = DownloadVoodoo.downloadVoodoo(component = "multimc-installer", bootstrap = false, binariesDir = directories.cacheHome)
+        val installer = downloadVoodoo(component = "multimc-installer", bootstrap = false, binariesDir = directories.cacheHome)
         installer.copyTo(multimcInstaller)
 
         val packignore = instanceDir.resolve(".packignore")
