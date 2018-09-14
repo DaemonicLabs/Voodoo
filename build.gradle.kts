@@ -104,7 +104,7 @@ allprojects {
     else
         path.substringAfter(':').split(':').joinToString("-") { it.toLowerCase() }
     base {
-        archivesBaseName = "$baseName$versionSuffix"
+        archivesBaseName = baseName
     }
     val jar by tasks.getting(Jar::class) {
         this.version = ""
