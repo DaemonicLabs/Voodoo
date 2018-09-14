@@ -7,6 +7,7 @@ import kotlinx.serialization.KSerialSaver
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
+import kotlinx.serialization.Transient
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
 import voodoo.data.Side
@@ -84,17 +85,22 @@ data class LockPack(
     }
 
     @JsonIgnore
+    @Transient
     lateinit var rootFolder: File
 //        private set
 
+    @Transient
     val sourceFolder: File
         get() = rootFolder.resolve(sourceDir)
+    @Transient
     val localFolder: File
         get() = rootFolder.resolve(localDir)
+    @Transient
     val iconFile: File
         get() = rootFolder.resolve(icon)
 
     @JsonIgnore
+    @Transient
     val entrySet: MutableSet<LockEntry> = mutableSetOf()
 
     fun loadEntries(rootFolder: File = this.rootFolder) {
@@ -135,6 +141,7 @@ data class LockPack(
 
     fun title() = title.blankOr ?: id
 
+    @Transient
     val report: String
         get() = markdownTable(
             header = "Title" to this.title(), content = listOf(

@@ -44,7 +44,7 @@ data class TestData(
         val a: Int
 )
 
-fun main(args: Array<String>) = runBlocking(context = ExceptionHelper.context) {
+fun main(args: Array<String>) = runBlocking {
     val test = try {
         client.get<TestData>("https://goofsgyfdygle.com")
     } catch(e: Exception) {

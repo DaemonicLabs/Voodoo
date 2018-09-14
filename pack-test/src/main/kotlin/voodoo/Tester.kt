@@ -22,7 +22,7 @@ object Tester : KLogging() {
     fun main(vararg args: String) = mainBody {
         val arguments = Arguments(ArgParser(args))
 
-        runBlocking(context = ExceptionHelper.context){
+        runBlocking{
             arguments.run {
 
                 logger.info("loading $modpackLockFile")

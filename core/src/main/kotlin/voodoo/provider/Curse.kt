@@ -25,7 +25,7 @@ import kotlin.system.exitProcess
  * Created by nikky on 30/12/17.
  * @author Nikky
  */
-object CurseProviderThing : ProviderBase, KLogging() {
+object CurseProvider : ProviderBase, KLogging() {
     override val name = "Curse Provider"
     private val resolved = Collections.synchronizedList(mutableListOf<String>())
 
@@ -191,7 +191,7 @@ object CurseProviderThing : ProviderBase, KLogging() {
 //        return false
     }
 
-    val isOptional = CurseProviderThing::isOptionalCall.memoize()
+    val isOptional = CurseProvider::isOptionalCall.memoize()
 
     override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
         val addonFile = getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)

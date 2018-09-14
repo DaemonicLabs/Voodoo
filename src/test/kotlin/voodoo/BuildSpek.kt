@@ -40,7 +40,7 @@ object BuildSpek : Spek({
         }
 
         val packFile by memoized {
-            runBlocking(context = ExceptionHelper.context) {
+            runBlocking{
                 YamlImporter.import(
                     coroutineScope = this,
                     source = mainFile.path,
@@ -71,7 +71,7 @@ object BuildSpek : Spek({
             }
             context("building pack") {
                 val lockEntries by memoized {
-                    runBlocking(context = ExceptionHelper.context) {
+                    runBlocking {
                         modpack.resolve(
                             coroutineScope = this,
                             folder = rootFolder,

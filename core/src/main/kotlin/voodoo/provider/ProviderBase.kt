@@ -15,11 +15,11 @@ import java.time.Instant
 
 //TODO: use sealed classes
 enum class Provider(val base: ProviderBase) {
-    CURSE(CurseProviderThing),
-    DIRECT(DirectProviderThing),
-    LOCAL(LocalProviderThing),
-    JENKINS(JenkinsProviderThing),
-    JSON(UpdateJsonProviderThing)
+    CURSE(CurseProvider),
+    DIRECT(DirectProvider),
+    LOCAL(LocalProvider),
+    JENKINS(JenkinsProvider),
+    JSON(UpdateJsonProvider)
 }
 
 interface ProviderBase {

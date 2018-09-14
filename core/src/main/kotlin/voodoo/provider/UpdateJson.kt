@@ -30,7 +30,7 @@ import java.util.Date
  * Created by nikky on 30/12/17.
  * @author Nikky
  */
-object UpdateJsonProviderThing : ProviderBase, KLogging() {
+object UpdateJsonProvider : ProviderBase, KLogging() {
     private val client = HttpClient(CIO) {
         engine {
             maxConnectionsCount = 1000 // Maximum number of socket connections.

@@ -26,7 +26,7 @@ object Builder : KLogging() {
         val arguments = Arguments(parser)
         parser.force()
 
-        runBlocking(context = ExceptionHelper.context) {
+        runBlocking {
             arguments.run {
                 val modpack: ModPack = JSON.unquoted.parse(packFile.readText())
 

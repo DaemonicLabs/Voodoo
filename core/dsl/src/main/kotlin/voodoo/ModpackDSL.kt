@@ -47,87 +47,87 @@ abstract class Wrapper<P : ProviderBase>(
 
 //var AbstractWrapper<CurseProviderThing>.optionals: Boolean by ref(this.entry::curseOptionalDependencies)
 
-infix fun Wrapper<CurseProviderThing>.optionals(b: Boolean): Wrapper<CurseProviderThing> {
+infix fun Wrapper<CurseProvider>.optionals(b: Boolean): Wrapper<CurseProvider> {
     return this.apply { entry.curseOptionalDependencies = b }
 }
 
-var Wrapper<CurseProviderThing>.metaUrl: String
+var Wrapper<CurseProvider>.metaUrl: String
     get() = this.entry.curseMetaUrl
     set(it) {
         this.entry.curseMetaUrl = it
     }
-var Wrapper<CurseProviderThing>.releaseTypes: Set<FileType>
+var Wrapper<CurseProvider>.releaseTypes: Set<FileType>
     get() = this.entry.curseReleaseTypes
     set(it) {
         this.entry.curseReleaseTypes = it
     }
-var Wrapper<CurseProviderThing>.optionals: Boolean
+var Wrapper<CurseProvider>.optionals: Boolean
     get() = entry.curseOptionalDependencies
     set(it) {
         entry.curseOptionalDependencies = it
     }
-var SpecificEntry<CurseProviderThing>.projectID: ProjectID
+var SpecificEntry<CurseProvider>.projectID: ProjectID
     get() = entry.curseProjectID
     set(it) {
         entry.curseProjectID = it
     }
-var SpecificEntry<CurseProviderThing>.fileID: FileID
+var SpecificEntry<CurseProvider>.fileID: FileID
     get() = entry.curseFileID
     set(it) {
         entry.curseFileID = it
     }
 
 // DIRECT
-var SpecificEntry<DirectProviderThing>.url: String
+var SpecificEntry<DirectProvider>.url: String
     get() = entry.url
     set(it) {
         entry.url = it
     }
-var Wrapper<DirectProviderThing>.useUrlTxt: Boolean
+var Wrapper<DirectProvider>.useUrlTxt: Boolean
     get() = entry.useUrlTxt
     set(it) {
         entry.useUrlTxt = it
     }
 
 //JENKINS
-infix fun SpecificEntry<JenkinsProviderThing>.job(s: String): SpecificEntry<JenkinsProviderThing> {
+infix fun SpecificEntry<JenkinsProvider>.job(s: String): SpecificEntry<JenkinsProvider> {
     return this.apply { entry.job = s }
 }
-var Wrapper<JenkinsProviderThing>.jenkinsUrl: String
+var Wrapper<JenkinsProvider>.jenkinsUrl: String
     get() = entry.jenkinsUrl
     set(it) {
         entry.jenkinsUrl = it
     }
-var SpecificEntry<JenkinsProviderThing>.job: String
+var SpecificEntry<JenkinsProvider>.job: String
     get() = entry.job
     set(it) {
         entry.job = it
     }
-var SpecificEntry<JenkinsProviderThing>.buildNumber: Int
+var SpecificEntry<JenkinsProvider>.buildNumber: Int
     get() = entry.buildNumber
     set(it) {
         entry.buildNumber = it
     }
 
 //LOCAL
-var SpecificEntry<LocalProviderThing>.fileSrc: String
+var SpecificEntry<LocalProvider>.fileSrc: String
     get() = entry.fileSrc
     set(it) {
         entry.fileSrc = it
     }
 
 //UPDATE-JSON
-var SpecificEntry<UpdateJsonProviderThing>.json: String
+var SpecificEntry<UpdateJsonProvider>.json: String
     get() = entry.updateJson
     set(it) {
         entry.updateJson = it
     }
-var Wrapper<UpdateJsonProviderThing>.channel: UpdateChannel
+var Wrapper<UpdateJsonProvider>.channel: UpdateChannel
     get() = entry.updateChannel
     set(it) {
         entry.updateChannel = it
     }
-var SpecificEntry<UpdateJsonProviderThing>.template: String
+var SpecificEntry<UpdateJsonProvider>.template: String
     get() = entry.template
     set(it) {
         entry.template = it

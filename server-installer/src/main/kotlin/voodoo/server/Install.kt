@@ -23,7 +23,7 @@ object Install : KLogging() {
         val parsedArgs = Arguments(parser)
         parser.force()
 
-        runBlocking(context = ExceptionHelper.context) {
+        runBlocking {
             parsedArgs.run {
                 logger.info("target dir: $targetDir")
                 logger.info("pack file: $packFile")

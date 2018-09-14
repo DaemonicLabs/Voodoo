@@ -25,7 +25,7 @@ object Import : KLogging() {
         val arguments = Arguments(parser)
         parser.force()
 
-        runBlocking(context = ExceptionHelper.context) {
+        runBlocking {
             arguments.run {
                 logger.info { this.methode }
                 val importer = when (methode) {
