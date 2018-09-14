@@ -160,10 +160,8 @@ data class LockEntry(
                 registerSerializer(Side::class, Side)
             })
 
-        fun loadEntry(file: File): LockEntry =
-            json.parse<LockEntry>(file.readText().also { logger.info { "loading: $it" } })
+        fun loadEntry(file: File): LockEntry = json.parse(file.readText())
     }
 
     fun serialize(): String = json.stringify(this)
-
 }
