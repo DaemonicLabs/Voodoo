@@ -66,32 +66,32 @@ object CurseClient : KLogging() {
 
     @Serializable
     data class GraphQLRequest(
-            val query: String,
-            val operationName: String,
-            val variables: Map<String, Any> = emptyMap()
+        val query: String,
+        val operationName: String,
+        val variables: Map<String, Any> = emptyMap()
     )
 
     @Serializable
     data class IdNamePair(
-            val id: Int,
-            val slug: String
+        val id: Int,
+        val slug: String
     )
 
     @Serializable
     data class WrapperAddonResult(
-            val addons: List<IdNamePair>
+        val addons: List<IdNamePair>
     )
 
     @Serializable
     data class GraphQlResult(
-            val data: WrapperAddonResult
+        val data: WrapperAddonResult
     )
 
     private suspend fun graphQLRequest(): GraphQlResult {
         val url = "https://curse.nikky.moe/graphql"
         logger.debug("post $url")
         val request = GraphQLRequest(
-                query = """
+            query = """
                     |{
                     |  addons(gameID: 432) {
                     |    id
@@ -99,37 +99,24 @@ object CurseClient : KLogging() {
                     |  }
                     |}
                 """.trimMargin(),
-                operationName = "GetNameIDPairs"
+            operationName = "GetNameIDPairs"
         )
-        return client.post(url) {
-            contentType(ContentType.Application.Json)
-            body = request
+        return try {
+            client.post(url) {
+                contentType(ContentType.Application.Json)
+                body = request
+            }
+        } catch (e: Exception) {
+            logger.error("url: $url")
+            throw e
         }
-//        val (request, response, result) = url.httpPost()
-//                .body(mapper.writeValueAsBytes(graphQlRequest))
-//                .header("User-Agent" to useragent, "Content-Type" to "application/json")
-//                .apply {
-//                    httpHeaders["Content-Type"] = "application/json"
-//                }
-//                .awaitStringResponse()
-//        return when (result) {
-//            is Result.Success -> {
-//                mapper.readValue(result.value)
-//            }
-//            is Result.Failure -> {
-//                logger.error { request }
-//                logger.error { response }
-//                logger.error { result }
-//                throw Exception("failed getting name-id pairs")
-//            }
-//        }
     }
 
     private suspend fun initSlugIdMap(): Map<String, ProjectID> {
         val grapqhQlResult = graphQLRequest()
         return grapqhQlResult.data.addons.groupBy(
-                { it.slug },
-                { it.id }).mapValues {
+            { it.slug },
+            { it.id }).mapValues {
             //(slug, list) ->
             ProjectID(it.value.first())
         }
@@ -156,9 +143,6 @@ object CurseClient : KLogging() {
         }
     }
 
-    fun <T: Any> Array<T?>.something() {
-
-    }
     //    val getAllFilesForAddon = ::getAllFilesForAddonCall.memoizeSuspend()
     private val getAllFilesForAddonCache: MutableMap<Pair<ProjectID, String>, List<AddonFile>> = HashMap(1 shl 0)
 
@@ -166,6 +150,7 @@ object CurseClient : KLogging() {
         val a = addonId to proxyUrl
         return getAllFilesForAddonCache.getOrPut(a) { getAllFilesForAddonCall(addonId, proxyUrl) }
     }
+
     private suspend fun getAllFilesForAddonCall(addonId: ProjectID, proxyUrl: String): List<AddonFile> {
         val url = "$proxyUrl/addon/$addonId/files"
 
@@ -198,6 +183,7 @@ object CurseClient : KLogging() {
             client.get(url)
         } catch (e: Exception) {
             e.printStackTrace()
+            logger.error("url: $url")
             logger.error(e.message)
             null
         }
@@ -217,16 +203,20 @@ object CurseClient : KLogging() {
 
     suspend fun getAddonBySlug(slug: String, proxyUrl: String = PROXY_URL): Addon? {
         slugIdMap[slug]
-                ?.let { getAddon(it, proxyUrl) }
-                ?.let {
-                    return it
-                }
+            ?.let { getAddon(it, proxyUrl) }
+            ?.let {
+                return it
+            }
         slugIdMap = initSlugIdMap()
         return slugIdMap[slug]
-                ?.let { getAddon(it, proxyUrl) }
+            ?.let { getAddon(it, proxyUrl) }
     }
 
-    suspend fun findFile(entry: Entry, mcVersion: String, proxyUrl: String = PROXY_URL): Triple<ProjectID, FileID, String> {
+    suspend fun findFile(
+        entry: Entry,
+        mcVersion: String,
+        proxyUrl: String = PROXY_URL
+    ): Triple<ProjectID, FileID, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
         val slug = entry.id //TODO: maybe make into separate property
         val version = entry.version
@@ -236,7 +226,7 @@ object CurseClient : KLogging() {
 
         val addon = if (!addonId.valid) {
             slug.takeUnless { it.isBlank() }
-                    ?.let { getAddonBySlug(it, proxyUrl) }
+                ?.let { getAddonBySlug(it, proxyUrl) }
         } else {
             getAddon(addonId, proxyUrl)
         }
@@ -305,9 +295,11 @@ object CurseClient : KLogging() {
         val file = files.sortedWith(compareByDescending { it.fileDate }).firstOrNull()
         if (file == null) {
             val filesUrl = "$proxyUrl/addon/$addonId/files"
-            logger.error("no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
+            logger.error(
+                "no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
                     "files: $filesUrl mc version: $mcVersions version: $version \n" +
-                    "$addon")
+                    "$addon"
+            )
             logger.error("no file matching the parameters found for ${addon.name}")
             kotlin.system.exitProcess(-1)
 //            return Triple(addonId, FileID.INVALID, "")

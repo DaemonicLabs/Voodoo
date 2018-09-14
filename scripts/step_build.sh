@@ -13,14 +13,14 @@ cd run
 [ ! -e "$pack" ] && mkdir "$pack"
 cd "$pack"
 
-rm src/**/*.lock.json
+rm src/**/*.lock.hjson
 
 
 echo
 echo "building $1"
 echo
 
-$DIR/gradlew -p "$DIR" :run --args "build '$pack/$pack.pack.hjson' -o '$pack/$pack.lock.json' $2"
+$DIR/gradlew -p "$DIR" :run --args "build '$pack/$pack.pack.hjson' -o '$pack/$pack.lock.hjson' $2"
 if [ ! $? -eq 0 ]; then
     echo "Error Building $pack"
     exit 1

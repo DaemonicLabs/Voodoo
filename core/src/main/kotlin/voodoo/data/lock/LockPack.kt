@@ -26,12 +26,12 @@ import java.io.File
 
 @Serializable
 data class LockPack(
-    val id: String = "",
+    val id: String,
+    val mcVersion: String,
     @Optional val title: String = "",
     @Optional val version: String = "1.0",
     @Optional val icon: String = "icon.png",
     @Optional val authors: List<String> = emptyList(),
-    val mcVersion: String = "",
     @Optional val forge: Int = -1,
     @Optional val launch: Launch = Launch(),
     @Optional var userFiles: UserFiles = UserFiles(),
@@ -44,12 +44,12 @@ data class LockPack(
         override fun save(output: KOutput, obj: LockPack) {
             val elemOutput = output.writeBegin(serialClassDesc)
             elemOutput.writeStringElementValue(serialClassDesc, 0, obj.id)
-            with(LockPack(obj.id)) {
-                elemOutput.serialize(this.title, obj.title, 1)
-                elemOutput.serialize(this.version, obj.version, 2)
-                elemOutput.serialize(this.icon, obj.icon, 3)
-                elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 4)
-                elemOutput.writeStringElementValue(serialClassDesc, 5, obj.mcVersion)
+            elemOutput.writeStringElementValue(serialClassDesc, 1, obj.mcVersion)
+            with(LockPack(obj.id, obj.mcVersion)) {
+                elemOutput.serialize(this.title, obj.title, 2)
+                elemOutput.serialize(this.version, obj.version, 3)
+                elemOutput.serialize(this.icon, obj.icon, 4)
+                elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 5)
                 elemOutput.serialize(this.forge, obj.forge, 6)
                 elemOutput.serializeObj(this.launch, obj.launch, Launch::class.serializer(), 7)
                 elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles::class.serializer(), 8)
@@ -79,7 +79,7 @@ data class LockPack(
 
         fun parseFiles(srcDir: File) = srcDir.walkTopDown()
             .filter {
-                it.isFile && it.name.endsWith(".lock.json")
+                it.isFile && it.name.endsWith(".entry.lock.hjson")
             }
             .map { LockEntry.loadEntry(it) to it }
     }

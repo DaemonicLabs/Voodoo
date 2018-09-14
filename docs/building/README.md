@@ -40,7 +40,7 @@ this step needs to be executed any time you change the yaml input file
 
 ```bash
 # assuming sourceDir is 'src'
-rm src/**/*.lock.json
+rm src/**/*.lock.hjson
 rm src/**/*.entry.hjson
 mkdir -p awesomepack/ # you can also use . to import the pack into the current working directory
 voodoo import yaml awesomepack.yaml awesomepack/
@@ -53,14 +53,14 @@ This step updates mod versions and creates a static file that can be used to rep
 
 you can either update all mods
 ```bash
-voodoo build awesomepack.pack.hjson -o awesomepack.lock.json --updateAll
+voodoo build awesomepack.pack.hjson -o awesomepack.lock.hjson --updateAll
 ```
 
 or specify which mods to update, any mods that were resolved before will not be updated,
 versions of dependencies might be recalculated as needed
 
 ```bash
-voodoo build awesomepack.pack.hjson -o awesomepack.lock.json -E "Botania" -E "Magic Arsenal"
+voodoo build awesomepack.pack.hjson -o awesomepack.lock.hjson -E "Botania" -E "Magic Arsenal"
 ```
 
 

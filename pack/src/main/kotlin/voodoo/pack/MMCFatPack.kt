@@ -12,7 +12,6 @@ object MMCFatPack : AbstractPack() {
     override val label = "MultiMC Packer (frozen pack)"
 
     override suspend fun download(
-        coroutineScope: CoroutineScope,
         modpack: LockPack,
         target: String?,
         clean: Boolean
@@ -77,9 +76,7 @@ object MMCFatPack : AbstractPack() {
             minecraftDir.deleteRecursively()
         }
 
-        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
-
-        coroutineScope.apply {
+        coroutineScope {
             val jobs = mutableListOf<Job>()
 
             for (entry in modpack.entrySet) {

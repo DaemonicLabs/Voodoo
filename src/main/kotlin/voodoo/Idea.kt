@@ -148,7 +148,7 @@ val wrapper by tasks.getting(Wrapper::class) {
     gradleVersion = "4.9"
     distributionType = Wrapper.DistributionType.ALL
 }
-// java.sourceSets["main"].java.srcDir("src")
+// java.sourceSets["build"].java.srcDir("src")
     """.trimIndent()
 
 
@@ -156,7 +156,7 @@ val wrapper by tasks.getting(Wrapper::class) {
 
     // also copy/symlink script resource in
     tmpProjectDir.resolve("src")
-            .resolve("main")
+            .resolve("build")
             .resolve("kotlin").run {
                 mkdirs()
 

@@ -49,7 +49,7 @@ object Install : KLogging() {
 
         val packFile by parser.storing("--file", "-f",
                 help = "input pack lock.json") { File(this) }
-                .default(File("pack.lock.json"))
+                .default(File("pack.lock.hjson"))
 
         val skipForge by parser.flagging("--skipForge",
                 help = "do not call the forge installer")

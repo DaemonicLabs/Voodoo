@@ -30,7 +30,7 @@ object BuildSpek : Spek({
             listOf("include_features.yaml", "include_server.yaml").map { rootFolder.resolve(it) }
         }
 
-        it("main yaml exists") {
+        it("build yaml exists") {
             assert(mainFile.isFile)
         }
         it("include yaml file exists") {

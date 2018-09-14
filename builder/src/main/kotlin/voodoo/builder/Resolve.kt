@@ -162,7 +162,8 @@ suspend fun ModPack.resolve(
                         if (old == null) {
                             val filename = entry.file.nameWithoutExtension
                             new.file =
-                                entry.file.parentFile.resolve("$filename.lock.json").relativeTo(srcDir.absoluteFile)
+                                entry.file.parentFile.resolve("$filename.lock.hjson")
+                                    .relativeTo(srcDir.absoluteFile)
                             new
                         } else {
                             logger.info("existing lockEntry: $old")
@@ -260,7 +261,7 @@ suspend fun ModPack.resolve(
                 it.optional && !feature.entries.contains(it.id)
             }.map { it.id }
         }
-        logger.info("main entry: ${feature.entries.first()}")
+        logger.info("build entry: ${feature.entries.first()}")
         val mainEntry = findEntryById(feature.entries.first())!!
         feature.properties.description = mainEntry.description
 

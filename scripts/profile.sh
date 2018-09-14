@@ -29,7 +29,7 @@ echo
 echo "importing $1"
 echo
 
-rm src/**/*.lock.json
+rm src/**/*.lock.hjson
 rm src/**/*.entry.hjson
 
 # TIMEFORMAT="%E"
@@ -47,7 +47,7 @@ echo "building $1"
 echo
 
 exec 3>&1 4>&2
-build_time=$({ time java -jar "$DIR/build/libs/voodoo.jar" build $pack.pack.hjson -o $pack.lock.json $2 1>&3 2>&4; } 2>&1)
+build_time=$({ time java -jar "$DIR/build/libs/voodoo.jar" build $pack.pack.hjson -o $pack.lock.hjson $2 1>&3 2>&4; } 2>&1)
 status=$?
 exec 3>&- 4>&-
 if [ ! $status -eq 0 ]; then
@@ -61,7 +61,7 @@ echo
 
 
 exec 3>&1 4>&2
-pack_time=$({ time java -jar "$DIR/build/libs/voodoo.jar" pack sk $pack.lock.json 1>&3 2>&4; } 2>&1)
+pack_time=$({ time java -jar "$DIR/build/libs/voodoo.jar" pack sk $pack.lock.hjson 1>&3 2>&4; } 2>&1)
 status=$?
 exec 3>&- 4>&-
 if [ ! $status -eq 0 ]; then

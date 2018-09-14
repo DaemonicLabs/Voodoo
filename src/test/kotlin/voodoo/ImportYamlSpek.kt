@@ -103,7 +103,7 @@ object ImportYamlSpek : Spek({
             includeFile.writeText(includeYaml)
         }
 
-        context("main yaml file") {
+        context("build yaml file") {
             it("exists") {
                 assert(mainFile.isFile)
             }

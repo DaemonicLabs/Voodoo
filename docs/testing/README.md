@@ -4,7 +4,7 @@
 
 ## Requirements
 
-assuming you have a `.lock.json` file ready to use from
+assuming you have a `.lock.hjson` file ready to use from
 [Build](../building)
 
 ## MultiMC
@@ -21,13 +21,13 @@ now with all that out of the way.. lets run the pack locally
 
 
 ```bash
-vodoo test mmc awesomepack.lock.json
+vodoo test mmc awesomepack.lock.hjson
 ```
 
 to force a clean install of the pack you can use
 
 ```bash
-vodoo test mmc awesomepack.lock.json --clean
+vodoo test mmc awesomepack.lock.hjson --clean
 ```
 
 ## SK Creator Tools
@@ -37,7 +37,7 @@ this assumes prior knowledge of skcraft creator tools
 you can package the modpack for skcraft
 
 ````bash
-voodoo pack sk awesomepack.lock.json
+voodoo pack sk awesomepack.lock.hjson
 ````
 
 this will create a `workspace` folder

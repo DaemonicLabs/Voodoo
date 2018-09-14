@@ -24,7 +24,7 @@ echo
 echo "importing $1"
 echo
 
-rm src/**/*.lock.json
+rm src/**/*.lock.hjson
 rm src/**/*.entry.hjson
 
 java -jar "$DIR/build/libs/voodoo.jar" import yaml "$DIR/samples/$pack.yaml" .
@@ -37,7 +37,7 @@ echo
 echo "building $1"
 echo
 
-java -jar "$DIR/build/libs/voodoo.jar" build $pack.pack.hjson -o $pack.lock.json $2
+java -jar "$DIR/build/libs/voodoo.jar" build $pack.pack.hjson -o $pack.lock.hjson $2
 if [ ! $? -eq 0 ]; then
     echo "Error Building $pack"
     exit 1
@@ -47,7 +47,7 @@ echo
 echo "packaging $1"
 echo
 
-java -jar "$DIR/build/libs/voodoo.jar" pack sk $pack.lock.json
+java -jar "$DIR/build/libs/voodoo.jar" pack sk $pack.lock.hjson
 if [ ! $? -eq 0 ]; then
     echo "Error Packing $pack"
     exit 1

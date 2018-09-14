@@ -109,7 +109,6 @@ data class LockEntry(
     @Serializer(forClass = LockEntry::class)
     companion object : KLogging() {
         override fun save(output: KOutput, obj: LockEntry) {
-            println(serialClassDesc)
             val elemOutput = output.writeBegin(serialClassDesc)
             elemOutput.writeStringElementValue(serialClassDesc, 0, obj.provider)
             elemOutput.writeStringElementValue(serialClassDesc, 1, obj.id)

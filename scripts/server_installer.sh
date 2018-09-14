@@ -20,7 +20,7 @@ echo
 
 cd "$DIR/run/.server/$pack"
 
-$DIR/gradlew -p "$DIR" :server-installer:run --args "'$DIR/run/.server/${pack}_run' --file '.server/$pack/pack.lock.json' --clean"
+$DIR/gradlew -p "$DIR" :server-installer:run --args "'$DIR/run/.server/${pack}_run' --file '.server/$pack/pack.lock.hjson' --clean"
 if [ ! $? -eq 0 ]; then
     echo "Error Installing $pack"
     exit 1

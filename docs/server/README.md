@@ -4,7 +4,7 @@
 
 ## Requirements
 
-assuming you have a `.lock.json` file ready to use from
+assuming you have a `.lock.hjson` file ready to use from
 [Build](../building)
 
 ## Packing the Server
@@ -12,7 +12,7 @@ assuming you have a `.lock.json` file ready to use from
 Voodoo packages all data needed to install a server into a folder
 
 ```bash
-vodoo pack server awesomepack.lock.json
+vodoo pack server awesomepack.lock.hjson
 ```
 
 You will find a `.server/awesomepack/` folder has been created

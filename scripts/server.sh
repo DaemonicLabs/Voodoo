@@ -9,7 +9,7 @@ pack=$1
 [ ! -e run ] && mkdir run
 cd run
 
-[ ! -e "$DIR/run/$pack/$pack.lock.json" ] && echo "pack does not exist" && exit -1
+[ ! -e "$DIR/run/$pack/$pack.lock.hjson" ] && echo "pack does not exist" && exit -1
 
 rm -rf ".server/$pack"
 
@@ -20,7 +20,7 @@ echo
 echo packing $pack server
 echo
 
-$DIR/gradlew -p "$DIR" :run --args "pack server $pack/$pack.lock.json -o '$DIR/run/.server/$pack'"
+$DIR/gradlew -p "$DIR" :run --args "pack server $pack/$pack.lock.hjson -o '$DIR/run/.server/$pack'"
 if [ ! $? -eq 0 ]; then
     echo "Error packing $pack server"
     exit 1

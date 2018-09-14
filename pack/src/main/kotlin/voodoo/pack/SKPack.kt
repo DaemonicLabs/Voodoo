@@ -26,7 +26,6 @@ object SKPack : AbstractPack() {
     override val label = "SK Packer"
 
     override suspend fun download(
-        coroutineScope: CoroutineScope,
         modpack: LockPack,
         target: String?,
         clean: Boolean
@@ -47,7 +46,7 @@ object SKPack : AbstractPack() {
             logger.debug("cp -r $packSrc $skSrcFolder")
             packSrc.copyRecursively(skSrcFolder, overwrite = true)
             skSrcFolder.walkBottomUp().forEach {
-                if (it.name.endsWith(".entry.hjson") || it.name.endsWith(".lock.json"))
+                if (it.name.endsWith(".entry.hjson") || it.name.endsWith(".lock.hjson"))
                     it.delete()
                 if (it.isDirectory && it.listFiles().isEmpty()) {
                     it.delete()
@@ -68,7 +67,7 @@ object SKPack : AbstractPack() {
         logger.info("cleaning loaders $loadersFolder")
         loadersFolder.deleteRecursively()
 
-        coroutineScope.apply {
+        coroutineScope {
             val jobs = mutableListOf<Job>()
 
             // download forge

@@ -72,7 +72,6 @@ data class Entry(
     @Serializer(forClass = Entry::class)
     companion object : KLogging() {
         override fun save(output: KOutput, obj: Entry) {
-            println(serialClassDesc)
             val elemOutput = output.writeBegin(serialClassDesc)
             elemOutput.writeStringElementValue(serialClassDesc, 0, obj.provider)
             elemOutput.writeStringElementValue(serialClassDesc, 1, obj.id)
@@ -185,6 +184,15 @@ data class Entry(
     @JsonIgnore
     @Transient
     lateinit var file: File
+
+    fun setDefaultFile(sourceFolder: File) {
+        if(!::file.isInitialized) {
+            val filename = id
+                .replace('/', '-')
+                .replace("[^\\w-]+".toRegex(), "")
+            file = sourceFolder.resolve(folder).resolve("$filename.entry.hjson").absoluteFile
+        }
+    }
 
     fun serialize() {
         file.absoluteFile.parentFile.mkdirs()

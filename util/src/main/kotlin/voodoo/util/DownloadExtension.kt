@@ -20,6 +20,7 @@ import java.io.File
 import io.ktor.http.*
 import io.ktor.http.cio.ParserException
 import kotlinx.coroutines.experimental.*
+import kotlinx.io.IOException
 import voodoo.util.redirect.HttpRedirectFixed
 
 /**
@@ -101,7 +102,7 @@ suspend fun File.download(url: String, cacheDir: File, useragent: String = downl
                                 logger.error("connection url: {}", request.url)
                                 logger.error("content: {}", result.component1())
                                 logger.error("error: {}", result.error.toString())
-                                throw IllegalStateException(result.error.toString())
+                                throw IOException(result.error.toString())
                             }
                         }
                     }

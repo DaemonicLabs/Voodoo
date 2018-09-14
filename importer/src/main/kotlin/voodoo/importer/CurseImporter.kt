@@ -65,7 +65,7 @@ object CurseImporter : AbstractImporter() {
             when {
                 !file.isFile -> false
                 file.name.endsWith(".entry.hjson") -> false
-                file.name.endsWith(".entry.lock.json") -> false
+                file.name.endsWith(".lock.hjson") -> false
                 else -> true
             }
         }.forEach { file ->
@@ -131,7 +131,7 @@ object CurseImporter : AbstractImporter() {
                         projectID = projectID,
                         fileID = fileID
                     )
-                    overridesFolder.resolve(path).apply { mkdirs() }.resolve("${addon.slug}.entry.lock.json")
+                    overridesFolder.resolve(path).apply { mkdirs() }.resolve("${addon.slug}.lock.hjson")
                         .writeText(
                             JSON.unquoted.stringify(lockEntry)
                         )
@@ -178,7 +178,7 @@ object CurseImporter : AbstractImporter() {
         target.resolve(entriesFilename).writeYaml(rootEntry)
 
         val packFile = target.resolve("$mainFilename.pack.hjson")
-        val lockFile = target.resolve("$mainFilename.lock.json")
+        val lockFile = target.resolve("$mainFilename.lock.hjson")
 
         val modpack = nestedPack.flatten()
 
