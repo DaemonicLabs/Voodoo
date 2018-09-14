@@ -145,9 +145,9 @@ suspend fun ModPack.resolve(
             logger.info("unresolved: ${unresolved.map { it.id }}")
 //        logger.info("resolved: $resolved")() + 1, "pool")
 
-            val jobs = mutableListOf<Pair <String, Job>>()
+            val jobs = mutableListOf<Job>()
             for (entry in unresolved) {
-                jobs += entry.id to launch(context = pool) {
+                jobs += launch(context = pool) {
                     logger.info("resolving: ${entry.id}")
                     val provider = Provider.valueOf(entry.provider).base
 
