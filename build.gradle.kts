@@ -19,7 +19,7 @@ buildscript {
 plugins {
     application
     `maven-publish`
-    kotlin("jvm") version "1.2.61"
+    kotlin("jvm") version "1.2.70"
 //    kotlin("jvm") version "1.3-M2"
     id("idea")
     id("project-report")
@@ -105,6 +105,9 @@ allprojects {
         path.substringAfter(':').split(':').joinToString("-") { it.toLowerCase() }
     base {
         archivesBaseName = "$baseName$versionSuffix"
+    }
+    val jar by tasks.getting(Jar::class) {
+        this.version = ""
     }
 
     if (project !in noConstants) {

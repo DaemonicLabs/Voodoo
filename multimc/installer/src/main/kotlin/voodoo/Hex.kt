@@ -46,7 +46,7 @@ object Hex : KLogging() {
     private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
 
     private fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
-
+        logger.info("installing into $instanceId")
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         val packUrl = urlFile.readText().trim()
         val (_, _, result) = packUrl.httpGet()
