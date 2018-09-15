@@ -39,16 +39,16 @@ object DslSpek : Spek({
 
                     //TODO: use type URL ?
                     metaUrl = "https://curse.nikky.moe"
-                    entriesBlock {
+                    list {
                         id("botania") optionals false
 
                         id("rf-tools") {
                             optionals = false
                         }
 
-                        entry(JenkinsProvider) {
+                        withProvider(JenkinsProvider) {
                             side = Side.SERVER
-                        }.entriesBlock {
+                        }.list {
                             id("matterlink") job "elytra/matterlink/master"
                             id("elytra/btfu/master")
                         }

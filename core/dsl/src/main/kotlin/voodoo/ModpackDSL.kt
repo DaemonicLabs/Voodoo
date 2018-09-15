@@ -3,6 +3,7 @@ package voodoo
 import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.curse.ProjectID
+import voodoo.data.flat.EntryFeature
 import voodoo.data.nested.NestedEntry
 import voodoo.data.provider.UpdateChannel
 import voodoo.provider.*
@@ -28,8 +29,13 @@ abstract class Wrapper<P : ProviderBase>(
     var folder by ref(entry::folder)
     var comment by ref(entry::comment)
     var description by ref(entry::description)
+    infix fun description (s: String): Wrapper<P> {
+        return this.apply { description = s }
+    }
 
     //TODO: Feature functions
+//    var feature by ref(entry::feature)
+
     var side by ref(entry::side)
     var websiteUrl by ref(entry::websiteUrl)
 
@@ -41,6 +47,20 @@ abstract class Wrapper<P : ProviderBase>(
     var version by ref(entry::version)
     var fileName by ref(entry::fileName)
     var validMcVersions by ref(entry::validMcVersions)
+
+    fun feature(block: FeatureWrapper.() -> Unit) {
+        val feature = entry.feature?.copy() ?: EntryFeature()
+        val wrapper = FeatureWrapper(feature)
+        wrapper.block()
+        entry.feature = feature
+    }
+}
+
+class FeatureWrapper(feature: EntryFeature) {
+    var name by ref(feature::name)
+    var selected by ref(feature::selected)
+    var description by ref(feature::description)
+    var recommendation by ref(feature::recommendation)
 }
 
 // CURSE
@@ -78,6 +98,9 @@ var SpecificEntry<CurseProvider>.fileID: FileID
     }
 
 // DIRECT
+infix fun Wrapper<DirectProvider>.url(s: String): Wrapper<DirectProvider> {
+    return this.apply { entry.url = s }
+}
 var SpecificEntry<DirectProvider>.url: String
     get() = entry.url
     set(it) {
@@ -175,10 +198,10 @@ fun <T : ProviderBase> rootEntry(provider: T, function: GroupingEntry<T>.() -> U
 /**
  * Create new EntryList as subentries to `this`
  */
-fun <T : ProviderBase> GroupingEntry<T>.entriesBlock(function: EntriesList<T>.() -> Unit) {
+fun <T : ProviderBase> GroupingEntry<T>.list(function: EntriesList<T>.() -> Unit) {
     EntriesList(provider).apply {
         function()
-        this@entriesBlock.entry.entries += entries.map { it.entry }
+        this@list.entry.entries += entries.map { it.entry }
     }
 }
 
@@ -186,10 +209,17 @@ fun <T : ProviderBase> GroupingEntry<T>.entriesBlock(function: EntriesList<T>.()
  * Create new Entry with specified provier
  * and add to Entrylist
  */
-fun <T : ProviderBase, R : ProviderBase> EntriesList<T>.entry(provider: R, function: GroupingEntry<R>.() -> Unit): GroupingEntry<R> {
+fun <T : ProviderBase, R : ProviderBase> EntriesList<T>.withProvider(provider: R, block: GroupingEntry<R>.() -> Unit = {}): GroupingEntry<R> {
     val entry = NestedEntry()
     val env = GroupingEntry(entry = entry, provider = provider)
-    env.function()
+    env.block()
+    return env.also { this.entries += it }
+}
+
+fun <T: ProviderBase> EntriesList<T>.group(block: GroupingEntry<T>.() -> Unit = {}): GroupingEntry<T> {
+    val entry = NestedEntry()
+    val env = GroupingEntry(entry = entry, provider = this.parent)
+    env.block()
     return env.also { this.entries += it }
 }
 
