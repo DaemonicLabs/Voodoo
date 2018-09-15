@@ -1,6 +1,7 @@
 package voodoo.pack.sk
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import kotlinx.serialization.Serializable
 import voodoo.data.sk.FeatureFiles
 import voodoo.data.sk.FeatureProperties
 
@@ -11,6 +12,7 @@ import voodoo.data.sk.FeatureProperties
 
 
 @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+@Serializable
 data class SKFeatureComposite(
         var properties: FeatureProperties = FeatureProperties(),
         var files: FeatureFiles = FeatureFiles()

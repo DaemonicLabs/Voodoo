@@ -38,7 +38,8 @@ inline fun <reified T : Any> File.readJsonOrNull(): T? {
     }
 }
 
-fun File.writeJson(value: Any) {
+@Deprecated("", ReplaceWith(".writeText(JSON.stringify(value))", "kotlinx.serialization.json.JSON"))
+inline fun <reified T: Any> File.writeJson(value: T) {
     this.bufferedWriter().use {
         jsonMapper.writeValue(it, value)
     }

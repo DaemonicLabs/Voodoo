@@ -1,16 +1,19 @@
 package voodoo.pack.sk
 
-import java.util.*
+import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class SKPackages(
-        val minimumVersion: Int = 1,
-        var packages: List<SkPackageFragment> = emptyList()
+    @Optional val minimumVersion: Int = 1,
+    @Optional var packages: List<SkPackageFragment> = emptyList()
 )
 
+@Serializable
 data class SkPackageFragment(
-        val title: String,
-        val name: String,
-        var version: String,
-        val location: String,
-        val priority: Int = 0
+    val title: String,
+    val name: String,
+    var version: String,
+    val location: String,
+    @Optional val priority: Int = 0
 )

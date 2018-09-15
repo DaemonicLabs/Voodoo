@@ -42,8 +42,6 @@ fun main(args: Array<String>) {
                 metaUrl = "https://curse.nikky.moe/api"
                 optionals = false
                 list {
-                    id("")
-
                     // Vazkii
                     id("akashic-tome")
                     id("botania")

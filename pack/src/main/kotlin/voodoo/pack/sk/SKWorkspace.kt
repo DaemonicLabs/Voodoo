@@ -1,7 +1,11 @@
 package voodoo.pack.sk
 
+import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class SKWorkspace(
-        val packs: MutableSet<SKLocation> = mutableSetOf(),
-        var packageListingEntries: List<Any> = listOf(),
-        var packageListingType: String = "STATIC"
+    @Optional val packs: MutableSet<SKLocation> = mutableSetOf(),
+    @Optional var packageListingEntries: List<String> = listOf(),
+    @Optional var packageListingType: String = "STATIC"
 )
