@@ -20,7 +20,7 @@ fun withDefaultMain(
     val id = nestedPack.id
     val packFileName = "$id.pack.hjson"
     val packFile = root.resolve(packFileName)
-    val lockFileName = "$id.pack.hjson"
+    val lockFileName = "$id.lock.hjson"
     val lockFile = root.resolve(lockFileName)
 
     val funcs = mapOf<String, (Array<String>) -> Unit>(
