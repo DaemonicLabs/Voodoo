@@ -26,6 +26,6 @@ dependencies {
 
 //    compile(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-slf4j", version = kotlin_coroutines_version)
     compile(group = "io.github.microutils", name = "kotlin-logging", version = "1.6.10")
-    compile(group = "ch.qos.logback", name = "logback-classic", version = "+")
+    compile(group = "ch.qos.logback", name = "logback-classic", version = "1.3.0-alpha4")
 //    compile(group = "org.slf4j", name = "slf4j-simple", version = "1.8.0-beta2")
 }
