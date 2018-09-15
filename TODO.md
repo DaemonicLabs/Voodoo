@@ -22,6 +22,9 @@ enum class CurseMods(id: Int) {
 # curse import -> kotlinpoet
 https://github.com/square/kotlinpoet
 
+requires more knowledge of how packs are going to be written
+and imports are going to work
+
 generate the NestedPack
 
 # config tweaks

@@ -94,6 +94,8 @@ object BuilderForDSL : KLogging() {
 
                 val modlist = targetFile.absoluteFile.parentFile.resolve("modlist.md")
                 modlist.writeText(sw.toString())
+
+                logger.info("finished")
             }
         }
     }
