@@ -3,6 +3,7 @@ package voodoo.pack
 import com.skcraft.launcher.builder.PackageBuilder
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.*
+import kotlinx.serialization.json.JSON
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.pack.sk.*
@@ -167,7 +168,7 @@ object SKPack : AbstractPack() {
                 features = features
             )
             val modpackPath = modpackDir.resolve("modpack.json")
-            modpackPath.writeJson(skmodpack)
+            modpackPath.writeText(JSON.stringify(skmodpack))
 
             // add to workspace.json
             logger.info("adding {} to workpace.json", modpack.id)
@@ -175,13 +176,13 @@ object SKPack : AbstractPack() {
             workspaceMetaFolder.mkdirs()
             val workspacePath = workspaceMetaFolder.resolve("workspace.json")
             val workspace = if (workspacePath.exists()) {
-                workspacePath.readJson()
+                JSON.parse(workspacePath.readText())
             } else {
                 SKWorkspace()
             }
             workspace.packs += SKLocation(modpack.id)
 
-            workspacePath.writeJson(workspace)
+            workspacePath.writeText(JSON.indented.stringify(workspace))
 
             val targetDir = if (target != null) {
                 File(target)
@@ -206,7 +207,7 @@ object SKPack : AbstractPack() {
             //regenerate packages.json
             val packagesFile = targetDir.resolve("packages.json")
             val packages: SKPackages = if (packagesFile.exists()) {
-                packagesFile.readJson()
+                JSON.indented.parse(packagesFile.readText())
             } else {
                 SKPackages()
             }
@@ -219,7 +220,7 @@ object SKPack : AbstractPack() {
                     location = "${modpack.id}.json"
                 ).apply { packages.packages += this }
             packFragment.version = uniqueVersion
-            packagesFile.writeJson(packages)
+            packagesFile.writeText(JSON.indented.stringify(packages))
         }
     }
 }
