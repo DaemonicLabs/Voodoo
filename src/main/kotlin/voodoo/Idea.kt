@@ -20,23 +20,28 @@ data class ProcessResult(val command: String, val exitCode: Int, val stdout: Str
     }
 }
 
-fun evalBash(cmd: String, wd: File? = null,
-             stdoutConsumer: Consumer<String> = StringBuilderConsumer(),
-             stderrConsumer: Consumer<String> = StringBuilderConsumer()): ProcessResult {
-    return runProcess("bash", "-c", cmd,
-            wd = wd, stderrConsumer = stderrConsumer, stdoutConsumer = stdoutConsumer)
+fun evalBash(
+    cmd: String, wd: File? = null,
+    stdoutConsumer: Consumer<String> = StringBuilderConsumer(),
+    stderrConsumer: Consumer<String> = StringBuilderConsumer()
+): ProcessResult {
+    return runProcess(
+        "bash", "-c", cmd,
+        wd = wd, stderrConsumer = stderrConsumer, stdoutConsumer = stdoutConsumer
+    )
 }
 
-fun runProcess(vararg cmd: String, wd: File? = null,
-               stdoutConsumer: Consumer<String> = StringBuilderConsumer(),
-               stderrConsumer: Consumer<String> = StringBuilderConsumer()): ProcessResult {
+fun runProcess(
+    vararg cmd: String, wd: File? = null,
+    stdoutConsumer: Consumer<String> = StringBuilderConsumer(),
+    stderrConsumer: Consumer<String> = StringBuilderConsumer()
+): ProcessResult {
 
     try {
         // simplify with https://stackoverflow.com/questions/35421699/how-to-invoke-external-command-from-within-kotlin-code
         val proc = ProcessBuilder(cmd.asList()).directory(wd).
-                // see https://youtrack.jetbrains.com/issue/KT-20785
-                apply { environment()["KOTLIN_RUNNER"] = "" }.start();
-
+            // see https://youtrack.jetbrains.com/issue/KT-20785
+            apply { environment()["KOTLIN_RUNNER"] = "" }.start();
 
         // we need to gobble the streams to prevent that the internal pipes hit their respecitive buffer limits, which
         // would lock the sub-process execution (see see https://github.com/holgerbrandl/kscript/issues/55
@@ -51,7 +56,6 @@ fun runProcess(vararg cmd: String, wd: File? = null,
         stdoutGobbler.join()
 
         return ProcessResult(cmd.joinToString(" "), exitVal, stdoutConsumer.toString(), stderrConsumer.toString())
-
     } catch (t: Throwable) {
         throw RuntimeException(t)
     }
@@ -69,8 +73,8 @@ fun quit(status: Int): Nothing {
     exitProcess(status)
 }
 
-internal class StreamGobbler(private val inputStream: InputStream, private val consumeInputLine: Consumer<String>) : Thread() {
-
+internal class StreamGobbler(private val inputStream: InputStream, private val consumeInputLine: Consumer<String>) :
+    Thread() {
 
     override fun run() {
         BufferedReader(InputStreamReader(inputStream)).lines().forEach(consumeInputLine)
@@ -95,7 +99,10 @@ object ShellUtils {
 }
 
 fun launchIdeaWithKscriptlet(scriptFile: File, libs: List<File>): File {
-    requireInPath("idea", "Could not find 'idea' in your PATH. It can be created in IntelliJ under `Tools -> Create Command-line Launcher`")
+    requireInPath(
+        "idea",
+        "Could not find 'idea' in your PATH. It can be created in IntelliJ under `Tools -> Create Command-line Launcher`"
+    )
 
     logger.info("Setting up idea project from ${scriptFile}")
 
@@ -148,26 +155,24 @@ val wrapper by tasks.getting(Wrapper::class) {
     gradleVersion = "4.9"
     distributionType = Wrapper.DistributionType.ALL
 }
-// java.sourceSets["build"].java.srcDir("src")
+kotlin.sourceSets.maybeCreate("main").kotlin.srcDir("src")
     """.trimIndent()
 
 
     File(tmpProjectDir, "build.gradle.kts").writeText(gradleScript)
 
     // also copy/symlink script resource in
-    tmpProjectDir.resolve("src")
-            .resolve("build")
-            .resolve("kotlin").run {
-                mkdirs()
+    tmpProjectDir.resolve("src").run {
+        mkdirs()
 
-                // https://stackoverflow.com/questions/17926459/creating-a-symbolic-link-with-java
-//        createSymLink(File(this, scriptFile.name), scriptFile)
+        // https://stackoverflow.com/questions/17926459/creating-a-symbolic-link-with-java
+        createSymLink(File(this, scriptFile.name), scriptFile)
 
-                for (libJar in libs) {
-                    val target = tmpProjectDir.resolve("libs")
-                    target.mkdirs()
-                    libJar.copyTo(target.resolve(libJar.name), overwrite = true)
-                }
+        for (libJar in libs) {
+            val target = tmpProjectDir.resolve("libs")
+            target.mkdirs()
+            libJar.copyTo(target.resolve(libJar.name), overwrite = true)
+        }
 //        // also symlink all includes
 //        includeURLs.distinctBy { it.fileName() }
 //                .forEach {
@@ -179,7 +184,7 @@ val wrapper by tasks.getting(Wrapper::class) {
 //
 //                    createSymLink(File(this, it.fileName()), includeFile)
 //                }
-            }
+    }
 
     return tmpProjectDir
 }
