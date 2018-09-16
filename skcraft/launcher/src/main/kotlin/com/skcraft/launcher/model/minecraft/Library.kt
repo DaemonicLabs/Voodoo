@@ -6,39 +6,46 @@
  */
 package com.skcraft.launcher.model.minecraft
 
-import com.fasterxml.jackson.annotation.*
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import com.skcraft.launcher.util.Environment
 import com.skcraft.launcher.util.Platform
+import kotlinx.serialization.Optional
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import java.util.regex.Pattern
+import kotlinx.serialization.Transient
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-class Library(
-        val name: String
+@Serializable
+data class Library(
+    val name: String
 ) {
     companion object {
         fun String.split() =
-                this.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+            this.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
     }
 
+    @kotlin.jvm.Transient
     @Transient
-    @get:JsonIgnore
     var group: String = name.split()[0]
+    @kotlin.jvm.Transient
     @Transient
-    @get:JsonIgnore
     var artifact: String? = name.split()[1]
+    @kotlin.jvm.Transient
     @Transient
-    @get:JsonIgnore
     var version: String? = name.split()[2]
-    @JsonProperty("url")
+    @SerialName("url")
+    @Optional
     var baseUrl: String? = null
+    @Optional
     var natives: Map<String, String>? = null
+    @Optional
     var extract: Extract? = null
+    @Optional
     var rules: List<Rule>? = null
     // Forge-added
+    @Optional
     var comment: String? = null
     // Custom
+    @Optional
     var isLocallyAvailable: Boolean = false
 
     fun matches(environment: Environment): Boolean {
@@ -46,7 +53,7 @@ class Library(
         if (rules != null) {
             for (rule in rules!!) {
                 if (rule.matches(environment)) {
-                    allow = rule.action == Action.ALLOW
+                    allow = rule.action == Action.allow
                 }
             }
         } else {
@@ -92,21 +99,13 @@ class Library(
         return path
     }
 
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other == null || javaClass != other.javaClass) return false
-        val library = other as Library?
-        return this.name == library!!.name
-    }
-
-    override fun hashCode(): Int {
-        return this.name.hashCode()
-    }
-
-
-    class Rule {
-        var action: Action? = null
+    @Serializable
+    data class Rule(
+        @Optional
+        var action: Action? = null,
+        @Optional
         var os: OS? = null
+    ) {
 
         fun matches(environment: Environment): Boolean {
             return if (os == null) {
@@ -115,82 +114,34 @@ class Library(
                 os!!.matches(environment)
             }
         }
-
-        override fun equals(other: Any?): Boolean {
-            if (other === this) return true
-            if (other !is Rule) return false
-            if (if (this.action == null) other.action != null else this.action != other.action) return false
-            return if (if (this.os == null) other.os != null else this.os != other.os) false else true
-        }
-
-        override fun hashCode(): Int {
-            val PRIME = 59
-            var result = 1
-            result = result * PRIME + if (action == null) 43 else action!!.hashCode()
-            result = result * PRIME + if (os == null) 43 else os!!.hashCode()
-            return result
-        }
-
-        override fun toString(): String {
-            return "Library.Rule(action=" + this.action + ", os=" + this.os + ")"
-        }
     }
 
-
-    class OS {
-        @get:JsonProperty("name")
-        @get:JsonDeserialize(using = PlatformDeserializer::class)
-        @get:JsonSerialize(using = PlatformSerializer::class)
-        var platform: Platform? = null
-        var version: Pattern? = null
-
+    @Serializable
+    data class OS(
+        @Optional var platform: Platform? = null,
+        @Optional var version: Pattern? = null
+    ) {
         fun matches(environment: Environment): Boolean {
-            return (platform == null || platform == environment.platform) && (version == null || version!!.matcher(environment.platformVersion).matches())
-        }
-
-        override fun equals(other: Any?): Boolean {
-            if (other === this) return true
-            if (other !is OS) return false
-            if (if (this.platform == null) other.platform != null else this.platform != other.platform) return false
-            return !if (this.version == null) other.version != null else this.version != other.version
-        }
-
-        protected fun canEqual(other: Any): Boolean {
-            return other is OS
-        }
-
-        override fun hashCode(): Int {
-            val PRIME = 59
-            var result = 1
-            val `$platform` = this.platform
-            result = result * PRIME + (`$platform`?.hashCode() ?: 43)
-            val `$version` = this.version
-            result = result * PRIME + (`$version`?.hashCode() ?: 43)
-            return result
-        }
-
-        override fun toString(): String {
-            return "Library.OS(platform=" + this.platform + ", version=" + this.version + ")"
+            return (platform == null || platform == environment.platform) && (version == null || version!!.matcher(
+                environment.platformVersion
+            ).matches())
         }
     }
 
-
+    @Serializable
     data class Extract(
-            var exclude: List<String>
+        var exclude: List<String>
     )
 
-
     enum class Action {
-        ALLOW, DISALLOW;
+        allow, disallow;
 
-        @JsonValue
         fun toJson(): String {
             return name.toLowerCase()
         }
 
         companion object {
 
-            @JsonCreator
             fun fromJson(text: String): Action {
                 return valueOf(text.toUpperCase())
             }

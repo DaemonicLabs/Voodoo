@@ -1,6 +1,5 @@
 package voodoo.util.jenkins
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.defaultRequest
@@ -97,7 +96,6 @@ class JenkinsServer(val url: String) {
 }
 
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Serializable
 data class Build(
     val number: Int,
@@ -116,7 +114,6 @@ data class Build(
     }
 }
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Serializable
 data class BuildWithDetails(
     val number: Int,
@@ -125,7 +122,6 @@ data class BuildWithDetails(
     val timestamp: Long
 )
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Serializable
 data class Job(
     val url: String,
@@ -142,7 +138,6 @@ data class Job(
     }
 }
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 @Serializable
 data class Artifact(
     val displayPath: String,

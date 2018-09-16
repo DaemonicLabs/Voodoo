@@ -6,41 +6,18 @@
  */
 package com.skcraft.launcher.builder
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.skcraft.launcher.model.modpack.Feature
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-class FeaturePattern(
-        @JsonProperty("properties")
+@Serializable
+data class FeaturePattern(
+        @SerialName("properties")
         var feature: Feature,
-        @JsonProperty("files")
+        @SerialName("files")
         var filePatterns: FnPatternList
 ) {
-
     fun matches(path: String): Boolean {
         return filePatterns.matches(path)
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other === this) return true
-        if (other !is FeaturePattern) return false
-        if (!other.canEqual(this as Any)) return false
-        if (this.feature != other.feature) return false
-        return this.filePatterns == other.filePatterns
-    }
-
-    private fun canEqual(other: Any): Boolean {
-        return other is FeaturePattern
-    }
-
-    override fun hashCode(): Int {
-        val PRIME = 59
-        var result = 1
-        result = result * PRIME + (this.feature.hashCode())
-        result = result * PRIME + (this.filePatterns.hashCode() )
-        return result
-    }
-
-    override fun toString(): String {
-        return "FeaturePattern(feature=" + this.feature + ", filePatterns=" + this.filePatterns + ")"
     }
 }

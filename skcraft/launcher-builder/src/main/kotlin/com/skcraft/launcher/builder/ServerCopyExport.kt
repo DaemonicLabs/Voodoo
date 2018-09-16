@@ -6,8 +6,8 @@
  */
 package com.skcraft.launcher.builder
 
-import com.skcraft.launcher.util.SimpleLogFormatter
 import com.xenomachina.argparser.ArgParser
+import mu.KLogging
 import java.io.File
 import java.io.IOException
 
@@ -31,23 +31,20 @@ class ServerCopyExport(private val destDir: File) : DirectoryWalker() {
     @Throws(IOException::class)
     override fun onFile(file: File, relPath: String) {
         val dest = File(destDir, relPath)
-        log.info("Copying " + file.absolutePath + " to " + dest.absolutePath)
+        logger.info("Copying ${file.absolutePath} to ${dest.absolutePath}")
         dest.parentFile.mkdirs()
         file.copyRecursively(dest)
     }
 
-    companion object {
-        private val log = java.util.logging.Logger.getLogger(ServerCopyExport::class.java.name)
-
+    companion object: KLogging() {
         @Throws(IOException::class)
         @JvmStatic
         fun main(args: Array<String>) {
-            SimpleLogFormatter.configureGlobalLogger()
             val parser = ArgParser(args)
             val options = ServerExportOptions(parser)
             parser.force()
-            log.info("From: " + options.sourceDir.absolutePath)
-            log.info("To: " + options.destDir.absolutePath)
+            logger.info("From: ${options.sourceDir.absolutePath}")
+            logger.info("To: ${options.destDir.absolutePath}")
             val task = ServerCopyExport(options.destDir)
             task.walk(options.sourceDir)
         }

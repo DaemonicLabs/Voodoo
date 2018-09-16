@@ -16,7 +16,8 @@ import java.io.File
 fun main(args: Array<String>) {
     withDefaultMain(
         root = File("run").resolve("cotm"),
-        arguments = arrayOf("quickbuild", "--", "pack", "sk")
+//        arguments = arrayOf("quickbuild", "--", "pack", "sk")
+        arguments = arrayOf("pack", "sk")
     ) {
         NestedPack(
             id = "cotm",

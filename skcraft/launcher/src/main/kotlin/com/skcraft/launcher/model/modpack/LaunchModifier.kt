@@ -6,6 +6,11 @@
  */
 package com.skcraft.launcher.model.modpack
 
-class LaunchModifier {
+import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class LaunchModifier(
+    @Optional
     val flags: List<String> = emptyList()
-}
+)

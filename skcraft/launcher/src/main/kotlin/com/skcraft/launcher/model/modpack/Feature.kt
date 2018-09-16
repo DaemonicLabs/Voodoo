@@ -6,8 +6,6 @@
  */
 package com.skcraft.launcher.model.modpack
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonValue
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 
@@ -20,16 +18,14 @@ class Feature(
 ) : Comparable<Feature> {
 
     enum class Recommendation {
-        STARRED, AVOID;
+        starred, avoid;
 
-        @JsonValue
         fun toJson(): String {
             return name.toLowerCase()
         }
 
         companion object {
 
-            @JsonCreator
             fun fromJson(text: String): Recommendation {
                 return valueOf(text.toUpperCase())
             }

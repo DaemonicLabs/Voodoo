@@ -17,16 +17,14 @@ import java.security.MessageDigest
 /**
  * Walks a path and adds hashed path versions to the given
  * [Manifest].
- */
-class ClientFileCollector
-/**
- * Create a new collector.
  *
  * @param manifest   the manifest
  * @param applicator applies properties to manifest entries
  * @param destDir    the destination directory to copy the hashed objects
  */
-(private val manifest: Manifest, private val applicator: PropertiesApplicator, private val destDir: File) : DirectoryWalker() {
+class ClientFileCollector(
+    private val manifest: Manifest, private val applicator: PropertiesApplicator, private val destDir: File
+) : DirectoryWalker() {
     init {
     }
 
@@ -47,7 +45,11 @@ class ClientFileCollector
         val urlFile = File(file.absoluteFile.parentFile, file.name + URL_FILE_SUFFIX)
         val location: String
         var copy = true
-        if (urlFile.exists() && !System.getProperty("com.skcraft.builder.ignoreURLOverrides", "false").equals("true", ignoreCase = true)) {
+        if (urlFile.exists() && !System.getProperty("com.skcraft.builder.ignoreURLOverrides", "false").equals(
+                "true",
+                ignoreCase = true
+            )
+        ) {
             location = urlFile.readLines().first()
             copy = false
         } else {
@@ -55,10 +57,10 @@ class ClientFileCollector
         }
         val destPath = File(destDir, location)
         val entry = FileInstall(
-                hash = hash,
-                location = location,
-                to = to,
-                size = file.length()
+            hash = hash,
+            location = location,
+            to = to,
+            size = file.length()
         )
         applicator.apply(entry)
         destPath.parentFile.mkdirs()

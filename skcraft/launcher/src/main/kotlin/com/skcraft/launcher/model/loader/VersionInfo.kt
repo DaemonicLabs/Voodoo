@@ -6,12 +6,12 @@
  */
 package com.skcraft.launcher.model.loader
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.skcraft.launcher.model.minecraft.Library
+import kotlinx.serialization.Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Serializable
 data class VersionInfo(
-        var minecraftArguments: String,
-        var mainClass: String,
-        var libraries: List<Library>
+    var minecraftArguments: String,
+    var mainClass: String,
+    var libraries: List<Library>
 )

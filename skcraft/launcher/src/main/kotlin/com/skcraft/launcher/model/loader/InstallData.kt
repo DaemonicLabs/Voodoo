@@ -6,9 +6,9 @@
  */
 package com.skcraft.launcher.model.loader
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import kotlinx.serialization.Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Serializable
 data class InstallData(
         var path: String,
         var filePath: String

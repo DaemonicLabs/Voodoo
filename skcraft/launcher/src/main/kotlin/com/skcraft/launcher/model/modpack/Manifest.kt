@@ -6,25 +6,26 @@
  */
 package com.skcraft.launcher.model.modpack
 
-import com.fasterxml.jackson.annotation.JsonManagedReference
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.skcraft.launcher.model.minecraft.VersionManifest
+import kotlinx.serialization.Optional
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import java.net.URL
 
+@Serializable
 class Manifest(
         var minimumVersion: Int = 0
 ) : BaseManifest() {
-
-    var baseUrl: URL? = null
-    var librariesLocation: String? = null
-    var objectsLocation: String? = null
-    var gameVersion: String? = null
-    @JsonProperty("launch")
-    var launchModifier: LaunchModifier? = null
-    var features: List<Feature>? = emptyList()
-    @JsonManagedReference("manifest")
-    var tasks: MutableList<ManifestEntry> = mutableListOf()
-    var versionManifest: VersionManifest? = null
+    @Optional var baseUrl: URL? = null
+    @Optional var librariesLocation: String? = null
+    @Optional var objectsLocation: String? = null
+    @Optional var gameVersion: String? = null
+    @SerialName("launch")
+    @Optional var launchModifier: LaunchModifier? = null
+    @Optional var features: List<Feature>? = emptyList()
+//    @JsonManagedReference("manifest")
+    @Optional var tasks: MutableList<ManifestEntry> = mutableListOf()
+    @Optional var versionManifest: VersionManifest? = null
 
     fun updateName(name: String?) {
         if (name != null) {

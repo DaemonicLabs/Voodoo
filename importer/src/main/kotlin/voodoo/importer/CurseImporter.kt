@@ -14,7 +14,6 @@ import voodoo.provider.Provider
 import voodoo.util.UnzipUtility.unzip
 import voodoo.util.blankOr
 import voodoo.util.download
-import voodoo.util.readJson
 import voodoo.util.toJson
 import voodoo.util.writeYaml
 import java.io.File
@@ -44,7 +43,7 @@ object CurseImporter : AbstractImporter() {
         val extractFolder = cacheHome.resolve(tmpName)
         unzip(zipFile.absolutePath, extractFolder.absolutePath)
 
-        val manifest = extractFolder.resolve("manifest.json").readJson<CurseManifest>()
+        val manifest = JSON.parse<CurseManifest>(extractFolder.resolve("manifest.json").readText())
 
         val validMcVersions = mutableSetOf<String>()
 

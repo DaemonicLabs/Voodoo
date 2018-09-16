@@ -1,16 +1,13 @@
 package voodoo.util
 
-import com.fasterxml.jackson.databind.MapperFeature
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.defaultRequest
-import io.ktor.client.request.header
 import voodoo.util.redirect.HttpRedirectFixed
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
 import io.ktor.client.request.get
 import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.serialization.SerialContext
 import java.lang.Exception
 
 

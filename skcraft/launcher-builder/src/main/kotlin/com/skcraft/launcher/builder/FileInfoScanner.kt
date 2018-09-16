@@ -6,16 +6,16 @@
  */
 package com.skcraft.launcher.builder
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import java.io.File
 import java.io.IOException
 import java.util.ArrayList
 import java.util.EnumSet
 import com.skcraft.launcher.builder.ClientFileCollector.Companion.getDirectoryBehavior
+import kotlinx.serialization.json.JSON
+import mu.KLogging
 import org.apache.commons.io.FilenameUtils.*
 
-class FileInfoScanner(private val mapper: ObjectMapper) : DirectoryWalker() {
+class FileInfoScanner : DirectoryWalker() {
     val patterns = ArrayList<FeaturePattern>()
 
     override fun getBehavior(name: String): DirectoryWalker.DirectoryBehavior {
@@ -26,10 +26,10 @@ class FileInfoScanner(private val mapper: ObjectMapper) : DirectoryWalker() {
     override fun onFile(file: File, relPath: String) {
         if (file.name.endsWith(FILE_SUFFIX)) {
             val fnPattern = separatorsToUnix(getPath(relPath)) + getBaseName(getBaseName(file.name)) + "*"
-            val info = mapper.readValue<FileInfo>(file)
+            val info: FileInfo = JSON.parse(file.readText()) // mapper.readValue<FileInfo>(file)
             val feature = info.feature
             if (feature != null) {
-                if(feature.name.isNullOrEmpty()) {
+                if(feature.name.isEmpty()) {
                     throw IllegalStateException("Empty component name found in ${file.absolutePath}")
                 }
                 val stringPatterns = ArrayList<String>()
@@ -39,13 +39,12 @@ class FileInfoScanner(private val mapper: ObjectMapper) : DirectoryWalker() {
                 patternList.flags = MATCH_FLAGS
                 val fp = FeaturePattern(feature = feature, filePatterns = patternList)
                 this.patterns += fp
-                FileInfoScanner.log.info("Found .info.json file at " + file.absolutePath + ", with pattern " + fnPattern + ", and component " + feature)
+                logger.info("Found .info.json file at ${file.absolutePath}, with pattern $fnPattern, and component $feature")
             }
         }
     }
 
-    companion object {
-        private val log = java.util.logging.Logger.getLogger(FileInfoScanner::class.java.name)
+    companion object: KLogging() {
         private val MATCH_FLAGS = EnumSet.of<FnMatch.Flag>(FnMatch.Flag.CASEFOLD, FnMatch.Flag.PERIOD, FnMatch.Flag.PATHNAME)
         const val FILE_SUFFIX = ".info.json"
     }

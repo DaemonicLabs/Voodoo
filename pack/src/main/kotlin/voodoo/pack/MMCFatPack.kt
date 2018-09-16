@@ -1,6 +1,9 @@
 package voodoo.pack
 
 import kotlinx.coroutines.experimental.*
+import kotlinx.serialization.internal.HashMapSerializer
+import kotlinx.serialization.json.JSON
+import kotlinx.serialization.serializer
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
@@ -55,10 +58,12 @@ object MMCFatPack : AbstractPack() {
             }
         }
 
+        val json = JSON(indented = true)
+
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val previousSelection = if (featureJson.exists()) {
-            featureJson.readJson()
+            json.parse(HashMapSerializer(String.serializer(), Boolean::class.serializer()),featureJson.readText())
         } else {
             mapOf<String, Boolean>()
         }
@@ -70,7 +75,7 @@ object MMCFatPack : AbstractPack() {
         logger.debug("result: features: $features")
         if (!features.isEmpty()) {
             featureJson.createNewFile()
-            featureJson.writeJson(features)
+            featureJson.writeText(json.stringify(features))
         }
         if (reinstall) {
             minecraftDir.deleteRecursively()

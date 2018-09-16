@@ -11,9 +11,7 @@ import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
 import voodoo.util.Platform
 import voodoo.util.json
-import voodoo.util.readJson
 import voodoo.util.toJson
-import voodoo.util.writeJson
 import java.awt.*
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -164,10 +162,12 @@ object MMCUtil : KLogging() {
             "default"
         }
 
+        val json = JSON(indented = true)
+
         // set minecraft and forge versions
         val mmcPackPath = instanceDir.resolve("mmc-pack.json")
         val mmcPack = if (mmcPackPath.exists()) {
-            mmcPackPath.readJson()
+            json.parse(mmcPackPath.readText())
         } else MultiMCPack()
 
         if (mcVersion != null) {
@@ -191,7 +191,7 @@ object MMCUtil : KLogging() {
                 )
             ) + mmcPack.components
         }
-        mmcPackPath.writeJson(mmcPack)
+        mmcPackPath.writeText(json.stringify(mmcPack))
 
         val cfgFile = instanceDir.resolve("instance.cfg")
         val cfg = if (cfgFile.exists())

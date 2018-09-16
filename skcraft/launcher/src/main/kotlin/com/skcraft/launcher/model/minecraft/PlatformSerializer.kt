@@ -6,25 +6,36 @@
 
 package com.skcraft.launcher.model.minecraft
 
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.core.JsonProcessingException
-import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.SerializerProvider
 import com.skcraft.launcher.util.Platform
+import kotlinx.serialization.KInput
+import kotlinx.serialization.KOutput
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializer
 
 import java.io.IOException
 
-class PlatformSerializer : JsonSerializer<Platform>() {
-
-    @Throws(IOException::class, JsonProcessingException::class)
-    override fun serialize(platform: Platform, jsonGenerator: JsonGenerator, serializerProvider: SerializerProvider) {
-        when (platform) {
-            Platform.WINDOWS -> jsonGenerator.writeString("windows")
-            Platform.MAC_OS_X -> jsonGenerator.writeString("osx")
-            Platform.LINUX -> jsonGenerator.writeString("linux")
-            Platform.SOLARIS -> jsonGenerator.writeString("solaris")
-            Platform.UNKNOWN -> jsonGenerator.writeNull()
+@Serializer(forClass = Platform::class)
+class PlatformSerializer : KSerializer<Platform> {
+    override fun load(input: KInput): Platform {
+        val text = input.readStringValue()
+        return when {
+            text.equals("windows", ignoreCase = true) -> Platform.WINDOWS
+            text.equals("linux", ignoreCase = true) -> Platform.LINUX
+            text.equals("solaris", ignoreCase = true) -> Platform.SOLARIS
+            text.equals("osx", ignoreCase = true) -> Platform.MAC_OS_X
+            else -> throw IOException("Unknown platform: $text")
         }
     }
 
+    override fun save(output: KOutput, obj: Platform) {
+        output.writeStringValue(
+            when (obj) {
+                Platform.WINDOWS -> "windows"
+                Platform.MAC_OS_X -> "osx"
+                Platform.LINUX -> "linux"
+                Platform.SOLARIS -> "solaris"
+                Platform.UNKNOWN -> ""
+            }
+        )
+    }
 }

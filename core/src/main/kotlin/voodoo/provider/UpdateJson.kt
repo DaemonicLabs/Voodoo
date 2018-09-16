@@ -1,30 +1,20 @@
 package voodoo.provider
 
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.features.defaultRequest
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.get
-import io.ktor.client.request.header
 import kotlinx.coroutines.experimental.channels.SendChannel
 import mu.KLogging
-import voodoo.curse.CurseClient
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import voodoo.data.provider.UpdateChannel
-import voodoo.memoize
 import voodoo.util.encoded
 import voodoo.util.json.TestKotlinxSerializer
 import voodoo.util.redirect.HttpRedirectFixed
-import voodoo.util.serializer.DateSerializer
 import java.io.File
 import java.lang.Exception
-import java.util.Date
 
 /**
  * Created by nikky on 30/12/17.
@@ -53,9 +43,6 @@ object UpdateJsonProvider : ProviderBase, KLogging() {
         }
     }
     override val name = "UpdateJson Provider"
-
-    private val mapper = jacksonObjectMapper() // Enable YAML parsing
-        .registerModule(KotlinModule()) // Enable Kotlin support
 
     private suspend fun getUpdateJson(url: String): UpdateJson? =
         try {
