@@ -6,12 +6,12 @@
  */
 package com.skcraft.launcher.model.loader
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties
-import com.fasterxml.jackson.annotation.JsonProperty
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
-@JsonIgnoreProperties(ignoreUnknown = true)
+@Serializable
 data class InstallProfile(
-        @JsonProperty("install")
-        var installData: InstallData,
-        var versionInfo: VersionInfo
+    @SerialName("install")
+    var installData: InstallData,
+    var versionInfo: VersionInfo
 )

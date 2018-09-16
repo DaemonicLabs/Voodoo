@@ -6,12 +6,6 @@
  */
 package com.skcraft.launcher.builder
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.ObjectWriter
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.skcraft.launcher.LauncherUtils
@@ -20,7 +14,6 @@ import com.skcraft.launcher.model.minecraft.Library
 import com.skcraft.launcher.model.minecraft.VersionManifest
 import com.skcraft.launcher.model.modpack.Manifest
 import com.skcraft.launcher.util.Environment
-import com.skcraft.launcher.util.SimpleLogFormatter
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
 import kotlinx.coroutines.experimental.Job
@@ -35,6 +28,8 @@ import voodoo.util.copyInputStreamToFile
 import voodoo.util.download
 import kotlinx.io.core.Closeable
 import kotlinx.serialization.json.JSON
+import kotlinx.serialization.list
+import kotlinx.serialization.serializer
 import java.io.File
 import java.util.Properties
 import java.util.jar.JarFile
@@ -51,40 +46,38 @@ class PackageBuilder
  * @param manifest the manifest
  */
 @Throws(IOException::class)
-constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
+constructor(
+    private val manifest: Manifest,
+    val isPrettyPrint: Boolean
+) {
     private val properties: Properties = LauncherUtils.loadProperties(
         LauncherUtils::class.java,
         "launcher.properties",
         "com.skcraft.launcher.propertiesFile"
     )
-    private var writer: ObjectWriter? = null
+    private val json: JSON = if (isPrettyPrint) {
+        JSON(indented = true, nonstrict = true)
+    } else {
+        JSON(nonstrict = true)
+    }
     private val applicator: PropertiesApplicator = PropertiesApplicator(manifest)
-    var isPrettyPrint = false
-        set(prettyPrint) {
-            writer = if (prettyPrint) {
-                mapper.writerWithDefaultPrettyPrinter()
-            } else {
-                mapper.writer()
-            }
-            field = prettyPrint
-        }
     private val loaderLibraries = arrayListOf<Library>()
     private var mavenRepos: List<String>? = null
 
     init {
-        isPrettyPrint = false // Set writer
         mavenRepos = LauncherUtils::class.java.getResourceAsStream("maven_repos.json").use {
-            mapper.readValue<List<String>>(
-                it,
-                object : TypeReference<List<String>>() {}
-            )
+            json.parse<List<String>>(String.serializer().list, it.bufferedReader().use { reader -> reader.readText() })
+//            mapper.readValue<List<String>>(
+//                it,
+//                object : TypeReference<List<String>>() {}
+//            )
         }
     }
 
     @Throws(IOException::class)
     fun scan(dir: File?) {
         logSection("Scanning for .info.json files...")
-        val scanner = FileInfoScanner(mapper)
+        val scanner = FileInfoScanner()
         scanner.walk(dir!!)
         for (pattern in scanner.patterns) {
             applicator.register(pattern)
@@ -113,7 +106,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
         }
         this.loaderLibraries.addAll(collected)
         val version = manifest.versionManifest!!
-        collected.addAll(version.libraries!!)
+        collected.addAll(version.libraries)
         version.libraries = collected
     }
 
@@ -126,7 +119,8 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
                 // Read file
                 var data = jarFile.getInputStream(profileEntry).bufferedReader().use { it.readText() }
                 data = data.replace(",\\s*\\}".toRegex(), "}") // Fix issues with trailing commas
-                val profile = mapper.readValue<InstallProfile>(data, InstallProfile::class.java)
+                val profile: InstallProfile = json.parse(data)
+                //mapper.readValue<InstallProfile>(data, InstallProfile::class.java)
                 val version = manifest.versionManifest
                 // Copy tweak class arguments
                 val args = profile.versionInfo.minecraftArguments
@@ -281,7 +275,9 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
             val (_, response, result) = url.httpGet().responseString()
             manifest.versionManifest = when (result) {
                 is Result.Success -> {
-                    mapper.readValue(result.value)
+                    logger.info("reading json: ${result.value}")
+                    json.parse(result.value)
+                    //mapper.readValue(result.value)
                 }
                 is Result.Failure -> {
                     throw Exception("cannot HTTP GET $url status: ${response.statusCode}")
@@ -300,17 +296,19 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
         }
         validateManifest()
         path.absoluteFile.parentFile.mkdirs()
-        writer!!.writeValue(path, manifest)
+        path.writeText(json.stringify(manifest))
+//        json!!.writeValue(path, manifest)
         logger.info("Wrote manifest to " + path.absolutePath)
     }
 
     @Throws(IOException::class)
-    private inline fun <reified V: Any> read(path: File?): V {
+    private inline fun <reified V : Any> read(path: File?): V {
         try {
             return if (path == null) {
                 V::class.java.newInstance()
             } else {
-                mapper.readValue(path, V::class.java)
+                json.parse(path.readText())
+//                mapper.readValue(path, V::class.java)
             }
         } catch (e: InstantiationException) {
             throw IOException("Failed to create " + V::class.java.canonicalName, e)
@@ -337,15 +335,13 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
             parser.force()
 
             // Initialize
-            SimpleLogFormatter.configureGlobalLogger()
-            val mapper = ObjectMapper()
-                .registerModule(KotlinModule())
-            mapper.setSerializationInclusion(JsonInclude.Include.NON_DEFAULT)
             val manifest = Manifest(
                 minimumVersion = Manifest.MIN_PROTOCOL_VERSION
             )
-            val builder = PackageBuilder(mapper, manifest)
-            builder.isPrettyPrint = options.isPrettyPrinting
+            val builder = PackageBuilder(
+                manifest = manifest,
+                isPrettyPrint = options.isPrettyPrinting
+            )
             // From config
             builder.readConfig(options.configPath)
             builder.readVersionManifest(options.versionManifestPath)
@@ -360,7 +356,7 @@ constructor(private val mapper: ObjectMapper, private val manifest: Manifest) {
             builder.addFiles(options.filesDir, options.objectsDir)
             builder.addLoaders(options.loadersDir, options.librariesDir)
             builder.downloadLibraries(options.librariesDir)
-            builder.writeManifest(options.manifestPath!!)
+            builder.writeManifest(options.manifestPath)
             logSection("Done")
             logger.info("Now upload the contents of " + options.outputPath + " to your web server or CDN!")
         }

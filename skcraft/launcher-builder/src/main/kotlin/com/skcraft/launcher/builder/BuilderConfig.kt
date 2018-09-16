@@ -6,24 +6,28 @@
  */
 package com.skcraft.launcher.builder
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.skcraft.launcher.model.modpack.LaunchModifier
 import com.skcraft.launcher.model.modpack.Manifest
+import kotlinx.serialization.Optional
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 class BuilderConfig {
+    @Optional
     var name: String? = null
-    var title: String? = null
-    var gameVersion: String? = null
-    @JsonProperty("launch")
-    var launchModifier: LaunchModifier? = LaunchModifier()
+    @Optional var title: String? = null
+    @Optional var gameVersion: String? = null
+    @SerialName("launch")
+    @Optional var launchModifier: LaunchModifier? = LaunchModifier()
         set(launchModifier) {
             field = launchModifier ?: LaunchModifier()
         }
-    var features: List<FeaturePattern>? = arrayListOf()
+    @Optional var features: List<FeaturePattern>? = arrayListOf()
         set(features) {
             field = features ?: arrayListOf()
         }
-    var userFiles: FnPatternList? = FnPatternList()
+    @Optional var userFiles: FnPatternList? = FnPatternList()
         set(userFiles) {
             field = userFiles ?: FnPatternList()
         }

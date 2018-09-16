@@ -6,18 +6,19 @@
  */
 package com.skcraft.launcher.model.modpack
 
-import com.fasterxml.jackson.annotation.JsonIgnore
+import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
 
+@Serializable
 class FileInstall(
-        var version: String? = null,
-        var hash: String,
-        var location: String,
-        var to: String,
-        var size: Long = 0,
-        var isUserFile: Boolean = false
+    @Optional var version: String? = null,
+    var hash: String,
+    var location: String,
+    var to: String,
+    @Optional var size: Long = 0,
+    @Optional var isUserFile: Boolean = false
 ) : ManifestEntry() {
     val targetPath: String
-        @JsonIgnore
         get() = this.to
 
     override fun toString(): String {

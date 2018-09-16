@@ -7,9 +7,14 @@
 package com.skcraft.launcher.builder
 
 import com.skcraft.launcher.model.modpack.Feature
+import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
 
-class FileInfo {
+@Serializable
+class FileInfo(
+    @Optional
     var feature: Feature? = null
+) {
 
     override fun equals(other: Any?): Boolean {
         if (other === this) return true

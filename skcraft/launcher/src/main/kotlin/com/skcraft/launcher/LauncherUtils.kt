@@ -20,7 +20,7 @@ object LauncherUtils : KLogging() {
     fun loadProperties(clazz: Class<*>, name: String, extraProperty: String): Properties {
         val prop = Properties()
         logger.info("loading $name from $clazz")
-//        log.info(clazz.getResourceAsStream(name).bufferedReader().use { it.readText() })
+//        logger.info(clazz.getResourceAsStream(name).bufferedReader().use { it.readText() })
         clazz.getResourceAsStream(name).use { input ->
             prop.load(input)
             val extraPath = System.getProperty(extraProperty)

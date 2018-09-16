@@ -6,6 +6,7 @@ import kotlinx.coroutines.experimental.channels.consume
 import kotlinx.coroutines.experimental.channels.toList
 import kotlinx.html.*
 import kotlinx.html.stream.createHTML
+import kotlinx.serialization.json.JSON
 import voodoo.data.Side
 import voodoo.data.curse.CurseFile
 import voodoo.data.curse.CurseManifest
@@ -16,7 +17,6 @@ import voodoo.forge.Forge
 import voodoo.provider.Provider
 import voodoo.util.ExceptionHelper
 import voodoo.util.packToZip
-import voodoo.util.writeJson
 import java.io.File
 
 /**
@@ -172,8 +172,9 @@ object CursePack : AbstractPack() {
                 files = curseMods,
                 overrides = "overrides"
             )
+            val json = JSON(indented = true)
             val manifestFile = modpackDir.resolve("manifest.json")
-            manifestFile.writeJson(curseManifest)
+            manifestFile.writeText(json.stringify(curseManifest))
 
             val cursePackFile = workspaceDir.resolve(with(modpack) { "$id-$version.zip" })
 

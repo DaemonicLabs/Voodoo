@@ -6,14 +6,20 @@
  */
 package com.skcraft.launcher.builder
 
-import com.fasterxml.jackson.annotation.JsonIgnore
+import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import java.util.EnumSet
 
-class FnPatternList {
-    var include: List<String> = arrayListOf()
-    var exclude: List<String> = arrayListOf()
-    @JsonIgnore
+@Serializable
+data class FnPatternList(
+    @Optional
+    var include: List<String> = arrayListOf(),
+    @Optional
+    var exclude: List<String> = arrayListOf(),
+    @Transient
     var flags: EnumSet<FnMatch.Flag> = DEFAULT_FLAGS
+) {
 
     fun matches(path: String): Boolean {
         return matches(path, this.include) && !matches(path, this.exclude)
@@ -26,33 +32,6 @@ class FnPatternList {
             }
         }
         return false
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other === this) return true
-        if (other !is FnPatternList) return false
-        val other = other as FnPatternList?
-        if (!other!!.canEqual(this as Any)) return false
-        if (this.include != other.include) return false
-        if (this.exclude != other.exclude) return false
-        return this.flags == other.flags
-    }
-
-    private fun canEqual(other: Any): Boolean {
-        return other is FnPatternList
-    }
-
-    override fun hashCode(): Int {
-        val PRIME = 59
-        var result = 1
-        result = result * PRIME + (this.include.hashCode())
-        result = result * PRIME + (this.exclude.hashCode())
-        result = result * PRIME + (this.flags.hashCode() )
-        return result
-    }
-
-    override fun toString(): String {
-        return "FnPatternList(include=" + this.include + ", exclude=" + this.exclude + ", flags=" + this.flags + ")"
     }
 
     companion object {

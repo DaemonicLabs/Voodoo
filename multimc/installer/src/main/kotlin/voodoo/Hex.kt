@@ -1,8 +1,5 @@
 package voodoo
 
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.mainBody
 import io.ktor.client.HttpClient
@@ -16,7 +13,9 @@ import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext
 import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.JSON
+import kotlinx.serialization.serializer
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
 import voodoo.curse.CurseClient
@@ -28,7 +27,6 @@ import voodoo.mmc.data.PackComponent
 import voodoo.util.*
 import voodoo.util.json.TestKotlinxSerializer
 import voodoo.util.redirect.HttpRedirectFixed
-import voodoo.util.serializer.DateSerializer
 import java.awt.Toolkit
 import java.io.File
 import java.util.*
@@ -80,6 +78,9 @@ object Hex : KLogging() {
             serializer = TestKotlinxSerializer()
         }
     }
+
+    private val json = JSON(indented = true)
+
     private suspend fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
         logger.info("installing into $instanceId")
         val urlFile = instanceDir.resolve("voodoo.url.txt")
@@ -97,7 +98,7 @@ object Hex : KLogging() {
         val oldpack: SKPack? = if (!oldpackFile.exists())
             null
         else {
-            val pack: SKPack = jsonMapper.readValue(oldpackFile)
+            val pack: SKPack = json.parse(oldpackFile.readText())
             logger.info("loaded old pack ${pack.name} ${pack.version}")
             pack
         }
@@ -245,7 +246,7 @@ object Hex : KLogging() {
         // set minecraft and forge versions
         val mmcPackPath = instanceDir.resolve("mmc-pack.json")
         val mmcPack = if (mmcPackPath.exists()) {
-            mmcPackPath.readJson()
+            json.parse(mmcPackPath.readText())
         } else MultiMCPack()
         mmcPack.components = listOf(
                 PackComponent(
@@ -259,10 +260,10 @@ object Hex : KLogging() {
                         important = true
                 )
         ) + mmcPack.components
-        mmcPackPath.writeJson(mmcPack)
+        mmcPackPath.writeText(json.stringify(mmcPack))
 
         oldpackFile.createNewFile()
-        oldpackFile.writeJson(modpack)
+        oldpackFile.writeText(json.stringify(modpack))
     }
 
     private class Arguments(parser: ArgParser) {
