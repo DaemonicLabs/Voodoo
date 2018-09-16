@@ -1,9 +1,11 @@
 # documentation generator | tome
 
-<s> https://github.com/korlibs/korte
+<s>
+https://github.com/korlibs/korte
 
 - liquid templating
-- markdown or html -> user choice</s>
+- markdown or html -> user choice
+</s>
 
 use html-dsl in .kts files
 maybe css-dsl
@@ -18,6 +20,10 @@ enum class CurseMods(id: Int) {
     OtherMod(6543)
 }
 ```
+
+# provider registry
+
+change `Provider` enum to a registry, so proiders can be registered by scripts as required
 
 # curse import -> kotlinpoet
 https://github.com/square/kotlinpoet

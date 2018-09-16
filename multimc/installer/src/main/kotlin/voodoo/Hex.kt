@@ -10,6 +10,7 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.joinAll
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext
 import kotlinx.coroutines.experimental.runBlocking
@@ -32,7 +33,6 @@ import java.io.File
 import java.util.*
 import kotlin.system.exitProcess
 
-
 /**
  * Created by nikky on 01/04/18.
  * @author Nikky
@@ -51,7 +51,6 @@ object Hex : KLogging() {
                 install(instanceId, instanceDir, minecraftDir)
             }
         }
-
 
     }
 
@@ -88,7 +87,7 @@ object Hex : KLogging() {
 
         val modpack: SKPack = try {
             client.get(packUrl)
-        }catch(e: Exception) {
+        } catch (e: Exception) {
             logger.error("could not retrieve pack")
             logger.error(e.message)
             return
@@ -114,7 +113,6 @@ object Hex : KLogging() {
 //                } else {
 //                    exitProcess(0)
 //                }
-
             }
         }
 
@@ -123,7 +121,7 @@ object Hex : KLogging() {
             it.name.startsWith(forgePrefix)
         }?.name.let { it ?: "::" }.split(':')
         logger.info("forge version is '$forgeVersion'")
-        if(forgeVersion.isBlank()) {
+        if (forgeVersion.isBlank()) {
             logger.error("could not parse forge version in modpack")
             exitProcess(2)
         }
@@ -139,22 +137,22 @@ object Hex : KLogging() {
         } else {
             mapOf<String, Boolean>()
         }
-        val (features, reinstall) = selectFeatures(modpack.features, defaults, modpack.title.blankOr
-                ?: modpack.name, modpack.version, forceDisplay = forceDisplay, updating = oldpack != null)
+        val (features, reinstall) = selectFeatures(
+            modpack.features, defaults, modpack.title.blankOr
+                ?: modpack.name, modpack.version, forceDisplay = forceDisplay, updating = oldpack != null
+        )
         featureJson.writeText(JSON.indented.stringify(features))
-        if(reinstall) {
+        if (reinstall) {
             minecraftDir.deleteRecursively()
         }
 
         val objectsUrl = packUrl.substringBeforeLast('/') + "/" + modpack.objectsLocation
 
-        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
         val oldTaskList =  Collections.synchronizedList(oldpack?.tasks?.toMutableList() ?: mutableListOf())
 
         runBlocking {
-            val jobs = mutableListOf<Job>()
-            for (task in modpack.tasks) {
-                jobs += launch(context=pool) {
+            val jobs = modpack.tasks.map { task ->
+                launch(context = pool) {
                     val oldTask = oldTaskList.find { it.to == task.to }
 
                     val whenTask = task.`when`
@@ -169,7 +167,6 @@ object Hex : KLogging() {
                             return@launch
                         }
                     }
-
 
                     val url = if (task.location.startsWith("http")) {
                         task.location
@@ -233,7 +230,7 @@ object Hex : KLogging() {
             }
 
             // iterate new tasks
-            jobs.forEach { it.join() }
+           jobs.joinAll()
         }
 
         // iterate old
@@ -249,16 +246,16 @@ object Hex : KLogging() {
             json.parse(mmcPackPath.readText())
         } else MultiMCPack()
         mmcPack.components = listOf(
-                PackComponent(
-                        uid = "net.minecraft",
-                        version = modpack.gameVersion,
-                        important = true
-                ),
-                PackComponent(
-                        uid = "net.minecraftforge",
-                        version = forgeVersion.substringAfter("${modpack.gameVersion}-"),
-                        important = true
-                )
+            PackComponent(
+                uid = "net.minecraft",
+                version = modpack.gameVersion,
+                important = true
+            ),
+            PackComponent(
+                uid = "net.minecraftforge",
+                version = forgeVersion.substringAfter("${modpack.gameVersion}-"),
+                important = true
+            )
         ) + mmcPack.components
         mmcPackPath.writeText(json.stringify(mmcPack))
 
@@ -267,13 +264,19 @@ object Hex : KLogging() {
     }
 
     private class Arguments(parser: ArgParser) {
-        val instanceId by parser.storing("--id",
-                help = "\$INST_ID - ID of the instance")
+        val instanceId by parser.storing(
+            "--id",
+            help = "\$INST_ID - ID of the instance"
+        )
 
-        val instanceDir by parser.storing("--inst",
-                help = "\$INST_DIR - absolute path of the instance") { File(this) }
+        val instanceDir by parser.storing(
+            "--inst",
+            help = "\$INST_DIR - absolute path of the instance"
+        ) { File(this) }
 
-        val minecraftDir by parser.storing("--mc",
-                help = "\$INST_MC_DIR - absolute path of minecraft") { File(this) }
+        val minecraftDir by parser.storing(
+            "--mc",
+            help = "\$INST_MC_DIR - absolute path of minecraft"
+        ) { File(this) }
     }
 }

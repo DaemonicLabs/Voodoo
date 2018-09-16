@@ -1,5 +1,6 @@
 package voodoo.mmc
 
+import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import mu.KLogging
@@ -11,13 +12,14 @@ import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
 import voodoo.util.Platform
 import voodoo.util.json
+import voodoo.util.serializer.FileSerializer
 import voodoo.util.toJson
 import java.awt.*
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.io.File
 import java.io.IOException
-import java.util.*
+import java.util.SortedMap
 import java.util.concurrent.TimeUnit
 import javax.swing.*
 import kotlin.system.exitProcess
@@ -29,8 +31,8 @@ object MMCUtil : KLogging() {
 
     @Serializable
     data class MMCConfiguration(
-        val binary: String = "multimc",
-        val path: File = File(System.getProperty("user.home") + "/.local/share/multimc")
+        @Optional val binary: String = "multimc",
+        @Optional @Serializable(with = FileSerializer::class) val path: File = File(System.getProperty("user.home") + "/.local/share/multimc")
     )
 
     val mmcConfig: MMCConfiguration
@@ -54,6 +56,9 @@ object MMCUtil : KLogging() {
             .start()
 
         logger.info("started multimc instance $name $process")
+        val status = process.waitFor()
+        logger.info("multimc instance exited with code $status")
+
     }
 
     var dir: File? = null
@@ -197,7 +202,7 @@ object MMCUtil : KLogging() {
         val cfg = if (cfgFile.exists())
             readCfg(cfgFile)
         else
-            sortedMapOf()
+            sortedMapOf<String, String>()
 
         cfg["InstanceType"] = "OneSix"
         cfg["name"] = name
@@ -243,8 +248,6 @@ object MMCUtil : KLogging() {
 
         var success = false
         var reinstall = false
-
-//        logger.info { UIManager.getDefaults()/*.filterValues { it is Icon }.map { (k, v) -> "$k = $v\n" }*/ }
 
         val windowTitle =
             "Features" + if (name.isBlank()) "" else " - $name" + if (version.isBlank()) "" else " - $version"
