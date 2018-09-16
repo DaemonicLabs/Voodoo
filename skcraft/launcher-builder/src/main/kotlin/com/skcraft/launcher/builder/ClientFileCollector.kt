@@ -8,6 +8,7 @@ package com.skcraft.launcher.builder
 
 import com.skcraft.launcher.model.modpack.FileInstall
 import com.skcraft.launcher.model.modpack.Manifest
+import mu.KLogging
 import org.apache.commons.io.FilenameUtils
 import voodoo.util.toHex
 import java.io.File
@@ -64,15 +65,14 @@ class ClientFileCollector(
         )
         applicator.apply(entry)
         destPath.parentFile.mkdirs()
-        ClientFileCollector.log.info(String.format("Adding %s from %s...", relPath, file.absolutePath))
+        logger.info(String.format("Adding %s from %s...", relPath, file.absolutePath))
         if (copy) {
             file.copyTo(destPath, overwrite = true)
         }
         manifest.tasks.add(entry)
     }
 
-    companion object {
-        private val log = java.util.logging.Logger.getLogger(ClientFileCollector::class.java.name)
+    companion object: KLogging() {
         const val URL_FILE_SUFFIX = ".url.txt"
 
         fun getDirectoryBehavior(name: String): DirectoryWalker.DirectoryBehavior {
