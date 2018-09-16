@@ -1,40 +1,54 @@
 package voodoo.forge
 
-import com.fasterxml.jackson.module.kotlin.KotlinModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.features.defaultRequest
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import kotlinx.coroutines.experimental.GlobalScope
+import kotlinx.coroutines.experimental.async
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.Quadruple
+import voodoo.util.downloader
+import voodoo.util.encoded
+import voodoo.util.json.TestKotlinxSerializer
+import voodoo.util.redirect.HttpRedirectFixed
 
 /**
  * Created by nikky on 30/12/17.
  * @author Nikky
  */
 object Forge : KLogging() {
-    var data: ForgeData = getForgeData()
 
-//    fun getForge(forgeVersion: String, mcVersion: String/*, spongeEntry: Entry?*/): Pair<Entry, String> {
-//        val (url, filename, longVersion, version) = resolveVersion(forgeVersion, mcVersion)
-//
-//        val entry = Entry(
-//                provider = "DIRECT",
-//                id = "Minecraft Forge",
-//                url = url,
-//                fileName = filename
-////                    packageType = PackageType.LOADER,
-////                internal = EntryInternal(
-////                        basePath = "loaders",
-////                        targetPath = ".",
-////                        path = ".",
-////                        cacheRelpath = "FORGE/$longVersion"
-////                )
-//        )
-//        return Pair(entry, version)
-//    }
+    private val deferredData = GlobalScope.async { getForgeData() }
 
-    fun getForgeBuild(version: String, mcVersion: String): Int {
+    private val client = HttpClient(CIO) {
+        engine {
+            maxConnectionsCount = 1000 // Maximum number of socket connections.
+            endpoint.apply {
+                maxConnectionsPerRoute = 100 // Maximum number of requests for a specific endpoint route.
+                pipelineMaxSize = 20 // Max number of opened endpoints.
+                keepAliveTime = 5000 // Max number of milliseconds to keep each connection alive.
+                connectTimeout = 5000 // Number of milliseconds to wait trying to connect to the server.
+                connectRetryAttempts = 5 // Maximum number of attempts for retrying a connection.
+            }
+        }
+        defaultRequest {
+            header("User-Agent", downloader.useragent)
+        }
+        install(HttpRedirectFixed) {
+            applyUrl { it.encoded }
+        }
+        install(JsonFeature) {
+            serializer = TestKotlinxSerializer(JSON(indented = true))
+        }
+    }
+
+    suspend fun getForgeBuild(version: String, mcVersion: String): Int {
+        val data = deferredData.await()
         return if (version.equals("recommended", true) || version.equals("latest", true)) {
             val promoVersion = "$mcVersion-${version.toLowerCase()}"
             data.promos[promoVersion]!!
@@ -43,8 +57,9 @@ object Forge : KLogging() {
         }
     }
 
-    fun resolveVersion(version: String, mcVersion: String): Quadruple<String, String, String, String> {
+    suspend fun resolveVersion(version: String, mcVersion: String): Quadruple<String, String, String, String> {
         var versionStr: String
+        val data = deferredData.await()
         if (version.equals("recommended", true) || version.equals("latest", true)) {
             val promoVersion = "$mcVersion-${version.toLowerCase()}"
             versionStr = data.promos[promoVersion]?.toString() ?: ""
@@ -70,7 +85,7 @@ object Forge : KLogging() {
             }
         }
         val webpath = data.webpath
-        val artifact = data.number.get(versionStr)!!
+        val artifact = data.number[versionStr]!!
         val mcversion = artifact.mcversion
         val forgeVersion = artifact.version
         val branch = artifact.branch
@@ -84,40 +99,31 @@ object Forge : KLogging() {
         return Quadruple(url, fileName, longVersion, forgeVersion)
     }
 
-    fun getForgeData(): ForgeData {
-        val (_, _, result) = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/json"
-                .httpGet().responseString()
-        return when (result) {
-            is Result.Success -> {
-                val mapper = jacksonObjectMapper() // Enable YAML parsing
-                mapper.registerModule(KotlinModule()) // Enable Kotlin support
-                mapper.readValue(result.component1()!!)
-            }
-            is Result.Failure -> {
-                throw Exception("cannot get forge data ${result.error}")
-            }
-        }
+    suspend fun getForgeData(): ForgeData {
+        val content = client.get<String>("http://files.minecraftforge.net/maven/net/minecraftforge/forge/json")
+        return JSON().parse(content)
     }
-
 }
 
+@Serializable
 data class ForgeData(
-        val adfocus: String,
-        val artifact: String,
-        val homepage: String,
-        val webpath: String,
-        val name: String,
-        val branches: Map<String, List<Int>>,
-        val mcversion: Map<String, List<Int>>,
-        val number: Map<String, Artifact>,
-        val promos: Map<String, Int>
+    val adfocus: String,
+    val artifact: String,
+    val homepage: String,
+    val webpath: String,
+    val name: String,
+    val branches: Map<String, List<Int>>,
+    val mcversion: Map<String, List<Int>>,
+    val number: Map<String, Artifact>,
+    val promos: Map<String, Int>
 )
 
+@Serializable
 data class Artifact(
-        val branch: String?,
-        val build: Int,
-        val files: List<List<String>>, //file, extension, checksum
-        val mcversion: String,
-        val modified: Long,
-        val version: String
+    val branch: String?,
+    val build: Int,
+    val files: List<List<String>>, //file, extension, checksum
+    val mcversion: String,
+    val modified: Double,
+    val version: String
 )

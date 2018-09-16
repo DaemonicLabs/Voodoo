@@ -162,7 +162,7 @@ data class ModPack(
         }
     }
 
-    fun lock(): LockPack {
+    suspend fun lock(): LockPack {
         return LockPack(
             id = id,
             title = title,
