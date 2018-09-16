@@ -1,12 +1,14 @@
 package voodoo.mmc
 
 import kotlinx.serialization.Optional
+import kotlinx.serialization.SerialContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.Recommendation
 import voodoo.data.sk.FeatureProperties
 import voodoo.forge.Forge
+import voodoo.mmc.data.CachedRequire
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
@@ -139,7 +141,7 @@ object MMCUtil : KLogging() {
      * Prepares a MultiMC instance
      * @return Minecraft Directory
      */
-    fun installEmptyPack(
+    suspend fun installEmptyPack(
         name: String, folder: String,
         icon: File? = null, mcVersion: String? = null, forgeBuild: Int? = null,
         instanceDir: File = with(MMCUtil.findDir()) {
