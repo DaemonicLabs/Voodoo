@@ -34,6 +34,13 @@ object Importer : KLogging() {
         nestedPack: NestedPack,
         targetFolder: File
     ): ModPack {
+        targetFolder.walkTopDown().asSequence()
+            .filter {
+                it.isFile && it.name.endsWith(".entry.hjson")
+            }
+            .forEach {
+                it.delete()
+            }
         val modpack = nestedPack.flatten()
         modpack.entrySet += nestedPack.root.flatten(File("parentFile"))
         val srcDir = targetFolder.resolve(modpack.sourceDir)

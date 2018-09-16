@@ -275,9 +275,8 @@ constructor(
             val (_, response, result) = url.httpGet().responseString()
             manifest.versionManifest = when (result) {
                 is Result.Success -> {
-                    logger.info("reading json: ${result.value}")
+//                    logger.info("reading json: ${result.value}")
                     json.parse(result.value)
-                    //mapper.readValue(result.value)
                 }
                 is Result.Failure -> {
                     throw Exception("cannot HTTP GET $url status: ${response.statusCode}")
