@@ -1,5 +1,8 @@
 package voodoo.tester
 
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.serializer
@@ -9,6 +12,7 @@ import voodoo.mmc.MMCUtil
 import voodoo.provider.Provider
 import voodoo.util.blankOr
 import voodoo.util.downloader
+import voodoo.util.pool
 import java.io.File
 
 /**
@@ -62,7 +66,7 @@ object MultiMCTester : AbstractTester() {
         }
 
         val json = JSON(indented = true)
-        val featureSerializer = HashMapSerializer(String.serializer(), Boolean::class.serializer())
+        val featureSerializer = HashMapSerializer(String.serializer(), BooleanSerializer)
 
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
@@ -83,24 +87,29 @@ object MultiMCTester : AbstractTester() {
             minecraftDir.deleteRecursively()
         }
 
-        for (entry in modpack.entrySet) {
+        runBlocking(context = pool) {
+            modpack.entrySet.forEach { entry ->
+                if (entry.side == Side.SERVER) return@forEach
+                launch {
+                    val folder = minecraftDir.resolve(entry.file).absoluteFile.parentFile
 
-            if (entry.side == Side.SERVER) continue
-            val folder = minecraftDir.resolve(entry.file).absoluteFile.parentFile
-
-            val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
-            if (!matchedFeatureList.isEmpty()) {
-                val download = matchedFeatureList.any { features[it.properties.name] ?: false }
-                if (!download) {
-                    MMCUtil.logger.info("${matchedFeatureList.map { it.properties.name }} is disabled, skipping download")
-                    continue
+                    val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
+                    if (!matchedFeatureList.isEmpty()) {
+                        val download = matchedFeatureList.any { features[it.properties.name] ?: false }
+                        if (!download) {
+                            MMCUtil.logger.info("${matchedFeatureList.map { it.properties.name }} is disabled, skipping download")
+                            return@launch
+                        }
+                    }
+                    val provider = Provider.valueOf(entry.provider).base
+                    val targetFolder = minecraftDir.resolve(folder)
+                    val (url, file) = provider.download(entry, targetFolder, cacheDir)
                 }
+
             }
-            val provider = Provider.valueOf(entry.provider).base
-            val targetFolder = minecraftDir.resolve(folder)
-            val (url, file) = provider.download(entry, targetFolder, cacheDir)
         }
 
+        logger.info("clearing serverside files")
         for (file in minecraftDir.walkTopDown()) {
             when {
                 file.name == "_CLIENT" -> {

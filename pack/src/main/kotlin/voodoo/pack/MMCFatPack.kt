@@ -1,6 +1,7 @@
 package voodoo.pack
 
 import kotlinx.coroutines.experimental.*
+import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.serializer
@@ -63,7 +64,7 @@ object MMCFatPack : AbstractPack() {
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val previousSelection = if (featureJson.exists()) {
-            json.parse(HashMapSerializer(String.serializer(), Boolean::class.serializer()),featureJson.readText())
+            json.parse(HashMapSerializer(String.serializer(), BooleanSerializer),featureJson.readText())
         } else {
             mapOf<String, Boolean>()
         }

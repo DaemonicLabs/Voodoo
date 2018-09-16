@@ -8,7 +8,7 @@ import java.io.File
 fun withDefaultMain(
     arguments: Array<String>,
     root: File = File(System.getProperty("user.dir")),
-    block: () -> NestedPack = { throw NotImplementedError() }
+    block: () -> NestedPack = { throw IllegalStateException("no nested pack provided") }
 ) {
     class XY
     println("classloader is of type:" + Thread.currentThread().contextClassLoader)
@@ -31,7 +31,7 @@ fun withDefaultMain(
             BuilderForDSL.build(modpack, root, id, targetFileName = lockFileName, args = *args)
         } },
         "pack" to { args -> runBlocking { Pack.pack(lockFile, root, args = *args) } },
-//        "test" to Tester::main,
+        "test" to { args -> TesterForDSL.main(lockFile, args = *args) },
 //        "idea" to Idea::main,
         "version" to { _ ->
             logger.info(FULL_VERSION)
@@ -51,7 +51,7 @@ fun withDefaultMain(
         }
     }
 
-    val invocations = arguments.split("--")
+    val invocations = arguments.split("-")
     invocations.forEach { argChunk ->
         val command = argChunk.getOrNull(0)
         logger.info(argChunk.joinToString())
@@ -72,7 +72,7 @@ fun withDefaultMain(
     }
 }
 
-private fun Array<String>.split(separator: String = "--"): List<Array<String>> {
+private fun Array<String>.split(separator: String = "-"): List<Array<String>> {
     val result: MutableList<MutableList<String>> = mutableListOf(mutableListOf())
     this.forEach {
         if (it == separator)
