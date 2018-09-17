@@ -12,7 +12,7 @@ buildscript {
 //    val kotlin_version: String by project
     val serialization_version: String by project
     dependencies {
-//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        //        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
         classpath("org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:$serialization_version")
     }
 }
@@ -36,14 +36,14 @@ println("""
 *******************************************
 """)
 val runnableProjects = listOf(
-        rootProject to "voodoo.Voodoo",
-        project(":multimc:installer") to "voodoo.Hex",
-        project(":server-installer") to "voodoo.server.Install"
+    rootProject to "voodoo.Voodoo",
+    project(":multimc:installer") to "voodoo.Hex",
+    project(":server-installer") to "voodoo.server.Install"
 )
 val noConstants = listOf(
-        project(":skcraft"),
-        project(":skcraft:launcher"),
-        project(":skcraft:launcher-builder")
+    project(":skcraft"),
+    project(":skcraft:launcher"),
+    project(":skcraft:launcher-builder")
 //        project(":fuel-coroutines"),
 )
 val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: ""
@@ -69,7 +69,8 @@ allprojects {
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    kotlin { // configure<org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension>
+    kotlin {
+        // configure<org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension>
         experimental.coroutines = Coroutines.ENABLE
     }
     val compileKotlin by tasks.getting(KotlinCompile::class) {
@@ -121,20 +122,21 @@ allprojects {
 //        kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated-src")
         compileKotlin.apply {
             doFirst {
-                val folder = if (project != rootProject) "voodoo/${project.name}" else "voodoo" //TODO: try to use native project path
+                val folder =
+                    if (project != rootProject) "voodoo/${project.name}" else "voodoo" //TODO: try to use native project path
                 val name = project.name.split("/").last().capitalize().split("-").joinToString("") { it.capitalize() }
                 val templateSrc = rootProject.file("template/kotlin/voodoo/")
                 copy {
                     from(templateSrc)
                     into("$buildDir/generated-src/$folder")
                     expand(mapOf(
-                            "PACKAGE" to folder.replace("/", ".").replace("-", "."),
-                            "NAME" to name,
-                            "MAJOR_VERSION" to major,
-                            "MINOR_VERSION" to minor,
-                            "PATCH_VERSION" to patch,
-                            "BUILD_NUMBER" to System.getenv("BUILD_NUMBER").let { it ?: -1 },
-                            "BUILD" to System.getenv("BUILD_NUMBER").let { it ?: "dev" }
+                        "PACKAGE" to folder.replace("/", ".").replace("-", "."),
+                        "NAME" to name,
+                        "MAJOR_VERSION" to major,
+                        "MINOR_VERSION" to minor,
+                        "PATCH_VERSION" to patch,
+                        "BUILD_NUMBER" to System.getenv("BUILD_NUMBER").let { it ?: -1 },
+                        "BUILD" to System.getenv("BUILD_NUMBER").let { it ?: "dev" }
                     ))
                 }
             }
@@ -198,9 +200,9 @@ allprojects {
         }
 
         val branch = System.getenv("GIT_BRANCH")
-                ?.takeUnless { it == "master" }
-                ?.let { "-$it" }
-                ?: ""
+            ?.takeUnless { it == "master" }
+            ?.let { "-$it" }
+            ?: ""
 
         publishing {
             publications {
@@ -215,8 +217,8 @@ allprojects {
         }
 
         rootProject.file("private.gradle")
-                .takeIf { it.exists() }
-                ?.let { apply(from = it) }
+            .takeIf { it.exists() }
+            ?.let { apply(from = it) }
     }
 
 }
@@ -242,7 +244,6 @@ dependencies {
     testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
 
     // spek requires kotlin-reflect, can be omitted if already in the classpath
-//    testRuntimeOnly(group = "org.jetbrains.kotlin", name = "kotlin-reflect", version = kotlin_version)
     testRuntimeOnly(kotlin("reflect", kotlin_version))
 
 
