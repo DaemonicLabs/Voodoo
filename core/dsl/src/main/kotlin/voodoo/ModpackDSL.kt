@@ -8,16 +8,14 @@ import voodoo.data.nested.NestedEntry
 import voodoo.data.provider.UpdateChannel
 import voodoo.provider.*
 import java.io.File
-import kotlin.reflect.KMutableProperty0
-import kotlin.reflect.KProperty
 
 @DslMarker
-annotation class VodooDSL
+annotation class VoodooDSL
 
-@VodooDSL
+@VoodooDSL
 abstract class Wrapper<P : ProviderBase>(
-        val provider: P,
-        val entry: NestedEntry
+    val provider: P,
+    val entry: NestedEntry
 ) {
     init {
         entry.provider = provider.id
@@ -26,27 +24,23 @@ abstract class Wrapper<P : ProviderBase>(
     suspend fun flatten(parent: File) = entry.flatten(parent)
 //    val flatten = entry::flatten
 
-    var folder by ref(entry::folder)
-    var comment by ref(entry::comment)
-    var description by ref(entry::description)
-    infix fun description (s: String): Wrapper<P> {
-        return this.apply { description = s }
-    }
+    var folder by property(entry::folder)
+    var comment by property(entry::comment)
+    var description by property(entry::description)
 
     //TODO: Feature functions
-//    var feature by ref(entry::feature)
+//    var feature by property(entry::feature)
 
-    var side by ref(entry::side)
-    var websiteUrl by ref(entry::websiteUrl)
+    var side by property(entry::side)
 
     //TODO: depenencies
     //TODO: replaceDependencies
 
-    var packageType by ref(entry::packageType)
-    //    var transient by ref(entry::transient::get, entry::transient::set)
-    var version by ref(entry::version)
-    var fileName by ref(entry::fileName)
-    var validMcVersions by ref(entry::validMcVersions)
+    var packageType by property(entry::packageType)
+    //    var transient by property(entry::transient::get, entry::transient::set)
+    var version by property(entry::version)
+    var fileName by property(entry::fileName)
+    var validMcVersions by property(entry::validMcVersions)
 
     fun feature(block: FeatureWrapper.() -> Unit) {
         val feature = entry.feature?.copy() ?: EntryFeature()
@@ -56,20 +50,23 @@ abstract class Wrapper<P : ProviderBase>(
     }
 }
 
+inline infix fun <reified W: Wrapper<P>, P: ProviderBase> W.description(s: String) = apply { description = s }
+
 class FeatureWrapper(feature: EntryFeature) {
-    var name by ref(feature::name)
-    var selected by ref(feature::selected)
-    var description by ref(feature::description)
-    var recommendation by ref(feature::recommendation)
+    var name by property(feature::name)
+    var selected by property(feature::selected)
+    var description by property(feature::description)
+    var recommendation by property(feature::recommendation)
 }
 
 // CURSE
 
-//var AbstractWrapper<CurseProviderThing>.optionals: Boolean by ref(this.entry::curseOptionalDependencies)
+inline infix fun <reified W: Wrapper<CurseProvider>> W.optionals(b: Boolean) =
+    apply { entry.curseOptionalDependencies = b }
 
-infix fun Wrapper<CurseProvider>.optionals(b: Boolean): Wrapper<CurseProvider> {
-    return this.apply { entry.curseOptionalDependencies = b }
-}
+//var Wrapper<CurseProvider>.metaUrl: String by property { entry::curseMetaUrl }
+//var Wrapper<CurseProvider>.releaseTypes: Set<FileType> by property { entry::curseReleaseTypes }
+//var Wrapper<CurseProvider>.optionals: Boolean by property { entry::curseOptionalDependencies }
 
 var Wrapper<CurseProvider>.metaUrl: String
     get() = this.entry.curseMetaUrl
@@ -98,9 +95,9 @@ var SpecificEntry<CurseProvider>.fileID: FileID
     }
 
 // DIRECT
-infix fun Wrapper<DirectProvider>.url(s: String): Wrapper<DirectProvider> {
-    return this.apply { entry.url = s }
-}
+inline infix fun <reified W: SpecificEntry<DirectProvider>> W.url(s: String) =
+    apply { entry.url = s }
+
 var SpecificEntry<DirectProvider>.url: String
     get() = entry.url
     set(it) {
@@ -113,9 +110,9 @@ var Wrapper<DirectProvider>.useUrlTxt: Boolean
     }
 
 //JENKINS
-infix fun SpecificEntry<JenkinsProvider>.job(s: String): SpecificEntry<JenkinsProvider> {
-    return this.apply { entry.job = s }
-}
+inline infix fun <reified W: SpecificEntry<JenkinsProvider>> W.job(s: String) =
+    apply { entry.job = s }
+
 var Wrapper<JenkinsProvider>.jenkinsUrl: String
     get() = entry.jenkinsUrl
     set(it) {
@@ -157,36 +154,25 @@ var SpecificEntry<UpdateJsonProvider>.template: String
     }
 
 class SpecificEntry<R : ProviderBase>(
-        provider: R,
-        entry: NestedEntry
+    provider: R,
+    entry: NestedEntry
 ) : Wrapper<R>(provider, entry) {
-    var id by ref(entry::id)
-    var name by ref(entry::name)
+    var id by property(entry::id)
+    var name by property(entry::name)
+    var websiteUrl by property(entry::websiteUrl)
 }
 
 class GroupingEntry<R : ProviderBase>(
-        provider: R,
-        entry: NestedEntry
+    provider: R,
+    entry: NestedEntry
 ) : Wrapper<R>(provider, entry)
 
-@VodooDSL
-class EntriesList<out P : ProviderBase>(val parent: P) {
+@VoodooDSL
+class EntriesList<P : ProviderBase>(val parent: P) {
     val entries: MutableList<Wrapper<*>> = mutableListOf()
 }
 
-class ReferenceDelegate<T>(val get: () -> T, val set: (value: T) -> Unit) {
-    operator fun getValue(thisRef: Any?, property: KProperty<*>): T {
-        return get()
-    }
 
-    operator fun setValue(thisRef: Any?, property: KProperty<*>, value: T) {
-        set(value)
-    }
-}
-
-fun <T> ref(prop: KMutableProperty0<T>): ReferenceDelegate<T> {
-    return ReferenceDelegate(prop::get, prop::set)
-}
 
 fun <T : ProviderBase> rootEntry(provider: T, function: GroupingEntry<T>.() -> Unit): NestedEntry {
     val entry = NestedEntry()
@@ -209,14 +195,17 @@ fun <T : ProviderBase> GroupingEntry<T>.list(function: EntriesList<T>.() -> Unit
  * Create new Entry with specified provier
  * and add to Entrylist
  */
-fun <T : ProviderBase, R : ProviderBase> EntriesList<T>.withProvider(provider: R, block: GroupingEntry<R>.() -> Unit = {}): GroupingEntry<R> {
+fun <T : ProviderBase, R : ProviderBase> EntriesList<T>.withProvider(
+    provider: R,
+    block: GroupingEntry<R>.() -> Unit = {}
+): GroupingEntry<R> {
     val entry = NestedEntry()
     val env = GroupingEntry(entry = entry, provider = provider)
     env.block()
     return env.also { this.entries += it }
 }
 
-fun <T: ProviderBase> EntriesList<T>.group(block: GroupingEntry<T>.() -> Unit = {}): GroupingEntry<T> {
+fun <T : ProviderBase> EntriesList<T>.group(block: GroupingEntry<T>.() -> Unit = {}): GroupingEntry<T> {
     val entry = NestedEntry()
     val env = GroupingEntry(entry = entry, provider = this.parent)
     env.block()
@@ -226,10 +215,10 @@ fun <T: ProviderBase> EntriesList<T>.group(block: GroupingEntry<T>.() -> Unit = 
 fun <T : ProviderBase> EntriesList<T>.id(id: String, function: SpecificEntry<T>.() -> Unit = {}): SpecificEntry<T> {
     val entry = NestedEntry(id = id)
     return SpecificEntry(provider = parent, entry = entry)
-            .also {
-                it.function()
-                this.entries += it
-            }
+        .also {
+            it.function()
+            this.entries += it
+        }
 }
 
 fun <T : ProviderBase> EntriesList<T>.include(include: String) {
