@@ -33,7 +33,7 @@ Creating Modpacks with Voodoo requires minimal effort, just create one `yaml` de
 
 You can Test Any pack in MultiMC, creating a instance and launching it is completely automated, no more clicking than necessary
 
-Modern Minecraft versions (1.6.+) and Forge are supported
+Modern Minecraft versions (1.6.+) and Forge are supported (older versions do not have mods on curseforge)
 
 Uses [SKCraft Launcher](https://github.com/SKCraft/Launcher#skcraft-launcher) Pack Format, but download all files,
 dependencies and configures all file input based on the `yaml` definition
@@ -50,6 +50,9 @@ https://elytra.github.io/Voodoo
 
 ## Guides
 
+//TODO: YAML based format is being deprecated in favor of kotlin-dsl and kscript support
+//TODO: rewrite Guides before merge into master
+
 - [Setup](docs/setup)
 - [Building](docs/building)
 - [Testing](docs/testing)
@@ -59,10 +62,7 @@ https://elytra.github.io/Voodoo
 
 ### download
 
-[![Jenkins](https://img.shields.io/jenkins/s/https/ci.elytradev.com/job/elytra/job/Voodoo/job/master.svg?style=for-the-badge&label=Jenkins%20Build)](https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/lastSuccessfulBuild/artifact/)
-
-`-fat` files are not modified by proguard in case something breaks randomly, \
-but please report those errors too
+[![Jenkins](https://img.shields.io/jenkins/s/https/ci.elytradev.com/job/elytra/job/Voodoo/job/rewrite.svg?style=for-the-badge&label=Jenkins%20Build)](https://ci.elytradev.com/job/elytra/job/Voodoo/job/rewrite/lastSuccessfulBuild/artifact/)
 
 ### build
 
@@ -70,6 +70,8 @@ unix: `./gradlew build`
 windows: `./gradlew.bat build`
 
 ## usage
+
+//TODO: see note about yaml deprecation
 
 examples based on [Center of the Multiverse](https://github.com/elytra/Center-of-the-Multiverse)
 
@@ -118,7 +120,6 @@ more specifically the json file of the pack
 ## Maven
 
 Voodoo is available on the elytradev maven
-
 
 ```kotlin
 repositories {
