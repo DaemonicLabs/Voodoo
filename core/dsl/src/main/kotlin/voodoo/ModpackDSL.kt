@@ -68,27 +68,27 @@ inline infix fun <reified W: Wrapper<CurseProvider>> W.optionals(b: Boolean) =
 //var Wrapper<CurseProvider>.releaseTypes: Set<FileType> by property { entry::curseReleaseTypes }
 //var Wrapper<CurseProvider>.optionals: Boolean by property { entry::curseOptionalDependencies }
 
-var Wrapper<CurseProvider>.metaUrl: String
+var Wrapper<CurseProvider>.metaUrl
     get() = this.entry.curseMetaUrl
     set(it) {
         this.entry.curseMetaUrl = it
     }
-var Wrapper<CurseProvider>.releaseTypes: Set<FileType>
+var Wrapper<CurseProvider>.releaseTypes
     get() = this.entry.curseReleaseTypes
     set(it) {
         this.entry.curseReleaseTypes = it
     }
-var Wrapper<CurseProvider>.optionals: Boolean
+var Wrapper<CurseProvider>.optionals
     get() = entry.curseOptionalDependencies
     set(it) {
         entry.curseOptionalDependencies = it
     }
-var SpecificEntry<CurseProvider>.projectID: ProjectID
+var SpecificEntry<CurseProvider>.projectID
     get() = entry.curseProjectID
     set(it) {
         entry.curseProjectID = it
     }
-var SpecificEntry<CurseProvider>.fileID: FileID
+var SpecificEntry<CurseProvider>.fileID
     get() = entry.curseFileID
     set(it) {
         entry.curseFileID = it
@@ -98,12 +98,12 @@ var SpecificEntry<CurseProvider>.fileID: FileID
 inline infix fun <reified W: SpecificEntry<DirectProvider>> W.url(s: String) =
     apply { entry.url = s }
 
-var SpecificEntry<DirectProvider>.url: String
+var SpecificEntry<DirectProvider>.url
     get() = entry.url
     set(it) {
         entry.url = it
     }
-var Wrapper<DirectProvider>.useUrlTxt: Boolean
+var Wrapper<DirectProvider>.useUrlTxt
     get() = entry.useUrlTxt
     set(it) {
         entry.useUrlTxt = it
@@ -113,41 +113,41 @@ var Wrapper<DirectProvider>.useUrlTxt: Boolean
 inline infix fun <reified W: SpecificEntry<JenkinsProvider>> W.job(s: String) =
     apply { entry.job = s }
 
-var Wrapper<JenkinsProvider>.jenkinsUrl: String
+var Wrapper<JenkinsProvider>.jenkinsUrl
     get() = entry.jenkinsUrl
     set(it) {
         entry.jenkinsUrl = it
     }
-var SpecificEntry<JenkinsProvider>.job: String
+var SpecificEntry<JenkinsProvider>.job
     get() = entry.job
     set(it) {
         entry.job = it
     }
-var SpecificEntry<JenkinsProvider>.buildNumber: Int
+var SpecificEntry<JenkinsProvider>.buildNumber
     get() = entry.buildNumber
     set(it) {
         entry.buildNumber = it
     }
 
 //LOCAL
-var SpecificEntry<LocalProvider>.fileSrc: String
+var SpecificEntry<LocalProvider>.fileSrc
     get() = entry.fileSrc
     set(it) {
         entry.fileSrc = it
     }
 
 //UPDATE-JSON
-var SpecificEntry<UpdateJsonProvider>.json: String
+var SpecificEntry<UpdateJsonProvider>.json
     get() = entry.updateJson
     set(it) {
         entry.updateJson = it
     }
-var Wrapper<UpdateJsonProvider>.channel: UpdateChannel
+var Wrapper<UpdateJsonProvider>.channel
     get() = entry.updateChannel
     set(it) {
         entry.updateChannel = it
     }
-var SpecificEntry<UpdateJsonProvider>.template: String
+var SpecificEntry<UpdateJsonProvider>.template
     get() = entry.template
     set(it) {
         entry.template = it
@@ -221,7 +221,10 @@ fun <T : ProviderBase> EntriesList<T>.id(id: String, function: SpecificEntry<T>.
         }
 }
 
+@Deprecated("including yaml files is no logner supported")
 fun <T : ProviderBase> EntriesList<T>.include(include: String) {
     val entry = NestedEntry(include = include)
     GroupingEntry(provider = parent, entry = entry).also { this.entries += it }
 }
+
+//TODO: add import() for curse
