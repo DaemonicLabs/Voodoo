@@ -158,7 +158,7 @@ object CurseProvider : ProviderBase, KLogging() {
             logger.info("set dependency $depType = $dependsSet")
 
             if (depType == DependencyType.REQUIRED || (entry.curseOptionalDependencies && depType == DependencyType.OPTIONAL)) {
-                val depEntry = Entry(provider = Provider.CURSE.name, id = depAddon.slug).apply {
+                val depEntry = Entry(provider = CurseProvider.id, id = depAddon.slug).apply {
                     name = entry.name
                     side = entry.side
                     transient = true

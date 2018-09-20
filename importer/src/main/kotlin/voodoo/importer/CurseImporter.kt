@@ -10,7 +10,8 @@ import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
-import voodoo.provider.Provider
+import voodoo.provider.CurseProvider
+import voodoo.provider.LocalProvider
 import voodoo.util.UnzipUtility.unzip
 import voodoo.util.blankOr
 import voodoo.util.download
@@ -87,7 +88,7 @@ object CurseImporter : AbstractImporter() {
 
         if (localEntries.isNotEmpty()) {
             entries += NestedEntry(
-                provider = Provider.LOCAL.name,
+                provider = LocalProvider.id,
                 entries = localEntries
             )
         }
@@ -111,7 +112,7 @@ object CurseImporter : AbstractImporter() {
                     }
 
                     val entry = Entry(
-                        provider = Provider.CURSE.name,
+                        provider = CurseProvider.id,
                         curseReleaseTypes = sortedSetOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
                         id = addon.slug,
                         fileName = addonFile.fileName,
@@ -164,7 +165,7 @@ object CurseImporter : AbstractImporter() {
         )
         val rootEntry = NestedEntry(
             validMcVersions = validMcVersions - manifest.minecraft.version,
-            provider = Provider.CURSE.name,
+            provider = CurseProvider.id,
             curseReleaseTypes = sortedSetOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
             entries = entries
         )

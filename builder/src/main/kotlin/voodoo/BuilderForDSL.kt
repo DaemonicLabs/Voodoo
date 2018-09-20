@@ -3,12 +3,10 @@ package voodoo
 import com.xenomachina.argparser.*
 import kotlinx.coroutines.experimental.cancel
 import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.builder.resolve
 import voodoo.data.flat.ModPack
-import voodoo.provider.Provider
-import voodoo.util.ExceptionHelper
+import voodoo.provider.Providers
 import voodoo.util.json
 import voodoo.util.toJson
 import java.io.File
@@ -61,7 +59,7 @@ object BuilderForDSL : KLogging() {
                 }
 
                 modpack.lockEntrySet.forEach { lockEntry ->
-                    val provider = Provider.valueOf(lockEntry.provider).base
+                    val provider = Providers[lockEntry.provider]
                     if (!provider.validate(lockEntry)) {
                         logger.error { lockEntry }
                         throw IllegalStateException("entry did not validate")
@@ -87,7 +85,7 @@ object BuilderForDSL : KLogging() {
                 sw.append("\n")
 
                 modpack.lockEntrySet.sortedBy { it.name().toLowerCase() }.forEach { entry ->
-                    val provider = Provider.valueOf(entry.provider).base
+                    val provider =  Providers[entry.provider]
                     sw.append("\n\n")
                     sw.append(provider.report(entry))
                 }
@@ -112,7 +110,6 @@ object BuilderForDSL : KLogging() {
         modpack.loadEntries(targetFolder)
         return build(modpack, targetFolder, name, targetFileName, targetFile, args = *args)
     }
-
 }
 
 private class ArgumentsForDSL(parser: ArgParser) {

@@ -85,7 +85,7 @@ object UpdateJsonProvider : ProviderBase, KLogging() {
     }
 
     override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File> {
-        return Provider.DIRECT.base.download(entry, targetFolder, cacheDir)
+        return Providers["DIRECT"].download(entry, targetFolder, cacheDir)
     }
 
     override suspend fun generateName(entry: LockEntry): String {

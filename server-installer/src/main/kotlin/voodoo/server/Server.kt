@@ -5,7 +5,7 @@ import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.util.pool
-import voodoo.provider.Provider
+import voodoo.provider.Providers
 import voodoo.util.Directories
 import voodoo.util.download
 import voodoo.util.downloader.logger
@@ -73,7 +73,7 @@ object Server {
             for (entry in modpack.entrySet) {
                 if (entry.side == Side.CLIENT) continue
                 jobs += launch(context = pool) {
-                    val provider = Provider.valueOf(entry.provider).base
+                    val provider = Providers[entry.provider]
                     val targetFolder = serverDir.resolve(entry.file).absoluteFile.parentFile
                     logger.info("downloading to - ${targetFolder.path}")
                     val (_, _) = provider.download(entry, targetFolder, cacheDir)

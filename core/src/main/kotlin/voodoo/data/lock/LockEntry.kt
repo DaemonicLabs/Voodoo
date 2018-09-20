@@ -18,8 +18,13 @@ import voodoo.data.Side
 import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
-import voodoo.provider.Provider
+import voodoo.provider.CurseProvider
+import voodoo.provider.DirectProvider
+import voodoo.provider.JenkinsProvider
+import voodoo.provider.LocalProvider
 import voodoo.provider.ProviderBase
+import voodoo.provider.Providers
+import voodoo.provider.UpdateJsonProvider
 import java.io.File
 import java.time.Instant
 
@@ -68,7 +73,7 @@ data class LockEntry(
     lateinit var file: File
 
     @JsonIgnore
-    fun provider(): ProviderBase = Provider.valueOf(provider).base
+    fun provider(): ProviderBase = Providers[provider]
 
     @JsonIgnore
     fun name(): String = name.takeIf { it.isNotBlank() } ?: runBlocking { provider().generateName(this@LockEntry) }
@@ -92,19 +97,19 @@ data class LockEntry(
     fun releaseDate(): Instant? = runBlocking { provider().getReleaseDate(this@LockEntry) }
 
     @JsonIgnore
-    fun isCurse(): Boolean = provider == Provider.CURSE.name
+    fun isCurse(): Boolean = provider == CurseProvider.id
 
     @JsonIgnore
-    fun isJenkins(): Boolean = provider == Provider.JENKINS.name
+    fun isJenkins(): Boolean = provider == JenkinsProvider.id
 
     @JsonIgnore
-    fun isDirect(): Boolean = provider == Provider.DIRECT.name
+    fun isDirect(): Boolean = provider == DirectProvider.id
 
     @JsonIgnore
-    fun isJson(): Boolean = provider == Provider.JSON.name
+    fun isJson(): Boolean = provider == UpdateJsonProvider.id
 
     @JsonIgnore
-    fun isLocal(): Boolean = provider == Provider.LOCAL.name
+    fun isLocal(): Boolean = provider == LocalProvider.id
 
     @Serializer(forClass = LockEntry::class)
     companion object : KLogging() {

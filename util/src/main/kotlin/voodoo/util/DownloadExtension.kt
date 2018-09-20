@@ -57,7 +57,7 @@ suspend fun File.download(
     logger: KLogger = downloader.logger
 ) {
     val cacheFile = cacheDir.resolve(this.name)
-    withContext(IO) {
+    withContext(Dispatchers.IO) {
         val fixedUrl = url.encoded
         logger.info("downloading $url -> $this")
         logger.debug("cacheFile $cacheFile")

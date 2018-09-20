@@ -26,15 +26,17 @@ object CurseSpek : Spek({
 
         val modpack by memoized {
             ModPack(
-                    id = "curse_spek",
-                    title = "Curse Spek",
-                    mcVersion = "1.12.2"
+                id = "curse_spek",
+                title = "Curse Spek",
+                mcVersion = "1.12.2"
             ).apply {
-                addOrMerge(entry = Entry(
-                        provider = Provider.CURSE.name,
+                addOrMerge(
+                    entry = Entry(
+                        provider = CurseProvider.id,
                         id = "matterlink",
                         folder = "mods"
-                )) { _, new -> new }
+                    )
+                ) { _, new -> new }
                 writeEntries(rootFolder)
             }
         }
@@ -49,7 +51,7 @@ object CurseSpek : Spek({
         context("build pack") {
             val versionsMapping by memoized {
                 runBlocking {
-                    Provider.CURSE.base.reset()
+                    CurseProvider.reset()
                     modpack.resolve(rootFolder, updateAll = true)
                 }
                 modpack.lockEntrySet
@@ -64,11 +66,11 @@ object CurseSpek : Spek({
                     val targetFolder = rootFolder.resolve("install")
                     runBlocking {
                         val deferredFiles =
-                                versionsMapping.map { entry ->
-                                    async {
-                                        entry.provider().download(entry, targetFolder, cacheDir)
-                                    }
+                            versionsMapping.map { entry ->
+                                async {
+                                    entry.provider().download(entry, targetFolder, cacheDir)
                                 }
+                            }
                         deferredFiles.map { it.await() }
                     }
                 }
