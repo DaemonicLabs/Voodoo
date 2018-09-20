@@ -24,5 +24,5 @@ object ExceptionHelper : KLogging() {
     }
 }
 
-val pool = newFixedThreadPoolContext(max(8, Runtime.getRuntime().availableProcessors()) + 1, "pool")
+val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
 
