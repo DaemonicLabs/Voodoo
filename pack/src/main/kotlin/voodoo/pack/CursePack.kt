@@ -14,7 +14,8 @@ import voodoo.data.curse.CurseMinecraft
 import voodoo.data.curse.CurseModLoader
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
-import voodoo.provider.Provider
+import voodoo.provider.CurseProvider
+import voodoo.provider.Providers
 import voodoo.util.ExceptionHelper
 import voodoo.util.packToZip
 import java.io.File
@@ -83,8 +84,8 @@ object CursePack : AbstractPack() {
                         feature.entries.any { it == entry.id }
                     }
 
-                    val provider = Provider.valueOf(entry.provider).base
-                    if (entry.provider() == Provider.CURSE) {
+                    val provider = Providers[entry.provider]
+                    if (provider == CurseProvider) {
                         curseModsChannel.send(
                             CurseFile(
                                 entry.projectID,
@@ -122,7 +123,7 @@ object CursePack : AbstractPack() {
                 body {
                     ul {
                         for (entry in modpack.entrySet.sortedBy { it.name() }) {
-                            val provider = Provider.valueOf(entry.provider).base
+                            val provider = Providers[entry.provider]
                             if (entry.side == Side.SERVER) {
                                 continue
                             }

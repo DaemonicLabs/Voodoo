@@ -3,7 +3,6 @@ package voodoo.builder
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.consume
-import kotlinx.coroutines.experimental.channels.consumeEach
 import mu.KotlinLogging
 import voodoo.Builder
 import voodoo.data.curse.DependencyType
@@ -12,7 +11,7 @@ import voodoo.data.flat.ModPack
 import voodoo.data.sk.FeatureProperties
 import voodoo.data.sk.SKFeature
 import voodoo.memoize
-import voodoo.provider.Provider
+import voodoo.provider.Providers
 import voodoo.util.pool
 import java.io.File
 import java.util.*
@@ -114,7 +113,14 @@ suspend fun ModPack.resolve(
 
     if (updateAll) {
         lockEntrySet.clear()
-//        versions.clear()
+        //delete all lockfiles
+        folder.walkTopDown().asSequence()
+            .filter {
+                it.isFile && it.name.endsWith(".lock.hjson")
+            }
+            .forEach {
+                it.delete()
+            }
     } else {
         for (entryId in updateEntries) {
             val entry = findEntryById(entryId)
@@ -122,7 +128,10 @@ suspend fun ModPack.resolve(
                 logger.error("entry $entryId not found")
                 exitProcess(-1)
             }
-            lockEntrySet.removeIf { it.id == entry.id }
+            lockEntrySet.find { it.id == entryId }?.let {
+                it.file.delete()
+                lockEntrySet.remove(it)
+            }
         }
     }
 
@@ -148,7 +157,7 @@ suspend fun ModPack.resolve(
             for (entry in unresolved) {
                 jobs += launch(context = pool) {
                     logger.info("resolving: ${entry.id}")
-                    val provider = Provider.valueOf(entry.provider).base
+                    val provider = Providers[entry.provider]
 
                     val lockEntry = provider.resolve(entry, this@resolve.mcVersion, newEntriesChannel)
 

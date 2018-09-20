@@ -8,7 +8,7 @@ import kotlinx.serialization.serializer
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
-import voodoo.provider.Provider
+import voodoo.provider.Providers
 import voodoo.util.*
 import java.io.File
 
@@ -64,7 +64,7 @@ object MMCFatPack : AbstractPack() {
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val previousSelection = if (featureJson.exists()) {
-            json.parse(HashMapSerializer(String.serializer(), BooleanSerializer),featureJson.readText())
+            json.parse(HashMapSerializer(String.serializer(), BooleanSerializer), featureJson.readText())
         } else {
             mapOf<String, Boolean>()
         }
@@ -96,7 +96,7 @@ object MMCFatPack : AbstractPack() {
                         features[it.properties.name] ?: false
                     }
 
-                    val provider = Provider.valueOf(entry.provider).base
+                    val provider = Providers[entry.provider]
                     val targetFolder = minecraftDir.resolve(folder)
                     val (_, file) = provider.download(entry, targetFolder, cacheDir)
                     if (!selected) {

@@ -8,7 +8,7 @@ import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.pack.sk.*
 import voodoo.util.pool
-import voodoo.provider.Provider
+import voodoo.provider.Providers
 import voodoo.util.download
 import java.io.File
 import java.time.Instant
@@ -86,7 +86,7 @@ object SKPack : AbstractPack() {
             // download entries
             for (entry in modpack.entrySet) {
                 jobs += launch(context = pool) {
-                    val provider = Provider.valueOf(entry.provider).base
+                    val provider = Providers[entry.provider]
 
                     val folder = skSrcFolder.resolve(entry.file).parentFile
 

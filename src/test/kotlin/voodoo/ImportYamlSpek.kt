@@ -2,14 +2,12 @@ package voodoo
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.serialization.json.JSON
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.data.flat.Entry
 import voodoo.data.nested.NestedPack
 import voodoo.importer.YamlImporter
-import voodoo.provider.Provider
-import voodoo.util.ExceptionHelper
+import voodoo.provider.Providers
 import voodoo.util.toJson
 import voodoo.util.yamlMapper
 import java.io.File
@@ -198,7 +196,7 @@ object ImportYamlSpek : Spek({
                         context("provider tests") {
                             val providers by memoized {
                                 entries2.map { entry ->
-                                    Provider.valueOf(entry.provider).base to entry
+                                    Providers[entry.provider] to entry
                                 }
                             }
 

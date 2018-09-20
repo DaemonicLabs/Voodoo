@@ -8,7 +8,7 @@ import voodoo.data.curse.*
 import voodoo.data.flat.Entry
 import voodoo.data.flat.EntryFeature
 import voodoo.data.provider.UpdateChannel
-import voodoo.provider.Provider
+import voodoo.provider.Providers
 import voodoo.util.readYaml
 import java.io.File
 import java.lang.IllegalStateException
@@ -69,8 +69,10 @@ data class NestedEntry(
         @JvmStatic
         @JsonCreator
         fun fromString(stringValue: String): NestedEntry {
-            logger
-            return NestedEntry(provider = Provider.CURSE.name).apply { id = stringValue }
+            logger.info("fromJson('$stringValue')")
+            val entry = NestedEntry(provider = Providers["CURSE"].id).apply { id = stringValue }
+            logger.info { entry }
+            return entry
         }
 
         val DEFAULT = NestedEntry()

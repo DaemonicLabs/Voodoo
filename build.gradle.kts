@@ -23,7 +23,7 @@ plugins {
 //    kotlin("jvm") version "1.3-M2"
     id("idea")
     id("project-report")
-    id("com.github.johnrengelman.shadow") version "2.0.3"
+    id("com.github.johnrengelman.shadow") version "2.0.4"
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
 //    id("org.jmailen.kotlinter") version "1.17.0"
 }
@@ -59,7 +59,6 @@ allprojects {
     }
     apply {
         plugin("kotlin")
-//        plugin("org.jetbrains.kotlin.jvm")
         plugin("kotlinx-serialization")
 //        plugin("org.jmailen.kotlinter")
         plugin("idea")
@@ -73,12 +72,7 @@ allprojects {
         // configure<org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension>
         experimental.coroutines = Coroutines.ENABLE
     }
-    val compileKotlin by tasks.getting(KotlinCompile::class) {
-        kotlinOptions {
-            jvmTarget = "1.8"
-        }
-    }
-    val compileTestKotlin by tasks.getting(KotlinCompile::class) {
+    tasks.withType<KotlinCompile> {
         kotlinOptions {
             jvmTarget = "1.8"
         }
@@ -123,7 +117,7 @@ allprojects {
         }
         //TODO: use with 1.3 again
 //        kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated-src")
-        compileKotlin.apply {
+        val compileKotlin by tasks.getting(KotlinCompile::class) {
             doFirst {
                 val folder =
                     if (project != rootProject) "voodoo/${project.name}" else "voodoo" //TODO: try to use native project path
@@ -260,12 +254,6 @@ dependencies {
 tasks.withType<Test> {
     useJUnitPlatform {
         includeEngines("spek2")
-    }
-}
-
-val compileTestKotlin by tasks.getting(KotlinCompile::class) {
-    kotlinOptions {
-        jvmTarget = "1.8"
     }
 }
 

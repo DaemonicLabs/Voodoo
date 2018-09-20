@@ -9,7 +9,7 @@ import kotlinx.serialization.serializer
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
-import voodoo.provider.Provider
+import voodoo.provider.Providers
 import voodoo.util.blankOr
 import voodoo.util.downloader
 import voodoo.util.pool
@@ -101,7 +101,7 @@ object MultiMCTester : AbstractTester() {
                             return@launch
                         }
                     }
-                    val provider = Provider.valueOf(entry.provider).base
+                    val provider = Providers[entry.provider]
                     val targetFolder = minecraftDir.resolve(folder)
                     val (url, file) = provider.download(entry, targetFolder, cacheDir)
                 }

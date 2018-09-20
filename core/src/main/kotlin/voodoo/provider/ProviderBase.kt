@@ -13,19 +13,10 @@ import java.time.Instant
  * @author Nikky
  */
 
-//TODO: use sealed classes
-enum class Provider(val base: ProviderBase) {
-    CURSE(CurseProvider),
-    DIRECT(DirectProvider),
-    LOCAL(LocalProvider),
-    JENKINS(JenkinsProvider),
-    JSON(UpdateJsonProvider)
-}
-
 interface ProviderBase {
     val name: String
     val id: String
-    get() = Provider.values().find { it.base == this }!!.name
+    get() = Providers.getId(this).also {println("id of $this is $it")}!!
 
     fun reset() {}
 
