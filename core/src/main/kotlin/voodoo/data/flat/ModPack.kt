@@ -175,7 +175,7 @@ data class ModPack(
             userFiles = userFiles,
             localDir = localDir,
             sourceDir = sourceDir,
-            features = features
+            features = features.sortedBy { it.properties.name }
         )
     }
 
