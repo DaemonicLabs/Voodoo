@@ -10,6 +10,7 @@ import mu.KLogging
 import kotlin.coroutines.experimental.CoroutineContext
 import kotlin.coroutines.experimental.EmptyCoroutineContext
 import kotlin.coroutines.experimental.coroutineContext
+import kotlin.math.max
 import kotlin.system.exitProcess
 
 object ExceptionHelper : KLogging() {
@@ -23,5 +24,5 @@ object ExceptionHelper : KLogging() {
     }
 }
 
-val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
+val pool = newFixedThreadPoolContext(max(8, Runtime.getRuntime().availableProcessors()) + 1, "pool")
 
