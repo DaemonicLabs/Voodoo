@@ -160,8 +160,7 @@ suspend fun ModPack.resolve(
                     val actualLockEntry = addOrMerge(lockEntry) { old, new ->
                         if (old == null) {
                             val filename = entry.file.name.substringBefore(".entry.hjson")
-                            new.file =
-                                entry.file.parentFile.resolve("$filename.lock.hjson")
+                            new.file = entry.file.parentFile.resolve("$filename.lock.hjson")
                                     .relativeTo(srcDir.absoluteFile)
                             new
                         } else {

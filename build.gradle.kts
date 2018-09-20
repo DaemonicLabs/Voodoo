@@ -74,10 +74,13 @@ allprojects {
         experimental.coroutines = Coroutines.ENABLE
     }
     val compileKotlin by tasks.getting(KotlinCompile::class) {
-        // Customise the “compileKotlin” task.
         kotlinOptions {
             jvmTarget = "1.8"
-//            freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
+        }
+    }
+    val compileTestKotlin by tasks.getting(KotlinCompile::class) {
+        kotlinOptions {
+            jvmTarget = "1.8"
         }
     }
 
