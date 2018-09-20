@@ -165,7 +165,9 @@ object CurseProvider : ProviderBase, KLogging() {
                     curseReleaseTypes = entry.curseReleaseTypes
                     curseOptionalDependencies = entry.curseOptionalDependencies
                 }
+                logger.debug("adding dependency: $depEntry")
                 addEntry.send(depEntry to depAddon.categorySection.path)
+                logger.debug("added dependency: $depEntry")
                 logger.info("added $depType dependency ${depAddon.name} of ${addon.name}")
             } else {
                 continue
