@@ -28,7 +28,7 @@ object MMCPack : AbstractPack() {
         logger.info("tmp dir: $instanceDir")
 
         val urlFile = definitionsDir.resolve("${modpack.id}.url.txt")
-        if (!urlFile.exists()) {
+        if (!urlFile.isFile) {
             logger.error("no file '${urlFile.absolutePath}' found")
             exitProcess(3)
         }
