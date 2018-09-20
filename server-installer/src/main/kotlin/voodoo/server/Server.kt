@@ -20,7 +20,14 @@ import java.util.concurrent.TimeUnit
 object Server {
     private val directories = Directories.get()
 
-    suspend fun install(coroutineScope: CoroutineScope, modpack: LockPack, serverDir: File, skipForge: Boolean, clean: Boolean, cleanConfig: Boolean) {
+    suspend fun install(
+        coroutineScope: CoroutineScope,
+        modpack: LockPack,
+        serverDir: File,
+        skipForge: Boolean,
+        clean: Boolean,
+        cleanConfig: Boolean
+    ) {
         val cacheDir = directories.cacheHome
 
         if (clean) {
@@ -82,11 +89,11 @@ object Server {
             )
             val forgeFile = directories.runtimeDir.resolve(forgeFileName)
             logger.info("forge: $forgeLongVersion")
-            jobs += launch(context = pool) {
-                forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
-            }
+//            jobs += launch(context = pool) {
+            forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
+//            }
 
-            jobs.joinAll()
+//            jobs.joinAll()
 
             // install forge
             if (!skipForge) {

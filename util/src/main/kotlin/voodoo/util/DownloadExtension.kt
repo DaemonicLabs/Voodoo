@@ -50,14 +50,20 @@ object downloader : KLogging() {
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 }
 
-suspend fun File.download(url: String, cacheDir: File, useragent: String = downloader.useragent, logger: KLogger = downloader.logger) {
-    val fixedUrl = url.encoded
-    logger.info("downloading $url -> $this")
+suspend fun File.download(
+    url: String,
+    cacheDir: File,
+    useragent: String = downloader.useragent,
+    logger: KLogger = downloader.logger
+) {
     val cacheFile = cacheDir.resolve(this.name)
-    logger.debug("cacheFile $cacheFile")
-    if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
+    withContext(IO) {
+        val fixedUrl = url.encoded
+        logger.info("downloading $url -> $this")
+        logger.debug("cacheFile $cacheFile")
+        if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
 
-    if (!cacheFile.exists() || !cacheFile.isFile) {
+        if (!cacheFile.exists() || !cacheFile.isFile) {
 //        try {
 //            val handler = CoroutineExceptionHandler { context, exception ->
 //                exception.printStackTrace()
@@ -78,39 +84,40 @@ suspend fun File.download(url: String, cacheDir: File, useragent: String = downl
 ////            throw p
 //            logger.error("fallback to fuel")
 //            withContext(NonCancellable) {
-                var nextUrl = url
-                do {
-                    nextUrl = nextUrl.encoded
-                    logger.info { nextUrl }
-                    val (request, response, result) = nextUrl //.encode()
-                            .httpGet().header("User-Agent" to useragent)
-                            .allowRedirects(false)
-                            .awaitByteArrayResponse()
-                    val isRedirect = when (result) {
-                        is Result.Success -> {
-                            cacheDir.mkdirs()
-                            cacheFile.parentFile.mkdirs()
-                            cacheFile.writeBytes(result.value)
-                            false
-                        }
-                        is Result.Failure -> {
-                            if (response.isStatusRedirection) {
-                                nextUrl = response.headers["Location"]?.firstOrNull() ?: throw IllegalStateException("missing Location header")
-                                true
-                            } else {
-                                logger.error("invalid statusCode {} from {}", response.statusCode, fixedUrl)
-                                logger.error("connection url: {}", request.url)
-                                logger.error("content: {}", result.component1())
-                                logger.error("error: {}", result.error.toString())
-                                throw IOException(result.error.toString())
-                            }
+            var nextUrl = url
+            do {
+                nextUrl = nextUrl.encoded
+                logger.info { nextUrl }
+                val (request, response, result) = nextUrl //.encode()
+                    .httpGet().header("User-Agent" to useragent)
+                    .allowRedirects(false)
+                    .awaitByteArrayResponse()
+                val isRedirect = when (result) {
+                    is Result.Success -> {
+                        cacheDir.mkdirs()
+                        cacheFile.parentFile.mkdirs()
+                        cacheFile.writeBytes(result.value)
+                        false
+                    }
+                    is Result.Failure -> {
+                        if (response.isStatusRedirection) {
+                            nextUrl = response.headers["Location"]?.firstOrNull() ?:
+                                throw IllegalStateException("missing Location header")
+                            true
+                        } else {
+                            logger.error("invalid statusCode {} from {}", response.statusCode, fixedUrl)
+                            logger.error("connection url: {}", request.url)
+                            logger.error("content: {}", result.component1())
+                            logger.error("error: {}", result.error.toString())
+                            throw IOException(result.error.toString())
                         }
                     }
-                } while (isRedirect)
-            }
-
+                }
+            } while (isRedirect)
+        }
 //        }
 //    }
+    }
 
     try {
         this.parentFile.mkdirs()
@@ -125,6 +132,6 @@ suspend fun File.download(url: String, cacheDir: File, useragent: String = downl
 
 val String.encoded: String
     get() = this
-            .replace(" ", "%20")
-            .replace("[", "%5B")
-            .replace("]", "%5D")
+        .replace(" ", "%20")
+        .replace("[", "%5B")
+        .replace("]", "%5D")
