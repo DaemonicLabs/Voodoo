@@ -17,10 +17,11 @@ object MMCFatPack : AbstractPack() {
 
     override suspend fun download(
         modpack: LockPack,
+        folder: File,
         target: String?,
         clean: Boolean
     ) {
-        val targetDir = File(target ?: ".multimc")
+        val targetDir = folder.resolve(target ?: ".multimc")
         val cacheDir = directories.cacheHome
         val instanceDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id)
         val title = modpack.title.blankOr ?: modpack.id
