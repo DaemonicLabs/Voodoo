@@ -12,11 +12,13 @@ object MMCStaticPack : AbstractPack() {
 
     override suspend fun download(
         modpack: LockPack,
+        folder: File,
         target: String?,
         clean: Boolean
     ) {
-        val targetDir = File(target ?: ".multimc")
-        val definitionsDir = File("multimc").apply { mkdirs() }
+        val targetDir = folder.resolve(target ?: ".multimc")
+        //TODO: move configuration into modpack/lockpack ?
+        val definitionsDir = folder.resolve("multimc").apply { mkdirs() }
         val cacheDir = directories.cacheHome.resolve("mmc")
         val instanceDir = cacheDir.resolve(modpack.id)
         instanceDir.deleteRecursively()

@@ -19,7 +19,8 @@ fun main(args: Array<String>) {
     withDefaultMain(
         root = File("run").resolve("cotm"),
 //        arguments = arrayOf("quickbuild", "-", "pack", "sk", "-", "test", "mmc")
-        arguments = arrayOf("import")
+//        arguments = arrayOf("import")
+        arguments = arrayOf("quickbuild", "-", "pack", "server")
 //        arguments = arrayOf("test", "mmc")
     ) {
         NestedPack(

@@ -16,10 +16,11 @@ object ServerPack : AbstractPack() {
 
     override suspend fun download(
         modpack: LockPack,
+        folder: File,
         target: String?,
         clean: Boolean
     ) {
-        val serverDir = File(target ?: "server_${modpack.id}")
+        val serverDir = folder.resolve(target ?: "server_${modpack.id}")
 
         if (clean) {
             logger.info("cleaning server directory $serverDir")

@@ -4,7 +4,6 @@ import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import com.xenomachina.argparser.mainBody
 import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.pack.*
@@ -45,6 +44,7 @@ object Pack : KLogging() {
 
                 packer.download(
                     modpack = modpack,
+                    folder = File(System.getProperty("user.dir")),
                     target = targetFolder,
                     clean = true
                 )
@@ -71,7 +71,8 @@ object Pack : KLogging() {
 
                 packer.download(
                     modpack = modpack,
-                    target = targetFolder,
+                    folder = rootFolder,
+                    target = target,
                     clean = true
                 )
             }
@@ -102,8 +103,7 @@ object Pack : KLogging() {
             help = "format to package into"
         ) { this.toLowerCase() }
             .default("")
-
-        val targetFolder by parser.storing(
+        val target by parser.storing(
             "--output", "-o",
             help = "output rootFolder"
         ).default<String?>(null)

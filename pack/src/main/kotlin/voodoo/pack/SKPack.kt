@@ -26,6 +26,7 @@ object SKPack : AbstractPack() {
 
     override suspend fun download(
         modpack: LockPack,
+        folder: File,
         target: String?,
         clean: Boolean
     ) {
@@ -183,7 +184,7 @@ object SKPack : AbstractPack() {
             workspacePath.writeText(JSON.indented.stringify(workspace))
 
             val targetDir = if (target != null) {
-                File(target)
+                folder.resolve(target)
             } else {
                 workspaceDir.resolve("_upload")
             }
