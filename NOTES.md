@@ -1,7 +1,7 @@
 # maven and restrucure
 
 groupId: `moe.nikky.voodoo-branch`
-artifactId: ppath seperated by `-`
+artifactId: path seperated by `-`
 
 goals:
 - depend only on DSL artifact
@@ -11,6 +11,15 @@ goals:
   - download
   - deploy
   - generate HTML/markdown
+  
+## generated curse mods data
+
+option 1: 
+- initialize new packs with voodoo.jar
+- build packs with voodoo.jar loading .kts files
+
+option 2:
+- initialize new pack with separate script
 
 ## Stages
 

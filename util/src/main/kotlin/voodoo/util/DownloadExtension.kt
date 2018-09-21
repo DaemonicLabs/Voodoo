@@ -6,19 +6,12 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
-import io.ktor.client.features.HttpRedirect
 import io.ktor.client.features.defaultRequest
-import io.ktor.client.request.accept
-import io.ktor.client.request.get
 import io.ktor.client.request.header
-import io.ktor.client.response.HttpResponse
-import io.ktor.client.response.readBytes
 import mu.KLogger
 import mu.KLogging
 import voodoo.util.UtilConstants.VERSION
 import java.io.File
-import io.ktor.http.*
-import io.ktor.http.cio.ParserException
 import kotlinx.coroutines.experimental.*
 import kotlinx.io.IOException
 import voodoo.util.redirect.HttpRedirectFixed
@@ -27,7 +20,7 @@ import voodoo.util.redirect.HttpRedirectFixed
  * Created by nikky on 30/03/18.
  * @author Nikky
  */
-object downloader : KLogging() {
+object Downloader : KLogging() {
     val client = HttpClient(CIO) {
         engine {
             maxConnectionsCount = 1000 // Maximum number of socket connections.
@@ -53,8 +46,8 @@ object downloader : KLogging() {
 suspend fun File.download(
     url: String,
     cacheDir: File,
-    useragent: String = downloader.useragent,
-    logger: KLogger = downloader.logger
+    useragent: String = Downloader.useragent,
+    logger: KLogger = Downloader.logger
 ) {
     val cacheFile = cacheDir.resolve(this.name)
     withContext(Dispatchers.IO) {

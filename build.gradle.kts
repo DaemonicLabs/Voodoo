@@ -12,7 +12,7 @@ buildscript {
 //    val kotlin_version: String by project
     val serialization_version: String by project
     dependencies {
-        //        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
         classpath("org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:$serialization_version")
     }
 }
@@ -20,7 +20,6 @@ plugins {
     application
     `maven-publish`
     kotlin("jvm") version "1.2.70"
-//    kotlin("jvm") version "1.3-M2"
     id("idea")
     id("project-report")
     id("com.github.johnrengelman.shadow") version "2.0.4"
@@ -28,13 +27,15 @@ plugins {
 //    id("org.jmailen.kotlinter") version "1.17.0"
 }
 
-println("""
+println(
+    """
 *******************************************
  You are building Voodoo Toolset ! 
 
  Output files will be in [subproject]/build/libs
 *******************************************
-""")
+"""
+)
 val runnableProjects = listOf(
     rootProject to "voodoo.Voodoo",
     project(":multimc:installer") to "voodoo.Hex",
@@ -114,6 +115,7 @@ allprojects {
         val patch: String by project
         sourceSets {
             getByName("main").java.srcDirs("$buildDir/generated-src")
+            getByName("test").java.srcDirs("$buildDir/test-src")
         }
         //TODO: use with 1.3 again
 //        kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated-src")
@@ -162,9 +164,6 @@ allprojects {
             val shadowJar by tasks.getting(ShadowJar::class) {
                 classifier = ""
                 archiveName = "$baseName$versionSuffix.$extension"
-//                exclude("**/*.txt")
-//                exclude("**/*.xml")
-//                exclude("**/*.properties")
             }
 
             val build by tasks.getting(Task::class) {

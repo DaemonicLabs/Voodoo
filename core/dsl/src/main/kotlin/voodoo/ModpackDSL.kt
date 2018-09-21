@@ -1,13 +1,11 @@
 package voodoo
 
-import voodoo.data.curse.FileID
-import voodoo.data.curse.FileType
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.EntryFeature
 import voodoo.data.nested.NestedEntry
-import voodoo.data.provider.UpdateChannel
 import voodoo.provider.*
 import java.io.File
+import kotlin.reflect.KProperty0
 
 @DslMarker
 annotation class VoodooDSL
@@ -214,6 +212,25 @@ fun <T : ProviderBase> EntriesList<T>.group(block: GroupingEntry<T>.() -> Unit =
 
 fun <T : ProviderBase> EntriesList<T>.id(id: String, function: SpecificEntry<T>.() -> Unit = {}): SpecificEntry<T> {
     val entry = NestedEntry(id = id)
+    return SpecificEntry(provider = parent, entry = entry)
+        .also {
+            it.function()
+            this.entries += it
+        }
+}
+
+//TODO: take Pair<String, ProjectID>
+fun EntriesList<CurseProvider>.id(id: Int, function: SpecificEntry<CurseProvider>.() -> Unit = {}): SpecificEntry<CurseProvider> {
+    val entry = NestedEntry(id = id.toString(), curseProjectID = ProjectID(id))
+    return SpecificEntry(provider = parent, entry = entry)
+        .also {
+            it.function()
+            this.entries += it
+        }
+}
+
+fun EntriesList<CurseProvider>.id(mod: KProperty0<Int>, function: SpecificEntry<CurseProvider>.() -> Unit = {}): SpecificEntry<CurseProvider> {
+    val entry = NestedEntry(id = mod.name, curseProjectID = ProjectID(mod.get()))
     return SpecificEntry(provider = parent, entry = entry)
         .also {
             it.function()
