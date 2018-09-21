@@ -31,7 +31,10 @@ fun main(vararg args: String) {
 }
 
 fun cursePoet(
-    root: File = File(System.getProperty("user.dir"))
+    root: File = File(System.getProperty("user.dir")),
+    slugSanitizer: (String) -> String = { slug ->
+        slug.split('-').joinToString("") { it.capitalize() }.decapitalize()
+    }
 ) {
     class XY
     println("classloader is of type:" + Thread.currentThread().contextClassLoader)
@@ -41,13 +44,23 @@ fun cursePoet(
 
     CursePoet.generate(
         name = "Mod",
-        slugIdMap = runBlocking { CursePoet.requestMods() },
+        slugIdMap = runBlocking {
+            CursePoet.requestMods()
+                .mapKeys { (slug, id) ->
+                    slugSanitizer(slug)
+                }
+        },
         folder = root
     )
 
     CursePoet.generate(
         name = "TexturePack",
-        slugIdMap = runBlocking { CursePoet.requestResourcePacks() },
+        slugIdMap = runBlocking {
+            CursePoet.requestResourcePacks()
+                .mapKeys { (slug, id) ->
+                    slugSanitizer(slug)
+                }
+        },
         folder = root
     )
 }
@@ -75,7 +88,11 @@ object CursePoet : KLogging() {
         }
     }
 
-    internal fun generate(name: String, slugIdMap: Map<String, ProjectID>, folder: File = File("run")) {
+    internal fun generate(
+        name: String,
+        slugIdMap: Map<String, ProjectID>,
+        folder: File = File("run")
+    ) {
         val objectBuilder = TypeSpec.objectBuilder(name)
         slugIdMap.entries.sortedBy { (slug, id) ->
             slug
