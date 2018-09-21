@@ -41,7 +41,7 @@ object MMCFatPack : AbstractPack() {
         val modsDir = minecraftDir.resolve("mods")
         modsDir.deleteRecursively()
 
-        downloader.logger.info("copying files into minecraft dir")
+        Downloader.logger.info("copying files into minecraft dir")
         val minecraftSrcDir = modpack.sourceFolder
         if (minecraftSrcDir.exists()) {
             minecraftSrcDir.copyRecursively(minecraftDir, overwrite = true)

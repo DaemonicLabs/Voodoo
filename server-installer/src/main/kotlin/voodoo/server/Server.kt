@@ -8,7 +8,7 @@ import voodoo.util.pool
 import voodoo.provider.Providers
 import voodoo.util.Directories
 import voodoo.util.download
-import voodoo.util.downloader.logger
+import voodoo.util.Downloader.logger
 import java.io.File
 import java.util.concurrent.TimeUnit
 

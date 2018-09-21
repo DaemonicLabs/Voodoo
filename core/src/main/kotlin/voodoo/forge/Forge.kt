@@ -12,7 +12,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.Quadruple
-import voodoo.util.downloader
+import voodoo.util.Downloader
 import voodoo.util.encoded
 import voodoo.util.json.TestKotlinxSerializer
 import voodoo.util.redirect.HttpRedirectFixed
@@ -37,7 +37,7 @@ object Forge : KLogging() {
             }
         }
         defaultRequest {
-            header("User-Agent", downloader.useragent)
+            header("User-Agent", Downloader.useragent)
         }
         install(HttpRedirectFixed) {
             applyUrl { it.encoded }

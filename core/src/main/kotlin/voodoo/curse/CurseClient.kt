@@ -32,10 +32,6 @@ import java.util.*
  * @author Nikky
  */
 object CurseClient : KLogging() {
-    private val context = SerialContext()
-    private val json = JSON(context = context)
-//    private val mapper = JsonTreeMapper(context = context)
-
     private val client = HttpClient(CIO) {
         engine {
             maxConnectionsCount = 1000 // Maximum number of socket connections.
@@ -54,7 +50,7 @@ object CurseClient : KLogging() {
             applyUrl { it.encoded }
         }
         install(JsonFeature) {
-            serializer = TestKotlinxSerializer(json = json) {
+            serializer = TestKotlinxSerializer() {
                 registerSerializer(Date::class, DateSerializer)
             }
         }

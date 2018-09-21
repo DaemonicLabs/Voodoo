@@ -11,7 +11,7 @@ import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
 import voodoo.provider.Providers
 import voodoo.util.blankOr
-import voodoo.util.downloader
+import voodoo.util.Downloader
 import voodoo.util.pool
 import java.io.File
 
@@ -45,7 +45,7 @@ object MultiMCTester : AbstractTester() {
         val modsDir = minecraftDir.resolve("mods")
         modsDir.deleteRecursively()
 
-        downloader.logger.info("copying files into minecraft dir")
+        Downloader.logger.info("copying files into minecraft dir")
         val minecraftSrcDir = modpack.sourceFolder
         if (minecraftSrcDir.exists()) {
             minecraftSrcDir.copyRecursively(minecraftDir, overwrite = true)

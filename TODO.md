@@ -21,11 +21,7 @@ enum class CurseMods(id: Int) {
 }
 ```
 
-# provider registry
-
-change `Provider` enum to a registry, so proiders can be registered by scripts as required
-
-# curse import -> kotlinpoet
+# curse import -> kotlinpoet ?
 https://github.com/square/kotlinpoet
 
 requires more knowledge of how packs are going to be written
