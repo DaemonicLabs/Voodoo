@@ -193,14 +193,16 @@ data class ModPack(
     fun findLockEntryById(id: String) = lockEntrySet.find { it.id == id }
     fun addOrMerge(entry: LockEntry, mergeOp: (LockEntry?, LockEntry) -> LockEntry): LockEntry {
         logger.debug("waiting on synchrnoized")
-        synchronized(lockEntrySet) {
+        val result2 = synchronized(lockEntrySet) {
             logger.debug("entering synchronized")
             val result = lockEntrySet.find { it.id == entry.id }?.let {
                 lockEntrySet -= it
                 mergeOp(it, entry)
             } ?: mergeOp(null, entry)
             lockEntrySet += result
-            return result
+            result
         }
+        logger.debug("left synchronized")
+        return result2
     }
 }

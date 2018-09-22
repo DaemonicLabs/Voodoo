@@ -195,8 +195,8 @@ suspend fun ModPack.resolve(
                     logger.debug("adding to resolved")
                     resolved += entry.id
 
-                    logger.debug("resolved: $resolved")
-                    logger.debug("unresolved: ${entrySet.filter { !resolved.contains(it.id) }}")
+                    logger.debug("resolved: $resolved\n")
+                    logger.debug("unresolved: ${entrySet.map {entry -> entry.id}.filter { id -> !resolved.contains(id) }\n")
                 }.also {
                     logger.info("started job resolve ${entry.id}")
                     delay(100)
