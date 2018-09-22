@@ -81,11 +81,6 @@ object CurseProvider : ProviderBase, KLogging() {
             fileID = fileID
         )
 
-        logger.debug("validating: $lock")
-        if (!validate(lock)) {
-            throw IllegalStateException("did not pass validation")
-        }
-
         logger.debug("returning locked entry: $lock")
         return lock
     }

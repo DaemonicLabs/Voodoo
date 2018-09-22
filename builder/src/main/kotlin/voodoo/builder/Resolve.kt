@@ -11,6 +11,7 @@ import voodoo.data.flat.ModPack
 import voodoo.data.sk.FeatureProperties
 import voodoo.data.sk.SKFeature
 import voodoo.memoize
+import voodoo.provider.CurseProvider
 import voodoo.provider.Providers
 import voodoo.util.pool
 import java.io.File
@@ -145,7 +146,7 @@ suspend fun ModPack.resolve(
     // recalculate all dependencies
 //    val resolved: MutableSet<String> = mutableSetOf()
     var unresolved: Set<Entry> = entrySet.toSet()
-    val resolved = Collections.synchronizedSet(mutableSetOf<String>())
+    val resolved: MutableSet<String> = Collections.synchronizedSet(mutableSetOf<String>())
     val accumulatorContext = newSingleThreadContext("AccumulatorContext")
     coroutineScope {
         do {
@@ -160,33 +161,41 @@ suspend fun ModPack.resolve(
                     val provider = Providers[entry.provider]
 
                     val lockEntry = provider.resolve(entry, this@resolve.mcVersion, newEntriesChannel)
+                    logger.debug("received locked entry: $lockEntry")
 
+                    logger.debug("validating: $lockEntry")
                     if (!provider.validate(lockEntry)) {
-                        Builder.logger.error { lockEntry }
-                        throw IllegalStateException("entry did not validate")
+                        throw IllegalStateException("did not pass validation")
                     }
 
+                    logger.debug("trying to merge entry")
                     val actualLockEntry = addOrMerge(lockEntry) { old, new ->
                         if (old == null) {
                             val filename = entry.file.name.substringBefore(".entry.hjson")
+                            logger.debug("setting file on new entry to $filename")
                             new.file = entry.file.parentFile.resolve("$filename.lock.hjson")
-                                    .relativeTo(srcDir.absoluteFile)
+                                .relativeTo(srcDir.absoluteFile)
                             new
                         } else {
                             logger.info("existing lockEntry: $old")
                             old
                         }
                     }
+                    logger.debug("merged entry: $actualLockEntry")
 
+                    logger.debug("validating: actual $actualLockEntry")
                     if (!provider.validate(actualLockEntry)) {
                         Builder.logger.error { actualLockEntry }
                         throw IllegalStateException("actual entry did not validate")
                     }
 
+                    logger.debug("setting display name")
                     actualLockEntry.name = actualLockEntry.name()
 
+                    logger.debug("adding to resolved")
                     resolved += entry.id
 
+                    logger.debug("resolved: $resolved")
                 }.also {
                     logger.info("started job resolve ${entry.id}")
                     delay(100)
