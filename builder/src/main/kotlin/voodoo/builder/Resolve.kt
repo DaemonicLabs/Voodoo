@@ -196,6 +196,7 @@ suspend fun ModPack.resolve(
                     resolved += entry.id
 
                     logger.debug("resolved: $resolved")
+                    logger.debug("unresolved: ${entrySet.filter { !resolved.contains(it.id) }}")
                 }.also {
                     logger.info("started job resolve ${entry.id}")
                     delay(100)
