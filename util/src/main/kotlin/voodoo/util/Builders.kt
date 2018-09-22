@@ -24,5 +24,6 @@ object ExceptionHelper : KLogging() {
     }
 }
 
-val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
+val VOODOO_MULTITHREADING = System.getenv("VOODOO_MULTITHREADING")?.toIntOrNull() ?: Runtime.getRuntime().availableProcessors()
+val pool = newFixedThreadPoolContext(VOODOO_MULTITHREADING + 1, "pool")
 
