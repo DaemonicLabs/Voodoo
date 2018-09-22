@@ -52,7 +52,7 @@ suspend fun File.download(
     val cacheFile = cacheDir.resolve(this.name)
     withContext(Dispatchers.IO) {
         val fixedUrl = url.encoded
-        logger.info("downloading $url -> $this")
+        logger.info("downloading $url -> ${this@download}")
         logger.debug("cacheFile $cacheFile")
         if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
 
