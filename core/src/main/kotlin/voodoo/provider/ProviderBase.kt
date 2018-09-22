@@ -16,7 +16,7 @@ import java.time.Instant
 interface ProviderBase {
     val name: String
     val id: String
-    get() = Providers.getId(this).also {println("id of $this is $it")}!!
+    get() = Providers.getId(this).also {logger.debug("id of $this is $it")}!!
 
     fun reset() {}
 
