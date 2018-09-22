@@ -33,7 +33,11 @@ object CurseProvider : ProviderBase, KLogging() {
         resolved.clear()
     }
 
-    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
+    override suspend fun resolve(
+        entry: Entry,
+        mcVersion: String,
+        addEntry: SendChannel<Pair<Entry, String>>
+    ): LockEntry {
         val (projectID, fileID, _) = findFile(entry, mcVersion, entry.curseMetaUrl)
 
         synchronized(resolved) {
@@ -53,32 +57,37 @@ object CurseProvider : ProviderBase, KLogging() {
         resolveDependencies(projectID, fileID, entry, addEntry)
 
         entry.optional = isOptional(entry)
+        logger.debug("entry.optiona = ${entry.optional}")
 
-        if(!projectID.valid) {
+        if (!projectID.valid) {
             logger.error("invalid project id for $entry")
             throw IllegalStateException("invalid project id for $entry")
         }
-        if(!fileID.valid) {
+        if (!fileID.valid) {
             logger.error("invalid file id for $entry")
             throw IllegalStateException("invalid file id for $entry")
         }
 
-        return LockEntry(
-                provider = entry.provider,
-                id = entry.id,
-                name = entry.name,
-                curseMetaUrl = entry.curseMetaUrl,
-                //rootFolder = path, //maybe use entry.rootFolder only if its non-default
-                useUrlTxt = entry.useUrlTxt,
-                fileName = entry.fileName,
-                side = entry.side,
-                projectID = projectID,
-                fileID = fileID
-        ).apply {
-            if (!validate(this)) {
-                throw IllegalStateException("did not pass validation")
-            }
+        val lock = LockEntry(
+            provider = entry.provider,
+            id = entry.id,
+            name = entry.name,
+            curseMetaUrl = entry.curseMetaUrl,
+            //rootFolder = path, //maybe use entry.rootFolder only if its non-default
+            useUrlTxt = entry.useUrlTxt,
+            fileName = entry.fileName,
+            side = entry.side,
+            projectID = projectID,
+            fileID = fileID
+        )
+
+        logger.debug("validating: $lock")
+        if (!validate(lock)) {
+            throw IllegalStateException("did not pass validation")
         }
+
+        logger.debug("returning locked entry: $lock")
+        return lock
     }
 
     override suspend fun generateName(entry: LockEntry): String {
@@ -118,11 +127,16 @@ object CurseProvider : ProviderBase, KLogging() {
 //        return addon.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
 //    }
 
-    private suspend fun resolveDependencies(addonId: ProjectID, fileId: FileID, entry: Entry, addEntry: SendChannel<Pair<Entry, String>>) {
+    private suspend fun resolveDependencies(
+        addonId: ProjectID,
+        fileId: FileID,
+        entry: Entry,
+        addEntry: SendChannel<Pair<Entry, String>>
+    ) {
         val addon = getAddon(addonId, entry.curseMetaUrl)
-                ?: throw IllegalStateException("addon $addonId could not be resolved, entry: $entry")
+            ?: throw IllegalStateException("addon $addonId could not be resolved, entry: $entry")
         val addonFile = getAddonFile(addonId, fileId, entry.curseMetaUrl)
-                ?: throw IllegalStateException("addon file $addonId:$fileId could not be resolved, entry: $entry")
+            ?: throw IllegalStateException("addon file $addonId:$fileId could not be resolved, entry: $entry")
         val dependencies = addonFile.dependencies ?: return
 
         logger.info("dependencies of ${entry.id} ${addonFile.dependencies}")
@@ -172,7 +186,6 @@ object CurseProvider : ProviderBase, KLogging() {
             } else {
                 continue
             }
-
         }
     }
 
@@ -202,7 +215,10 @@ object CurseProvider : ProviderBase, KLogging() {
             exitProcess(3)
         }
         val targetFile = targetFolder.resolve(entry.fileName ?: addonFile.fileNameOnDisk)
-        targetFile.download(addonFile.downloadURL, cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()))
+        targetFile.download(
+            addonFile.downloadURL,
+            cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString())
+        )
         Murmur2Hash.computeFileHash(targetFile.path)
         return Pair(addonFile.downloadURL, targetFile)
     }
@@ -218,7 +234,7 @@ object CurseProvider : ProviderBase, KLogging() {
     }
 
     override fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> {
-        logger.debug ("reporting for: $entry")
+        logger.debug("reporting for: $entry")
         val addon = runBlocking { getAddon(entry.projectID, entry.curseMetaUrl)!! }
         val addonFile = runBlocking { getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)!! }
 
@@ -229,14 +245,14 @@ object CurseProvider : ProviderBase, KLogging() {
     }
 
     override fun validate(lockEntry: LockEntry): Boolean {
-        if(!super.validate(lockEntry)) {
+        if (!super.validate(lockEntry)) {
             return false
         }
-        if(!lockEntry.projectID.valid) {
+        if (!lockEntry.projectID.valid) {
             logger.warn("invalid project id")
             return false
         }
-        if(!lockEntry.fileID.valid) {
+        if (!lockEntry.fileID.valid) {
             logger.warn("invalid file id")
             return false
         }
