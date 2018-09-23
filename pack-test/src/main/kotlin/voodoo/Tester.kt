@@ -19,8 +19,7 @@ import kotlin.system.exitProcess
  */
 
 object Tester : KLogging() {
-    @JvmStatic
-    fun main(vararg args: String) = runBlocking {
+    suspend fun main(vararg args: String) = runBlocking {
         val arguments = Arguments(ArgParser(args))
 
         arguments.run {

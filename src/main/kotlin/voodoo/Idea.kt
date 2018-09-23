@@ -200,8 +200,7 @@ private fun createSymLink(link: File, target: File, overwrite: Boolean = false) 
 }
 
 object Idea {
-    @JvmStatic
-    fun main(vararg args: String) {
+    suspend fun main(vararg args: String) {
         logger.info(args.joinToString())
         val script = File(args[0])
         if (!script.isFile) {

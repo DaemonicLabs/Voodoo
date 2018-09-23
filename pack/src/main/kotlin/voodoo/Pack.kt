@@ -26,8 +26,7 @@ object Pack : KLogging() {
         "curse" to CursePack
     )
 
-    @JvmStatic
-    fun main(vararg args: String) = runBlocking {
+    suspend fun main(vararg args: String) {
         val arguments = Arguments(ArgParser(args))
 
         arguments.run {
@@ -47,33 +46,33 @@ object Pack : KLogging() {
                 target = targetFolder,
                 clean = true
             )
+            logger.info("finished packaging")
         }
     }
 
-    fun pack(packFile: File, rootFolder: File, vararg args: String) {
+    suspend fun pack(packFile: File, rootFolder: File, vararg args: String) {
         val modpack: LockPack = json.parse(packFile.readText())
         pack(modpack, rootFolder, *args)
     }
 
-    fun pack(modpack: LockPack, rootFolder: File, vararg args: String) {
+    suspend fun pack(modpack: LockPack, rootFolder: File, vararg args: String) {
         val arguments = ArgumentsForDSL(ArgParser(args))
 
-        runBlocking {
-            arguments.run {
-                modpack.loadEntries(rootFolder)
+        arguments.run {
+            modpack.loadEntries(rootFolder)
 
-                val packer = packMap[methode.toLowerCase()] ?: run {
-                    logger.error("no such packing methode: $methode")
-                    exitProcess(-1)
-                }
-
-                packer.download(
-                    modpack = modpack,
-                    folder = rootFolder,
-                    target = target,
-                    clean = true
-                )
+            val packer = packMap[methode.toLowerCase()] ?: run {
+                logger.error("no such packing methode: $methode")
+                exitProcess(-1)
             }
+
+            packer.download(
+                modpack = modpack,
+                folder = rootFolder,
+                target = target,
+                clean = true
+            )
+            logger.info("finished packaging")
         }
     }
 
