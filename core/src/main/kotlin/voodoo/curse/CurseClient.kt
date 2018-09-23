@@ -58,7 +58,7 @@ object CurseClient : KLogging() {
     //    const val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10"
     const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
-    private var slugIdMap: Map<String, ProjectID> = runBlocking { initSlugIdMap() }
+    private val slugIdMap: Map<String, ProjectID> by lazy { runBlocking { initSlugIdMap() } }
 
     @Serializable
     data class GraphQLRequest(
@@ -203,7 +203,7 @@ object CurseClient : KLogging() {
             ?.let {
                 return it
             }
-        slugIdMap = initSlugIdMap()
+//        slugIdMap = initSlugIdMap()
         return slugIdMap[slug]
             ?.let { getAddon(it, proxyUrl) }
     }

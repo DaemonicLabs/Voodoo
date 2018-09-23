@@ -214,7 +214,9 @@ object CurseProvider : ProviderBase, KLogging() {
             addonFile.downloadURL,
             cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString())
         )
-        Murmur2Hash.computeFileHash(targetFile.path)
+        val fileFingerprint = Murmur2Hash.computeFileHash(targetFile.path)
+        if(addonFile.packageFingerprint != fileFingerprint)
+            logger.error("file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: $fileFingerprint ")
         return Pair(addonFile.downloadURL, targetFile)
     }
 
