@@ -69,7 +69,7 @@ class ClientFileCollector(
         if (copy) {
             file.copyTo(destPath, overwrite = true)
         }
-        manifest.tasks.add(entry)
+        manifest.tasks += entry
     }
 
     companion object: KLogging() {

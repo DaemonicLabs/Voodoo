@@ -14,18 +14,26 @@ import java.net.URL
 
 @Serializable
 class Manifest(
-        var minimumVersion: Int = 0
+    var minimumVersion: Int = 0
 ) : BaseManifest() {
-    @Optional var baseUrl: URL? = null
-    @Optional var librariesLocation: String? = null
-    @Optional var objectsLocation: String? = null
-    @Optional var gameVersion: String? = null
+    @Optional
+    var baseUrl: URL? = null
+    @Optional
+    var librariesLocation: String? = null
+    @Optional
+    var objectsLocation: String? = null
+    @Optional
+    var gameVersion: String? = null
+    @Optional
     @SerialName("launch")
-    @Optional var launchModifier: LaunchModifier? = null
-    @Optional var features: List<Feature>? = emptyList()
-//    @JsonManagedReference("manifest")
-    @Optional var tasks: MutableList<ManifestEntry> = mutableListOf()
-    @Optional var versionManifest: VersionManifest? = null
+    var launchModifier: LaunchModifier? = null
+    @Optional
+    var features: List<Feature> = emptyList()
+    //    @JsonManagedReference("manifest")
+    @Optional
+    var tasks: List<FileInstall> = emptyList()
+    @Optional
+    var versionManifest: VersionManifest? = null
 
     fun updateName(name: String?) {
         if (name != null) {

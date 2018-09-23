@@ -15,7 +15,6 @@ import com.skcraft.launcher.model.minecraft.VersionManifest
 import com.skcraft.launcher.model.modpack.Manifest
 import com.skcraft.launcher.util.Environment
 import com.xenomachina.argparser.ArgParser
-import com.xenomachina.argparser.mainBody
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext
@@ -27,6 +26,7 @@ import voodoo.util.Directories
 import voodoo.util.copyInputStreamToFile
 import voodoo.util.download
 import kotlinx.io.core.Closeable
+import kotlinx.serialization.SerialContext
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
@@ -56,9 +56,9 @@ constructor(
         "com.skcraft.launcher.propertiesFile"
     )
     private val json: JSON = if (isPrettyPrint) {
-        JSON(indented = true, nonstrict = true)
+        JSON(indented = true, nonstrict = true, context = SerialContext())
     } else {
-        JSON(nonstrict = true)
+        JSON(nonstrict = true, context = SerialContext())
     }
     private val applicator: PropertiesApplicator = PropertiesApplicator(manifest)
     private val loaderLibraries = arrayListOf<Library>()
@@ -328,7 +328,7 @@ constructor(
          */
         @Throws(IOException::class, InterruptedException::class)
         @JvmStatic
-        fun main(vararg args: String) = mainBody {
+        fun main(vararg args: String) {
             val parser = ArgParser(args)
             val options = BuilderOptions(parser)
             parser.force()

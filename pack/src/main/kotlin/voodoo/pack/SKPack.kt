@@ -96,7 +96,7 @@ object SKPack : AbstractPack() {
                         val urlTxtFile = folder.resolve(file.name + ".url.txt")
                         urlTxtFile.writeText(url)
                     }
-    //                println("done: ${entry.id} $file")
+                    //                println("done: ${entry.id} $file")
                     fileChannel.send(entry.id to file)  // file.relativeTo(skSrcFolder
                 }
                 logger.info("started job: download '${entry.id}'")
@@ -170,12 +170,17 @@ object SKPack : AbstractPack() {
             modpackPath.writeText(JSON.stringify(skmodpack))
 
             // add to workspace.json
-            logger.info("adding {} to workpace.json", modpack.id)
+            logger.info("adding ${modpack.id} to workpace.json", modpack.id)
             val workspaceMetaFolder = workspaceDir.resolve(".modpacks")
             workspaceMetaFolder.mkdirs()
             val workspacePath = workspaceMetaFolder.resolve("workspace.json")
             val workspace = if (workspacePath.exists()) {
-                JSON.parse(workspacePath.readText())
+                try {
+                    JSON.parse<SKWorkspace>(workspacePath.readText())
+                } catch (e: Exception) {
+                    logger.error("failed parsing: $workspacePath", e)
+                    SKWorkspace()
+                }
             } else {
                 SKWorkspace()
             }
@@ -220,6 +225,8 @@ object SKPack : AbstractPack() {
                 ).apply { packages.packages += this }
             packFragment.version = uniqueVersion
             packagesFile.writeText(JSON.indented.stringify(packages))
+
+            logger.info("finished")
         }
     }
 }

@@ -2,7 +2,7 @@ package voodoo
 
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
-import com.xenomachina.argparser.mainBody
+
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.json.JSON
 import mu.KLogging
@@ -20,28 +20,26 @@ import kotlin.system.exitProcess
 
 object Tester : KLogging() {
     @JvmStatic
-    fun main(vararg args: String) = mainBody {
+    fun main(vararg args: String) = runBlocking {
         val arguments = Arguments(ArgParser(args))
 
-        runBlocking{
-            arguments.run {
+        arguments.run {
 
-                logger.info("loading $modpackLockFile")
-                val modpack: LockPack = json.parse(modpackLockFile.readText())
-                val rootFolder = modpackLockFile.absoluteFile.parentFile
-                modpack.loadEntries(rootFolder)
+            logger.info("loading $modpackLockFile")
+            val modpack: LockPack = json.parse(modpackLockFile.readText())
+            val rootFolder = modpackLockFile.absoluteFile.parentFile
+            modpack.loadEntries(rootFolder)
 
-                val tester = when (methode) {
-                    "mmc" -> MultiMCTester
+            val tester = when (methode) {
+                "mmc" -> MultiMCTester
 
-                    else -> {
-                        logger.error("no such packing methode: $methode")
-                        exitProcess(-1)
-                    }
+                else -> {
+                    logger.error("no such packing methode: $methode")
+                    exitProcess(-1)
                 }
-
-                tester.execute(modpack = modpack, clean = clean)
             }
+
+            tester.execute(modpack = modpack, clean = clean)
         }
 
     }
