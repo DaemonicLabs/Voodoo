@@ -81,6 +81,8 @@ object Server {
 //                logger.info("started job ${entry.name()}")
         }
 
+//            jobs.joinAll()
+
         // download forge
         val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.resolveVersion(
             modpack.forge.toString(),
@@ -91,8 +93,6 @@ object Server {
 //            jobs += launch(context = pool) {
         forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
 //            }
-
-//            jobs.joinAll()
 
         // install forge
         if (!skipForge) {
