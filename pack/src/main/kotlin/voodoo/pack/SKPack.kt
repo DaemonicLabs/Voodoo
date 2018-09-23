@@ -91,7 +91,7 @@ object SKPack : AbstractPack() {
 
                     val (url, file) = provider.download(entry, targetFolder, cacheDir)
                     if (url != null && entry.useUrlTxt) {
-                        val urlTxtFile = folder.resolve(file.name + ".url.txt")
+                        val urlTxtFile = targetFolder.resolve(file.name + ".url.txt")
                         urlTxtFile.writeText(url)
                     }
                     //                println("done: ${entry.id} $file")
