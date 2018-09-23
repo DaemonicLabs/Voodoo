@@ -14,6 +14,9 @@ import com.skcraft.launcher.model.modpack.Manifest
 import com.skcraft.launcher.util.Environment
 import com.xenomachina.argparser.ArgParser
 import io.ktor.client.request.get
+import io.ktor.client.response.HttpResponse
+import io.ktor.client.response.readBytes
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext
@@ -29,7 +32,9 @@ import kotlinx.serialization.SerialContext
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
+import voodoo.util.Downloader
 import voodoo.util.Downloader.client
+import voodoo.util.encoded
 import java.io.File
 import java.util.Properties
 import java.util.jar.JarFile
@@ -200,20 +205,19 @@ constructor(
                             val tempFile = File.createTempFile("launcherlib", null)
                             try {
                                 logger.info("Downloading library " + library.name + " from " + url + "...")
-                                tempFile.download(url, cache)
-//                        HttpRequest.get(URL(url)).execute().expectResponseCode(200).saveContent(tempFile)
-//                            val (_, response, result) = url.httpGet().response()
-//                            when (result) {
-//                                is Result.Success -> {
-//                                    logger.info("writing to $tempFile")
-//                                    tempFile.writeBytes(result.value)
-//                                }
-//                                is Result.Failure -> {
-//                                    throw IOException("Did not get expected response code, got ${response.statusCode} for $url")
-//                                }
-//                            }
-                            } catch (e: IOException) {
-                                logger.info("Could not get file from " + url + ": " + e.message)
+                                val response = Downloader.client.get<HttpResponse>(url.encoded)
+
+                                if (response.status != HttpStatusCode.OK) {
+                                    logger.info("Could not get file from $url: ${response.status}")
+                                    continue
+                                }
+
+                                val bytes: ByteArray = response.readBytes()
+
+                                logger.info("writing to $tempFile")
+                                tempFile.writeBytes(bytes)
+                            } catch (e: Exception) {
+                                logger.info("Could not get file from $url: ${e.message}")
                                 continue
                             }
 
