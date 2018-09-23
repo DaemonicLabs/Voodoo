@@ -72,13 +72,15 @@ object Server {
         for (entry in modpack.entrySet) {
             if (entry.side == Side.CLIENT) continue
 //                jobs += launch(context = pool) {
-            val provider = Providers[entry.provider]
-            val targetFolder = serverDir.resolve(entry.file).absoluteFile.parentFile
-            logger.info("downloading to - ${targetFolder.path}")
-            val (_, _) = provider.download(entry, targetFolder, cacheDir)
+            withContext(CoroutineName("job-${entry.id}")) {
+                val provider = Providers[entry.provider]
+                val targetFolder = serverDir.resolve(entry.file).absoluteFile.parentFile
+                logger.info("downloading to - ${targetFolder.path}")
+                val (_, _) = provider.download(entry, targetFolder, cacheDir)
 //                }
 //                delay(10)
 //                logger.info("started job ${entry.name()}")
+            }
         }
 
 //            jobs.joinAll()
