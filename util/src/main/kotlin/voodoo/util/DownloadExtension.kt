@@ -112,6 +112,7 @@ suspend fun File.download(
 //    }
     }
 
+    logger.debug("saving $url -> $this")
     try {
         this.parentFile.mkdirs()
         cacheFile.copyTo(this, overwrite = true)
@@ -121,6 +122,8 @@ suspend fun File.download(
         if (!fileIsLocked)
             cacheFile.copyTo(this, overwrite = true)
     }
+
+    logger.debug("done downloading $url -> $this")
 }
 
 val String.encoded: String
