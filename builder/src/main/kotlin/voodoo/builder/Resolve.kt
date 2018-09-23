@@ -28,7 +28,7 @@ private val logger = KotlinLogging.logger {}
 private fun ModPack.getDependenciesCall(entryId: String): List<Entry> {
     val modpack = this
     val entry = modpack.findEntryById(entryId) ?: return emptyList()
-    var result = listOf(entry)
+    val result = mutableListOf(entry)
     for ((depType, entryList) in entry.dependencies) {
         if (depType == DependencyType.EMBEDDED) continue
         for (depName in entryList) {
