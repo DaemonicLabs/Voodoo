@@ -11,10 +11,13 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Transient
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
 import voodoo.data.UserFiles
+import voodoo.data.flat.Entry
+import voodoo.data.flat.EntryFeature
 import voodoo.data.flat.ModPack
 import voodoo.data.sk.Launch
 
@@ -24,10 +27,12 @@ data class FileInstall(
     var hash: String,
     var location: String,
     var to: String,
-    @Optional var size: Long = 0,
-    @Serilname("userFile")
-    @Optional var isUserFile: Boolean = false,
-    @Optional var manifest: Manifest? = null,
+    @Optional
+    var size: Long = 0,
+    @Optional @SerialName("userFile")
+    var isUserFile: Boolean = false,
+    @Optional
+    var manifest: Manifest? = null,
     @Optional @SerialName("when")
     var conditionWhen: Condition? = null
 ) {
@@ -48,10 +53,12 @@ data class FileInstall(
             if (obj.size != 0L) elemOutput.writeLongElementValue(serialClassDesc, 4, obj.size)
             elemOutput.writeBooleanElementValue(serialClassDesc, 5, obj.isUserFile)
             obj.manifest?.let { manifest ->
-                elemOutput.writeStringElementValue(serialClassDesc, 6, manifest)
+                elemOutput.writeElement(serialClassDesc, 6)
+                elemOutput.write(Manifest::class.serializer(), manifest)
             }
             obj.conditionWhen?.let { conditionWhen ->
-                elemOutput.writeStringElementValue(serialClassDesc, 7, conditionWhen)
+                elemOutput.writeElement(serialClassDesc, 7)
+                elemOutput.write(Condition::class.serializer(), conditionWhen)
             }
             elemOutput.writeEnd(serialClassDesc)
         }

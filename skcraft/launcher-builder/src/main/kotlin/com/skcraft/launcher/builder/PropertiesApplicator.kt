@@ -18,7 +18,7 @@ class PropertiesApplicator(private val manifest: Manifest) {
     val featuresInUse: List<Feature>
         get() = ArrayList(used)
 
-    private fun apply(entry: FileInstall) {
+    fun apply(entry: FileInstall) {
         val path = entry.targetPath
         entry.conditionWhen = fromFeature(path)
         entry.isUserFile = isUserFile(path)
