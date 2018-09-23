@@ -156,7 +156,7 @@ suspend fun ModPack.resolve(
 
             val jobs = mutableListOf<Job>()
             for (entry in unresolved) {
-                jobs += launch(context = pool) {
+                jobs += launch(context = pool + CoroutineName("job-${entry.id}")) {
                     logger.info("resolving: ${entry.id}")
                     val provider = Providers[entry.provider]
 
