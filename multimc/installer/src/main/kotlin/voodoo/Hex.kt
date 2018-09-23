@@ -132,7 +132,7 @@ object Hex : KLogging() {
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val defaults = if (featureJson.exists()) {
-            JSON.indented.parse(featureJson.readText())
+            JSON.indented.parse(HashMapSerializer(String.serializer(), Boolean::class.serializer()), featureJson.readText())
         } else {
             mapOf<String, Boolean>()
         }
@@ -140,7 +140,7 @@ object Hex : KLogging() {
             modpack.features, defaults, modpack.title.blankOr
                 ?: modpack.name, modpack.version, forceDisplay = forceDisplay, updating = oldpack != null
         )
-        featureJson.writeText(JSON.indented.stringify(features))
+        featureJson.writeText(JSON.indented.stringify(HashMapSerializer(String.serializer(), Boolean::class.serializer()), features))
         if (reinstall) {
             minecraftDir.deleteRecursively()
         }
