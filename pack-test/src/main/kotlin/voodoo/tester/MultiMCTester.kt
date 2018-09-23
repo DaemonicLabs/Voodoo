@@ -1,5 +1,7 @@
 package voodoo.tester
 
+import kotlinx.coroutines.experimental.CoroutineName
+import kotlinx.coroutines.experimental.coroutineScope
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.internal.BooleanSerializer
@@ -14,6 +16,7 @@ import voodoo.util.blankOr
 import voodoo.util.Downloader
 import voodoo.util.pool
 import java.io.File
+import java.io.IOException
 
 /**
  * Created by nikky on 06/05/18.
@@ -39,7 +42,13 @@ object MultiMCTester : AbstractTester() {
 
         instanceDir.mkdirs()
 
-        val minecraftDir = MMCUtil.installEmptyPack(title, folder, icon = modpack.iconFile, mcVersion = modpack.mcVersion, forgeBuild = modpack.forge)
+        val minecraftDir = MMCUtil.installEmptyPack(
+            title,
+            folder,
+            icon = modpack.iconFile,
+            mcVersion = modpack.mcVersion,
+            forgeBuild = modpack.forge
+        )
 
         minecraftDir.mkdirs()
         val modsDir = minecraftDir.resolve("mods")
@@ -51,10 +60,42 @@ object MultiMCTester : AbstractTester() {
             minecraftSrcDir.copyRecursively(minecraftDir, overwrite = true)
         }
 
+        for (src in minecraftSrcDir.walkTopDown()) {
+            if (src.name.endsWith(".lock.hjson")) continue
+            if (src.name.endsWith(".entry.hjson")) continue
+
+            val relPath = src.relativeTo(minecraftDir)
+            val dstFile = minecraftDir.resolve(relPath)
+
+            if (dstFile.exists() && !(src.isDirectory && dstFile.isDirectory)) {
+                val stillExists = when {
+                    dstFile.isDirectory -> !dstFile.deleteRecursively()
+                    else -> !dstFile.delete()
+                }
+
+                if (stillExists) {
+                    throw FileAlreadyExistsException(
+                        file = src,
+                        other = dstFile,
+                        reason = "The destination file already exists."
+                    )
+                }
+            }
+
+            if (src.isDirectory) {
+                dstFile.mkdirs()
+            } else {
+                if (src.copyTo(dstFile, overwrite = true).length() != src.length()) {
+                    throw IOException("Source file wasn't copied completely, length of destination file differs.")
+                }
+            }
+        }
+
+        logger.info("sorting client / server mods")
         for (file in minecraftDir.walkTopDown()) {
             when {
-                file.name.endsWith(".lock.hjson") -> file.delete()
-                file.name.endsWith(".entry.hjson") -> file.delete()
+//                file.name.endsWith(".lock.hjson") -> file.delete()
+//                file.name.endsWith(".entry.hjson") -> file.delete()
                 file.name == "_CLIENT" -> {
                     file.copyRecursively(file.parentFile, overwrite = true)
                     file.deleteRecursively()
@@ -75,9 +116,11 @@ object MultiMCTester : AbstractTester() {
         } else {
             mapOf<String, Boolean>()
         }
-        val (features, reinstall) = MMCUtil.selectFeatures(modpack.features.map { it.properties }, previousSelection,
-                modpack.title.blankOr
-                        ?: modpack.id, modpack.version, forceDisplay = false, updating = featureJson.exists())
+        val (features, reinstall) = MMCUtil.selectFeatures(
+            modpack.features.map { it.properties }, previousSelection,
+            modpack.title.blankOr
+                ?: modpack.id, modpack.version, forceDisplay = false, updating = featureJson.exists()
+        )
         logger.debug("result: features: $features")
         if (!features.isEmpty()) {
             featureJson.createNewFile()
@@ -87,10 +130,10 @@ object MultiMCTester : AbstractTester() {
             minecraftDir.deleteRecursively()
         }
 
-        runBlocking(context = pool) {
+        coroutineScope {
             modpack.entrySet.forEach { entry ->
                 if (entry.side == Side.SERVER) return@forEach
-                launch {
+                launch(pool + CoroutineName(entry.id)) {
                     val folder = minecraftDir.resolve(entry.file).absoluteFile.parentFile
 
                     val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
@@ -105,7 +148,6 @@ object MultiMCTester : AbstractTester() {
                     val targetFolder = minecraftDir.resolve(folder)
                     val (url, file) = provider.download(entry, targetFolder, cacheDir)
                 }
-
             }
         }
 
@@ -125,6 +167,4 @@ object MultiMCTester : AbstractTester() {
 //        MMCUtil.startInstance(title)
         MMCUtil.startInstance(folder)
     }
-
-
 }
