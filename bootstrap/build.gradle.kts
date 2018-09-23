@@ -31,10 +31,10 @@ if (project.hasProperty("target")) {
                 """^[Vv]oodoo(-[^-]*)?(?!-fat)\\.jar$""",
                 "bootstrap-voodoo"
         )
-        "hex" -> Triple(
-                "hex",
-                """^hex(-[^-]*)?(?!-fat)\\.jar$""",
-                "bootstrap-hex"
+        "multimc-installer" -> Triple(
+                "multimc-installer",
+                """^multimc-installer(-[^-]*)?(?!-fat)\\.jar$""",
+                "bootstrap-multimc-installer"
         )
         else -> throw InvalidUserDataException("invalid target property")
     }

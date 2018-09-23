@@ -33,9 +33,9 @@ pipeline {
 	        steps {
 	            sh './gradlew :bootstrap:clean'
 	            sh './gradlew :bootstrap:build -Ptarget=voodoo'
-	            sh './gradlew :bootstrap:build -Ptarget=hex'
+	            sh './gradlew :bootstrap:build -Ptarget=multimc-installer'
 	            archiveArtifacts artifacts:  'bootstrap/build/libs/*voodoo*'
-	            archiveArtifacts artifacts:  'bootstrap/build/libs/*hex*'
+	            archiveArtifacts artifacts:  'bootstrap/build/libs/*multimc-installer*'
 	        }
 	    }
 	    stage('Deploy') {
