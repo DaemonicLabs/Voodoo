@@ -43,14 +43,14 @@ object Downloader : KLogging() {
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 }
 
-suspend fun File.download(
+fun File.download(
     url: String,
     cacheDir: File,
     useragent: String = Downloader.useragent,
     logger: KLogger = Downloader.logger
 ) {
     val cacheFile = cacheDir.resolve(this.name)
-    withContext(Dispatchers.IO) {
+//    withContext(Dispatchers.IO) {
         val fixedUrl = url.encoded
         logger.info("downloading $url -> ${this@download}")
         logger.debug("cacheFile $cacheFile")
@@ -84,7 +84,7 @@ suspend fun File.download(
                 val (request, response, result) = nextUrl //.encode()
                     .httpGet().header("User-Agent" to useragent)
                     .allowRedirects(false)
-                    .awaitByteArrayResponse()
+                    .response()
                 val isRedirect = when (result) {
                     is Result.Success -> {
                         cacheDir.mkdirs()
@@ -110,7 +110,7 @@ suspend fun File.download(
         }
 //        }
 //    }
-    }
+//    }
 
     logger.debug("saving $url -> $this")
     try {
