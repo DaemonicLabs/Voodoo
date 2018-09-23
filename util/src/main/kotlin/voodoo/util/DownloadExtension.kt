@@ -52,7 +52,7 @@ suspend fun File.download(
     if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
 
     if (!cacheFile.exists() || !cacheFile.isFile) {
-        val bytes = Downloader.client.get<ByteArray>(url)
+        val bytes = Downloader.client.get<ByteArray>(url.encoded)
         cacheDir.mkdirs()
         cacheFile.parentFile.mkdirs()
         cacheFile.writeBytes(bytes)
