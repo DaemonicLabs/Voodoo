@@ -25,10 +25,6 @@ dependencies {
 //    compile(group = "io.ktor", name ="ktor-client-okhttp", version = ktor_version)
     compile(group = "io.ktor", name ="ktor-client-json-jvm", version = ktor_version)
 
-    compile(group = "com.github.kittinunf.fuel", name = "fuel", version = fuel_version)
-    compile(group = "com.github.kittinunf.fuel", name = "fuel-coroutines", version = fuel_version)
-//    compile(project(":fuel-coroutines"))
-
 //    compile(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-slf4j", version = kotlin_coroutines_version)
     compile(group = "io.github.microutils", name = "kotlin-logging", version = "1.6.10")
     compile(group = "ch.qos.logback", name = "logback-classic", version = "1.3.0-alpha4")

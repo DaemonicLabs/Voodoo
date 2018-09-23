@@ -6,8 +6,6 @@
  */
 package com.skcraft.launcher.builder
 
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
 import com.skcraft.launcher.LauncherUtils
 import com.skcraft.launcher.model.loader.InstallProfile
 import com.skcraft.launcher.model.minecraft.Library
@@ -15,6 +13,7 @@ import com.skcraft.launcher.model.minecraft.VersionManifest
 import com.skcraft.launcher.model.modpack.Manifest
 import com.skcraft.launcher.util.Environment
 import com.xenomachina.argparser.ArgParser
+import io.ktor.client.request.get
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext
@@ -30,6 +29,7 @@ import kotlinx.serialization.SerialContext
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
+import voodoo.util.Downloader.client
 import java.io.File
 import java.util.Properties
 import java.util.jar.JarFile
@@ -263,7 +263,7 @@ constructor(
     }
 
     @Throws(IOException::class, InterruptedException::class)
-    private fun readVersionManifest(path: File?) {
+    private suspend fun readVersionManifest(path: File?) {
         logSection("Reading version manifest...")
         if (path!!.exists()) {
             val versionManifest = read<VersionManifest>(path)
@@ -272,16 +272,12 @@ constructor(
         } else {
             val url = String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion)
             logger.info("Fetching version manifest from $url...")
-            val (_, response, result) = url.httpGet().responseString()
-            manifest.versionManifest = when (result) {
-                is Result.Success -> {
-//                    logger.info("reading json: ${result.value}")
-                    json.parse(result.value)
-                }
-                is Result.Failure -> {
-                    throw Exception("cannot HTTP GET $url status: ${response.statusCode}")
-                }
-            }
+           try {
+               manifest.versionManifest = client.get(url)
+           } catch(e: Exception) {
+               logger.error("cannot parse manifest from $url", e)
+               throw e
+           }
         }
     }
 
@@ -326,9 +322,8 @@ constructor(
          * @throws IOException thrown on I/O error
          * @throws InterruptedException on interruption
          */
-        @Throws(IOException::class, InterruptedException::class)
-        @JvmStatic
-        fun main(vararg args: String) {
+//        @Throws(IOException::class, InterruptedException::class)
+        suspend fun main(vararg args: String) {
             val parser = ArgParser(args)
             val options = BuilderOptions(parser)
             parser.force()
