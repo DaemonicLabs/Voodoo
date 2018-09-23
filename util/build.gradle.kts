@@ -16,8 +16,9 @@ dependencies {
     compile(group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-yaml", version = jackson_version)
 
     compile(group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-runtime", version = serialization_version)
-//    compile(group = "io.ktor", name ="ktor-client", version = ktor_version)
-    compile(group = "io.ktor", name ="ktor-client-cio", version = ktor_version)
+//    compile(group = "io.ktor", name ="ktor-client-cio", version = ktor_version)
+//    compile(group = "io.ktor", name ="ktor-client-jetty", version = ktor_version)
+    compile(group = "io.ktor", name ="ktor-client-okhttp", version = ktor_version)
     compile(group = "io.ktor", name ="ktor-client-json-jvm", version = ktor_version)
 
     compile(group = "com.github.kittinunf.fuel", name = "fuel", version = fuel_version)

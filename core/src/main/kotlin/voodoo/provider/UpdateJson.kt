@@ -1,7 +1,7 @@
 package voodoo.provider
 
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.features.defaultRequest
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.get
@@ -21,15 +21,18 @@ import java.lang.Exception
  * @author Nikky
  */
 object UpdateJsonProvider : ProviderBase, KLogging() {
-    private val client = HttpClient(CIO) {
+    private val client = HttpClient(OkHttp) {
         engine {
-            maxConnectionsCount = 1000 // Maximum number of socket connections.
-            endpoint.apply {
-                maxConnectionsPerRoute = 100 // Maximum number of requests for a specific endpoint route.
-                pipelineMaxSize = 20 // Max number of opened endpoints.
-                keepAliveTime = 5000 // Max number of milliseconds to keep each connection alive.
-                connectTimeout = 5000 // Number of milliseconds to wait trying to connect to the server.
-                connectRetryAttempts = 5 // Maximum number of attempts for retrying a connection.
+//            maxConnectionsCount = 1000 // Maximum number of socket connections.
+//            endpoint.apply {
+//                maxConnectionsPerRoute = 100 // Maximum number of requests for a specific endpoint route.
+//                pipelineMaxSize = 20 // Max number of opened endpoints.
+//                keepAliveTime = 5000 // Max number of milliseconds to keep each connection alive.
+//                connectTimeout = 5000 // Number of milliseconds to wait trying to connect to the server.
+//                connectRetryAttempts = 5 // Maximum number of attempts for retrying a connection.
+//            }
+            config { // this: OkHttpClient.Builder ->
+                followRedirects(true)
             }
         }
         defaultRequest {
