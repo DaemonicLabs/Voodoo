@@ -5,16 +5,17 @@ package voodoo
  * @author Nikky
  */
 
+import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.VoodooConstants.FULL_VERSION
 
 object Voodoo : KLogging() {
-    val funcs = mapOf<String, (Array<String>) -> Unit>(
-            "import" to Import::main,
-            "build" to Builder::main,
-            "pack" to Pack::main,
-            "test" to Tester::main,
-            "idea" to Idea::main,
+    val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
+            "import" to { args -> Import.main(*args) },
+            "build" to { args -> Builder.main(*args) },
+            "pack" to { args -> Pack.main(*args) },
+            "test" to { args -> Tester.main(*args) },
+            "idea" to{ args ->  Idea.main(*args) },
             "version" to { _ ->
                 println(FULL_VERSION)
             }
@@ -34,22 +35,23 @@ object Voodoo : KLogging() {
     }
 
     @JvmStatic
-    fun main(vararg args: String) {
+    fun main(vararg args: String) = runBlocking {
         val command = args.getOrNull(0)
         logger.info(args.joinToString())
         val remainingArgs = args.drop(1).toTypedArray()
 
         if (command == null) {
             printCommands(null)
-            return
+            return@runBlocking
         }
 
         val function = funcs[command.toLowerCase()]
         if (function == null) {
             printCommands(command)
-            return
+            return@runBlocking
         }
 
         function(remainingArgs)
+        logger.info("waiting for exit program")
     }
 }

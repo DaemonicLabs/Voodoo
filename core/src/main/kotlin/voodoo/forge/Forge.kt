@@ -1,7 +1,7 @@
 package voodoo.forge
 
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.defaultRequest
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.get
@@ -25,7 +25,7 @@ object Forge : KLogging() {
 
     private val deferredData = GlobalScope.async { getForgeData() }
 
-    private val client = HttpClient(OkHttp) {
+    private val client = HttpClient(Apache) {
         engine {
 //            maxConnectionsCount = 1000 // Maximum number of socket connections.
 //            endpoint.apply {
@@ -35,9 +35,9 @@ object Forge : KLogging() {
 //                connectTimeout = 5000 // Number of milliseconds to wait trying to connect to the server.
 //                connectRetryAttempts = 5 // Maximum number of attempts for retrying a connection.
 //            }
-            config { // this: OkHttpClient.Builder ->
-                followRedirects(true)
-            }
+//            config {
+//                followRedirects(true)
+//            }
         }
         defaultRequest {
             header("User-Agent", Downloader.useragent)

@@ -23,14 +23,14 @@ fun withDefaultMain(
     val lockFileName = "$id.lock.hjson"
     val lockFile = root.resolve(lockFileName)
 
-    val funcs = mapOf<String, (Array<String>) -> Unit>(
-        "import" to { _ -> runBlocking { Importer.flatten(nestedPack, root, targetFileName = packFileName) } },
-        "build" to { args -> runBlocking { BuilderForDSL.build(packFile, root, id, targetFileName = lockFileName, args = *args) } },
-        "quickbuild" to { args -> runBlocking {
+    val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
+        "import" to { _ ->  Importer.flatten(nestedPack, root, targetFileName = packFileName) },
+        "build" to { args -> BuilderForDSL.build(packFile, root, id, targetFileName = lockFileName, args = *args) },
+        "quickbuild" to { args ->
             val modpack = Importer.flatten(nestedPack, root)
             BuilderForDSL.build(modpack, root, id, targetFileName = lockFileName, args = *args)
-        } },
-        "pack" to { args -> runBlocking { Pack.pack(lockFile, root, args = *args) } },
+        },
+        "pack" to { args -> Pack.pack(lockFile, root, args = *args) },
         "test" to { args -> TesterForDSL.main(lockFile, args = *args) },
 //        "idea" to Idea::main,
         "version" to { _ ->
@@ -42,7 +42,7 @@ fun withDefaultMain(
         if (cmd == null) {
             logger.error("no command specified")
         } else {
-            logger.error("unknown command $cmd")
+            logger.error("unknown command '$cmd'")
         }
         logger.warn("voodoo $FULL_VERSION")
         logger.warn("commands: ")
@@ -68,7 +68,9 @@ fun withDefaultMain(
             return
         }
 
-        function(remainingArgs)
+        runBlocking {
+            function(remainingArgs)
+        }
     }
 }
 

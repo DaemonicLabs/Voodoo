@@ -68,60 +68,60 @@ object SKPack : AbstractPack() {
         loadersFolder.deleteRecursively()
 
         coroutineScope {
-            val jobs = mutableListOf<Job>()
-
             // download forge
             val (forgeUrl, forgeFileName, _, forgeVersion) = Forge.resolveVersion(
                 modpack.forge.toString(),
                 modpack.mcVersion
             )
             val forgeFile = loadersFolder.resolve(forgeFileName)
-            jobs += launch(context = pool) {
+//            jobs += launch(context = pool) {
                 forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
-            }
+//            }
             val modsFolder = skSrcFolder.resolve("mods")
             logger.info("cleaning mods $modsFolder")
             modsFolder.deleteRecursively()
 
-            val fileChannel = Channel<Pair<String, File>>(Channel.UNLIMITED)
+//            val fileChannel = Channel<Pair<String, File>>(Channel.UNLIMITED)
             // download entries
-            for (entry in modpack.entrySet) {
-                jobs += launch(context = pool) {
+            val deferredFiles: List<Deferred<Pair<String, File>>> = modpack.entrySet.map { entry ->
+                async(context = pool + CoroutineName("download-${entry.id}")) {
                     val provider = Providers[entry.provider]
 
-                    val folder = skSrcFolder.resolve(entry.file).parentFile
+                    val targetFolder = skSrcFolder.resolve(entry.file).parentFile
 
-                    val (url, file) = provider.download(entry, folder, cacheDir)
+                    val (url, file) = provider.download(entry, targetFolder, cacheDir)
                     if (url != null && entry.useUrlTxt) {
                         val urlTxtFile = folder.resolve(file.name + ".url.txt")
                         urlTxtFile.writeText(url)
                     }
                     //                println("done: ${entry.id} $file")
-                    fileChannel.send(entry.id to file)  // file.relativeTo(skSrcFolder
+//                    fileChannel.send(entry.id to file)  // file.relativeTo(skSrcFolder
+                    entry.id to file  // file.relativeTo(skSrcFolder
                 }
-                logger.info("started job: download '${entry.id}'")
-                delay(10)
+//                logger.info("started job: download '${entry.id}'")
+//                delay(10)
             }
 
             delay(10)
             logger.info("waiting for file jobs to finish")
 
-            val deferredFiles = async {
-                fileChannel.associate {
-                    it
-                }
-            }
+//            val deferredFiles = async {
+//                fileChannel.associate {
+//                    it
+//                }
+//            }
 
-            fileChannel.consume {
-                jobs.joinAll()
-            }
+//            fileChannel.consume {
+//                jobs.joinAll()
+//            }
+//            fileChannel.close()
 
-            val targetFiles = deferredFiles.await()
+            val targetFiles = deferredFiles.awaitAll().toMap()
             logger.debug("targetFiles: $targetFiles")
 
             // write features
             val deferredFeatures = modpack.features.map { feature ->
-                async(pool) {
+                async(pool + CoroutineName("feature-${feature.properties.name}")) {
                     logger.info("processing feature: ${feature.properties.name}")
                     for (id in feature.entries) {
                         logger.info(id)
