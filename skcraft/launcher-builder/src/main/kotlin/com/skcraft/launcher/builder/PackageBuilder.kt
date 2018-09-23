@@ -272,12 +272,13 @@ constructor(
         } else {
             val url = String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion)
             logger.info("Fetching version manifest from $url...")
-           try {
-               manifest.versionManifest = client.get(url)
-           } catch(e: Exception) {
-               logger.error("cannot parse manifest from $url", e)
-               throw e
-           }
+            manifest.versionManifest = try {
+                val content = client.get<String>(url)
+                json.parse<VersionManifest>(content)
+            } catch (e: Exception) {
+                logger.error("cannot parse manifest from $url", e)
+                throw e
+            }
         }
     }
 
