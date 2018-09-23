@@ -70,7 +70,7 @@ object Bootstrap : KLogging() {
         val targetFile = binariesDir.resolve("$MODULE_NAME-$buildNumber.jar")
         if (!targetFile.exists()) {
             try {
-                targetFile.download(url, cacheDir = binariesDir)
+                targetFile.download(url, cacheDir = binariesDir.resolve("tmp"))
             } catch( e: Exception) {
                 logger.error("cannot download voodoo binary from $url", e)
                 throw e
