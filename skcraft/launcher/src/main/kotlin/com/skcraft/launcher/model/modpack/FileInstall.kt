@@ -25,8 +25,12 @@ data class FileInstall(
     var location: String,
     var to: String,
     @Optional var size: Long = 0,
-    @Optional var isUserFile: Boolean = false
-) : ManifestEntry() {
+    @Serilname("userFile")
+    @Optional var isUserFile: Boolean = false,
+    @Optional var manifest: Manifest? = null,
+    @Optional @SerialName("when")
+    var conditionWhen: Condition? = null
+) {
     @Transient
     val targetPath: String
         get() = this.to
@@ -43,6 +47,12 @@ data class FileInstall(
             elemOutput.writeStringElementValue(serialClassDesc, 3, obj.to)
             if (obj.size != 0L) elemOutput.writeLongElementValue(serialClassDesc, 4, obj.size)
             elemOutput.writeBooleanElementValue(serialClassDesc, 5, obj.isUserFile)
+            obj.manifest?.let { manifest ->
+                elemOutput.writeStringElementValue(serialClassDesc, 6, manifest)
+            }
+            obj.conditionWhen?.let { conditionWhen ->
+                elemOutput.writeStringElementValue(serialClassDesc, 7, conditionWhen)
+            }
             elemOutput.writeEnd(serialClassDesc)
         }
     }

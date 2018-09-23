@@ -18,12 +18,6 @@ class PropertiesApplicator(private val manifest: Manifest) {
     val featuresInUse: List<Feature>
         get() = ArrayList(used)
 
-    fun apply(entry: ManifestEntry) {
-        if (entry is FileInstall) {
-            apply(entry)
-        }
-    }
-
     private fun apply(entry: FileInstall) {
         val path = entry.targetPath
         entry.conditionWhen = fromFeature(path)
