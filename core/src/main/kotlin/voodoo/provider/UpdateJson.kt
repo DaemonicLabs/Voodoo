@@ -84,7 +84,9 @@ object UpdateJsonProvider : ProviderBase, KLogging() {
             url = url,
             updateJson = entry.updateJson,
             jsonVersion = version
-        )
+        ).apply {
+            folder = entry.folder
+        }
     }
 
     override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File> {

@@ -1,6 +1,5 @@
 package voodoo.data.flat
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore
 import com.fasterxml.jackson.annotation.JsonInclude
 import kotlinx.serialization.*
@@ -72,6 +71,7 @@ data class ModPack(
                 }
             }
         }
+
         private fun <T : Any?> KOutput.serializeObj(default: T, actual: T, saver: KSerialSaver<T>, index: Int) {
             if (default != actual) {
                 this.writeElement(serialClassDesc, index)
@@ -108,10 +108,11 @@ data class ModPack(
             if (newEntry == existingEntry) {
                 return@addOrMerge newEntry
             }
-            logger.info("duplicate entry $newEntry.id")
+            logger.info("duplicate entry $newEntry")
+            logger.info("old entry $existingEntry")
 
             if (!dependency && !existingEntry.transient) {
-                throw IllegalStateException("duplicate entries: ${existingEntry.file} and ${existingEntry.file}")
+                throw IllegalStateException("duplicate entries: ${newEntry.file} and ${existingEntry.file}")
             }
 
             // TODO: make some util code to merge Entries
@@ -135,6 +136,7 @@ data class ModPack(
             }
             .forEach { file ->
                 val entry = Entry.loadEntry(file)
+                entry.folder = file.parentFile.relativeTo(srcDir).path
 //                val entryJsonObj = jankson.load(file)
 //                val entry: Entry = jankson.fromJson(entryJsonObj)
                 addEntry(entry, file.absoluteFile, false)

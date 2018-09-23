@@ -21,7 +21,9 @@ object LocalProvider : ProviderBase, KLogging() {
                 name = entry.name,
                 side = entry.side,
                 fileSrc = entry.fileSrc
-        )
+        ).apply {
+            folder = entry.folder
+        }
     }
 
     override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File> {
