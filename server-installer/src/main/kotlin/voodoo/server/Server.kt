@@ -106,7 +106,7 @@ object Server {
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 .redirectError(ProcessBuilder.Redirect.INHERIT)
                 .start()
-                .waitFor(60, TimeUnit.MINUTES)
+                .waitFor()
 
             //rename forge jar
             val forgeJar = serverDir.resolve("forge-$forgeLongVersion-universal.jar")
@@ -117,6 +117,7 @@ object Server {
             val forgeJar = serverDir.resolve("forge-installer.jar")
             forgeFile.copyTo(forgeJar, overwrite = true)
         }
+        logger.info("finished")
 //        }
     }
 }
