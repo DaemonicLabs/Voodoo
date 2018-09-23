@@ -4,9 +4,15 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 pack=$1
 
-$DIR/scripts/server.sh $pack
-
 cd $DIR
+
+$DIR/gradlew server-installer:build
+if [ ! $? -eq 0 ]; then
+    echo "Error Compiling server-installer"
+    exit 1
+fi
+
+$DIR/scripts/server.sh $pack
 
 [ ! -e run ] && mkdir run
 cd run
@@ -20,7 +26,8 @@ echo
 
 cd "$DIR/run/.server/$pack"
 
-$DIR/gradlew -p "$DIR" :server-installer:run --args "'$DIR/run/.server/${pack}_run' --file '.server/$pack/pack.lock.hjson' --clean"
+java -jar $DIR/server-installer/build/libs/server-installer.jar "$DIR/run/.server/${pack}_run" --file pack.lock.hjson --clean
+# $DIR/gradlew -p "$DIR" :server-installer:run --args "'$DIR/run/.server/${pack}_run' --file '.server/$pack/pack.lock.hjson' --clean"
 if [ ! $? -eq 0 ]; then
     echo "Error Installing $pack"
     exit 1

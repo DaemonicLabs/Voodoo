@@ -21,7 +21,6 @@ object Server {
     private val directories = Directories.get()
 
     suspend fun install(
-        coroutineScope: CoroutineScope,
         modpack: LockPack,
         serverDir: File,
         skipForge: Boolean,
@@ -67,7 +66,7 @@ object Server {
             }
         }
 
-        coroutineScope.apply {
+        coroutineScope {
             val jobs = mutableListOf<Job>()
 
             for (entry in modpack.entrySet) {

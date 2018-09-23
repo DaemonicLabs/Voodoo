@@ -34,7 +34,7 @@ object Install : KLogging() {
                 val rootFolder = packFile.absoluteFile.parentFile
                 modpack.loadEntries(rootFolder)
 
-                Server.install(this@runBlocking, modpack, targetDir, skipForge, clean, cleanConfig)
+                Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
             }
         }
     }
