@@ -49,7 +49,9 @@ object JenkinsProvider : ProviderBase, KLogging() {
                 job = entry.job,
                 buildNumber = buildNumber,
                 fileNameRegex = entry.fileNameRegex
-        )
+        ).apply {
+            folder = entry.folder
+        }
     }
 
     override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {

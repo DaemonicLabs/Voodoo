@@ -38,7 +38,7 @@ object CurseProvider : ProviderBase, KLogging() {
         mcVersion: String,
         addEntry: SendChannel<Pair<Entry, String>>
     ): LockEntry {
-        val (projectID, fileID, _) = findFile(entry, mcVersion, entry.curseMetaUrl)
+        val (projectID, fileID, path) = findFile(entry, mcVersion, entry.curseMetaUrl)
 
         synchronized(resolved) {
             logger.info("resolved: ${resolved.count()} unique entries")
@@ -79,7 +79,9 @@ object CurseProvider : ProviderBase, KLogging() {
             side = entry.side,
             projectID = projectID,
             fileID = fileID
-        )
+        ).apply {
+            folder = path
+        }
 
         logger.debug("returning locked entry: $lock")
         return lock
@@ -215,7 +217,7 @@ object CurseProvider : ProviderBase, KLogging() {
             cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString())
         )
         val fileFingerprint = Murmur2Hash.computeFileHash(targetFile.path)
-        if(addonFile.packageFingerprint != fileFingerprint)
+        if (addonFile.packageFingerprint != fileFingerprint)
             logger.error("file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: $fileFingerprint ")
         return Pair(addonFile.downloadURL, targetFile)
     }

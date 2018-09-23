@@ -92,39 +92,39 @@ object Builder : KLogging() {
             logger.info("finished")
         }
     }
-}
 
-private class Arguments(parser: ArgParser) {
-    val packFile by parser.positional(
-        "FILE",
-        help = "input pack json"
-    ) { File(this) }
+    private class Arguments(parser: ArgParser) {
+        val packFile by parser.positional(
+            "FILE",
+            help = "input pack json"
+        ) { File(this) }
 
-    val targetFile by parser.storing(
-        "--output", "-o",
-        help = "output file json"
-    ) { File(this) }
-        .default<File?>(null)
+        val targetFile by parser.storing(
+            "--output", "-o",
+            help = "output file json"
+        ) { File(this) }
+            .default<File?>(null)
 
-    val stdout by parser.flagging(
-        "--stdout", "-s",
-        help = "print output"
-    )
-        .default(false)
+        val stdout by parser.flagging(
+            "--stdout", "-s",
+            help = "print output"
+        )
+            .default(false)
 
-    val updateDependencies by parser.flagging(
-        "--updateDependencies", "-d",
-        help = "update all dependencies"
-    )
-        .default(false)
+        val updateDependencies by parser.flagging(
+            "--updateDependencies", "-d",
+            help = "update all dependencies"
+        )
+            .default(false)
 
-    val updateAll by parser.flagging(
-        "--updateAll", "-u",
-        help = "update all entries, implies updating dependencies"
-    )
-        .default(false)
+        val updateAll by parser.flagging(
+            "--updateAll", "-u",
+            help = "update all entries, implies updating dependencies"
+        )
+            .default(false)
 
-    val entries by parser.adding(
-        "-E", help = "entries to update"
-    )
+        val entries by parser.adding(
+            "-E", help = "entries to update"
+        )
+    }
 }

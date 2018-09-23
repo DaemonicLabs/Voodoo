@@ -21,12 +21,13 @@ object DirectProvider : ProviderBase, KLogging() {
                 provider = entry.provider,
                 id = entry.id,
                 name = entry.name,
-                //rootFolder = entry.rootFolder,
                 useUrlTxt = entry.useUrlTxt,
                 fileName = entry.fileName,
                 side = entry.side,
                 url = entry.url
-        )
+        ).apply {
+            folder = entry.folder
+        }
     }
 
     override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {

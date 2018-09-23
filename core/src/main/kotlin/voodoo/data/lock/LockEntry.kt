@@ -73,6 +73,10 @@ data class LockEntry(
     lateinit var file: File
 
     @JsonIgnore
+    @Transient
+    lateinit var folder: String
+
+    @JsonIgnore
     fun provider(): ProviderBase = Providers[provider]
 
     @JsonIgnore
