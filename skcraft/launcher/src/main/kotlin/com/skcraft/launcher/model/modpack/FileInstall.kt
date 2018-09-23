@@ -6,11 +6,20 @@
  */
 package com.skcraft.launcher.model.modpack
 
+import kotlinx.serialization.KOutput
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.Transient
+import kotlinx.serialization.list
+import kotlinx.serialization.serializer
+import voodoo.data.UserFiles
+import voodoo.data.flat.ModPack
+import voodoo.data.sk.Launch
 
 @Serializable
-class FileInstall(
+data class FileInstall(
     @Optional var version: String? = null,
     var hash: String,
     var location: String,
@@ -18,38 +27,23 @@ class FileInstall(
     @Optional var size: Long = 0,
     @Optional var isUserFile: Boolean = false
 ) : ManifestEntry() {
+    @Transient
     val targetPath: String
         get() = this.to
 
-    override fun toString(): String {
-        return "FileInstall(version=" + this.version + ", hash=" + this.hash + ", location=" + this.location + ", to=" + this.to + ", size=" + this.size + ", userFile=" + this.isUserFile + ")"
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other === this) return true
-        if (other !is FileInstall) return false
-        if (!other.canEqual(this as Any)) return false
-        if (if (this.version == null) other.version != null else this.version != other.version) return false
-        if (this.hash != other.hash) return false
-        if (this.location != other.location) return false
-        if (this.to != other.to) return false
-        if (this.size != other.size) return false
-        return this.isUserFile == other.isUserFile
-    }
-
-    override fun canEqual(other: Any): Boolean {
-        return other is FileInstall
-    }
-
-    override fun hashCode(): Int {
-        val PRIME = 59
-        var result = 1
-        result = result * PRIME + (version?.hashCode() ?: 43)
-        result = result * PRIME + hash.hashCode()
-        result = result * PRIME + location.hashCode()
-        result = result * PRIME + to.hashCode()
-        result = result * PRIME + (size.ushr(32) xor size).toInt()
-        result = result * PRIME + if (this.isUserFile) 79 else 97
-        return result
+    @Serializer(forClass = FileInstall::class)
+    companion object : KSerializer<FileInstall> {
+        override fun save(output: KOutput, obj: FileInstall) {
+            val elemOutput = output.writeBegin(serialClassDesc)
+            obj.version?.let { version ->
+                elemOutput.writeStringElementValue(serialClassDesc, 0, version)
+            }
+            elemOutput.writeStringElementValue(serialClassDesc, 1, obj.hash)
+            elemOutput.writeStringElementValue(serialClassDesc, 2, obj.location)
+            elemOutput.writeStringElementValue(serialClassDesc, 3, obj.to)
+            if (obj.size != 0L) elemOutput.writeLongElementValue(serialClassDesc, 4, obj.size)
+            elemOutput.writeBooleanElementValue(serialClassDesc, 5, obj.isUserFile)
+            elemOutput.writeEnd(serialClassDesc)
+        }
     }
 }

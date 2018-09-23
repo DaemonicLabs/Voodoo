@@ -3,7 +3,7 @@ package voodoo.server
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.InvalidArgumentException
 import com.xenomachina.argparser.default
-import com.xenomachina.argparser.mainBody
+
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.data.lock.LockPack
@@ -19,28 +19,26 @@ import kotlin.system.exitProcess
 
 object Install : KLogging() {
     @JvmStatic
-    fun main(vararg args: String): Unit = mainBody {
+    fun main(vararg args: String): Unit = runBlocking {
         val parser = ArgParser(args)
         val parsedArgs = Arguments(parser)
         parser.force()
 
-        runBlocking {
-            parsedArgs.run {
-                if (version) {
-                    logger.info(VERSION)
-                    exitProcess(0)
-                }
-
-                logger.info("target dir: $targetDir")
-                logger.info("pack file: $packFile")
-                logger.info("cleanConfig: $cleanConfig")
-
-                val modpack: LockPack = json.parse(packFile.readText())
-                val rootFolder = packFile.absoluteFile.parentFile
-                modpack.loadEntries(rootFolder)
-
-                Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
+        parsedArgs.run {
+            if (version) {
+                logger.info(VERSION)
+                exitProcess(0)
             }
+
+            logger.info("target dir: $targetDir")
+            logger.info("pack file: $packFile")
+            logger.info("cleanConfig: $cleanConfig")
+
+            val modpack: LockPack = json.parse(packFile.readText())
+            val rootFolder = packFile.absoluteFile.parentFile
+            modpack.loadEntries(rootFolder)
+
+            Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
         }
     }
 

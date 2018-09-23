@@ -20,78 +20,76 @@ import kotlin.system.exitProcess
 
 object Builder : KLogging() {
     @JvmStatic
-    fun main(vararg args: String) = mainBody {
+    fun main(vararg args: String) = runBlocking {
         val parser = ArgParser(args)
         val arguments = Arguments(parser)
         parser.force()
 
-        runBlocking {
-            arguments.run {
-                val modpack: ModPack = json.parse(packFile.readText())
+        arguments.run {
+            val modpack: ModPack = json.parse(packFile.readText())
 
-                val parentFolder = packFile.absoluteFile.parentFile
+            val parentFolder = packFile.absoluteFile.parentFile
 
-                modpack.loadEntries(parentFolder)
+            modpack.loadEntries(parentFolder)
 
-                modpack.entrySet.forEach { entry ->
-                    logger.info("id: ${entry.id} entry: $entry")
-                }
-
-                try {
-                    modpack.resolve(
-                        parentFolder,
-                        updateAll = updateAll,
-                        updateDependencies = updateDependencies,
-                        updateEntries = entries
-                    )
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    coroutineContext.cancel(e)
-                    exitProcess(1)
-                }
-
-                modpack.lockEntrySet.forEach { lockEntry ->
-                    val provider = Providers[lockEntry.provider]
-                    if (!provider.validate(lockEntry)) {
-                        logger.error { lockEntry }
-                        throw IllegalStateException("entry did not validate")
-                    }
-                }
-
-                logger.info("Creating locked pack...")
-                val lockedPack = modpack.lock()
-                lockedPack.rootFolder = parentFolder
-                lockedPack.entrySet.clear()
-                lockedPack.entrySet += modpack.lockEntrySet
-
-                lockedPack.writeLockEntries()
-
-                if (stdout) {
-                    print(lockedPack.toJson)
-                } else {
-                    val file = targetFile ?: parentFolder.resolve("${lockedPack.id}.lock.hjson")
-                    logger.info("Writing lock file... $file")
-                    file.writeText(json.stringify(lockedPack))
-                }
-
-                //TODO: generate modlist
-
-                logger.info("writing modlist")
-                val sw = StringWriter()
-                sw.append(lockedPack.report)
-                sw.append("\n")
-
-                modpack.lockEntrySet.sortedBy { it.name().toLowerCase() }.forEach { entry ->
-                    val provider =  Providers[entry.provider]
-                    sw.append("\n\n")
-                    sw.append(provider.report(entry))
-                }
-
-                val modlist = (targetFile ?: File(".")).absoluteFile.parentFile.resolve("modlist.md")
-                modlist.writeText(sw.toString())
-
-                logger.info("finished")
+            modpack.entrySet.forEach { entry ->
+                logger.info("id: ${entry.id} entry: $entry")
             }
+
+            try {
+                modpack.resolve(
+                    parentFolder,
+                    updateAll = updateAll,
+                    updateDependencies = updateDependencies,
+                    updateEntries = entries
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                coroutineContext.cancel(e)
+                exitProcess(1)
+            }
+
+            modpack.lockEntrySet.forEach { lockEntry ->
+                val provider = Providers[lockEntry.provider]
+                if (!provider.validate(lockEntry)) {
+                    logger.error { lockEntry }
+                    throw IllegalStateException("entry did not validate")
+                }
+            }
+
+            logger.info("Creating locked pack...")
+            val lockedPack = modpack.lock()
+            lockedPack.rootFolder = parentFolder
+            lockedPack.entrySet.clear()
+            lockedPack.entrySet += modpack.lockEntrySet
+
+            lockedPack.writeLockEntries()
+
+            if (stdout) {
+                print(lockedPack.toJson)
+            } else {
+                val file = targetFile ?: parentFolder.resolve("${lockedPack.id}.lock.hjson")
+                logger.info("Writing lock file... $file")
+                file.writeText(json.stringify(lockedPack))
+            }
+
+            //TODO: generate modlist
+
+            logger.info("writing modlist")
+            val sw = StringWriter()
+            sw.append(lockedPack.report)
+            sw.append("\n")
+
+            modpack.lockEntrySet.sortedBy { it.name().toLowerCase() }.forEach { entry ->
+                val provider = Providers[entry.provider]
+                sw.append("\n\n")
+                sw.append(provider.report(entry))
+            }
+
+            val modlist = (targetFile ?: File(".")).absoluteFile.parentFile.resolve("modlist.md")
+            modlist.writeText(sw.toString())
+
+            logger.info("finished")
         }
     }
 }

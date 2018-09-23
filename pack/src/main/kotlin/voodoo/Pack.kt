@@ -2,7 +2,7 @@ package voodoo
 
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
-import com.xenomachina.argparser.mainBody
+
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.data.lock.LockPack
@@ -27,28 +27,26 @@ object Pack : KLogging() {
     )
 
     @JvmStatic
-    fun main(vararg args: String) = mainBody {
+    fun main(vararg args: String) = runBlocking {
         val arguments = Arguments(ArgParser(args))
 
-        runBlocking {
-            arguments.run {
-                logger.info("loading $modpackLockFile")
-                val modpack: LockPack = json.parse(modpackLockFile.readText())
-                val rootFolder = modpackLockFile.absoluteFile.parentFile
-                modpack.loadEntries(rootFolder)
+        arguments.run {
+            logger.info("loading $modpackLockFile")
+            val modpack: LockPack = json.parse(modpackLockFile.readText())
+            val rootFolder = modpackLockFile.absoluteFile.parentFile
+            modpack.loadEntries(rootFolder)
 
-                val packer = packMap[methode.toLowerCase()] ?: run {
-                    logger.error("no such packing methode: $methode")
-                    exitProcess(-1)
-                }
-
-                packer.download(
-                    modpack = modpack,
-                    folder = File(System.getProperty("user.dir")),
-                    target = targetFolder,
-                    clean = true
-                )
+            val packer = packMap[methode.toLowerCase()] ?: run {
+                logger.error("no such packing methode: $methode")
+                exitProcess(-1)
             }
+
+            packer.download(
+                modpack = modpack,
+                folder = File(System.getProperty("user.dir")),
+                target = targetFolder,
+                clean = true
+            )
         }
     }
 

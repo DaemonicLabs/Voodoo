@@ -1,7 +1,6 @@
 package voodoo
 
 import com.xenomachina.argparser.ArgParser
-import com.xenomachina.argparser.mainBody
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.features.defaultRequest
@@ -43,22 +42,19 @@ object Hex : KLogging() {
     val kit = Toolkit.getDefaultToolkit();
 
     @JvmStatic
-    fun main(vararg args: String) = mainBody {
+    fun main(vararg args: String) = runBlocking {
         val arguments = Arguments(ArgParser(args))
 
-        runBlocking {
-            arguments.run {
-                install(instanceId, instanceDir, minecraftDir)
-            }
+        arguments.run {
+            install(instanceId, instanceDir, minecraftDir)
         }
-
     }
 
     private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
 
     private val client = HttpClient(OkHttp) {
         engine {
-//            maxConnectionsCount = 1000 // Maximum number of socket connections.
+            //            maxConnectionsCount = 1000 // Maximum number of socket connections.
 //            endpoint.apply {
 //                maxConnectionsPerRoute = 100 // Maximum number of requests for a specific endpoint route.
 //                pipelineMaxSize = 20 // Max number of opened endpoints.
@@ -66,7 +62,8 @@ object Hex : KLogging() {
 //                connectTimeout = 5000 // Number of milliseconds to wait trying to connect to the server.
 //                connectRetryAttempts = 5 // Maximum number of attempts for retrying a connection.
 //            }
-            config { // this: OkHttpClient.Builder ->
+            config {
+                // this: OkHttpClient.Builder ->
                 followRedirects(true)
             }
         }
@@ -151,7 +148,7 @@ object Hex : KLogging() {
 
         val objectsUrl = packUrl.substringBeforeLast('/') + "/" + modpack.objectsLocation
 
-        val oldTaskList =  Collections.synchronizedList(oldpack?.tasks?.toMutableList() ?: mutableListOf())
+        val oldTaskList = Collections.synchronizedList(oldpack?.tasks?.toMutableList() ?: mutableListOf())
 
         runBlocking {
             val jobs = modpack.tasks.map { task ->
@@ -233,7 +230,7 @@ object Hex : KLogging() {
             }
 
             // iterate new tasks
-           jobs.joinAll()
+            jobs.joinAll()
         }
 
         // iterate old
