@@ -1,15 +1,11 @@
 package voodoo
 
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
 import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.ParameterSpec
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.features.defaultRequest
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.header
@@ -66,15 +62,18 @@ fun cursePoet(
 }
 
 object CursePoet : KLogging() {
-    private val client = HttpClient(CIO) {
+    private val client = HttpClient(OkHttp) {
         engine {
-            maxConnectionsCount = 1000 // Maximum number of socket connections.
-            endpoint.apply {
-                maxConnectionsPerRoute = 100 // Maximum number of requests for a specific endpoint route.
-                pipelineMaxSize = 20 // Max number of opened endpoints.
-                keepAliveTime = 5000 // Max number of milliseconds to keep each connection alive.
-                connectTimeout = 5000 // Number of milliseconds to wait trying to connect to the server.
-                connectRetryAttempts = 5 // Maximum number of attempts for retrying a connection.
+//            maxConnectionsCount = 1000 // Maximum number of socket connections.
+//            endpoint.apply {
+//                maxConnectionsPerRoute = 100 // Maximum number of requests for a specific endpoint route.
+//                pipelineMaxSize = 20 // Max number of opened endpoints.
+//                keepAliveTime = 5000 // Max number of milliseconds to keep each connection alive.
+//                connectTimeout = 5000 // Number of milliseconds to wait trying to connect to the server.
+//                connectRetryAttempts = 5 // Maximum number of attempts for retrying a connection.
+//            }
+            config {
+                followRedirects(true)
             }
         }
         defaultRequest {
