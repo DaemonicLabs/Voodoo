@@ -6,17 +6,15 @@
 
 package voodoo
 
-import awaitByteArrayResponse
 import bootstrap.FILE_REGEX
 import bootstrap.JENKINS_JOB
 import bootstrap.JENKINS_URL
 import bootstrap.MODULE_NAME
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.bootstrap.BootstrapConstants.VERSION
 import voodoo.util.Directories
+import voodoo.util.download
 import voodoo.util.jenkins.JenkinsServer
 import java.io.File
 import kotlin.system.exitProcess
@@ -69,23 +67,13 @@ object Bootstrap : KLogging() {
             throw Exception()
         }
         val url = build.url + "artifact/" + artifact.relativePath
-        val tmpFile = binariesDir.resolve("$MODULE_NAME-$buildNumber.tmp")
         val targetFile = binariesDir.resolve("$MODULE_NAME-$buildNumber.jar")
         if (!targetFile.exists()) {
-            val (_, _, result) = url.httpGet()
-                    .header("User-Agent" to userAgent)
-                    .awaitByteArrayResponse()
-            when (result) {
-                is Result.Success -> {
-                    tmpFile.parentFile.mkdirs()
-                    tmpFile.writeBytes(result.value)
-                    targetFile.parentFile.mkdirs()
-                    tmpFile.renameTo(targetFile)
-                }
-                is Result.Failure -> {
-                    logger.error(result.error.toString())
-                    throw Exception("unable to download jarfile from $url")
-                }
+            try {
+                targetFile.download(url, cacheDir = binariesDir)
+            } catch( e: Exception) {
+                logger.error("cannot download voodoo binary from $url", e)
+                throw e
             }
         }
         return targetFile
@@ -103,11 +91,11 @@ object Bootstrap : KLogging() {
         val args = arrayOf(java, "-jar", file.path, *originalArgs)
         logger.debug("running " + args.joinToString(" ") { "\"$it\"" })
         val exitStatus = ProcessBuilder(*args)
-                .directory(workingDir)
-                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                .redirectError(ProcessBuilder.Redirect.INHERIT)
-                .start()
-                .waitFor()
+            .directory(workingDir)
+            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+            .redirectError(ProcessBuilder.Redirect.INHERIT)
+            .start()
+            .waitFor()
         exitProcess(exitStatus)
     }
 }
