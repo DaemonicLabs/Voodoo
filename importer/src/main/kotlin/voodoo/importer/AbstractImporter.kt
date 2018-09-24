@@ -14,7 +14,6 @@ abstract class AbstractImporter : KLogging() {
     abstract val label: String
 
     abstract suspend fun import(
-        coroutineScope: CoroutineScope,
         source: String,
         target: File,
         name: String? = null

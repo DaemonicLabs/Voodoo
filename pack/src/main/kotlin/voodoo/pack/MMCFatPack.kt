@@ -90,7 +90,7 @@ object MMCFatPack : AbstractPack() {
                 if (entry.side == Side.SERVER) continue
 
                 jobs += launch(context = coroutineContext + pool) {
-                    val folder = minecraftDir.resolve(entry.file).absoluteFile.parentFile
+                    val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
 
                     val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
                     val selected = !matchedFeatureList.isEmpty() && matchedFeatureList.any {

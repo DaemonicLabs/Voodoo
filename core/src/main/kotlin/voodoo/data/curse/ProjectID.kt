@@ -1,6 +1,5 @@
 package voodoo.data.curse
 
-import com.fasterxml.jackson.annotation.JsonCreator
 import kotlinx.serialization.KInput
 import kotlinx.serialization.KOutput
 import kotlinx.serialization.KSerializer
@@ -29,16 +28,5 @@ data class ProjectID(val value: Int) {
         }
 
         val INVALID = ProjectID(-1)
-
-        //TODO: remove in 1.3
-        @JsonCreator
-        @JvmStatic
-        fun fromString(id: String?): ProjectID? {
-            return if (id == null)
-                null
-            else {
-                id.toIntOrNull()?.let { ProjectID(it) }
-            }
-        }
     }
 }

@@ -2,7 +2,6 @@ package voodoo.pack
 
 import com.skcraft.launcher.builder.PackageBuilder
 import kotlinx.coroutines.experimental.*
-import kotlinx.coroutines.experimental.channels.*
 import kotlinx.serialization.json.JSON
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
@@ -84,7 +83,7 @@ object SKPack : AbstractPack() {
                 async(context = pool + CoroutineName("download-${entry.id}")) {
                     val provider = Providers[entry.provider]
 
-                    val targetFolder = skSrcFolder.resolve(entry.file).parentFile
+                    val targetFolder = skSrcFolder.resolve(entry.serialFile).parentFile
 
                     val (url, file) = provider.download(entry, targetFolder, cacheDir)
                     if (url != null && entry.useUrlTxt) {
@@ -92,7 +91,7 @@ object SKPack : AbstractPack() {
                         urlTxtFile.writeText(url)
                     }
                     //                println("done: ${entry.id} $file")
-                    entry.id to file  // file.relativeTo(skSrcFolder
+                    entry.id to file  // serialFile.relativeTo(skSrcFolder
                 }.also {
                     logger.info("started job: download '${entry.id}'")
                     delay(10)

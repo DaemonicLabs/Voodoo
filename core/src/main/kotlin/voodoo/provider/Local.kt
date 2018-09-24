@@ -14,15 +14,13 @@ import java.io.File
 object LocalProvider : ProviderBase, KLogging() {
     override val name = "Local Provider"
 
-    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
-        return LockEntry(
-                provider = entry.provider,
-                id = entry.id,
-                name = entry.name,
-                side = entry.side,
-                fileSrc = entry.fileSrc
-        ).apply {
-            folder = entry.folder
+    override suspend fun resolve(
+        entry: Entry,
+        mcVersion: String,
+        addEntry: SendChannel<Pair<Entry, String>>
+    ): LockEntry {
+        return entry.lock {
+            fileSrc = entry.fileSrc
         }
     }
 

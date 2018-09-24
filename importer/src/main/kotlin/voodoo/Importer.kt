@@ -43,10 +43,6 @@ object Importer : KLogging() {
             }
         val modpack = nestedPack.flatten()
         modpack.entrySet += nestedPack.root.flatten(File("parentFile"))
-        val srcDir = targetFolder.resolve(modpack.sourceDir)
-        modpack.entrySet.forEach { entry ->
-            entry.setDefaultFile(srcDir)
-        }
         return modpack
     }
 }

@@ -11,7 +11,14 @@ use html-dsl in .kts files
 maybe css-dsl
 search for markdown-dsl
 
-# cursemods enum
+# deprecate flat entries
+
+entries are flattened fast enough from the nested format, thee is no reason for a multi step process anymore
+keep flat entries on disk for debugging purposes only
+
+# cursemods generated constants / enum
+
+https://github.com/square/kotlinpoet
 
 generate 
 ```kotlin
@@ -22,8 +29,8 @@ enum class CurseMods(id: Int) {
 ```
 
 # curse import -> kotlinpoet ?
-https://github.com/square/kotlinpoet
 
+https://github.com/square/kotlinpoet
 requires more knowledge of how packs are going to be written
 and imports are going to work
 

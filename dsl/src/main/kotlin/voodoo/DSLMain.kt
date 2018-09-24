@@ -22,20 +22,20 @@ fun withDefaultMain(
     val nestedPack = block()
     val id = nestedPack.id
     val packFileName = "$id.pack.hjson"
-    val packFile = root.resolve(packFileName)
+//    val packFile = root.resolve(packFileName)
     val lockFileName = "$id.lock.hjson"
     val lockFile = root.resolve(lockFileName)
 
     val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
-        "import" to { _ ->  Importer.flatten(nestedPack, root, targetFileName = packFileName) },
-        "build" to { args -> BuilderForDSL.build(packFile, root, id, targetFileName = lockFileName, args = *args) },
-        "quickbuild" to { args ->
+        "import_debug" to { _ ->  Importer.flatten(nestedPack, root, targetFileName = packFileName) },
+//        "build_debug" to { args -> BuilderForDSL.build(packFile, root, id, targetFileName = lockFileName, args = *args) },
+        "build" to { args ->
             val modpack = Importer.flatten(nestedPack, root)
-            BuilderForDSL.build(modpack, root, id, targetFileName = lockFileName, args = *args)
+            Builder.build(modpack, root, id, targetFileName = lockFileName, args = *args)
         },
         "pack" to { args -> Pack.pack(lockFile, root, args = *args) },
         "test" to { args -> TesterForDSL.main(lockFile, args = *args) },
-//        "idea" to Idea::main,
+//        "idea" to Idea::main, //TODO: generate gradle/idea project ?
         "version" to { _ ->
             logger.info(FULL_VERSION)
         }

@@ -28,6 +28,8 @@ fun main(vararg args: String) {
 
 fun cursePoet(
     root: File = File(System.getProperty("user.dir")),
+    mods: String = "Mod",
+    texturePacks: String = "TexturePack",
     slugSanitizer: (String) -> String = { slug ->
         slug.split('-').joinToString("") { it.capitalize() }.decapitalize()
     }
@@ -39,7 +41,7 @@ fun cursePoet(
     Thread.currentThread().contextClassLoader = XY::class.java.classLoader
 
     CursePoet.generate(
-        name = "Mod",
+        name = mods,
         slugIdMap = runBlocking {
             CursePoet.requestMods()
                 .mapKeys { (slug, id) ->
@@ -50,7 +52,7 @@ fun cursePoet(
     )
 
     CursePoet.generate(
-        name = "TexturePack",
+        name = texturePacks,
         slugIdMap = runBlocking {
             CursePoet.requestResourcePacks()
                 .mapKeys { (slug, id) ->

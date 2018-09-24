@@ -16,7 +16,6 @@ import voodoo.util.UnzipUtility.unzip
 import voodoo.util.blankOr
 import voodoo.util.download
 import voodoo.util.toJson
-import voodoo.util.writeYaml
 import java.io.File
 import java.util.*
 
@@ -25,11 +24,11 @@ import java.util.*
  * @author Nikky
  */
 
+@Deprecated("roken due to significant changes to the codebase and deprecation of yaml")
 object CurseImporter : AbstractImporter() {
     override val label = "Curse Importer"
 
     override suspend fun import(
-        coroutineScope: CoroutineScope,
         source: String,
         target: File,
         name: String?
@@ -94,7 +93,7 @@ object CurseImporter : AbstractImporter() {
         }
 
         val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
-        coroutineScope.apply {
+        coroutineScope {
             val jobs = mutableListOf<Job>()
             //TODO: process in parallel
             for (file in manifest.files) {
@@ -161,7 +160,7 @@ object CurseImporter : AbstractImporter() {
             mcVersion = manifest.minecraft.version,
             sourceDir = overridesFolder.relativeTo(target).path,
             localDir = local,
-            root = NestedEntry(include = entriesFilename)
+            root = NestedEntry(/*include = entriesFilename*/)
         )
         val rootEntry = NestedEntry(
             validMcVersions = validMcVersions - manifest.minecraft.version,
@@ -171,10 +170,10 @@ object CurseImporter : AbstractImporter() {
         )
 
 
-        logger.info("writing to $mainFilename.yaml")
-        target.resolve("$mainFilename.yaml").writeYaml(nestedPack)
-        logger.info("writing to $entriesFilename")
-        target.resolve(entriesFilename).writeYaml(rootEntry)
+//        logger.info("writing to $mainFilename.yaml")
+//        target.resolve("$mainFilename.yaml").writeYaml(nestedPack)
+//        logger.info("writing to $entriesFilename")
+//        target.resolve(entriesFilename).writeYaml(rootEntry)
 
         val packFile = target.resolve("$mainFilename.pack.hjson")
         val lockFile = target.resolve("$mainFilename.lock.hjson")

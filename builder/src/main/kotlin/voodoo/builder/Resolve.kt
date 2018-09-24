@@ -4,14 +4,12 @@ import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.consume
 import mu.KotlinLogging
-import voodoo.Builder
 import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.data.sk.FeatureProperties
 import voodoo.data.sk.SKFeature
 import voodoo.memoize
-import voodoo.provider.CurseProvider
 import voodoo.provider.Providers
 import voodoo.util.pool
 import java.io.File
@@ -61,14 +59,14 @@ private fun ModPack.resolveFeatureDependencies(entry: Entry, defaultName: String
                 recommendation = entryFeature.recommendation
             )
         )
-        processFeature(feature)
+        processFeature(this, feature)
         features += feature
         entry.optional = true
     }
     logger.debug("processed ${entry.id}")
 }
 
-private fun ModPack.processFeature(feature: SKFeature) {
+private fun processFeature(modPack: ModPack, feature: SKFeature) {
     logger.info("processing feature: $feature")
     var processedEntries = emptyList<String>()
     var processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
@@ -76,7 +74,7 @@ private fun ModPack.processFeature(feature: SKFeature) {
         processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
         for (entry_id in processableEntries) {
             logger.info("searching $entry_id")
-            val entry = findEntryById(entry_id)
+            val entry = modPack.findEntryById(entry_id)
             if (entry == null) {
                 logger.warn("$entry_id not in entries")
                 processedEntries += entry_id
@@ -85,7 +83,7 @@ private fun ModPack.processFeature(feature: SKFeature) {
             var depNames = entry.dependencies.values.flatten()
             logger.info("depNames: $depNames")
             depNames = depNames.filter { d ->
-                entrySet.any { entry -> entry.id == d && entry.optional }
+                modPack.entrySet.any { entry -> entry.id == d && entry.optional }
             }
             logger.info("filtered dependency names: $depNames")
             for (dep in depNames) {
@@ -98,16 +96,13 @@ private fun ModPack.processFeature(feature: SKFeature) {
     }
 }
 
-/**
- * ensure entries are loaded before calling resolve
- */
 suspend fun ModPack.resolve(
     folder: File,
     updateAll: Boolean = false,
     updateDependencies: Boolean = false,
     updateEntries: List<String> = listOf()
 ) {
-    this.loadEntries(folder)
+//    this.loadEntries(folder)
     this.loadLockEntries(folder)
 
     val srcDir = folder.resolve(sourceDir)
@@ -130,7 +125,7 @@ suspend fun ModPack.resolve(
                 exitProcess(-1)
             }
             lockEntrySet.find { it.id == entryId }?.let {
-                it.file.delete()
+                it.serialFile.delete()
                 lockEntrySet.remove(it)
             }
         }
@@ -144,10 +139,9 @@ suspend fun ModPack.resolve(
     }
 
     // recalculate all dependencies
-//    val resolved: MutableSet<String> = mutableSetOf()
     var unresolved: Set<Entry> = entrySet.toSet()
     val resolved: MutableSet<String> = Collections.synchronizedSet(mutableSetOf<String>())
-    val accumulatorContext = newSingleThreadContext("AccumulatorContext")
+//    val accumulatorContext = newSingleThreadContext("AccumulatorContext")
     coroutineScope {
         do {
             val newEntriesChannel = Channel<Pair<Entry, String>>(Channel.UNLIMITED)
@@ -170,26 +164,18 @@ suspend fun ModPack.resolve(
 
                     logger.debug("trying to merge entry")
                     val actualLockEntry = addOrMerge(lockEntry) { old, new ->
-                        if (old == null) {
-                            val filename = entry.file.name.substringBefore(".entry.hjson")
-                            logger.debug("setting file on new entry to $filename")
-                            new.file = File(new.folder).resolve("$filename.lock.hjson")
-                            new
-                        } else {
-                            logger.info("existing lockEntry: $old")
-                            old
-                        }
+                        old ?: new
                     }
                     logger.debug("merged entry: $actualLockEntry")
 
                     logger.debug("validating: actual $actualLockEntry")
                     if (!provider.validate(actualLockEntry)) {
-                        Builder.logger.error { actualLockEntry }
+                        logger.error { actualLockEntry }
                         throw IllegalStateException("actual entry did not validate")
                     }
 
-                    logger.debug("setting display name")
-                    actualLockEntry.name = actualLockEntry.name()
+//                    logger.debug("setting display name")
+//                    actualLockEntry.name = actualLockEntry.name()
 
                     logger.debug("adding to resolved")
                     resolved += entry.id
@@ -204,33 +190,25 @@ suspend fun ModPack.resolve(
 
             val newEntries = async(context = pool) {
                 val accumultator = mutableSetOf<Entry>()
-                suspend fun receive(entry: Entry, path: String) {
-                    withContext(accumulatorContext) {
-                        logger.info("channel received: ${entry.id}")
-
-                        if (entry.id in resolved) {
-                            logger.info("entry already resolved ${entry.id}")
-                            return@withContext
-                        }
-                        if (this@resolve.entrySet.any { it.id == entry.id }) {
-                            logger.info("entry already added ${entry.id}")
-                            return@withContext
-                        }
-                        if (accumultator.any { it.id == entry.id }) {
-                            logger.info("entry already in queue ${entry.id}")
-                            return@withContext
-                        }
-
-                        val filename = entry.id.replace("[^\\w-]+".toRegex(), "")
-                        //TODO: calculate filename on demand
-                        val file = srcDir.resolve(path).resolve("$filename.entry.hjson").absoluteFile
-                        this@resolve.addEntry(entry, file, dependency = true)
-                        logger.info { "added entry ${entry.id}" }
-                        accumultator += entry
-                    }
-                }
                 for ((entry, path) in newEntriesChannel) {
-                    receive(entry, path)
+                    logger.info("channel received: ${entry.id}")
+
+                    if (entry.id in resolved) {
+                        logger.info("entry already resolved ${entry.id}")
+                        continue
+                    }
+                    if (this@resolve.entrySet.any { it.id == entry.id }) {
+                        logger.info("entry already added ${entry.id}")
+                        continue
+                    }
+                    if (accumultator.any { it.id == entry.id }) {
+                        logger.info("entry already in queue ${entry.id}")
+                        continue
+                    }
+
+                    this@resolve.addEntry(entry, dependency = true)
+                    logger.info { "added entry ${entry.id}" }
+                    accumultator += entry
                 }
                 accumultator
             }
@@ -260,7 +238,7 @@ suspend fun ModPack.resolve(
 
     for (entry in entrySet) {
         this.resolveFeatureDependencies(
-            entry, findLockEntryById(entry.id)?.name()
+            entry, findLockEntryById(entry.id)?.name
                 ?: throw NullPointerException("cannot find lockentry for ${entry.id}")
         )
     }

@@ -1,16 +1,28 @@
 package voodoo.data.flat
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore
-import kotlinx.serialization.*
+import kotlinx.serialization.KOutput
+import kotlinx.serialization.KSerialSaver
 import kotlinx.serialization.Optional
+import kotlinx.serialization.SerialContext
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.Transient
+import kotlinx.serialization.UpdateMode
 import kotlinx.serialization.internal.EnumSerializer
 import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.JSON
+import kotlinx.serialization.list
+import kotlinx.serialization.serializer
+import kotlinx.serialization.set
 import mu.KLogging
 import voodoo.data.Side
-import voodoo.data.curse.*
 import voodoo.data.curse.CurseConstancts.PROXY_URL
+import voodoo.data.curse.DependencyType
+import voodoo.data.curse.FileID
+import voodoo.data.curse.FileType
+import voodoo.data.curse.PackageType
+import voodoo.data.curse.ProjectID
+import voodoo.data.lock.LockEntry
 import voodoo.data.provider.UpdateChannel
 import voodoo.util.equalsIgnoreCase
 import java.io.File
@@ -170,32 +182,37 @@ data class Entry(
             context = SerialContext().apply {
                 registerSerializer(Side::class, Side.Companion)
             })
-
-        fun loadEntry(file: File): Entry = json.parse<Entry>(file.readText().also { logger.info { "loading: $it" } })
     }
 
-    @JsonIgnore
     @Transient
     var optional: Boolean = feature != null
 
-    /**
-     * abssolute file
-     */
-    @JsonIgnore
     @Transient
-    lateinit var file: File
+    val cleanId: String
+        get() = id
+            .replace('/', '-')
+            .replace("[^\\w-]+".toRegex(), "")
+    @Transient
+    val serialFilename: String
+        get() = "$cleanId.entry.hjson"
 
-    fun setDefaultFile(sourceFolder: File) {
-        if(!::file.isInitialized) {
-            val filename = id
-                .replace('/', '-')
-                .replace("[^\\w-]+".toRegex(), "")
-            file = sourceFolder.resolve(folder).resolve("$filename.entry.hjson").absoluteFile
-        }
-    }
-
-    fun serialize() {
+    fun serialize(sourceFolder: File) {
+        val file = sourceFolder.resolve(folder).resolve("$cleanId.entry.hjson").absoluteFile
         file.absoluteFile.parentFile.mkdirs()
         file.writeText(json.stringify(this))
+    }
+
+    fun lock(block: LockEntry.() -> Unit): LockEntry {
+        val lockEntry = LockEntry(
+            provider = provider,
+            id = id,
+            useUrlTxt = useUrlTxt,
+            fileName = fileName,
+            side = side
+        )
+        lockEntry.name = name
+        lockEntry.block()
+        lockEntry.serialFile = File(lockEntry.suggestedFolder ?: folder).resolve("$cleanId.lock.hjson")
+        return lockEntry
     }
 }

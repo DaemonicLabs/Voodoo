@@ -1,7 +1,9 @@
 package voodoo.data.curse
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import kotlinx.serialization.*
+import kotlinx.serialization.KInput
+import kotlinx.serialization.KOutput
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.internal.PrimitiveDesc
 
 //TODO: inline
@@ -14,7 +16,7 @@ class FileID(val value: Int) {
     val valid: Boolean
         get() = value > 0
 
-    companion object : KSerializer<FileID>{
+    companion object : KSerializer<FileID> {
         override val serialClassDesc = PrimitiveDesc("FileID")
 
         override fun load(input: KInput): FileID {
@@ -26,16 +28,5 @@ class FileID(val value: Int) {
         }
 
         val INVALID = FileID(-1)
-
-        //TODO: remove in 1.3
-        @JsonCreator
-        @JvmStatic
-        fun fromString(id: String?): FileID? {
-            return if (id == null)
-                null
-            else {
-                id.toIntOrNull()?.let { FileID(it) }
-            }
-        }
     }
 }
