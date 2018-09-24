@@ -67,19 +67,11 @@ object CurseProvider : ProviderBase, KLogging() {
             throw IllegalStateException("invalid file id for $entry")
         }
 
-        val lock = LockEntry(
-            provider = entry.provider,
-            id = entry.id,
-            name = entry.name,
-            curseMetaUrl = entry.curseMetaUrl,
-            //rootFolder = path, //maybe use entry.rootFolder only if its non-default
-            useUrlTxt = entry.useUrlTxt,
-            fileName = entry.fileName,
-            side = entry.side,
-            projectID = projectID,
-            fileID = fileID
-        ).apply {
-            folder = path
+        val lock = entry.lock {
+            curseMetaUrl = entry.curseMetaUrl
+            this.projectID = projectID
+            this.fileID = fileID
+            suggestedFolder = path
         }
 
         logger.debug("returning locked entry: $lock")

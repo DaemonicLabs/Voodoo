@@ -62,19 +62,10 @@ object UpdateJsonProvider : ProviderBase, KLogging() {
         }
         val version = json.promos[key]!!
         val url = entry.template.replace("{version}", version)
-        return LockEntry(
-            provider = entry.provider,
-            id = entry.id,
-            name = entry.name,
-            //rootFolder = entry.rootFolder,
-            useUrlTxt = entry.useUrlTxt,
-            fileName = entry.fileName,
-            side = entry.side,
-            url = url,
-            updateJson = entry.updateJson,
+        return entry.lock {
+            this.url = url
+            updateJson = entry.updateJson
             jsonVersion = version
-        ).apply {
-            folder = entry.folder
         }
     }
 

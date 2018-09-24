@@ -1,6 +1,5 @@
 package voodoo.data.curse
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import kotlinx.serialization.SerialName
 
 /**
@@ -8,16 +7,12 @@ import kotlinx.serialization.SerialName
  * @author Nikky
  */
 enum class Section {
-    @JsonProperty("modpacks")
     @SerialName("modpacks")
-    modpacks,
-    @JsonProperty("mc-mods")
+    MODPACKS,
     @SerialName("mc-mods")
-    `mcmods`,
-    @JsonProperty("texture-packs")
+    MCMODS,
     @SerialName("texture-packs")
-    `texture-packs`,
-    @JsonProperty("worlds")
+    TEXTURE_PACKS,
     @SerialName("worlds")
-    worlds;
+    WORLDS;
 }

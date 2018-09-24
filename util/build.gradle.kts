@@ -10,10 +10,6 @@ val serialization_version: String by project
 apply(from = rootProject.file("base.gradle.kts"))
 dependencies {
     compile(kotlin("reflect", kotlin_version))
-    compile(group = "com.fasterxml.jackson.core", name = "jackson-databind", version = jackson_version)
-    compile(group = "com.fasterxml.jackson.core", name = "jackson-annotations", version = jackson_version)
-    compile(group = "com.fasterxml.jackson.module", name = "jackson-module-kotlin", version = jackson_version)
-    compile(group = "com.fasterxml.jackson.dataformat", name = "jackson-dataformat-yaml", version = jackson_version)
 
     compile(group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-runtime", version = serialization_version)
 //    compile(group = "io.ktor", name ="ktor-client-cio", version = ktor_version)

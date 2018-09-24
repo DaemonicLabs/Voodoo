@@ -80,7 +80,7 @@ object CursePack : AbstractPack() {
             for (entry in modpack.entrySet) {
                 if (entry.side == Side.SERVER) continue
                 jobs += launch(context = coroutineContext + pool) {
-                    val folder = entry.file.absoluteFile.parentFile
+                    val folder = entry.serialFile.absoluteFile.parentFile
                     val required = modpack.features.none { feature ->
                         feature.entries.any { it == entry.id }
                     }
@@ -123,7 +123,7 @@ object CursePack : AbstractPack() {
             val html = createHTML().html {
                 body {
                     ul {
-                        for (entry in modpack.entrySet.sortedBy { it.name() }) {
+                        for (entry in modpack.entrySet.sortedBy { it.name.toLowerCase() }) {
                             val provider = Providers[entry.provider]
                             if (entry.side == Side.SERVER) {
                                 continue

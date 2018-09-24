@@ -1,12 +1,11 @@
 package voodoo.data.lock
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonInclude
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.KOutput
 import kotlinx.serialization.KSerialSaver
 import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialContext
+import kotlinx.serialization.SerialId
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
@@ -33,14 +32,11 @@ import java.time.Instant
  * @author Nikky
  */
 
-@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Serializable
 data class LockEntry(
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     var provider: String = "",
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     var id: String = "",
-    @Optional var name: String = "",
+//    @Optional var name: String = "",
     @Optional var fileName: String? = null,
     @Optional var side: Side = Side.BOTH,
     // CURSE
@@ -61,58 +57,46 @@ data class LockEntry(
     // LOCAL
     @Optional var fileSrc: String = ""
 ) {
-    @JsonIgnore
+    @Optional @SerialId(2)
+    var name: String = ""
+        get() = field.takeIf { it.isNotBlank() } ?: runBlocking { provider().generateName(this@LockEntry) }
+
+    @Transient
+    var suggestedFolder: String? = null
+
     @Transient
     lateinit var parent: LockPack
 
     /**
      * relative to src folder
      */
-    @JsonIgnore
     @Transient
-    lateinit var file: File
+    lateinit var serialFile: File
 
-    @JsonIgnore
-    @Transient
-    lateinit var folder: String
-
-    @JsonIgnore
     fun provider(): ProviderBase = Providers[provider]
 
-    @JsonIgnore
-    fun name(): String = name.takeIf { it.isNotBlank() } ?: runBlocking { provider().generateName(this@LockEntry) }
+//    fun name(): String = name.takeIf { it.isNotBlank() } ?: runBlocking { provider().generateName(this@LockEntry) }
 
-    @JsonIgnore
     fun version(): String = runBlocking { provider().getVersion(this@LockEntry) }
 
-    @JsonIgnore
     fun license(): String = runBlocking { provider().getLicense(this@LockEntry) }
 
-    @JsonIgnore
     fun thumbnail(): String = runBlocking { provider().getThumbnail(this@LockEntry) }
 
-    @JsonIgnore
     fun authors(): String = runBlocking { provider().getAuthors(this@LockEntry).joinToString(", ") }
 
-    @JsonIgnore
     fun projectPage(): String = runBlocking { provider().getProjectPage(this@LockEntry) }
 
-    @JsonIgnore
     fun releaseDate(): Instant? = runBlocking { provider().getReleaseDate(this@LockEntry) }
 
-    @JsonIgnore
     fun isCurse(): Boolean = provider == CurseProvider.id
 
-    @JsonIgnore
     fun isJenkins(): Boolean = provider == JenkinsProvider.id
 
-    @JsonIgnore
     fun isDirect(): Boolean = provider == DirectProvider.id
 
-    @JsonIgnore
     fun isJson(): Boolean = provider == UpdateJsonProvider.id
 
-    @JsonIgnore
     fun isLocal(): Boolean = provider == LocalProvider.id
 
     @Serializer(forClass = LockEntry::class)
@@ -121,25 +105,25 @@ data class LockEntry(
             val elemOutput = output.writeBegin(serialClassDesc)
             elemOutput.writeStringElementValue(serialClassDesc, 0, obj.provider)
             elemOutput.writeStringElementValue(serialClassDesc, 1, obj.id)
-            elemOutput.writeStringElementValue(serialClassDesc, 2, obj.name)
             with(LockEntry(provider = obj.provider, id = obj.id)) {
                 if (this.fileName != obj.fileName) {
-                    elemOutput.writeStringElementValue(serialClassDesc, 3, obj.fileName!!)
+                    elemOutput.writeStringElementValue(serialClassDesc, 2, obj.fileName!!)
                 }
-                elemOutput.serializeObj(this.side, obj.side, EnumSerializer(Side::class), 4)
-                elemOutput.serialize(this.curseMetaUrl, obj.curseMetaUrl, 5)
-                elemOutput.serializeObj(this.projectID, obj.projectID, ProjectID.Companion, 6)
-                elemOutput.serializeObj(this.fileID, obj.fileID, FileID.Companion, 7)
-                elemOutput.serialize(this.url, obj.url, 8)
-                elemOutput.serialize(this.useUrlTxt, obj.useUrlTxt, 9)
-                elemOutput.serialize(this.jenkinsUrl, obj.jenkinsUrl, 10)
-                elemOutput.serialize(this.job, obj.job, 11)
-                elemOutput.serialize(this.buildNumber, obj.buildNumber, 12)
-                elemOutput.serialize(this.fileNameRegex, obj.fileNameRegex, 13)
-                elemOutput.serialize(this.updateJson, obj.updateJson, 28)
-                elemOutput.serialize(this.jsonVersion, obj.jsonVersion, 29)
-                elemOutput.serialize(this.fileSrc, obj.fileSrc, 27)
+                elemOutput.serializeObj(this.side, obj.side, EnumSerializer(Side::class), 3)
+                elemOutput.serialize(this.curseMetaUrl, obj.curseMetaUrl, 4)
+                elemOutput.serializeObj(this.projectID, obj.projectID, ProjectID.Companion, 5)
+                elemOutput.serializeObj(this.fileID, obj.fileID, FileID.Companion, 6)
+                elemOutput.serialize(this.url, obj.url, 7)
+                elemOutput.serialize(this.useUrlTxt, obj.useUrlTxt, 8)
+                elemOutput.serialize(this.jenkinsUrl, obj.jenkinsUrl, 9)
+                elemOutput.serialize(this.job, obj.job, 10)
+                elemOutput.serialize(this.buildNumber, obj.buildNumber, 11)
+                elemOutput.serialize(this.fileNameRegex, obj.fileNameRegex, 12)
+                elemOutput.serialize(this.updateJson, obj.updateJson, 13)
+                elemOutput.serialize(this.jsonVersion, obj.jsonVersion, 14)
+                elemOutput.serialize(this.fileSrc, obj.fileSrc, 15)
             }
+            elemOutput.writeStringElementValue(serialClassDesc, 16, obj.name)
             output.writeEnd(serialClassDesc)
         }
 

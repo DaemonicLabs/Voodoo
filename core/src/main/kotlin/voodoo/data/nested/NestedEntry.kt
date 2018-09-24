@@ -1,15 +1,11 @@
 package voodoo.data.nested
 
-import com.fasterxml.jackson.annotation.JsonCreator
-import com.fasterxml.jackson.annotation.JsonInclude
 import mu.KLogging
 import voodoo.data.Side
 import voodoo.data.curse.*
 import voodoo.data.flat.Entry
 import voodoo.data.flat.EntryFeature
 import voodoo.data.provider.UpdateChannel
-import voodoo.provider.Providers
-import voodoo.util.readYaml
 import java.io.File
 import java.lang.IllegalStateException
 import kotlin.reflect.KMutableProperty
@@ -20,9 +16,7 @@ import kotlin.reflect.full.memberProperties
  * @author Nikky
  */
 
-@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 data class NestedEntry(
-        @JsonInclude(JsonInclude.Include.ALWAYS)
         var provider: String = "",
         var id: String = "",
         var name: String = "",
@@ -62,19 +56,9 @@ data class NestedEntry(
         var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
         var template: String = "",
         //  NESTED
-        var entries: List<NestedEntry> = emptyList(),
-        var include: String? = null
+        var entries: List<NestedEntry> = emptyList()
 ) {
     companion object : KLogging() {
-        @JvmStatic
-        @JsonCreator
-        fun fromString(stringValue: String): NestedEntry {
-            logger.info("fromJson('$stringValue')")
-            val entry = NestedEntry(provider = Providers["CURSE"].id).apply { id = stringValue }
-            logger.info { entry }
-            return entry
-        }
-
         val DEFAULT = NestedEntry()
     }
 
@@ -137,26 +121,6 @@ data class NestedEntry(
     private suspend fun flatten(indent: String, parentFile: File) {
         var parent = parentFile
         val toDelete = mutableListOf<NestedEntry>()
-        include?.let {
-            val includeFile = parentFile.resolve(it)
-            logger.info("loading $includeFile")
-            val includeEntry = includeFile.readYaml<NestedEntry>()
-
-            for (prop in NestedEntry::class.memberProperties) {
-                if (prop is KMutableProperty<*>) {
-                    val includeValue = prop.get(includeEntry)
-                    val thisValue = prop.get(this)
-                    val defValue = prop.get(DEFAULT)
-
-                    if (thisValue == defValue) {
-                        prop.setter.call(this, includeValue)
-                    }
-                }
-            }
-            parent = includeFile.parentFile
-            logger.info("loaded $includeFile")
-            include = null
-        }
 
         entries.forEach { entry ->
 
@@ -225,7 +189,7 @@ data class NestedEntry(
             }
 
             entry.flatten("$indent|  ", parent)
-            if (entry.entries.isNotEmpty() || entry.id.isBlank() || !entry.include.isNullOrEmpty()) {
+            if (entry.entries.isNotEmpty() || entry.id.isBlank()) {
                 toDelete += entry
             }
 

@@ -238,10 +238,6 @@ fun EntriesList<CurseProvider>.id(mod: KProperty0<Int>, function: SpecificEntry<
         }
 }
 
-@Deprecated("including yaml files is no logner supported")
-fun <T : ProviderBase> EntriesList<T>.include(include: String) {
-    val entry = NestedEntry(include = include)
-    GroupingEntry(provider = parent, entry = entry).also { this.entries += it }
-}
+//TODO: add include -like functionality
 
 //TODO: add import() for curse

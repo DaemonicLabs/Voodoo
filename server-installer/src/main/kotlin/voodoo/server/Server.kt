@@ -4,13 +4,11 @@ import kotlinx.coroutines.experimental.*
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
-import voodoo.util.pool
 import voodoo.provider.Providers
 import voodoo.util.Directories
 import voodoo.util.download
 import voodoo.util.Downloader.logger
 import java.io.File
-import java.util.concurrent.TimeUnit
 
 /**
  * Created by nikky on 06/05/18.
@@ -74,7 +72,7 @@ object Server {
 //                jobs += launch(context = pool) {
             withContext(CoroutineName("job-${entry.id}")) {
                 val provider = Providers[entry.provider]
-                val targetFolder = serverDir.resolve(entry.file).absoluteFile.parentFile
+                val targetFolder = serverDir.resolve(entry.serialFile).absoluteFile.parentFile
                 logger.info("downloading to - ${targetFolder.path}")
                 val (_, _) = provider.download(entry, targetFolder, cacheDir)
 //                }

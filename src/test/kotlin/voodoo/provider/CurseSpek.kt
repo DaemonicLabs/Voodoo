@@ -4,12 +4,10 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import voodoo.Builder
 import voodoo.builder.resolve
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.util.Directories
-import voodoo.util.ExceptionHelper
 import java.io.File
 
 object CurseSpek : Spek({

@@ -2,7 +2,6 @@ package voodoo.provider
 
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.core.CoreConstants.VERSION
 import voodoo.data.Quadruple
@@ -11,12 +10,10 @@ import voodoo.data.lock.LockEntry
 import voodoo.memoize
 import voodoo.util.download
 import voodoo.util.jenkins.Artifact
-import voodoo.util.jenkins.Build
 import voodoo.util.jenkins.BuildWithDetails
 import voodoo.util.jenkins.JenkinsServer
 import voodoo.util.jenkins.Job
 import java.io.File
-import java.lang.IllegalStateException
 import java.time.Instant
 import java.util.Collections
 
@@ -30,32 +27,26 @@ object JenkinsProvider : ProviderBase, KLogging() {
 
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
-
-    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
-        if(entry.job.isBlank()) {
+    override suspend fun resolve(
+        entry: Entry,
+        mcVersion: String,
+        addEntry: SendChannel<Pair<Entry, String>>
+    ): LockEntry {
+        if (entry.job.isBlank()) {
             entry.job = entry.id
         }
         val job = job(entry.job, entry.jenkinsUrl)
         val buildNumber = job.lastSuccessfulBuild?.number ?: throw IllegalStateException("buildnumber not set")
-        return LockEntry(
-                provider = entry.provider,
-                id = entry.id,
-                name = entry.name,
-                //rootFolder = entry.rootFolder,
-                useUrlTxt = entry.useUrlTxt,
-                fileName = entry.fileName,
-                side = entry.side,
-                jenkinsUrl = entry.jenkinsUrl,
-                job = entry.job,
-                buildNumber = buildNumber,
-                fileNameRegex = entry.fileNameRegex
-        ).apply {
-            folder = entry.folder
+        return entry.lock {
+            jenkinsUrl = entry.jenkinsUrl
+            this.job = entry.job
+            this.buildNumber = buildNumber
+            fileNameRegex = entry.fileNameRegex
         }
     }
 
     override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
-        if(entry.job.isBlank()) {
+        if (entry.job.isBlank()) {
             entry.job = entry.id
         }
 
@@ -90,11 +81,14 @@ object JenkinsProvider : ProviderBase, KLogging() {
         return Instant.ofEpochSecond(build.timestamp)
     }
 
-    private val artifactCache: MutableMap<Quadruple<String, String, Int, String>, Artifact> =  Collections.synchronizedMap(hashMapOf())
+    private val artifactCache: MutableMap<Quadruple<String, String, Int, String>, Artifact> =
+        Collections.synchronizedMap(hashMapOf())
+
     suspend fun artifact(jobName: String, url: String, buildNumber: Int, fileNameRegex: String): Artifact {
         val a = Quadruple(jobName, url, buildNumber, fileNameRegex)
         return artifactCache.getOrPut(a) { artifactCall(jobName, url, buildNumber, fileNameRegex) }
     }
+
     private suspend fun artifactCall(jobName: String, url: String, buildNumber: Int, fileNameRegex: String): Artifact {
         val build = build(jobName, url, buildNumber)
         val re = Regex(fileNameRegex)
@@ -104,11 +98,14 @@ object JenkinsProvider : ProviderBase, KLogging() {
         }!!
     }
 
-    private val buildCache: MutableMap<Triple<String, String, Int>, BuildWithDetails> =  Collections.synchronizedMap(hashMapOf())
+    private val buildCache: MutableMap<Triple<String, String, Int>, BuildWithDetails> =
+        Collections.synchronizedMap(hashMapOf())
+
     suspend fun build(jobName: String, url: String, buildNumber: Int): BuildWithDetails {
         val a = Triple(jobName, url, buildNumber)
         return buildCache.getOrPut(a) { buildCall(jobName, url, buildNumber) }
     }
+
     private suspend fun buildCall(jobName: String, url: String, buildNumber: Int): BuildWithDetails {
         logger.info("get build $buildNumber")
         delay(20)
@@ -120,6 +117,7 @@ object JenkinsProvider : ProviderBase, KLogging() {
         val a = Pair(jobName, url)
         return jobCache.getOrPut(a) { jobCall(jobName, url) }
     }
+
     private suspend fun jobCall(jobName: String, url: String): Job {
         val server = server(url)
         logger.info("get jenkins job $jobName")

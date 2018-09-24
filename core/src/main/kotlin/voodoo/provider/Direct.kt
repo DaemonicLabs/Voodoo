@@ -16,17 +16,13 @@ import java.net.URL
 object DirectProvider : ProviderBase, KLogging() {
     override val name = "Direct Provider"
 
-    override suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
-        return LockEntry(
-                provider = entry.provider,
-                id = entry.id,
-                name = entry.name,
-                useUrlTxt = entry.useUrlTxt,
-                fileName = entry.fileName,
-                side = entry.side,
-                url = entry.url
-        ).apply {
-            folder = entry.folder
+    override suspend fun resolve(
+        entry: Entry,
+        mcVersion: String,
+        addEntry: SendChannel<Pair<Entry, String>>
+    ): LockEntry {
+        return entry.lock {
+            url = entry.url
         }
     }
 

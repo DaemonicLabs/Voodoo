@@ -1,7 +1,5 @@
 package voodoo.data.flat
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import com.fasterxml.jackson.annotation.JsonInclude
 import kotlinx.serialization.*
 import kotlinx.serialization.Optional
 import mu.KLogging
@@ -13,34 +11,26 @@ import voodoo.data.sk.SKFeature
 import voodoo.forge.Forge
 import java.io.File
 import java.util.*
-import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 28/03/18.
  * @author Nikky
  */
 
-@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Serializable
 data class ModPack(
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     var id: String,
     var mcVersion: String,
     @Optional var title: String = "",
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     @Optional var version: String = "1.0",
     @Optional var icon: String = "icon.png",
     @Optional val authors: List<String> = emptyList(),
     @Optional var forge: String = "recommended",
     //var forgeBuild: Int = -1,
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     @Optional val launch: Launch = Launch(),
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     @Optional var userFiles: UserFiles = UserFiles(),
 
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     @Optional var localDir: String = "local",
-    @JsonInclude(JsonInclude.Include.ALWAYS)
     @Optional var sourceDir: String = "src"
 ) {
     @Serializer(forClass = ModPack::class)
@@ -81,28 +71,18 @@ data class ModPack(
     }
 
     @Transient
-    @JsonIgnore
     val features: MutableList<SKFeature> = mutableListOf()
 
-    //TODO: move file into ModPack ad LockPack as lateinit
     @Transient
-    @JsonIgnore
     val entrySet: MutableSet<Entry> = Collections.synchronizedSet(mutableSetOf())
     @Transient
-    @JsonIgnore
     val lockEntrySet: MutableSet<LockEntry> = Collections.synchronizedSet(mutableSetOf())
 
-    fun addEntry(entry: Entry, file: File, dependency: Boolean = false) {
+    fun addEntry(entry: Entry, dependency: Boolean = false) {
         if (entry.id.isBlank()) {
             logger.error("invalid: $entry")
             return
         }
-
-        if (!file.isAbsolute) {
-            logger.warn("file $file must be absolute")
-            exitProcess(-1)
-        }
-        entry.file = file
 
         addOrMerge(entry) { existingEntry, newEntry ->
             if (newEntry == existingEntry) {
@@ -112,7 +92,7 @@ data class ModPack(
             logger.info("old entry $existingEntry")
 
             if (!dependency && !existingEntry.transient) {
-                throw IllegalStateException("duplicate entries: ${newEntry.file} and ${existingEntry.file}")
+                throw IllegalStateException("duplicate entries: ${newEntry.folder} ${newEntry.serialFilename} and ${existingEntry.folder}} ${existingEntry.serialFilename}")
             }
 
             // TODO: make some util code to merge Entries
@@ -128,28 +108,13 @@ data class ModPack(
         }
     }
 
-    fun loadEntries(folder: File) {
-        val srcDir = folder.resolve(sourceDir)
-        srcDir.walkTopDown()
-            .filter {
-                it.isFile && it.name.endsWith(".entry.hjson")
-            }
-            .forEach { file ->
-                val entry = Entry.loadEntry(file)
-                entry.folder = file.parentFile.relativeTo(srcDir).path
-//                val entryJsonObj = jankson.load(file)
-//                val entry: Entry = jankson.fromJson(entryJsonObj)
-                addEntry(entry, file.absoluteFile, false)
-            }
-    }
-
     //TODO: call from LockPack ?
     fun loadLockEntries(folder: File) {
         val srcDir = folder.resolve(sourceDir)
         LockPack.parseFiles(srcDir)
             .forEach { (lockEntry, file) ->
                 val relFile = file.relativeTo(srcDir)
-                lockEntry.file = relFile
+                lockEntry.serialFile = relFile
                 addOrMerge(lockEntry) { _, newEntry -> newEntry }
             }
     }
@@ -157,9 +122,7 @@ data class ModPack(
     fun writeEntries(rootFolder: File) {
         val srcDir = rootFolder.resolve(sourceDir)
         entrySet.forEach { entry ->
-            //TODO: calculate filename in Entry
-            entry.setDefaultFile(srcDir)
-            entry.serialize()
+            entry.serialize(srcDir)
         }
     }
 
@@ -193,7 +156,7 @@ data class ModPack(
     }
 
     fun findLockEntryById(id: String) = lockEntrySet.find { it.id == id }
-    fun addOrMerge(entry: LockEntry, mergeOp: (LockEntry?, LockEntry) -> LockEntry): LockEntry {
+    fun addOrMerge(entry: LockEntry, mergeOp: (new: LockEntry?, old: LockEntry) -> LockEntry = { old, new -> old ?: new }): LockEntry {
         logger.debug("waiting on synchrnoized")
         val result2 = synchronized(lockEntrySet) {
             logger.debug("entering synchronized")

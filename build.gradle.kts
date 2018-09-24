@@ -19,7 +19,7 @@ buildscript {
 plugins {
     application
     `maven-publish`
-    kotlin("jvm") version "1.2.70"
+    kotlin("jvm") version "1.2.71"
     id("idea")
     id("project-report")
     id("com.github.johnrengelman.shadow") version "2.0.4"
@@ -120,10 +120,14 @@ allprojects {
         }
         //TODO: use with 1.3 again
 //        kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated-src")
+
+        //TODO: try to use native project path
+        val folder = when {
+            project != rootProject -> "voodoo/${project.name.replace('-', '/')}"
+            else -> "voodoo"
+        }
         val compileKotlin by tasks.getting(KotlinCompile::class) {
             doFirst {
-                val folder =
-                    if (project != rootProject) "voodoo/${project.name}" else "voodoo" //TODO: try to use native project path
                 val name = project.name.split("/").last().capitalize().split("-").joinToString("") { it.capitalize() }
                 val templateSrc = rootProject.file("template/kotlin/voodoo/")
                 copy {
@@ -139,6 +143,12 @@ allprojects {
                         "BUILD" to System.getenv("BUILD_NUMBER").let { it ?: "dev" }
                     ))
                 }
+            }
+        }
+
+        idea {
+            module {
+                generatedSourceDirs.add(buildDir.resolve(folder))
             }
         }
 
@@ -247,8 +257,8 @@ dependencies {
     compile(project(":core:dsl"))
     compile(project(":builder"))
     compile(project(":pack"))
+    compile(project(":pack:test"))
     compile(project(":importer"))
-    compile(project(":pack-test"))
 }
 
 tasks.withType<Test> {

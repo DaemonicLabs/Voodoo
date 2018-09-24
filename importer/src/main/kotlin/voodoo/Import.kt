@@ -5,8 +5,6 @@ import com.xenomachina.argparser.default
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.importer.CurseImporter
-import voodoo.importer.YamlImporter
-import voodoo.util.ExceptionHelper
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -27,7 +25,6 @@ object Import : KLogging() {
             logger.info { this.methode }
             val importer = when (methode) {
                 "curse" -> CurseImporter
-                "yaml" -> YamlImporter
 
                 else -> {
                     logger.error("no such import methode: '$methode'")
@@ -37,7 +34,7 @@ object Import : KLogging() {
 
             //TODO: import as ModPack and NestedPack ?
 
-            importer.import(coroutineScope = this@runBlocking, source = source, target = target, name = name)
+            importer.import(source = source, target = target, name = name)
 
             println("import successful")
         }

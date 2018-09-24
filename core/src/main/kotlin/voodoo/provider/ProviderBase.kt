@@ -66,7 +66,7 @@ interface ProviderBase {
         return null
     }
 
-    fun report(entry: LockEntry): String = markdownTable(header = "Mod" to entry.name(), content = reportData(entry))
+    fun report(entry: LockEntry): String = markdownTable(header = "Mod" to entry.name, content = reportData(entry))
 
     fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> = mutableListOf(
             "Provider" to "`${entry.provider}`",

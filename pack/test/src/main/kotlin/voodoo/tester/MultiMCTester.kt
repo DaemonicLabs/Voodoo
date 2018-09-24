@@ -3,7 +3,6 @@ package voodoo.tester
 import kotlinx.coroutines.experimental.CoroutineName
 import kotlinx.coroutines.experimental.coroutineScope
 import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.JSON
@@ -134,7 +133,7 @@ object MultiMCTester : AbstractTester() {
             modpack.entrySet.forEach { entry ->
                 if (entry.side == Side.SERVER) return@forEach
                 launch(pool + CoroutineName(entry.id)) {
-                    val folder = minecraftDir.resolve(entry.file).absoluteFile.parentFile
+                    val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
 
                     val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
                     if (!matchedFeatureList.isEmpty()) {

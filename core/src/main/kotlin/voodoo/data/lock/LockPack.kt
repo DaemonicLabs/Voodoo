@@ -1,7 +1,6 @@
 package voodoo.data.lock
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import kotlinx.serialization.KOutput
 import kotlinx.serialization.KSerialSaver
 import kotlinx.serialization.Optional
@@ -83,7 +82,6 @@ data class LockPack(
             .map { LockEntry.loadEntry(it) to it }
     }
 
-    @JsonIgnore
     @Transient
     lateinit var rootFolder: File
 //        private set
@@ -98,7 +96,6 @@ data class LockPack(
     val iconFile: File
         get() = rootFolder.resolve(icon)
 
-    @JsonIgnore
     @Transient
     val entrySet: MutableSet<LockEntry> = mutableSetOf()
 
@@ -108,16 +105,16 @@ data class LockPack(
         LockPack.parseFiles(srcDir)
             .forEach { (lockEntry, file) ->
                 val relFile = file.relativeTo(srcDir)
-                lockEntry.file = relFile
+                lockEntry.serialFile = relFile
                 addOrMerge(lockEntry) { _, newEntry -> newEntry }
             }
     }
 
     fun writeLockEntries() {
         entrySet.forEach { lockEntry ->
-            ModPack.logger.info("saving: ${lockEntry.id} , file: ${lockEntry.file} , entry: $lockEntry")
+            ModPack.logger.info("saving: ${lockEntry.id} , file: ${lockEntry.serialFile} , entry: $lockEntry")
 
-            val folder = sourceFolder.resolve(lockEntry.file).absoluteFile.parentFile
+            val folder = sourceFolder.resolve(lockEntry.serialFile).absoluteFile.parentFile
 
             val targetFolder = if (folder.toPath().none { it.toString() == "_CLIENT" || it.toString() == "_SERVER" }) {
                 when (lockEntry.side) {
@@ -132,7 +129,7 @@ data class LockPack(
             } else folder
 
             targetFolder.mkdirs()
-            val targetFile = targetFolder.resolve(lockEntry.file.name)
+            val targetFile = targetFolder.resolve(lockEntry.serialFile.name)
 
             targetFile.writeText(lockEntry.serialize())
         }
