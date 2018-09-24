@@ -4,9 +4,9 @@
 id: cotm
 title: Center of the Multiverse
 authors: ["AnsuzThuriaz", "Falkreon", "NikkyAi"]
-version: 2.1.9
+version: 2.1.9.1
 mcVersion: 1.12.2
-forge: 2756
+forge: 2759
 icon: icon.png
 sourceDir: src
 
@@ -146,8 +146,8 @@ root:
   - unlimited-chisel-works-botany
   - simplelogic-gates
   - simplelogic-wires
+  - preston
 
-  - embers
   - ender-storage-1-8
   - exchangers
   - extra-bit-manipulation
@@ -163,7 +163,6 @@ root:
   - iron-chests
   - redstone-paste
   - mmmmmmmmmmmm
-  #- Just Enough Dimensions (currently unused)
   - kleeslabs
   - magic-bees
   - malisisdoors
@@ -177,7 +176,7 @@ root:
   - opencomputers
   - openblocks
   - packing-tape
-  - pams-harvestcraft
+  #- pams-harvestcraft
   - passthrough-signs
   - platforms
   - random-things
@@ -229,16 +228,23 @@ root:
   - flopper
   - catwalks-4
   - wall-jump
+  - magical-map
+  - pewter
+  - the-erebus
+  - grappling-hook-mod
+  - embers-rekindled
+  - outfox
+  - chococraft
+  - portality
+  - modular-powersuits
+  - grimoire-of-gaia
 
-  # because curse is stupid and there is just a lpha of this,
+  # because curse is stupid and there is just alpha of this,
   # will be fixed in CurseProxy soon
   - id: ariente
     curseProjectID: 301076
-  - magical-map
-  - pewter
 
   # Pulled due to outstanding issues
-  #- the-erebus
 
   # Unused mods
   #- just-enough-dimensions
@@ -249,12 +255,16 @@ root:
   - provider: DIRECT
     entries:
 
+    # Pam's Harvestcraft (SK redirect stupidity)
+    - url: https://centerofthemultiverse.net/launcher/mirror/Pams_HarvestCraft_1.12.2z.jar
+      id: pams-harvestcraft
+
     # Nutrition
     - url: https://github.com/WesCook/Nutrition/releases/download/v3.5.0/Nutrition-1.12.2-3.5.0.jar
       id: nutrition
 
     # Correlated 2
-    - url: https://centerofthemultiverse.net/launcher/mirror/Correlated-1.12.2-2.1.123.jar
+    - url: https://centerofthemultiverse.net/launcher/mirror/Correlated-1.12.2-2.1.140.jar
       id: correlated
 
   # Jenkins Downloads
@@ -466,6 +476,7 @@ root:
       - id: unity
         filename: Unity.zip
         description: "Multi-mod compatible resource pack. Very nice, but does have some broken textures here and there."
+      # folder: resourcepacks
 
       # Slice
       - provider: DIRECT

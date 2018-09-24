@@ -5,11 +5,14 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.defaultRequest
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.response.HttpResponse
+import io.ktor.client.response.readBytes
 import mu.KLogger
 import mu.KLogging
 import voodoo.util.UtilConstants.VERSION
 import java.io.File
 import voodoo.util.redirect.HttpRedirectFixed
+import java.lang.IllegalStateException
 
 /**
  * Created by nikky on 30/03/18.
@@ -17,19 +20,7 @@ import voodoo.util.redirect.HttpRedirectFixed
  */
 object Downloader : KLogging() {
     val client = HttpClient(Apache) {
-        engine {
-//            maxConnectionsCount = 1000 // Maximum number of socket connections.
-//            endpoint.apply {
-//                maxConnectionsPerRoute = 100 // Maximum number of requests for a specific endpoint route.
-//                pipelineMaxSize = 20 // Max number of opened endpoints.
-//                keepAliveTime = 5000 // Max number of milliseconds to keep each connection alive.
-//                connectTimeout = 5000 // Number of milliseconds to wait trying to connect to the server.
-//                connectRetryAttempts = 5 // Maximum number of attempts for retrying a connection.
-//            }
-//            config {
-//                followRedirects(true)
-//            }
-        }
+//        engine { }
         defaultRequest {
             header("User-Agent", useragent)
         }
@@ -52,7 +43,12 @@ suspend fun File.download(
     if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
 
     if (!cacheFile.exists() || !cacheFile.isFile) {
-        val bytes = Downloader.client.get<ByteArray>(url.encoded)
+        val response = Downloader.client.get<HttpResponse>(url.encoded)
+        val bytes: ByteArray = response.readBytes()
+        if(bytes.isEmpty()) {
+            logger.error("response status: ${response.status}")
+            throw IllegalStateException("content is empty: $response")
+        }
         cacheDir.mkdirs()
         cacheFile.parentFile.mkdirs()
         cacheFile.writeBytes(bytes)
