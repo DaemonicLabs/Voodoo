@@ -8,11 +8,9 @@ package com.skcraft.launcher.model.modpack
 
 import java.util.ArrayList
 
-class RequireAny(
-        private var features: MutableList<Feature> = ArrayList()
-) : Condition {
-    constructor(vararg feature: Feature) : this(feature.toMutableList())
-
+data class RequireAny(
+    override var features: MutableList<Feature> = ArrayList()
+) : Condition("requireAny", features) {
     override fun matches(): Boolean {
         for (feature in features) {
             if (feature.selected) {
@@ -20,31 +18,5 @@ class RequireAny(
             }
         }
         return false
-    }
-
-    fun setFeatures(features: MutableList<Feature>) {
-        this.features = features
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (other === this) return true
-        if (other !is RequireAny) return false
-        if (!other.canEqual(this as Any)) return false
-        return this.features == other.features
-    }
-
-    protected fun canEqual(other: Any): Boolean {
-        return other is RequireAny
-    }
-
-    override fun hashCode(): Int {
-        val PRIME = 59
-        var result = 1
-        result = result * PRIME + features.hashCode()
-        return result
-    }
-
-    override fun toString(): String {
-        return "RequireAny(features=" + this.features + ")"
     }
 }
