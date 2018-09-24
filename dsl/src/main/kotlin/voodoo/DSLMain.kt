@@ -1,5 +1,6 @@
 package voodoo
 
+import kotlinx.coroutines.experimental.CoroutineName
 import kotlinx.coroutines.experimental.runBlocking
 import voodoo.data.nested.NestedPack
 import voodoo.dsl.DslConstants.FULL_VERSION
@@ -10,6 +11,8 @@ fun withDefaultMain(
     root: File = File(System.getProperty("user.dir")),
     block: () -> NestedPack = { throw IllegalStateException("no nested pack provided") }
 ) {
+
+    //classloader switching necessary for kscript
     class XY
     println("classloader is of type:" + Thread.currentThread().contextClassLoader)
     println("classloader is of type:" + ClassLoader.getSystemClassLoader())
@@ -51,16 +54,14 @@ fun withDefaultMain(
         }
     }
 
-    val invocations = arguments.split("-")
+    val invocations = arguments.chunkBy(separator = "-")
     invocations.forEach { argChunk ->
-        val command = argChunk.getOrNull(0)
-        logger.info(argChunk.joinToString())
-        val remainingArgs = argChunk.drop(1).toTypedArray()
-
-        if (command == null) {
+        val command = argChunk.getOrNull(0) ?: run {
             printCommands(null)
-            return@forEach
+            return
         }
+        logger.info("executing command [${argChunk.joinToString()}]")
+        val remainingArgs = argChunk.drop(1).toTypedArray()
 
         val function = funcs[command.toLowerCase()]
         if (function == null) {
@@ -68,13 +69,13 @@ fun withDefaultMain(
             return
         }
 
-        runBlocking {
+        runBlocking(CoroutineName("main")) {
             function(remainingArgs)
         }
     }
 }
 
-private fun Array<String>.split(separator: String = "-"): List<Array<String>> {
+private fun Array<String>.chunkBy(separator: String = "-"): List<Array<String>> {
     val result: MutableList<MutableList<String>> = mutableListOf(mutableListOf())
     this.forEach {
         if (it == separator)

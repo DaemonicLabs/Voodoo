@@ -5,6 +5,7 @@ package voodoo
  * @author Nikky
  */
 
+import kotlinx.coroutines.experimental.CoroutineName
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.VoodooConstants.FULL_VERSION
@@ -36,7 +37,7 @@ object Voodoo : KLogging() {
     }
 
     @JvmStatic
-    fun main(vararg args: String) = runBlocking {
+    fun main(vararg args: String) = runBlocking(CoroutineName("main")) {
         val command = args.getOrNull(0)
         logger.info(args.joinToString())
         val remainingArgs = args.drop(1).toTypedArray()
@@ -52,8 +53,8 @@ object Voodoo : KLogging() {
             return@runBlocking
         }
 
-        function(remainingArgs)
-        logger.info("waiting for exit program")
-        Downloader.client.close()
+        function.invoke(remainingArgs)
+
+        logger.debug("closing program")
     }
 }

@@ -71,7 +71,7 @@ object Bootstrap : KLogging() {
         if (!targetFile.exists()) {
             try {
                 targetFile.download(url, cacheDir = binariesDir.resolve("tmp"))
-            } catch( e: Exception) {
+            } catch (e: Exception) {
                 logger.error("cannot download voodoo binary from $url", e)
                 throw e
             }
@@ -88,8 +88,12 @@ object Bootstrap : KLogging() {
         val java = arrayOf(System.getProperty("java.home"), "bin", "java").joinToString(File.separator)
         val workingDir = File(System.getProperty("user.dir"))
 
-        val args = arrayOf(java, "-jar", file.path, *originalArgs)
-        logger.debug("running " + args.joinToString(" ") { "\"$it\"" })
+        val debugArgs = System.getProperty("kotlinx.coroutines.debug")?.let {
+            arrayOf("-Dkotlinx.coroutines.debug")
+        } ?: emptyArray()
+
+        val args = arrayOf(java, *debugArgs, "-jar", file.path, *originalArgs)
+        logger.debug("executing [${args.joinToString { "'$it'" }}]")
         val exitStatus = ProcessBuilder(*args)
             .directory(workingDir)
             .redirectOutput(ProcessBuilder.Redirect.INHERIT)
