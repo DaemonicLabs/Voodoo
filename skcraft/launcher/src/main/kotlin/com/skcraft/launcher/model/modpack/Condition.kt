@@ -6,7 +6,35 @@
 
 package com.skcraft.launcher.model.modpack
 
+import kotlinx.serialization.KOutput
+import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.list
+import kotlinx.serialization.serializer
+import java.util.ArrayList
 
-interface Condition {
-    fun matches(): Boolean
+@Serializable
+abstract class Condition(
+    @SerialName("if")
+    val ifSwitch: String,
+    @Optional
+    open var features: MutableList<Feature> = ArrayList()
+) {
+
+    abstract fun matches(): Boolean
+
+    @Serializer(forClass = Condition::class)
+    companion object : KSerializer<Condition> {
+        override fun save(output: KOutput, obj: Condition) {
+            val elemOutput = output.writeBegin(serialClassDesc)
+            elemOutput.writeStringElementValue(serialClassDesc, 0, obj.ifSwitch)
+            elemOutput.writeElement(serialClassDesc, 1)
+            elemOutput.write(String.serializer().list, obj.features.map { feature -> feature.name })
+            elemOutput.writeEnd(serialClassDesc)
+        }
+    }
 }
+

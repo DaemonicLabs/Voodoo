@@ -36,6 +36,7 @@ data class FileInstall(
     @Optional @SerialName("when")
     var conditionWhen: Condition? = null
 ) {
+    val type: String = "file"
     @Transient
     val targetPath: String
         get() = this.to
@@ -60,6 +61,7 @@ data class FileInstall(
                 elemOutput.writeElement(serialClassDesc, 7)
                 elemOutput.write(Condition::class.serializer(), conditionWhen)
             }
+            elemOutput.writeStringElementValue(serialClassDesc, 8, obj.type)
             elemOutput.writeEnd(serialClassDesc)
         }
     }
