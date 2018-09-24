@@ -15,7 +15,7 @@ import kotlinx.serialization.Serializer
 import java.io.IOException
 
 @Serializer(forClass = Platform::class)
-class PlatformSerializer : KSerializer<Platform> {
+object PlatformSerializer : KSerializer<Platform> {
     override fun load(input: KInput): Platform {
         val text = input.readStringValue()
         return when {

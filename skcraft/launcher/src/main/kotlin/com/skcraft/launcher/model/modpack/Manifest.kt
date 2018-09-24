@@ -7,15 +7,27 @@
 package com.skcraft.launcher.model.modpack
 
 import com.skcraft.launcher.model.minecraft.VersionManifest
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.KOutput
 import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.list
+import kotlinx.serialization.serializer
 import java.net.URL
 
 @Serializable
 class Manifest(
+    @Optional
     var minimumVersion: Int = 0
-) : BaseManifest() {
+) {
+    @Optional
+    var title: String? = null
+    @Optional
+    var name: String? = null
+    @Optional
+    var version: String? = null
     @Optional
     var baseUrl: URL? = null
     @Optional
@@ -29,7 +41,6 @@ class Manifest(
     var launchModifier: LaunchModifier? = null
     @Optional
     var features: List<Feature> = emptyList()
-    //    @JsonManagedReference("manifest")
     @Optional
     var tasks: List<FileInstall> = emptyList()
     @Optional
@@ -37,13 +48,13 @@ class Manifest(
 
     fun updateName(name: String?) {
         if (name != null) {
-            super.name = name
+            this.name = name
         }
     }
 
     fun updateTitle(title: String?) {
         if (title != null) {
-            super.title = title
+            this.title = title
         }
     }
 
@@ -53,7 +64,52 @@ class Manifest(
         }
     }
 
-    companion object {
+    @Serializer(forClass=Manifest::class)
+    companion object : KSerializer<Manifest> {
         val MIN_PROTOCOL_VERSION = 2
+
+        override fun save(output: KOutput, obj: Manifest) {
+            val elemOutput = output.writeBegin(serialClassDesc)
+            obj.title?.let { title ->
+                elemOutput.writeStringElementValue(serialClassDesc, 1, title)
+            }
+            obj.name?.let { name ->
+                elemOutput.writeStringElementValue(serialClassDesc, 2, name)
+            }
+            obj.version?.let { version ->
+                elemOutput.writeStringElementValue(serialClassDesc, 3, version)
+            }
+                elemOutput.writeIntElementValue(serialClassDesc, 0, obj.minimumVersion)
+            obj.baseUrl?.let { baseUrl ->
+                elemOutput.writeStringElementValue(serialClassDesc, 4, baseUrl.toString())
+            }
+            obj.librariesLocation?.let { librariesLocation ->
+                elemOutput.writeStringElementValue(serialClassDesc, 5, librariesLocation)
+            }
+            obj.objectsLocation?.let { objectsLocation ->
+                elemOutput.writeStringElementValue(serialClassDesc, 6, objectsLocation)
+            }
+            obj.gameVersion?.let { gameVersion ->
+                elemOutput.writeStringElementValue(serialClassDesc, 7, gameVersion)
+            }
+            obj.launchModifier?.let { launchModifier ->
+                elemOutput.writeElement(serialClassDesc, 8)
+                elemOutput.write(LaunchModifier::class.serializer(), launchModifier)
+            }
+            obj.features.takeUnless { it.isEmpty() }?.let { features ->
+                elemOutput.writeElement(serialClassDesc, 9)
+                elemOutput.write(Feature::class.serializer().list, features)
+            }
+            obj.tasks.takeUnless { it.isEmpty() }?.let { tasks ->
+                elemOutput.writeElement(serialClassDesc, 10)
+                elemOutput.write(FileInstall::class.serializer().list, tasks)
+            }
+            obj.versionManifest?.let {versionManifest ->
+                elemOutput.writeElement(serialClassDesc, 11)
+                elemOutput.write(VersionManifest::class.serializer(), versionManifest)
+            }
+            elemOutput.writeEnd(serialClassDesc)
+        }
+        
     }
 }
