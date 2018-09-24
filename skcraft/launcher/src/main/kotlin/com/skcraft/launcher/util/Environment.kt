@@ -9,35 +9,10 @@ package com.skcraft.launcher.util
 /**
  * Represents information about the current environment.
  */
-class Environment(val platform: Platform, val platformVersion: String, val arch: String) {
+data class Environment(val platform: Platform, val platformVersion: String, val arch: String) {
 
     val archBits: String
         get() = if (arch.contains("64")) "64" else "32"
-
-    override fun equals(other: Any?): Boolean {
-        if (other === this) return true
-        if (other !is Environment) return false
-        if (this.platform != other.platform) return false
-        if (this.platformVersion != other.platformVersion) return false
-        return this.arch == other.arch
-    }
-
-    protected fun canEqual(other: Any): Boolean {
-        return other is Environment
-    }
-
-    override fun hashCode(): Int {
-        val PRIME = 59
-        var result = 1
-        result = result * PRIME + (platform.hashCode())
-        result = result * PRIME + (platformVersion.hashCode())
-        result = result * PRIME + (arch.hashCode())
-        return result
-    }
-
-    override fun toString(): String {
-        return "Environment(platform=" + this.platform + ", platformVersion=" + this.platformVersion + ", arch=" + this.arch + ")"
-    }
 
     companion object {
 

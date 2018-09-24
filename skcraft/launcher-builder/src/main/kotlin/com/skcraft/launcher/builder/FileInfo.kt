@@ -11,30 +11,7 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 
 @Serializable
-class FileInfo(
+data class FileInfo(
     @Optional
-    var feature: Feature? = null
-) {
-
-    override fun equals(other: Any?): Boolean {
-        if (other === this) return true
-        if (other !is FileInfo) return false
-        if (!other.canEqual(this as Any)) return false
-        return this.feature == other.feature
-    }
-
-    private fun canEqual(other: Any): Boolean {
-        return other is FileInfo
-    }
-
-    override fun hashCode(): Int {
-        val PRIME = 59
-        var result = 1
-        result = result * PRIME + (feature?.hashCode() ?: 43)
-        return result
-    }
-
-    override fun toString(): String {
-        return "FileInfo(feature=" + this.feature + ")"
-    }
-}
+    @Serializable(with=Feature.Companion::class) var feature: Feature? = null
+)

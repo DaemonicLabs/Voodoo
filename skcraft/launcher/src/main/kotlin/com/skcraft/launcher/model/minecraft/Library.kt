@@ -8,9 +8,15 @@ package com.skcraft.launcher.model.minecraft
 
 import com.skcraft.launcher.util.Environment
 import com.skcraft.launcher.util.Platform
+import kotlinx.serialization.KOutput
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.internal.HashMapSerializer
+import kotlinx.serialization.serializer
+import kotlinx.serialization.list
 import java.util.regex.Pattern
 import kotlinx.serialization.Transient
 
@@ -18,9 +24,35 @@ import kotlinx.serialization.Transient
 data class Library(
     val name: String
 ) {
-    companion object {
+    @Serializer(forClass=Library::class)
+    companion object : KSerializer<Library> {
+        override fun save(output: KOutput, obj: Library) {
+            val elemOutput = output.writeBegin(serialClassDesc)
+            elemOutput.writeStringElementValue(serialClassDesc, 0, obj.name)
+            obj.baseUrl?.let { url ->
+                elemOutput.writeStringElementValue(serialClassDesc, 1, url)
+            }
+            obj.natives?.let { natives ->
+                elemOutput.writeElement(serialClassDesc, 2)
+                elemOutput.write(HashMapSerializer(String.serializer(), String.serializer()), natives)
+
+            }
+            obj.extract?.let { extract ->
+                elemOutput.writeElement(serialClassDesc, 3)
+                elemOutput.write(Extract::class.serializer(), extract)
+            }
+            obj.rules?.filter {
+                    it.action != null || it.os != null
+                }?.let {rules ->
+                    elemOutput.writeElement(serialClassDesc, 4)
+                    elemOutput.write(Rule::class.serializer().list, rules)
+            }
+            elemOutput.writeEnd(serialClassDesc)
+        }
+
         fun String.split() =
             this.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+
     }
 
     @kotlin.jvm.Transient
@@ -43,9 +75,11 @@ data class Library(
     var rules: List<Rule>? = null
     // Forge-added
     @Optional
+    @Transient
     var comment: String? = null
     // Custom
     @Optional
+    @Transient
     var isLocallyAvailable: Boolean = false
 
     fun matches(environment: Environment): Boolean {
@@ -126,6 +160,21 @@ data class Library(
                 environment.platformVersion
             ).matches())
         }
+
+        @Serializer(forClass=OS::class)
+        companion object : KSerializer<OS> {
+            override fun save(output: KOutput, obj: OS) {
+                val elemOutput = output.writeBegin(serialClassDesc)
+                obj.platform?.let { platform ->
+                    elemOutput.writeElement(serialClassDesc, 0)
+                    elemOutput.write(PlatformSerializer, platform)
+                }
+//                obj.version?.let { version ->
+//
+//                }
+                elemOutput.writeEnd(serialClassDesc)
+            }
+        }
     }
 
     @Serializable
@@ -146,9 +195,5 @@ data class Library(
                 return valueOf(text.toUpperCase())
             }
         }
-    }
-
-    override fun toString(): String {
-        return "Library(name=" + this.name + ", group=" + this.group + ", artifact=" + this.artifact + ", version=" + this.version + ", baseUrl=" + this.baseUrl + ", natives=" + this.natives + ", extract=" + this.extract + ", rules=" + this.rules + ", comment=" + this.comment + ", locallyAvailable=" + this.isLocallyAvailable + ")"
     }
 }

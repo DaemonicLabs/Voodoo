@@ -13,7 +13,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class FeaturePattern(
         @SerialName("properties")
-        var feature: Feature,
+        @Serializable(with=Feature.Companion::class) var feature: Feature,
         @SerialName("files")
         var filePatterns: FnPatternList
 ) {

@@ -45,6 +45,11 @@ data class FileInstall(
     companion object : KSerializer<FileInstall> {
         override fun save(output: KOutput, obj: FileInstall) {
             val elemOutput = output.writeBegin(serialClassDesc)
+            elemOutput.writeStringElementValue(serialClassDesc, 8, obj.type)
+            obj.conditionWhen?.let { conditionWhen ->
+                elemOutput.writeElement(serialClassDesc, 7)
+                elemOutput.write(Condition::class.serializer(), conditionWhen)
+            }
             obj.version?.let { version ->
                 elemOutput.writeStringElementValue(serialClassDesc, 0, version)
             }
@@ -52,16 +57,13 @@ data class FileInstall(
             elemOutput.writeStringElementValue(serialClassDesc, 2, obj.location)
             elemOutput.writeStringElementValue(serialClassDesc, 3, obj.to)
             if (obj.size != 0L) elemOutput.writeLongElementValue(serialClassDesc, 4, obj.size)
-            elemOutput.writeBooleanElementValue(serialClassDesc, 5, obj.isUserFile)
+            if(obj.isUserFile) {
+                elemOutput.writeBooleanElementValue(serialClassDesc, 5, obj.isUserFile)
+            }
             obj.manifest?.let { manifest ->
                 elemOutput.writeElement(serialClassDesc, 6)
                 elemOutput.write(Manifest::class.serializer(), manifest)
             }
-            obj.conditionWhen?.let { conditionWhen ->
-                elemOutput.writeElement(serialClassDesc, 7)
-                elemOutput.write(Condition::class.serializer(), conditionWhen)
-            }
-            elemOutput.writeStringElementValue(serialClassDesc, 8, obj.type)
             elemOutput.writeEnd(serialClassDesc)
         }
     }

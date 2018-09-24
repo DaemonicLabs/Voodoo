@@ -6,31 +6,33 @@
  */
 package com.skcraft.launcher.model.modpack
 
-import kotlinx.serialization.Optional
+import kotlinx.serialization.KOutput
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.internal.EnumSerializer
 
 @Serializable
-class Feature(
+data class Feature(
     val name: String,
     val description: String,
     val selected: Boolean,
-    @Optional var recommendation: Recommendation? = null
-) : Comparable<Feature> {
+//    @Optional
+    var recommendation: Recommendation? = null
+) {
 
-    enum class Recommendation {
-        starred, avoid;
-
-        fun toJson(): String {
-            return name.toLowerCase()
-        }
-
-        companion object {
-
-            fun fromJson(text: String): Recommendation {
-                return valueOf(text.toUpperCase())
+    @Serializer(forClass = Feature::class)
+    companion object : KSerializer<Feature> {
+        override fun save(output: KOutput, obj: Feature) {
+            val elemOutput = output.writeBegin(serialClassDesc)
+            elemOutput.writeStringElementValue(serialClassDesc, 0, obj.name)
+            elemOutput.writeStringElementValue(serialClassDesc, 1, obj.description)
+            if (obj.selected) elemOutput.writeBooleanElementValue(serialClassDesc, 2, obj.selected)
+            obj.recommendation?.let { recommendation ->
+                elemOutput.writeElement(serialClassDesc, 3)
+                elemOutput.write(EnumSerializer(Recommendation::class), recommendation)
             }
+            elemOutput.writeEnd(serialClassDesc)
         }
     }
-
-    override fun compareTo(other: Feature): Int = name.compareTo(other.name)
 }
