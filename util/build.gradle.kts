@@ -18,9 +18,6 @@ dependencies {
     compile(group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-runtime", version = serialization_version)
 //    compile(group = "io.ktor", name ="ktor-client-cio", version = ktor_version)
     compile(group = "io.ktor", name ="ktor-client-apache", version = ktor_version)
-//    compile(group = "io.ktor", name ="ktor-client-jetty", version = ktor_version)
-//    # https://mvnrepository.com/artifact/org.eclipse.jetty/jetty-alpn-openjdk8-client
-//    compile(group = "org.eclipse.jetty", name = "jetty-alpn-openjdk8-client", version = "jar:9.4.12.v20180830")
 
 //    compile(group = "io.ktor", name ="ktor-client-okhttp", version = ktor_version)
     compile(group = "io.ktor", name ="ktor-client-json-jvm", version = ktor_version)

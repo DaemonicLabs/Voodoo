@@ -8,6 +8,7 @@ package voodoo
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.VoodooConstants.FULL_VERSION
+import voodoo.util.Downloader
 
 object Voodoo : KLogging() {
     val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
@@ -53,5 +54,6 @@ object Voodoo : KLogging() {
 
         function(remainingArgs)
         logger.info("waiting for exit program")
+        Downloader.client.close()
     }
 }

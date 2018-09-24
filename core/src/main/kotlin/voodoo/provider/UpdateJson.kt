@@ -5,16 +5,17 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.defaultRequest
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.get
+import io.ktor.client.request.header
 import kotlinx.coroutines.experimental.channels.SendChannel
 import mu.KLogging
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import voodoo.data.provider.UpdateChannel
+import voodoo.util.Downloader
 import voodoo.util.encoded
 import voodoo.util.json.TestKotlinxSerializer
 import voodoo.util.redirect.HttpRedirectFixed
 import java.io.File
-import java.lang.Exception
 
 /**
  * Created by nikky on 30/12/17.
@@ -22,21 +23,9 @@ import java.lang.Exception
  */
 object UpdateJsonProvider : ProviderBase, KLogging() {
     private val client = HttpClient(Apache) {
-        engine {
-//            maxConnectionsCount = 1000 // Maximum number of socket connections.
-//            endpoint.apply {
-//                maxConnectionsPerRoute = 100 // Maximum number of requests for a specific endpoint route.
-//                pipelineMaxSize = 20 // Max number of opened endpoints.
-//                keepAliveTime = 5000 // Max number of milliseconds to keep each connection alive.
-//                connectTimeout = 5000 // Number of milliseconds to wait trying to connect to the server.
-//                connectRetryAttempts = 5 // Maximum number of attempts for retrying a connection.
-//            }
-//            config {
-//                followRedirects(true)
-//            }
-        }
+        //        engine { }
         defaultRequest {
-            //            header("User-Agent", useragent)
+            header("User-Agent", Downloader.useragent)
         }
         install(HttpRedirectFixed) {
             applyUrl { it.encoded }

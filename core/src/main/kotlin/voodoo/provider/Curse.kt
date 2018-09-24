@@ -17,8 +17,7 @@ import voodoo.memoize
 import voodoo.util.download
 import java.io.File
 import java.time.Instant
-import java.util.*
-import kotlin.IllegalStateException
+import java.util.Collections
 import kotlin.system.exitProcess
 
 /**
@@ -217,8 +216,27 @@ object CurseProvider : ProviderBase, KLogging() {
             cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString())
         )
         val fileFingerprint = Murmur2Hash.computeFileHash(targetFile.path)
-        if (addonFile.packageFingerprint != fileFingerprint)
-            logger.error("file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: $fileFingerprint ")
+
+//        logger.info("reading zip file: $targetFile")
+//        ByteArrayInputStream(targetFile.readBytes()).use { byteStream ->
+//            ZipInputStream(byteStream).use {zipStream ->
+//                var zipEntry: ZipEntry? = zipStream.nextEntry
+//                while (zipEntry != null) {
+////                    logger.info("zipEntry: ${zipEntry.name}")
+//
+//                    zipEntry = zipStream.nextEntry
+//                }
+//            }
+//        }
+
+        if (addonFile.packageFingerprint != fileFingerprint) {
+            logger.error("[${entry.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: $fileFingerprint ")
+
+//            logger.info(targetFile.readText())
+//            targetFile.delete()
+//            throw IllegalStateException("[${entry.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: $fileFingerprint ")
+        }
+
         return Pair(addonFile.downloadURL, targetFile)
     }
 
