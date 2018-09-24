@@ -50,7 +50,6 @@ object MultiMCTester : AbstractTester() {
             forgeBuild = modpack.forge
         )
 
-        minecraftDir.mkdirs()
         val modsDir = minecraftDir.resolve("mods")
         modsDir.deleteRecursively()
 
@@ -64,7 +63,7 @@ object MultiMCTester : AbstractTester() {
             if (src.name.endsWith(".lock.hjson")) continue
             if (src.name.endsWith(".entry.hjson")) continue
 
-            val relPath = src.relativeTo(minecraftDir)
+            val relPath = src.relativeTo(minecraftSrcDir)
             val dstFile = minecraftDir.resolve(relPath)
 
             if (dstFile.exists() && !(src.isDirectory && dstFile.isDirectory)) {
@@ -85,6 +84,7 @@ object MultiMCTester : AbstractTester() {
             if (src.isDirectory) {
                 dstFile.mkdirs()
             } else {
+                logger.debug("copying $src -> $dstFile")
                 if (src.copyTo(dstFile, overwrite = true).length() != src.length()) {
                     throw IOException("Source file wasn't copied completely, length of destination file differs.")
                 }
