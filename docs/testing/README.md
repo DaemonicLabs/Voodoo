@@ -4,8 +4,11 @@
 
 ## Requirements
 
-assuming you have a `.lock.hjson` file ready to use from
-[Build](../building)
+assuming you have a `.kt` file and `.lock.hjson` ready to use from
+[Building](../building)
+
+gradle and kscript run configurations were covered in [Building](../building) 
+in the rest of the guide i will mainly use the gradle javaExec task
 
 ## MultiMC
 
@@ -21,13 +24,13 @@ now with all that out of the way.. lets run the pack locally
 
 
 ```bash
-vodoo test mmc awesomepack.lock.hjson
+./gradlew awesomepack --args "test mmc"
 ```
 
 to force a clean install of the pack you can use
 
 ```bash
-vodoo test mmc awesomepack.lock.hjson --clean
+./gradlew awesomepack --args "test mmc --clean"
 ```
 
 ## SK Creator Tools
@@ -37,7 +40,7 @@ this assumes prior knowledge of skcraft creator tools
 you can package the modpack for skcraft
 
 ````bash
-voodoo pack sk awesomepack.lock.hjson
+./gradlew awesomepack --args "pack sk"
 ````
 
 this will create a `workspace` folder
