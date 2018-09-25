@@ -6,8 +6,8 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
+import io.ktor.client.features.HttpRedirect
 import io.ktor.client.features.defaultRequest
-import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.response.HttpResponse
 import io.ktor.client.response.readBytes
@@ -16,7 +16,6 @@ import mu.KLogger
 import mu.KLogging
 import voodoo.util.UtilConstants.VERSION
 import java.io.File
-import voodoo.util.redirect.HttpRedirectFixed
 import java.lang.IllegalStateException
 
 /**
@@ -25,13 +24,10 @@ import java.lang.IllegalStateException
  */
 object Downloader : KLogging() {
     val client = HttpClient(Apache) {
-//        engine { }
         defaultRequest {
             header("User-Agent", useragent)
         }
-        install(HttpRedirectFixed) {
-            applyUrl { it.encoded }
-        }
+        install(HttpRedirect)
     }
 
     const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
@@ -98,5 +94,5 @@ suspend fun File.download(
 val String.encoded: String
     get() = this
         .replace(" ", "%20")
-        .replace("[", "%5B")
-        .replace("]", "%5D")
+        .replace("[", "%5b")
+        .replace("]", "%5d")
