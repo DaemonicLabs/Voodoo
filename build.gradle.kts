@@ -231,7 +231,7 @@ allprojects {
 }
 
 
-val genSrc = rootDir.resolve("gen")
+val genSrc = rootDir.resolve(".gen")
 sourceSets {
     getByName("test").java.srcDirs(rootDir.resolve("samples"))
     getByName("test").java.srcDirs(genSrc)
