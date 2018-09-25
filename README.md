@@ -10,7 +10,7 @@
 - [Is Voodoo for you ?](#is-voodoo-for-you)
 - [Docs](#docs)
 - [Guides](#guides)
-- [Getting started](#getting-started)
+- [Developing](#developing)
 - [Usage examples](#usage-examples)
 - [Maven](#maven)
 - [Support](#support)
@@ -19,20 +19,21 @@
 About
 -----
 
-Creating Modpacks with Voodoo requires minimal effort, just create one `.kt` definition
+Creating Modpacks with Voodoo requires minimal effort, just create one `.kt` definition per modpack
 
 You can Test Any pack in MultiMC, creating a instance and launching it is completely automated, no more clicking than necessary
 
 Modern Minecraft versions (1.6.+) and Forge are supported (older versions do not have mods on curseforge)
 
-Uses [SKCraft Launcher](https://github.com/SKCraft/Launcher#skcraft-launcher) Pack Format, but download all files,
-dependencies and configures all file input based on the `yaml` definition
+packages to [SKCraft Launcher](https://github.com/SKCraft/Launcher#skcraft-launcher) Pack Format
 
-Reproducability: with a modpacks `.lock.hjson` file you can reproduce the modpack on any platform, server install or local testing
+**No Rehosting of Mods!** completely automated by preparing `.url.txt` files for SKLauncher
+
+Reproducability: with a modpacks `.lock.hjson` file and `src` folder you can reproduce the modpack on any platform, server install or local testing
 (given that the urls do not get taken down or redirect anywhere else)
 
 Minimalistic Packs: on all platforms that support it (SK and the multimc-wrapper) mods will be downloaded by the user from the original location,  
-**No Rehosting of Mods!** completely automated by preparing `.url.txt` files for SKLauncher
+
 
 Is Voodoo for you?
 -------------------
@@ -71,38 +72,37 @@ Docs
 Guides
 ------
 
-//TODO: YAML based format is being deprecated in favor of kotlin-dsl and kscript support
-//TODO: rewrite Guides before merge into master
-
 - [Setup](docs/setup)
+- [Basics](docs/basics)
 - [Building](docs/building)
 - [Testing](docs/testing)
 - [Server](docs/server)
 
-Getting started
----------------
+Developing
+----------
 
-### download
+when building locally you can use a development version of voodoo from `mavenLocal`
 
-[![Jenkins](https://img.shields.io/jenkins/s/https/ci.elytradev.com/job/elytra/job/Voodoo/job/rewrite.svg?style=for-the-badge&label=Jenkins%20Build)](https://ci.elytradev.com/job/elytra/job/Voodoo/job/rewrite/lastSuccessfulBuild/artifact/)
+```kotlin
+dependencies {
+    mavenLocal()
+}
+```
 
-### build
-
-unix: `./gradlew build`  
-windows: `./gradlew.bat build`
+unix: `./gradlew deployToMavenLocal`  
+windows: `./gradlew.bat deployToMavenLocal`
 
 Usage examples
 --------------
 
 examples based on [Center of the Multiverse](https://github.com/elytra/Center-of-the-Multiverse)
 
-Lear how to fine your `$pack.kt` in [docs/setup](docs/setup)
+Learn how to define your `$pack.kt` in [docs/setup](docs/setup)
 
 other samples: [samples](samples)
 
 update the pack and write out the lockfiles \
 `./cotm.kt build --updateAll`
-
 
 to update just a few mods in the update step \
 `./cotm.kt build -E correlated -E magicArsenal`
@@ -113,6 +113,9 @@ now you can just upload the contents of `workspace/_upload`
 
 or do all of the above
 `./cotm.kt build --updateAll - pack sk`
+
+build and test with multimc \
+`./cotm.kt build - test mmc`
 
 ## Server Deployment
 
@@ -149,24 +152,22 @@ gradle:
 ```kotlin
 repositories {
     maven { setUrl("https://repo.elytradev.com") }
+    maven { setUrl("https://kotlin.bintray.com/kotlinx") }
+    maven { setUrl("https://dl.bintray.com/kotlin/ktor") }
 }
 dependencies {
-    compile(group = "moe.nikky.voodoo", name = "voodoo", version = "+")
+    compile(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.0+")
 }
 ```
 
 kscript:
 ```kotlin
 #!/usr/bin/env kscript
-@file:DependsOnMaven("moe.nikky.voodoo-rewrite:dsl:0.4.0-151") // buildnumber needs to be updated menually
+@file:DependsOnMaven("moe.nikky.voodoo-rewrite:dsl:0.4.0-174") // buildnumber needs to be updated menually
 @file:DependsOnMaven("ch.qos.logback:logback-classic:1.2.3")
 @file:MavenRepository("kotlinx","https://kotlin.bintray.com/kotlinx" )
 @file:MavenRepository("ktor","https://dl.bintray.com/kotlin/ktor" )
 @file:MavenRepository("elytradev", "https://repo.elytradev.com")
-@file:KotlinOpts("-J-Xmx5g")
-@file:KotlinOpts("-J-server")
-@file:Include("../.gen/Mod.kt")
-@file:Include("../.gen/TexturePack.kt")
 //COMPILER_OPTS -jvm-target 1.8
 ```
 
@@ -178,10 +179,10 @@ Support
 
 Feel welcome to post ideas and suggestions to our [tracker](https://github.com/elytra/Voodoo/issues).
 
-More advanced use-cases are documented in the [complementary user guide](docs/user_guide)
+More advanced use-cases are (soon to be) documented in the [complementary user guide](docs/user_guide)
 
-ask me directly in chat [![Discord](https://img.shields.io/discord/342696338556977153.svg?style=flat-square&label=%23ai-lab&logo=discord)](https://discord.gg/SRFkHfp)   
-or in irc `#unascribed` @ `irc.esper.net`
+contact me directly in chat [![Discord](https://img.shields.io/discord/342696338556977153.svg?style=flat-square&label=%23ai-lab&logo=discord)](https://discord.gg/SRFkHfp)   
+or on irc `#unascribed` @ `irc.esper.net`
 
 How to contribute?
 ------------------
