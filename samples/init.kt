@@ -10,4 +10,4 @@
 import voodoo.cursePoet
 import java.io.File
 
-cursePoet(root = File(System.getProperty("user.dir")))
+fun main(args: Array<String>) = cursePoet(root = File(System.getProperty("user.dir")))

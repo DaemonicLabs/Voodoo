@@ -230,6 +230,32 @@ allprojects {
 
 }
 
+
+val genSrc = rootDir.resolve("gen")
+sourceSets {
+    getByName("test").java.srcDirs(rootDir.resolve("samples"))
+    getByName("test").java.srcDirs(genSrc)
+}
+idea {
+    module {
+        generatedSourceDirs.add(genSrc)
+    }
+}
+
+val cursePoet = task<JavaExec>("cursePoet") {
+    main = "voodoo.CursePoetKt"
+    args = listOf(genSrc.path)
+    classpath = project(":dsl").sourceSets["main"].runtimeClasspath
+    this.description = "generate curse mod listing"
+    this.group = "build"
+    dependsOn(":dsl:classes")
+//    enabled = !genSrc.exists() || !genSrc.resolve("Mod.kt").exists()
+}
+
+val compileTestKotlin by tasks.getting(KotlinCompile::class) {
+    dependsOn(cursePoet)
+}
+
 // SPEK
 val spek_version: String by project
 
@@ -253,6 +279,8 @@ dependencies {
     // spek requires kotlin-reflect, can be omitted if already in the classpath
     testRuntimeOnly(kotlin("reflect", kotlin_version))
 
+
+    testCompile(project(":dsl"))
 
     compile(project(":core:dsl"))
     compile(project(":builder"))

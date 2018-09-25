@@ -6,8 +6,8 @@
 //@file:MavenRepository("elytradev", "https://repo.elytradev.com")
 @file:KotlinOpts("-J-Xmx5g")
 @file:KotlinOpts("-J-server")
-@file:Include("../run/Mod.kt")
-@file:Include("../run/TexturePack.kt")
+@file:Include("../gen/Mod.kt")
+@file:Include("../gen/TexturePack.kt")
 //COMPILER_OPTS -jvm-target 1.8
 
 import voodoo.*
