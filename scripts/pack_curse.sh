@@ -5,10 +5,9 @@ PWD=$(pwd)
 
 cd $DIR
 
-$DIR/gradlew :voodoo:build
-
+$DIR/gradlew clean publishToMavenLocal :cursePoet
 if [ ! $? -eq 0 ]; then
-    echo "Error building voodoo"
+    echo "Error compiling voodoo"
     exit 1
 fi
 
@@ -18,10 +17,10 @@ pack=$1
 cd run
 
 echo
-echo "packaging $1 voodoo.data.curse"
+echo "packaging $1 curse"
 echo
 
-java -jar "$DIR/build/libs/voodoo.jar" pack $pack.lock.hjson curse
+kscript "$DIR/samples/$pack.kt" pack curse
 if [ ! $? -eq 0 ]; then
     echo "Error Packing $pack"
     exit 1

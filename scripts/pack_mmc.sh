@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
+PWD=$(pwd)
 
 cd $DIR
 
@@ -15,19 +16,12 @@ pack=$1
 [ ! -e run ] && mkdir run
 cd run
 
-[ ! -e "$DIR/run/$pack/$pack.lock.hjson" ] && echo "pack does not exist" && exit -1
-
-rm -rf ".server/$pack"
-
-[ ! -e "$pack" ] && mkdir "$pack"
-cd "$pack"
-
 echo
-echo packing $pack server
+echo "packaging $1 voodoo mmc"
 echo
 
-kscript "$DIR/samples/$pack.kt" pack server -o "$DIR/run/.server/$pack"
+kscript "$DIR/samples/$pack.kt" pack mmc
 if [ ! $? -eq 0 ]; then
-    echo "Error packing $pack server"
+    echo "Error Packing $pack"
     exit 1
 fi

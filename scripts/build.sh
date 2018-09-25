@@ -6,9 +6,8 @@ PWD=$(pwd)
 cd $DIR
 
 $DIR/gradlew clean publishToMavenLocal :cursePoet
-
 if [ ! $? -eq 0 ]; then
-    echo "Error building voodoo"
+    echo "Error compiling voodoo"
     exit 1
 fi
 
