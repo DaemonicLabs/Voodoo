@@ -55,15 +55,15 @@ suspend fun downloadVoodoo(
         Jenkins.logger.error("did not find {} in {}", fileRegex, build.artifacts)
         throw Exception()
     }
-    val url = build.url + "artifact/" + artifact.relativePath
+    val artifactUrl = build.url + "artifact/" + artifact.relativePath
     val tmpFile = File(binariesDir, "$moduleName-$buildNumber.tmp")
     val targetFile = File(binariesDir, "$moduleName-$buildNumber.jar")
     val content: ByteArray = try {
-        client.get(url)
+        client.get(artifactUrl)
     } catch (e: Exception) {
         e.printStackTrace()
         Jenkins.logger.error(e.message)
-        Jenkins.logger.error("unable to download jarfile from $url")
+        Jenkins.logger.error("unable to download jarfile from $artifactUrl")
         throw e
     }
     tmpFile.writeBytes(content)
