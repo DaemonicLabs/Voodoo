@@ -1,5 +1,8 @@
 package voodoo
 
+import com.skcraft.launcher.model.modpack.Manifest
+import com.skcraft.launcher.model.modpack.RequireAll
+import com.skcraft.launcher.model.modpack.RequireAny
 import com.xenomachina.argparser.ArgParser
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
@@ -7,11 +10,9 @@ import io.ktor.client.features.defaultRequest
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.get
 import io.ktor.client.request.header
-import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.joinAll
 import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.newFixedThreadPoolContext
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.JSON
@@ -19,8 +20,6 @@ import kotlinx.serialization.serializer
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
 import voodoo.curse.CurseClient
-import voodoo.data.sk.SKPack
-import voodoo.data.sk.task.TaskIf
 import voodoo.mmc.MMCUtil.selectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
@@ -72,7 +71,7 @@ object Hex : KLogging() {
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         val packUrl = urlFile.readText().trim()
 
-        val modpack: SKPack = try {
+        val modpack: Manifest = try {
             client.get(packUrl)
         } catch (e: Exception) {
             logger.error("could not retrieve pack")
@@ -81,10 +80,10 @@ object Hex : KLogging() {
         }
 
         val oldpackFile = instanceDir.resolve("voodoo.modpack.json")
-        val oldpack: SKPack? = if (!oldpackFile.exists())
+        val oldpack: Manifest? = if (!oldpackFile.exists())
             null
         else {
-            val pack: SKPack = json.parse(oldpackFile.readText())
+            val pack: Manifest = json.parse(oldpackFile.readText())
             logger.info("loaded old pack ${pack.name} ${pack.version}")
             pack
         }
@@ -104,7 +103,7 @@ object Hex : KLogging() {
         }
 
         val forgePrefix = "net.minecraftforge:forge:"
-        var (_, _, forgeVersion) = modpack.versionManifest.libraries.find {
+        var (_, _, forgeVersion) = modpack.versionManifest?.libraries?.find {
             it.name.startsWith(forgePrefix)
         }?.name.let { it ?: "::" }.split(':')
         logger.info("forge version is '$forgeVersion'")
@@ -126,7 +125,7 @@ object Hex : KLogging() {
         }
         val (features, reinstall) = selectFeatures(
             modpack.features, defaults, modpack.title.blankOr
-                ?: modpack.name, modpack.version, forceDisplay = forceDisplay, updating = oldpack != null
+                ?: modpack.name!!, modpack.version!!, forceDisplay = forceDisplay, updating = oldpack != null
         )
         featureJson.writeText(JSON.indented.stringify(HashMapSerializer(String.serializer(), Boolean::class.serializer()), features))
         if (reinstall) {
@@ -142,12 +141,16 @@ object Hex : KLogging() {
                 launch(context = pool) {
                     val oldTask = oldTaskList.find { it.to == task.to }
 
-                    val whenTask = task.`when`
+                    val whenTask = task.conditionWhen
                     if (whenTask != null) {
-                        val download = when (whenTask.`if`) {
-                            TaskIf.requireAny -> {
-                                whenTask.features.any { features[it] ?: false }
+                        val download = when (whenTask) {
+                            is RequireAny -> {
+                                whenTask.features.any { feature -> features[feature.name] ?: false }
                             }
+                            is RequireAll -> {
+                                whenTask.features.all { feature ->features[feature.name] ?: false }
+                            }
+                            else -> false
                         }
                         if (!download) {
                             logger.info("${whenTask.features} is disabled, skipping download")
@@ -168,7 +171,7 @@ object Hex : KLogging() {
                         if (oldTask != null) {
                             // file exists already and existed in the last version
 
-                            if (task.userFile && oldTask.userFile) {
+                            if (task.isUserFile && oldTask.isUserFile) {
                                 logger.info("task ${task.to} is a userfile, will not be modified")
                                 oldTask.let { oldTaskList.remove(it) }
                                 return@launch
@@ -235,7 +238,7 @@ object Hex : KLogging() {
         mmcPack.components = listOf(
             PackComponent(
                 uid = "net.minecraft",
-                version = modpack.gameVersion,
+                version = modpack.gameVersion!!,
                 important = true
             ),
             PackComponent(

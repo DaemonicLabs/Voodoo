@@ -1,9 +1,9 @@
 package voodoo.data.nested
 
+import com.skcraft.launcher.model.launcher.LaunchModifier
 import mu.KLogging
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
-import voodoo.data.sk.Launch
 
 /**
  * Created by nikky on 28/03/18.
@@ -27,7 +27,7 @@ data class NestedPack(
     val authors: List<String> = emptyList(),
     var forge: String = "recommended",
     var userFiles: UserFiles = UserFiles(),
-    var launch: Launch = Launch(),
+    var launch: LaunchModifier = LaunchModifier(),
     var root: NestedEntry = NestedEntry(),
     var localDir: String = "local",
     var sourceDir: String = "src"

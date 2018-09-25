@@ -13,13 +13,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Transient
-import kotlinx.serialization.list
 import kotlinx.serialization.serializer
-import voodoo.data.UserFiles
-import voodoo.data.flat.Entry
-import voodoo.data.flat.EntryFeature
-import voodoo.data.flat.ModPack
-import voodoo.data.sk.Launch
 
 @Serializable
 data class FileInstall(

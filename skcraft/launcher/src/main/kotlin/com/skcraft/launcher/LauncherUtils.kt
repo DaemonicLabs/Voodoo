@@ -25,7 +25,7 @@ object LauncherUtils : KLogging() {
             prop.load(input)
             val extraPath = System.getProperty(extraProperty)
             if (extraPath != null) {
-                logger.info("Loading extra properties for " + clazz.canonicalName + ":" + name + " from " + extraPath + "...")
+                logger.info("Loading extra feature for " + clazz.canonicalName + ":" + name + " from " + extraPath + "...")
                 File(extraPath).bufferedReader().use { reader ->
                     prop.load(reader)
                 }

@@ -80,7 +80,7 @@ object CursePoet : KLogging() {
     internal fun generate(
         name: String,
         slugIdMap: Map<String, ProjectID>,
-        folder: File = File("run")
+        folder: File
     ) {
         val objectBuilder = TypeSpec.objectBuilder(name)
         slugIdMap.entries.sortedBy { (slug, id) ->
@@ -98,18 +98,19 @@ object CursePoet : KLogging() {
             )
         }
 
-        save(objectBuilder.build(), folder)
+
+        save(objectBuilder.build(), name, folder)
     }
 
-    private fun save(type: TypeSpec, folder: File) {
+    private fun save(type: TypeSpec, name: String, folder: File) {
         folder.mkdirs()
         val source = FileSpec.get("", type)
         val path = folder.apply {
             absoluteFile.parentFile.mkdirs()
-            createNewFile()
         }.absoluteFile
+        val targetFile = path.resolve("$name.kt")
         source.writeTo(path)
-        logger.info("written to $path")
+        logger.info("written to $targetFile")
     }
 
     @Serializable

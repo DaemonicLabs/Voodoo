@@ -13,9 +13,7 @@ import java.net.URL
  * @author Nikky
  */
 
-object DirectProvider : ProviderBase, KLogging() {
-    override val name = "Direct Provider"
-
+object DirectProvider : ProviderBase("Direct Provider") {
     override suspend fun resolve(
         entry: Entry,
         mcVersion: String,

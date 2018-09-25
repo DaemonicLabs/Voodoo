@@ -22,9 +22,7 @@ import java.util.Collections
  * @author Nikky
  */
 
-object JenkinsProvider : ProviderBase, KLogging() {
-    override val name = "Jenkins Provider"
-
+object JenkinsProvider : ProviderBase( "Jenkins Provider") {
     val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
     override suspend fun resolve(

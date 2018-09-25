@@ -1,7 +1,8 @@
 package voodoo.pack.sk
 
+import com.skcraft.launcher.builder.FeaturePattern
+import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.Serializable
-import voodoo.data.sk.Launch
 import voodoo.data.UserFiles
 
 /**
@@ -13,7 +14,7 @@ data class SKModpack(
         var name: String,
         var title: String = "",
         var gameVersion: String,
-        var features: List<SKFeatureComposite> = emptyList(),
+        var features: List<FeaturePattern> = emptyList(),
         var userFiles: UserFiles = UserFiles(),
-        var launch: Launch = Launch()
+        var launch: LaunchModifier = LaunchModifier()
 )

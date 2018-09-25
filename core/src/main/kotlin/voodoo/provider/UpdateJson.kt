@@ -21,7 +21,7 @@ import java.io.File
  * Created by nikky on 30/12/17.
  * @author Nikky
  */
-object UpdateJsonProvider : ProviderBase, KLogging() {
+object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
     private val client = HttpClient(Apache) {
         //        engine { }
         defaultRequest {
@@ -34,7 +34,6 @@ object UpdateJsonProvider : ProviderBase, KLogging() {
             serializer = TestKotlinxSerializer()
         }
     }
-    override val name = "UpdateJson Provider"
 
     private suspend fun getUpdateJson(url: String): UpdateJson? =
         try {
