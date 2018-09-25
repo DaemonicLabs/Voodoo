@@ -1,6 +1,10 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 dependencies {
-    compile(project(":"))
+    compile(project(":core:dsl"))
+    compile(project(":builder"))
+    compile(project(":pack"))
+    compile(project(":pack:tester"))
+    compile(project(":importer"))
     compile(group = "com.squareup", name = "kotlinpoet", version = "1.0.0-RC1")
 }
 

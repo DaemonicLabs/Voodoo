@@ -6,6 +6,7 @@
  */
 package com.skcraft.launcher.model.modpack
 
+import com.skcraft.launcher.model.launcher.LaunchModifier
 import com.skcraft.launcher.model.minecraft.VersionManifest
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.KOutput
@@ -64,7 +65,7 @@ class Manifest(
         }
     }
 
-    @Serializer(forClass=Manifest::class)
+    @Serializer(forClass= Manifest::class)
     companion object : KSerializer<Manifest> {
         val MIN_PROTOCOL_VERSION = 2
 

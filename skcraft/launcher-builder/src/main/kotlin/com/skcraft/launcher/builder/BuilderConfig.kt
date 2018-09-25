@@ -6,7 +6,7 @@
  */
 package com.skcraft.launcher.builder
 
-import com.skcraft.launcher.model.modpack.LaunchModifier
+import com.skcraft.launcher.model.launcher.LaunchModifier
 import com.skcraft.launcher.model.modpack.Manifest
 import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialName
@@ -19,7 +19,8 @@ class BuilderConfig {
     @Optional var title: String? = null
     @Optional var gameVersion: String? = null
     @SerialName("launch")
-    @Optional var launchModifier: LaunchModifier? = LaunchModifier()
+    @Optional var launchModifier: LaunchModifier? =
+        LaunchModifier()
         set(launchModifier) {
             field = launchModifier ?: LaunchModifier()
         }

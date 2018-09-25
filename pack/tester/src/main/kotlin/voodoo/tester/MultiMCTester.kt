@@ -116,7 +116,7 @@ object MultiMCTester : AbstractTester() {
             mapOf<String, Boolean>()
         }
         val (features, reinstall) = MMCUtil.selectFeatures(
-            modpack.features.map { it.properties }, previousSelection,
+            modpack.features.map { it.feature }, previousSelection,
             modpack.title.blankOr
                 ?: modpack.id, modpack.version, forceDisplay = false, updating = featureJson.exists()
         )
@@ -137,9 +137,9 @@ object MultiMCTester : AbstractTester() {
 
                     val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
                     if (!matchedFeatureList.isEmpty()) {
-                        val download = matchedFeatureList.any { features[it.properties.name] ?: false }
+                        val download = matchedFeatureList.any { features[it.feature.name] ?: false }
                         if (!download) {
-                            MMCUtil.logger.info("${matchedFeatureList.map { it.properties.name }} is disabled, skipping download")
+                            MMCUtil.logger.info("${matchedFeatureList.map { it.feature.name }} is disabled, skipping download")
                             return@launch
                         }
                     }

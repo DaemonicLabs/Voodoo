@@ -1,5 +1,6 @@
 package voodoo.data.flat
 
+import com.skcraft.launcher.model.modpack.Feature
 import kotlinx.serialization.KOutput
 import kotlinx.serialization.KSerialSaver
 import kotlinx.serialization.Optional
@@ -42,7 +43,7 @@ data class Entry(
     @Optional var folder: String = "mods",
     @Optional var comment: String = "",
     @Optional var description: String = "",
-    @Optional var feature: EntryFeature? = null,
+    @Optional @Serializable(with=Feature.Companion::class) var feature: Feature? = null,
     @Optional var side: Side = Side.BOTH,
     @Optional var websiteUrl: String = "",
     @Optional var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
@@ -94,7 +95,7 @@ data class Entry(
                 elemOutput.serialize(this.description, obj.description, 5)
                 if (this.feature != obj.feature) {
                     elemOutput.writeElement(serialClassDesc, 6)
-                    elemOutput.write(EntryFeature::class.serializer(), obj.feature!!)
+                    elemOutput.write(Feature::class.serializer(), obj.feature!!)
                 }
                 elemOutput.serializeObj(this.side, obj.side, EnumSerializer(Side::class), 7)
                 elemOutput.serialize(this.websiteUrl, obj.websiteUrl, 8)

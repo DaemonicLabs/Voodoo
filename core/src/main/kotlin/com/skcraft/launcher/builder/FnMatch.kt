@@ -36,7 +36,13 @@ object FnMatch {
     }
 
     fun fnmatch(pattern: String, string: String, stringPos: Int = 0): Boolean {
-        return match(pattern, 0, string, stringPos, EnumSet.noneOf(Flag::class.java))
+        return match(
+            pattern,
+            0,
+            string,
+            stringPos,
+            EnumSet.noneOf(Flag::class.java)
+        )
     }
 
     fun match(pattern: String, patternPos: Int = 0,
@@ -116,7 +122,8 @@ object FnMatch {
                         return false
                     }
 
-                    val result = matchRange(pattern, patternPos, string[stringPos], flags)
+                    val result =
+                        matchRange(pattern, patternPos, string[stringPos], flags)
                     if (result == RANGE_ERROR)
                     /* not a good range, treat as normal text */ {
                         break@loop

@@ -19,7 +19,7 @@ include("dsl")
 include("multimc", "multimc:installer")
 include("util")
 //include("fuel-coroutines")
-include("importer", "builder", "pack", "pack:test")
+include("importer", "builder", "pack", "pack:tester")
 include("server-installer")
 include("bootstrap")
 

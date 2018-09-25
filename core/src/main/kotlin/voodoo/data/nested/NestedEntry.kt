@@ -1,10 +1,10 @@
 package voodoo.data.nested
 
+import com.skcraft.launcher.model.modpack.Feature
 import mu.KLogging
 import voodoo.data.Side
 import voodoo.data.curse.*
 import voodoo.data.flat.Entry
-import voodoo.data.flat.EntryFeature
 import voodoo.data.provider.UpdateChannel
 import java.io.File
 import java.lang.IllegalStateException
@@ -23,7 +23,7 @@ data class NestedEntry(
         var folder: String = "mods",
         var comment: String = "",
         var description: String = "",
-        var feature: EntryFeature? = null,
+        var feature: Feature? = null,
         var side: Side = Side.BOTH,
         var websiteUrl: String = "",
 //        var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
@@ -124,7 +124,7 @@ data class NestedEntry(
 
         entries.forEach { entry ->
 
-            // set properties of entry from `this` or DEFAULT
+            // set feature of entry from `this` or DEFAULT
 
 //            if ((entry.provider == DEFAULT.provider || entry.provider.isBlank()) && provider != DEFAULT.provider) entry.provider = provider
 //            if (entry.id == DEFAULT.id && id != DEFAULT.id) entry.id = id

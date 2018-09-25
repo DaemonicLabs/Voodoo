@@ -13,14 +13,17 @@ import java.time.Instant
  * @author Nikky
  */
 
-interface ProviderBase {
-    val name: String
+abstract class ProviderBase (
+    open val name: String
+) {
     val id: String
-    get() = Providers.getId(this).also {logger.debug("id of $this is $it")}!!
+    get() = Providers.getId(this)!!
 
-    fun reset() {}
+    override fun toString() = "name: $name, id: $id"
 
-    suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
+    open fun reset() {}
+
+    open suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
         println("[$name] resolve ${entry.id}")
         throw NotImplementedError("unable to resolve")
     }
@@ -34,46 +37,46 @@ interface ProviderBase {
      * @param targetFolder provided target rootFolder/location
      * @param cacheDir prepared cache directory
      */
-    suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File>
+    abstract suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File>
 
-    suspend fun generateName(entry: LockEntry): String
+    abstract suspend fun generateName(entry: LockEntry): String
 
-    suspend fun getAuthors(entry: LockEntry): List<String> {
+    open suspend fun getAuthors(entry: LockEntry): List<String> {
         return emptyList()
     }
 
-    suspend fun getProjectPage(entry: LockEntry): String {
+    open suspend fun getProjectPage(entry: LockEntry): String {
         return ""
     }
 
-    suspend fun getVersion(entry: LockEntry): String {
+    open suspend fun getVersion(entry: LockEntry): String {
         return ""
     }
 
-    suspend fun getLicense(entry: LockEntry): String {
+    open suspend fun getLicense(entry: LockEntry): String {
         return ""
     }
 
-    suspend fun getThumbnail(entry: LockEntry): String {
+    open suspend fun getThumbnail(entry: LockEntry): String {
         return ""
     }
 
-    suspend fun getThumbnail(entry: Entry): String {
+    open suspend fun getThumbnail(entry: Entry): String {
         return ""
     }
 
-    suspend fun getReleaseDate(entry: LockEntry): Instant? {
+    open suspend fun getReleaseDate(entry: LockEntry): Instant? {
         return null
     }
 
     fun report(entry: LockEntry): String = markdownTable(header = "Mod" to entry.name, content = reportData(entry))
 
-    fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> = mutableListOf(
+    open fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> = mutableListOf(
             "Provider" to "`${entry.provider}`",
             "Version" to "`${entry.version()}`"
     )
 
-    fun validate(lockEntry: LockEntry): Boolean {
+    open fun validate(lockEntry: LockEntry): Boolean {
         if(lockEntry.id.isEmpty()) {
             logger.error("invalid id of $lockEntry")
             return false

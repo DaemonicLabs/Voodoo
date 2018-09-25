@@ -24,8 +24,7 @@ import kotlin.system.exitProcess
  * Created by nikky on 30/12/17.
  * @author Nikky
  */
-object CurseProvider : ProviderBase, KLogging() {
-    override val name = "Curse Provider"
+object CurseProvider : ProviderBase("Curse Provider") {
     private val resolved = Collections.synchronizedList(mutableListOf<String>())
 
     override fun reset() {

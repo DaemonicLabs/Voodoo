@@ -11,9 +11,7 @@ import java.io.File
  * @author Nikky
  */
 
-object LocalProvider : ProviderBase, KLogging() {
-    override val name = "Local Provider"
-
+object LocalProvider : ProviderBase("Local Provider") {
     override suspend fun resolve(
         entry: Entry,
         mcVersion: String,

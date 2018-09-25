@@ -1,13 +1,13 @@
 package voodoo.data.flat
 
+import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.*
 import kotlinx.serialization.Optional
 import mu.KLogging
 import voodoo.data.UserFiles
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
-import voodoo.data.sk.Launch
-import voodoo.data.sk.SKFeature
+import voodoo.data.sk.ExtendedFeaturePattern
 import voodoo.forge.Forge
 import java.io.File
 import java.util.*
@@ -27,7 +27,7 @@ data class ModPack(
     @Optional val authors: List<String> = emptyList(),
     @Optional var forge: String = "recommended",
     //var forgeBuild: Int = -1,
-    @Optional val launch: Launch = Launch(),
+    @Optional val launch: LaunchModifier = LaunchModifier(),
     @Optional var userFiles: UserFiles = UserFiles(),
 
     @Optional var localDir: String = "local",
@@ -45,7 +45,7 @@ data class ModPack(
                 elemOutput.serialize(this.icon, obj.icon, 4)
                 elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 5)
                 elemOutput.serialize(this.forge, obj.forge, 6)
-                elemOutput.serializeObj(this.launch, obj.launch, Launch::class.serializer(), 7)
+                elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier::class.serializer(), 7)
                 elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles::class.serializer(), 8)
                 elemOutput.serialize(this.localDir, obj.localDir, 9)
                 elemOutput.serialize(this.sourceDir, obj.sourceDir, 10)
@@ -71,7 +71,7 @@ data class ModPack(
     }
 
     @Transient
-    val features: MutableList<SKFeature> = mutableListOf()
+    val features: MutableList<ExtendedFeaturePattern> = mutableListOf()
 
     @Transient
     val entrySet: MutableSet<Entry> = Collections.synchronizedSet(mutableSetOf())
@@ -139,7 +139,7 @@ data class ModPack(
             userFiles = userFiles,
             localDir = localDir,
             sourceDir = sourceDir,
-            features = features.sortedBy { it.properties.name }
+            features = features.sortedBy { it.feature.name }
         )
     }
 

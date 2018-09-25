@@ -1,5 +1,6 @@
 package voodoo.builder
 
+import com.skcraft.launcher.model.modpack.Feature
 import kotlinx.coroutines.experimental.*
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.consume
@@ -7,8 +8,7 @@ import mu.KotlinLogging
 import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
-import voodoo.data.sk.FeatureProperties
-import voodoo.data.sk.SKFeature
+import voodoo.data.sk.ExtendedFeaturePattern
 import voodoo.memoize
 import voodoo.provider.Providers
 import voodoo.util.pool
@@ -43,16 +43,16 @@ private fun ModPack.resolveFeatureDependencies(entry: Entry, defaultName: String
     val entryFeature = entry.feature ?: return
     val featureName = entry.name.takeIf { it.isNotBlank() } ?: defaultName
     // find feature with matching id
-    var feature = features.find { f -> f.properties.name == featureName }
+    var feature = features.find { f -> f.feature.name == featureName }
 
     //TODO: merge existing features with matching id
     if (feature == null) {
         var description = entryFeature.description
         if (description.isEmpty()) description = entry.description
-        feature = SKFeature(
+        feature = ExtendedFeaturePattern(
             entries = setOf(entry.id),
             files = entryFeature.files,
-            properties = FeatureProperties(
+            feature = Feature(
                 name = featureName,
                 selected = entryFeature.selected,
                 description = description,
@@ -66,7 +66,7 @@ private fun ModPack.resolveFeatureDependencies(entry: Entry, defaultName: String
     logger.debug("processed ${entry.id}")
 }
 
-private fun processFeature(modPack: ModPack, feature: SKFeature) {
+private fun processFeature(modPack: ModPack, feature: ExtendedFeaturePattern) {
     logger.info("processing feature: $feature")
     var processedEntries = emptyList<String>()
     var processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
@@ -245,7 +245,7 @@ suspend fun ModPack.resolve(
 
     // resolve features
     for (feature in features) {
-        logger.info("processed feature ${feature.properties.name}")
+        logger.info("processed feature ${feature.feature.name}")
         for (id in feature.entries) {
             logger.info("processing feature entry $id")
             val dependencies = this.getDependencies(id)
@@ -256,7 +256,7 @@ suspend fun ModPack.resolve(
         }
         logger.info("build entry: ${feature.entries.first()}")
         val mainEntry = findEntryById(feature.entries.first())!!
-        feature.properties.description = mainEntry.description
+        feature.feature.description = mainEntry.description
 
         logger.info("processed feature $feature")
     }

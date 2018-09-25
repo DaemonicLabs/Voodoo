@@ -70,7 +70,7 @@ object MMCFatPack : AbstractPack() {
             mapOf<String, Boolean>()
         }
         val (features, reinstall) = MMCUtil.selectFeatures(
-            modpack.features.map { it.properties }, previousSelection,
+            modpack.features.map { it.feature }, previousSelection,
             modpack.title.blankOr
                 ?: modpack.id, modpack.version, forceDisplay = false, updating = featureJson.exists()
         )
@@ -94,7 +94,7 @@ object MMCFatPack : AbstractPack() {
 
                     val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
                     val selected = !matchedFeatureList.isEmpty() && matchedFeatureList.any {
-                        features[it.properties.name] ?: false
+                        features[it.feature.name] ?: false
                     }
 
                     val provider = Providers[entry.provider]

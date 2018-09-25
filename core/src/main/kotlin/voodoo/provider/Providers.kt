@@ -40,13 +40,11 @@ object Providers : KLogging() {
 
     fun getId(provider: ProviderBase): String? {
         for( (id, registeredProvider) in providers) {
-            if (provider == registeredProvider)
-            {
-                logger.info("found ${registeredProvider.name}")
+            if (provider == registeredProvider) {
                 return id
             }
         }
-        logger.warn("found no matching registered provider")
+        logger.error("found no matching registered provider")
         return null
     }
 }

@@ -1,7 +1,7 @@
 package voodoo
 
+import com.skcraft.launcher.model.modpack.Feature
 import voodoo.data.curse.ProjectID
-import voodoo.data.flat.EntryFeature
 import voodoo.data.nested.NestedEntry
 import voodoo.provider.*
 import java.io.File
@@ -41,7 +41,7 @@ abstract class Wrapper<P : ProviderBase>(
     var validMcVersions by property(entry::validMcVersions)
 
     fun feature(block: FeatureWrapper.() -> Unit) {
-        val feature = entry.feature?.copy() ?: EntryFeature()
+        val feature = entry.feature?.copy() ?: Feature()
         val wrapper = FeatureWrapper(feature)
         wrapper.block()
         entry.feature = feature
@@ -50,7 +50,7 @@ abstract class Wrapper<P : ProviderBase>(
 
 inline infix fun <reified W: Wrapper<P>, P: ProviderBase> W.description(s: String) = apply { description = s }
 
-class FeatureWrapper(feature: EntryFeature) {
+class FeatureWrapper(feature: Feature) {
     var name by property(feature::name)
     var selected by property(feature::selected)
     var description by property(feature::description)

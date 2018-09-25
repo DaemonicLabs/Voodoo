@@ -257,7 +257,7 @@ dependencies {
     compile(project(":core:dsl"))
     compile(project(":builder"))
     compile(project(":pack"))
-    compile(project(":pack:test"))
+    compile(project(":pack:tester"))
     compile(project(":importer"))
 }
 

@@ -4,7 +4,7 @@
  * Copyright (C) 2010-2014 Albert Pham <http://www.sk89q.com> and contributors
  * Please see LICENSE.txt for license information.
  */
-package com.skcraft.launcher.model.modpack
+package com.skcraft.launcher.model.launcher
 
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable

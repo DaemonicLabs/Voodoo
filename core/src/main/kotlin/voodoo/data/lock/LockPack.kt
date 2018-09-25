@@ -1,6 +1,8 @@
 package voodoo.data.lock
 
 
+import com.skcraft.launcher.builder.FeaturePattern
+import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.KOutput
 import kotlinx.serialization.KSerialSaver
 import kotlinx.serialization.Optional
@@ -12,8 +14,7 @@ import kotlinx.serialization.serializer
 import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
-import voodoo.data.sk.Launch
-import voodoo.data.sk.SKFeature
+import voodoo.data.sk.ExtendedFeaturePattern
 import voodoo.markdownTable
 import voodoo.util.blankOr
 import java.io.File
@@ -32,11 +33,11 @@ data class LockPack(
     @Optional val icon: String = "icon.png",
     @Optional val authors: List<String> = emptyList(),
     @Optional val forge: Int = -1,
-    @Optional val launch: Launch = Launch(),
+    @Optional val launch: LaunchModifier = LaunchModifier(),
     @Optional var userFiles: UserFiles = UserFiles(),
     @Optional var localDir: String = "local",
     @Optional var sourceDir: String = "src", //id, //"src-$id",
-    @Optional val features: List<SKFeature> = emptyList()
+    @Optional val features: List<ExtendedFeaturePattern> = emptyList()
 ) {
     @Serializer(forClass = LockPack::class)
     companion object {
@@ -50,11 +51,11 @@ data class LockPack(
                 elemOutput.serialize(this.icon, obj.icon, 4)
                 elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 5)
                 elemOutput.serialize(this.forge, obj.forge, 6)
-                elemOutput.serializeObj(this.launch, obj.launch, Launch::class.serializer(), 7)
+                elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier::class.serializer(), 7)
                 elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles::class.serializer(), 8)
                 elemOutput.serialize(this.localDir, obj.localDir, 9)
                 elemOutput.serialize(this.sourceDir, obj.sourceDir, 10)
-                elemOutput.serializeObj(this.features, obj.features, SKFeature::class.serializer().list, 11)
+                elemOutput.serializeObj(this.features, obj.features, ExtendedFeaturePattern::class.serializer().list, 11)
             }
             elemOutput.writeEnd(serialClassDesc)
         }

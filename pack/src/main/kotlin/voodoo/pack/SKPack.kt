@@ -1,14 +1,24 @@
 package voodoo.pack
 
+import com.skcraft.launcher.builder.FeaturePattern
 import com.skcraft.launcher.builder.PackageBuilder
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.CoroutineName
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.experimental.awaitAll
+import kotlinx.coroutines.experimental.coroutineScope
+import kotlinx.coroutines.experimental.delay
 import kotlinx.serialization.json.JSON
 import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
-import voodoo.pack.sk.*
-import voodoo.util.pool
+import voodoo.pack.sk.SKLocation
+import voodoo.pack.sk.SKModpack
+import voodoo.pack.sk.SKPackages
+import voodoo.pack.sk.SKWorkspace
+import voodoo.pack.sk.SkPackageFragment
 import voodoo.provider.Providers
 import voodoo.util.download
+import voodoo.util.pool
 import java.io.File
 import java.time.Instant
 import java.time.ZoneOffset
@@ -106,8 +116,8 @@ object SKPack : AbstractPack() {
 
             // write features
             val deferredFeatures = modpack.features.map { feature ->
-                async(pool + CoroutineName("feature-${feature.properties.name}")) {
-                    logger.info("processing feature: ${feature.properties.name}")
+                async(pool + CoroutineName("feature-${feature.feature.name}")) {
+                    logger.info("processing feature: ${feature.feature.name}")
                     for (id in feature.entries) {
                         logger.info(id)
 
@@ -128,12 +138,13 @@ object SKPack : AbstractPack() {
                     }
 
                     logger.info("entries: ${feature.entries}")
-                    logger.info("properties: ${feature.properties}")
+                    logger.info("feature: ${feature.feature}")
 
                     logger.info("processed feature $feature")
-                    SKFeatureComposite(
-                        properties = feature.properties,
-                        files = feature.files
+
+                    FeaturePattern(
+                        feature = feature.feature,
+                        filePatterns = feature.files
                     )
                 }
             }
@@ -151,6 +162,7 @@ object SKPack : AbstractPack() {
                 launch = modpack.launch,
                 features = features
             )
+
             val modpackPath = modpackDir.resolve("modpack.json")
             modpackPath.writeText(JSON.stringify(skmodpack))
 

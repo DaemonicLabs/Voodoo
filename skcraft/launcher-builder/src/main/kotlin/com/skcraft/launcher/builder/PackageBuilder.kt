@@ -26,7 +26,6 @@ import kotlinx.io.InputStream
 import mu.KLogging
 import voodoo.util.Directories
 import voodoo.util.copyInputStreamToFile
-import voodoo.util.download
 import kotlinx.io.core.Closeable
 import kotlinx.serialization.SerialContext
 import kotlinx.serialization.json.JSON
