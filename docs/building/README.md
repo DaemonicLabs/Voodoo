@@ -4,64 +4,48 @@
 
 ## Requirements
 
-assuming you have a `.yaml` file ready to use from
-[Setup](../setup)
-
-## Get Voodoo
-
-Before we can continue you need to download or compile Voodoo
-
-download it
-[here](https://ci.elytradev.com/job/elytra/job/Voodoo/job/rewrite/8/artifact/bootstrap/build/libs/bootstrap-voodoo-8.jar)
-
-or if this is far in the future and i neglected to update this url.. grab the 
-[lastSucessfulBuild](https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/lastSuccessfulBuild/)
-
-my recommendation is to drop this jar in `~/bin/bootstrap-voodoo.jar`
-
-add to your .bashrc or similar
-
-```bash
-alias voodoo='java -jar ~/bin/bootstrap-voodoo.jar'
-```
-
-for the rest of this guide you can assume this is what is meant 
-when you just see the `voodoo` command
+assuming you have a `.kt` file ready to use from
+[Basics](../basics)
 
 ## Building
 
-building is separated into multiple steps
-1. import the nested yaml
-2. updating and locking the pack
-
-### Import
-
-this step needs to be executed any time you change the yaml input file
-
+### kscript
 ```bash
-# assuming sourceDir is 'src'
-rm src/**/*.lock.hjson
-rm src/**/*.entry.hjson
-mkdir -p awesomepack/ # you can also use . to import the pack into the current working directory
-voodoo import yaml awesomepack.yaml awesomepack/
-cd awesomepack/
+# invoking kscript directly
+kscript awesomepack.kt build
+```
+```bash
+# with kscript in the shebang this is possible
+./awesomepack.kt build
 ```
 
-### Locking
+### gradle
 
-This step updates mod versions and creates a static file that can be used to reproduce the version environment at any point
+#### with application plugin
 
-you can either update all mods
+```kotlin
+application {
+    mainClassName = "awesomepackKt"
+}
+```
+can be executed via
 ```bash
-voodoo build awesomepack.pack.hjson -o awesomepack.lock.hjson --updateAll
+./gradlew run --args "build"
 ```
 
-or specify which mods to update, any mods that were resolved before will not be updated,
-versions of dependencies might be recalculated as needed
+#### with separate JavaExec task
+```kotlin
+task<JavaExec>("awesomepack") {
+    classpath = sourceSets["main"].runtimeClasspath
+    main = "awesomepackKt"
+    this.description = "Awesome pack"
+    this.group = "application"
+}
+```
+can be executed via
 
 ```bash
-voodoo build awesomepack.pack.hjson -o awesomepack.lock.hjson -E "Botania" -E "Magic Arsenal"
+./gradlew awesomepack --args "build"
 ```
-
 
 continue with [Testing the Modpack](../testing)

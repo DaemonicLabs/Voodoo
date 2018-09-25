@@ -4,15 +4,15 @@
 
 ## Requirements
 
-assuming you have a `.lock.hjson` file ready to use from
-[Build](../building)
+assuming you have a `.kt` file and `.lock.hjson` ready to use from
+[Building](../building)
 
 ## Packing the Server
 
 Voodoo packages all data needed to install a server into a folder
 
 ```bash
-vodoo pack server awesomepack.lock.hjson
+./gradlew awesomepack --args "pack server"
 ```
 
 You will find a `.server/awesomepack/` folder has been created

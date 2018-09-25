@@ -242,7 +242,7 @@ idea {
     }
 }
 
-val cursePoet = task<JavaExec>("cursePoet") {
+val poet = task<JavaExec>("poet") {
     main = "voodoo.CursePoetKt"
     args = listOf(genSrc.path)
     classpath = project(":dsl").sourceSets["main"].runtimeClasspath
@@ -253,7 +253,7 @@ val cursePoet = task<JavaExec>("cursePoet") {
 }
 
 val compileTestKotlin by tasks.getting(KotlinCompile::class) {
-    dependsOn(cursePoet)
+    dependsOn(poet)
 }
 
 // SPEK

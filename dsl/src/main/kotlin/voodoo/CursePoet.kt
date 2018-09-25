@@ -136,7 +136,8 @@ object CursePoet : KLogging() {
         val data: WrapperAddonResult
     )
 
-    internal suspend fun requestMods(): Map<String, ProjectID> = graphQlRequest("gameID: 432, section: MC_ADDONS")
+    internal suspend fun requestMods(): Map<String, ProjectID> =
+        graphQlRequest("gameID: 432, section: MC_ADDONS")
 
     internal suspend fun requestResourcePacks(): Map<String, ProjectID> =
         graphQlRequest("gameID: 432, section: TEXTURE_PACKS")
@@ -147,7 +148,7 @@ object CursePoet : KLogging() {
         val request = GraphQLRequest(
             query = """
                     |{
-                    |  addons(gameID: 432, section: MC_ADDONS) {
+                    |  addons($filter) {
                     |    id
                     |    slug
                     |  }
