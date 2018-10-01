@@ -1,5 +1,9 @@
 # documentation generator | tome
 
+use html-dsl in .kts files
+maybe css-dsl
+search for markdown-dsl
+
 <s>
 https://github.com/korlibs/korte
 
@@ -7,9 +11,13 @@ https://github.com/korlibs/korte
 - markdown or html -> user choice
 </s>
 
-use html-dsl in .kts files
-maybe css-dsl
-search for markdown-dsl
+# generate gradle setup
+
+requires testing the gradle setup before generating it
+
+- create framework
+- add pack
+- generate curse files ?
 
 # deprecate flat entries
 
