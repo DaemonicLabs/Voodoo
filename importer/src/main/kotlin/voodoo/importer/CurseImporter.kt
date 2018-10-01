@@ -24,7 +24,7 @@ import java.util.*
  * @author Nikky
  */
 
-@Deprecated("roken due to significant changes to the codebase and deprecation of yaml")
+@Deprecated("broken due to deprecation of yaml format")
 object CurseImporter : AbstractImporter() {
     override val label = "Curse Importer"
 
