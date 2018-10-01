@@ -9,8 +9,6 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.HttpRedirect
 import io.ktor.client.features.defaultRequest
 import io.ktor.client.request.header
-import io.ktor.client.response.HttpResponse
-import io.ktor.client.response.readBytes
 import kotlinx.io.IOException
 import mu.KLogger
 import mu.KLogging
@@ -39,13 +37,12 @@ suspend fun File.download(
     logger: KLogger = Downloader.logger
 ) {
     val cacheFile = cacheDir.resolve(this.name)
-    val fixedUrl = url.encoded
     logger.info("downloading $url -> ${this@download}")
     logger.debug("cacheFile $cacheFile")
     if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
 
     if (!cacheFile.exists() || !cacheFile.isFile) {
-        var nextUrl = url
+        var nextUrl = url.encoded
         do {
             nextUrl = nextUrl.encoded
             logger.info { nextUrl }
@@ -66,7 +63,7 @@ suspend fun File.download(
                             throw IllegalStateException("missing Location header")
                         true
                     } else {
-                        logger.error("invalid statusCode {} from {}", response.statusCode, fixedUrl)
+                        logger.error("invalid statusCode {} from {}", response.statusCode, url.encoded)
                         logger.error("connection url: {}", request.url)
                         logger.error("content: {}", result.component1())
                         logger.error("error: {}", result.error.toString())

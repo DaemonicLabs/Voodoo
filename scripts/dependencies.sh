@@ -6,6 +6,5 @@ cd $DIR
 
 $DIR/gradlew :generateDependencyGraph
 
-if [ ! $? -eq 0 ]; then
-    dot -Tpng build/reports/dependency-graph/dependency-graph.dot > dependency-graph.png
-fi
+dot -Tpng build/reports/dependency-graph/dependency-graph.dot > dependency-graph.png
+echo $DIR/dependency-graph.png

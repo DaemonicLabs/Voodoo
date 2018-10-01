@@ -12,7 +12,7 @@ buildscript {
 //    val kotlin_version: String by project
     val serialization_version: String by project
     dependencies {
-//        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
+        //        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
         classpath("org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:$serialization_version")
     }
 }
@@ -38,13 +38,13 @@ println(
 )
 val runnableProjects = listOf(
     rootProject to "voodoo.Voodoo",
-    project(":multimc:installer") to "voodoo.Hex",
-    project(":server-installer") to "voodoo.server.Install"
+    project("multimc:multimc-installer") to "voodoo.Hex",
+    project("server-installer") to "voodoo.server.Install"
 )
 val noConstants = listOf(
-    project(":skcraft"),
-    project(":skcraft:launcher"),
-    project(":skcraft:launcher-builder")
+    project("skcraft"),
+    project("skcraft:skcraft-launcher"),
+    project("skcraft:skcraft-launcher-builder")
 //        project(":fuel-coroutines"),
 )
 val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: ""
@@ -98,11 +98,8 @@ allprojects {
         }
     }
 
-    // fix jar names
-    val baseName = if (project == rootProject)
-        rootProject.name.toLowerCase()
-    else
-        path.substringAfter(':').split(':').joinToString("-") { it.toLowerCase() }
+    // fix jar names (projects renamed in settings.gradle.kts)
+    val baseName= project.name.toLowerCase()
     base {
         archivesBaseName = "$baseName$versionSuffix"
     }
@@ -230,7 +227,6 @@ allprojects {
 
 }
 
-
 val genSrc = rootDir.resolve(".gen")
 sourceSets {
     getByName("test").java.srcDirs(rootDir.resolve("samples"))
@@ -282,10 +278,10 @@ dependencies {
 
     testCompile(project(":dsl"))
 
-    compile(project(":core:dsl"))
+    compile(project(":core:core-dsl"))
     compile(project(":builder"))
     compile(project(":pack"))
-    compile(project(":pack:tester"))
+    compile(project(":pack:pack-tester"))
     compile(project(":importer"))
 }
 

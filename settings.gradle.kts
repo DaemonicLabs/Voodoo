@@ -27,3 +27,17 @@ include("bootstrap")
 
 include("skcraft:launcher")
 include("skcraft:launcher-builder")
+
+fun prefixProject(project: ProjectDescriptor, prefix: String) {
+    project.name = prefix + "-" + project.name
+    println("path of ${project.name} is ${project.path}")
+    project.children.forEach { child ->
+        prefixProject(child, project.name)
+    }
+}
+
+rootProject.children.forEach { child ->
+    child.children.forEach { grandchild ->
+        prefixProject(grandchild, child.name)
+    }
+}
