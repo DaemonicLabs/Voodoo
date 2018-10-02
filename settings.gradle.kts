@@ -24,8 +24,6 @@ include("server-installer")
 include("bootstrap")
 include("fuel-kotlinxserialization")
 
-//include("Jankson")
-
 include("skcraft:launcher")
 include("skcraft:launcher-builder")
 
