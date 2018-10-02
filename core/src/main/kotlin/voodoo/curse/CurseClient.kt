@@ -20,7 +20,6 @@ import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
-import voodoo.util.Downloader
 import voodoo.util.serializer.DateSerializer
 import java.util.Date
 import java.util.HashMap
@@ -46,14 +45,14 @@ object CurseClient : KLogging() {
     )
 
     @Serializable
-    data class IdNamePair(
+    data class SlugIdPair(
         val id: Int,
         val slug: String
     )
 
     @Serializable
     data class WrapperAddonResult(
-        val addons: List<IdNamePair>
+        val addons: List<SlugIdPair>
     )
 
     @Serializable
@@ -61,13 +60,13 @@ object CurseClient : KLogging() {
         val data: WrapperAddonResult
     )
 
-    private suspend fun graphQLRequest(): GraphQlResult {
+    suspend fun graphQLRequest(additionalFilter: String = ""): List<SlugIdPair> {
         val url = "https://curse.nikky.moe/graphql"
         logger.debug("post $url")
         val requestBody = GraphQLRequest(
             query = """
                     |{
-                    |  addons(gameID: 432) {
+                    |  addons(gameID: 432 $additionalFilter) {
                     |    id
                     |    slug
                     |  }
@@ -82,7 +81,7 @@ object CurseClient : KLogging() {
 
         when (result) {
             is Result.Success -> {
-                return result.value
+                return result.value.data.addons
             }
             is Result.Failure -> {
                 logger.error(result.error.exception) { "cold not request slug-id pairs" }
@@ -93,7 +92,7 @@ object CurseClient : KLogging() {
 
     private suspend fun initSlugIdMap(): Map<String, ProjectID> {
         val grapqhQlResult = graphQLRequest()
-        return grapqhQlResult.data.addons.groupBy(
+        return grapqhQlResult.groupBy(
             { it.slug },
             { it.id }).mapValues {
             //(slug, list) ->
