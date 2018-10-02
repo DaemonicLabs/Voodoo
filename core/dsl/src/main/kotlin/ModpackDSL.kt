@@ -1,5 +1,3 @@
-package voodoo
-
 import com.skcraft.launcher.model.modpack.Feature
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.async
@@ -7,7 +5,7 @@ import kotlinx.coroutines.experimental.runBlocking
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
-import voodoo.dsl.CurseMod
+import voodoo.property
 import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
 import voodoo.provider.JenkinsProvider
@@ -35,9 +33,6 @@ abstract class Wrapper<P : ProviderBase>(
     var folder by property(entry::folder)
     var comment by property(entry::comment)
     var description by property(entry::description)
-
-    //TODO: Feature functions
-//    var feature by property(entry::feature)
 
     var side by property(entry::side)
 

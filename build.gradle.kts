@@ -235,7 +235,7 @@ idea {
 }
 
 val poet = task<JavaExec>("poet") {
-    main = "voodoo.PoetKt"
+    main = "PoetKt"
     args = listOf(genSrc.path)
     classpath = project(":dsl").sourceSets["main"].runtimeClasspath
     this.description = "generate curse mod listing"
