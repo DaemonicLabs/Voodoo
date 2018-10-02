@@ -23,7 +23,7 @@ data class ModPack(
     var mcVersion: String,
     @Optional var title: String = "",
     @Optional var version: String = "1.0",
-    @Optional var icon: String = "icon.png",
+    @Optional var icon: File = File("icon.png"),
     @Optional val authors: List<String> = emptyList(),
     @Optional var forge: String = "recommended",
     //var forgeBuild: Int = -1,

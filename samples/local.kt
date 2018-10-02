@@ -11,15 +11,11 @@
 //COMPILER_OPTS -jvm-target 1.8
 
 import voodoo.*
-import voodoo.data.*
-import voodoo.data.curse.*
 import voodoo.data.nested.*
 import voodoo.provider.*
-import voodoo.releaseTypes
 import voodoo.rootEntry
 import java.io.File
 import voodoo.withDefaultMain
-import com.skcraft.launcher.model.modpack.*
 
 fun main(args: Array<String>) = withDefaultMain(
     root = File("."),
