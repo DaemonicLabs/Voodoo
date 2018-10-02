@@ -9,10 +9,14 @@ import java.io.File
 
 private val logger = KotlinLogging.logger {}
 
+class MainEnv(
+    val root: File
+)
+
 fun withDefaultMain(
     arguments: Array<String>,
     root: File = File(System.getProperty("user.dir")),
-    block: () -> NestedPack = { throw IllegalStateException("no nested pack provided") }
+    block: MainEnv.() -> NestedPack = { throw IllegalStateException("no nested pack provided") }
 ) {
 
     //classloader switching necessary for kscript
@@ -22,7 +26,7 @@ fun withDefaultMain(
     println("classloader is of type:" + XY::class.java.classLoader)
     Thread.currentThread().contextClassLoader = XY::class.java.classLoader
 
-    val nestedPack = block()
+    val nestedPack = MainEnv(root = root).block()
     val id = nestedPack.id
     val packFileName = "$id.pack.hjson"
 //    val packFile = root.resolve(packFileName)

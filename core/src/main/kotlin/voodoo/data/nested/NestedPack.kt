@@ -4,6 +4,7 @@ import com.skcraft.launcher.model.launcher.LaunchModifier
 import mu.KLogging
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
+import java.io.File
 
 /**
  * Created by nikky on 28/03/18.
@@ -23,7 +24,7 @@ data class NestedPack(
      */
     var title: String = "",
     var version: String = "1.0",
-    var icon: String = "icon.png",
+    var icon: File = File("icon.png"),
     val authors: List<String> = emptyList(),
     var forge: String = "recommended",
     var userFiles: UserFiles = UserFiles(),

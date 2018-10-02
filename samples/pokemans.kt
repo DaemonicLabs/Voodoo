@@ -38,7 +38,7 @@ fun main(args: Array<String>) = withDefaultMain(root = File("."), arguments = ar
         title = "Pokemans Reloaded",
         version = "1.0",
         mcVersion = "1.10.2",
-        icon = "icon.png",
+        icon = root.resolve("icon.png"),
         authors = listOf("capitalthree", "NikkyAi"),
         forge = "2422",
         userFiles = UserFiles(

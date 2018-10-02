@@ -30,7 +30,7 @@ data class LockPack(
     val mcVersion: String,
     @Optional val title: String = "",
     @Optional val version: String = "1.0",
-    @Optional val icon: String = "icon.png",
+    @Optional val icon: File = File("icon.png"),
     @Optional val authors: List<String> = emptyList(),
     @Optional val forge: Int = -1,
     @Optional val launch: LaunchModifier = LaunchModifier(),
@@ -95,7 +95,7 @@ data class LockPack(
         get() = rootFolder.resolve(localDir)
     @Transient
     val iconFile: File
-        get() = rootFolder.resolve(icon)
+        get() = icon
 
     @Transient
     val entrySet: MutableSet<LockEntry> = mutableSetOf()
@@ -147,7 +147,7 @@ data class LockPack(
                 "Pack Version" to "`$version`",
                 "MC Version" to "`$mcVersion`",
                 "Author" to "`${authors.joinToString(", ")}`",
-                "Icon" to "<img src=\"$icon\" alt=\"icon\" style=\"max-height: 128px;\"/>"
+                "Icon" to "<img src=\"${icon.relativeTo(rootFolder).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
             )
         )
 

@@ -32,7 +32,7 @@ fun main(args: Array<String>) = withDefaultMain(
         version = "2.1.9",
         mcVersion = "1.12.2", //TODO: generate sealed class with mc version -> see forge versions
         forge = "2759", //TODO: generate file with compatible forge version  //TODO: type = {recommended, latest} | buildnumber, make sealed class
-        icon = "icon.png", //TODO: type = File
+        icon = root.resolve("icon.png"), //TODO: type = File
         sourceDir = "src",
         userFiles = UserFiles(
             include = listOf(
