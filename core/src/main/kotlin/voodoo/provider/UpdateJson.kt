@@ -1,20 +1,20 @@
 package voodoo.provider
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.defaultRequest
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.request.get
-import io.ktor.client.request.header
+
+import awaitObjectResponse
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
+import com.github.kittinunf.result.Result
 import kotlinx.coroutines.experimental.channels.SendChannel
 import mu.KLogging
+import voodoo.curse.CurseClient
+import voodoo.data.curse.Addon
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import voodoo.data.provider.UpdateChannel
 import voodoo.util.Downloader
 import voodoo.util.encoded
-import voodoo.util.json.TestKotlinxSerializer
-import voodoo.util.redirect.HttpRedirectFixed
+
 import java.io.File
 
 /**
@@ -22,26 +22,33 @@ import java.io.File
  * @author Nikky
  */
 object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
-    private val client = HttpClient(Apache) {
-        //        engine { }
-        defaultRequest {
-            header("User-Agent", Downloader.useragent)
-        }
-        install(HttpRedirectFixed) {
-            applyUrl { it.encoded }
-        }
-        install(JsonFeature) {
-            serializer = TestKotlinxSerializer()
+//    private val client = HttpClient(Apache) {
+//        //        engine { }
+//        defaultRequest {
+//        }
+//        install(HttpRedirectFixed) {
+//            applyUrl { it.encoded }
+//        }
+//        install(JsonFeature) {
+//            serializer = TestKotlinxSerializer()
+//        }
+//    }
+
+//    header("User-Agent" to Downloader.useragent)
+
+    private suspend fun getUpdateJson(url: String): UpdateJson? {
+        val(request, response, result) = url.httpGet()
+            .header("User-Agent" to Downloader.useragent)
+            .awaitObjectResponse<UpdateJson>(kotlinxDeserializerOf())
+        return when(result) {
+            is Result.Success ->  result.value
+            is Result.Failure -> {
+                logger.error(result.error.exception) { result.error }
+                result.error.exception.printStackTrace()
+                null
+            }
         }
     }
-
-    private suspend fun getUpdateJson(url: String): UpdateJson? =
-        try {
-            client.get<UpdateJson>(url)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            null
-        }
 
     override suspend fun resolve(
         entry: Entry,

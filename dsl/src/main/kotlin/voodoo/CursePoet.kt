@@ -1,25 +1,20 @@
 package voodoo
 
+import awaitObjectResponse
+import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.serialization.jsonBody
+import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
+import com.github.kittinunf.result.Result
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.defaultRequest
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
-import voodoo.util.encoded
-import voodoo.util.json.TestKotlinxSerializer
-import voodoo.util.redirect.HttpRedirectFixed
 import java.io.File
 
 fun main(vararg args: String) {
@@ -64,19 +59,6 @@ fun cursePoet(
 }
 
 object CursePoet : KLogging() {
-    private val client = HttpClient(Apache) {
-//        engine { }
-        defaultRequest {
-            header("User-Agent", CurseClient.useragent)
-        }
-        install(HttpRedirectFixed) {
-            applyUrl { it.encoded }
-        }
-        install(JsonFeature) {
-            serializer = TestKotlinxSerializer()
-        }
-    }
-
     internal fun generate(
         name: String,
         slugIdMap: Map<String, ProjectID>,
@@ -145,7 +127,7 @@ object CursePoet : KLogging() {
     private suspend fun graphQlRequest(filter: String): Map<String, ProjectID> {
         val url = "https://curse.nikky.moe/graphql"
         CurseClient.logger.debug("post $url")
-        val request = GraphQLRequest(
+        val requestBody = GraphQLRequest(
             query = """
                     |{
                     |  addons($filter) {
@@ -156,16 +138,21 @@ object CursePoet : KLogging() {
                 """.trimMargin(),
             operationName = "GetNameIDPairs"
         )
-        return try {
-            client.post<GraphQlResult>(url) {
-                contentType(ContentType.Application.Json)
-                body = request
-            }.data.addons.map { (id, slug) ->
-                slug to ProjectID(id)
-            }.toMap()
-        } catch (e: Exception) {
-            logger.error("url: $url")
-            throw e
+        val (request, response, result) = Fuel.post(url)
+            .jsonBody(body = JSON.stringify(requestBody))
+            .header("User-Agent" to CurseClient.useragent)
+            .awaitObjectResponse<GraphQlResult>(kotlinxDeserializerOf())
+
+        return when (result) {
+            is Result.Success -> {
+                result.value.data.addons.map { (id, slug) ->
+                    slug to ProjectID(id)
+                }.toMap()
+            }
+            is Result.Failure -> {
+                logger.error(result.error.exception) { "cold not request slug-id pairs" }
+                throw result.error.exception
+            }
         }
     }
 }

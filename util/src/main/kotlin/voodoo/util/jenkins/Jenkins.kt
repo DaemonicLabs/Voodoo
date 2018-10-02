@@ -1,48 +1,35 @@
 package voodoo.util.jenkins
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.defaultRequest
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.request.get
-import io.ktor.client.request.header
+import awaitByteArrayResponse
+import awaitObjectResponse
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
+import com.github.kittinunf.result.Result
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.util.UtilConstants
-import voodoo.util.json.TestKotlinxSerializer
-import voodoo.util.redirect.HttpRedirectFixed
 import java.io.File
 
 object Jenkins : KLogging()
 
-private val client = HttpClient(Apache) {
-//        engine { }
-
-    defaultRequest {
-        header("User-Agent", userAgent)
-    }
-    install(HttpRedirectFixed)
-    install(JsonFeature) {
-        serializer = TestKotlinxSerializer(JSON(nonstrict = true))
-    }
-}
-private val userAgent = "voodoo/${UtilConstants.VERSION}"
+private val json = JSON(nonstrict = true)
+private val useragent = "voodoo/${UtilConstants.VERSION}"
 
 suspend fun downloadVoodoo(
     component: String,
     bootstrap: Boolean = true,
-    url: String = "https://ci.elytradev.com",
+    serverUrl: String = "https://ci.elytradev.com",
     job: String = "elytra/Voodoo/rewrite", //TODO: switch to master once merged
     binariesDir: File
 ): File {
     val moduleName = "${if (bootstrap) "bootstrap-" else ""}$component"
     val fileRegex = "$moduleName-[^-]*(?!-fat)\\.jar"
 
-    val server = JenkinsServer(url)
-    val jenkinsJob = server.getJob(job, userAgent)!!
-    val build = jenkinsJob.lastSuccessfulBuild?.details(userAgent)!!
+    val server = JenkinsServer(serverUrl)
+    val jenkinsJob = server.getJob(job, useragent)!!
+    val build = jenkinsJob.lastSuccessfulBuild?.details(useragent)!!
     val buildNumber = build.number
     Jenkins.logger.info("lastSuccessfulBuild: $buildNumber")
     Jenkins.logger.debug("looking for $fileRegex")
@@ -58,31 +45,39 @@ suspend fun downloadVoodoo(
     val artifactUrl = build.url + "artifact/" + artifact.relativePath
     val tmpFile = File(binariesDir, "$moduleName-$buildNumber.tmp")
     val targetFile = File(binariesDir, "$moduleName-$buildNumber.jar")
-    val content: ByteArray = try {
-        client.get(artifactUrl)
-    } catch (e: Exception) {
-        e.printStackTrace()
-        Jenkins.logger.error(e.message)
-        Jenkins.logger.error("unable to download jarfile from $artifactUrl")
-        throw e
+    val(request, response, result) = artifactUrl.httpGet()
+        .header("User-Agent" to useragent)
+        .awaitByteArrayResponse()
+    val content = when(result) {
+        is Result.Success ->  result.value
+        is Result.Failure -> {
+            Jenkins.logger.error { result.error }
+            Jenkins.logger.error("unable to download jarfile from $artifactUrl")
+            throw result.error.exception
+        }
     }
+
     tmpFile.writeBytes(content)
     tmpFile.renameTo(targetFile)
     return targetFile
 }
 
-class JenkinsServer(val url: String) {
-    fun getUrl(job: String) = url + "/job/" + job.replace("/", "/job/")
+class JenkinsServer(val serverUrl: String) {
+    fun getUrl(job: String) = serverUrl + "/job/" + job.replace("/", "/job/")
 
-    suspend fun getJob(job: String, userAgent: String): Job? {
+    suspend fun getJob(job: String, useragent: String): Job? {
         val requestURL = getUrl(job) + "/api/json"
-        return try {
-            client.get(requestURL) { header("User-Agent", userAgent) }
-        } catch(e: Exception) {
-            e.printStackTrace()
-            Jenkins.logger.error(e.message)
-            Jenkins.logger.error("url: $requestURL")
-            null
+        val(request, response, result) = requestURL.httpGet()
+            .header("User-Agent" to useragent)
+            .awaitObjectResponse<Job>(kotlinxDeserializerOf(json = json))
+        return when(result) {
+            is Result.Success ->  result.value
+            is Result.Failure -> {
+                result.error.exception.printStackTrace()
+                Jenkins.logger.error { result.error }
+                Jenkins.logger.error("url: $requestURL")
+                null
+            }
         }
     }
 }
@@ -93,15 +88,19 @@ data class Build(
     val number: Int,
     val url: String
 ) {
-    suspend fun details(userAgent: String): BuildWithDetails? {
+    suspend fun details(useragent: String): BuildWithDetails? {
         val url = "$url/api/json"
-        return try {
-            client.get(url) { header("User-Agent", userAgent) }
-        } catch(e: Exception) {
-            e.printStackTrace()
-            Jenkins.logger.error(e.message)
-            Jenkins.logger.error("build url: $url")
-            null
+        val(request, response, result) = url.httpGet()
+            .header("User-Agent" to useragent)
+            .awaitObjectResponse<BuildWithDetails>(kotlinxDeserializerOf(json = json))
+        return when(result) {
+            is Result.Success ->  result.value
+            is Result.Failure -> {
+                result.error.exception.printStackTrace()
+                Jenkins.logger.error { result.error }
+                Jenkins.logger.error("build url: $url")
+                null
+            }
         }
     }
 }

@@ -1,21 +1,16 @@
 package voodoo.forge
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.defaultRequest
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.request.get
-import io.ktor.client.request.header
+import awaitObjectResponse
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
+import com.github.kittinunf.result.Result
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.async
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.Quadruple
+import voodoo.provider.ProviderBase
 import voodoo.util.Downloader
-import voodoo.util.encoded
-import voodoo.util.json.TestKotlinxSerializer
-import voodoo.util.redirect.HttpRedirectFixed
 
 /**
  * Created by nikky on 30/12/17.
@@ -25,18 +20,18 @@ object Forge : KLogging() {
 
     private val deferredData = GlobalScope.async { getForgeData() }
 
-    private val client = HttpClient(Apache) {
-//        engine { }
-        defaultRequest {
-            header("User-Agent", Downloader.useragent)
-        }
-//        install(HttpRedirectFixed) {
-//            applyUrl { it.encoded }
+//    private val client = HttpClient(Apache) {
+////        engine { }
+//        defaultRequest {
+//            header("User-Agent", Downloader.useragent)
 //        }
-        install(JsonFeature) {
-            serializer = TestKotlinxSerializer(JSON(indented = true))
-        }
-    }
+////        install(HttpRedirectFixed) {
+////            applyUrl { it.encoded }
+////        }
+//        install(JsonFeature) {
+//            serializer = TestKotlinxSerializer(JSON(indented = true))
+//        }
+//    }
 
     suspend fun getForgeBuild(version: String, mcVersion: String): Int {
         val data = deferredData.await()
@@ -91,8 +86,17 @@ object Forge : KLogging() {
     }
 
     suspend fun getForgeData(): ForgeData {
-        val content = client.get<String>("http://files.minecraftforge.net/maven/net/minecraftforge/forge/json")
-        return JSON().parse(content)
+        val url = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/json"
+        val(request, response, result) = url.httpGet()
+            .header("User-Agent" to Downloader.useragent)
+            .awaitObjectResponse<ForgeData>(kotlinxDeserializerOf())
+        return when(result) {
+            is Result.Success ->  result.value
+            is Result.Failure -> {
+                ProviderBase.logger.error { result.error }
+                throw result.error.exception
+            }
+        }
     }
 }
 

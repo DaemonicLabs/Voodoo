@@ -22,6 +22,7 @@ include("util")
 include("importer", "builder", "pack", "pack:tester")
 include("server-installer")
 include("bootstrap")
+include("fuel-kotlinxserialization")
 
 //include("Jankson")
 
