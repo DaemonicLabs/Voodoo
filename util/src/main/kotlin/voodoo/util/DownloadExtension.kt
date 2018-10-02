@@ -4,11 +4,6 @@ import awaitByteArrayResponse
 import com.github.kittinunf.fuel.core.isStatusRedirection
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.HttpRedirect
-import io.ktor.client.features.defaultRequest
-import io.ktor.client.request.header
 import kotlinx.io.IOException
 import mu.KLogger
 import mu.KLogging
@@ -21,13 +16,6 @@ import java.lang.IllegalStateException
  * @author Nikky
  */
 object Downloader : KLogging() {
-    val client = HttpClient(Apache) {
-        defaultRequest {
-            header("User-Agent", useragent)
-        }
-        install(HttpRedirect)
-    }
-
     const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 }
 
@@ -63,6 +51,7 @@ suspend fun File.download(
                             throw IllegalStateException("missing Location header")
                         true
                     } else {
+//                        logger.error(result.error.exception) { result.error }
                         logger.error("invalid statusCode {} from {}", response.statusCode, url.encoded)
                         logger.error("connection url: {}", request.url)
                         logger.error("content: {}", result.component1())

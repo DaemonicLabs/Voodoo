@@ -1,18 +1,17 @@
 package voodoo.curse
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.defaultRequest
-import io.ktor.client.request.header
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.request.get
-import io.ktor.client.request.post
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
+import awaitObjectResponse
+import awaitStringResponse
+import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.serialization.jsonBody
+import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
+import com.github.kittinunf.result.Result
 import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.serialization.*
-import kotlinx.serialization.internal.SerialClassDescImpl
+import kotlinx.serialization.SerialContext
+import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
+import kotlinx.serialization.list
 import mu.KLogging
 import voodoo.core.CoreConstants.VERSION
 import voodoo.data.curse.Addon
@@ -21,31 +20,19 @@ import voodoo.data.curse.CurseConstancts.PROXY_URL
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
-import voodoo.util.encoded
-import voodoo.util.json.TestKotlinxSerializer
-import voodoo.util.redirect.HttpRedirectFixed
+import voodoo.util.Downloader
 import voodoo.util.serializer.DateSerializer
-import java.util.*
+import java.util.Date
+import java.util.HashMap
 
 /**
  * Created by nikky on 30/01/18.
  * @author Nikky
  */
 object CurseClient : KLogging() {
-    private val client = HttpClient(Apache) {
-//        engine { }
-        defaultRequest {
-            header("User-Agent", useragent)
-        }
-        install(HttpRedirectFixed) {
-            applyUrl { it.encoded }
-        }
-        install(JsonFeature) {
-            serializer = TestKotlinxSerializer() {
-                registerSerializer(Date::class, DateSerializer)
-            }
-        }
-    }
+    private val json = JSON(context = SerialContext().apply {
+        registerSerializer(Date::class, DateSerializer)
+    })
     //    const val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10"
     const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
@@ -77,7 +64,7 @@ object CurseClient : KLogging() {
     private suspend fun graphQLRequest(): GraphQlResult {
         val url = "https://curse.nikky.moe/graphql"
         logger.debug("post $url")
-        val request = GraphQLRequest(
+        val requestBody = GraphQLRequest(
             query = """
                     |{
                     |  addons(gameID: 432) {
@@ -86,16 +73,21 @@ object CurseClient : KLogging() {
                     |  }
                     |}
                 """.trimMargin(),
-            operationName = "GetNameIDPairs"
+            operationName = "GetSlugIDPairs"
         )
-        return try {
-            client.post(url) {
-                contentType(ContentType.Application.Json)
-                body = request
+        val (request, response, result) = Fuel.post(url)
+            .jsonBody(body = JSON.stringify(requestBody))
+            .header("User-Agent" to useragent)
+            .awaitObjectResponse<GraphQlResult>(kotlinxDeserializerOf())
+
+        when (result) {
+            is Result.Success -> {
+                return result.value
             }
-        } catch (e: Exception) {
-            logger.error("url: $url")
-            throw e
+            is Result.Failure -> {
+                logger.error(result.error.exception) { "cold not request slug-id pairs" }
+                throw result.error.exception
+            }
         }
     }
 
@@ -121,12 +113,17 @@ object CurseClient : KLogging() {
         val url = "$proxyUrl/addon/$addonId/file/$fileId"
 
         logger.debug("get $url")
-        return try {
-            client.get(url)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            logger.error(e.message)
-            null
+
+        val(request, response, result) = url.httpGet()
+            .header("User-Agent" to useragent)
+            .awaitObjectResponse<AddonFile>(kotlinxDeserializerOf(json = json))
+        return when(result) {
+            is Result.Success ->  result.value
+            is Result.Failure -> {
+                logger.error(result.error.exception) { result.error }
+                throw result.error.exception
+                null
+            }
         }
     }
 
@@ -142,14 +139,16 @@ object CurseClient : KLogging() {
         val url = "$proxyUrl/addon/$addonId/files"
 
         logger.debug("get $url")
-
-        return try {
-            client.get(url)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            logger.error(e.message)
-            emptyList()
-//            throw IllegalStateException()
+        val(request, response, result) = url.httpGet()
+            .header("User-Agent" to useragent)
+            .awaitObjectResponse<List<AddonFile>>(kotlinxDeserializerOf(AddonFile.serializer().list, json))
+        return when(result) {
+            is Result.Success ->  result.value
+            is Result.Failure -> {
+                logger.error(result.error.exception) { result.error }
+                throw result.error.exception
+                emptyList()
+            }
         }
     }
 
@@ -165,14 +164,16 @@ object CurseClient : KLogging() {
         val url = "$proxyUrl/addon/$addonId"
 
         logger.debug("get $url")
-
-        return try {
-            client.get(url)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            logger.error("url: $url")
-            logger.error(e.message)
-            null
+        val(request, response, result) = url.httpGet()
+            .header("User-Agent" to useragent)
+            .awaitObjectResponse<Addon>(kotlinxDeserializerOf(json = json))
+        return when(result) {
+            is Result.Success ->  result.value
+            is Result.Failure -> {
+                logger.error(result.error.exception) { result.error }
+                throw result.error.exception
+                null
+            }
         }
     }
 
@@ -181,10 +182,16 @@ object CurseClient : KLogging() {
 
         logger.debug("get $url")
 
-        return try {
-            client.get(url)
-        } catch (e: Exception) {
-            throw Exception("failed getting cursemeta data", e)
+        logger.debug("get $url")
+        val(request, response, result) = url.httpGet()
+            .header("User-Agent" to useragent)
+            .awaitStringResponse()
+        return when(result) {
+            is Result.Success ->  result.value
+            is Result.Failure -> {
+                logger.error(result.error.exception) { result.error }
+                throw IllegalStateException("failed getting changelog", result.error.exception)
+            }
         }
     }
 

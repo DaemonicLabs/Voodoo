@@ -1,15 +1,13 @@
 package voodoo
 
+import awaitObjectResponse
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
+import com.github.kittinunf.result.Result
 import com.skcraft.launcher.model.modpack.Manifest
 import com.skcraft.launcher.model.modpack.RequireAll
 import com.skcraft.launcher.model.modpack.RequireAny
 import com.xenomachina.argparser.ArgParser
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.defaultRequest
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.request.get
-import io.ktor.client.request.header
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.joinAll
 import kotlinx.coroutines.experimental.launch
@@ -24,8 +22,6 @@ import voodoo.mmc.MMCUtil.selectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.*
-import voodoo.util.json.TestKotlinxSerializer
-import voodoo.util.redirect.HttpRedirectFixed
 import java.awt.Toolkit
 import java.io.File
 import java.util.*
@@ -51,19 +47,6 @@ object Hex : KLogging() {
 
     private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
 
-    private val client = HttpClient(Apache) {
-//        engine { }
-        defaultRequest {
-            header("User-Agent", CurseClient.useragent)
-        }
-        install(HttpRedirectFixed) {
-            applyUrl { it.encoded }
-        }
-        install(JsonFeature) {
-            serializer = TestKotlinxSerializer()
-        }
-    }
-
     private val json = JSON(indented = true)
 
     private suspend fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
@@ -71,12 +54,15 @@ object Hex : KLogging() {
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         val packUrl = urlFile.readText().trim()
 
-        val modpack: Manifest = try {
-            client.get(packUrl)
-        } catch (e: Exception) {
-            logger.error("could not retrieve pack")
-            logger.error(e.message)
-            return
+        val(request, response, result) = packUrl.httpGet()
+            .header("User-Agent" to CurseClient.useragent)
+            .awaitObjectResponse<Manifest>(kotlinxDeserializerOf())
+        val modpack = when(result) {
+            is Result.Success ->  result.value
+            is Result.Failure -> {
+                logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
+                return
+            }
         }
 
         val oldpackFile = instanceDir.resolve("voodoo.modpack.json")

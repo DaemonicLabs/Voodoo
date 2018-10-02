@@ -6,6 +6,11 @@
  */
 package com.skcraft.launcher.builder
 
+import awaitByteArrayResponse
+import awaitObjectResponse
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
+import com.github.kittinunf.result.Result
 import com.skcraft.launcher.LauncherUtils
 import com.skcraft.launcher.model.loader.InstallProfile
 import com.skcraft.launcher.model.minecraft.Library
@@ -13,10 +18,6 @@ import com.skcraft.launcher.model.minecraft.VersionManifest
 import com.skcraft.launcher.model.modpack.Manifest
 import com.skcraft.launcher.util.Environment
 import com.xenomachina.argparser.ArgParser
-import io.ktor.client.request.get
-import io.ktor.client.response.HttpResponse
-import io.ktor.client.response.readBytes
-import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext
@@ -26,14 +27,12 @@ import kotlinx.io.InputStream
 import mu.KLogging
 import voodoo.util.Directories
 import voodoo.util.copyInputStreamToFile
-import kotlinx.io.core.Closeable
 import kotlinx.serialization.SerialContext
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
 import voodoo.util.Downloader
-import voodoo.util.Downloader.client
-import voodoo.util.encoded
+import java.io.Closeable
 import java.io.File
 import java.util.Properties
 import java.util.jar.JarFile
@@ -71,10 +70,6 @@ constructor(
     init {
         mavenRepos = LauncherUtils::class.java.getResourceAsStream("maven_repos.json").use {
             json.parse<List<String>>(String.serializer().list, it.bufferedReader().use { reader -> reader.readText() })
-//            mapper.readValue<List<String>>(
-//                it,
-//                object : TypeReference<List<String>>() {}
-//            )
         }
     }
 
@@ -124,7 +119,6 @@ constructor(
                 var data = jarFile.getInputStream(profileEntry).bufferedReader().use { it.readText() }
                 data = data.replace(",\\s*\\}".toRegex(), "}") // Fix issues with trailing commas
                 val profile: InstallProfile = json.parse(data)
-                //mapper.readValue<InstallProfile>(data, InstallProfile::class.java)
                 val version = manifest.versionManifest
                 // Copy tweak class arguments
                 val args = profile.versionInfo.minecraftArguments
@@ -193,7 +187,7 @@ constructor(
                         }
                         sources.addAll(mavenRepos!!)
                         // Try each repository
-                        for (baseUrl in sources) {
+                        loop@for (baseUrl in sources) {
                             var pathname = library.getPath(env)
                             // Some repositories compress their files
                             val compressors = BuilderUtils.getCompressors(baseUrl)
@@ -204,14 +198,17 @@ constructor(
                             val tempFile = File.createTempFile("launcherlib", null)
                             try {
                                 logger.info("Downloading library " + library.name + " from " + url + "...")
-                                val response = Downloader.client.get<HttpResponse>(url.encoded)
-
-                                if (response.status != HttpStatusCode.OK) {
-                                    logger.info("Could not get file from $url: ${response.status}")
-                                    continue
+                                val(request, response, result) = url.httpGet()
+                                    .header("User-Agent" to Downloader.useragent)
+                                    .awaitByteArrayResponse()
+                                val bytes = when(result) {
+                                    is Result.Success ->  result.value
+                                    is Result.Failure -> {
+                                        logger.warn("Could not get file from $url: ${response.statusCode}")
+                                        logger.error { result.error }
+                                        continue@loop
+                                    }
                                 }
-
-                                val bytes: ByteArray = response.readBytes()
 
                                 logger.info("writing to $tempFile")
                                 tempFile.writeBytes(bytes)
@@ -275,12 +272,15 @@ constructor(
         } else {
             val url = String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion)
             logger.info("Fetching version manifest from $url...")
-            manifest.versionManifest = try {
-                val content = client.get<String>(url)
-                json.parse<VersionManifest>(content)
-            } catch (e: Exception) {
-                logger.error("cannot parse manifest from $url", e)
-                throw e
+            val(request, response, result) = url.httpGet()
+                .header("User-Agent" to Downloader.useragent)
+                .awaitObjectResponse<VersionManifest>(kotlinxDeserializerOf(json = json))
+            manifest.versionManifest =  when(result) {
+                is Result.Success ->  result.value
+                is Result.Failure -> {
+                    logger.error { "cannot parse manifest from $url error: ${result.error}" }
+                    throw result.error.exception
+                }
             }
         }
     }
