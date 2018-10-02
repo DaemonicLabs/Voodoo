@@ -28,13 +28,9 @@ object Murmur2Hash {
 
     @Throws(IOException::class)
     fun computeFileHash(path: String, normalizeWhitespace: Boolean = true): Long {
-        var ch: FileChannel? = null
-        try {
-            ch = FileChannel.open(Paths.get(path), StandardOpenOption.READ)
-            val len = if (normalizeWhitespace) computeNormalizedLength(Channels.newInputStream(ch!!.position(0)), null) else ch!!.size()
-            return computeHash(BufferedInputStream(Channels.newInputStream(ch.position(0))), len, true)
-        } finally {
-            if (ch != null) ch.close()
+        FileChannel.open(Paths.get(path), StandardOpenOption.READ).use { ch ->
+            val len = if (normalizeWhitespace) computeNormalizedLength(Channels.newInputStream(ch.position(0)), null) else ch!!.size()
+            return computeHash(BufferedInputStream(Channels.newInputStream(ch.position(0))), len, normalizeWhitespace)
         }
     }
 
@@ -152,8 +148,10 @@ object Murmur2Hash {
     }
 
     private fun isWhitespaceCharacter(b: Int): Boolean {
-        return b == 9 || b == 10 || b == 13 || b == 32
-
+        return when(b) {
+            9, 10, 13, 20 -> true
+            else -> false
+        }
     }
 
     @Throws(IOException::class)

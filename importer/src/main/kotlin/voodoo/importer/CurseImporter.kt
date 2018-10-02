@@ -156,7 +156,7 @@ object CurseImporter : AbstractImporter() {
             authors = listOf(manifest.author),
             title = manifest.name,
             version = manifest.version,
-            forge = forge ?: "recommended",
+            forge = null, //TODO pick correct forge version quadruple
             mcVersion = manifest.minecraft.version,
             sourceDir = overridesFolder.relativeTo(target).path,
             localDir = local,

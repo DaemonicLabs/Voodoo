@@ -1,9 +1,17 @@
 package voodoo
 
 import com.skcraft.launcher.model.modpack.Feature
+import kotlinx.coroutines.experimental.runBlocking
+import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
-import voodoo.provider.*
+import voodoo.dsl.CurseMod
+import voodoo.provider.CurseProvider
+import voodoo.provider.DirectProvider
+import voodoo.provider.JenkinsProvider
+import voodoo.provider.LocalProvider
+import voodoo.provider.ProviderBase
+import voodoo.provider.UpdateJsonProvider
 import java.io.File
 import kotlin.reflect.KProperty0
 
@@ -48,7 +56,7 @@ abstract class Wrapper<P : ProviderBase>(
     }
 }
 
-inline infix fun <reified W: Wrapper<P>, P: ProviderBase> W.description(s: String) = apply { description = s }
+inline infix fun <reified W : Wrapper<P>, P : ProviderBase> W.description(s: String) = apply { description = s }
 
 class FeatureWrapper(feature: Feature) {
     var name by property(feature::name)
@@ -59,7 +67,7 @@ class FeatureWrapper(feature: Feature) {
 
 // CURSE
 
-inline infix fun <reified W: Wrapper<CurseProvider>> W.optionals(b: Boolean) =
+inline infix fun <reified W : Wrapper<CurseProvider>> W.optionals(b: Boolean) =
     apply { entry.curseOptionalDependencies = b }
 
 //var Wrapper<CurseProvider>.metaUrl: String by property { entry::curseMetaUrl }
@@ -93,7 +101,7 @@ var SpecificEntry<CurseProvider>.fileID
     }
 
 // DIRECT
-inline infix fun <reified W: SpecificEntry<DirectProvider>> W.url(s: String) =
+inline infix fun <reified W : SpecificEntry<DirectProvider>> W.url(s: String) =
     apply { entry.url = s }
 
 var SpecificEntry<DirectProvider>.url
@@ -108,7 +116,7 @@ var Wrapper<DirectProvider>.useUrlTxt
     }
 
 //JENKINS
-inline infix fun <reified W: SpecificEntry<JenkinsProvider>> W.job(s: String) =
+inline infix fun <reified W : SpecificEntry<JenkinsProvider>> W.job(s: String) =
     apply { entry.job = s }
 
 var Wrapper<JenkinsProvider>.jenkinsUrl
@@ -166,11 +174,9 @@ class GroupingEntry<R : ProviderBase>(
 ) : Wrapper<R>(provider, entry)
 
 @VoodooDSL
-class EntriesList<P : ProviderBase>(val parent: P) {
+class EntriesList<T : ProviderBase>(val provider: T, val parent: GroupingEntry<T>) {
     val entries: MutableList<Wrapper<*>> = mutableListOf()
 }
-
-
 
 fun <T : ProviderBase> rootEntry(provider: T, function: GroupingEntry<T>.() -> Unit): NestedEntry {
     val entry = NestedEntry()
@@ -183,7 +189,7 @@ fun <T : ProviderBase> rootEntry(provider: T, function: GroupingEntry<T>.() -> U
  * Create new EntryList as subentries to `this`
  */
 fun <T : ProviderBase> GroupingEntry<T>.list(function: EntriesList<T>.() -> Unit) {
-    EntriesList(provider).apply {
+    EntriesList(provider, this).apply {
         function()
         this@list.entry.entries += entries.map { it.entry }
     }
@@ -205,33 +211,55 @@ fun <T : ProviderBase, R : ProviderBase> EntriesList<T>.withProvider(
 
 fun <T : ProviderBase> EntriesList<T>.group(block: GroupingEntry<T>.() -> Unit = {}): GroupingEntry<T> {
     val entry = NestedEntry()
-    val env = GroupingEntry(entry = entry, provider = this.parent)
+    val env = GroupingEntry(entry = entry, provider = this.provider)
     env.block()
     return env.also { this.entries += it }
 }
 
 fun <T : ProviderBase> EntriesList<T>.id(id: String, function: SpecificEntry<T>.() -> Unit = {}): SpecificEntry<T> {
     val entry = NestedEntry(id = id)
-    return SpecificEntry(provider = parent, entry = entry)
+    return SpecificEntry(provider = provider, entry = entry)
         .also {
             it.function()
             this.entries += it
         }
 }
 
-//TODO: take Pair<String, ProjectID>
-fun EntriesList<CurseProvider>.id(id: Int, function: SpecificEntry<CurseProvider>.() -> Unit = {}): SpecificEntry<CurseProvider> {
-    val entry = NestedEntry(id = id.toString(), curseProjectID = ProjectID(id))
-    return SpecificEntry(provider = parent, entry = entry)
+fun EntriesList<CurseProvider>.id(
+    id: Int,
+    function: SpecificEntry<CurseProvider>.() -> Unit = {}
+): SpecificEntry<CurseProvider> {
+    val projectId = ProjectID(id)
+    //TODO: replace with lookup in slugIdMap
+    val addon = runBlocking {
+        CurseClient.getAddon(ProjectID(id), parent.metaUrl)
+    }
+    val entry = NestedEntry(id = addon!!.slug, curseProjectID = projectId)
+    return SpecificEntry(provider = provider, entry = entry)
         .also {
             it.function()
             this.entries += it
         }
 }
 
-fun EntriesList<CurseProvider>.id(mod: KProperty0<Int>, function: SpecificEntry<CurseProvider>.() -> Unit = {}): SpecificEntry<CurseProvider> {
-    val entry = NestedEntry(id = mod.name, curseProjectID = ProjectID(mod.get()))
-    return SpecificEntry(provider = parent, entry = entry)
+fun EntriesList<CurseProvider>.id(
+    idProperty: KProperty0<Int>,
+    function: SpecificEntry<CurseProvider>.() -> Unit = {}
+): SpecificEntry<CurseProvider> {
+    val entry = NestedEntry(id = idProperty.name, curseProjectID = ProjectID(idProperty.get()))
+    return SpecificEntry(provider = provider, entry = entry)
+        .also {
+            it.function()
+            this.entries += it
+        }
+}
+
+fun EntriesList<CurseProvider>.id(
+    mod: CurseMod,
+    function: SpecificEntry<CurseProvider>.() -> Unit = {}
+): SpecificEntry<CurseProvider> {
+    val entry = NestedEntry(id = mod.id, curseProjectID = ProjectID(mod.projectId))
+    return SpecificEntry(provider = provider, entry = entry)
         .also {
             it.function()
             this.entries += it

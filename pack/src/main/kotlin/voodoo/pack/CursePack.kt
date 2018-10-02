@@ -67,7 +67,7 @@ object CursePack : AbstractPack() {
         coroutineScope {
             val jobs = mutableListOf<Job>()
 
-            val (_, _, _, forgeVersion) = Forge.resolveVersion(modpack.forge.toString(), modpack.mcVersion)
+            val forgeVersion = modpack.forge?.forgeVersion
 
             val modsFolder = srcFolder.resolve("mods")
             logger.info("cleaning mods $modsFolder")
@@ -162,12 +162,14 @@ object CursePack : AbstractPack() {
                 author = modpack.authors.joinToString(", "),
                 minecraft = CurseMinecraft(
                     version = modpack.mcVersion,
-                    modLoaders = listOf(
-                        CurseModLoader(
-                            id = "forge-$forgeVersion",
-                            primary = true
+                    modLoaders = forgeVersion?.run {
+                        listOf(
+                            CurseModLoader(
+                                id = "forge-$forgeVersion",
+                                primary = true
+                            )
                         )
-                    )
+                    } ?: emptyList()
                 ),
                 manifestType = "minecraftModpack",
                 manifestVersion = 1,

@@ -29,10 +29,10 @@ object DslSpek : Spek({
                 version = "1.0",
                 mcVersion = "1.12.2",
                 //TODO: type = File
-                icon = "icon.png",
+                icon = File("icon.png"),
                 authors = listOf("dude", "and", "friends"),
                 //TODO: type = {recommended, latest} | buildnumber, make sealed class
-                forge = "recommended",
+                forge = Forge.recommended,
                 root = rootEntry(CurseProvider) {
                     optionals = false
                     releaseTypes = setOf(FileType.RELEASE, FileType.BETA)

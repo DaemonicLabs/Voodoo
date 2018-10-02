@@ -22,14 +22,15 @@ fun main(args: Array<String>) = withDefaultMain(
     arguments = args
 ) {
     NestedPack(
-        id = "local",
+        id = "cursefail",
         mcVersion = "1.12.2",
-        localDir = "local",
-        root = rootEntry(LocalProvider) {
+        root = rootEntry(CurseProvider) {
             list {
-                id("correlated") {
-                    fileSrc = "Correlated-1.12.2-2.1.125.jar"
-                }
+                id(Mod.electroblobsWizardry)
+                id(Mod.botania)
+                id(Mod.betterBuildersWands)
+                id(Mod.bibliocraft)
+                id(Mod.toastControl)
             }
         }
     )

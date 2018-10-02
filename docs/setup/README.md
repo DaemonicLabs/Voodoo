@@ -23,7 +23,7 @@ using kscript:
 @file:KotlinOpts("-J-Xmx5g")
 @file:KotlinOpts("-J-server")
 
-import voodoo.cursePoet
+import voodoo.poet
 import java.io.File
 
 //TODO: figure out how to use File relative to script location

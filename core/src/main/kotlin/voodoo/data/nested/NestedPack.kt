@@ -2,6 +2,8 @@ package voodoo.data.nested
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import mu.KLogging
+import voodoo.data.ForgeVersion
+import voodoo.data.Quadruple
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
 import java.io.File
@@ -26,7 +28,7 @@ data class NestedPack(
     var version: String = "1.0",
     var icon: File = File("icon.png"),
     val authors: List<String> = emptyList(),
-    var forge: String = "recommended",
+    var forge: ForgeVersion? = null,
     var userFiles: UserFiles = UserFiles(),
     var launch: LaunchModifier = LaunchModifier(),
     var root: NestedEntry = NestedEntry(),

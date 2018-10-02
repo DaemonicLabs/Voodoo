@@ -113,15 +113,15 @@ root = rootEntry(CurseProvider) {
     optionals = false
     releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
     list {
-        id(Mod::thermalDynamics)
-        id(Mod::thermalexpansion)
-        id(Mod::thermalInnovation)
+        id(Mod.thermalDynamics)
+        id(Mod.thermalexpansion)
+        id(Mod.thermalInnovation)
         
         group {
             releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
         }.list {
-            id(Mod::rftools)
-            id(Mod::rftoolsDimensions)
+            id(Mod.rftools)
+            id(Mod.rftoolsDimensions)
         }
     }
 }
@@ -237,10 +237,10 @@ just some of the basics.. all examples use curse, but they could be from any pro
 group {
     side = Side.CLIENT
 }.list {
-    id(Mod::toastControl)
-    id(Mod::wawlaWhatAreWeLookingAt)
-    id(Mod::wailaHarvestability)
-    id(Mod::jeiIntegration)
+    id(Mod.toastControl)
+    id(Mod.wawlaWhatAreWeLookingAt)
+    id(Mod.wailaHarvestability)
+    id(Mod.jeiIntegration)
 }
 ```
 
@@ -252,10 +252,10 @@ Backup Solution and universal chatbridge
 group {
     side = Side.SERVER
 }.list {
-    id(Mod::btfuContinuousRsyncIncrementalBackup)
-    id(Mod::swingthroughgrass)
-    id(Mod::colorchat)
-    id(Mod::shadowfactsForgelin)
+    id(Mod.btfuContinuousRsyncIncrementalBackup)
+    id(Mod.swingthroughgrass)
+    id(Mod.colorchat)
+    id(Mod.shadowfactsForgelin)
     
     withProvider(JenkinsProvider) {
         jenkinsUrl = "https://ci.elytradev.com"
@@ -283,22 +283,22 @@ group {
         recommendation = Recommendation.starred
     }
 }.list {
-    id(Mod::journeymap) {
+    id(Mod.journeymap) {
         description =
             "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
     }
 
-    id(Mod::mage) description "Configurable graphics enhancements. Highly recomended."
+    id(Mod.mage) description "Configurable graphics enhancements. Highly recomended."
 
-    id(Mod::neat) {
+    id(Mod.neat) {
         description = "Simple health and unit frames."
     }
 
-    id(Mod::clientTweaks) {
+    id(Mod.clientTweaks) {
         description = "Various client related fixes and tweaks, all in a handy menu."
     }
 
-    id(Mod::mouseTweaks) {
+    id(Mod.mouseTweaks) {
         description = "Add extra mouse gestures for inventories and crafting grids."
     }
 }
@@ -307,19 +307,19 @@ group {
         selected = false
     }
 }.list {
-    id(Mod::itemScroller) {
+    id(Mod.itemScroller) {
         description = "Alternative to MouseTweaks."
     }
 
-    id(Mod::xaerosMinimap) {
+    id(Mod.xaerosMinimap) {
         description = "Lightweight alternative to JourneyMap."
     }
 
-    id(Mod::minemenu) {
+    id(Mod.minemenu) {
         description = "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
     }
 
-    id(Mod::itemzoom) {
+    id(Mod.itemzoom) {
         description = "Check this if you like to get a closer look at item textures."
     } 
 }
