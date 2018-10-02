@@ -1,6 +1,8 @@
 package voodoo
 
 import com.skcraft.launcher.model.modpack.Feature
+import kotlinx.coroutines.experimental.GlobalScope
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
@@ -225,16 +227,20 @@ fun <T : ProviderBase> EntriesList<T>.id(id: String, function: SpecificEntry<T>.
         }
 }
 
+val deferredSlugMap = GlobalScope.async {
+    CurseClient.graphQLRequest().map { (id, slug) ->
+        id to slug
+    }.toMap()
+}
+
 fun EntriesList<CurseProvider>.id(
     id: Int,
     function: SpecificEntry<CurseProvider>.() -> Unit = {}
 ): SpecificEntry<CurseProvider> {
-    val projectId = ProjectID(id)
-    //TODO: replace with lookup in slugIdMap
-    val addon = runBlocking {
-        CurseClient.getAddon(ProjectID(id), parent.metaUrl)
+    val slugMap = runBlocking {
+        deferredSlugMap.await()
     }
-    val entry = NestedEntry(id = addon!!.slug, curseProjectID = projectId)
+    val entry = NestedEntry(id = slugMap[id]!!, curseProjectID = ProjectID(id))
     return SpecificEntry(provider = provider, entry = entry)
         .also {
             it.function()

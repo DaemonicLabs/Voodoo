@@ -1,18 +1,11 @@
 package voodoo
 
-import awaitObjectResponse
-import com.github.kittinunf.fuel.Fuel
-import com.github.kittinunf.fuel.serialization.jsonBody
-import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
-import com.github.kittinunf.result.Result
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import com.squareup.kotlinpoet.asTypeName
 import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.data.ForgeVersion
@@ -98,7 +91,15 @@ object Poet : KLogging() {
 
         fun ForgeVersion.toPropertySpec(identifier: String): PropertySpec {
             return PropertySpec.builder(identifier, forgeVersionType)
-                .initializer("%T(%S, %S, %S, %S, %L)", forgeVersionType, url, fileName, longVersion, forgeVersion, build).build()
+                .initializer(
+                    "%T(%S, %S, %S, %S, %L)",
+                    forgeVersionType,
+                    url,
+                    fileName,
+                    longVersion,
+                    forgeVersion,
+                    build
+                ).build()
         }
 
         val forgeBuilder = TypeSpec.objectBuilder("Forge")
@@ -144,64 +145,13 @@ object Poet : KLogging() {
         logger.info("written to $targetFile")
     }
 
-    @Serializable
-    private data class GraphQLRequest(
-        val query: String,
-        val operationName: String,
-        val variables: Map<String, Any> = emptyMap()
-    )
-
-    @Serializable
-    private data class SlugIdPair(
-        val id: Int,
-        val slug: String
-    )
-
-    @Serializable
-    private data class WrapperAddonResult(
-        val addons: List<SlugIdPair>
-    )
-
-    @Serializable
-    private data class GraphQlResult(
-        val data: WrapperAddonResult
-    )
-
     internal suspend fun requestMods(): Map<String, ProjectID> =
-        graphQlRequest("gameID: 432, section: MC_ADDONS")
+        CurseClient.graphQLRequest("gameID: 432, section: MC_ADDONS").map { (id, slug) ->
+            slug to ProjectID(id)
+        }.toMap()
 
     internal suspend fun requestResourcePacks(): Map<String, ProjectID> =
-        graphQlRequest("gameID: 432, section: TEXTURE_PACKS")
-
-    private suspend fun graphQlRequest(filter: String): Map<String, ProjectID> {
-        val url = "https://curse.nikky.moe/graphql"
-        CurseClient.logger.debug("post $url")
-        val requestBody = GraphQLRequest(
-            query = """
-                    |{
-                    |  addons($filter) {
-                    |    id
-                    |    slug
-                    |  }
-                    |}
-                """.trimMargin(),
-            operationName = "GetNameIDPairs"
-        )
-        val (request, response, result) = Fuel.post(url)
-            .jsonBody(body = JSON.stringify(requestBody))
-            .header("User-Agent" to CurseClient.useragent)
-            .awaitObjectResponse<GraphQlResult>(kotlinxDeserializerOf())
-
-        return when (result) {
-            is Result.Success -> {
-                result.value.data.addons.map { (id, slug) ->
-                    slug to ProjectID(id)
-                }.toMap()
-            }
-            is Result.Failure -> {
-                logger.error(result.error.exception) { "cold not request slug-id pairs" }
-                throw result.error.exception
-            }
-        }
-    }
+        CurseClient.graphQLRequest("gameID: 432, section: TEXTURE_PACKS").map { (id, slug) ->
+            slug to ProjectID(id)
+        }.toMap()
 }
