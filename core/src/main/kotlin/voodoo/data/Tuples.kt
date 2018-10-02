@@ -1,6 +1,6 @@
 package voodoo.data
 
-import java.io.Serializable
+import kotlinx.serialization.Serializable
 
 /**
  * Represents a tetrad of values
@@ -17,12 +17,13 @@ import java.io.Serializable
  * @property third Third value.
  * @property fourth Fourth value.
  */
+@Serializable
 data class Quadruple<out A, out B, out C, out D>(
         val first: A,
         val second: B,
         val third: C,
         val fourth: D
-) : Serializable {
+) {
 
     /**
      * Returns string representation of the [Quadruple] including its [first], [second], [third] and [fourth] values.
@@ -47,13 +48,14 @@ data class Quadruple<out A, out B, out C, out D>(
  * @property fourth Fourth value.
  * @property fifth Fifth value.
  */
+@Serializable
 data class Quintuple<out A, out B, out C, out D, out E>(
         val first: A,
         val second: B,
         val third: C,
         val fourth: D,
         val fifth: E
-) : Serializable {
+) {
 
     /**
      * Returns string representation of the [Quadruple] including its [first], [second], [third], [fourth] and [fifth] values.

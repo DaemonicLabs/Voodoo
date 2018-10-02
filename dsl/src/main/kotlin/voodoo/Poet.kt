@@ -9,19 +9,23 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asTypeName
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.curse.CurseClient
+import voodoo.data.ForgeVersion
 import voodoo.data.curse.ProjectID
+import voodoo.dsl.CurseMod
+import voodoo.forge.Forge
 import java.io.File
 
 fun main(vararg args: String) {
-    cursePoet(root = File(args[0]))
+    poet(root = File(args[0]))
 }
 
-fun cursePoet(
+fun poet(
     root: File = File(System.getProperty("user.dir")),
     mods: String = "Mod",
     texturePacks: String = "TexturePack",
@@ -35,53 +39,98 @@ fun cursePoet(
     println("classloader is of type:" + XY::class.java.classLoader)
     Thread.currentThread().contextClassLoader = XY::class.java.classLoader
 
-    CursePoet.generate(
-        name = mods,
-        slugIdMap = runBlocking {
-            CursePoet.requestMods()
-                .mapKeys { (slug, id) ->
-                    slugSanitizer(slug)
-                }
-        },
-        folder = root
-    )
+    runBlocking {
+        Poet.generate(
+            name = mods,
+            slugIdMap = Poet.requestMods(),
+            slugSanitizer = slugSanitizer,
+            folder = root
+        )
 
-    CursePoet.generate(
-        name = texturePacks,
-        slugIdMap = runBlocking {
-            CursePoet.requestResourcePacks()
-                .mapKeys { (slug, id) ->
-                    slugSanitizer(slug)
-                }
-        },
-        folder = root
-    )
+        Poet.generate(
+            name = texturePacks,
+            slugIdMap = Poet.requestResourcePacks(),
+            slugSanitizer = slugSanitizer,
+            folder = root
+        )
+
+        Poet.generateForge("Forge", folder = root)
+    }
 }
 
-object CursePoet : KLogging() {
+object Poet : KLogging() {
     internal fun generate(
         name: String,
         slugIdMap: Map<String, ProjectID>,
+        slugSanitizer: (String) -> String,
         folder: File
     ) {
+        val curseModType = CurseMod::class.asTypeName()
         val objectBuilder = TypeSpec.objectBuilder(name)
         slugIdMap.entries.sortedBy { (slug, id) ->
             slug
         }.forEach { (slug, id) ->
             objectBuilder.addProperty(
                 PropertySpec.builder(
-                    slug,
+                    slugSanitizer(slug),
                     Int::class,
                     KModifier.CONST
                 )
                     .mutable(false)
-                    .initializer("%L", id)
+                    .initializer("%L", id.value)
                     .build()
             )
         }
 
 
         save(objectBuilder.build(), name, folder)
+    }
+
+    internal suspend fun generateForge(
+        name: String,
+        folder: File
+    ) {
+        val forgeData = runBlocking {
+            Forge.getForgeData()
+        }
+
+        val forgeVersionType = ForgeVersion::class.asTypeName()
+
+        fun ForgeVersion.toPropertySpec(identifier: String): PropertySpec {
+            return PropertySpec.builder(identifier, forgeVersionType)
+                .initializer("%T(%S, %S, %S, %S, %L)", forgeVersionType, url, fileName, longVersion, forgeVersion, build).build()
+        }
+
+        val forgeBuilder = TypeSpec.objectBuilder("Forge")
+        val webpath =
+            PropertySpec.builder("WEBPATH", String::class, KModifier.CONST).initializer("%S", forgeData.webpath).build()
+        forgeBuilder.addProperty(webpath)
+
+        for ((version, numbers) in forgeData.mcversion) {
+            val versionIdentifier = "mc" + version.replace('.', '_')
+            val versionBuilder = TypeSpec.objectBuilder(versionIdentifier)
+            for (number in numbers) {
+                val buildIdentifier = "build$number"
+                val forgeVersion = Forge.toForgeVersion(number)
+                val property = forgeVersion.toPropertySpec(buildIdentifier)
+                versionBuilder.addProperty(property)
+            }
+            forgeBuilder.addType(versionBuilder.build())
+        }
+
+        for ((key, number) in forgeData.promos) {
+            val keyIdentifier = key.replace('-', '_').replace('.', '_').run {
+                if (this.first().isDigit())
+                    "mc$this"
+                else
+                    this
+            }
+            val forgeVersion = Forge.toForgeVersion(number)
+            val property = forgeVersion.toPropertySpec(keyIdentifier)
+            forgeBuilder.addProperty(property)
+        }
+
+        save(forgeBuilder.build(), name, folder)
     }
 
     private fun save(type: TypeSpec, name: String, folder: File) {
@@ -103,14 +152,14 @@ object CursePoet : KLogging() {
     )
 
     @Serializable
-    private data class IdNamePair(
+    private data class SlugIdPair(
         val id: Int,
         val slug: String
     )
 
     @Serializable
     private data class WrapperAddonResult(
-        val addons: List<IdNamePair>
+        val addons: List<SlugIdPair>
     )
 
     @Serializable

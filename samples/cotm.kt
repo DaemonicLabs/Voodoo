@@ -2,13 +2,13 @@
 @file:DependsOnMaven("moe.nikky.voodoo:dsl:0.4.0") // for testing from local maven
 @file:DependsOnMaven("ch.qos.logback:logback-classic:1.2.3")
 @file:MavenRepository("kotlinx","https://kotlin.bintray.com/kotlinx" )
-@file:MavenRepository("ktor","https://dl.bintray.com/kotlin/ktor" )
 //@file:MavenRepository("elytradev", "https://repo.elytradev.com")
 @file:KotlinOpts("-J-Xmx5g")
 @file:KotlinOpts("-J-server")
 @file:Include("../.gen/Mod.kt")
 @file:Include("../.gen/TexturePack.kt")
-//COMPILER_OPTS -jvm-target 1.8
+@file:Include("../.gen/Forge.kt")
+//COMPILER_OPTS -jvm-target 1.8 -J-Xmx5g
 
 import voodoo.*
 import voodoo.data.*
@@ -31,8 +31,8 @@ fun main(args: Array<String>) = withDefaultMain(
         authors = listOf("AnsuzThuriaz", "Falkreon", "NikkyAi"),
         version = "2.1.9",
         mcVersion = "1.12.2", //TODO: generate sealed class with mc version -> see forge versions
-        forge = "2759", //TODO: generate file with compatible forge version  //TODO: type = {recommended, latest} | buildnumber, make sealed class
-        icon = root.resolve("icon.png"), //TODO: type = File
+        forge = Forge.mc1_12_2.build2759,
+        icon = root.resolve("icon.png"),
         sourceDir = "src",
         userFiles = UserFiles(
             include = listOf(
@@ -50,66 +50,66 @@ fun main(args: Array<String>) = withDefaultMain(
             optionals = false
             list {
                 // Vazkii
-                id(Mod::akashicTome)
-                id(Mod::botania)
-                id(Mod::psi)
-                id(Mod::quark)
-                id(Mod::morphOTool)
+                id(Mod.akashicTome)
+                id(Mod.botania)
+                id(Mod.psi)
+                id(Mod.quark)
+                id(Mod.morphOTool)
 
                 // Sangar
-                id(Mod::architect)
-                id(Mod::bedrockores)
+                id(Mod.architect)
+                id(Mod.bedrockores)
 
                 // HellFirePvP
-                id(Mod::astralSorcery)
+                id(Mod.astralSorcery)
 
                 // Nuchaz
-                id(Mod::bibliocraft)
+                id(Mod.bibliocraft)
 
                 // Binnie
-                id(Mod::binniesMods)
+                id(Mod.binniesMods)
 
                 // chiselTeam
-                id(Mod::chisel)
+                id(Mod.chisel)
 
                 // AlgorithmX2
-                id(Mod::chiselsBits)
+                id(Mod.chiselsBits)
 
                 // jaredlll08
-                id(Mod::clumps)
+                id(Mod.clumps)
 
                 // TheIllusiveC4
-                id(Mod::comforts)
+                id(Mod.comforts)
 
                 // BlayTheNinth
-                id(Mod::cookingForBlockheads)
-                id(Mod::farmingForBlockheads)
+                id(Mod.cookingForBlockheads)
+                id(Mod.farmingForBlockheads)
 
                 // ZLainSama
-                id(Mod::cosmeticArmorReworked)
+                id(Mod.cosmeticArmorReworked)
 
                 // jaredlll08
-                id(Mod::diamondGlass)
+                id(Mod.diamondGlass)
 
                 // copygirl
-                id(Mod::wearableBackpacks)
+                id(Mod.wearableBackpacks)
 
                 // mezz
-                id(Mod::jei)
+                id(Mod.jei)
 
                 // Benimatic
-                id(Mod::theTwilightForest)
+                id(Mod.theTwilightForest)
 
                 // The_Wabbit
-                id(Mod::upsizerMod)
+                id(Mod.upsizerMod)
 
                 // Viesis
-                id(Mod::viescraftAirships)
+                id(Mod.viescraftAirships)
 
                 // Team CoFH
-                id(Mod::thermalDynamics)
-                id(Mod::thermalexpansion)
-                id(Mod::thermalInnovation)
+                id(Mod.thermalDynamics)
+                id(Mod.thermalexpansion)
+                id(Mod.thermalInnovation)
 
 
                 group {
@@ -117,142 +117,142 @@ fun main(args: Array<String>) = withDefaultMain(
                     releaseTypes = setOf(FileType.BETA, FileType.RELEASE)
                 }.list {
                     // McJTY
-                    id(Mod::rftools)
-                    id(Mod::rftoolsDimensions)
+                    id(Mod.rftools)
+                    id(Mod.rftoolsDimensions)
                 }
 
                 // Mr_Crayfish
-                id(Mod::mrcrayfishFurnitureMod)
+                id(Mod.mrcrayfishFurnitureMod)
 
                 // zabi94
-                id(Mod::extraAlchemy)
-                id(Mod::nomoreglowingpots)
+                id(Mod.extraAlchemy)
+                id(Mod.nomoreglowingpots)
 
                 // CrazyPants
-                id(Mod::enderIo)
+                id(Mod.enderIo)
 
                 // Subaraki
-                id(Mod::paintings)
+                id(Mod.paintings)
 
                 // azanor
-                id(Mod::thaumcraft)
-                id(Mod::baubles)
+                id(Mod.thaumcraft)
+                id(Mod.baubles)
 
                 // asie
-                id(Mod::charsetLib)
-                id(Mod::charsetTweaks)
-                id(Mod::charsetBlockCarrying)
-                id(Mod::charsetTablet)
-                id(Mod::charsetCrafting)
-                id(Mod::charsetAudio)
-                id(Mod::charsetStorageLocks)
-                id(Mod::charsetTools)
-                id(Mod::charsetpatches)
-                id(Mod::charsetImmersion)
-                id(Mod::foamfixForMinecraft)
-                id(Mod::unlimitedChiselWorks)
-                id(Mod::unlimitedChiselWorksBotany)
-                id(Mod::simplelogicGates)
-                id(Mod::simplelogicWires)
+                id(Mod.charsetLib)
+                id(Mod.charsetTweaks)
+                id(Mod.charsetBlockCarrying)
+                id(Mod.charsetTablet)
+                id(Mod.charsetCrafting)
+                id(Mod.charsetAudio)
+                id(Mod.charsetStorageLocks)
+                id(Mod.charsetTools)
+                id(Mod.charsetpatches)
+                id(Mod.charsetImmersion)
+                id(Mod.foamfixForMinecraft)
+                id(Mod.unlimitedChiselWorks)
+                id(Mod.unlimitedChiselWorksBotany)
+                id(Mod.simplelogicGates)
+                id(Mod.simplelogicWires)
 
-                id(Mod::enderStorage18)
-                id(Mod::exchangers)
-                id(Mod::extraBitManipulation)
-                id(Mod::extraUtilities)
-                id(Mod::fairyLights)
-                id(Mod::forestry)
-                id(Mod::ftbUtilities)
-                id(Mod::ftblib)
-                id(Mod::gendustry)
-                id(Mod::hwyla)
-                id(Mod::initialInventory)
-                id(Mod::inventoryTweaks)
-                id(Mod::ironChests)
-                id(Mod::redstonePaste)
-                id(Mod::mmmmmmmmmmmm)
-                id(Mod::kleeslabs)
-                id(Mod::magicBees)
-                id(Mod::malisisdoors)
-                id(Mod::mobGrindingUtils)
-                id(Mod::natura)
-                id(Mod::naturesCompass)
-                id(Mod::netherex)
-                id(Mod::netherportalfix)
-                id(Mod::stimmedcowNomorerecipeconflict)
-                id(Mod::notenoughids)
-                id(Mod::opencomputers)
-                id(Mod::openblocks)
-                id(Mod::packingTape)
-                id(Mod::pamsHarvestcraft)
-                id(Mod::passthroughSigns)
-                id(Mod::platforms)
-                id(Mod::randomThings)
-                id(Mod::randomtweaks)
-                id(Mod::rangedPumps)
-                id(Mod::recurrentComplex)
-                id(Mod::redstoneFlux)
-                id(Mod::roguelikeDungeons)
-                id(Mod::roots)
-                id(Mod::scannable)
-                id(Mod::simpleSponge)
-                id(Mod::spartanShields)
-                id(Mod::storageDrawers)
-                id(Mod::storageDrawersExtras)
-                id(Mod::tails)
-                id(Mod::tammodized)
-                id(Mod::angryPixelTheBetweenlandsMod)
-                id(Mod::tinkersConstruct)
-                id(Mod::tinkersToolLeveling)
-                id(Mod::extremeReactors)
-                id(Mod::zerocore)
-                id(Mod::toolBelt)
-                id(Mod::torchmaster)
-                id(Mod::roboticparts)
-                id(Mod::woot)
-                id(Mod::quickLeafDecay)
-                id(Mod::bloodMagic)
-                id(Mod::colorfulwater)
-                id(Mod::constructsArmory)
-                id(Mod::simpleVoidWorld)
-                id(Mod::yoyos)
-                id(Mod::badWitherNoCookieReloaded)
-                id(Mod::waystones)
-                id(Mod::aetherLegacy)
-                id(Mod::corpseComplex)
-                id(Mod::thaumcraftInventoryScanning)
-                id(Mod::peckish)
-                id(Mod::electroblobsWizardry)
-                id(Mod::reliquaryV13)
-                id(Mod::cookiecore)
-                id(Mod::thaumcraft)
-                id(Mod::fastworkbench)
-                id(Mod::dimensionaldoors)
-                id(Mod::betterBuildersWands)
-                id(Mod::antighost)
-                id(Mod::loginShield)
-                id(Mod::caliper)
-                id(Mod::refinedStorage)
-                id(Mod::flopper)
-                id(Mod::catwalks4)
-                id(Mod::wallJump)
-                id(Mod::magicalMap)
-                id(Mod::pewter)
-                id(Mod::theErebus)
-                id(Mod::grapplingHookMod)
-                id(Mod::embersRekindled)
+                id(Mod.enderStorage18)
+                id(Mod.exchangers)
+                id(Mod.extraBitManipulation)
+                id(Mod.extraUtilities)
+                id(Mod.fairyLights)
+                id(Mod.forestry)
+                id(Mod.ftbUtilities)
+                id(Mod.ftblib)
+                id(Mod.gendustry)
+                id(Mod.hwyla)
+                id(Mod.initialInventory)
+                id(Mod.inventoryTweaks)
+                id(Mod.ironChests)
+                id(Mod.redstonePaste)
+                id(Mod.mmmmmmmmmmmm)
+                id(Mod.kleeslabs)
+                id(Mod.magicBees)
+                id(Mod.malisisdoors)
+                id(Mod.mobGrindingUtils)
+                id(Mod.natura)
+                id(Mod.naturesCompass)
+                id(Mod.netherex)
+                id(Mod.netherportalfix)
+                id(Mod.stimmedcowNomorerecipeconflict)
+                id(Mod.notenoughids)
+                id(Mod.opencomputers)
+                id(Mod.openblocks)
+                id(Mod.packingTape)
+                id(Mod.pamsHarvestcraft)
+                id(Mod.passthroughSigns)
+                id(Mod.platforms)
+                id(Mod.randomThings)
+                id(Mod.randomtweaks)
+                id(Mod.rangedPumps)
+                id(Mod.recurrentComplex)
+                id(Mod.redstoneFlux)
+                id(Mod.roguelikeDungeons)
+                id(Mod.roots)
+                id(Mod.scannable)
+                id(Mod.simpleSponge)
+                id(Mod.spartanShields)
+                id(Mod.storageDrawers)
+                id(Mod.storageDrawersExtras)
+                id(Mod.tails)
+                id(Mod.tammodized)
+                id(Mod.angryPixelTheBetweenlandsMod)
+                id(Mod.tinkersConstruct)
+                id(Mod.tinkersToolLeveling)
+                id(Mod.extremeReactors)
+                id(Mod.zerocore)
+                id(Mod.toolBelt)
+                id(Mod.torchmaster)
+                id(Mod.roboticparts)
+                id(Mod.woot)
+                id(Mod.quickLeafDecay)
+                id(Mod.bloodMagic)
+                id(Mod.colorfulwater)
+                id(Mod.constructsArmory)
+                id(Mod.simpleVoidWorld)
+                id(Mod.yoyos)
+                id(Mod.badWitherNoCookieReloaded)
+                id(Mod.waystones)
+                id(Mod.aetherLegacy)
+                id(Mod.corpseComplex)
+                id(Mod.thaumcraftInventoryScanning)
+                id(Mod.peckish)
+                id(Mod.electroblobsWizardry)
+                id(Mod.reliquaryV13)
+                id(Mod.cookiecore)
+                id(Mod.thaumcraft)
+                id(Mod.fastworkbench)
+                id(Mod.dimensionaldoors)
+                id(Mod.betterBuildersWands)
+                id(Mod.antighost)
+                id(Mod.loginShield)
+                id(Mod.caliper)
+                id(Mod.refinedStorage)
+                id(Mod.flopper)
+                id(Mod.catwalks4)
+                id(Mod.wallJump)
+                id(Mod.magicalMap)
+                id(Mod.pewter)
+                id(Mod.theErebus)
+                id(Mod.grapplingHookMod)
+                id(Mod.embersRekindled)
 
-                id(Mod::ariente)
+                id(Mod.ariente)
 
                 // Pulled due to outstanding issues
 
                 // Unused mods
-                // id(Mod::justEnoughDimensions)
-                // id(Mod::crafttweaker)
-                // id(Mod::modtweaker)
+                // id(Mod.justEnoughDimensions)
+                // id(Mod.crafttweaker)
+                // id(Mod.modtweaker)
 
                 withProvider(DirectProvider).list {
                     id("nutrition") url "https://github.com/WesCook/Nutrition/releases/download/v3.5.0/Nutrition-1.12.2-3.5.0.jar"
-                    id("correlated") url "https://centerofthemultiverse.net/launcher/mirror/Correlated-1.12.2-2.1.125.jar"
+                    id("correlated") url "https://centerofthemultiverse.net/launcher/mirror/Correlated-1.12.2-2.1.143.jar"
                 }
 
                 withProvider(JenkinsProvider) {
@@ -304,15 +304,15 @@ fun main(args: Array<String>) = withDefaultMain(
                         selected = false
                     }
                 }.list {
-                    id(Mod::laggoggles) {
+                    id(Mod.laggoggles) {
                         description =
                             "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                     }
-                    id(Mod::sampler) {
+                    id(Mod.sampler) {
                         description =
                             "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                     }
-                    id(Mod::openeye) {
+                    id(Mod.openeye) {
                         description =
                             "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
                     }
@@ -320,25 +320,25 @@ fun main(args: Array<String>) = withDefaultMain(
                 group {
                     side = Side.CLIENT
                 }.list {
-                    id(Mod::toastControl)
-                    id(Mod::wawlaWhatAreWeLookingAt)
-                    id(Mod::wailaHarvestability)
-                    id(Mod::jeiIntegration)
-                    id(Mod::appleskin)
-                    id(Mod::betterfps)
-                    id(Mod::nonausea)
-                    id(Mod::betterPlacement)
-                    id(Mod::controlling)
-                    id(Mod::customMainMenu)
-                    id(Mod::defaultOptions)
-                    id(Mod::fullscreenWindowedBorderlessForMinecraft)
-                    id(Mod::modNameTooltip)
-                    id(Mod::reauth)
-                    id(Mod::cleanview)
-                    id(Mod::craftingTweaks)
+                    id(Mod.toastControl)
+                    id(Mod.wawlaWhatAreWeLookingAt)
+                    id(Mod.wailaHarvestability)
+                    id(Mod.jeiIntegration)
+                    id(Mod.appleskin)
+                    id(Mod.betterfps)
+                    id(Mod.nonausea)
+                    id(Mod.betterPlacement)
+                    id(Mod.controlling)
+                    id(Mod.customMainMenu)
+                    id(Mod.defaultOptions)
+                    id(Mod.fullscreenWindowedBorderlessForMinecraft)
+                    id(Mod.modNameTooltip)
+                    id(Mod.reauth)
+                    id(Mod.cleanview)
+                    id(Mod.craftingTweaks)
 
                     // Way2muchnoise
-                    id(Mod::betterAdvancements)
+                    id(Mod.betterAdvancements)
                     //OPT-OUT
                     group {
                         feature {
@@ -346,43 +346,43 @@ fun main(args: Array<String>) = withDefaultMain(
                             recommendation = Recommendation.starred
                         }
                     }.list {
-                        id(Mod::journeymap) {
+                        id(Mod.journeymap) {
                             description = "Mod-compatible mini-map."
                         }
-                        id(Mod::mage) {
+                        id(Mod.mage) {
                             description = "Configurable graphics enhancements. Highly recomended."
                         }
-                        id(Mod::neat) {
+                        id(Mod.neat) {
                             description = "Simple health and unit frames."
                         }
-                        id(Mod::clientTweaks) {
+                        id(Mod.clientTweaks) {
                             description = "Various client related fixes and tweaks, all in a handy menu."
                         }
-                        id(Mod::mouseTweaks) {
+                        id(Mod.mouseTweaks) {
                             description = "Add extra mouse gestures for inventories and crafting grids."
                         }
-                        id(Mod::thaumicJei) {
+                        id(Mod.thaumicJei) {
                             description = "JEI Integration for Thaumcraft."
                         }
-                        id(Mod::jeiBees) {
+                        id(Mod.jeiBees) {
                             description = "JEI Integration for Forestry/Gendustry Bees."
                         }
-                        id(Mod::justEnoughHarvestcraft) {
+                        id(Mod.justEnoughHarvestcraft) {
                             description = "JEI Integration for Pam's HarvestCraft."
                         }
-                        id(Mod::justEnoughResourcesJer) {
+                        id(Mod.justEnoughResourcesJer) {
                             description = "JEI Integration that gives drop-rates for mobs, dungeonloot, etc."
                         }
-                        id(Mod::vise) {
+                        id(Mod.vise) {
                             description = "More granular control over UI/HUD elements."
                         }
-                        id(Mod::smoothFont) {
+                        id(Mod.smoothFont) {
                             description = "It smoothes fonts."
                         }
-                        id(Mod::inventoryTweaks) {
+                        id(Mod.inventoryTweaks) {
                             description = "Adds amll changes to invetory handling to minor conviniences."
                         }
-                        id(Mod::nofov) {
+                        id(Mod.nofov) {
                             description = "Removes dynamic FOV shifting due to ingame effects."
                         }
                     }
@@ -392,49 +392,49 @@ fun main(args: Array<String>) = withDefaultMain(
                             selected = false
                         }
                     }.list {
-                        id(Mod::itemScroller) {
+                        id(Mod.itemScroller) {
                             description = "Alternative to MouseTweaks."
                         }
-                        id(Mod::xaerosMinimap) {
+                        id(Mod.xaerosMinimap) {
                             description = "Alternative to MouseTweaks."
                         }
-                        id(Mod::minemenu) {
+                        id(Mod.minemenu) {
                             description =
                                 "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
                         }
-                        id(Mod::itemzoom) {
+                        id(Mod.itemzoom) {
                             description = "Check this if you like to get a closer look at item textures."
                         }
-                        id(Mod::lightLevelOverlayReloaded) {
+                        id(Mod.lightLevelOverlayReloaded) {
                             description = "Smol light-level overlay if you aren't using Dynamic Surroundings."
                         }
-                        id(Mod::durabilityShow) {
+                        id(Mod.durabilityShow) {
                             description = "Toggle-able item/tool/armor durability HUD. Duplicates with RPG-HUD."
                         }
-                        id(Mod::fancyBlockParticles) {
+                        id(Mod.fancyBlockParticles) {
                             description =
                                 "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps. (Defaults set to be less intrusive.)"
                         }
-                        id(Mod::dynamicSurroundings) {
+                        id(Mod.dynamicSurroundings) {
                             description =
                                 "Caution: Resource heavy. Quite nice, has a lot of configurable features that add immersive sound/visual effects. Includes light-level overlay. (Defaults set to remove some sounds and generally be better.)"
                         }
-                        id(Mod::rpgHud) {
+                        id(Mod.rpgHud) {
                             description =
                                 "Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)"
 
                         }
-                        id(Mod::betterFoliage) {
+                        id(Mod.betterFoliage) {
                             description =
                                 "Improves the fauna in the world. Very heavy, but very pretty. (Sane defaults set.)"
                         }
-                        id(Mod::keyboardWizard) {
+                        id(Mod.keyboardWizard) {
                             description = "Visual keybind manager."
                         }
-                        id(Mod::chunkAnimator) {
+                        id(Mod.chunkAnimator) {
                             description = "Configurable chunk pop-in animator."
                         }
-                        id(Mod::fasterLadderClimbing) {
+                        id(Mod.fasterLadderClimbing) {
                             description = "Helps you control ladder climb speed and allows you to go a bit faster."
                         }
 

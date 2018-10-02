@@ -8,6 +8,7 @@ import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.async
 import kotlinx.serialization.Serializable
 import mu.KLogging
+import voodoo.data.ForgeVersion
 import voodoo.data.Quadruple
 import voodoo.provider.ProviderBase
 import voodoo.util.Downloader
@@ -20,19 +21,6 @@ object Forge : KLogging() {
 
     private val deferredData = GlobalScope.async { getForgeData() }
 
-//    private val client = HttpClient(Apache) {
-////        engine { }
-//        defaultRequest {
-//            header("User-Agent", Downloader.useragent)
-//        }
-////        install(HttpRedirectFixed) {
-////            applyUrl { it.encoded }
-////        }
-//        install(JsonFeature) {
-//            serializer = TestKotlinxSerializer(JSON(indented = true))
-//        }
-//    }
-
     suspend fun getForgeBuild(version: String, mcVersion: String): Int {
         val data = deferredData.await()
         return if (version.equals("recommended", true) || version.equals("latest", true)) {
@@ -43,35 +31,10 @@ object Forge : KLogging() {
         }
     }
 
-    suspend fun resolveVersion(version: String, mcVersion: String): Quadruple<String, String, String, String> {
-        var versionStr: String
+    suspend fun toForgeVersion(build: Int): ForgeVersion {
         val data = deferredData.await()
-        if (version.equals("recommended", true) || version.equals("latest", true)) {
-            val promoVersion = "$mcVersion-${version.toLowerCase()}"
-            versionStr = data.promos[promoVersion]?.toString() ?: ""
-        } else {
-            if (data.number.containsKey(version)) {
-                versionStr = version
-            } else {
-                versionStr = data.promos[version]?.toString() ?: ""
-                if (versionStr.isBlank()) {
-                    var versionList = data.branches.getOrDefault(version, emptyList())
-                    if (versionList.isEmpty()) {
-                        versionList = data.mcversion.getOrDefault(version, emptyList())
-                    }
-
-                    if (versionList.isNotEmpty()) {
-                        versionList = versionList.filter { i -> data.number[i.toString()]?.mcversion == mcVersion }
-                    }
-                    if (versionList.isEmpty()) {
-                        throw IllegalArgumentException("forge value is invalid")
-                    }
-                    versionStr = versionList.max().toString()
-                }
-            }
-        }
         val webpath = data.webpath
-        val artifact = data.number[versionStr]!!
+        val artifact = data.number[build.toString()]!!
         val mcversion = artifact.mcversion
         val forgeVersion = artifact.version
         val branch = artifact.branch
@@ -80,9 +43,15 @@ object Forge : KLogging() {
             longVersion += "-$branch"
         }
         val fileName = "forge-$longVersion-installer.jar" // "forge-mcversion-$forgeVersion(-$branch)/installer.jar"
-        val url = "$webpath/$longVersion/$fileName"
+        val url = "$webpath$longVersion/$fileName"
 
-        return Quadruple(url, fileName, longVersion, forgeVersion)
+        return ForgeVersion(
+            url,
+            fileName,
+            longVersion,
+            forgeVersion,
+            build
+        )
     }
 
     suspend fun getForgeData(): ForgeData {
@@ -117,7 +86,7 @@ data class ForgeData(
 data class Artifact(
     val branch: String?,
     val build: Int,
-    val files: List<List<String>>, //file, extension, checksum
+    val files: List<List<String>>, //extension, file, checksum
     val mcversion: String,
     val modified: Double,
     val version: String

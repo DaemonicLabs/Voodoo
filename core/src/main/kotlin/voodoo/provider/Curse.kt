@@ -2,7 +2,6 @@ package voodoo.provider
 
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.runBlocking
-import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
 import voodoo.curse.CurseClient.getAddon
@@ -204,24 +203,15 @@ object CurseProvider : ProviderBase("Curse Provider") {
         val targetFile = targetFolder.resolve(entry.fileName ?: addonFile.fileNameOnDisk)
         targetFile.download(
             addonFile.downloadURL,
-            cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString())
+            cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),
+            validator = { file ->
+                addonFile.packageFingerprint != Murmur2Hash.computeFileHash(file.path, true)
+            }
         )
-        val fileFingerprint = Murmur2Hash.computeFileHash(targetFile.path)
-
-//        logger.info("reading zip file: $targetFile")
-//        ByteArrayInputStream(targetFile.readBytes()).use { byteStream ->
-//            ZipInputStream(byteStream).use {zipStream ->
-//                var zipEntry: ZipEntry? = zipStream.nextEntry
-//                while (zipEntry != null) {
-////                    logger.info("zipEntry: ${zipEntry.name}")
-//
-//                    zipEntry = zipStream.nextEntry
-//                }
-//            }
-//        }
+        val fileFingerprint = Murmur2Hash.computeFileHash(targetFile.path, true)
 
         if (addonFile.packageFingerprint != fileFingerprint) {
-            logger.error("[${entry.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: $fileFingerprint ")
+            logger.error("[${entry.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: $fileFingerprint")
 
 //            logger.info(targetFile.readText())
 //            targetFile.delete()

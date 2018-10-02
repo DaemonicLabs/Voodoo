@@ -7,7 +7,7 @@
 @file:KotlinOpts("-J-Xmx5g")
 @file:KotlinOpts("-J-server")
 
-import voodoo.cursePoet
+import voodoo.poet
 import java.io.File
 
-fun main(args: Array<String>) = cursePoet(root = File(System.getProperty("user.dir")))
+fun main(args: Array<String>) = poet(root = File(System.getProperty("user.dir")))

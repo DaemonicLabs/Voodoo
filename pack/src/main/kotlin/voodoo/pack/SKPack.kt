@@ -78,12 +78,11 @@ object SKPack : AbstractPack() {
 
         coroutineScope {
             // download forge
-            val (forgeUrl, forgeFileName, _, forgeVersion) = Forge.resolveVersion(
-                modpack.forge.toString(),
-                modpack.mcVersion
-            )
-            val forgeFile = loadersFolder.resolve(forgeFileName)
-            forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
+            modpack.forge?.also { forge ->
+                val (forgeUrl, forgeFileName, _, forgeVersion) = forge
+                val forgeFile = loadersFolder.resolve(forgeFileName)
+                forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
+            } ?: logger.warn { "no forge configured" }
             val modsFolder = skSrcFolder.resolve("mods")
             logger.info("cleaning mods $modsFolder")
             modsFolder.deleteRecursively()

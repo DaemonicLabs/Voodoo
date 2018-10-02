@@ -9,7 +9,6 @@ import mu.KLogger
 import mu.KLogging
 import voodoo.util.UtilConstants.VERSION
 import java.io.File
-import java.lang.IllegalStateException
 
 /**
  * Created by nikky on 30/03/18.
@@ -22,6 +21,7 @@ object Downloader : KLogging() {
 suspend fun File.download(
     url: String,
     cacheDir: File,
+    validator: (file: File) -> Boolean = { true },
     logger: KLogger = Downloader.logger
 ) {
     val cacheFile = cacheDir.resolve(this.name)
@@ -30,37 +30,40 @@ suspend fun File.download(
     if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
 
     if (!cacheFile.exists() || !cacheFile.isFile) {
-        var nextUrl = url.encoded
+        var nextUrl = url
         do {
             nextUrl = nextUrl.encoded
-            logger.info { nextUrl }
+            logger.info("url: $nextUrl")
             val (request, response, result) = nextUrl //.encode()
                 .httpGet().header("User-Agent" to Downloader.useragent)
                 .allowRedirects(false)
                 .awaitByteArrayResponse()
-            val isRedirect = when (result) {
+
+            logger.info("status: ${response.statusCode}")
+            if (response.isStatusRedirection) {
+                nextUrl = response.headers["Location"]?.firstOrNull() ?:
+                    throw IllegalStateException("missing Location header")
+                logger.info("next url: $nextUrl")
+                continue
+            }
+            when (result) {
                 is Result.Success -> {
                     cacheDir.mkdirs()
                     cacheFile.parentFile.mkdirs()
                     cacheFile.writeBytes(result.value)
-                    false
                 }
                 is Result.Failure -> {
-                    if (response.isStatusRedirection) {
-                        nextUrl = response.headers["Location"]?.firstOrNull() ?:
-                            throw IllegalStateException("missing Location header")
-                        true
-                    } else {
-//                        logger.error(result.error.exception) { result.error }
-                        logger.error("invalid statusCode {} from {}", response.statusCode, url.encoded)
-                        logger.error("connection url: {}", request.url)
-                        logger.error("content: {}", result.component1())
-                        logger.error("error: {}", result.error.toString())
-                        throw IOException(result.error.toString())
-                    }
+                    result.error.exception.printStackTrace()
+//                    logger.error(result.error.exception) { result.error }
+                    logger.error("invalid statusCode {} from {}", response.statusCode, url.encoded)
+                    logger.error("connection url: {}", request.url)
+                    logger.error("content: {}", result.component1())
+                    logger.error("error: {}", result.error.toString())
+                    throw IOException(result.error.toString(), result.error.exception)
                 }
             }
-        } while (isRedirect)
+            break
+        } while (true)
     }
 
     logger.debug("saving $url -> $this")
@@ -72,6 +75,13 @@ suspend fun File.download(
         logger.error("failed to copy file $cacheFile to $this .. file is locked ? $fileIsLocked")
         if (!fileIsLocked)
             cacheFile.copyTo(this, overwrite = true)
+    }
+
+    if(!validator(cacheFile)) {
+        cacheFile.delete()
+    }
+    if(!validator(this)) {
+        logger.error("$this did not pass validation")
     }
 
     logger.debug("done downloading $url -> $this")

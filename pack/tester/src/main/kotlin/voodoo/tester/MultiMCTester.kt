@@ -46,7 +46,7 @@ object MultiMCTester : AbstractTester() {
             folder,
             icon = modpack.iconFile,
             mcVersion = modpack.mcVersion,
-            forgeBuild = modpack.forge
+            forge = modpack.forge
         )
 
         val modsDir = minecraftDir.resolve("mods")

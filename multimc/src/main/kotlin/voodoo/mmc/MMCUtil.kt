@@ -6,7 +6,7 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import mu.KLogging
-import voodoo.forge.Forge
+import voodoo.data.ForgeVersion
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
@@ -141,8 +141,9 @@ object MMCUtil : KLogging() {
      */
     suspend fun installEmptyPack(
         name: String, folder: String,
-        icon: File? = null, mcVersion: String? = null, forgeBuild: Int? = null,
-        instanceDir: File = with(MMCUtil.findDir()) {
+        icon: File? = null, mcVersion: String? = null,
+        forge: ForgeVersion? = null,
+        instanceDir: File = with(findDir()) {
             this.resolve(
                 readCfg(this.resolve("multimc.cfg"))["InstanceDir"] ?: "instances"
             ).resolve(folder)
@@ -176,9 +177,9 @@ object MMCUtil : KLogging() {
         } else MultiMCPack()
 
         if (mcVersion != null) {
-            if (forgeBuild != null) {
-                logger.info("forge version for build $forgeBuild")
-                val (_, _, _, forgeVersion) = Forge.resolveVersion(forgeBuild.toString(), mcVersion)
+            if (forge != null) {
+                logger.info("forge version for build $forge")
+                val forgeVersion = forge.forgeVersion
                 logger.info("forge version : $forgeVersion")
                 mmcPack.components = listOf(
                     PackComponent(

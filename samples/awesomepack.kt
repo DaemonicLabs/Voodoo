@@ -2,12 +2,12 @@
 @file:DependsOnMaven("moe.nikky.voodoo:dsl:0.4.0") // for testing from local maven
 @file:DependsOnMaven("ch.qos.logback:logback-classic:1.2.3")
 @file:MavenRepository("kotlinx", "https://kotlin.bintray.com/kotlinx")
-@file:MavenRepository("ktor", "https://dl.bintray.com/kotlin/ktor")
 //@file:MavenRepository("elytradev", "https://repo.elytradev.com")
 @file:KotlinOpts("-J-Xmx5g")
 @file:KotlinOpts("-J-server")
 @file:Include("../.gen/Mod.kt")
 @file:Include("../.gen/TexturePack.kt")
+@file:Include("../.gen/Forge.kt")
 
 //COMPILER_OPTS -jvm-target 1.8
 
@@ -45,7 +45,7 @@ fun main(args: Array<String>) = withDefaultMain(
         title = "Awesome Pack",
         version = "1.0",
         mcVersion = "1.12.2",
-        forge = "recommended",
+        forge = Forge.recommended,
         authors = listOf("SomeDude", "OtherDude"),
         sourceDir = "src",
         localDir = "local",
@@ -62,15 +62,15 @@ fun main(args: Array<String>) = withDefaultMain(
             optionals = false
             releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
             list {
-                id(Mod::thermalDynamics)
-                id(Mod::thermalexpansion)
-                id(Mod::thermalInnovation)
+                id(Mod.thermalDynamics)
+                id(Mod.thermalexpansion)
+                id(Mod.thermalInnovation)
 
                 group {
                     releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
                 }.list {
-                    id(Mod::rftools)
-                    id(Mod::rftoolsDimensions)
+                    id(Mod.rftools)
+                    id(Mod.rftoolsDimensions)
                 }
 
                 withProvider(DirectProvider).list {
@@ -111,19 +111,19 @@ fun main(args: Array<String>) = withDefaultMain(
                 group {
                     side = Side.CLIENT
                 }.list {
-                    id(Mod::toastControl)
-                    id(Mod::wawlaWhatAreWeLookingAt)
-                    id(Mod::wailaHarvestability)
-                    id(Mod::jeiIntegration)
+                    id(Mod.toastControl)
+                    id(Mod.wawlaWhatAreWeLookingAt)
+                    id(Mod.wailaHarvestability)
+                    id(Mod.jeiIntegration)
                 }
 
                 group {
                     side = Side.SERVER
                 }.list {
-                    id(Mod::btfuContinuousRsyncIncrementalBackup)
-                    id(Mod::swingthroughgrass)
-                    id(Mod::colorchat)
-                    id(Mod::shadowfactsForgelin)
+                    id(Mod.btfuContinuousRsyncIncrementalBackup)
+                    id(Mod.swingthroughgrass)
+                    id(Mod.colorchat)
+                    id(Mod.shadowfactsForgelin)
 
                     withProvider(JenkinsProvider) {
                         jenkinsUrl = "https://ci.elytradev.com"
@@ -139,22 +139,22 @@ fun main(args: Array<String>) = withDefaultMain(
                         recommendation = Recommendation.starred
                     }
                 }.list {
-                    id(Mod::journeymap) {
+                    id(Mod.journeymap) {
                         description =
                             "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
                     }
 
-                    id(Mod::mage) description "Configurable graphics enhancements. Highly recomended."
+                    id(Mod.mage) description "Configurable graphics enhancements. Highly recomended."
 
-                    id(Mod::neat) {
+                    id(Mod.neat) {
                         description = "Simple health and unit frames."
                     }
 
-                    id(Mod::clientTweaks) {
+                    id(Mod.clientTweaks) {
                         description = "Various client related fixes and tweaks, all in a handy menu."
                     }
 
-                    id(Mod::mouseTweaks) {
+                    id(Mod.mouseTweaks) {
                         description = "Add extra mouse gestures for inventories and crafting grids."
                     }
                 }
@@ -163,19 +163,19 @@ fun main(args: Array<String>) = withDefaultMain(
                         selected = false
                     }
                 }.list {
-                    id(Mod::itemScroller) {
+                    id(Mod.itemScroller) {
                         description = "Alternative to MouseTweaks."
                     }
 
-                    id(Mod::xaerosMinimap) {
+                    id(Mod.xaerosMinimap) {
                         description = "Lightweight alternative to JourneyMap."
                     }
 
-                    id(Mod::minemenu) {
+                    id(Mod.minemenu) {
                         description = "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
                     }
 
-                    id(Mod::itemzoom) {
+                    id(Mod.itemzoom) {
                         description = "Check this if you like to get a closer look at item textures."
                     }
                 }

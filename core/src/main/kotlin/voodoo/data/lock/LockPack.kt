@@ -1,7 +1,6 @@
 package voodoo.data.lock
 
 
-import com.skcraft.launcher.builder.FeaturePattern
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.KOutput
 import kotlinx.serialization.KSerialSaver
@@ -11,6 +10,7 @@ import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
+import voodoo.data.ForgeVersion
 import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
@@ -32,7 +32,7 @@ data class LockPack(
     @Optional val version: String = "1.0",
     @Optional val icon: File = File("icon.png"),
     @Optional val authors: List<String> = emptyList(),
-    @Optional val forge: Int = -1,
+    @Optional val forge: ForgeVersion? = null,
     @Optional val launch: LaunchModifier = LaunchModifier(),
     @Optional var userFiles: UserFiles = UserFiles(),
     @Optional var localDir: String = "local",
@@ -50,7 +50,9 @@ data class LockPack(
                 elemOutput.serialize(this.version, obj.version, 3)
                 elemOutput.serialize(this.icon, obj.icon, 4)
                 elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 5)
-                elemOutput.serialize(this.forge, obj.forge, 6)
+                this.forge?.also { forge ->
+                    elemOutput.serializeObj(forge, obj.forge, ForgeVersion::class.serializer(), 6)
+                }
                 elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier::class.serializer(), 7)
                 elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles::class.serializer(), 8)
                 elemOutput.serialize(this.localDir, obj.localDir, 9)
@@ -69,8 +71,8 @@ data class LockPack(
             }
         }
 
-        private fun <T : Any?> KOutput.serializeObj(default: T, actual: T, saver: KSerialSaver<T>, index: Int) {
-            if (default != actual) {
+        private fun <T : Any?> KOutput.serializeObj(default: T, actual: T?, saver: KSerialSaver<T>, index: Int) {
+            if (default != actual && actual != null) {
                 this.writeElement(serialClassDesc, index)
                 this.write(saver, actual)
             }
@@ -146,6 +148,7 @@ data class LockPack(
                 "ID" to "`$id`",
                 "Pack Version" to "`$version`",
                 "MC Version" to "`$mcVersion`",
+                "Forge Version" to "`${forge?.forgeVersion ?: "missing"}`",
                 "Author" to "`${authors.joinToString(", ")}`",
                 "Icon" to "<img src=\"${icon.relativeTo(rootFolder).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
             )

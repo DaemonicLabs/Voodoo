@@ -4,11 +4,11 @@ import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.*
 import kotlinx.serialization.Optional
 import mu.KLogging
+import voodoo.data.ForgeVersion
 import voodoo.data.UserFiles
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.data.sk.ExtendedFeaturePattern
-import voodoo.forge.Forge
 import java.io.File
 import java.util.*
 
@@ -25,7 +25,7 @@ data class ModPack(
     @Optional var version: String = "1.0",
     @Optional var icon: File = File("icon.png"),
     @Optional val authors: List<String> = emptyList(),
-    @Optional var forge: String = "recommended",
+    @Optional var forge: ForgeVersion? = null,
     //var forgeBuild: Int = -1,
     @Optional val launch: LaunchModifier = LaunchModifier(),
     @Optional var userFiles: UserFiles = UserFiles(),
@@ -44,7 +44,9 @@ data class ModPack(
                 elemOutput.serialize(this.version, obj.version, 3)
                 elemOutput.serialize(this.icon, obj.icon, 4)
                 elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 5)
-                elemOutput.serialize(this.forge, obj.forge, 6)
+                this.forge?.also { forge ->
+                    elemOutput.serializeObj(forge, obj.forge, ForgeVersion::class.serializer(), 6)
+                }
                 elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier::class.serializer(), 7)
                 elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles::class.serializer(), 8)
                 elemOutput.serialize(this.localDir, obj.localDir, 9)
@@ -62,8 +64,8 @@ data class ModPack(
             }
         }
 
-        private fun <T : Any?> KOutput.serializeObj(default: T, actual: T, saver: KSerialSaver<T>, index: Int) {
-            if (default != actual) {
+        private fun <T : Any?> KOutput.serializeObj(default: T, actual: T?, saver: KSerialSaver<T>, index: Int) {
+            if (default != actual && actual != null) {
                 this.writeElement(serialClassDesc, index)
                 this.write(saver, actual)
             }
@@ -134,7 +136,7 @@ data class ModPack(
             icon = icon,
             authors = authors,
             mcVersion = mcVersion,
-            forge = Forge.getForgeBuild(forge, mcVersion),
+            forge = forge,
             launch = launch,
             userFiles = userFiles,
             localDir = localDir,
