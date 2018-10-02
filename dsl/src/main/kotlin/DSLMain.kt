@@ -1,8 +1,10 @@
-package voodoo
-
 import kotlinx.coroutines.experimental.CoroutineName
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KotlinLogging
+import voodoo.Builder
+import voodoo.Importer
+import voodoo.Pack
+import voodoo.TesterForDSL
 import voodoo.data.nested.NestedPack
 import voodoo.dsl.DslConstants.FULL_VERSION
 import java.io.File
@@ -34,7 +36,7 @@ fun withDefaultMain(
     val lockFile = root.resolve(lockFileName)
 
     val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
-        "import_debug" to { _ ->  Importer.flatten(nestedPack, root, targetFileName = packFileName) },
+        "import_debug" to { _ -> Importer.flatten(nestedPack, root, targetFileName = packFileName) },
 //        "build_debug" to { args -> BuilderForDSL.build(packFile, root, id, targetFileName = lockFileName, args = *args) },
         "build" to { args ->
             val modpack = Importer.flatten(nestedPack, root)

@@ -16,23 +16,10 @@ import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedPack
-import voodoo.description
-import voodoo.fileSrc
-import voodoo.group
-import voodoo.id
-import voodoo.jenkinsUrl
-import voodoo.job
-import voodoo.list
-import voodoo.optionals
 import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
 import voodoo.provider.JenkinsProvider
 import voodoo.provider.LocalProvider
-import voodoo.releaseTypes
-import voodoo.rootEntry
-import voodoo.url
-import voodoo.withDefaultMain
-import voodoo.withProvider
 import java.io.File
 
 fun main(args: Array<String>) = withDefaultMain(

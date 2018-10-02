@@ -1,5 +1,3 @@
-package voodoo
-
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
@@ -10,7 +8,6 @@ import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.data.ForgeVersion
 import voodoo.data.curse.ProjectID
-import voodoo.dsl.CurseMod
 import voodoo.forge.Forge
 import java.io.File
 

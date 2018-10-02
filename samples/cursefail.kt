@@ -10,12 +10,9 @@
 @file:Include("../.gen/Forge.kt")
 //COMPILER_OPTS -jvm-target 1.8
 
-import voodoo.*
 import voodoo.data.nested.*
 import voodoo.provider.*
-import voodoo.rootEntry
 import java.io.File
-import voodoo.withDefaultMain
 
 fun main(args: Array<String>) = withDefaultMain(
     root = File("."),
