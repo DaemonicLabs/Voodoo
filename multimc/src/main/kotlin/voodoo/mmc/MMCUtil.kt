@@ -142,7 +142,7 @@ object MMCUtil : KLogging() {
     suspend fun installEmptyPack(
         name: String, folder: String,
         icon: File? = null, mcVersion: String? = null,
-        forge: ForgeVersion? = null,
+        forgeVersion: String? = null,
         instanceDir: File = with(findDir()) {
             this.resolve(
                 readCfg(this.resolve("multimc.cfg"))["InstanceDir"] ?: "instances"
@@ -156,10 +156,10 @@ object MMCUtil : KLogging() {
         minecraftDir.mkdirs()
 
         val iconKey = if (icon != null && icon.exists()) {
-            var iconName = "icon_$folder"
+            val iconName = "icon_$folder"
             val iconsDir =
                 with(MMCUtil.findDir()) { this.resolve(readCfg(this.resolve("multimc.cfg"))["IconsDir"] ?: "icons") }
-            var iconFile = iconsDir.resolve("$iconName.png")
+            val iconFile = iconsDir.resolve("$iconName.png")
             icon.copyTo(iconFile, overwrite = true)
 //            val iconName = "icon"
             icon.copyTo(instanceDir.resolve("$iconName.png"), overwrite = true)
@@ -177,9 +177,7 @@ object MMCUtil : KLogging() {
         } else MultiMCPack()
 
         if (mcVersion != null) {
-            if (forge != null) {
-                logger.info("forge version for build $forge")
-                val forgeVersion = forge.forgeVersion
+            if(forgeVersion != null){
                 logger.info("forge version : $forgeVersion")
                 mmcPack.components = listOf(
                     PackComponent(

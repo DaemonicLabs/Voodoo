@@ -19,6 +19,10 @@ requires testing the gradle setup before generating it
 - add pack
 - generate curse files ?
 
+- discover gradle tasks from files
+- update kscript annotations/header
+- update gradle scripts
+
 # deprecate flat entries
 
 entries are flattened fast enough from the nested format, thee is no reason for a multi step process anymore

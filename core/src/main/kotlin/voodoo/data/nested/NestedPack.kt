@@ -28,7 +28,7 @@ data class NestedPack(
     var version: String = "1.0",
     var icon: File = File("icon.png"),
     val authors: List<String> = emptyList(),
-    var forge: ForgeVersion? = null,
+    var forge: Int? = null,
     var userFiles: UserFiles = UserFiles(),
     var launch: LaunchModifier = LaunchModifier(),
     var root: NestedEntry = NestedEntry(),

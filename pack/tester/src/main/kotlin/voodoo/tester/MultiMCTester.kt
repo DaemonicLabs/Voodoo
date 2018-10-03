@@ -9,6 +9,7 @@ import kotlinx.serialization.json.JSON
 import kotlinx.serialization.serializer
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
+import voodoo.forge.Forge
 import voodoo.mmc.MMCUtil
 import voodoo.provider.Providers
 import voodoo.util.blankOr
@@ -44,9 +45,9 @@ object MultiMCTester : AbstractTester() {
         val minecraftDir = MMCUtil.installEmptyPack(
             title,
             folder,
-            icon = modpack.iconFile,
+            icon = modpack.icon,
             mcVersion = modpack.mcVersion,
-            forge = modpack.forge
+            forgeVersion = Forge.forgeVersionOf(modpack.forge)?.forgeVersion
         )
 
         val modsDir = minecraftDir.resolve("mods")

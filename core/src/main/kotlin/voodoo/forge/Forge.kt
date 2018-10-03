@@ -31,7 +31,12 @@ object Forge : KLogging() {
         }
     }
 
-    suspend fun toForgeVersion(build: Int): ForgeVersion {
+    suspend fun forgeVersionOf(build: Int?): ForgeVersion? {
+        if (build == null || build <= 0) return null
+        return forgeVersionOf(build)
+    }
+
+    suspend fun forgeVersionOf(build: Int): ForgeVersion {
         val data = deferredData.await()
         val webpath = data.webpath
         val artifact = data.number[build.toString()]!!
@@ -49,8 +54,7 @@ object Forge : KLogging() {
             url,
             fileName,
             longVersion,
-            forgeVersion,
-            build
+            forgeVersion
         )
     }
 

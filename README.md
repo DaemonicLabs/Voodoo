@@ -99,7 +99,9 @@ examples based on [Center of the Multiverse](https://github.com/elytra/Center-of
 
 Learn how to define your `$pack.kt` in [docs/setup](docs/setup)
 
-other samples: [samples](samples)
+other samples: [samples](samples) 
+
+[Voodoo Samples](https://github.com/NikkyAI/VoodooSamples)
 
 update the pack and write out the lockfiles \
 `./cotm.kt build --updateAll`
