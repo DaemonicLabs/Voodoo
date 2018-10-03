@@ -50,8 +50,8 @@ data class LockPack(
                 elemOutput.serialize(this.version, obj.version, 3)
                 elemOutput.serialize(this.icon, obj.icon, 4)
                 elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 5)
-                this.forge?.also { forge ->
-                    elemOutput.serializeObj(forge, obj.forge, ForgeVersion::class.serializer(), 6)
+                obj.forge?.also { forge ->
+                    elemOutput.serializeObj(this.forge, forge, ForgeVersion::class.serializer(), 6)
                 }
                 elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier::class.serializer(), 7)
                 elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles::class.serializer(), 8)
@@ -71,8 +71,8 @@ data class LockPack(
             }
         }
 
-        private fun <T : Any?> KOutput.serializeObj(default: T, actual: T?, saver: KSerialSaver<T>, index: Int) {
-            if (default != actual && actual != null) {
+        private fun <T : Any?> KOutput.serializeObj(default: T?, actual: T, saver: KSerialSaver<T>, index: Int) {
+            if (default != actual || default != null) {
                 this.writeElement(serialClassDesc, index)
                 this.write(saver, actual)
             }
