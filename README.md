@@ -89,8 +89,8 @@ dependencies {
 }
 ```
 
-unix: `./gradlew deployToMavenLocal`  
-windows: `./gradlew.bat deployToMavenLocal`
+unix: `./gradlew publishToMavenLocal`  
+windows: `./gradlew.bat publishToMavenLocal`
 
 Usage examples
 --------------

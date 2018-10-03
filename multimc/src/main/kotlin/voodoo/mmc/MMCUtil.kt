@@ -159,9 +159,7 @@ object MMCUtil : KLogging() {
             val iconName = "icon_$folder"
             val iconsDir =
                 with(MMCUtil.findDir()) { this.resolve(readCfg(this.resolve("multimc.cfg"))["IconsDir"] ?: "icons") }
-            val iconFile = iconsDir.resolve("$iconName.png")
-            icon.copyTo(iconFile, overwrite = true)
-//            val iconName = "icon"
+            icon.copyTo(iconsDir.resolve("$iconName.png"), overwrite = true)
             icon.copyTo(instanceDir.resolve("$iconName.png"), overwrite = true)
             iconName
         } else {
@@ -454,15 +452,8 @@ object MMCUtil : KLogging() {
                     (parent as? JFrame)?.dispose()
                 }
             }
-
-//            fun getValue(): Pair<Map<String, Boolean>, Boolean> {
-//                isVisible = true
-//                dispose()
-//                return features.associateBy({ it.id }, { toggleButtons[it.id]!!.isSelected }) to force
-//            }
         }
         logger.info("created dialog")
-//        return dialog.getValue()
 
         dialog.isVisible = true
         dialog.dispose()
