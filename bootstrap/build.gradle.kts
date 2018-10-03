@@ -14,7 +14,6 @@ application {
 }
 version = project.version
 
-apply(from = rootProject.file("base.gradle.kts"))
 dependencies {
     compile(project(":util"))
 }

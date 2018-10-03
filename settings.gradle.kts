@@ -24,8 +24,8 @@ include("server-installer")
 include("bootstrap")
 include("fuel-kotlinxserialization")
 
-include("skcraft:launcher")
-include("skcraft:launcher-builder")
+include("skcraft")
+include("skcraft:builder")
 
 fun prefixProject(project: ProjectDescriptor, prefix: String) {
     project.name = prefix + "-" + project.name

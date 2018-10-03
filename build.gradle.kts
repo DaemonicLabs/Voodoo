@@ -43,9 +43,8 @@ val runnableProjects = listOf(
 )
 val noConstants = listOf(
     project("skcraft"),
-    project("skcraft:skcraft-launcher"),
-    project("skcraft:skcraft-launcher-builder")
-//        project(":fuel-coroutines"),
+    project("skcraft:skcraft-builder"),
+    project(":fuel-kotlinxserialization")
 )
 val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: ""
 val kotlin_version: String by project

@@ -19,7 +19,7 @@ dependencies {
     compile(project(":core"))
     compile(project(":multimc"))
     compile(project(":builder"))
-    compile(project(":skcraft:skcraft-launcher-builder"))
+    compile(project(":skcraft:skcraft-builder"))
 
     compile(group = "org.jetbrains.kotlinx", name = "kotlinx-html-jvm", version = "0.6.11")
 }
