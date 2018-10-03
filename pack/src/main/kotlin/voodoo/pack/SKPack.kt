@@ -79,7 +79,7 @@ object SKPack : AbstractPack() {
         coroutineScope {
             // download forge
             modpack.forge?.also { forge ->
-                val (forgeUrl, forgeFileName, _, forgeVersion) = forge
+                val (forgeUrl, forgeFileName, _, forgeVersion) = Forge.forgeVersionOf(forge)
                 val forgeFile = loadersFolder.resolve(forgeFileName)
                 forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
             } ?: logger.warn { "no forge configured" }

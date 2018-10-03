@@ -7,6 +7,5 @@ data class ForgeVersion(
     val url: String,
     val fileName: String,
     val longVersion: String,
-    val forgeVersion: String,
-    val build: Int
+    val forgeVersion: String
 )

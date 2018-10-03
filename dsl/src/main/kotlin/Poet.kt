@@ -6,7 +6,6 @@ import com.squareup.kotlinpoet.asTypeName
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
-import voodoo.data.ForgeVersion
 import voodoo.data.curse.ProjectID
 import voodoo.forge.Forge
 import java.io.File
@@ -84,19 +83,11 @@ object Poet : KLogging() {
             Forge.getForgeData()
         }
 
-        val forgeVersionType = ForgeVersion::class.asTypeName()
-
-        fun ForgeVersion.toPropertySpec(identifier: String): PropertySpec {
-            return PropertySpec.builder(identifier, forgeVersionType)
-                .initializer(
-                    "%T(%S, %S, %S, %S, %L)",
-                    forgeVersionType,
-                    url,
-                    fileName,
-                    longVersion,
-                    forgeVersion,
-                    build
-                ).build()
+        fun buildProperty(identifier: String, build: Int): PropertySpec {
+            return PropertySpec
+                .builder(identifier, Int::class, KModifier.CONST)
+                .initializer("%L", build)
+                .build()
         }
 
         val forgeBuilder = TypeSpec.objectBuilder("Forge")
@@ -109,9 +100,7 @@ object Poet : KLogging() {
             val versionBuilder = TypeSpec.objectBuilder(versionIdentifier)
             for (number in numbers) {
                 val buildIdentifier = "build$number"
-                val forgeVersion = Forge.toForgeVersion(number)
-                val property = forgeVersion.toPropertySpec(buildIdentifier)
-                versionBuilder.addProperty(property)
+                versionBuilder.addProperty(buildProperty(buildIdentifier, number))
             }
             forgeBuilder.addType(versionBuilder.build())
         }
@@ -123,9 +112,7 @@ object Poet : KLogging() {
                 else
                     this
             }
-            val forgeVersion = Forge.toForgeVersion(number)
-            val property = forgeVersion.toPropertySpec(keyIdentifier)
-            forgeBuilder.addProperty(property)
+            forgeBuilder.addProperty(buildProperty(keyIdentifier, number))
         }
 
         save(forgeBuilder.build(), name, folder)

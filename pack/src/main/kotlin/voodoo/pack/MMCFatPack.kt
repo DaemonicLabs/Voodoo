@@ -7,6 +7,7 @@ import kotlinx.serialization.json.JSON
 import kotlinx.serialization.serializer
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
+import voodoo.forge.Forge
 import voodoo.mmc.MMCUtil
 import voodoo.provider.Providers
 import voodoo.util.*
@@ -32,10 +33,10 @@ object MMCFatPack : AbstractPack() {
         val minecraftDir = MMCUtil.installEmptyPack(
             title,
             modpack.id,
-            icon = modpack.iconFile,
+            icon = modpack.icon,
             instanceDir = instanceDir,
             mcVersion = modpack.mcVersion,
-            forge = modpack.forge
+            forgeVersion = Forge.forgeVersionOf(modpack.forge)?.forgeVersion
         )
 
         minecraftDir.mkdirs()

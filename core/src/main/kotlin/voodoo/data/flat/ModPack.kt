@@ -25,7 +25,7 @@ data class ModPack(
     @Optional var version: String = "1.0",
     @Optional var icon: File = File("icon.png"),
     @Optional val authors: List<String> = emptyList(),
-    @Optional var forge: ForgeVersion? = null,
+    @Optional var forge: Int? = null,
     //var forgeBuild: Int = -1,
     @Optional val launch: LaunchModifier = LaunchModifier(),
     @Optional var userFiles: UserFiles = UserFiles(),
@@ -45,7 +45,7 @@ data class ModPack(
                 elemOutput.serialize(this.icon, obj.icon, 4)
                 elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 5)
                 obj.forge?.also { forge ->
-                    elemOutput.serializeObj(this.forge, forge, ForgeVersion::class.serializer(), 6)
+                    elemOutput.serialize(this.forge, forge, 6)
                 }
                 elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier::class.serializer(), 7)
                 elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles::class.serializer(), 8)
@@ -55,7 +55,7 @@ data class ModPack(
             elemOutput.writeEnd(serialClassDesc)
         }
 
-        private inline fun <reified T : Any> KOutput.serialize(default: T, actual: T, index: Int) {
+        private inline fun <reified T : Any> KOutput.serialize(default: T?, actual: T, index: Int) {
             if (default != actual) {
                 when (actual) {
                     is String -> this.writeStringElementValue(serialClassDesc, index, actual)

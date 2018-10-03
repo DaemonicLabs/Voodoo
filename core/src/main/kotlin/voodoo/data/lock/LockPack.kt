@@ -1,7 +1,7 @@
 package voodoo.data.lock
 
-
 import com.skcraft.launcher.model.launcher.LaunchModifier
+import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.KOutput
 import kotlinx.serialization.KSerialSaver
 import kotlinx.serialization.Optional
@@ -10,11 +10,11 @@ import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
-import voodoo.data.ForgeVersion
 import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
 import voodoo.data.sk.ExtendedFeaturePattern
+import voodoo.forge.Forge
 import voodoo.markdownTable
 import voodoo.util.blankOr
 import java.io.File
@@ -32,7 +32,7 @@ data class LockPack(
     @Optional val version: String = "1.0",
     @Optional val icon: File = File("icon.png"),
     @Optional val authors: List<String> = emptyList(),
-    @Optional val forge: ForgeVersion? = null,
+    @Optional val forge: Int? = null,
     @Optional val launch: LaunchModifier = LaunchModifier(),
     @Optional var userFiles: UserFiles = UserFiles(),
     @Optional var localDir: String = "local",
@@ -51,18 +51,23 @@ data class LockPack(
                 elemOutput.serialize(this.icon, obj.icon, 4)
                 elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 5)
                 obj.forge?.also { forge ->
-                    elemOutput.serializeObj(this.forge, forge, ForgeVersion::class.serializer(), 6)
+                    elemOutput.serialize(this.forge, forge, 6)
                 }
                 elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier::class.serializer(), 7)
                 elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles::class.serializer(), 8)
                 elemOutput.serialize(this.localDir, obj.localDir, 9)
                 elemOutput.serialize(this.sourceDir, obj.sourceDir, 10)
-                elemOutput.serializeObj(this.features, obj.features, ExtendedFeaturePattern::class.serializer().list, 11)
+                elemOutput.serializeObj(
+                    this.features,
+                    obj.features,
+                    ExtendedFeaturePattern::class.serializer().list,
+                    11
+                )
             }
             elemOutput.writeEnd(serialClassDesc)
         }
 
-        private inline fun <reified T : Any> KOutput.serialize(default: T, actual: T, index: Int) {
+        private inline fun <reified T : Any> KOutput.serialize(default: T?, actual: T, index: Int) {
             if (default != actual) {
                 when (actual) {
                     is String -> this.writeStringElementValue(serialClassDesc, index, actual)
@@ -95,9 +100,6 @@ data class LockPack(
     @Transient
     val localFolder: File
         get() = rootFolder.resolve(localDir)
-    @Transient
-    val iconFile: File
-        get() = icon
 
     @Transient
     val entrySet: MutableSet<LockEntry> = mutableSetOf()
@@ -143,16 +145,21 @@ data class LockPack(
 
     @Transient
     val report: String
-        get() = markdownTable(
-            header = "Title" to this.title(), content = listOf(
-                "ID" to "`$id`",
-                "Pack Version" to "`$version`",
-                "MC Version" to "`$mcVersion`",
-                "Forge Version" to "`${forge?.forgeVersion ?: "missing"}`",
-                "Author" to "`${authors.joinToString(", ")}`",
-                "Icon" to "<img src=\"${icon.relativeTo(rootFolder).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
+        get() {
+            val forgeVersion = runBlocking {
+                Forge.forgeVersionOf(forge)?.forgeVersion ?: "missing"
+            }
+            return markdownTable(
+                header = "Title" to this.title(), content = listOf(
+                    "ID" to "`$id`",
+                    "Pack Version" to "`$version`",
+                    "MC Version" to "`$mcVersion`",
+                    "Forge Version" to "`$forgeVersion`",
+                    "Author" to "`${authors.joinToString(", ")}`",
+                    "Icon" to "<img src=\"${icon.relativeTo(rootFolder).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
+                )
             )
-        )
+        }
 
     fun findEntryById(id: String) = entrySet.find { it.id == id }
 
