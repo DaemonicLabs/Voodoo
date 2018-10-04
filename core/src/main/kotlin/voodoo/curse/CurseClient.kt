@@ -85,6 +85,7 @@ object CurseClient : KLogging() {
             }
             is Result.Failure -> {
                 logger.error(result.error.exception) { "cold not request slug-id pairs" }
+                logger.error { request }
                 throw result.error.exception
             }
         }
@@ -285,7 +286,7 @@ object CurseClient : KLogging() {
             }
         }
 
-        val file = files.sortedWith(compareByDescending { it.fileDate }).firstOrNull()
+        val file = files.asSequence().sortedWith(compareByDescending { it.fileDate }).firstOrNull()
         if (file == null) {
             val filesUrl = "$proxyUrl/addon/$addonId/files"
             logger.error(

@@ -45,6 +45,6 @@ inline fun <reified T : Any> kotlinxDeserializerOf(loader: KSerialLoader<T> = T:
 }
 
 fun Request.jsonBody(body: String, charset: Charset = Charsets.UTF_8): Request {
-    header("content-type" to "application/json")
+    headers["Content-Type"] = "application/json"
     return body(body, charset)
 }
