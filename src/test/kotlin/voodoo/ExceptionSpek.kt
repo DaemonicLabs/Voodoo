@@ -1,14 +1,11 @@
 package voodoo
 
-import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import voodoo.util.ExceptionHelper
-import kotlin.coroutines.experimental.coroutineContext
-import kotlin.test.*
+import kotlin.test.assertFailsWith
 
 object ExceptionSpek : Spek({
     describe("throw exception") {
@@ -32,12 +29,11 @@ object ExceptionSpek : Spek({
 
                         job.join()
                     }
-                }catch(e: Exception) {
+                } catch (e: Exception) {
                     e.printStackTrace()
                     throw e
                 }
             }
-
         }
     }
 })

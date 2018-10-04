@@ -2,26 +2,15 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.gradle.api.publish.maven.MavenPom
 import org.jetbrains.kotlin.gradle.dsl.Coroutines
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
-buildscript {
-    repositories {
-        jcenter()
-        maven { setUrl("https://kotlin.bintray.com/kotlinx") }
-        maven { setUrl("https://plugins.gradle.org/m2/") }
-    }
-//    val kotlin_version: String by project
-    val serialization_version: String by project
-    dependencies {
-        //        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version")
-        classpath("org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:$serialization_version")
-    }
-}
 plugins {
+    kotlin("jvm") version Versions.kotlin
     application
+    idea
     `maven-publish`
-    kotlin("jvm") version "1.2.71"
-    id("idea")
-    id("project-report")
+    `project-report`
+    id("kotlinx-serialization") version Versions.serialization
     id("com.github.johnrengelman.shadow") version "2.0.4"
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
 //    id("org.jmailen.kotlinter") version "1.17.0"
@@ -44,15 +33,14 @@ val runnableProjects = listOf(
 val noConstants = listOf(
     project("skcraft"),
     project("skcraft:skcraft-builder"),
-    project(":fuel-kotlinxserialization")
+    project(":fuel-kotlinx-serialization")
 )
 val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: ""
-val kotlin_version: String by project
 allprojects {
     configurations.all {
         resolutionStrategy.eachDependency {
             if (requested.group == "org.jetbrains.kotlin") {
-                useVersion(kotlin_version)
+                useVersion(Versions.kotlin)
 //                because("We use kotlin EAP 1.3")
             }
         }
@@ -60,18 +48,18 @@ allprojects {
     apply {
         plugin("kotlin")
         plugin("kotlinx-serialization")
-//        plugin("org.jmailen.kotlinter")
         plugin("idea")
+//        plugin("org.jmailen.kotlinter")
     }
     java {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
 
-    kotlin {
-        // configure<org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension>
+    configure<KotlinJvmProjectExtension> {
         experimental.coroutines = Coroutines.ENABLE
     }
+
     tasks.withType<KotlinCompile> {
         kotlinOptions {
             languageVersion = "1.2"
@@ -84,7 +72,7 @@ allprojects {
         jcenter()
 //        mavenLocal()
 //        maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap") }
-        maven { setUrl("https://kotlin.bintray.com/kotlinx") }
+        maven { url = uri("https://kotlin.bintray.com/kotlinx") }
     }
 
     idea {
@@ -94,7 +82,7 @@ allprojects {
     }
 
     // fix jar names (projects renamed in settings.gradle.kts)
-    val baseName= project.name.toLowerCase()
+    val baseName = project.name.toLowerCase()
     base {
         archivesBaseName = "$baseName$versionSuffix"
     }
@@ -118,6 +106,7 @@ allprojects {
             project != rootProject -> "voodoo/${project.name.replace('-', '/')}"
             else -> "voodoo"
         }
+        //TODO: move to buildSrc
         val compileKotlin by tasks.getting(KotlinCompile::class) {
             doFirst {
                 val name = project.name.split("/").last().capitalize().split("-").joinToString("") { it.capitalize() }
@@ -255,20 +244,18 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8", kotlin_version))
-//    implementation(group = "org.jetbrains.kotlin", name = "kotlin-stdlib-jdk8", version = kotlin_version)
+    implementation(kotlin("stdlib-jdk8", Versions.kotlin))
 
-    testImplementation(group = "org.spekframework.spek2", name = "spek-dsl-jvm", version = spek_version)
-    testRuntimeOnly(group = "org.spekframework.spek2", name = "spek-runner-junit5", version = spek_version)
+    testImplementation(group = "org.spekframework.spek2", name = "spek-dsl-jvm", version = Versions.spek)
+    testRuntimeOnly(group = "org.spekframework.spek2", name = "spek-runner-junit5", version = Versions.spek)
 
-//    testImplementation(group = "org.jetbrains.kotlin", name = "kotlin-test", version = kotlin_version)
-    testImplementation(kotlin("test"))
+    testImplementation(kotlin("test", Versions.kotlin))
 
     // https=//mvnrepository.com/artifact/org.junit.platform/junit-platform-engine
     testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
 
     // spek requires kotlin-reflect, can be omitted if already in the classpath
-    testRuntimeOnly(kotlin("reflect", kotlin_version))
+    testRuntimeOnly(kotlin("reflect", Versions.kotlin))
 
 
     testCompile(project(":dsl"))
@@ -286,7 +273,8 @@ tasks.withType<Test> {
     }
 }
 
-//val wrapper by tasks.getting(Wrapper::class) {
-//    gradleVersion = "4.10"
-//    distributionType = Wrapper.DistributionType.ALL
-//}
+tasks.withType<Wrapper> {
+    gradleVersion = "4.10.2"
+    distributionType = Wrapper.DistributionType.ALL
+}
+

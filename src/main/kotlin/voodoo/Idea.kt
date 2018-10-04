@@ -3,7 +3,11 @@ package voodoo
 import mu.KLogging
 import voodoo.ShellUtils.requireInPath
 import voodoo.data.nested.NestedPack
-import java.io.*
+import java.io.BufferedReader
+import java.io.File
+import java.io.IOException
+import java.io.InputStream
+import java.io.InputStreamReader
 import java.nio.file.Files
 import java.util.function.Consumer
 import kotlin.system.exitProcess
@@ -21,7 +25,8 @@ data class ProcessResult(val command: String, val exitCode: Int, val stdout: Str
 }
 
 fun evalBash(
-    cmd: String, wd: File? = null,
+    cmd: String,
+    wd: File? = null,
     stdoutConsumer: Consumer<String> = StringBuilderConsumer(),
     stderrConsumer: Consumer<String> = StringBuilderConsumer()
 ): ProcessResult {
@@ -32,16 +37,17 @@ fun evalBash(
 }
 
 fun runProcess(
-    vararg cmd: String, wd: File? = null,
+    vararg cmd: String,
+    wd: File? = null,
     stdoutConsumer: Consumer<String> = StringBuilderConsumer(),
     stderrConsumer: Consumer<String> = StringBuilderConsumer()
 ): ProcessResult {
 
     try {
         // simplify with https://stackoverflow.com/questions/35421699/how-to-invoke-external-command-from-within-kotlin-code
-        val proc = ProcessBuilder(cmd.asList()).directory(wd).
+        val proc = ProcessBuilder(cmd.asList()).directory(wd)
             // see https://youtrack.jetbrains.com/issue/KT-20785
-            apply { environment()["KOTLIN_RUNNER"] = "" }.start();
+            .apply { environment()["KOTLIN_RUNNER"] = "" }.start()
 
         // we need to gobble the streams to prevent that the internal pipes hit their respecitive buffer limits, which
         // would lock the sub-process execution (see see https://github.com/holgerbrandl/kscript/issues/55
@@ -104,7 +110,7 @@ fun launchIdeaWithKscriptlet(scriptFile: File, libs: List<File>): File {
         "Could not find 'idea' in your PATH. It can be created in IntelliJ under `Tools -> Create Command-line Launcher`"
     )
 
-    logger.info("Setting up idea project from ${scriptFile}")
+    logger.info("Setting up idea project from $scriptFile")
 
     val tmpProjectDir = scriptFile.run {
         absoluteFile.parentFile
@@ -158,7 +164,6 @@ val wrapper by tasks.getting(Wrapper::class) {
 kotlin.sourceSets.maybeCreate("main").kotlin.srcDir("src")
     """.trimIndent()
 
-
     File(tmpProjectDir, "build.gradle.kts").writeText(gradleScript)
 
     // also copy/symlink script resource in
@@ -192,7 +197,7 @@ kotlin.sourceSets.maybeCreate("main").kotlin.srcDir("src")
 private fun createSymLink(link: File, target: File, overwrite: Boolean = false) {
     try {
         if (overwrite) link.deleteRecursively()
-        Files.createSymbolicLink(link.toPath(), target.absoluteFile.toPath());
+        Files.createSymbolicLink(link.toPath(), target.absoluteFile.toPath())
     } catch (e: IOException) {
         logger.error("Failed to create symbolic link to script. Copying instead...", e)
         target.copyTo(link)

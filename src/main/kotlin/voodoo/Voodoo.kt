@@ -14,12 +14,12 @@ object Voodoo : KLogging() {
     val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
 //            "import" to { args -> Import.main(*args) },
 //            "build" to { args -> BuilderOld.main(*args) },
-            "pack" to { args -> Pack.main(*args) },
-            "test" to { args -> Tester.main(*args) },
-            "idea" to{ args ->  Idea.main(*args) },
-            "version" to { _ ->
-                println(FULL_VERSION)
-            }
+        "pack" to { args -> Pack.main(*args) },
+        "test" to { args -> Tester.main(*args) },
+        "idea" to { args -> Idea.main(*args) },
+        "version" to { _ ->
+            println(FULL_VERSION)
+        }
     )
 
     fun printCommands(cmd: String?) {
