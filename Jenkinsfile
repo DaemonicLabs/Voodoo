@@ -17,8 +17,8 @@ pipeline {
 	    }
 	    stage("multimc-installer") {
 	        steps {
-	            sh './gradlew :multimc:installer:clean'
-	            sh './gradlew :multimc:installer:build'
+	            sh './gradlew :multimc:multimc-installer:clean'
+	            sh './gradlew :multimc:multimc-installer:build'
 	            archiveArtifacts artifacts:  'multimc/installer/build/libs/*jar'
 	        }
 	    }
