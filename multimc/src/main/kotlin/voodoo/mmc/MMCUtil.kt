@@ -6,7 +6,6 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.JSON
 import mu.KLogging
-import voodoo.data.ForgeVersion
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
@@ -14,20 +13,34 @@ import voodoo.util.Platform
 import voodoo.util.json
 import voodoo.util.serializer.FileSerializer
 import voodoo.util.toJson
-import java.awt.*
+import java.awt.BorderLayout
+import java.awt.Color
+import java.awt.Component
+import java.awt.Dialog
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import java.awt.Insets
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.io.File
 import java.io.IOException
 import java.util.SortedMap
 import java.util.concurrent.TimeUnit
-import javax.swing.*
+import javax.swing.JButton
+import javax.swing.JCheckBox
+import javax.swing.JDialog
+import javax.swing.JFrame
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JToggleButton
+import javax.swing.SwingConstants
+import javax.swing.UIManager
 import kotlin.system.exitProcess
 
 object MMCUtil : KLogging() {
     private val directories = Directories.get(moduleName = "multimc")
     private val cacheHome = directories.cacheHome
-    val configHome = Directories.get().configHome
+    private val configHome = Directories.get().configHome
 
     @Serializable
     data class MMCConfiguration(
@@ -58,7 +71,6 @@ object MMCUtil : KLogging() {
         logger.info("started multimc instance $name $process")
         val status = process.waitFor()
         logger.info("multimc instance exited with code $status")
-
     }
 
     var dir: File? = null
@@ -94,18 +106,7 @@ object MMCUtil : KLogging() {
         return dir!!
     }
 
-    fun String.runCommandWithRedirct(workingDir: File = cacheHome) {
-        logger.info("running '$this' in $workingDir")
-        ProcessBuilder(*split(" ").toTypedArray())
-            .directory(workingDir)
-            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-            .redirectError(ProcessBuilder.Redirect.INHERIT)
-            .apply { logger.info { directory() } }
-            .start()
-//                .waitFor()
-    }
-
-    fun String.runCommand(workingDir: File = cacheHome): String {
+    private fun String.runCommand(workingDir: File = cacheHome): String {
         try {
             val parts = this.split("\\s".toRegex())
             val proc = ProcessBuilder(*parts.toTypedArray())
@@ -122,12 +123,12 @@ object MMCUtil : KLogging() {
         }
     }
 
-    fun readCfg(cfgFile: File): SortedMap<String, String> =
+    private fun readCfg(cfgFile: File): SortedMap<String, String> =
         cfgFile.bufferedReader().useLines { lines ->
             lines.map { Pair(it.substringBefore('='), it.substringAfter('=')) }.toMap().toSortedMap()
         }
 
-    fun writeCfg(cfgFile: File, properties: Map<String, String>) {
+    private fun writeCfg(cfgFile: File, properties: Map<String, String>) {
         cfgFile.createNewFile()
         cfgFile.writeText(
             properties.map { (key, value) -> "$key=$value" }
@@ -139,9 +140,11 @@ object MMCUtil : KLogging() {
      * Prepares a MultiMC instance
      * @return Minecraft Directory
      */
-    suspend fun installEmptyPack(
-        name: String, folder: String,
-        icon: File? = null, mcVersion: String? = null,
+    fun installEmptyPack(
+        name: String,
+        folder: String,
+        icon: File? = null,
+        mcVersion: String? = null,
         forgeVersion: String? = null,
         instanceDir: File = with(findDir()) {
             this.resolve(
@@ -175,7 +178,7 @@ object MMCUtil : KLogging() {
         } else MultiMCPack()
 
         if (mcVersion != null) {
-            if(forgeVersion != null){
+            if (forgeVersion != null) {
                 logger.info("forge version : $forgeVersion")
                 mmcPack.components = listOf(
                     PackComponent(
@@ -218,7 +221,8 @@ object MMCUtil : KLogging() {
     fun selectFeatures(
         features: List<Feature>,
         previousSelection: Map<String, Boolean>,
-        name: String, version: String,
+        name: String,
+        version: String,
         forceDisplay: Boolean,
         updating: Boolean
     ): Pair<Map<String, Boolean>, Boolean> {
@@ -255,7 +259,7 @@ object MMCUtil : KLogging() {
                 val panel = JPanel()
                 panel.layout = GridBagLayout()
 
-                val setter = features.sortedBy { it.name }.mapIndexed { row, feature ->
+                val setter = features.asSequence().sortedBy { it.name }.mapIndexed { row, feature ->
                     val indicator = JCheckBox("", toggleButtons[feature.name]!!.isSelected)
                     panel.add(indicator,
                         GridBagConstraints().apply {
@@ -341,15 +345,15 @@ object MMCUtil : KLogging() {
                         )
                     }
                     feature.name to ::select
-                }.toMap()
+                }.toList().toMap()
 
                 add(panel, BorderLayout.CENTER)
                 val buttonPane = JPanel(GridBagLayout())
 
                 val buttonResetDefault = JButton("Reset to Default").apply {
-                    addActionListener {
+                    addActionListener { _ ->
                         setter.forEach { (name, function) ->
-                            val selected = features.find { it.name == name }!!.selected
+                            val selected = features.find { feature -> feature.name == name }!!.selected
                             function(selected)
                         }
                     }
@@ -364,7 +368,7 @@ object MMCUtil : KLogging() {
                 })
                 val buttonResetLast = JButton("Reset to Last").apply {
                     isEnabled = previousSelection.isNotEmpty()
-                    addActionListener {
+                    addActionListener { _ ->
                         setter.forEach { (name, function) ->
                             val selected = features.find { it.name == name }!!.selected
                             function(previousSelection[name] ?: selected)

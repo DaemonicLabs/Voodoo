@@ -17,7 +17,7 @@ import kotlinx.serialization.serializer
 import kotlinx.serialization.set
 import mu.KLogging
 import voodoo.data.Side
-import voodoo.data.curse.CurseConstancts.PROXY_URL
+import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
@@ -33,26 +33,26 @@ import java.io.File
  * @author Nikky
  */
 
-//@JsonInclude(JsonInclude.Include.NON_DEFAULT)
+// @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Serializable
 data class Entry(
-    //@JsonInclude(JsonInclude.Include.ALWAYS)
+    // @JsonInclude(JsonInclude.Include.ALWAYS)
     val provider: String,
     var id: String,
-    @Optional var name: String = "",  // TODO add `by provider.getDisplayname(this)`
+    @Optional var name: String = "", // TODO add `by provider.getDisplayname(this)`
     @Optional var folder: String = "mods",
     @Optional var comment: String = "",
     @Optional var description: String = "",
-    @Optional @Serializable(with=Feature.Companion::class) var feature: Feature? = null,
+    @Optional @Serializable(with = Feature.Companion::class) var feature: Feature? = null,
     @Optional var side: Side = Side.BOTH,
     @Optional var websiteUrl: String = "",
     @Optional var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
     @Optional var replaceDependencies: Map<String, String> = mapOf(),
-    //@JsonInclude(JsonInclude.Include.ALWAYS)
+    // @JsonInclude(JsonInclude.Include.ALWAYS)
 //        @Optional var optional: Boolean = feature != null,
     @Optional var packageType: PackageType = PackageType.MOD,
     @Optional var transient: Boolean = false, // this entry got added as dependency for something else
-    @Optional var version: String = "", //TODO: use regex only ?
+    @Optional var version: String = "", // TODO: use regex only ?
     @Optional var fileName: String? = null,
     @Optional var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
 //        when {

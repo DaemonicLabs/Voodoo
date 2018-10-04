@@ -38,7 +38,6 @@ object Tester : KLogging() {
 
             tester.execute(modpack = modpack, clean = clean)
         }
-
     }
 
     private class Arguments(parser: ArgParser) {

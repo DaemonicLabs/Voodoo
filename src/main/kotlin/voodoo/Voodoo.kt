@@ -8,7 +8,6 @@ package voodoo
 import kotlinx.coroutines.experimental.CoroutineName
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
-import voodoo.VoodooConstants.FULL_VERSION
 
 object Voodoo : KLogging() {
     val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
@@ -18,7 +17,7 @@ object Voodoo : KLogging() {
         "test" to { args -> Tester.main(*args) },
         "idea" to { args -> Idea.main(*args) },
         "version" to { _ ->
-            println(FULL_VERSION)
+            println(VoodooConstants.FULL_VERSION)
         }
     )
 
@@ -28,7 +27,7 @@ object Voodoo : KLogging() {
         } else {
             logger.error("unknown command $cmd")
         }
-        logger.warn("voodoo $FULL_VERSION")
+        logger.warn("voodoo ${VoodooConstants.FULL_VERSION}")
         logger.warn("commands: ")
         funcs.keys.forEach { key ->
             logger.warn("> $key")

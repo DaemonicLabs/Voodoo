@@ -100,7 +100,7 @@ object SKPack : AbstractPack() {
                         urlTxtFile.writeText(url)
                     }
                     //                println("done: ${entry.id} $file")
-                    entry.id to file  // serialFile.relativeTo(skSrcFolder
+                    entry.id to file // serialFile.relativeTo(skSrcFolder
                 }.also {
                     logger.info("started job: download '${entry.id}'")
                     delay(10)
@@ -204,7 +204,7 @@ object SKPack : AbstractPack() {
                 "--manifest-dest", manifestDest.path
             )
 
-            //regenerate packages.json
+            // regenerate packages.json
             val packagesFile = targetDir.resolve("packages.json")
             val packages: SKPackages = if (packagesFile.exists()) {
                 JSON.indented.parse(packagesFile.readText())

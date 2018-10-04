@@ -1,6 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import org.gradle.api.publish.maven.MavenPom
 import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 
@@ -13,7 +12,7 @@ plugins {
     id("kotlinx-serialization") version Versions.serialization
     id("com.github.johnrengelman.shadow") version "2.0.4"
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
-//    id("org.jmailen.kotlinter") version "1.17.0"
+    id("org.jmailen.kotlinter") version "1.17.0"
 }
 
 println(
@@ -35,13 +34,13 @@ val noConstants = listOf(
     project("skcraft:skcraft-builder"),
     project(":fuel-kotlinx-serialization")
 )
-val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: ""
+val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: "-SNAPSHOT"
 allprojects {
     configurations.all {
         resolutionStrategy.eachDependency {
             if (requested.group == "org.jetbrains.kotlin") {
                 useVersion(Versions.kotlin)
-//                because("We use kotlin EAP 1.3")
+                because("We use kotlin version ${Versions.kotlin}")
             }
         }
     }
@@ -49,7 +48,7 @@ allprojects {
         plugin("kotlin")
         plugin("kotlinx-serialization")
         plugin("idea")
-//        plugin("org.jmailen.kotlinter")
+        plugin("org.jmailen.kotlinter")
     }
     java {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -91,46 +90,17 @@ allprojects {
     }
 
     if (project !in noConstants) {
-        val major: String by project
-        val minor: String by project
-        val patch: String by project
-        sourceSets {
-            getByName("main").java.srcDirs("$buildDir/generated-src")
-            getByName("test").java.srcDirs("$buildDir/test-src")
-        }
-        //TODO: use with 1.3 again
-//        kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated-src")
-
-        //TODO: try to use native project path
-        val folder = when {
-            project != rootProject -> "voodoo/${project.name.replace('-', '/')}"
-            else -> "voodoo"
-        }
-        //TODO: move to buildSrc
-        val compileKotlin by tasks.getting(KotlinCompile::class) {
-            doFirst {
-                val name = project.name.split("/").last().capitalize().split("-").joinToString("") { it.capitalize() }
-                val templateSrc = rootProject.file("template/kotlin/voodoo/")
-                copy {
-                    from(templateSrc)
-                    into("$buildDir/generated-src/$folder")
-                    expand(mapOf(
-                        "PACKAGE" to folder.replace("/", ".").replace("-", "."),
-                        "NAME" to name,
-                        "MAJOR_VERSION" to major,
-                        "MINOR_VERSION" to minor,
-                        "PATCH_VERSION" to patch,
-                        "BUILD_NUMBER" to System.getenv("BUILD_NUMBER").let { it ?: -1 },
-                        "BUILD" to System.getenv("BUILD_NUMBER").let { it ?: "dev" }
-                    ))
+        val generateConstants = task<GenerateConstantsTask>("generateConstants") {
+            kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
+            idea {
+                module {
+                    generatedSourceDirs.add(outputFolder)
                 }
             }
         }
 
-        idea {
-            module {
-                generatedSourceDirs.add(buildDir.resolve(folder))
-            }
+        tasks.withType<KotlinCompile> {
+            dependsOn(generateConstants)
         }
 
         runnableProjects.find { it.first == project }?.let { (_, mainClass) ->
@@ -180,7 +150,7 @@ allprojects {
             from(sourceSets["main"].allSource)
         }
 
-        //fails due to Jankson
+        // fails due to Jankson
         val javadoc by tasks.getting(Javadoc::class) {}
         val javadocJar by tasks.registering(Jar::class) {
             classifier = "javadoc"
@@ -208,7 +178,6 @@ allprojects {
             .takeIf { it.exists() }
             ?.let { apply(from = it) }
     }
-
 }
 
 val genSrc = rootDir.resolve(".gen")
@@ -257,7 +226,6 @@ dependencies {
     // spek requires kotlin-reflect, can be omitted if already in the classpath
     testRuntimeOnly(kotlin("reflect", Versions.kotlin))
 
-
     testCompile(project(":dsl"))
 
     compile(project(":core:core-dsl"))
@@ -277,4 +245,3 @@ tasks.withType<Wrapper> {
     gradleVersion = "4.10.2"
     distributionType = Wrapper.DistributionType.ALL
 }
-

@@ -13,7 +13,7 @@ import java.time.Instant
  * @author Nikky
  */
 
-abstract class ProviderBase (
+abstract class ProviderBase(
     open val name: String
 ) {
     val id: String
@@ -77,7 +77,7 @@ abstract class ProviderBase (
     )
 
     open fun validate(lockEntry: LockEntry): Boolean {
-        if(lockEntry.id.isEmpty()) {
+        if (lockEntry.id.isEmpty()) {
             logger.error("invalid id of $lockEntry")
             return false
         }

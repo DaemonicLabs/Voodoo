@@ -12,10 +12,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FeaturePattern(
-        @SerialName("feature")
-        @Serializable(with=Feature.Companion::class) var feature: Feature,
-        @SerialName("files")
-        var filePatterns: FnPatternList
+    @SerialName("feature")
+    @Serializable(with = Feature.Companion::class) var feature: Feature,
+    @SerialName("files")
+    var filePatterns: FnPatternList
 ) {
     fun matches(path: String): Boolean {
         return filePatterns.matches(path)

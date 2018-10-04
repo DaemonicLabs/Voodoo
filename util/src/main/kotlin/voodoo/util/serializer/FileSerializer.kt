@@ -9,7 +9,7 @@ import kotlinx.serialization.internal.SerialClassDescImpl
 import java.io.File
 
 @Serializer(forClass = File::class)
-class FileSerializer: KSerializer<File> {
+class FileSerializer : KSerializer<File> {
     override val serialClassDesc: KSerialClassDesc = SerialClassDescImpl("java.io.File")
 
     override fun save(output: KOutput, obj: File) {

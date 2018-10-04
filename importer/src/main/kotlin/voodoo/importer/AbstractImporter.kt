@@ -1,6 +1,5 @@
 package voodoo.importer
 
-import kotlinx.coroutines.experimental.CoroutineScope
 import mu.KLogging
 import voodoo.util.Directories
 import java.io.File

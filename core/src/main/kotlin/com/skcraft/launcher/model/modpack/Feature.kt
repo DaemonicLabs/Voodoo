@@ -28,7 +28,7 @@ data class Feature(
     companion object : KSerializer<Feature> {
         override fun save(output: KOutput, obj: Feature) {
             val elemOutput = output.writeBegin(serialClassDesc)
-            if(obj.name.isNotEmpty())
+            if (obj.name.isNotEmpty())
                 elemOutput.writeStringElementValue(serialClassDesc, 0, obj.name)
             elemOutput.writeBooleanElementValue(serialClassDesc, 1, obj.selected)
             if (obj.description != "")

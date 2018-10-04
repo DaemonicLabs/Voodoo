@@ -9,6 +9,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserFiles(
-        var include: List<String> = listOf("options.txt", "optionsshaders.txt"),
-        var exclude: List<String> = emptyList()
+    var include: List<String> = listOf("options.txt", "optionsshaders.txt"),
+    var exclude: List<String> = emptyList()
 )

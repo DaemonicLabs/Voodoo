@@ -1,6 +1,10 @@
 package voodoo.pack
 
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.coroutineScope
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.joinAll
+import kotlinx.coroutines.experimental.launch
 import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.JSON
@@ -10,7 +14,10 @@ import voodoo.data.lock.LockPack
 import voodoo.forge.Forge
 import voodoo.mmc.MMCUtil
 import voodoo.provider.Providers
-import voodoo.util.*
+import voodoo.util.Downloader
+import voodoo.util.blankOr
+import voodoo.util.packToZip
+import voodoo.util.pool
 import java.io.File
 
 object MMCFatPack : AbstractPack() {
@@ -111,7 +118,6 @@ object MMCFatPack : AbstractPack() {
             CursePack.logger.info("waiting for jobs to finish")
             jobs.joinAll()
         }
-
 
         for (file in minecraftDir.walkTopDown()) {
             when {

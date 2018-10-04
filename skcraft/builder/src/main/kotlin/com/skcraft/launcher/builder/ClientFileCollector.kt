@@ -19,12 +19,14 @@ import java.security.MessageDigest
  * Walks a path and adds hashed path versions to the given
  * [Manifest].
  *
- * @param manifest   the manifest
+ * @param manifest the manifest
  * @param applicator applies feature to manifest entries
- * @param destDir    the destination directory to copy the hashed objects
+ * @param destDir the destination directory to copy the hashed objects
  */
 class ClientFileCollector(
-    private val manifest: Manifest, private val applicator: PropertiesApplicator, private val destDir: File
+    private val manifest: Manifest,
+    private val applicator: PropertiesApplicator,
+    private val destDir: File
 ) : DirectoryWalker() {
     init {
     }
@@ -72,7 +74,7 @@ class ClientFileCollector(
         manifest.tasks += entry
     }
 
-    companion object: KLogging() {
+    companion object : KLogging() {
         const val URL_FILE_SUFFIX = ".url.txt"
 
         fun getDirectoryBehavior(name: String): DirectoryWalker.DirectoryBehavior {

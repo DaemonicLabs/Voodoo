@@ -1,5 +1,4 @@
 
-import java.io.File
 
 apply(from = rootProject.file("base.gradle.kts"))
 dependencies {

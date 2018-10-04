@@ -14,5 +14,4 @@ class JarFileFilter : FileFilter {
     override fun accept(pathname: File): Boolean {
         return pathname.name.toLowerCase().endsWith(".jar")
     }
-
 }

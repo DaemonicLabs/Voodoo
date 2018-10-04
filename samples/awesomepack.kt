@@ -2,14 +2,14 @@
 @file:DependsOnMaven("moe.nikky.voodoo:dsl:0.4.0") // for testing from local maven
 @file:DependsOnMaven("ch.qos.logback:logback-classic:1.2.3")
 @file:MavenRepository("kotlinx", "https://kotlin.bintray.com/kotlinx")
-//@file:MavenRepository("elytradev", "https://repo.elytradev.com")
+// @file:MavenRepository("elytradev", "https://repo.elytradev.com")
 @file:KotlinOpts("-J-Xmx5g")
 @file:KotlinOpts("-J-server")
 @file:Include("../.gen/Mod.kt")
 @file:Include("../.gen/TexturePack.kt")
 @file:Include("../.gen/Forge.kt")
 
-//COMPILER_OPTS -jvm-target 1.8
+// COMPILER_OPTS -jvm-target 1.8
 
 import com.skcraft.launcher.model.modpack.Recommendation
 import voodoo.data.Side

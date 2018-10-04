@@ -2,7 +2,6 @@ package voodoo.provider
 
 import kotlinx.coroutines.experimental.channels.SendChannel
 import kotlinx.coroutines.experimental.delay
-import mu.KLogging
 import voodoo.core.CoreConstants.VERSION
 import voodoo.data.Quadruple
 import voodoo.data.flat.Entry
@@ -22,8 +21,8 @@ import java.util.Collections
  * @author Nikky
  */
 
-object JenkinsProvider : ProviderBase( "Jenkins Provider") {
-    val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
+object JenkinsProvider : ProviderBase("Jenkins Provider") {
+    const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
     override suspend fun resolve(
         entry: Entry,
@@ -135,4 +134,3 @@ object JenkinsProvider : ProviderBase( "Jenkins Provider") {
         return data
     }
 }
-

@@ -14,7 +14,7 @@ import kotlinx.serialization.internal.EnumSerializer
 import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.Side
-import voodoo.data.curse.CurseConstancts.PROXY_URL
+import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.provider.CurseProvider

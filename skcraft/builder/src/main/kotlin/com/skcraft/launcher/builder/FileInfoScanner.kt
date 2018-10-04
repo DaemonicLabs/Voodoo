@@ -6,14 +6,16 @@
  */
 package com.skcraft.launcher.builder
 
+import com.skcraft.launcher.builder.ClientFileCollector.Companion.getDirectoryBehavior
+import kotlinx.serialization.json.JSON
+import mu.KLogging
+import org.apache.commons.io.FilenameUtils.getBaseName
+import org.apache.commons.io.FilenameUtils.getPath
+import org.apache.commons.io.FilenameUtils.separatorsToUnix
 import java.io.File
 import java.io.IOException
 import java.util.ArrayList
 import java.util.EnumSet
-import com.skcraft.launcher.builder.ClientFileCollector.Companion.getDirectoryBehavior
-import kotlinx.serialization.json.JSON
-import mu.KLogging
-import org.apache.commons.io.FilenameUtils.*
 
 class FileInfoScanner : DirectoryWalker() {
     val patterns = ArrayList<FeaturePattern>()
@@ -29,7 +31,7 @@ class FileInfoScanner : DirectoryWalker() {
             val info: FileInfo = JSON.parse(file.readText()) // mapper.readValue<FileInfo>(file)
             val feature = info.feature
             if (feature != null) {
-                if(feature.name.isEmpty()) {
+                if (feature.name.isEmpty()) {
                     throw IllegalStateException("Empty component name found in ${file.absolutePath}")
                 }
                 val stringPatterns = ArrayList<String>()
@@ -44,8 +46,9 @@ class FileInfoScanner : DirectoryWalker() {
         }
     }
 
-    companion object: KLogging() {
-        private val MATCH_FLAGS = EnumSet.of<FnMatch.Flag>(FnMatch.Flag.CASEFOLD, FnMatch.Flag.PERIOD, FnMatch.Flag.PATHNAME)
+    companion object : KLogging() {
+        private val MATCH_FLAGS =
+            EnumSet.of<FnMatch.Flag>(FnMatch.Flag.CASEFOLD, FnMatch.Flag.PERIOD, FnMatch.Flag.PATHNAME)
         const val FILE_SUFFIX = ".info.json"
     }
 }

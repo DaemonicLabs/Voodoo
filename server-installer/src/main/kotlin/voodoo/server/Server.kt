@@ -1,9 +1,7 @@
 package voodoo.server
 
 import kotlinx.coroutines.experimental.CoroutineName
-import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.coroutineScope
-import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
@@ -102,7 +100,7 @@ object Server {
                     .start()
                     .waitFor()
 
-                //rename forge jar
+                // rename forge jar
                 val forgeJar = serverDir.resolve("forge-$forgeLongVersion-universal.jar")
                 val targetForgeJar = serverDir.resolve("forge.jar")
                 targetForgeJar.delete()

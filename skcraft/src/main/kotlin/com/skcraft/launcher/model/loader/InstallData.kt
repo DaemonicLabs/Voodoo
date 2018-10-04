@@ -10,6 +10,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class InstallData(
-        var path: String,
-        var filePath: String
+    var path: String,
+    var filePath: String
 )

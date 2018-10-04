@@ -14,12 +14,12 @@ pluginManagement {
 }
 rootProject.name = "voodoo"
 
-//include("voodoo-gradle-plugin")
+// include("voodoo-gradle-plugin")
 include("core", "core:dsl")
 include("dsl")
 include("multimc", "multimc:installer")
 include("util")
-//include("fuel-coroutines")
+// include("fuel-coroutines")
 include("importer", "builder", "pack", "pack:tester")
 include("server-installer")
 include("bootstrap")

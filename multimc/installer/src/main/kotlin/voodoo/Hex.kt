@@ -21,10 +21,13 @@ import voodoo.curse.CurseClient
 import voodoo.mmc.MMCUtil.selectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
-import voodoo.util.*
+import voodoo.util.Directories
+import voodoo.util.blankOr
+import voodoo.util.download
+import voodoo.util.pool
 import java.awt.Toolkit
 import java.io.File
-import java.util.*
+import java.util.Collections
 import kotlin.system.exitProcess
 
 /**
@@ -34,7 +37,7 @@ import kotlin.system.exitProcess
 
 object Hex : KLogging() {
     private val directories = Directories.get()
-    val kit = Toolkit.getDefaultToolkit();
+    val kit = Toolkit.getDefaultToolkit()
 
     @JvmStatic
     fun main(vararg args: String) = runBlocking {
@@ -54,11 +57,11 @@ object Hex : KLogging() {
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         val packUrl = urlFile.readText().trim()
 
-        val(request, response, result) = packUrl.httpGet()
+        val (request, response, result) = packUrl.httpGet()
             .header("User-Agent" to CurseClient.useragent)
             .awaitObjectResponse<Manifest>(kotlinxDeserializerOf())
-        val modpack = when(result) {
-            is Result.Success ->  result.value
+        val modpack = when (result) {
+            is Result.Success -> result.value
             is Result.Failure -> {
                 logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
                 return
@@ -105,7 +108,10 @@ object Hex : KLogging() {
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val defaults = if (featureJson.exists()) {
-            JSON.indented.parse(HashMapSerializer(String.serializer(), Boolean::class.serializer()), featureJson.readText())
+            JSON.indented.parse(
+                HashMapSerializer(String.serializer(), Boolean::class.serializer()),
+                featureJson.readText()
+            )
         } else {
             mapOf<String, Boolean>()
         }
@@ -113,7 +119,14 @@ object Hex : KLogging() {
             modpack.features, defaults, modpack.title.blankOr
                 ?: modpack.name!!, modpack.version!!, forceDisplay = forceDisplay, updating = oldpack != null
         )
-        featureJson.writeText(JSON.indented.stringify(HashMapSerializer(String.serializer(), Boolean::class.serializer()), features))
+        featureJson.writeText(
+            JSON.indented.stringify(
+                HashMapSerializer(
+                    String.serializer(),
+                    Boolean::class.serializer()
+                ), features
+            )
+        )
         if (reinstall) {
             minecraftDir.deleteRecursively()
         }
@@ -134,7 +147,7 @@ object Hex : KLogging() {
                                 whenTask.features.any { feature -> features[feature.name] ?: false }
                             }
                             is RequireAll -> {
-                                whenTask.features.all { feature ->features[feature.name] ?: false }
+                                whenTask.features.all { feature -> features[feature.name] ?: false }
                             }
                             else -> false
                         }

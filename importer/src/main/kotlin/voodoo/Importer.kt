@@ -1,6 +1,5 @@
 package voodoo
 
-import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.flat.ModPack
 import voodoo.data.nested.NestedPack

@@ -6,7 +6,11 @@
  */
 package com.skcraft.launcher.builder
 
-import com.skcraft.launcher.model.modpack.*
+import com.skcraft.launcher.model.modpack.Condition
+import com.skcraft.launcher.model.modpack.Feature
+import com.skcraft.launcher.model.modpack.FileInstall
+import com.skcraft.launcher.model.modpack.Manifest
+import com.skcraft.launcher.model.modpack.RequireAny
 import java.util.ArrayList
 import java.util.HashSet
 

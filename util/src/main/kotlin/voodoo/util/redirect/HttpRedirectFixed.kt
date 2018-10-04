@@ -1,23 +1,23 @@
-//package voodoo.util.redirect
+// package voodoo.util.redirect
 //
 //
-//import io.ktor.client.*
-//import io.ktor.client.call.*
-//import io.ktor.client.features.HttpClientFeature
-//import io.ktor.client.features.RedirectException
-//import io.ktor.client.request.*
-//import io.ktor.http.*
-//import io.ktor.util.pipeline.*
-//import io.ktor.util.*
-//import voodoo.util.encoded
+// import io.ktor.client.*
+// import io.ktor.client.call.*
+// import io.ktor.client.features.HttpClientFeature
+// import io.ktor.client.features.RedirectException
+// import io.ktor.client.request.*
+// import io.ktor.http.*
+// import io.ktor.util.pipeline.*
+// import io.ktor.util.*
+// import voodoo.util.encoded
 //
-///**
+// /**
 // * [HttpClient] feature that handles http redirect
 // */
-//class HttpRedirectFixed(
+// class HttpRedirectFixed(
 //        val maxJumps: Int,
 //        val applyUrlFunction: (String) -> String = {it}
-//) {
+// ) {
 //
 //    class Config {
 //        var maxJumps: Int = 20
@@ -55,12 +55,12 @@
 //            }
 //        }
 //    }
-//}
+// }
 //
-//private fun HttpStatusCode.isRedirect(): Boolean = when (value) {
+// private fun HttpStatusCode.isRedirect(): Boolean = when (value) {
 //    HttpStatusCode.MovedPermanently.value,
 //    HttpStatusCode.Found.value,
 //    HttpStatusCode.TemporaryRedirect.value,
 //    HttpStatusCode.PermanentRedirect.value -> true
 //    else -> false
-//}
+// }

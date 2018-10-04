@@ -55,7 +55,6 @@ val build by tasks.getting(Task::class) {
     dependsOn(shadowJar)
 }
 
-
 val compileKotlin by tasks.getting(KotlinCompile::class) {
     doFirst {
         copy {

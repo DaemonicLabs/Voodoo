@@ -3,11 +3,15 @@ package voodoo.data.nested
 import com.skcraft.launcher.model.modpack.Feature
 import mu.KLogging
 import voodoo.data.Side
-import voodoo.data.curse.*
+import voodoo.data.curse.CurseConstants
+import voodoo.data.curse.DependencyType
+import voodoo.data.curse.FileID
+import voodoo.data.curse.FileType
+import voodoo.data.curse.PackageType
+import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
 import voodoo.data.provider.UpdateChannel
 import java.io.File
-import java.lang.IllegalStateException
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 
@@ -17,46 +21,46 @@ import kotlin.reflect.full.memberProperties
  */
 
 data class NestedEntry(
-        var provider: String = "",
-        var id: String = "",
-        var name: String = "",
-        var folder: String = "mods",
-        var comment: String = "",
-        var description: String = "",
-        var feature: Feature? = null,
-        var side: Side = Side.BOTH,
-        var websiteUrl: String = "",
+    var provider: String = "",
+    var id: String = "",
+    var name: String = "",
+    var folder: String = "mods",
+    var comment: String = "",
+    var description: String = "",
+    var feature: Feature? = null,
+    var side: Side = Side.BOTH,
+    var websiteUrl: String = "",
 //        var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
-        var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
-        var replaceDependencies: Map<String, String> = mapOf(),
-        var packageType: PackageType = PackageType.MOD,
-        var transient: Boolean = false, // this entry got added as dependency for something else
-        var version: String = "", //TODO: use regex only ?
-        var fileName: String? = null,
-        var fileNameRegex: String? = null,
-        var validMcVersions: Set<String> = setOf(),
-        var enabled: Boolean = true,
-        //  CURSE
-        var curseMetaUrl: String = CurseConstancts.PROXY_URL,
-        var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
-        var curseOptionalDependencies: Boolean = false,
-        var curseProjectID: ProjectID = ProjectID.INVALID,
-        var curseFileID: FileID = FileID.INVALID,
-        //  DIRECT
-        var url: String = "",
-        var useUrlTxt: Boolean = true,
-        //  JENKINS
-        var jenkinsUrl: String = "",
-        var job: String = "",
-        var buildNumber: Int = -1,
-        //  LOCAL
-        var fileSrc: String = "",
-        //  UPDATE-JSON
-        var updateJson: String = "",
-        var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
-        var template: String = "",
-        //  NESTED
-        var entries: List<NestedEntry> = emptyList()
+    var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+    var replaceDependencies: Map<String, String> = mapOf(),
+    var packageType: PackageType = PackageType.MOD,
+    var transient: Boolean = false, // this entry got added as dependency for something else
+    var version: String = "", // TODO: use regex only ?
+    var fileName: String? = null,
+    var fileNameRegex: String? = null,
+    var validMcVersions: Set<String> = setOf(),
+    var enabled: Boolean = true,
+    //  CURSE
+    var curseMetaUrl: String = CurseConstants.PROXY_URL,
+    var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
+    var curseOptionalDependencies: Boolean = false,
+    var curseProjectID: ProjectID = ProjectID.INVALID,
+    var curseFileID: FileID = FileID.INVALID,
+    //  DIRECT
+    var url: String = "",
+    var useUrlTxt: Boolean = true,
+    //  JENKINS
+    var jenkinsUrl: String = "",
+    var job: String = "",
+    var buildNumber: Int = -1,
+    //  LOCAL
+    var fileSrc: String = "",
+    //  UPDATE-JSON
+    var updateJson: String = "",
+    var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
+    var template: String = "",
+    //  NESTED
+    var entries: List<NestedEntry> = emptyList()
 ) {
     companion object : KLogging() {
         val DEFAULT = NestedEntry()
@@ -65,51 +69,52 @@ data class NestedEntry(
     suspend fun flatten(parentFile: File): List<Entry> {
         flatten("", parentFile)
 
-        //remove duplicate entries
+        // remove duplicate entries
         val ids = mutableSetOf<String>()
         entries.forEach {
-            if(it.id in ids) {
+            if (it.id in ids) {
                 entries -= it
             } else
                 ids += it.id
         }
         return this.entries.filter { it.enabled }.map { it ->
-            Entry(it.provider,
-                    id = it.id,
-                    name = it.name,
-                    folder = it.folder,
-                    comment = it.comment,
-                    description = it.description,
-                    feature = it.feature,
-                    side = it.side,
-                    websiteUrl = it.websiteUrl,
-                    dependencies = it.dependencies,
-                    replaceDependencies = it.replaceDependencies,
+            Entry(
+                it.provider,
+                id = it.id,
+                name = it.name,
+                folder = it.folder,
+                comment = it.comment,
+                description = it.description,
+                feature = it.feature,
+                side = it.side,
+                websiteUrl = it.websiteUrl,
+                dependencies = it.dependencies,
+                replaceDependencies = it.replaceDependencies,
 //                optional = it.optional,
-                    packageType = it.packageType,
-                    transient = it.transient,
-                    version = it.version,
-                    fileName = it.fileName,
+                packageType = it.packageType,
+                transient = it.transient,
+                version = it.version,
+                fileName = it.fileName,
 //                fileNameRegex = it.fileNameRegex,
-                    validMcVersions = it.validMcVersions,
-                    // CURSE
-                    curseMetaUrl = it.curseMetaUrl,
-                    curseReleaseTypes = it.curseReleaseTypes,
-                    curseOptionalDependencies = it.curseOptionalDependencies,
-                    curseProjectID = it.curseProjectID,
-                    curseFileID = it.curseFileID,
-                    // DIRECT
-                    url = it.url,
-                    useUrlTxt = it.useUrlTxt,// JENKINS
-                    jenkinsUrl = it.jenkinsUrl,
-                    job = it.job,
-                    buildNumber = it.buildNumber,
-                    // LOCAL
-                    fileSrc = it.fileSrc,
-                    // UPDATE JSON
-                    updateJson = it.updateJson,
-                    updateChannel = it.updateChannel,
-                    template = it.template
+                validMcVersions = it.validMcVersions,
+                // CURSE
+                curseMetaUrl = it.curseMetaUrl,
+                curseReleaseTypes = it.curseReleaseTypes,
+                curseOptionalDependencies = it.curseOptionalDependencies,
+                curseProjectID = it.curseProjectID,
+                curseFileID = it.curseFileID,
+                // DIRECT
+                url = it.url,
+                useUrlTxt = it.useUrlTxt, // JENKINS
+                jenkinsUrl = it.jenkinsUrl,
+                job = it.job,
+                buildNumber = it.buildNumber,
+                // LOCAL
+                fileSrc = it.fileSrc,
+                // UPDATE JSON
+                updateJson = it.updateJson,
+                updateChannel = it.updateChannel,
+                template = it.template
             ).apply {
                 it.fileNameRegex?.let {
                     fileNameRegex = it
@@ -158,7 +163,6 @@ data class NestedEntry(
 //            if (entry.updateJson == DEFAULT.updateJson && updateJson != DEFAULT.updateJson) entry.updateJson = updateJson
 //            if (entry.updateChannel == DEFAULT.updateChannel && updateChannel != DEFAULT.updateChannel) entry.updateChannel = updateChannel
 //            if (entry.template == DEFAULT.template && template != DEFAULT.template) entry.template = template
-
 
             for (prop in NestedEntry::class.memberProperties) {
                 if (prop is KMutableProperty<*>) {

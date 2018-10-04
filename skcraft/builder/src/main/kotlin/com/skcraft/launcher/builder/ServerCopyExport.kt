@@ -36,7 +36,7 @@ class ServerCopyExport(private val destDir: File) : DirectoryWalker() {
         file.copyRecursively(dest)
     }
 
-    companion object: KLogging() {
+    companion object : KLogging() {
         @Throws(IOException::class)
         @JvmStatic
         fun main(args: Array<String>) {

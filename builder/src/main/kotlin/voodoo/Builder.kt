@@ -1,6 +1,7 @@
 package voodoo
 
-import com.xenomachina.argparser.*
+import com.xenomachina.argparser.ArgParser
+import com.xenomachina.argparser.default
 import kotlinx.coroutines.experimental.cancel
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
@@ -18,7 +19,7 @@ import kotlin.system.exitProcess
  * @author Nikky
  */
 
-object Builder: KLogging() {
+object Builder : KLogging() {
     fun build(
         modpack: ModPack,
         targetFolder: File,

@@ -45,8 +45,13 @@ object FnMatch {
         )
     }
 
-    fun match(pattern: String, patternPos: Int = 0,
-                      string: String, stringPos: Int = 0, flags: EnumSet<Flag>): Boolean {
+    fun match(
+        pattern: String,
+        patternPos: Int = 0,
+        string: String,
+        stringPos: Int = 0,
+        flags: EnumSet<Flag>
+    ): Boolean {
         var patternPos = patternPos
         var stringPos = stringPos
         var flags = flags
@@ -159,8 +164,8 @@ object FnMatch {
     }
 
     private fun hasLeadingPeriod(string: String, stringPos: Int, flags: EnumSet<Flag>): Boolean {
-        return if (stringPos > string.length - 1) false else (stringPos == 0 || flags.contains(Flag.PATHNAME) && string[stringPos - 1] == '/')
-                && string[stringPos] == '.' && flags.contains(Flag.PERIOD)
+        return if (stringPos > string.length - 1) false else (stringPos == 0 || flags.contains(Flag.PATHNAME) && string[stringPos - 1] == '/') &&
+                string[stringPos] == '.' && flags.contains(Flag.PERIOD)
     }
 
     private fun matchRange(pattern: String, patternPos: Int, test: Char, flags: EnumSet<Flag>): Int {

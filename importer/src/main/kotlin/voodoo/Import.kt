@@ -32,7 +32,7 @@ object Import : KLogging() {
                 }
             }
 
-            //TODO: import as ModPack and NestedPack ?
+            // TODO: import as ModPack and NestedPack ?
 
             importer.import(source = source, target = target, name = name)
 
@@ -55,8 +55,7 @@ object Import : KLogging() {
         val target by parser.positional(
             "OUTPUT",
             help = "output file/rootFolder"
-        )
-        { File(this) }
+        ) { File(this) }
             .default(File("."))
 
         val name by parser.positional(

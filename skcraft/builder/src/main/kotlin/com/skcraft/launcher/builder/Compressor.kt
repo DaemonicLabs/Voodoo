@@ -6,14 +6,12 @@
 
 package com.skcraft.launcher.builder
 
-import kotlinx.coroutines.experimental.runBlocking
 import org.apache.commons.compress.compressors.CompressorException
 import org.apache.commons.compress.compressors.CompressorStreamFactory
 
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
-import kotlin.coroutines.experimental.coroutineContext
 
 class Compressor(private val extension: String, private val format: String) {
 
@@ -28,7 +26,6 @@ class Compressor(private val extension: String, private val format: String) {
         } catch (e: CompressorException) {
             throw IOException("Failed to create decompressor", e)
         }
-
     }
 
     @Throws(IOException::class)
@@ -38,12 +35,10 @@ class Compressor(private val extension: String, private val format: String) {
         } catch (e: CompressorException) {
             throw IOException("Failed to create compressor", e)
         }
-
     }
 
     companion object {
 
         private val factory = CompressorStreamFactory()
     }
-
 }

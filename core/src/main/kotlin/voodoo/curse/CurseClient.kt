@@ -16,7 +16,7 @@ import mu.KLogging
 import voodoo.core.CoreConstants.VERSION
 import voodoo.data.curse.Addon
 import voodoo.data.curse.AddonFile
-import voodoo.data.curse.CurseConstancts.PROXY_URL
+import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
@@ -96,7 +96,7 @@ object CurseClient : KLogging() {
         return grapqhQlResult.groupBy(
             { it.slug },
             { it.id }).mapValues {
-            //(slug, list) ->
+            // (slug, list) ->
             ProjectID(it.value.first())
         }
     }
@@ -117,8 +117,8 @@ object CurseClient : KLogging() {
         val(request, response, result) = url.httpGet()
             .header("User-Agent" to useragent)
             .awaitObjectResponse<AddonFile>(kotlinxDeserializerOf(json = json))
-        return when(result) {
-            is Result.Success ->  result.value
+        return when (result) {
+            is Result.Success -> result.value
             is Result.Failure -> {
                 logger.error(result.error.exception) { result.error }
                 throw result.error.exception
@@ -142,8 +142,8 @@ object CurseClient : KLogging() {
         val(request, response, result) = url.httpGet()
             .header("User-Agent" to useragent)
             .awaitObjectResponse<List<AddonFile>>(kotlinxDeserializerOf(AddonFile.serializer().list, json))
-        return when(result) {
-            is Result.Success ->  result.value
+        return when (result) {
+            is Result.Success -> result.value
             is Result.Failure -> {
                 logger.error(result.error.exception) { result.error }
                 throw result.error.exception
@@ -167,8 +167,8 @@ object CurseClient : KLogging() {
         val(request, response, result) = url.httpGet()
             .header("User-Agent" to useragent)
             .awaitObjectResponse<Addon>(kotlinxDeserializerOf(json = json))
-        return when(result) {
-            is Result.Success ->  result.value
+        return when (result) {
+            is Result.Success -> result.value
             is Result.Failure -> {
                 logger.error(result.error.exception) { result.error }
                 throw result.error.exception
@@ -186,8 +186,8 @@ object CurseClient : KLogging() {
         val(request, response, result) = url.httpGet()
             .header("User-Agent" to useragent)
             .awaitStringResponse()
-        return when(result) {
-            is Result.Success ->  result.value
+        return when (result) {
+            is Result.Success -> result.value
             is Result.Failure -> {
                 logger.error(result.error.exception) { result.error }
                 throw IllegalStateException("failed getting changelog", result.error.exception)
@@ -212,7 +212,7 @@ object CurseClient : KLogging() {
         proxyUrl: String = PROXY_URL
     ): Triple<ProjectID, FileID, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
-        val slug = entry.id //TODO: maybe make into separate property
+        val slug = entry.id // TODO: maybe make into separate property
         val version = entry.version
         val releaseTypes = entry.curseReleaseTypes
         var addonId = entry.curseProjectID
@@ -311,4 +311,3 @@ object CurseClient : KLogging() {
         return "https://minecraft.curseforge.com/projects/${addon.slug}"
     }
 }
-

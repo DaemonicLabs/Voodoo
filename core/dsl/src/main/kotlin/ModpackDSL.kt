@@ -36,8 +36,8 @@ abstract class Wrapper<P : ProviderBase>(
 
     var side by property(entry::side)
 
-    //TODO: depenencies
-    //TODO: replaceDependencies
+    // TODO: depenencies
+    // TODO: replaceDependencies
 
     var packageType by property(entry::packageType)
     //    var transient by property(entry::transient::get, entry::transient::set)
@@ -67,9 +67,9 @@ class FeatureWrapper(feature: Feature) {
 inline infix fun <reified W : Wrapper<CurseProvider>> W.optionals(b: Boolean) =
     apply { entry.curseOptionalDependencies = b }
 
-//var Wrapper<CurseProvider>.metaUrl: String by property { entry::curseMetaUrl }
-//var Wrapper<CurseProvider>.releaseTypes: Set<FileType> by property { entry::curseReleaseTypes }
-//var Wrapper<CurseProvider>.optionals: Boolean by property { entry::curseOptionalDependencies }
+// var Wrapper<CurseProvider>.metaUrl: String by property { entry::curseMetaUrl }
+// var Wrapper<CurseProvider>.releaseTypes: Set<FileType> by property { entry::curseReleaseTypes }
+// var Wrapper<CurseProvider>.optionals: Boolean by property { entry::curseOptionalDependencies }
 
 var Wrapper<CurseProvider>.metaUrl
     get() = this.entry.curseMetaUrl
@@ -112,7 +112,7 @@ var Wrapper<DirectProvider>.useUrlTxt
         entry.useUrlTxt = it
     }
 
-//JENKINS
+// JENKINS
 inline infix fun <reified W : SpecificEntry<JenkinsProvider>> W.job(s: String) =
     apply { entry.job = s }
 
@@ -132,14 +132,14 @@ var SpecificEntry<JenkinsProvider>.buildNumber
         entry.buildNumber = it
     }
 
-//LOCAL
+// LOCAL
 var SpecificEntry<LocalProvider>.fileSrc
     get() = entry.fileSrc
     set(it) {
         entry.fileSrc = it
     }
 
-//UPDATE-JSON
+// UPDATE-JSON
 var SpecificEntry<UpdateJsonProvider>.json
     get() = entry.updateJson
     set(it) {
@@ -267,6 +267,6 @@ fun EntriesList<CurseProvider>.id(
         }
 }
 
-//TODO: add include -like functionality
+// TODO: add include -like functionality
 
-//TODO: add import() for curse
+// TODO: add import() for curse

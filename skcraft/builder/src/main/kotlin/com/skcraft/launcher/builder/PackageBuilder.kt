@@ -181,7 +181,7 @@ constructor(
                         outputPath.parentFile.mkdirs()
                         var found = false
                         // Gather a list of repositories to download from
-                        val sources = arrayListOf<String>() //Lists.newArrayList<String>()
+                        val sources = arrayListOf<String>() // Lists.newArrayList<String>()
                         library.baseUrl?.let {
                             sources.add(it)
                         }
@@ -201,8 +201,8 @@ constructor(
                                 val(request, response, result) = url.httpGet()
                                     .header("User-Agent" to Downloader.useragent)
                                     .awaitByteArrayResponse()
-                                val bytes = when(result) {
-                                    is Result.Success ->  result.value
+                                val bytes = when (result) {
+                                    is Result.Success -> result.value
                                     is Result.Failure -> {
                                         logger.warn("Could not get file from $url: ${response.statusCode}")
                                         logger.error { result.error }
@@ -275,8 +275,8 @@ constructor(
             val(request, response, result) = url.httpGet()
                 .header("User-Agent" to Downloader.useragent)
                 .awaitObjectResponse<VersionManifest>(kotlinxDeserializerOf(json = json))
-            manifest.versionManifest =  when(result) {
-                is Result.Success ->  result.value
+            manifest.versionManifest = when (result) {
+                is Result.Success -> result.value
                 is Result.Failure -> {
                     logger.error { "cannot parse manifest from $url error: ${result.error}" }
                     throw result.error.exception

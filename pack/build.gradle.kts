@@ -7,4 +7,3 @@ dependencies {
 
     compile(group = "org.jetbrains.kotlinx", name = "kotlinx-html-jvm", version = Versions.html)
 }
-

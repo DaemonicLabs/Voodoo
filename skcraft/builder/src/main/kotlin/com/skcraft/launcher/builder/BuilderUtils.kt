@@ -7,9 +7,8 @@
 package com.skcraft.launcher.builder
 
 import org.apache.commons.compress.compressors.CompressorStreamFactory
-
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
@@ -39,8 +38,8 @@ object BuilderUtils {
     fun getCompressors(repoUrl: String): List<Compressor> {
         return if (repoUrl.matches("^https?://files.minecraftforge.net/maven/".toRegex())) {
             arrayListOf(
-                    Compressor("xz", CompressorStreamFactory.XZ),
-                    Compressor("pack", CompressorStreamFactory.PACK200)
+                Compressor("xz", CompressorStreamFactory.XZ),
+                Compressor("pack", CompressorStreamFactory.PACK200)
             )
         } else {
             emptyList()
@@ -51,5 +50,4 @@ object BuilderUtils {
         val today = Calendar.getInstance().time
         return VERSION_DATE_FORMAT.format(today)
     }
-
 }

@@ -49,7 +49,7 @@ object Murmur2Hash {
         var length = if (precomputedLength != 0L) precomputedLength else input.available().toLong()
         if ((precomputedLength == 0L) and normalizeWhitespace) {
             if (!input.markSupported()) {
-                //input = new BufferedInputStream(input);
+                // input = new BufferedInputStream(input);
                 throw IllegalArgumentException("Stream must support mark() to calculate size on the fly!")
             }
             input.mark(Integer.MAX_VALUE)
@@ -67,7 +67,7 @@ object Murmur2Hash {
         val length4 = length.ushr(2)
 
         for (i in 0 until length4) {
-            //final int i4 = i << 2;
+            // final int i4 = i << 2;
 
             var k = (getByte(input, normalizeWhitespace) and UNSIGNED_MASK).toLong()
             k = k or (getByte(input, normalizeWhitespace) and UNSIGNED_MASK shl 8).toLong()
@@ -83,7 +83,7 @@ object Murmur2Hash {
         }
 
         // Handle the last few bytes of the input array
-        //int offset = length4 << 2;
+        // int offset = length4 << 2;
         if (length and 3 > 0) {
             val data = ByteArray(4)
 
@@ -148,7 +148,7 @@ object Murmur2Hash {
     }
 
     private fun isWhitespaceCharacter(b: Int): Boolean {
-        return when(b) {
+        return when (b) {
             9, 10, 13, 20 -> true
             else -> false
         }

@@ -6,7 +6,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.internal.PrimitiveDesc
 
-//TODO: inline
+// TODO: inline
 @Serializable(with = ProjectID.Companion::class)
 data class ProjectID(val value: Int) {
     override fun toString(): String {

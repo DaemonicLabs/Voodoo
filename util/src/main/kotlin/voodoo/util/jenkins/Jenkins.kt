@@ -21,7 +21,7 @@ suspend fun downloadVoodoo(
     component: String,
     bootstrap: Boolean = true,
     serverUrl: String = "https://ci.elytradev.com",
-    job: String = "elytra/Voodoo/rewrite", //TODO: switch to master once merged
+    job: String = "elytra/Voodoo/rewrite", // TODO: switch to master once merged
     binariesDir: File
 ): File {
     val moduleName = "${if (bootstrap) "bootstrap-" else ""}$component"
@@ -48,8 +48,8 @@ suspend fun downloadVoodoo(
     val(request, response, result) = artifactUrl.httpGet()
         .header("User-Agent" to useragent)
         .awaitByteArrayResponse()
-    val content = when(result) {
-        is Result.Success ->  result.value
+    val content = when (result) {
+        is Result.Success -> result.value
         is Result.Failure -> {
             Jenkins.logger.error { result.error }
             Jenkins.logger.error("unable to download jarfile from $artifactUrl")
@@ -70,8 +70,8 @@ class JenkinsServer(val serverUrl: String) {
         val(request, response, result) = requestURL.httpGet()
             .header("User-Agent" to useragent)
             .awaitObjectResponse<Job>(kotlinxDeserializerOf(json = json))
-        return when(result) {
-            is Result.Success ->  result.value
+        return when (result) {
+            is Result.Success -> result.value
             is Result.Failure -> {
                 result.error.exception.printStackTrace()
                 Jenkins.logger.error { result.error }
@@ -81,7 +81,6 @@ class JenkinsServer(val serverUrl: String) {
         }
     }
 }
-
 
 @Serializable
 data class Build(
@@ -93,8 +92,8 @@ data class Build(
         val(request, response, result) = url.httpGet()
             .header("User-Agent" to useragent)
             .awaitObjectResponse<BuildWithDetails>(kotlinxDeserializerOf(json = json))
-        return when(result) {
-            is Result.Success ->  result.value
+        return when (result) {
+            is Result.Success -> result.value
             is Result.Failure -> {
                 result.error.exception.printStackTrace()
                 Jenkins.logger.error { result.error }

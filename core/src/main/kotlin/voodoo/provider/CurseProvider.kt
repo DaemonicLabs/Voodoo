@@ -41,7 +41,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
             logger.info("resolved: ${resolved.count()} unique entries")
             resolved += entry.id
         }
-        //TODO: move into appropriate place or remove
+        // TODO: move into appropriate place or remove
         // this is currently just used to validate that there is no entries getting resolved multiple times
 
         synchronized(resolved) {

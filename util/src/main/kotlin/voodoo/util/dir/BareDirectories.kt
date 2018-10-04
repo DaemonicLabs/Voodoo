@@ -7,7 +7,7 @@ import java.io.File
 class BareDirectories(private val appName: String) : Directories {
     private var hasUsedRuntimeDir = false
 
-    override val dataHome: File  by lazy {
+    override val dataHome: File by lazy {
         File(home, "data")
                 .apply { mkdirs() }
     }
@@ -41,5 +41,4 @@ class BareDirectories(private val appName: String) : Directories {
     private val home: File by lazy {
         File(System.getProperty("user.home"), ".$appName")
     }
-
 }
