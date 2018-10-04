@@ -1,5 +1,6 @@
 package voodoo
 
+import Forge
 import id
 import job
 import kotlinx.coroutines.experimental.runBlocking
@@ -16,7 +17,7 @@ import voodoo.data.nested.NestedPack
 import voodoo.provider.CurseProvider
 import voodoo.provider.JenkinsProvider
 import withProvider
-import java.io.*
+import java.io.File
 
 object DslSpek : Spek({
     describe("load pack") {
@@ -36,16 +37,16 @@ object DslSpek : Spek({
                 id = "some-id",
                 version = "1.0",
                 mcVersion = "1.12.2",
-                //TODO: type = File
+                // TODO: type = File
                 icon = File("icon.png"),
                 authors = listOf("dude", "and", "friends"),
-                //TODO: type = {recommended, latest} | buildnumber, make sealed class
+                // TODO: type = {recommended, latest} | buildnumber, make sealed class
                 forge = Forge.recommended,
                 root = rootEntry(CurseProvider) {
                     optionals = false
                     releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
 
-                    //TODO: use type URL ?
+                    // TODO: use type URL ?
                     metaUrl = "https://curse.nikky.moe"
                     list {
                         id("botania") optionals false
@@ -84,4 +85,3 @@ object DslSpek : Spek({
         }
     }
 })
-
