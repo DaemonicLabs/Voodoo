@@ -12,7 +12,7 @@ pipeline {
 	        steps {
 	            sh './gradlew clean'
 	            sh './gradlew test'
-	            # archiveArtifacts artifacts:  'build/libs/*jar'
+	            // archiveArtifacts artifacts:  'build/libs/*jar'
 	        }
 	    }
 	    stage("multimc-installer") {
