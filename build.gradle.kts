@@ -90,15 +90,20 @@ allprojects {
     }
 
     if (project !in noConstants) {
-        val generateConstants = task<GenerateConstantsTask>("generateConstants") {
-            kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
-            idea {
-                module {
-                    generatedSourceDirs.add(outputFolder)
-                }
-            }
+
+        apply {
+            plugin(ConstantGenerator::class)
         }
 
+        val generateConstants by tasks.getting(GenerateConstantsTask::class) {
+            kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
+        }
+
+        configure<ConstantsExtension> {
+
+        }
+
+        // TODO depend on kotlin tasks in the plugin
         tasks.withType<KotlinCompile> {
             dependsOn(generateConstants)
         }
