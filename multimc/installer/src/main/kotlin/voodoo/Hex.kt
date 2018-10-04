@@ -56,6 +56,7 @@ object Hex : KLogging() {
         logger.info("installing into $instanceId")
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         val packUrl = urlFile.readText().trim()
+        logger.info("pack url: $packUrl")
 
         val (request, response, result) = packUrl.httpGet()
             .header("User-Agent" to CurseClient.useragent)
