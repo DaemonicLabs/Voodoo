@@ -98,6 +98,4 @@ class XDGDirectories(private val appName: String) : Directories {
         f.mkdirs()
         return f
     }
-
-
 }

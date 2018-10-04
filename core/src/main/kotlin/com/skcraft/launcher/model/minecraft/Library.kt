@@ -24,7 +24,7 @@ import kotlinx.serialization.Transient
 data class Library(
     val name: String
 ) {
-    @Serializer(forClass=Library::class)
+    @Serializer(forClass = Library::class)
     companion object : KSerializer<Library> {
         override fun save(output: KOutput, obj: Library) {
             val elemOutput = output.writeBegin(serialClassDesc)
@@ -35,7 +35,6 @@ data class Library(
             obj.natives?.let { natives ->
                 elemOutput.writeElement(serialClassDesc, 2)
                 elemOutput.write(HashMapSerializer(String.serializer(), String.serializer()), natives)
-
             }
             obj.extract?.let { extract ->
                 elemOutput.writeElement(serialClassDesc, 3)
@@ -43,7 +42,7 @@ data class Library(
             }
             obj.rules?.filter {
                     it.action != null || it.os != null
-                }?.let {rules ->
+                }?.let { rules ->
                     elemOutput.writeElement(serialClassDesc, 4)
                     elemOutput.write(Rule::class.serializer().list, rules)
             }
@@ -52,7 +51,6 @@ data class Library(
 
         fun String.split() =
             this.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
-
     }
 
     @kotlin.jvm.Transient
@@ -161,7 +159,7 @@ data class Library(
             ).matches())
         }
 
-        @Serializer(forClass=OS::class)
+        @Serializer(forClass = OS::class)
         companion object : KSerializer<OS> {
             override fun save(output: KOutput, obj: OS) {
                 val elemOutput = output.writeBegin(serialClassDesc)

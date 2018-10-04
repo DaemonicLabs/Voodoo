@@ -3,7 +3,6 @@ import org.gradle.plugin.use.PluginDependenciesSpec
 
 object Plugins {
     const val serialization = "org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:${Versions.serialization}"
-
 }
 
 fun PluginDependenciesSpec.kotlinJvm() {

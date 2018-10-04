@@ -21,7 +21,7 @@ fun withDefaultMain(
     block: MainEnv.() -> NestedPack = { throw IllegalStateException("no nested pack provided") }
 ) {
 
-    //classloader switching necessary for kscript
+    // classloader switching necessary for kscript
     class XY
     println("classloader is of type:" + Thread.currentThread().contextClassLoader)
     println("classloader is of type:" + ClassLoader.getSystemClassLoader())

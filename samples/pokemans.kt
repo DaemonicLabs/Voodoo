@@ -1,6 +1,6 @@
 #!/usr/bin/env kscript
 @file:DependsOnMaven("moe.nikky.voodoo:dsl:0.4.0")
-@file:DependsOnMaven("ch.qos.logback:logback-classic:1.3.0-alpha4") //seems that i need a explicit dependency on this.. yet another bugreport
+@file:DependsOnMaven("ch.qos.logback:logback-classic:1.3.0-alpha4") // seems that i need a explicit dependency on this.. yet another bugreport
 @file:MavenRepository("kotlinx", "https://kotlin.bintray.com/kotlinx")
 @file:MavenRepository("elytradev", "https://repo.elytradev.com")
 @file:KotlinOpts("-J-Xmx5g")
@@ -9,7 +9,7 @@
 @file:Include("../gen/src/TexturePack.kt")
 @file:Include("../gen/src/Forge.kt")
 
-//COMPILER_OPTS -jvm-target 1.8
+// COMPILER_OPTS -jvm-target 1.8
 
 import com.skcraft.launcher.model.modpack.Recommendation
 import voodoo.data.Side
@@ -41,7 +41,7 @@ fun main(args: Array<String>) = withDefaultMain(root = File("."), arguments = ar
             optionals = false
             releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
             list {
-                //TODO: group mods by category (eg. tweakers)
+                // TODO: group mods by category (eg. tweakers)
                 id(Mod.abyssalcraft)
                 id(Mod.advancedRocketry) {
                     releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
@@ -115,7 +115,7 @@ fun main(args: Array<String>) = withDefaultMain(root = File("."), arguments = ar
                             selected = false
                         }
                     }.list {
-                        //TODO: add Optifine ?
+                        // TODO: add Optifine ?
                     }
                 }
 
@@ -135,4 +135,3 @@ fun main(args: Array<String>) = withDefaultMain(root = File("."), arguments = ar
         }
     )
 }
-

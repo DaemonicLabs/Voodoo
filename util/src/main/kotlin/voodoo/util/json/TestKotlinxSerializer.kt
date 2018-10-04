@@ -1,20 +1,20 @@
-//package voodoo.util.json
+// package voodoo.util.json
 //
-//import io.ktor.client.call.TypeInfo
-//import io.ktor.client.features.json.JsonSerializer
-//import io.ktor.client.response.HttpResponse
-//import io.ktor.client.response.readText
-//import io.ktor.http.ContentType
-//import io.ktor.http.content.OutgoingContent
-//import io.ktor.http.content.TextContent
-//import kotlinx.serialization.*
-//import kotlinx.serialization.internal.*
-//import kotlinx.serialization.json.JSON
-//import java.lang.reflect.ParameterizedType
-//import java.lang.reflect.WildcardType
-//import kotlin.reflect.KClass
+// import io.ktor.client.call.TypeInfo
+// import io.ktor.client.features.json.JsonSerializer
+// import io.ktor.client.response.HttpResponse
+// import io.ktor.client.response.readText
+// import io.ktor.http.ContentType
+// import io.ktor.http.content.OutgoingContent
+// import io.ktor.http.content.TextContent
+// import kotlinx.serialization.*
+// import kotlinx.serialization.internal.*
+// import kotlinx.serialization.json.JSON
+// import java.lang.reflect.ParameterizedType
+// import java.lang.reflect.WildcardType
+// import kotlin.reflect.KClass
 //
-//class TestKotlinxSerializer (
+// class TestKotlinxSerializer (
 //        private val json: JSON = JSON(
 //                unquoted = false,
 //                indented = false,
@@ -22,7 +22,7 @@
 //                context = SerialContext()
 //        ),
 //        block: SerialContext.() -> Unit = {}
-//) : JsonSerializer {
+// ) : JsonSerializer {
 //    init {
 //        json.context?.apply {
 //            block()
@@ -75,4 +75,4 @@
 //        val serializer = serializerByTypeToken(type.reifiedType)
 //        return json.parse(serializer, response.readText())
 //    }
-//}
+// }

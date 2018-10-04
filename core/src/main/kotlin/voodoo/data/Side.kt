@@ -2,9 +2,7 @@ package voodoo.data
 
 import kotlinx.serialization.KInput
 import kotlinx.serialization.KOutput
-import kotlinx.serialization.KSerialClassDesc
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.internal.PrimitiveDesc
 
 /**

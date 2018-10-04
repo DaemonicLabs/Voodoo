@@ -9,7 +9,7 @@ package com.skcraft.launcher.builder
 import com.xenomachina.argparser.ArgParser
 import java.io.File
 
-class ServerExportOptions(parser: ArgParser)  {
+class ServerExportOptions(parser: ArgParser) {
     val sourceDir: File by parser.storing("--sorce", help = "") { File(this) }
     val destDir: File by parser.storing("--dest", help = "") { File(this) }
 }

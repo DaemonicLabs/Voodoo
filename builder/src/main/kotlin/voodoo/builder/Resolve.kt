@@ -1,9 +1,15 @@
 package voodoo.builder
 
 import com.skcraft.launcher.model.modpack.Feature
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.CoroutineName
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.consume
+import kotlinx.coroutines.experimental.coroutineScope
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.joinAll
+import kotlinx.coroutines.experimental.launch
 import mu.KotlinLogging
 import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
@@ -13,7 +19,7 @@ import voodoo.memoize
 import voodoo.provider.Providers
 import voodoo.util.pool
 import java.io.File
-import java.util.*
+import java.util.Collections
 import kotlin.system.exitProcess
 
 /**
@@ -45,7 +51,7 @@ private fun ModPack.resolveFeatureDependencies(entry: Entry, defaultName: String
     // find feature with matching id
     var feature = features.find { f -> f.feature.name == featureName }
 
-    //TODO: merge existing features with matching id
+    // TODO: merge existing features with matching id
     if (feature == null) {
         var description = entryFeature.description
         if (description.isEmpty()) description = entry.description
@@ -109,7 +115,7 @@ suspend fun ModPack.resolve(
 
     if (updateAll) {
         lockEntrySet.clear()
-        //delete all lockfiles
+        // delete all lockfiles
         folder.walkTopDown().asSequence()
             .filter {
                 it.isFile && it.name.endsWith(".lock.hjson")
@@ -181,7 +187,7 @@ suspend fun ModPack.resolve(
                     resolved += entry.id
 
                     logger.debug("resolved: $resolved\n")
-                    logger.debug("unresolved: ${entrySet.map {entry -> entry.id}.filter { id -> !resolved.contains(id) }}\n")
+                    logger.debug("unresolved: ${entrySet.map { entry -> entry.id }.filter { id -> !resolved.contains(id) }}\n")
                 }.also {
                     logger.info("started job resolve ${entry.id}")
                     delay(100)
@@ -233,7 +239,7 @@ suspend fun ModPack.resolve(
     entrySet.filter {
         findLockEntryById(it.id) == null
     }.run {
-        if (isNotEmpty()) throw IllegalStateException("unresolved entries: ${this}")
+        if (isNotEmpty()) throw IllegalStateException("unresolved entries: $this")
     }
 
     for (entry in entrySet) {
@@ -261,5 +267,5 @@ suspend fun ModPack.resolve(
         logger.info("processed feature $feature")
     }
 
-    //TODO: rethink history, since packs are now mainly file based
+    // TODO: rethink history, since packs are now mainly file based
 }

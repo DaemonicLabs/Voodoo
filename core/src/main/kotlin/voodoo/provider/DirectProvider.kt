@@ -1,7 +1,6 @@
 package voodoo.provider
 
 import kotlinx.coroutines.experimental.channels.SendChannel
-import mu.KLogging
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import voodoo.util.download

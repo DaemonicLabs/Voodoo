@@ -2,14 +2,14 @@
 @file:DependsOnMaven("moe.nikky.voodoo:dsl:0.4.0") // for testing from local maven
 @file:DependsOnMaven("ch.qos.logback:logback-classic:1.2.3")
 @file:MavenRepository("kotlinx", "https://kotlin.bintray.com/kotlinx")
-//@file:MavenRepository("elytradev", "https://repo.elytradev.com")
+// @file:MavenRepository("elytradev", "https://repo.elytradev.com")
 @file:KotlinOpts("-J-Xmx5g")
 @file:KotlinOpts("-J-server")
 @file:Include("../.gen/Mod.kt")
 @file:Include("../.gen/TexturePack.kt")
 @file:Include("../.gen/Forge.kt")
 
-//COMPILER_OPTS -jvm-target 1.8 -J-Xmx5g
+// COMPILER_OPTS -jvm-target 1.8 -J-Xmx5g
 
 import com.skcraft.launcher.model.modpack.Recommendation
 import voodoo.data.Side
@@ -30,7 +30,7 @@ fun main(args: Array<String>) = withDefaultMain(
         title = "Center of the Multiverse",
         authors = listOf("AnsuzThuriaz", "Falkreon", "NikkyAi"),
         version = "2.1.9",
-        mcVersion = "1.12.2", //TODO: generate sealed class with mc version -> see forge versions
+        mcVersion = "1.12.2", // TODO: generate sealed class with mc version -> see forge versions
         forge = Forge.mc1_12_2.build2759,
         icon = root.resolve("icon.png"),
         sourceDir = "src",
@@ -45,7 +45,7 @@ fun main(args: Array<String>) = withDefaultMain(
         root = rootEntry(CurseProvider) {
             releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
             validMcVersions = setOf("1.12.1", "1.12")
-            //TODO: use type URL ?
+            // TODO: use type URL ?
             metaUrl = "https://curse.nikky.moe/api"
             optionals = false
             list {
@@ -110,7 +110,6 @@ fun main(args: Array<String>) = withDefaultMain(
                 id(Mod.thermalDynamics)
                 id(Mod.thermalexpansion)
                 id(Mod.thermalInnovation)
-
 
                 group {
                     // because some alphas are buggy
@@ -265,7 +264,7 @@ fun main(args: Array<String>) = withDefaultMain(
                     // Falkreon
                     id("thermionics") job "elytra/Thermionics/master"
                     id("termionics-world") job "elytra/ThermionicsWorld/master"
-                    //TODO dependency  termionics-world -> thermionics
+                    // TODO dependency  termionics-world -> thermionics
                     id("engination") job "elytra/Engination/master"
                     id("magic-arsenal") job "elytra/MagicArsenal/master"
 
@@ -273,7 +272,7 @@ fun main(args: Array<String>) = withDefaultMain(
                     id("glass-hearts") job "elytra/GlassHearts/1.12.1"
                     id("probe-data-provider") job "elytra/ProbeDataProvider/1.12"
                     id("fruit-phone") job "elytra/FruitPhone/1.12.2"
-                    //TODO dependency  fruit-phone -> probe-data-provider
+                    // TODO dependency  fruit-phone -> probe-data-provider
 
                     // Job is private - mirroring now
                     // id("correlated") job "Correlated2-Dev"
@@ -339,7 +338,7 @@ fun main(args: Array<String>) = withDefaultMain(
 
                     // Way2muchnoise
                     id(Mod.betterAdvancements)
-                    //OPT-OUT
+                    // OPT-OUT
                     group {
                         feature {
                             selected = true
@@ -386,7 +385,7 @@ fun main(args: Array<String>) = withDefaultMain(
                             description = "Removes dynamic FOV shifting due to ingame effects."
                         }
                     }
-                    //OPT-IN
+                    // OPT-IN
                     group {
                         feature {
                             selected = false
@@ -422,7 +421,6 @@ fun main(args: Array<String>) = withDefaultMain(
                         id(Mod.rpgHud) {
                             description =
                                 "Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)"
-
                         }
                         id(Mod.betterFoliage) {
                             description =
@@ -439,7 +437,7 @@ fun main(args: Array<String>) = withDefaultMain(
                         }
 
                         // Resource packs
-                        //TODO: add curse resource packs
+                        // TODO: add curse resource packs
                         id(TexturePack::unity) {
                             fileName = "Unity.zip"
                             description =

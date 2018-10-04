@@ -34,15 +34,15 @@ suspend fun File.download(
         do {
             nextUrl = nextUrl.encoded
             logger.info("url: $nextUrl")
-            val (request, response, result) = nextUrl //.encode()
+            val (request, response, result) = nextUrl // .encode()
                 .httpGet().header("User-Agent" to Downloader.useragent)
                 .allowRedirects(false)
                 .awaitByteArrayResponse()
 
             logger.info("status: ${response.statusCode}")
             if (response.isStatusRedirection) {
-                nextUrl = response.headers["Location"]?.firstOrNull() ?:
-                    throw IllegalStateException("missing Location header")
+                nextUrl = response.headers["Location"]?.firstOrNull()
+                    ?: throw IllegalStateException("missing Location header")
                 logger.info("next url: $nextUrl")
                 continue
             }
@@ -77,10 +77,10 @@ suspend fun File.download(
             cacheFile.copyTo(this, overwrite = true)
     }
 
-    if(!validator(cacheFile)) {
+    if (!validator(cacheFile)) {
         cacheFile.delete()
     }
-    if(!validator(this)) {
+    if (!validator(this)) {
         logger.error("$this did not pass validation")
     }
 

@@ -1,11 +1,22 @@
 package voodoo.pack
 
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.Job
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.channels.consume
 import kotlinx.coroutines.experimental.channels.toList
-import kotlinx.html.*
+import kotlinx.coroutines.experimental.coroutineScope
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.joinAll
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.newFixedThreadPoolContext
+import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.html.ATarget
+import kotlinx.html.a
+import kotlinx.html.body
+import kotlinx.html.html
+import kotlinx.html.li
 import kotlinx.html.stream.createHTML
+import kotlinx.html.ul
 import kotlinx.serialization.json.JSON
 import voodoo.data.Side
 import voodoo.data.curse.CurseFile

@@ -65,7 +65,7 @@ class Manifest(
         }
     }
 
-    @Serializer(forClass= Manifest::class)
+    @Serializer(forClass = Manifest::class)
     companion object : KSerializer<Manifest> {
         val MIN_PROTOCOL_VERSION = 2
 
@@ -105,12 +105,11 @@ class Manifest(
                 elemOutput.writeElement(serialClassDesc, 10)
                 elemOutput.write(FileInstall::class.serializer().list, tasks)
             }
-            obj.versionManifest?.let {versionManifest ->
+            obj.versionManifest?.let { versionManifest ->
                 elemOutput.writeElement(serialClassDesc, 11)
                 elemOutput.write(VersionManifest::class.serializer(), versionManifest)
             }
             elemOutput.writeEnd(serialClassDesc)
         }
-        
     }
 }

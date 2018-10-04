@@ -3,14 +3,14 @@ package voodoo.provider
 import mu.KLogging
 import kotlin.IllegalArgumentException
 
-//TODO: use sealed classes
-//enum class Provider(val base: ProviderBase) {
+// TODO: use sealed classes
+// enum class Provider(val base: ProviderBase) {
 //    CURSE(CurseProvider),
 //    DIRECT(DirectProvider),
 //    LOCAL(LocalProvider),
 //    JENKINS(JenkinsProvider),
 //    JSON(UpdateJsonProvider)
-//}
+// }
 
 object Providers : KLogging() {
     private val providers = hashMapOf<String, ProviderBase>()
@@ -32,14 +32,13 @@ object Providers : KLogging() {
             }
 
             providers[key.toUpperCase()] = provider
-
         }
     }
 
     operator fun get(key: String) = providers[key.toUpperCase()] ?: throw IllegalArgumentException("cannot find provider for key '${key.toUpperCase()}'")
 
     fun getId(provider: ProviderBase): String? {
-        for( (id, registeredProvider) in providers) {
+        for ((id, registeredProvider) in providers) {
             if (provider == registeredProvider) {
                 return id
             }

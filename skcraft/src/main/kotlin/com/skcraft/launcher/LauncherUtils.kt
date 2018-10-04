@@ -7,7 +7,8 @@
 package com.skcraft.launcher
 
 import mu.KLogging
-import java.io.*
+import java.io.File
+import java.io.IOException
 import java.net.MalformedURLException
 import java.net.URL
 import java.util.Properties

@@ -13,4 +13,3 @@ data class MultiMCPack(
     @Optional var components: List<PackComponent> = emptyList(),
     @Optional var formatVersion: Int = 1
 )
-

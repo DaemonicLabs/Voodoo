@@ -1,6 +1,5 @@
 package voodoo.pack
 
-import kotlinx.serialization.json.JSON
 import voodoo.data.lock.LockPack
 import voodoo.util.jenkins.downloadVoodoo
 import voodoo.util.toJson
@@ -41,7 +40,7 @@ object ServerPack : AbstractPack() {
             localDir.copyRecursively(targetLocalDir, true)
         }
 
-        val sourceDir = modpack.sourceFolder //rootFolder.resolve(modpack.rootFolder).resolve(modpack.sourceDir)
+        val sourceDir = modpack.sourceFolder // rootFolder.resolve(modpack.rootFolder).resolve(modpack.sourceDir)
         logger.info("mcDir: $sourceDir")
         if (sourceDir.exists()) {
             val targetSourceDir = serverDir.resolve("src")
@@ -69,7 +68,6 @@ object ServerPack : AbstractPack() {
 
         val packFile = serverDir.resolve("pack.lock.hjson")
         packFile.writeText(modpack.toJson)
-
 
         logger.info("packaging installer jar")
         val installer = downloadVoodoo(component = "server-installer", bootstrap = false, binariesDir = directories.cacheHome)

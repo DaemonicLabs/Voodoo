@@ -43,5 +43,4 @@ class WindowsDirectories(private val appName: String) : Directories {
     private val home: File by lazy {
         File(System.getenv("APPDATA"), appName)
     }
-
 }

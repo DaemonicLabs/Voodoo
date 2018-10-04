@@ -2,8 +2,6 @@ package voodoo.data.nested
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import mu.KLogging
-import voodoo.data.ForgeVersion
-import voodoo.data.Quadruple
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
 import java.io.File

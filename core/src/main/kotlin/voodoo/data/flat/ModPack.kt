@@ -1,16 +1,21 @@
 package voodoo.data.flat
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
-import kotlinx.serialization.*
+import kotlinx.serialization.KOutput
+import kotlinx.serialization.KSerialSaver
 import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.Transient
+import kotlinx.serialization.list
+import kotlinx.serialization.serializer
 import mu.KLogging
-import voodoo.data.ForgeVersion
 import voodoo.data.UserFiles
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.data.sk.ExtendedFeaturePattern
 import java.io.File
-import java.util.*
+import java.util.Collections
 
 /**
  * Created by nikky on 28/03/18.
@@ -26,7 +31,7 @@ data class ModPack(
     @Optional var icon: File = File("icon.png"),
     @Optional val authors: List<String> = emptyList(),
     @Optional var forge: Int? = null,
-    //var forgeBuild: Int = -1,
+    // var forgeBuild: Int = -1,
     @Optional val launch: LaunchModifier = LaunchModifier(),
     @Optional var userFiles: UserFiles = UserFiles(),
 
@@ -110,7 +115,7 @@ data class ModPack(
         }
     }
 
-    //TODO: call from LockPack ?
+    // TODO: call from LockPack ?
     fun loadLockEntries(folder: File) {
         val srcDir = folder.resolve(sourceDir)
         LockPack.parseFiles(srcDir)
@@ -158,7 +163,10 @@ data class ModPack(
     }
 
     fun findLockEntryById(id: String) = lockEntrySet.find { it.id == id }
-    fun addOrMerge(entry: LockEntry, mergeOp: (new: LockEntry?, old: LockEntry) -> LockEntry = { old, new -> old ?: new }): LockEntry {
+    fun addOrMerge(
+        entry: LockEntry,
+        mergeOp: (new: LockEntry?, old: LockEntry) -> LockEntry = { old, new -> old ?: new }
+    ): LockEntry {
         logger.debug("waiting on synchrnoized")
         val result2 = synchronized(lockEntrySet) {
             logger.debug("entering synchronized")

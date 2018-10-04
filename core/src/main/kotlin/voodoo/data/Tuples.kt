@@ -19,10 +19,10 @@ import kotlinx.serialization.Serializable
  */
 @Serializable
 data class Quadruple<out A, out B, out C, out D>(
-        val first: A,
-        val second: B,
-        val third: C,
-        val fourth: D
+    val first: A,
+    val second: B,
+    val third: C,
+    val fourth: D
 ) {
 
     /**
@@ -50,11 +50,11 @@ data class Quadruple<out A, out B, out C, out D>(
  */
 @Serializable
 data class Quintuple<out A, out B, out C, out D, out E>(
-        val first: A,
-        val second: B,
-        val third: C,
-        val fourth: D,
-        val fifth: E
+    val first: A,
+    val second: B,
+    val third: C,
+    val fourth: D,
+    val fifth: E
 ) {
 
     /**

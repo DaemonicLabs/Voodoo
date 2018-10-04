@@ -1,12 +1,12 @@
 plugins {
-    `java-gradle-plugin`
-    `kotlin-dsl`
+    id("java-gradle-plugin")
+    id("kotlin-dsl")
 }
 
 gradlePlugin {
     plugins {
         register("myPlugin") {
-            id = "my-plugin"
+            id = "voodoo-poet"
             implementationClass = "plugin.MyPlugin"
         }
     }

@@ -8,6 +8,6 @@ import voodoo.data.curse.Addon
  */
 
 data class CurseFeed(
-        val timestamp: Long,
-        val data: List<Addon> = emptyList()
+    val timestamp: Long,
+    val data: List<Addon> = emptyList()
 )

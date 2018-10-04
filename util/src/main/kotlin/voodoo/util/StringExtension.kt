@@ -6,13 +6,12 @@ package voodoo.util
  */
 
 val String?.blankOr: String?
-    get() = if(this.isNullOrBlank()) null else this
-
+    get() = if (this.isNullOrBlank()) null else this
 
 fun String.equalsIgnoreCase(s: String) = this.equals(s, true)
 
 private val HEX_CHARS = "0123456789abcdef".toCharArray()
-fun ByteArray.toHex() : String{
+fun ByteArray.toHex(): String {
     val result = StringBuffer()
 
     forEach {

@@ -1,9 +1,13 @@
 package voodoo.importer
 
-import kotlinx.coroutines.experimental.*
+import kotlinx.coroutines.experimental.Job
+import kotlinx.coroutines.experimental.coroutineScope
+import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.experimental.newFixedThreadPoolContext
 import kotlinx.serialization.json.JSON
 import voodoo.curse.CurseClient
-import voodoo.data.curse.CurseConstancts.PROXY_URL
+import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.FileType
 import voodoo.data.flat.Entry
@@ -17,7 +21,7 @@ import voodoo.util.blankOr
 import voodoo.util.download
 import voodoo.util.toJson
 import java.io.File
-import java.util.*
+import java.util.UUID
 
 /**
  * Created by nikky on 13/06/18.
@@ -95,7 +99,7 @@ object CurseImporter : AbstractImporter() {
         val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
         coroutineScope {
             val jobs = mutableListOf<Job>()
-            //TODO: process in parallel
+            // TODO: process in parallel
             for (file in manifest.files) {
                 jobs += launch(context = pool) {
                     logger.info { file }
@@ -134,7 +138,6 @@ object CurseImporter : AbstractImporter() {
                     overridesFolder.resolve(path).apply { mkdirs() }.resolve("${addon.slug}.lock.hjson")
                         .writeText(lockEntry.toJson)
 
-
                     entries += nestedEntry
                 }
                 delay(10)
@@ -156,7 +159,7 @@ object CurseImporter : AbstractImporter() {
             authors = listOf(manifest.author),
             title = manifest.name,
             version = manifest.version,
-            forge = null, //TODO pick correct forge version quadruple
+            forge = null, // TODO pick correct forge version quadruple
             mcVersion = manifest.minecraft.version,
             sourceDir = overridesFolder.relativeTo(target).path,
             localDir = local,
@@ -168,7 +171,6 @@ object CurseImporter : AbstractImporter() {
             curseReleaseTypes = sortedSetOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA),
             entries = entries
         )
-
 
 //        logger.info("writing to $mainFilename.yaml")
 //        target.resolve("$mainFilename.yaml").writeYaml(nestedPack)
@@ -186,11 +188,11 @@ object CurseImporter : AbstractImporter() {
 
         lockFile.writeText(lockedPack.toJson)
 
-        //TODO: create srcDir with single entries and version-locked files and ModPack
+        // TODO: create srcDir with single entries and version-locked files and ModPack
 
         extractFolder.deleteRecursively()
         zipFile.delete()
     }
 
-    //TODO: options filename, src-folder/overrides,
+    // TODO: options filename, src-folder/overrides,
 }

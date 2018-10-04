@@ -9,7 +9,6 @@ import kotlinx.coroutines.experimental.async
 import kotlinx.serialization.Serializable
 import mu.KLogging
 import voodoo.data.ForgeVersion
-import voodoo.data.Quadruple
 import voodoo.provider.ProviderBase
 import voodoo.util.Downloader
 
@@ -63,8 +62,8 @@ object Forge : KLogging() {
         val(request, response, result) = url.httpGet()
             .header("User-Agent" to Downloader.useragent)
             .awaitObjectResponse<ForgeData>(kotlinxDeserializerOf())
-        return when(result) {
-            is Result.Success ->  result.value
+        return when (result) {
+            is Result.Success -> result.value
             is Result.Failure -> {
                 ProviderBase.logger.error { result.error }
                 throw result.error.exception
@@ -90,7 +89,7 @@ data class ForgeData(
 data class Artifact(
     val branch: String?,
     val build: Int,
-    val files: List<List<String>>, //extension, file, checksum
+    val files: List<List<String>>, // extension, file, checksum
     val mcversion: String,
     val modified: Double,
     val version: String

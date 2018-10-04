@@ -12,8 +12,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.SimpleFileVisitor
 import java.nio.file.attribute.BasicFileAttributes
-import java.util.*
-
+import java.util.Locale
 
 interface Directories {
     /**
@@ -71,9 +70,13 @@ interface Directories {
             }, "Runtime directory cleanup thread"))
         }
 
-        fun get(appName: String = "voodoo", moduleName: String? = null, useBareDirectories: Boolean = false): Directories {
+        fun get(
+            appName: String = "voodoo",
+            moduleName: String? = null,
+            useBareDirectories: Boolean = false
+        ): Directories {
             var cleanAppName = appName.toLowerCase(Locale.ROOT).replace(Regex("[^a-z0-9]"), "-")
-            if(moduleName != null) {
+            if (moduleName != null) {
                 val cleanModuleName = moduleName.toLowerCase(Locale.ROOT).replace(Regex("[^a-z0-9]"), "-")
                 cleanAppName += "/" + cleanModuleName
             }
@@ -90,7 +93,7 @@ interface Directories {
                 }
                 Platform.isMac -> {
                     logger.info("Using Mac Library directories")
-                    MacDirectories(appName.replace('/', '_'));
+                    MacDirectories(appName.replace('/', '_'))
                 }
                 Platform.isWindows -> {
                     logger.info("Using Windows directories")
@@ -100,7 +103,6 @@ interface Directories {
                     logger.info("Using bare directories")
                     BareDirectories(cleanAppName)
                 }
-
             }
             return directories
         }

@@ -53,4 +53,3 @@ object Platform {
     val isWindows = osType == OSType.WINDOWS || osType == OSType.WINDOWSCE
     val isX11 = !isWindows && !isMac
 }
-

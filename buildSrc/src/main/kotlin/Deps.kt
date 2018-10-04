@@ -1,10 +1,8 @@
-import org.gradle.api.Project
-
-object Dependencies {
-
+object Deps {
+    const val placeholder = ""
 }
 
-//fun Project.pin() {
+// fun Project.pin() {
 //    configurations.all {
 //        resolutionStrategy.eachDependency {
 //            if (requested.group == "org.jetbrains.kotlin") {
@@ -12,4 +10,4 @@ object Dependencies {
 //            }
 //        }
 //    }
-//}
+// }

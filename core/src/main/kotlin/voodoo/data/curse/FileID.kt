@@ -6,7 +6,7 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.internal.PrimitiveDesc
 
-//TODO: inline
+// TODO: inline
 @Serializable(with = FileID.Companion::class)
 class FileID(val value: Int) {
     override fun toString(): String {

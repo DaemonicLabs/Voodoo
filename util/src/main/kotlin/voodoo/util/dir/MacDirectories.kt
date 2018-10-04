@@ -1,6 +1,5 @@
 package voodoo.util.dir
 
-
 import voodoo.util.Directories
 import voodoo.util.Directories.Companion.deleteDirectoryOnExit
 import java.io.File

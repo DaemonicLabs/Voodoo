@@ -65,7 +65,7 @@ object UnzipUtility {
         var read: Int
         while (true) {
             read = zipIn.read(bytesIn)
-            if(read < 0) break
+            if (read < 0) break
             bos.write(bytesIn, 0, read)
         }
         bos.close()

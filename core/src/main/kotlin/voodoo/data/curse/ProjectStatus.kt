@@ -1,5 +1,4 @@
-package voodoo.data.curse;
-
+package voodoo.data.curse
 
 enum class ProjectStatus {
     NORMAL,

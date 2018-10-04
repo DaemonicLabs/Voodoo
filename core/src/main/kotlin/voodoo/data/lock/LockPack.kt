@@ -36,7 +36,7 @@ data class LockPack(
     @Optional val launch: LaunchModifier = LaunchModifier(),
     @Optional var userFiles: UserFiles = UserFiles(),
     @Optional var localDir: String = "local",
-    @Optional var sourceDir: String = "src", //id, //"src-$id",
+    @Optional var sourceDir: String = "src", // id, //"src-$id",
     @Optional val features: List<ExtendedFeaturePattern> = emptyList()
 ) {
     @Serializer(forClass = LockPack::class)

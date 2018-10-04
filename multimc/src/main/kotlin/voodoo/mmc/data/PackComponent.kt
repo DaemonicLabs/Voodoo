@@ -5,11 +5,9 @@ import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
-import kotlinx.serialization.internal.ArrayListSerializer
 import kotlinx.serialization.list
-import kotlinx.serialization.serializer
 
-@Serializable(with=PackComponent.Companion::class)
+@Serializable(with = PackComponent.Companion::class)
 data class PackComponent(
     @Optional var uid: String = "",
     @Optional var version: String = "",
@@ -28,7 +26,7 @@ data class PackComponent(
             elemOutput.serialize(DEFAULT.uid, obj.uid, 0)
             elemOutput.serialize(DEFAULT.version, obj.version, 1)
             elemOutput.serialize(DEFAULT.cachedName, obj.cachedName, 2)
-            if(DEFAULT.cachedRequires != obj.cachedRequires) {
+            if (DEFAULT.cachedRequires != obj.cachedRequires) {
                 val listSerializer = CachedRequire.list
                 elemOutput.writeElement(serialClassDesc, 3)
                 listSerializer.save(elemOutput, obj.cachedRequires)

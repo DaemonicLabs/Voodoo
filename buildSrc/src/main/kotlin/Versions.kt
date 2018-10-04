@@ -12,4 +12,6 @@ object Versions {
     const val html = "0.6.10"
 
     const val argparser = "2.0.7"
+
+    const val poet = "1.0.0-RC1"
 }

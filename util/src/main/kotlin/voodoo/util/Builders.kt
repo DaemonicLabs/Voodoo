@@ -1,17 +1,9 @@
 package voodoo.util
 
 import kotlinx.coroutines.experimental.CoroutineExceptionHandler
-import kotlinx.coroutines.experimental.CoroutineScope
 import kotlinx.coroutines.experimental.cancel
 import kotlinx.coroutines.experimental.newFixedThreadPoolContext
-import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.io.StringWriter
 import mu.KLogging
-import kotlin.coroutines.experimental.CoroutineContext
-import kotlin.coroutines.experimental.EmptyCoroutineContext
-import kotlin.coroutines.experimental.coroutineContext
-import kotlin.math.max
-import kotlin.system.exitProcess
 
 object ExceptionHelper : KLogging() {
     val context = CoroutineExceptionHandler { context, exception ->
@@ -26,4 +18,3 @@ object ExceptionHelper : KLogging() {
 
 val VOODOO_MULTITHREADING = System.getenv("VOODOO_MULTITHREADING")?.toIntOrNull() ?: Runtime.getRuntime().availableProcessors()
 val pool = newFixedThreadPoolContext(VOODOO_MULTITHREADING + 1, "pool")
-

@@ -55,7 +55,7 @@ fun <A, B, C, D, E, R> ((A, B, C, D, E) -> R).memoize(initialCapacity: Int = DEF
     }
 }
 
-//ssuspend function
+// ssuspend function
 
 fun <A, R> (suspend (A) -> R).memoizeSuspend(initialCapacity: Int = DEFAULT_CAPACITY): suspend (A) -> R {
     val cache: MutableMap<A, R> = HashMap(initialCapacity)

@@ -51,7 +51,7 @@ data class FileInstall(
             elemOutput.writeStringElementValue(serialClassDesc, 2, obj.location)
             elemOutput.writeStringElementValue(serialClassDesc, 3, obj.to)
             if (obj.size != 0L) elemOutput.writeLongElementValue(serialClassDesc, 4, obj.size)
-            if(obj.isUserFile) {
+            if (obj.isUserFile) {
                 elemOutput.writeBooleanElementValue(serialClassDesc, 5, obj.isUserFile)
             }
             obj.manifest?.let { manifest ->

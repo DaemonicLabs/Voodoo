@@ -6,7 +6,7 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
 
-@Serializable(with=CachedRequire.Companion::class)
+@Serializable(with = CachedRequire.Companion::class)
 data class CachedRequire(
     @Optional var uid: String = "",
     @Optional var suggests: String = "",

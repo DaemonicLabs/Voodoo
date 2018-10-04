@@ -17,7 +17,7 @@ object MMCStaticPack : AbstractPack() {
         clean: Boolean
     ) {
         val targetDir = folder.resolve(target ?: ".multimc")
-        //TODO: move configuration into modpack/lockpack ?
+        // TODO: move configuration into modpack/lockpack ?
         val definitionsDir = folder.resolve("multimc").apply { mkdirs() }
         val cacheDir = directories.cacheHome.resolve("mmc")
         val instanceDir = cacheDir.resolve(modpack.id)

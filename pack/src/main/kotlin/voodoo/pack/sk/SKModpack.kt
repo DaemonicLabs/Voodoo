@@ -11,10 +11,10 @@ import voodoo.data.UserFiles
  */
 @Serializable
 data class SKModpack(
-        var name: String,
-        var title: String = "",
-        var gameVersion: String,
-        var features: List<FeaturePattern> = emptyList(),
-        var userFiles: UserFiles = UserFiles(),
-        var launch: LaunchModifier = LaunchModifier()
+    var name: String,
+    var title: String = "",
+    var gameVersion: String,
+    var features: List<FeaturePattern> = emptyList(),
+    var userFiles: UserFiles = UserFiles(),
+    var launch: LaunchModifier = LaunchModifier()
 )
