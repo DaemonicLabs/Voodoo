@@ -4,15 +4,65 @@ import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
 import org.gradle.api.DefaultTask
+import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.tasks.CacheableTask
+import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.api.tasks.TaskAction
-import org.gradle.kotlin.dsl.provideDelegate
-import java.io.File
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.task
+import org.gradle.plugins.ide.idea.IdeaPlugin
 
+open class ConstantsExtension {
+    var major: String? = null
+    var minor: String? = null
+    var patch: String? = null
+    var build: String? = null
+}
+
+open class ConstantGenerator : Plugin<Project> {
+    override fun apply(project: Project) {
+        with(project) {
+            val folder = outputFolder(project)
+            project.getPlugins().withType(IdeaPlugin::class.java) {
+                model.apply {
+                    module {
+                        generatedSourceDirs.add(folder)
+                    }
+                }
+            }
+
+            project.extensions.configure<SourceSetContainer> {
+                this.maybeCreate("main").allSource.srcDir(folder)
+            }
+
+            val constExtension = extensions.create("constants", ConstantsExtension::class.java)
+            val generateConstants = task<GenerateConstantsTask>("generateConstants") {
+                extension = constExtension
+            }
+
+//            tasks.findByName("compileKotlin")
+//                ?.dependsOn(generateConstants)
+
+        }
+    }
+
+    companion object {
+        fun outputFolder(project: Project) = project.buildDir.resolve("generated-src")
+    }
+}
+
+@CacheableTask
 open class GenerateConstantsTask : DefaultTask() {
-    val folder = listOf("voodoo") + when(project.depth) {
+    lateinit var extension: ConstantsExtension
+
+    @OutputDirectory
+    val outputFolder = ConstantGenerator.outputFolder(project)
+
+    val folder = listOf("voodoo") + when (project.depth) {
         0 -> emptyList()
         else -> project.name.split('-')
     }
@@ -22,9 +72,6 @@ open class GenerateConstantsTask : DefaultTask() {
             it.capitalize()
         } + "Constants"
     val pkg = folder.joinToString(".")
-
-    @OutputDirectory
-    val outputFolder = project.buildDir.resolve("generated-src")
 
     @OutputFile
     val targetFile = outputFolder.resolve(pkg.replace('.', '/')).resolve(className + ".kt")
@@ -37,9 +84,11 @@ open class GenerateConstantsTask : DefaultTask() {
     @TaskAction
     fun createConstants() {
         println(project.name)
-        val major: String by project
-        val minor: String by project
-        val patch: String by project
+        val major: String = extension.major ?: project.properties["major"] as String
+        val minor: String = extension.minor ?: project.properties["minor"] as String
+        val patch: String = extension.patch ?: project.properties["patch"] as String
+
+        val build: String? = extension.build ?: System.getenv("BUILD_NUMBER")
 
         outputFolder.mkdirs()
 
@@ -59,10 +108,9 @@ open class GenerateConstantsTask : DefaultTask() {
                 .initializer("%S", patch)
                 .build()
         )
-        val build: String? = System.getenv("BUILD_NUMBER")
         constantBuilder.addProperty(
             PropertySpec.builder("BUILD_NUMBER", Int::class, KModifier.CONST)
-                .initializer("%L", build ?: -1 )
+                .initializer("%L", build ?: -1)
                 .build()
         )
         constantBuilder.addProperty(
