@@ -190,10 +190,10 @@ allprojects {
     }
 }
 
-val genSrc = rootDir.resolve(".gen")
-sourceSets {
-    getByName("test").java.srcDirs(rootDir.resolve("samples"))
-    getByName("test").java.srcDirs(genSrc)
+val genSrc = rootDir.resolve(".voodoo")
+kotlin.sourceSets.maybeCreate("test").kotlin.apply {
+    srcDirs(rootDir.resolve("samples"))
+    srcDirs(genSrc)
 }
 idea {
     module {
@@ -201,15 +201,17 @@ idea {
     }
 }
 
-val compileTestKotlin by tasks.getting(KotlinCompile::class) {
-    doFirst {
-        project.javaexec {
-            main = "moe.nikky.voodoo.PoetKt"
-            args = listOf(genSrc.path)
-            classpath = project(":poet").sourceSets["main"].runtimeClasspath
-        }
-    }
+val poet = task<JavaExec>("poet") {
+    main = "voodoo.PoetKt"
+    args = listOf(genSrc.path)
+    classpath = project(":poet").sourceSets["main"].runtimeClasspath
+
+    group = "build"
     dependsOn(":poet:classes")
+}
+
+val compileTestKotlin by tasks.getting(KotlinCompile::class) {
+    dependsOn(poet)
 }
 
 // SPEK

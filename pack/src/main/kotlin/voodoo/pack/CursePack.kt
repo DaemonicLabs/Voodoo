@@ -24,7 +24,7 @@ import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.CurseMinecraft
 import voodoo.data.curse.CurseModLoader
 import voodoo.data.lock.LockPack
-import voodoo.forge.Forge
+import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
 import voodoo.provider.Providers
 import voodoo.util.ExceptionHelper
@@ -78,7 +78,7 @@ object CursePack : AbstractPack() {
         coroutineScope {
             val jobs = mutableListOf<Job>()
 
-            val forgeVersion = Forge.forgeVersionOf(modpack.forge)?.forgeVersion
+            val forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge)?.forgeVersion
 
             val modsFolder = srcFolder.resolve("mods")
             logger.info("cleaning mods $modsFolder")

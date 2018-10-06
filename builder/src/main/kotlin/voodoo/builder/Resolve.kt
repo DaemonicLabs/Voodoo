@@ -14,7 +14,7 @@ import mu.KotlinLogging
 import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
-import voodoo.data.sk.ExtendedFeaturePattern
+import com.skcraft.launcher.model.ExtendedFeaturePattern
 import voodoo.memoize
 import voodoo.provider.Providers
 import voodoo.util.pool

@@ -26,11 +26,10 @@ val branch = System.getenv("GIT_BRANCH")
     ?: ""
 
 gradlePlugin {
-//configure<GradlePluginDevelopmentExtension> {
     plugins {
         this.register("voodooPoet") {
             id = "voodoo"
-            implementationClass = "moe.nikky.voodoo.VoodooPlugin"
+            implementationClass = "voodoo.VoodooPlugin"
         }
     }
 }

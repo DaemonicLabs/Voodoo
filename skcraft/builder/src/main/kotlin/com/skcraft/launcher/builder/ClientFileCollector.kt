@@ -20,7 +20,7 @@ import java.security.MessageDigest
  * [Manifest].
  *
  * @param manifest the manifest
- * @param applicator applies feature to manifest entries
+ * @param applicator applies properties to manifest entries
  * @param destDir the destination directory to copy the hashed objects
  */
 class ClientFileCollector(

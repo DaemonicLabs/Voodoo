@@ -10,7 +10,7 @@ import kotlinx.coroutines.experimental.coroutineScope
 import kotlinx.coroutines.experimental.delay
 import kotlinx.serialization.json.JSON
 import voodoo.data.lock.LockPack
-import voodoo.forge.Forge
+import voodoo.forge.ForgeUtil
 import voodoo.pack.sk.SKLocation
 import voodoo.pack.sk.SKModpack
 import voodoo.pack.sk.SKPackages
@@ -79,7 +79,7 @@ object SKPack : AbstractPack() {
         coroutineScope {
             // download forge
             modpack.forge?.also { forge ->
-                val (forgeUrl, forgeFileName, _, forgeVersion) = Forge.forgeVersionOf(forge)
+                val (forgeUrl, forgeFileName, _, forgeVersion) = ForgeUtil.forgeVersionOf(forge)
                 val forgeFile = loadersFolder.resolve(forgeFileName)
                 forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
             } ?: logger.warn { "no forge configured" }
@@ -115,8 +115,8 @@ object SKPack : AbstractPack() {
 
             // write features
             val deferredFeatures = modpack.features.map { feature ->
-                async(pool + CoroutineName("feature-${feature.feature.name}")) {
-                    logger.info("processing feature: ${feature.feature.name}")
+                async(pool + CoroutineName("properties-${feature.feature.name}")) {
+                    logger.info("processing properties: ${feature.feature.name}")
                     for (id in feature.entries) {
                         logger.info(id)
 
@@ -137,9 +137,9 @@ object SKPack : AbstractPack() {
                     }
 
                     logger.info("entries: ${feature.entries}")
-                    logger.info("feature: ${feature.feature}")
+                    logger.info("properties: ${feature.feature}")
 
-                    logger.info("processed feature $feature")
+                    logger.info("processed properties $feature")
 
                     FeaturePattern(
                         feature = feature.feature,
@@ -149,7 +149,7 @@ object SKPack : AbstractPack() {
             }
 
             delay(10)
-            logger.info("waiting for feature jobs to finish")
+            logger.info("waiting for properties jobs to finish")
 
             val features = deferredFeatures.awaitAll()
 
@@ -163,7 +163,7 @@ object SKPack : AbstractPack() {
             )
 
             val modpackPath = modpackDir.resolve("modpack.json")
-            modpackPath.writeText(JSON.stringify(skmodpack))
+            modpackPath.writeText(JSON.indented.stringify(skmodpack))
 
             // add to workspace.json
             logger.info("adding ${modpack.id} to workpace.json", modpack.id)
