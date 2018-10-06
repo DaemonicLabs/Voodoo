@@ -18,7 +18,6 @@ using kscript:
 @file:DependsOnMaven("moe.nikky.voodoo-rewrite:dsl:0.4.0-174")
 @file:DependsOnMaven("ch.qos.logback:logback-classic:1.3.0-alpha4") //seems that i need a explicit dependency on this.. yet another bugreport
 @file:MavenRepository("kotlinx","https://kotlin.bintray.com/kotlinx" )
-@file:MavenRepository("ktor", "https://dl.bintray.com/kotlin/ktor" )
 @file:MavenRepository("elytradev", "https://repo.elytradev.com")
 @file:KotlinOpts("-J-Xmx5g")
 @file:KotlinOpts("-J-server")
@@ -47,8 +46,7 @@ fun main(args: Array<String>) = cursePoet(root = File(".gen"))
 @file:DependsOnMaven("moe.nikky.voodoo:dsl:0.4.0") // for testing from local maven
 //@file:DependsOnMaven("moe.nikky.voodoo-rewrite:dsl:0.4.0-142")
 @file:DependsOnMaven("ch.qos.logback:logback-classic:jar:1.2.3")
-@file:MavenRepository("kotlinx","https://kotlin.bintray.com/kotlinx" )
-@file:MavenRepository("ktor","https://dl.bintray.com/kotlin/ktor" )
+@file:MavenRepository("kotlinx","https://kotlin.bintray.com/kotlinx")
 @file:MavenRepository("elytradev", "https://repo.elytradev.com")
 @file:KotlinOpts("-J-Xmx5g")
 @file:KotlinOpts("-J-server")

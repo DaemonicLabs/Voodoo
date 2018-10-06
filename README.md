@@ -155,7 +155,6 @@ gradle:
 repositories {
     maven { setUrl("https://repo.elytradev.com") }
     maven { setUrl("https://kotlin.bintray.com/kotlinx") }
-    maven { setUrl("https://dl.bintray.com/kotlin/ktor") }
 }
 dependencies {
     compile(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.0+")
@@ -168,7 +167,6 @@ kscript:
 @file:DependsOnMaven("moe.nikky.voodoo-rewrite:dsl:0.4.0-174") // buildnumber needs to be updated menually
 @file:DependsOnMaven("ch.qos.logback:logback-classic:1.2.3")
 @file:MavenRepository("kotlinx","https://kotlin.bintray.com/kotlinx" )
-@file:MavenRepository("ktor","https://dl.bintray.com/kotlin/ktor" )
 @file:MavenRepository("elytradev", "https://repo.elytradev.com")
 //COMPILER_OPTS -jvm-target 1.8
 ```

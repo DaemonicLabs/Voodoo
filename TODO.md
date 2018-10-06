@@ -76,8 +76,7 @@ curse-server zip export
 
 # coroutines
 
-replace fuel with ktor-http client
-replace Jackson with kotlinx-serialization
+ensure proper use of CoroutineContext everzwhere
 
 ## Actors
 - use Actors instead of synchronized mutable lists

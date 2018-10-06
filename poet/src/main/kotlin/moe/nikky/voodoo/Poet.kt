@@ -1,8 +1,9 @@
+package moe.nikky.voodoo
+
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asTypeName
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
@@ -54,7 +55,7 @@ object Poet : KLogging() {
         slugSanitizer: (String) -> String,
         folder: File
     ) {
-        val curseModType = CurseMod::class.asTypeName()
+//        val curseModType = CurseMod::class.asTypeName()
         val objectBuilder = TypeSpec.objectBuilder(name)
         slugIdMap.entries.sortedBy { (slug, id) ->
             slug
