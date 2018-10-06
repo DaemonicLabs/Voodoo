@@ -90,7 +90,7 @@ open class GenerateConstantsTask : DefaultTask() {
                 String::class,
                 KModifier.CONST
             )
-                .initializer("%S", build ?: "SNAPSHOT")
+                .initializer("%S", build ?: "dev")
                 .build()
         )
 
@@ -109,7 +109,7 @@ open class GenerateConstantsTask : DefaultTask() {
                 String::class,
                 KModifier.CONST
             )
-                .initializer("%S", "$major.$minor.$patch-${build ?: "SNAPSHOT"}")
+                .initializer("%S", "$major.$minor.$patch-${Env.versionSuffix}")
                 .build()
         )
 
