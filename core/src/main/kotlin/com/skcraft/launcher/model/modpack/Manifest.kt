@@ -8,8 +8,8 @@ package com.skcraft.launcher.model.modpack
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import com.skcraft.launcher.model.minecraft.VersionManifest
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.KOutput
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -19,33 +19,33 @@ import kotlinx.serialization.serializer
 import java.net.URL
 
 @Serializable
-class Manifest(
+data class Manifest(
     @Optional
-    var minimumVersion: Int = 0
-) {
+    var minimumVersion: Int = 0,
     @Optional
-    var title: String? = null
+    var title: String? = null,
     @Optional
-    var name: String? = null
+    var name: String? = null,
     @Optional
-    var version: String? = null
+    var version: String? = null,
     @Optional
-    var baseUrl: URL? = null
+    var baseUrl: URL? = null,
     @Optional
-    var librariesLocation: String? = null
+    var librariesLocation: String? = null,
     @Optional
-    var objectsLocation: String? = null
+    var objectsLocation: String? = null,
     @Optional
-    var gameVersion: String? = null
+    var gameVersion: String? = null,
     @Optional
     @SerialName("launch")
-    var launchModifier: LaunchModifier? = null
+    var launchModifier: LaunchModifier? = null,
     @Optional
-    var features: List<Feature> = emptyList()
+    var features: List<Feature> = emptyList(),
     @Optional
-    var tasks: List<FileInstall> = emptyList()
+    var tasks: List<FileInstall> = emptyList(),
     @Optional
     var versionManifest: VersionManifest? = null
+) {
 
     fun updateName(name: String?) {
         if (name != null) {
@@ -80,7 +80,7 @@ class Manifest(
             obj.version?.let { version ->
                 elemOutput.writeStringElementValue(serialClassDesc, 3, version)
             }
-                elemOutput.writeIntElementValue(serialClassDesc, 0, obj.minimumVersion)
+            elemOutput.writeIntElementValue(serialClassDesc, 0, obj.minimumVersion)
             obj.baseUrl?.let { baseUrl ->
                 elemOutput.writeStringElementValue(serialClassDesc, 4, baseUrl.toString())
             }

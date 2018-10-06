@@ -22,7 +22,6 @@ fun withDefaultMain(
     block: MainEnv.() -> NestedPack = { throw IllegalStateException("no nested pack provided") }
 ) {
 
-
     // classloader switching necessary for kscript
     class XY
 //    println("classloader is of type:" + Thread.currentThread().contextClassLoader)
@@ -30,7 +29,7 @@ fun withDefaultMain(
 //    println("classloader is of type:" + XY::class.java.classLoader)
     Thread.currentThread().contextClassLoader = XY::class.java.classLoader
 
-    if(arguments.first() == "dump-root") {
+    if (arguments.first() == "dump-root") {
         val nestedPack = MainEnv(root = root).block()
         val srcRoot = root.resolve(nestedPack.sourceDir)
         println("root=$srcRoot")

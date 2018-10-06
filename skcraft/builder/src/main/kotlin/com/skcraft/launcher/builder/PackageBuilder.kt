@@ -334,7 +334,14 @@ constructor(
 
             // Initialize
             val manifest = Manifest(
-                minimumVersion = Manifest.MIN_PROTOCOL_VERSION
+                minimumVersion = Manifest.MIN_PROTOCOL_VERSION,
+                // From options
+                version = options.version,
+                name = options.name,
+                title = options.title,
+                gameVersion = options.gameVersion,
+                librariesLocation = options.librariesLocation,
+                objectsLocation = options.objectsLocation
             )
             val builder = PackageBuilder(
                 manifest = manifest,
@@ -344,12 +351,6 @@ constructor(
             builder.readConfig(options.configPath)
             builder.readVersionManifest(options.versionManifestPath)
             // From options
-            manifest.updateName(options.name)
-            manifest.updateTitle(options.title)
-            manifest.updateGameVersion(options.gameVersion)
-            manifest.version = options.version
-            manifest.librariesLocation = options.librariesLocation
-            manifest.objectsLocation = options.objectsLocation
             builder.scan(options.filesDir)
             builder.addFiles(options.filesDir, options.objectsDir)
             builder.addLoaders(options.loadersDir, options.librariesDir)

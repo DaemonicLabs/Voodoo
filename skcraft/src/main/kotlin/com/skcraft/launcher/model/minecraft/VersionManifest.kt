@@ -14,8 +14,11 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
 import kotlinx.serialization.internal.SerialClassDescImpl
+import java.time.Instant
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.TimeZone
 
 @Serializable
 data class VersionManifest(
@@ -45,6 +48,7 @@ object DateSerializer : KSerializer<LocalDateTime> {
 //    }
 
     override fun load(input: KInput): LocalDateTime {
-        return LocalDateTime.parse(input.readStringValue(), DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+//        return LocalDateTime.parse(input.readStringValue(), DateTimeFormatter.)
+        return LocalDateTime.ofInstant(Instant.ofEpochMilli(input.readLongValue()), ZoneId.of("UTC"))
     }
 }
