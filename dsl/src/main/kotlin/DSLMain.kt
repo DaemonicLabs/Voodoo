@@ -8,6 +8,7 @@ import voodoo.TesterForDSL
 import voodoo.data.nested.NestedPack
 import voodoo.dsl.DslConstants.FULL_VERSION
 import java.io.File
+import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
 
@@ -21,12 +22,20 @@ fun withDefaultMain(
     block: MainEnv.() -> NestedPack = { throw IllegalStateException("no nested pack provided") }
 ) {
 
+
     // classloader switching necessary for kscript
     class XY
-    println("classloader is of type:" + Thread.currentThread().contextClassLoader)
-    println("classloader is of type:" + ClassLoader.getSystemClassLoader())
-    println("classloader is of type:" + XY::class.java.classLoader)
+//    println("classloader is of type:" + Thread.currentThread().contextClassLoader)
+//    println("classloader is of type:" + ClassLoader.getSystemClassLoader())
+//    println("classloader is of type:" + XY::class.java.classLoader)
     Thread.currentThread().contextClassLoader = XY::class.java.classLoader
+
+    if(arguments.first() == "dump-root") {
+        val nestedPack = MainEnv(root = root).block()
+        val srcRoot = root.resolve(nestedPack.sourceDir)
+        println("root=$srcRoot")
+        exitProcess(0)
+    }
 
     val nestedPack = MainEnv(root = root).block()
     val id = nestedPack.id

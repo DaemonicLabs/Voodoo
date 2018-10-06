@@ -9,6 +9,7 @@ plugins {
     idea
     `maven-publish`
     `project-report`
+    id("const-generator")
     id("kotlinx-serialization") version Versions.serialization
     id("com.github.johnrengelman.shadow") version "2.0.4"
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
@@ -32,8 +33,9 @@ val runnableProjects = listOf(
 val noConstants = listOf(
     project("skcraft"),
     project("skcraft:skcraft-builder"),
-    project(":fuel-kotlinx-serialization")
+    project("fuel-kotlinx-serialization")
 )
+// TODO: buildSrc
 val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: "-SNAPSHOT"
 allprojects {
     configurations.all {
@@ -42,27 +44,6 @@ allprojects {
                 useVersion(Versions.kotlin)
                 because("We use kotlin version ${Versions.kotlin}")
             }
-        }
-    }
-    apply {
-        plugin("kotlin")
-        plugin("kotlinx-serialization")
-        plugin("idea")
-        plugin("org.jmailen.kotlinter")
-    }
-    java {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    configure<KotlinJvmProjectExtension> {
-        experimental.coroutines = Coroutines.ENABLE
-    }
-
-    tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            languageVersion = "1.2"
-            jvmTarget = "1.8"
         }
     }
 
@@ -74,114 +55,138 @@ allprojects {
         maven { url = uri("https://kotlin.bintray.com/kotlinx") }
     }
 
-    idea {
-        module {
-            excludeDirs.add(file("run"))
-        }
-    }
-
-    // fix jar names (projects renamed in settings.gradle.kts)
-    val baseName = project.name.toLowerCase()
-    base {
-        archivesBaseName = "$baseName$versionSuffix"
-    }
-    val jar by tasks.getting(Jar::class) {
-        this.version = ""
-    }
-
-    if (project !in noConstants) {
-
+    if (project != project(":plugin")) {
         apply {
-            plugin(ConstantGenerator::class)
+            plugin("kotlin")
+            plugin("kotlinx-serialization")
+            plugin("idea")
+            plugin("org.jmailen.kotlinter")
         }
 
-        val generateConstants by tasks.getting(GenerateConstantsTask::class) {
-            kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
+        configure<KotlinJvmProjectExtension> {
+            experimental.coroutines = Coroutines.ENABLE
         }
 
-        configure<ConstantsExtension> {
-
-        }
-
-        // TODO depend on kotlin tasks in the plugin
         tasks.withType<KotlinCompile> {
-            dependsOn(generateConstants)
+            kotlinOptions {
+                languageVersion = "1.2"
+                jvmTarget = "1.8"
+            }
         }
 
-        runnableProjects.find { it.first == project }?.let { (_, mainClass) ->
+        java {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
+
+        idea {
+            module {
+                excludeDirs.add(file("run"))
+            }
+        }
+
+        base {
+            archivesBaseName = "${project.name.toLowerCase()}$versionSuffix"
+        }
+        val jar by tasks.getting(Jar::class) {
+            this.version = ""
+        }
+
+        if (project !in noConstants) {
+
             apply {
-                plugin("application")
-                plugin("com.github.johnrengelman.shadow")
+                plugin("const-generator")
             }
 
-            application {
-                mainClassName = mainClass
+            val generateConstants by tasks.getting(GenerateConstantsTask::class) {
+                kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
             }
 
-            val runDir = rootProject.file("run")
+            configure<ConstantsExtension> {
 
-            val run by tasks.getting(JavaExec::class) {
-                workingDir = runDir
             }
 
-            val runShadow by tasks.getting(JavaExec::class) {
-                workingDir = runDir
+            // TODO depend on kotlin tasks in the plugin
+            tasks.withType<KotlinCompile> {
+                dependsOn(generateConstants)
             }
 
-            val shadowJar by tasks.getting(ShadowJar::class) {
-                classifier = ""
-                archiveName = "$baseName$versionSuffix.$extension"
-            }
+            runnableProjects.find { it.first == project }?.let { (_, mainClass) ->
+                apply {
+                    plugin("application")
+                    plugin("com.github.johnrengelman.shadow")
+                }
 
-            val build by tasks.getting(Task::class) {
-                dependsOn(shadowJar)
-            }
-        }
-    }
+                application {
+                    mainClassName = mainClass
+                }
 
-    // publishing
-    if (project != project(":bootstrap")) {
-        apply {
-            plugin("maven-publish")
-        }
+                val runDir = rootProject.file("run")
 
-        val major: String by project
-        val minor: String by project
-        val patch: String by project
-        version = "$major.$minor.$patch$versionSuffix"
+                val run by tasks.getting(JavaExec::class) {
+                    workingDir = runDir
+                }
 
-        val sourcesJar by tasks.registering(Jar::class) {
-            classifier = "sources"
-            from(sourceSets["main"].allSource)
-        }
+                val runShadow by tasks.getting(JavaExec::class) {
+                    workingDir = runDir
+                }
 
-        // fails due to Jankson
-        val javadoc by tasks.getting(Javadoc::class) {}
-        val javadocJar by tasks.registering(Jar::class) {
-            classifier = "javadoc"
-            from(javadoc)
-        }
+                val shadowJar by tasks.getting(ShadowJar::class) {
+                    classifier = ""
+                    archiveName = "$baseName$versionSuffix.$extension"
+                }
 
-        val branch = System.getenv("GIT_BRANCH")
-            ?.takeUnless { it == "master" }
-            ?.let { "-$it" }
-            ?: ""
-
-        publishing {
-            publications {
-                create("default", MavenPublication::class.java) {
-                    from(components["java"])
-                    artifact(sourcesJar.get())
-                    artifact(javadocJar.get())
-                    groupId = "moe.nikky.voodoo$branch"
-                    artifactId = baseName
+                val build by tasks.getting(Task::class) {
+                    dependsOn(shadowJar)
                 }
             }
         }
 
-        rootProject.file("private.gradle")
-            .takeIf { it.exists() }
-            ?.let { apply(from = it) }
+        // publishing
+        if (project != project(":bootstrap")) {
+            apply {
+                plugin("maven-publish")
+            }
+
+            val major: String by project
+            val minor: String by project
+            val patch: String by project
+            version = "$major.$minor.$patch$versionSuffix"
+
+            val sourcesJar by tasks.registering(Jar::class) {
+                classifier = "sources"
+                from(sourceSets["main"].allSource)
+            }
+
+//            // fails due to Jankson
+            val javadoc by tasks.getting(Javadoc::class) {}
+            val javadocJar by tasks.registering(Jar::class) {
+                classifier = "javadoc"
+                from(javadoc)
+            }
+
+//            // TODO move into buildSrc
+            val branch = System.getenv("GIT_BRANCH")
+                ?.takeUnless { it == "master" }
+                ?.let { "-$it" }
+                ?: ""
+
+            publishing {
+                publications {
+                    create("default", MavenPublication::class.java) {
+                        from(components["java"])
+                        artifact(sourcesJar.get())
+                        artifact(javadocJar.get())
+                        groupId = "moe.nikky.voodoo$branch"
+                        artifactId = project.name.toLowerCase()
+                    }
+                }
+            }
+
+            rootProject.file("private.gradle")
+                .takeIf { it.exists() }
+                ?.let { apply(from = it) }
+        }
     }
 }
 
@@ -196,18 +201,15 @@ idea {
     }
 }
 
-val poet = task<JavaExec>("poet") {
-    main = "PoetKt"
-    args = listOf(genSrc.path)
-    classpath = project(":dsl").sourceSets["main"].runtimeClasspath
-    this.description = "generate curse mod listing"
-    this.group = "build"
-    dependsOn(":dsl:classes")
-//    enabled = !genSrc.exists() || !genSrc.resolve("Mod.kt").exists()
-}
-
 val compileTestKotlin by tasks.getting(KotlinCompile::class) {
-    dependsOn(poet)
+    doFirst {
+        project.javaexec {
+            main = "moe.nikky.voodoo.PoetKt"
+            args = listOf(genSrc.path)
+            classpath = project(":poet").sourceSets["main"].runtimeClasspath
+        }
+    }
+    dependsOn(":poet:classes")
 }
 
 // SPEK
