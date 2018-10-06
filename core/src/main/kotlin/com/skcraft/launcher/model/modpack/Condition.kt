@@ -17,23 +17,56 @@ import kotlinx.serialization.serializer
 import java.util.ArrayList
 
 @Serializable
-abstract class Condition(
+class Condition(
     @SerialName("if")
     val ifSwitch: String,
     @Optional
-    open var features: MutableList<Feature> = ArrayList()
+    var features: List<String> = listOf()
 ) {
-
-    abstract fun matches(): Boolean
+//    fun matches(): Boolean {
+//        when(ifSwitch) {
+//            "requireAny" -> {
+//                for (feature in features) {
+//                    if (feature.selected) {
+//                        return true
+//                    }
+//                }
+//                return false
+//            }
+//            "requireAll" -> {
+//                for (feature in features) {
+//                    if (!feature.selected) {
+//                        return false
+//                    }
+//                }
+//                return true
+//            }
+//            else -> return false
+//        }
+//    }
 
     @Serializer(forClass = Condition::class)
     companion object : KSerializer<Condition> {
+        fun requireAny(features: MutableList<Feature> = ArrayList()) = Condition("requireAny", features.map { feature -> feature.name })
+        fun requireAll(features: MutableList<Feature> = ArrayList()) = Condition("requireAll", features.map { feature -> feature.name })
+
         override fun save(output: KOutput, obj: Condition) {
             val elemOutput = output.writeBegin(serialClassDesc)
             elemOutput.writeStringElementValue(serialClassDesc, 0, obj.ifSwitch)
             elemOutput.writeElement(serialClassDesc, 1)
-            elemOutput.write(String.serializer().list, obj.features.map { feature -> feature.name })
+            elemOutput.write(String.serializer().list, obj.features)
             elemOutput.writeEnd(serialClassDesc)
         }
+
+//        override fun load(input: KInput): Condition {
+//            val inputElem = input.readBegin(serialClassDesc)
+//            val ifSwitch = inputElem.readStringElementValue(serialClassDesc, 0)
+//            return when(ifSwitch) {
+//                "requireAny" -> RequireAny::class.serializer().load(input)
+//                "requireAll" -> RequireAll::class.serializer().load(input)
+//                else -> throw IllegalStateException("if switch has unexpected value")
+//            }
+//
+//        }
     }
 }

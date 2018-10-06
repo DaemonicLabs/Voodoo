@@ -10,7 +10,6 @@ import com.skcraft.launcher.model.modpack.Condition
 import com.skcraft.launcher.model.modpack.Feature
 import com.skcraft.launcher.model.modpack.FileInstall
 import com.skcraft.launcher.model.modpack.Manifest
-import com.skcraft.launcher.model.modpack.RequireAny
 import java.util.ArrayList
 import java.util.HashSet
 
@@ -45,7 +44,7 @@ class PropertiesApplicator(private val manifest: Manifest) {
             }
         }
         return if (!found.isEmpty()) {
-            RequireAny(found)
+            Condition.requireAny(found)
         } else {
             null
         }

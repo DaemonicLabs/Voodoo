@@ -1,12 +1,10 @@
-package voodoo
+package moe.nikky.voodoo
 
 import awaitObjectResponse
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
 import com.skcraft.launcher.model.modpack.Manifest
-import com.skcraft.launcher.model.modpack.RequireAll
-import com.skcraft.launcher.model.modpack.RequireAny
 import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.joinAll
@@ -143,12 +141,12 @@ object Hex : KLogging() {
 
                     val whenTask = task.conditionWhen
                     if (whenTask != null) {
-                        val download = when (whenTask) {
-                            is RequireAny -> {
-                                whenTask.features.any { feature -> features[feature.name] ?: false }
+                        val download = when (whenTask.ifSwitch) {
+                            "requireAny" -> {
+                                whenTask.features.any { feature -> features[feature] ?: false }
                             }
-                            is RequireAll -> {
-                                whenTask.features.all { feature -> features[feature.name] ?: false }
+                            "requireAll" -> {
+                                whenTask.features.all { feature -> features[feature] ?: false }
                             }
                             else -> false
                         }
