@@ -6,7 +6,7 @@
 @file:KotlinOpts("-J-Xmx5g")
 @file:KotlinOpts("-J-server")
 
-import moe.nikky.voodoo.poet
+import voodoo.poet
 import java.io.File
 
 fun main(args: Array<String>) = poet(root = File(System.getProperty("user.dir")))

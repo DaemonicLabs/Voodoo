@@ -29,6 +29,7 @@ include("bootstrap")
 include("fuel-kotlinx-serialization")
 
 include("skcraft")
+include("skcraft:data")
 include("skcraft:builder")
 
 include("poet")

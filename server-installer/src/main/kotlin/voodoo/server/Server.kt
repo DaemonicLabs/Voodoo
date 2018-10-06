@@ -5,7 +5,7 @@ import kotlinx.coroutines.experimental.coroutineScope
 import kotlinx.coroutines.experimental.launch
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
-import voodoo.forge.Forge
+import voodoo.forge.ForgeUtil
 import voodoo.provider.Providers
 import voodoo.util.Directories
 import voodoo.util.Downloader.logger
@@ -83,7 +83,7 @@ object Server {
 
         // download forge
         modpack.forge?.also { forge ->
-            val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = Forge.forgeVersionOf(forge)
+            val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = ForgeUtil.forgeVersionOf(forge)
             val forgeFile = directories.runtimeDir.resolve(forgeFileName)
             logger.info("forge: $forgeLongVersion")
             forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))

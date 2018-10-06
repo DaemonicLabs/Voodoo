@@ -1,6 +1,8 @@
 package voodoo.data
 
+import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
 
 /**
  * Created by nikky on 29/03/18.
@@ -9,6 +11,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class UserFiles(
-    var include: List<String> = listOf("options.txt", "optionsshaders.txt"),
-    var exclude: List<String> = emptyList()
-)
+    @Optional var include: List<String> = listOf("options.txt", "optionsshaders.txt"),
+    @Optional var exclude: List<String> = emptyList()
+) {
+    @Serializer(forClass = UserFiles::class)
+    companion object
+}

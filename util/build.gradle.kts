@@ -1,5 +1,3 @@
-
-
 apply(from = rootProject.file("base.gradle.kts"))
 dependencies {
     compile(kotlin("reflect", Versions.kotlin))

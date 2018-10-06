@@ -5,7 +5,7 @@ out/
 run/
 *.iml
 
-.gen/
+.voodoo/
 
 **/output/
 

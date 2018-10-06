@@ -1,5 +1,6 @@
 package voodoo.data.lock
 
+import com.skcraft.launcher.model.ExtendedFeaturePattern
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.KOutput
@@ -13,8 +14,7 @@ import kotlinx.serialization.serializer
 import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
-import voodoo.data.sk.ExtendedFeaturePattern
-import voodoo.forge.Forge
+import voodoo.forge.ForgeUtil
 import voodoo.markdownTable
 import voodoo.util.blankOr
 import java.io.File
@@ -33,11 +33,17 @@ data class LockPack(
     @Optional val icon: File = File("icon.png"),
     @Optional val authors: List<String> = emptyList(),
     @Optional val forge: Int? = null,
-    @Optional val launch: LaunchModifier = LaunchModifier(),
-    @Optional var userFiles: UserFiles = UserFiles(),
+    @Optional
+    @Serializable(with = LaunchModifier.Companion::class)
+    val launch: LaunchModifier = LaunchModifier(),
+    @Optional
+    @Serializable(with = UserFiles.Companion::class)
+    var userFiles: UserFiles = UserFiles(),
     @Optional var localDir: String = "local",
     @Optional var sourceDir: String = "src", // id, //"src-$id",
-    @Optional val features: List<ExtendedFeaturePattern> = emptyList()
+    @Optional
+    @Serializable(with = ExtendedFeaturePattern.Companion::class)
+    val features: List<ExtendedFeaturePattern> = emptyList()
 ) {
     @Serializer(forClass = LockPack::class)
     companion object {
@@ -53,14 +59,14 @@ data class LockPack(
                 obj.forge?.also { forge ->
                     elemOutput.serialize(this.forge, forge, 6)
                 }
-                elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier::class.serializer(), 7)
-                elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles::class.serializer(), 8)
+                elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier, 7)
+                elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles, 8)
                 elemOutput.serialize(this.localDir, obj.localDir, 9)
                 elemOutput.serialize(this.sourceDir, obj.sourceDir, 10)
                 elemOutput.serializeObj(
                     this.features,
                     obj.features,
-                    ExtendedFeaturePattern::class.serializer().list,
+                    ExtendedFeaturePattern.list,
                     11
                 )
             }
@@ -147,7 +153,7 @@ data class LockPack(
     val report: String
         get() {
             val forgeVersion = runBlocking {
-                Forge.forgeVersionOf(forge)?.forgeVersion ?: "missing"
+                ForgeUtil.forgeVersionOf(forge)?.forgeVersion ?: "missing"
             }
             return markdownTable(
                 header = "Title" to this.title(), content = listOf(

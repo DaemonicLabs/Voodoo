@@ -23,8 +23,8 @@ echo
 echo "building $1"
 echo
 
-find . -name \*.entry.hjson -type f -delete
-find . -name \*.lock.hjson -type f -delete
+# find . -name \*.entry.hjson -type f -delete
+# find . -name \*.lock.hjson -type f -delete
 
 kscript "$DIR/samples/$pack.kt" pack sk
 if [ ! $? -eq 0 ]; then

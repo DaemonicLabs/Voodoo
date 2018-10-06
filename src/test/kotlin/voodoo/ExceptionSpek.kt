@@ -14,24 +14,19 @@ object ExceptionSpek : Spek({
                 suspend fun test() {
                     throw IllegalStateException("Excpected Exception")
                 }
-                try {
-                    runBlocking {
-                        (0..100).forEach {
-                            launch {
-                                delay(1000)
-                                println("finished")
-                            }
+                runBlocking {
+                    (0..100).forEach {
+                        launch {
+                            delay(1000)
+                            println("finished")
                         }
-                        val job = launch {
-                            test()
-                            assert(false)
-                        }
-
-                        job.join()
                     }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                    throw e
+                    val job = launch {
+                        test()
+                        assert(false)
+                    }
+
+                    job.join()
                 }
             }
         }

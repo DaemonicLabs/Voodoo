@@ -1,4 +1,5 @@
 #!/usr/bin/env kscript
+@file:CompilerOpts("-jvm-target 1.8")
 @file:DependsOnMaven("moe.nikky.voodoo:dsl:0.4.0") // for testing from local maven
 @file:DependsOnMaven("ch.qos.logback:logback-classic:1.2.3")
 @file:MavenRepository("kotlinx", "https://kotlin.bintray.com/kotlinx")
@@ -9,9 +10,10 @@
 @file:Include("../.gen/TexturePack.kt")
 @file:Include("../.gen/Forge.kt")
 
-// COMPILER_OPTS -jvm-target 1.8
+//COMPILER_OPTS -jvm-target 1.8
 
 import com.skcraft.launcher.model.modpack.Recommendation
+import voodoo.*
 import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.curse.FileType

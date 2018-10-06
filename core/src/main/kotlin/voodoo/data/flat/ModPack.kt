@@ -1,5 +1,6 @@
 package voodoo.data.flat
 
+import com.skcraft.launcher.model.ExtendedFeaturePattern
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.KOutput
 import kotlinx.serialization.KSerialSaver
@@ -13,7 +14,6 @@ import mu.KLogging
 import voodoo.data.UserFiles
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
-import voodoo.data.sk.ExtendedFeaturePattern
 import java.io.File
 import java.util.Collections
 
@@ -32,8 +32,12 @@ data class ModPack(
     @Optional val authors: List<String> = emptyList(),
     @Optional var forge: Int? = null,
     // var forgeBuild: Int = -1,
-    @Optional val launch: LaunchModifier = LaunchModifier(),
-    @Optional var userFiles: UserFiles = UserFiles(),
+    @Optional
+    @Serializable(with = LaunchModifier.Companion::class)
+    val launch: LaunchModifier = LaunchModifier(),
+    @Optional
+    @Serializable(with = UserFiles.Companion::class)
+    var userFiles: UserFiles = UserFiles(),
 
     @Optional var localDir: String = "local",
     @Optional var sourceDir: String = "src"
@@ -52,8 +56,8 @@ data class ModPack(
                 obj.forge?.also { forge ->
                     elemOutput.serialize(this.forge, forge, 6)
                 }
-                elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier::class.serializer(), 7)
-                elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles::class.serializer(), 8)
+                elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier, 7)
+                elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles, 8)
                 elemOutput.serialize(this.localDir, obj.localDir, 9)
                 elemOutput.serialize(this.sourceDir, obj.sourceDir, 10)
             }

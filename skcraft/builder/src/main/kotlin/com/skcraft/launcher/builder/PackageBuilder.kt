@@ -7,9 +7,8 @@
 package com.skcraft.launcher.builder
 
 import awaitByteArrayResponse
-import awaitObjectResponse
+import awaitStringResponse
 import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
 import com.skcraft.launcher.LauncherUtils
 import com.skcraft.launcher.model.loader.InstallProfile
@@ -253,14 +252,14 @@ constructor(
         }
     }
 
-    @Throws(IOException::class)
-    fun readConfig(path: File?) {
-        if (path != null) {
-            val config = read<BuilderConfig>(path)
-            config.update(manifest)
-            config.registerProperties(applicator)
-        }
-    }
+//    @Throws(IOException::class)
+//    fun readConfig(path: File?) {
+//        if (path != null) {
+//            val config = read<BuilderConfig>(path)
+//            config.update(manifest)
+//            config.registerProperties(applicator)
+//        }
+//    }
 
     @Throws(IOException::class, InterruptedException::class)
     private suspend fun readVersionManifest(path: File?) {
@@ -272,11 +271,18 @@ constructor(
         } else {
             val url = String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion)
             logger.info("Fetching version manifest from $url...")
+
             val(request, response, result) = url.httpGet()
                 .header("User-Agent" to Downloader.useragent)
-                .awaitObjectResponse<VersionManifest>(kotlinxDeserializerOf(json = json))
+                .awaitStringResponse()
             manifest.versionManifest = when (result) {
-                is Result.Success -> result.value
+                is Result.Success -> {
+                    val jsonString = result.value.replace("\n", "").replace(" ", "")
+                    val tmp = File.createTempFile("lib", ".json")
+                    tmp.writeText(jsonString)
+                    logger.info("parsing json: $tmp")
+                    json.parse<VersionManifest>(jsonString)
+                }
                 is Result.Failure -> {
                     logger.error { "cannot parse manifest from $url error: ${result.error}" }
                     throw result.error.exception
@@ -348,7 +354,7 @@ constructor(
                 isPrettyPrint = options.isPrettyPrinting
             )
             // From config
-            builder.readConfig(options.configPath)
+//            builder.readConfig(options.configPath)
             builder.readVersionManifest(options.versionManifestPath)
             // From options
             builder.scan(options.filesDir)
