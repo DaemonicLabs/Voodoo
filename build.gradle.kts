@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
@@ -35,8 +36,7 @@ val noConstants = listOf(
     project("skcraft:skcraft-builder"),
     project("fuel-kotlinx-serialization")
 )
-// TODO: buildSrc
-val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: "-SNAPSHOT"
+
 allprojects {
     configurations.all {
         resolutionStrategy.eachDependency {
@@ -86,10 +86,10 @@ allprojects {
         }
 
         base {
-            archivesBaseName = "${project.name.toLowerCase()}$versionSuffix"
+            archivesBaseName = "${project.name.toLowerCase()}-${Env.versionSuffix}"
         }
         val jar by tasks.getting(Jar::class) {
-            this.version = ""
+            version = ""
         }
 
         if (project !in noConstants) {
@@ -104,6 +104,7 @@ allprojects {
 
             configure<ConstantsExtension> {
 
+                build = System.getenv("BUILD_NUMBER")
             }
 
             // TODO depend on kotlin tasks in the plugin
@@ -133,7 +134,7 @@ allprojects {
 
                 val shadowJar by tasks.getting(ShadowJar::class) {
                     classifier = ""
-                    archiveName = "$baseName$versionSuffix.$extension"
+                    archiveName = "$baseName-${Env.versionSuffix}.$extension"
                 }
 
                 val build by tasks.getting(Task::class) {
@@ -151,7 +152,7 @@ allprojects {
             val major: String by project
             val minor: String by project
             val patch: String by project
-            version = "$major.$minor.$patch$versionSuffix"
+            version = "$major.$minor.$patch-${Env.versionSuffix}"
 
             val sourcesJar by tasks.registering(Jar::class) {
                 classifier = "sources"
@@ -165,20 +166,35 @@ allprojects {
                 from(javadoc)
             }
 
-//            // TODO move into buildSrc
-            val branch = System.getenv("GIT_BRANCH")
-                ?.takeUnless { it == "master" }
-                ?.let { "-$it" }
-                ?: ""
-
             publishing {
                 publications {
-                    create("default", MavenPublication::class.java) {
+                    val coordinates = create("default", MavenPublication::class.java) {
                         from(components["java"])
                         artifact(sourcesJar.get())
                         artifact(javadocJar.get())
-                        groupId = "moe.nikky.voodoo$branch"
+                        groupId = "moe.nikky.voodoo${Env.branch}"
                         artifactId = project.name.toLowerCase()
+                    }
+                    create("snapshot", MavenPublication::class.java) {
+                        val publication = this as MavenPublicationInternal
+                        publication.isAlias = true
+                        groupId = "moe.nikky.voodoo${Env.branch}"
+                        artifactId = project.name.toLowerCase()
+                        version = "$major.$minor.$patch-SNAPSHOT"
+                        pom.withXml {
+                            val root = asElement()
+                            val document = root.ownerDocument
+                            val dependencies = root.appendChild(document.createElement("dependencies"))
+                            val dependency = dependencies.appendChild(document.createElement("dependency"))
+                            val groupId = dependency.appendChild(document.createElement("groupId"))
+                            groupId.textContent = coordinates.groupId
+                            val artifactId = dependency.appendChild(document.createElement("artifactId"))
+                            artifactId.textContent = coordinates.artifactId
+                            val version = dependency.appendChild(document.createElement("version"))
+                            version.setTextContent(coordinates.version)
+                        }
+//                        pom.name.set(declaration.getDisplayName())
+//                        pom.getDescription().set(declaration.getDescription())
                     }
                 }
             }

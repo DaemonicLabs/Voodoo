@@ -11,23 +11,15 @@ dependencies {
     compile(project(":poet"))
     compile(group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version = Versions.kotlin)
 }
-// TODO: buildSrc
-val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "" } ?: "-SNAPSHOT"
 
 val major: String by project
 val minor: String by project
 val patch: String by project
-version = "$major.$minor.$patch$versionSuffix"
-
-// TODO move into buildSrc
-val branch = System.getenv("GIT_BRANCH")
-    ?.takeUnless { it == "master" }
-    ?.let { "-$it" }
-    ?: ""
+version = "$major.$minor.$patch-${Env.versionSuffix}"
 
 gradlePlugin {
     plugins {
-        this.register("voodooPoet") {
+        register("voodooPoet") {
             id = "voodoo"
             implementationClass = "voodoo.VoodooPlugin"
         }
@@ -48,10 +40,14 @@ val javadocJar by tasks.registering(Jar::class) {
 
 publishing {
     publications {
-        this.maybeCreate("pluginMaven", MavenPublication::class.java).apply {
+        maybeCreate("pluginMaven", MavenPublication::class.java).apply {
             artifact(sourcesJar.get())
             artifact(javadocJar.get())
-            groupId = "moe.nikky.voodoo$branch"
+            groupId = "moe.nikky.voodoo${Env.branch}"
+        }
+        maybeCreate("voodooPoetPluginMarkerMaven", MavenPublication::class.java).apply {
+            val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "" } ?: "-dev"
+            version = "$major.$minor.$patch$versionSuffix"
         }
     }
 }
