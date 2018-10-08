@@ -72,7 +72,11 @@ open class VoodooPlugin : Plugin<Project> {
             }
 
             task("voodooVersion") {
-                println(PoetConstants.FULL_VERSION)
+                group = "voodoo"
+                description = "prints the used voodoo version"
+                doLast {
+                    println(PoetConstants.FULL_VERSION)
+                }
             }
 
             extensions.configure<SourceSetContainer> {
