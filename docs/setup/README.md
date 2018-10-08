@@ -9,10 +9,11 @@ this guide attempts to make the project interchangeable useable from gradle and 
 
 ## generating curse files
 
-Voodoo can provide autocompletion for curse mods by generating kotlin source files (using kotlinpoet)
+Voodoo provides autocompletion for curse mods and forge by generating kotlin source files (using kotlinpoet)
 
+<!--
 using kscript:  
-`cursepoet.kt`
+`init.kt`
 ```kotlin
 #!/usr/bin/env kscript
 @file:DependsOnMaven("moe.nikky.voodoo-rewrite:dsl:0.4.0-174")
@@ -28,10 +29,36 @@ import java.io.File
 //TODO: figure out how to use File relative to script location
 fun main(args: Array<String>) = cursePoet(root = File(".gen")) 
 ```
+-->
 
-## gradle
+## gradle setup
 
 [sample project](https://github.com/NikkyAI/VoodooSamples)
+
+`build.gradle.kts`
+```kotlin
+plugins {
+    id("voodoo") version "0.4.0-SNAPSHOT"
+}
+
+// for configuration of folders
+voodoo {
+//    generatedSource = project.file(".voodoo")
+//    packDirectory = project.file("packs")
+}
+```
+
+`settings.gradle.kts`
+```kotlin
+pluginManagement {
+    repositories {
+        maven { url = uri("https://repo.elytradev.com") }
+        maven { url = uri("https://kotlin.bintray.com/kotlinx") }
+        gradlePluginPortal()
+    }
+}
+rootProject.name = "YourModpackname"
+```
 
 <!--
 [build.gradle.kts](build.gradle.kts)  
@@ -42,18 +69,6 @@ fun main(args: Array<String>) = cursePoet(root = File(".gen"))
 ## Modpack File
 
 ```kotlin
-#!/usr/bin/env kscript
-@file:DependsOnMaven("moe.nikky.voodoo:dsl:0.4.0") // for testing from local maven
-//@file:DependsOnMaven("moe.nikky.voodoo-rewrite:dsl:0.4.0-142")
-@file:DependsOnMaven("ch.qos.logback:logback-classic:jar:1.2.3")
-@file:MavenRepository("kotlinx","https://kotlin.bintray.com/kotlinx")
-@file:MavenRepository("elytradev", "https://repo.elytradev.com")
-@file:KotlinOpts("-J-Xmx5g")
-@file:KotlinOpts("-J-server")
-@file:Include("../build/gen/Mod.kt")
-@file:Include("../build/gen//TexturePack.kt")
-//COMPILER_OPTS -jvm-target 1.8
-
 import voodoo.*
 import voodoo.data.*
 import voodoo.data.curse.*
@@ -66,7 +81,7 @@ import voodoo.withDefaultMain
 
 fun main(args: Array<String>) = withDefaultMain(
     arguments = args,
-    root = File(System.getProperty("user.dir"))
+    root = Constants.rootDir
 ) {
     NestedPack(
         id = "mypack",

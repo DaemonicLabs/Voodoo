@@ -8,8 +8,7 @@
 
 - [About](#about)
 - [Is Voodoo for you ?](#is-voodoo-for-you)
-- [Docs](#docs)
-- [Guides](#guides)
+- [Docs & Guides](#docs--guides)
 - [Developing](#developing)
 - [Usage examples](#usage-examples)
 - [Maven](#maven)
@@ -64,13 +63,10 @@ and do not want to publish files to curse
 This applies to different modules of voodoo individually.. without a place to host files you can still export
 a pack and upload it to curse, it will just be a much slower process due to approval and waiting time
 
-Docs
-----
+Docs & Guides
+-------------
 
 [https://elytra.github.io/Voodoo](https://elytra.github.io/Voodoo)
-
-Guides
-------
 
 - [Setup](docs/setup)
 - [Basics](docs/basics)
@@ -92,6 +88,13 @@ dependencies {
 unix: `./gradlew publishToMavenLocal`  
 windows: `./gradlew.bat publishToMavenLocal`
 
+## using dev plugin
+
+use `-dev` on the plugin version and add `mavenLocal()` to the dependencies of plugins and in the main buildscript
+
+[build.gradle.kts](https://github.com/elytra/Voodoo/blob/master/samples/build.gradle.kts)  
+[settings.gradle.kts](https://github.com/elytra/Voodoo/blob/master/samples/settings.gradle.kts)  
+
 Usage examples
 --------------
 
@@ -104,17 +107,17 @@ other samples: [samples](samples)
 [Voodoo Samples](https://github.com/NikkyAI/VoodooSamples)
 
 update the pack and write out the lockfiles \
-`./cotm.kt build --updateAll`
+`./gradlew cotm --args "build --updateAll"`
 
 to update just a few mods in the update step \
-`./cotm.kt build -E correlated -E magicArsenal`
+`./gradlew cotm --args "build -E correlated -E magicArsenal"`
 
 package for sklauncher \
-`./cotm.kt pack sk`
+`./gradlew cotm --args "pack sk"`
 now you can just upload the contents of `workspace/_upload`
 
 or do all of the above
-`./cotm.kt build --updateAll - pack sk`
+`./gradlew cotm --args "build --updateAll - pack sk"`
 
 build and test with multimc \
 `./cotm.kt build - test mmc`
