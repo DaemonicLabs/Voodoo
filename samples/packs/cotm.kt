@@ -23,7 +23,7 @@ import java.io.File
 /* ktlint-enable no-wildcard-imports */
 
 fun main(args: Array<String>) = withDefaultMain(
-    root = File("."),
+    root = Constants.rootDir.resolve("run").resolve("cotm"),
     arguments = args
 ) {
     NestedPack(
@@ -47,7 +47,8 @@ fun main(args: Array<String>) = withDefaultMain(
             releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
             validMcVersions = setOf("1.12.1", "1.12")
             // TODO: use type URL ?
-            metaUrl = "https://curse.nikky.moe/api"
+//            metaUrl = "https://curse.nikky.moe/api"
+//            metaUrl = "https://curse.nikky.moe/api/"
             optionals = false
             list {
                 // Vazkii

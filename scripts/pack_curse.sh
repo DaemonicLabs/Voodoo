@@ -13,15 +13,11 @@ fi
 
 pack=$1
 
-[ ! -e run ] && mkdir run
-cd run
+[ ! -e samples ] && mkdir samples
+cd samples
 
-echo
-echo "packaging $1 curse"
-echo
-
-kscript "$DIR/samples/$pack.kt" pack curse
+./gradlew "$pack" --args "build - pack curse"
 if [ ! $? -eq 0 ]; then
-    echo "Error Packing $pack"
+    echo "Error importing $pack"
     exit 1
 fi

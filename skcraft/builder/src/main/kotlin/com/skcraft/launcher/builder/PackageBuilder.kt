@@ -62,7 +62,8 @@ constructor(
     } else {
         JSON(nonstrict = true, context = SerialContext())
     }
-    private val applicator: PropertiesApplicator = PropertiesApplicator(manifest)
+    private val applicator: PropertiesApplicator =
+        PropertiesApplicator(manifest)
     private val loaderLibraries = arrayListOf<Library>()
     private var mavenRepos: List<String>? = null
 
@@ -252,14 +253,14 @@ constructor(
         }
     }
 
-//    @Throws(IOException::class)
-//    fun readConfig(path: File?) {
-//        if (path != null) {
-//            val config = read<BuilderConfig>(path)
-//            config.update(manifest)
-//            config.registerProperties(applicator)
-//        }
-//    }
+    @Throws(IOException::class)
+    fun readConfig(path: File?) {
+        if (path != null) {
+            val config = read<BuilderConfig>(path)
+            config.update(manifest)
+            config.registerProperties(applicator)
+        }
+    }
 
     @Throws(IOException::class, InterruptedException::class)
     private suspend fun readVersionManifest(path: File?) {
@@ -349,12 +350,13 @@ constructor(
                 librariesLocation = options.librariesLocation,
                 objectsLocation = options.objectsLocation
             )
+            logger.info("gameVersion: ${manifest.gameVersion}")
             val builder = PackageBuilder(
                 manifest = manifest,
                 isPrettyPrint = options.isPrettyPrinting
             )
             // From config
-//            builder.readConfig(options.configPath)
+            builder.readConfig(options.configPath)
             builder.readVersionManifest(options.versionManifestPath)
             // From options
             builder.scan(options.filesDir)

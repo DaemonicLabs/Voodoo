@@ -11,6 +11,8 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
+import kotlinx.serialization.list
+import kotlinx.serialization.serializer
 import java.util.EnumSet
 
 @Serializable
@@ -41,12 +43,12 @@ data class FnPatternList(
         override fun save(output: KOutput, obj: FnPatternList) {
             val elemOutput = output.writeBegin(serialClassDesc)
             obj.include.takeUnless { it.isEmpty() }?.let {
-                elemOutput.writeElement(serialClassDesc, 1)
-                elemOutput.write(it)
+                elemOutput.writeElement(serialClassDesc, 0)
+                elemOutput.write(String.serializer().list, it)
             }
             obj.exclude.takeUnless { it.isEmpty() }?.let {
-                elemOutput.writeElement(serialClassDesc, 2)
-                elemOutput.write(it)
+                elemOutput.writeElement(serialClassDesc, 1)
+                elemOutput.write(String.serializer().list, it)
             }
 
             elemOutput.writeEnd(serialClassDesc)

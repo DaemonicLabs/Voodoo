@@ -16,6 +16,9 @@ mkdir -p "$DIR/profile"
 PROFILE="$DIR/profile/$pack.profile.txt"
 rm $PROFILE
 
+[ ! -e samples ] && mkdir samples
+cd samples
+
 [ ! -e run ] && mkdir run
 cd run
 

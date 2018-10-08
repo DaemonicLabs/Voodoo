@@ -23,7 +23,7 @@ import java.io.File
 object MMCFatPack : AbstractPack() {
     override val label = "MultiMC Packer (frozen pack)"
 
-    override suspend fun download(
+    override suspend fun pack(
         modpack: LockPack,
         folder: File,
         target: String?,

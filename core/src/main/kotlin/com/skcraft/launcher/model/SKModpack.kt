@@ -1,4 +1,4 @@
-package voodoo.pack.sk
+package com.skcraft.launcher.model
 
 import com.skcraft.launcher.builder.FeaturePattern
 import com.skcraft.launcher.model.launcher.LaunchModifier
@@ -16,12 +16,11 @@ data class SKModpack(
     @Optional var title: String = "",
     var gameVersion: String,
     @Optional
-    @Serializable(with = FeaturePattern.Companion::class)
-    var features: List<FeaturePattern> = emptyList(),
+    var features: List<FeaturePattern> = listOf(),
     @Optional
-    @Serializable(with = UserFiles.Companion::class)
+//    @Serializable(with = UserFiles.Companion::class)
     var userFiles: UserFiles = UserFiles(),
     @Optional
-    @Serializable(with = LaunchModifier.Companion::class)
+//    @Serializable(with = LaunchModifier.Companion::class)
     var launch: LaunchModifier = LaunchModifier()
 )

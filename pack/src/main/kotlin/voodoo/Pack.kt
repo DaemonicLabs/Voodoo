@@ -43,7 +43,7 @@ object Pack : KLogging() {
                 exitProcess(-1)
             }
 
-            packer.download(
+            packer.pack(
                 modpack = modpack,
                 folder = File(System.getProperty("user.dir")),
                 target = targetFolder,
@@ -59,9 +59,11 @@ object Pack : KLogging() {
     }
 
     suspend fun pack(modpack: LockPack, rootFolder: File, vararg args: String) {
+        logger.info("parsing arguments")
         val arguments = ArgumentsForDSL(ArgParser(args))
 
         arguments.run {
+            logger.info("loading entries")
             modpack.loadEntries(rootFolder)
 
             val packer = packMap[methode.toLowerCase()] ?: run {
@@ -69,7 +71,7 @@ object Pack : KLogging() {
                 exitProcess(-1)
             }
 
-            packer.download(
+            packer.pack(
                 modpack = modpack,
                 folder = rootFolder,
                 target = target,

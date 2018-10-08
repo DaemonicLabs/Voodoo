@@ -4,6 +4,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asClassName
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
@@ -12,11 +13,12 @@ import voodoo.forge.ForgeUtil
 import java.io.File
 
 fun main(vararg args: String) {
-    poet(root = File(args[0]))
+    poet(rootDir = File(args[0]), root = File(args[1]))
 }
 
 fun poet(
-    root: File = File(System.getProperty("user.dir")),
+    rootDir: File = File(System.getProperty("user.dir")).resolve(".voodoo"),
+    root: File = rootDir.resolve(".voodoo"),
     mods: String = "Mod",
     texturePacks: String = "TexturePack",
     slugSanitizer: (String) -> String = { slug ->
@@ -45,6 +47,8 @@ fun poet(
         )
 
         Poet.generateForge("Forge", folder = root)
+
+        Poet.generateConstants("Constants", rootDir, root)
     }
 }
 
@@ -76,7 +80,7 @@ object Poet : KLogging() {
     }
 
     internal suspend fun generateForge(
-        name: String,
+        name: String = "Forge",
         folder: File
     ) {
         val forgeData = runBlocking {
@@ -90,7 +94,7 @@ object Poet : KLogging() {
                 .build()
         }
 
-        val forgeBuilder = TypeSpec.objectBuilder("Forge")
+        val forgeBuilder = TypeSpec.objectBuilder(name)
         val webpath =
             PropertySpec.builder("WEBPATH", String::class, KModifier.CONST).initializer("%S", forgeData.webpath).build()
         forgeBuilder.addProperty(webpath)
@@ -116,6 +120,24 @@ object Poet : KLogging() {
         }
 
         save(forgeBuilder.build(), name, folder)
+    }
+
+    internal suspend fun generateConstants(
+        name: String = "Constants",
+        rootDir: File,
+        folder: File
+    ) {
+        val constBuilder = TypeSpec.objectBuilder(name)
+
+        val file = File::class.asClassName()
+        val rootDir = PropertySpec
+            .builder("rootDir", file)
+            .initializer("%T(%S)", file, rootDir.absoluteFile.path)
+            .build()
+
+        constBuilder.addProperty(rootDir)
+
+        save(constBuilder.build(), name, folder)
     }
 
     private fun save(type: TypeSpec, name: String, folder: File) {

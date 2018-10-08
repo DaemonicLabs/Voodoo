@@ -28,8 +28,8 @@ class BuilderOptions(parser: ArgParser) {
     val outputPath: File? by parser.storing("--output", "-o", help = "") { File(this) }
             .default<File?>(null)
     // Input paths
-//    val configPath by parser.storing("--config", help = "") { File(this) }
-//            .default { File(inputPath!!, DEFAULT_CONFIG_FILENAME) }
+    val configPath by parser.storing("--config", help = "") { File(this) }
+            .default { File(inputPath!!, DEFAULT_CONFIG_FILENAME) }
     val versionManifestPath by parser.storing("--version-file", help = "") { File(this) }
             .default { File(inputPath!!, DEFAULT_VERSION_FILENAME) }
     val filesDir by parser.storing("--files", help = "") { File(this) }

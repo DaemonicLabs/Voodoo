@@ -13,7 +13,7 @@ import java.io.File
 object ServerPack : AbstractPack() {
     override val label = "Server SKPack"
 
-    override suspend fun download(
+    override suspend fun pack(
         modpack: LockPack,
         folder: File,
         target: String?,

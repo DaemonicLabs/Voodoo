@@ -42,7 +42,6 @@ data class LockPack(
     @Optional var localDir: String = "local",
     @Optional var sourceDir: String = "src", // id, //"src-$id",
     @Optional
-    @Serializable(with = ExtendedFeaturePattern.Companion::class)
     val features: List<ExtendedFeaturePattern> = emptyList()
 ) {
     @Serializer(forClass = LockPack::class)

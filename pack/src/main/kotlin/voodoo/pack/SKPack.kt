@@ -12,7 +12,7 @@ import kotlinx.serialization.json.JSON
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
 import voodoo.pack.sk.SKLocation
-import voodoo.pack.sk.SKModpack
+import com.skcraft.launcher.model.SKModpack
 import voodoo.pack.sk.SKPackages
 import voodoo.pack.sk.SKWorkspace
 import voodoo.pack.sk.SkPackageFragment
@@ -33,7 +33,7 @@ object SKPack : AbstractPack() {
 
     override val label = "SK Packer"
 
-    override suspend fun download(
+    override suspend fun pack(
         modpack: LockPack,
         folder: File,
         target: String?,

@@ -3,6 +3,7 @@ import org.gradle.api.publish.maven.internal.publication.MavenPublicationInterna
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import java.io.FilenameFilter
 
 plugins {
     kotlin("jvm") version Versions.kotlin
@@ -63,9 +64,13 @@ allprojects {
             plugin("org.jmailen.kotlinter")
         }
 
-        configure<KotlinJvmProjectExtension> {
+
+        kotlin {
             experimental.coroutines = Coroutines.ENABLE
         }
+//        configure<KotlinJvmProjectExtension> {
+//            experimental.coroutines = Coroutines.ENABLE
+//        }
 
         tasks.withType<KotlinCompile> {
             kotlinOptions {
@@ -206,9 +211,10 @@ allprojects {
     }
 }
 
-val genSrc = rootDir.resolve(".voodoo")
+val genSrc = rootDir.resolve("samples").resolve(".voodoo")
+val packs = rootDir.resolve("samples").resolve("packs")
 kotlin.sourceSets.maybeCreate("test").kotlin.apply {
-    srcDirs(rootDir.resolve("samples"))
+    srcDirs(packs)
     srcDirs(genSrc)
 }
 idea {
@@ -219,7 +225,7 @@ idea {
 
 val poet = task<JavaExec>("poet") {
     main = "voodoo.PoetKt"
-    args = listOf(genSrc.path)
+    args = listOf(genSrc.parentFile.path, genSrc.path)
     classpath = project(":poet").sourceSets["main"].runtimeClasspath
 
     group = "build"
@@ -230,8 +236,23 @@ val compileTestKotlin by tasks.getting(KotlinCompile::class) {
     dependsOn(poet)
 }
 
+sourceSets {
+    val runtimeClasspath = maybeCreate("test").runtimeClasspath
+    packs
+        .listFiles(FilenameFilter { _, name -> name.endsWith(".kt") })
+        .forEach { sourceFile ->
+            val name = sourceFile.nameWithoutExtension
+            task<JavaExec>(name.toLowerCase()) {
+                workingDir = rootDir.resolve("samples").apply { mkdirs() }
+                classpath = runtimeClasspath
+                main = "${name.capitalize()}Kt"
+                description = name
+                group = "voodooo"
+            }
+        }
+}
+
 // SPEK
-val spek_version: String by project
 
 repositories {
     maven { setUrl("https://dl.bintray.com/spekframework/spek-dev") }
