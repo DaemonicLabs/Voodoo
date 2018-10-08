@@ -46,8 +46,8 @@ publishing {
             groupId = "moe.nikky.voodoo${Env.branch}"
         }
         maybeCreate("voodooPoetPluginMarkerMaven", MavenPublication::class.java).apply {
-            val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "" } ?: "-dev"
-            version = "$major.$minor.$patch$versionSuffix"
+            val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "SNAPSHOT" } ?: "dev"
+            version = "$major.$minor.$patch-$versionSuffix"
         }
     }
 }
