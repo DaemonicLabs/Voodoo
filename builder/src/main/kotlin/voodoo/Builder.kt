@@ -33,14 +33,6 @@ object Builder : KLogging() {
         parser.force()
 
         arguments.run {
-            targetFolder.walkTopDown().asSequence()
-                .filter {
-                    it.isFile && it.name.endsWith(".lock.hjson")
-                }
-                .forEach {
-                    it.delete()
-                }
-
             modpack.entrySet.forEach { entry ->
                 logger.info("id: ${entry.id} entry: $entry")
             }
