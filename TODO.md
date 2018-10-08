@@ -4,6 +4,9 @@ use html-dsl in .kts files
 maybe css-dsl
 search for markdown-dsl
 
+copy generated files into github pages docs folder
+or other targets
+
 <s>
 https://github.com/korlibs/korte
 
@@ -11,34 +14,26 @@ https://github.com/korlibs/korte
 - markdown or html -> user choice
 </s>
 
+# updateall
+
+formalize behaviour
+
+- update all
+- update selected entries
+
 # generate gradle setup
 
 requires testing the gradle setup before generating it
 
 - create framework
 - add pack
-- generate curse files ?
 
-- discover gradle tasks from files
 - update kscript annotations/header
-- update gradle scripts
 
 # deprecate flat entries
 
 entries are flattened fast enough from the nested format, thee is no reason for a multi step process anymore
 keep flat entries on disk for debugging purposes only
-
-# cursemods generated constants / enum
-
-https://github.com/square/kotlinpoet
-
-generate 
-```kotlin
-enum class CurseMods(id: Int) {
-    SomeMod(1234),
-    OtherMod(6543)
-}
-```
 
 # curse import -> kotlinpoet ?
 
@@ -51,7 +46,7 @@ generate the NestedPack
 # config tweaks
 
 move more deployment options into the modpack configuration
-exampeles:
+examples:
  - skcraft
  - multimc
  - curse
@@ -68,7 +63,6 @@ options:
   
   
 sort out windows file locking issues
-
 
 # misc
 

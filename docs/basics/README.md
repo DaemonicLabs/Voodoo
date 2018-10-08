@@ -10,7 +10,8 @@ assuming you have a `.kt` framework file set up
 you should have a kotlin file with content similar to
 ```kotlin
 fun main(args: Array<String>) = withDefaultMain(
-    arguments = args
+    arguments = args,
+    root = Constants.rootDir
 ) {
     NestedPack(
         id = "mypack",

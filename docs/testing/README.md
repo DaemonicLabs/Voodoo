@@ -7,9 +7,6 @@
 assuming you have a `.kt` file and `.lock.hjson` ready to use from
 [Building](../building)
 
-gradle and kscript run configurations were covered in [Building](../building) 
-in the rest of the guide i will mainly use the gradle javaExec task
-
 ## MultiMC
 
 Disclaimer: this functionality is not supported by the MultiMC devs, so do not

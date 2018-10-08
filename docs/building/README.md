@@ -7,42 +7,13 @@
 assuming you have a `.kt` file ready to use from
 [Basics](../basics)
 
-## Building
+## Building with gradle
 
-### kscript
-```bash
-# invoking kscript directly
-kscript awesomepack.kt build
-```
-```bash
-# with kscript in the shebang this is possible
-./awesomepack.kt build
-```
+the voodoo plugin will detect any `*.kt` files in the configured pack folder
+and generate gradle tasks for them  
+`awesomepack.kt` woud generate the task name `awesomepack` it is always lowercase
 
-### gradle
-
-#### with application plugin
-
-```kotlin
-application {
-    mainClassName = "awesomepackKt"
-}
-```
-can be executed via
-```bash
-./gradlew run --args "build"
-```
-
-#### with separate JavaExec task
-```kotlin
-task<JavaExec>("awesomepack") {
-    classpath = sourceSets["main"].runtimeClasspath
-    main = "awesomepackKt"
-    this.description = "Awesome pack"
-    this.group = "application"
-}
-```
-can be executed via
+it can be executed via
 
 ```bash
 ./gradlew awesomepack --args "build"

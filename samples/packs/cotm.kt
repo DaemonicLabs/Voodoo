@@ -1,16 +1,3 @@
-#!/usr/bin/env kscript
-@file:Include("../.voodoo/Mod.kt")
-@file:Include("../.voodoo/TexturePack.kt")
-@file:Include("../.voodoo/Forge.kt")
-@file:DependsOn("moe.nikky.voodoo:dsl:0.4.0-SNAPSHOT") // for testing from local maven
-@file:DependsOn("ch.qos.logback:logback-classic:1.2.3")
-@file:MavenRepository("kotlinx", "https://kotlin.bintray.com/kotlinx")
-// @file:MavenRepository("elytradev", "https://repo.elytradev.com")
-@file:KotlinOpts("-J-Xmx5g")
-@file:KotlinOpts("-J-server")
-
-//COMPILER_OPTS -jvm-target 1.8 -J-Xmx5g
-
 /* ktlint-disable no-wildcard-imports */
 import com.skcraft.launcher.model.modpack.Recommendation
 import voodoo.*
