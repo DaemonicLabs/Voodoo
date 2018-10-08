@@ -71,6 +71,10 @@ open class VoodooPlugin : Plugin<Project> {
                 }
             }
 
+            task("voodooVersion") {
+                println(PoetConstants.FULL_VERSION)
+            }
+
             extensions.configure<SourceSetContainer> {
                 // TODO discover all pack root locations, register as resource folder
 //                val mainRessources = maybeCreate("main").resources
