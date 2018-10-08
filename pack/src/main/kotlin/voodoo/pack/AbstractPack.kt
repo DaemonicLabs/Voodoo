@@ -13,7 +13,7 @@ import java.io.File
 abstract class AbstractPack : KLogging() {
     abstract val label: String
 
-    abstract suspend fun download(
+    abstract suspend fun pack(
         modpack: LockPack,
         folder: File,
         target: String?,

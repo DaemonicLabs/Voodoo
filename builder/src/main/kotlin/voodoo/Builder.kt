@@ -46,7 +46,8 @@ object Builder : KLogging() {
             }
 
             try {
-                modpack.resolve(
+                resolve(
+                    modpack,
                     targetFolder,
                     updateAll = updateAll,
                     updateDependencies = updateDependencies,

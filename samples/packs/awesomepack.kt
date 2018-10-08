@@ -6,9 +6,9 @@
 // @file:MavenRepository("elytradev", "https://repo.elytradev.com")
 @file:KotlinOpts("-J-Xmx5g")
 @file:KotlinOpts("-J-server")
-@file:Include("../.gen/Mod.kt")
-@file:Include("../.gen/TexturePack.kt")
-@file:Include("../.gen/Forge.kt")
+@file:Include("../.voodoo/Mod.kt")
+@file:Include("../.voodoo/TexturePack.kt")
+@file:Include("../.voodoo/Forge.kt")
 
 //COMPILER_OPTS -jvm-target 1.8
 
@@ -25,7 +25,7 @@ import voodoo.provider.LocalProvider
 import java.io.File
 
 fun main(args: Array<String>) = withDefaultMain(
-    root = File("."),
+    root = Constants.rootDir.resolve("run").resolve("awesomepack"),
     arguments = args
 ) {
     NestedPack(

@@ -12,6 +12,9 @@ fi
 
 pack=$1
 
+[ ! -e samples ] && mkdir samples
+cd samples
+
 [ ! -e run ] && mkdir run
 cd run
 

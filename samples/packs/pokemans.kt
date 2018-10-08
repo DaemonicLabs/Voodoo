@@ -6,9 +6,10 @@
 @file:MavenRepository("elytradev", "https://repo.elytradev.com")
 @file:KotlinOpts("-J-Xmx5g")
 @file:KotlinOpts("-J-server")
-@file:Include("../gen/src/Mod.kt")
-@file:Include("../gen/src/TexturePack.kt")
-@file:Include("../gen/src/Forge.kt")
+@file:Include("../.voodoo/Mod.kt")
+@file:Include("../.voodoo/TexturePack.kt")
+@file:Include("../.voodoo/Forge.kt")
+@file:Include("../.voodoo/Comstamts.kt")
 
 // COMPILER_OPTS -jvm-target 1.8
 
@@ -23,7 +24,10 @@ import voodoo.provider.JenkinsProvider
 import voodoo.withDefaultMain
 import java.io.File
 
-fun main(args: Array<String>) = withDefaultMain(root = File("."), arguments = args) {
+fun main(args: Array<String>) = withDefaultMain(
+    root = Constants.rootDir.resolve("run").resolve("pokemans"),
+    arguments = args
+) {
     NestedPack(
         id = "pokemans",
         title = "Pokemans Reloaded",

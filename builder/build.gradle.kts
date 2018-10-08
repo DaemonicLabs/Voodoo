@@ -1,4 +1,4 @@
-
+import org.jetbrains.kotlin.gradle.dsl.Coroutines
 
 plugins {
     application

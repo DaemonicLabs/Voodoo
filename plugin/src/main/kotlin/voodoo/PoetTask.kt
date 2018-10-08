@@ -19,7 +19,6 @@ open class PoetTask : DefaultTask() {
     @TaskAction
     fun runPoet() {
         targetFolder.mkdirs()
-        poet(root = targetFolder)
-
+        poet(rootDir = project.rootDir, root = targetFolder)
     }
 }

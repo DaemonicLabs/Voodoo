@@ -1,20 +1,15 @@
 package voodoo.builder
 
+import com.skcraft.launcher.model.ExtendedFeaturePattern
 import com.skcraft.launcher.model.modpack.Feature
 import kotlinx.coroutines.experimental.CoroutineName
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.channels.consume
 import kotlinx.coroutines.experimental.coroutineScope
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.joinAll
 import kotlinx.coroutines.experimental.launch
 import mu.KotlinLogging
 import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
-import com.skcraft.launcher.model.ExtendedFeaturePattern
 import voodoo.memoize
 import voodoo.provider.Providers
 import voodoo.util.pool
@@ -72,6 +67,9 @@ private fun ModPack.resolveFeatureDependencies(entry: Entry, defaultName: String
     logger.debug("processed ${entry.id}")
 }
 
+/**
+ * iterates through all entries and set
+ */
 private fun processFeature(modPack: ModPack, feature: ExtendedFeaturePattern) {
     logger.info("processing feature: $feature")
     var processedEntries = emptyList<String>()
@@ -102,19 +100,20 @@ private fun processFeature(modPack: ModPack, feature: ExtendedFeaturePattern) {
     }
 }
 
-suspend fun ModPack.resolve(
+suspend fun resolve(
+    modPack: ModPack,
     folder: File,
     updateAll: Boolean = false,
     updateDependencies: Boolean = false,
     updateEntries: List<String> = listOf()
 ) {
 //    this.loadEntries(folder)
-    this.loadLockEntries(folder)
+    modPack.loadLockEntries(folder)
 
-    val srcDir = folder.resolve(sourceDir)
+    val srcDir = folder.resolve(modPack.sourceDir)
 
     if (updateAll) {
-        lockEntrySet.clear()
+        modPack.lockEntrySet.clear()
         // delete all lockfiles
         folder.walkTopDown().asSequence()
             .filter {
@@ -125,42 +124,42 @@ suspend fun ModPack.resolve(
             }
     } else {
         for (entryId in updateEntries) {
-            val entry = findEntryById(entryId)
+            val entry = modPack.findEntryById(entryId)
             if (entry == null) {
                 logger.error("entry $entryId not found")
                 exitProcess(-1)
             }
-            lockEntrySet.find { it.id == entryId }?.let {
+            modPack.lockEntrySet.find { it.id == entryId }?.let {
                 it.serialFile.delete()
-                lockEntrySet.remove(it)
+                modPack.lockEntrySet.remove(it)
             }
         }
     }
 
     if (updateDependencies || updateAll) {
         // remove all transient entries
-        lockEntrySet.removeIf { (id, _) ->
-            findEntryById(id)?.transient ?: true
+        modPack.lockEntrySet.removeIf { (id, _) ->
+            modPack.findEntryById(id)?.transient ?: true
         }
     }
 
     // recalculate all dependencies
-    var unresolved: Set<Entry> = entrySet.toSet()
+    var unresolved: Set<Entry> = modPack.entrySet.toSet()
     val resolved: MutableSet<String> = Collections.synchronizedSet(mutableSetOf<String>())
 //    val accumulatorContext = newSingleThreadContext("AccumulatorContext")
-    coroutineScope {
-        do {
-            val newEntriesChannel = Channel<Pair<Entry, String>>(Channel.UNLIMITED)
 
-            logger.info("unresolved: ${unresolved.map { it.id }}")
+    do {
+        val newEntriesChannel = Channel<Pair<Entry, String>>(Channel.UNLIMITED)
 
-            val jobs = mutableListOf<Job>()
+        logger.info("unresolved: ${unresolved.map { it.id }}")
+
+        coroutineScope {
             for (entry in unresolved) {
-                jobs += launch(context = pool + CoroutineName("job-${entry.id}")) {
+                launch(context = pool + CoroutineName("job-${entry.id}")) {
                     logger.info("resolving: ${entry.id}")
                     val provider = Providers[entry.provider]
 
-                    val lockEntry = provider.resolve(entry, this@resolve.mcVersion, newEntriesChannel)
+                    val lockEntry = provider.resolve(entry, modPack.mcVersion, newEntriesChannel)
                     logger.debug("received locked entry: $lockEntry")
 
                     logger.debug("validating: $lockEntry")
@@ -169,7 +168,7 @@ suspend fun ModPack.resolve(
                     }
 
                     logger.debug("trying to merge entry")
-                    val actualLockEntry = addOrMerge(lockEntry) { old, new ->
+                    val actualLockEntry = modPack.addOrMerge(lockEntry) { old, new ->
                         old ?: new
                     }
                     logger.debug("merged entry: $actualLockEntry")
@@ -187,81 +186,80 @@ suspend fun ModPack.resolve(
                     resolved += entry.id
 
                     logger.debug("resolved: $resolved\n")
-                    logger.debug("unresolved: ${entrySet.map { entry -> entry.id }.filter { id -> !resolved.contains(id) }}\n")
+                    logger.debug("unresolved: ${modPack.entrySet.asSequence().map { entry -> entry.id }.filter { id ->
+                        !resolved.contains(
+                            id
+                        )
+                    }.toList()}\n")
                 }.also {
                     logger.info("started job resolve ${entry.id}")
-                    delay(100)
+                }
+            }
+        }
+
+        newEntriesChannel.close()
+        val newEntries = mutableSetOf<Entry>()
+        loop@ for ((entry, path) in newEntriesChannel) {
+            logger.info("channel received: ${entry.id}")
+
+            when {
+                entry.id in resolved -> {
+                    logger.info("entry already resolved ${entry.id}")
+                    continue@loop
+                }
+                modPack.entrySet.any { it.id == entry.id } -> {
+                    logger.info("entry already added ${entry.id}")
+                    continue@loop
+                }
+                newEntries.any { it.id == entry.id } -> {
+                    logger.info("entry already in queue ${entry.id}")
+                    continue@loop
                 }
             }
 
-            val newEntries = async(context = pool) {
-                val accumultator = mutableSetOf<Entry>()
-                for ((entry, path) in newEntriesChannel) {
-                    logger.info("channel received: ${entry.id}")
+            modPack.addEntry(entry, dependency = true)
+            logger.info { "added entry ${entry.id}" }
+            newEntries += entry
+        }
+        logger.info("added last step: ${newEntries.map { it.id }}")
 
-                    if (entry.id in resolved) {
-                        logger.info("entry already resolved ${entry.id}")
-                        continue
-                    }
-                    if (this@resolve.entrySet.any { it.id == entry.id }) {
-                        logger.info("entry already added ${entry.id}")
-                        continue
-                    }
-                    if (accumultator.any { it.id == entry.id }) {
-                        logger.info("entry already in queue ${entry.id}")
-                        continue
-                    }
+        logger.info("resolved last step: ${unresolved.map { it.id }}")
 
-                    this@resolve.addEntry(entry, dependency = true)
-                    logger.info { "added entry ${entry.id}" }
-                    accumultator += entry
-                }
-                accumultator
-            }
+        unresolved = modPack.entrySet.asSequence().filter { !resolved.contains(it.id) }.toSet()
+    } while (unresolved.isNotEmpty())
 
-            newEntriesChannel.consume {
-                jobs.joinAll()
-            }
-
-            logger.info("added last step: ${newEntries.await().map { it.id }}")
-            logger.info("resolved last step: ${unresolved.map { it.id }}")
-
-//        unresolved = newEntries.await()
-            unresolved = entrySet.asSequence().filter { !resolved.contains(it.id) }.toSet()
-        } while (unresolved.isNotEmpty())
-    }
-    val unresolvedIDs = resolved - this.entrySet.map { it.id }
+    val unresolvedIDs = resolved - modPack.entrySet.map { it.id }
     logger.info("unresolved ids: $unresolvedIDs")
-    logger.info("resolved ids: ${lockEntrySet.map { it.id }}")
+    logger.info("resolved ids: ${modPack.lockEntrySet.map { it.id }}")
 
-    features.clear()
+    modPack.features.clear()
 
-    entrySet.filter {
-        findLockEntryById(it.id) == null
-    }.run {
-        if (isNotEmpty()) throw IllegalStateException("unresolved entries: $this")
+    modPack.entrySet.filter {
+        modPack.findLockEntryById(it.id) == null
+    }.takeUnless { it.isEmpty() }?.let {
+        throw IllegalStateException("unresolved entries: $it")
     }
 
-    for (entry in entrySet) {
-        this.resolveFeatureDependencies(
-            entry, findLockEntryById(entry.id)?.name
+    for (entry in modPack.entrySet) {
+        modPack.resolveFeatureDependencies(
+            entry, modPack.findLockEntryById(entry.id)?.name
                 ?: throw NullPointerException("cannot find lockentry for ${entry.id}")
         )
     }
 
     // resolve features
-    for (feature in features) {
+    for (feature in modPack.features) {
         logger.info("processed feature ${feature.feature.name}")
         for (id in feature.entries) {
             logger.info("processing feature entry $id")
-            val dependencies = this.getDependencies(id)
+            val dependencies = modPack.getDependencies(id)
             feature.entries += dependencies.asSequence().filter {
                 logger.debug("testing ${it.id}")
                 it.optional && !feature.entries.contains(it.id)
             }.map { it.id }
         }
         logger.info("build entry: ${feature.entries.first()}")
-        val mainEntry = findEntryById(feature.entries.first())!!
+        val mainEntry = modPack.findEntryById(feature.entries.first())!!
         feature.feature.description = mainEntry.description
 
         logger.info("processed feature $feature")

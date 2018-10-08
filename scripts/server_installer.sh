@@ -14,6 +14,9 @@ fi
 
 $DIR/scripts/server.sh $pack
 
+[ ! -e samples ] && mkdir samples
+cd samples
+
 [ ! -e run ] && mkdir run
 cd run
 

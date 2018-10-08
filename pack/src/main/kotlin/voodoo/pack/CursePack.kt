@@ -39,7 +39,7 @@ import java.io.File
 object CursePack : AbstractPack() {
     override val label = "SK Packer"
 
-    override suspend fun download(
+    override suspend fun pack(
         modpack: LockPack,
         folder: File,
         target: String?,

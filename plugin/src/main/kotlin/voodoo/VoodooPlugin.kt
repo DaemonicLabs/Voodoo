@@ -82,7 +82,7 @@ open class VoodooPlugin : Plugin<Project> {
                         val name = sourceFile.nameWithoutExtension
                         task<JavaExec>(name.toLowerCase()) {
                             classpath = runtimeClasspath
-                            main = "${name}Kt"
+                            main = "${name.capitalize()}Kt"
                             this.description = name
                             this.group = "voodooo"
                         }

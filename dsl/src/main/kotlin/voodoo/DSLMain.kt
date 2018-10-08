@@ -16,9 +16,10 @@ class MainEnv(
 
 fun withDefaultMain(
     arguments: Array<String>,
-    root: File = File(System.getProperty("user.dir")),
-    block: MainEnv.() -> NestedPack = { throw IllegalStateException("no nested pack provided") }
+    root: File, // = File(System.getProperty("user.dir")),
+    block: MainEnv.() -> NestedPack // = { throw IllegalStateException("no nested pack provided") }
 ) {
+    // TODO: set system property "user.dir" to root
 
     // classloader switching necessary for kscript
     class XY

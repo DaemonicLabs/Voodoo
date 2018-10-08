@@ -10,7 +10,7 @@ import kotlin.system.exitProcess
 object MMCPack : AbstractPack() {
     override val label = "MultiMC Packer"
 
-    override suspend fun download(
+    override suspend fun pack(
         modpack: LockPack,
         folder: File,
         target: String?,

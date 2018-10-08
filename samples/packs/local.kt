@@ -6,9 +6,9 @@
 // @file:MavenRepository("elytradev", "https://repo.elytradev.com")
 @file:KotlinOpts("-J-Xmx5g")
 @file:KotlinOpts("-J-server")
-@file:Include("../.gen/Mod.kt")
-@file:Include("../.gen/TexturePack.kt")
-@file:Include("../.gen/Forge.kt")
+@file:Include("../.voodoo/Mod.kt")
+@file:Include("../.voodoo/TexturePack.kt")
+@file:Include("../.voodoo/Forge.kt")
 // COMPILER_OPTS -jvm-target 1.8
 
 /* ktlint-disable no-wildcard-imports */
@@ -19,19 +19,18 @@ import java.io.File
 /* ktlint-enable no-wildcard-imports */
 
 fun main(args: Array<String>) = withDefaultMain(
-    root = File("."),
+    root = Constants.rootDir.resolve("run").resolve("local"),
     arguments = args
 ) {
     NestedPack(
-        id = "cursefail",
+        id = "local",
         mcVersion = "1.12.2",
-        root = rootEntry(CurseProvider) {
+        localDir = "local",
+        root = rootEntry(LocalProvider) {
             list {
-                id(Mod.electroblobsWizardry)
-                id(Mod.botania)
-                id(Mod.betterBuildersWands)
-                id(Mod.bibliocraft)
-                id(Mod.toastControl)
+                id("correlated") {
+                    fileSrc = "Correlated-1.12.2-2.1.125.jar"
+                }
             }
         }
     )
