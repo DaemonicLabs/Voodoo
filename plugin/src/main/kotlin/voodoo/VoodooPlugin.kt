@@ -88,7 +88,7 @@ open class VoodooPlugin : Plugin<Project> {
                     .listFiles(FilenameFilter { _, name -> name.endsWith(".kt") })
                     .forEach { sourceFile ->
                         val name = sourceFile.nameWithoutExtension
-                        task<JavaExec>(name.toLowerCase()) {
+                        task<VoodooTask>(name.toLowerCase()) {
                             classpath = runtimeClasspath
                             main = "${name.capitalize()}Kt"
                             this.description = name
