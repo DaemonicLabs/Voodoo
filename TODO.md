@@ -14,12 +14,9 @@ https://github.com/korlibs/korte
 - markdown or html -> user choice
 </s>
 
-# updateall
-
-formalize behaviour
-
-- update all
-- update selected entries
+# condense module graph
+improve buildspeed and publish speed in dev
+merge builder & importer
 
 # generate gradle setup
 

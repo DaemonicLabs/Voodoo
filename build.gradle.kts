@@ -34,7 +34,6 @@ val runnableProjects = listOf(
 )
 val noConstants = listOf(
     project("skcraft"),
-    project("skcraft:skcraft-builder"),
     project("fuel-kotlinx-serialization")
 )
 
