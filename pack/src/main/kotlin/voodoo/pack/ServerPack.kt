@@ -3,7 +3,6 @@ package voodoo.pack
 import voodoo.data.lock.LockPack
 import voodoo.util.jenkins.downloadVoodoo
 import voodoo.util.toJson
-import java.io.File
 
 /**
  * Created by nikky on 06/05/18.
@@ -69,7 +68,8 @@ object ServerPack : AbstractPack() {
         packFile.writeText(modpack.toJson)
 
         logger.info("packaging installer jar")
-        val installer = downloadVoodoo(component = "server-installer", bootstrap = false, binariesDir = directories.cacheHome)
+        val installer =
+            downloadVoodoo(component = "server-installer", bootstrap = false, binariesDir = directories.cacheHome)
 
         val serverInstaller = serverDir.resolve("server-installer.jar")
         installer.copyTo(serverInstaller)

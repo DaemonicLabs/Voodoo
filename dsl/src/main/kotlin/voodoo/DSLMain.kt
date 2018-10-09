@@ -5,39 +5,14 @@ import kotlinx.coroutines.experimental.runBlocking
 import mu.KotlinLogging
 import voodoo.data.nested.NestedPack
 import voodoo.dsl.DslConstants.FULL_VERSION
-import voodoo.tome.TomeEnv
 import java.io.File
 import kotlin.system.exitProcess
-import ModpackWrapper
 import voodoo.data.lock.LockPack
 
 private val logger = KotlinLogging.logger {}
 
-class MainEnv(
-    val rootDir: File,
-    val tomeEnv: TomeEnv = TomeEnv(rootDir)
-) {
-    fun tome(configureTome: TomeEnv.() -> Unit) {
-        tomeEnv.configureTome()
-    }
-
-    fun nestedPack(id: String, mcVersion: String, packBuilder: ModpackWrapper.() -> Unit): NestedPack {
-        val pack = NestedPack(
-            rootDir = rootDir,
-            id = id,
-            mcVersion = mcVersion
-        )
-        val wrapper = ModpackWrapper(pack)
-        wrapper.packBuilder()
-        return pack
-    }
-
-    @Deprecated("replaced with rootDir", ReplaceWith("rootDir"))
-    val root: File = rootDir
-}
-
 fun withDefaultMain(
-    arguments: Array<String>,
+    arguments: Array<out String>,
     root: File, // = File(System.getProperty("user.dir")),
     configureMain: MainEnv.() -> NestedPack // = { throw IllegalStateException("no nested pack provided") }
 ) {
@@ -118,7 +93,7 @@ fun withDefaultMain(
     }
 }
 
-private fun Array<String>.chunkBy(separator: String = "-"): List<Array<String>> {
+private fun Array<out String>.chunkBy(separator: String = "-"): List<Array<String>> {
     val result: MutableList<MutableList<String>> = mutableListOf(mutableListOf())
     this.forEach {
         if (it == separator)

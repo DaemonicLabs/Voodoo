@@ -21,9 +21,7 @@ fun poet(
     root: File = rootDir.resolve(".voodoo"),
     mods: String = "Mod",
     texturePacks: String = "TexturePack",
-    slugSanitizer: (String) -> String = { slug ->
-        slug.split('-').joinToString("") { it.capitalize() }.decapitalize()
-    }
+    slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
 ) {
     class XY
     println("classloader is of type:" + Thread.currentThread().contextClassLoader)
@@ -53,6 +51,12 @@ fun poet(
 }
 
 object Poet : KLogging() {
+    fun defaultSlugSanitizer(slug: String) = slug
+        .split('-')
+        .joinToString("") {
+            it.capitalize()
+        }.decapitalize()
+
     internal fun generate(
         name: String,
         slugIdMap: Map<String, ProjectID>,
@@ -84,7 +88,7 @@ object Poet : KLogging() {
         folder: File
     ) {
         val forgeData = runBlocking {
-            ForgeUtil.getForgeData()
+            ForgeUtil.deferredData.await()
         }
 
         fun buildProperty(identifier: String, build: Int): PropertySpec {
@@ -151,12 +155,12 @@ object Poet : KLogging() {
         logger.info("written to $targetFile")
     }
 
-    internal suspend fun requestMods(): Map<String, ProjectID> =
+    suspend fun requestMods(): Map<String, ProjectID> =
         CurseClient.graphQLRequest("gameID: 432, section: MC_ADDONS").map { (id, slug) ->
             slug to ProjectID(id)
         }.toMap()
 
-    internal suspend fun requestResourcePacks(): Map<String, ProjectID> =
+    suspend fun requestResourcePacks(): Map<String, ProjectID> =
         CurseClient.graphQLRequest("gameID: 432, section: TEXTURE_PACKS").map { (id, slug) ->
             slug to ProjectID(id)
         }.toMap()

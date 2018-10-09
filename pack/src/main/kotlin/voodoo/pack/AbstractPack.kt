@@ -3,7 +3,6 @@ package voodoo.pack
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.util.Directories
-import java.io.File
 
 /**
  * Created by nikky on 30/03/18.

@@ -31,7 +31,9 @@ data class NestedEntry(
     var side: Side = Side.BOTH,
     var websiteUrl: String = "",
 //        var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+    @Deprecated("waiting to be redone")
     var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+    @Deprecated("waiting to be redone")
     var replaceDependencies: Map<String, String> = mapOf(),
     var packageType: PackageType = PackageType.MOD,
     var transient: Boolean = false, // this entry got added as dependency for something else
@@ -77,7 +79,7 @@ data class NestedEntry(
             } else
                 ids += it.id
         }
-        return this.entries.filter { it.enabled }.map { it ->
+        return this.entries.asSequence().filter { it.enabled }.map { it ->
             Entry(
                 it.provider,
                 id = it.id,
@@ -90,12 +92,12 @@ data class NestedEntry(
                 websiteUrl = it.websiteUrl,
                 dependencies = it.dependencies,
                 replaceDependencies = it.replaceDependencies,
-//                optional = it.optional,
+    //                optional = it.optional,
                 packageType = it.packageType,
                 transient = it.transient,
                 version = it.version,
                 fileName = it.fileName,
-//                fileNameRegex = it.fileNameRegex,
+    //                fileNameRegex = it.fileNameRegex,
                 validMcVersions = it.validMcVersions,
                 // CURSE
                 curseMetaUrl = it.curseMetaUrl,
@@ -120,7 +122,7 @@ data class NestedEntry(
                     fileNameRegex = it
                 }
             }
-        }
+        }.toList()
     }
 
     private suspend fun flatten(indent: String, parentFile: File? = null) {

@@ -1,0 +1,319 @@
+package voodoo
+
+import com.skcraft.launcher.model.launcher.LaunchModifier
+import com.skcraft.launcher.model.modpack.Feature
+import com.squareup.kotlinpoet.ClassName
+import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
+import com.squareup.kotlinpoet.KModifier
+import com.squareup.kotlinpoet.asClassName
+import kotlinx.coroutines.experimental.runBlocking
+import mu.KLogging
+import voodoo.curse.CurseClient
+import voodoo.data.UserFiles
+import voodoo.data.curse.CurseConstants
+import voodoo.data.curse.FileID
+import voodoo.data.nested.NestedEntry
+import voodoo.data.nested.NestedPack
+import voodoo.provider.CurseProvider
+import voodoo.provider.DirectProvider
+import voodoo.provider.JenkinsProvider
+import voodoo.provider.LocalProvider
+import voodoo.provider.Providers
+import voodoo.provider.UpdateJsonProvider
+import java.io.File
+
+data class ModBundle(
+    val identifier: String,
+    val properties: List<(CodeBlock.Builder) -> Unit> = listOf()
+)
+
+object NewModpack : KLogging() {
+    fun CodeBlock.Builder.addGroup(buildGroup: (group: CodeBlock.Builder) -> Unit): CodeBlock.Builder {
+        beginControlFlow("group")
+        buildGroup(this)
+        return endControlFlow()
+    }
+
+    fun CodeBlock.Builder.addList(buildList: (group: CodeBlock.Builder) -> Unit) {
+        beginControlFlow(".list")
+        buildList(this)
+        endControlFlow()
+    }
+
+    fun CodeBlock.Builder.withProvider(buildGroup: (group: CodeBlock.Builder) -> Unit) {
+        beginControlFlow("group")
+        buildGroup(this)
+        endControlFlow()
+    }
+
+    fun CodeBlock.Builder.controlFlow(
+        controlFlow: String,
+        vararg args: Any?,
+        buildFlow: (controlFlow: CodeBlock.Builder) -> Unit
+    ): CodeBlock.Builder =
+        beginControlFlow(controlFlow, *args)
+            .apply(buildFlow)
+            .endControlFlow()
+
+    fun CodeBlock.Builder.entry(entry: NestedEntry, default: NestedEntry, root: Boolean = false) {
+        val provider = Providers[entry.provider]
+        val codeBlock = CodeBlock.builder().apply {
+            entry.name.takeIf { it != default.name }?.let {
+                addStatement("name = %S", it)
+            }
+            entry.folder.takeIf { it != default.folder }?.let {
+                addStatement("folder = %S", it)
+            }
+            entry.comment.takeIf { it != default.comment }?.let {
+                addStatement("comment = %S", it)
+            }
+            entry.description.takeIf { it != default.description }?.let {
+                addStatement("description = %S", it)
+            }
+            entry.feature.takeIf { it != default.feature }?.let { feature ->
+                val default = Feature()
+                controlFlow("feature") { featureBuilder ->
+                    feature.name.takeIf { it != default.name }?.let {
+                        featureBuilder.addStatement("name = %S", it)
+                    }
+                    feature.selected.takeIf { it != default.selected }?.let {
+                        featureBuilder.addStatement("selected = %L", it)
+                    }
+                    feature.recommendation.takeIf { it != default.recommendation }?.let {
+                        featureBuilder.addStatement("recommendation = %L", it)
+                    }
+                }
+            }
+            entry.side.takeIf { it != default.side }?.let {
+                addStatement("side = %L", it)
+            }
+            entry.packageType.takeIf { it != default.packageType }?.let {
+                addStatement("packageType = %L", it)
+            }
+            entry.transient.takeIf { it != default.transient }?.let {
+                addStatement("transient = %L", it)
+            }
+            entry.version.takeIf { it != default.version }?.let {
+                addStatement("version = %S", it)
+            }
+            entry.fileName.takeIf { it != default.fileName }?.let {
+                addStatement("fileName = %S", it)
+            }
+            entry.fileNameRegex.takeIf { it != default.fileNameRegex }?.let {
+                addStatement("fileNameRegex = %S", it)
+            }
+            entry.validMcVersions.takeIf { it != default.validMcVersions }?.let { validMcVersions ->
+                addStatement("validMcVersions = setOf(%L)", validMcVersions.joinToString { """"$it"""" })
+            }
+            entry.enabled.takeIf { it != default.enabled }?.let {
+                addStatement("enabled = %L", it)
+            }
+            when (provider) {
+                is CurseProvider -> {
+                    entry.curseMetaUrl.takeIf { it != default.curseMetaUrl }?.let {
+                        addStatement("curseMetaUrl = %S", it)
+                    }
+                    entry.curseReleaseTypes.takeIf { it != default.curseReleaseTypes }?.let { curseReleaseTypes ->
+                        val array = curseReleaseTypes.toTypedArray()
+                        when {
+                            curseReleaseTypes.size == 1 -> {
+                                addStatement("curseReleaseTypes = setOf(%L)", *array)
+                            }
+                            curseReleaseTypes.size == 2 -> {
+                                addStatement("curseReleaseTypes = setOf(%L, %L)", *array)
+                            }
+                            curseReleaseTypes.size == 3 -> {
+                                addStatement("curseReleaseTypes = setOf(%L, %L, %L)", *array)
+                            }
+                            else -> throw IllegalStateException("unexpected number of release types in set")
+                        }
+                    }
+                    entry.curseOptionalDependencies.takeIf { it != default.curseOptionalDependencies }?.let {
+                        addStatement("curseOptionalDependencies = %L", it)
+                    }
+//                    entry.curseProjectID.takeIf { it != default.curseProjectID }?.let {
+//                        addStatement("curseProjectID = %T(%L)", ProjectID::class.asClassName(), it.value)
+//                    }
+                    entry.curseFileID.takeIf { it != default.curseFileID }?.let {
+                        addStatement("curseFileID = %T(%L)", FileID::class.asClassName(), it.value)
+                    }
+                }
+                is DirectProvider -> {
+                    entry.url.takeIf { it != default.url }?.let {
+                        addStatement("url = %S", it)
+                    }
+                    entry.useUrlTxt.takeIf { it != default.useUrlTxt }?.let {
+                        addStatement("useUrlTxt = %L", it)
+                    }
+                }
+                is JenkinsProvider -> {
+                    entry.jenkinsUrl.takeIf { it != default.jenkinsUrl }?.let {
+                        addStatement("jenkinsUrl = %S", it)
+                    }
+                    entry.job.takeIf { it != default.job }?.let {
+                        addStatement("job = %S", it)
+                    }
+                    entry.buildNumber.takeIf { it != default.buildNumber }?.let {
+                        addStatement("buildNumber = %L", it)
+                    }
+                }
+                is LocalProvider -> {
+                    entry.fileSrc.takeIf { it != default.fileSrc }?.let {
+                        addStatement("fileSrc = %S", it)
+                    }
+                }
+                is UpdateJsonProvider -> {
+                    entry.updateJson.takeIf { it != default.updateJson }?.let {
+                        addStatement("updateJson = %S", it)
+                    }
+                    entry.updateChannel.takeIf { it != default.updateChannel }?.let {
+                        addStatement("updateChannel = %L", it)
+                    }
+                    entry.template.takeIf { it != default.template }?.let {
+                        addStatement("template = %S", it)
+                    }
+                }
+                else -> {
+                    logger.info("unknown provider: ${provider::javaClass}")
+                }
+            }
+        }.build()
+        if (!root) {
+            when {
+                entry.id != default.id -> when (provider) {
+                    is CurseProvider -> {
+                        val slug =
+                            runBlocking { CurseClient.getAddon(entry.curseProjectID, CurseConstants.PROXY_URL)!!.slug }
+                        val identifier = Poet.defaultSlugSanitizer(slug)
+                        if (codeBlock.isEmpty())
+                            addStatement("%T(Mod.$identifier)", ClassName("", "id"))
+                        else
+                            beginControlFlow("%T(Mod.$identifier)", ClassName("", "id"))
+                    }
+                    else -> {
+                        if (codeBlock.isEmpty())
+                            addStatement("%T(%S)", ClassName("", "id"))
+                        else
+                            beginControlFlow("%T(%S)", ClassName("", "id"))
+                    }
+                }
+                entry.provider != default.provider -> beginControlFlow(
+                    "%T(%T)",
+                    ClassName("", "withProvider"),
+                    provider::class.asClassName()
+                )
+                else -> beginControlFlow("%T", ClassName("", "group"))
+            }
+        }
+
+        add(codeBlock)
+
+        if (!root && codeBlock.isNotEmpty()) endControlFlow()
+
+        entry.entries.takeUnless { it.isEmpty() }?.let { entries ->
+            controlFlow("%T", ClassName("", if (root) "list" else ".list")) { listBuilder ->
+                entries.forEach { subEntry ->
+                    listBuilder.entry(subEntry, NestedEntry(entry.provider))
+                }
+            }
+        }
+    }
+
+    fun createModpack(
+        folder: File,
+        nestedPack: NestedPack
+    ) {
+        Thread.currentThread().contextClassLoader = NewModpack::class.java.classLoader
+        val mainFunCall = CodeBlock.builder()
+            .controlFlow(
+                """return %T(
+                |    root = Constants.rootDir,
+                |    arguments = args
+                |)""".trimMargin(),
+                ClassName("voodoo", "withDefaultMain")
+            ) { mainEnv ->
+                mainEnv.controlFlow(
+                    """nestedPack(
+                    |    id = %S,
+                    |    mcVersion = %S
+                    |)""".trimMargin(),
+                    nestedPack.id,
+                    nestedPack.mcVersion
+                ) { nestedBuilder ->
+                    val default = NestedPack(
+                        rootDir = nestedPack.rootDir,
+                        id = nestedPack.id,
+                        mcVersion = nestedPack.mcVersion
+                    )
+                    nestedPack.title.takeIf { it != default.title }?.let {
+                        nestedBuilder.addStatement("title = %S", it)
+                    }
+                    nestedPack.version.takeIf { it != default.version }?.let {
+                        nestedBuilder.addStatement("version = %S", it)
+                    }
+                    nestedPack.icon.takeIf { it != default.icon }?.let {
+                        nestedBuilder.addStatement("icon = rootDir.resolve(%S)", it.relativeTo(nestedPack.rootDir).path)
+                    }
+                    nestedPack.authors.takeIf { it != default.authors }?.let { authors ->
+                        nestedBuilder.addStatement("authors = listOf(%L)", authors.joinToString { """"$it"""" })
+                    }
+                    nestedPack.forge.takeIf { it != default.forge }?.let {
+                        nestedBuilder.addStatement("forge = %L", it)
+                    }
+                    nestedPack.userFiles.takeIf { it != default.userFiles }?.let { userFiles ->
+                        nestedBuilder.addStatement(
+                            """userFiles = %T(
+                            |    include = listOf(%L),
+                            |    exclude = listOf(%L)
+                            |)""".trimMargin(),
+                            UserFiles::class.asClassName(),
+                            userFiles.include.joinToString { """"$it"""" },
+                            userFiles.exclude.joinToString { """"$it"""" }
+                        )
+                    }
+                    nestedPack.launch.takeIf { it != default.launch }?.let { launch ->
+                        nestedBuilder.addStatement(
+                            """launch = %T(
+                            |    flags = listOf(%L),
+                            |)""".trimMargin(),
+                            LaunchModifier::class.asClassName(),
+                            launch.flags.joinToString { """"$it"""" }
+                        )
+                    }
+                    nestedPack.localDir.takeIf { it != default.localDir }?.let {
+                        nestedBuilder.addStatement("localDir = %S", it)
+                    }
+                    nestedPack.sourceDir.takeIf { it != default.sourceDir }?.let {
+                        nestedBuilder.addStatement("sourceDir = %S", it)
+                    }
+                    val rootEntry = nestedPack.root
+                    val provider = Providers[rootEntry.provider]
+                    nestedBuilder.controlFlow(
+                        "root = %T(%T)",
+                        ClassName("", "rootEntry"),
+                        provider::class.asClassName()
+                    ) { rootBuilder ->
+                        rootBuilder.entry(
+                            rootEntry,
+                            NestedEntry(rootEntry.provider),
+                            true
+                        )
+                    }
+                }
+            }
+            .build()
+        val mainFun = FunSpec.builder("main")
+            .addParameter("args", String::class, KModifier.VARARG)
+            .addCode(mainFunCall)
+            .build()
+        val fileSpec = FileSpec.builder("", nestedPack.id)
+            .addFunction(mainFun)
+            .build()
+        folder.mkdirs()
+        fileSpec.writeTo(folder)
+        logger.info { folder }
+        logger.info { fileSpec }
+    }
+}
