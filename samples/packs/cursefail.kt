@@ -1,17 +1,17 @@
 /* ktlint-disable no-wildcard-imports */
-import voodoo.*
-import voodoo.data.nested.*
-import voodoo.provider.*
-import java.io.File
+import voodoo.provider.CurseProvider
+import voodoo.withDefaultMain
+
 /* ktlint-enable no-wildcard-imports */
 
 fun main(args: Array<String>) = withDefaultMain(
     root = Constants.rootDir.resolve("run").resolve("cursefail"),
     arguments = args
 ) {
-    NestedPack(
+    nestedPack(
         id = "cursefail",
-        mcVersion = "1.12.2",
+        mcVersion = "1.12.2"
+    ) {
         root = rootEntry(CurseProvider) {
             list {
                 id(Mod.electroblobsWizardry)
@@ -21,5 +21,5 @@ fun main(args: Array<String>) = withDefaultMain(
                 id(Mod.toastControl)
             }
         }
-    )
+    }
 }

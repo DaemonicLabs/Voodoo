@@ -11,6 +11,7 @@ import java.io.File
  * @author Nikky
  */
 data class NestedPack(
+    private val rootDir: File,
     /**
      * unique identifier
      */
@@ -24,8 +25,8 @@ data class NestedPack(
      */
     var title: String = "",
     var version: String = "1.0",
-    var icon: File = File("icon.png"),
-    val authors: List<String> = emptyList(),
+    var icon: File = rootDir.resolve("icon.png"),
+    var authors: List<String> = emptyList(),
     var forge: Int? = null,
     var userFiles: UserFiles = UserFiles(),
     var launch: LaunchModifier = LaunchModifier(),

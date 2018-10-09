@@ -155,6 +155,7 @@ object CurseImporter : AbstractImporter() {
         val entriesFilename = mainFilename + "_entries.yaml"
 
         val nestedPack = NestedPack(
+            target,
             name ?: manifest.name.replace("[^\\w-]+".toRegex(), ""),
             authors = listOf(manifest.author),
             title = manifest.name,

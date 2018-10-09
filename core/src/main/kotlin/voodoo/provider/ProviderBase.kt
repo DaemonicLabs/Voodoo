@@ -4,7 +4,6 @@ import kotlinx.coroutines.experimental.channels.SendChannel
 import mu.KLogging
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
-import voodoo.markdownTable
 import java.io.File
 import java.time.Instant
 
@@ -68,8 +67,6 @@ abstract class ProviderBase(
     open suspend fun getReleaseDate(entry: LockEntry): Instant? {
         return null
     }
-
-    fun report(entry: LockEntry): String = markdownTable(header = "Mod" to entry.name, content = reportData(entry))
 
     open fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> = mutableListOf(
             "Provider" to "`${entry.provider}`",

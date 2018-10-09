@@ -2,32 +2,31 @@ import com.skcraft.launcher.model.modpack.Recommendation
 import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.curse.FileType
-import voodoo.data.nested.NestedPack
 import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
 import voodoo.provider.JenkinsProvider
 import voodoo.withDefaultMain
-import java.io.File
 
 fun main(args: Array<String>) = withDefaultMain(
     root = Constants.rootDir.resolve("run").resolve("pokemans"),
     arguments = args
 ) {
-    NestedPack(
+    nestedPack(
         id = "pokemans",
-        title = "Pokemans Reloaded",
-        version = "1.0",
-        mcVersion = "1.10.2",
-        icon = root.resolve("icon.png"),
-        authors = listOf("capitalthree", "NikkyAi"),
-        forge = Forge.mc1_10_2.build2422,
+        mcVersion = "1.10.2"
+    ) {
+        title = "Pokemans Reloaded"
+        version = "1.0"
+        icon = rootDir.resolve("icon.png")
+        authors = listOf("capitalthree", "NikkyAi")
+        forge = Forge.mc1_10_2.build2422
         userFiles = UserFiles(
             include = listOf(
                 "options.txt",
                 "quark.cfg"
             ),
             exclude = listOf()
-        ),
+        )
         root = rootEntry(CurseProvider) {
             optionals = false
             releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
@@ -124,5 +123,5 @@ fun main(args: Array<String>) = withDefaultMain(
                 }
             }
         }
-    )
+    }
 }

@@ -21,12 +21,12 @@ import java.io.File
 
 object DslSpek : Spek({
     describe("load pack") {
-        //        val rootFolder by memoized {
-//            File("run").resolve("test").resolve("build").absoluteFile.apply {
-//                deleteRecursively()
-//                mkdirs()
-//            }
-//        }
+        val rootFolder by memoized {
+            File("run").resolve("test").resolve("dslspek").absoluteFile.apply {
+                deleteRecursively()
+                mkdirs()
+            }
+        }
 
 //        beforeEachTest {
 //            fileForResource("/voodoo/dslSpek").copyRecursively(rootFolder)
@@ -34,6 +34,7 @@ object DslSpek : Spek({
 
         val nestedPack by memoized {
             NestedPack(
+                rootDir = rootFolder,
                 id = "some-id",
                 version = "1.0",
                 mcVersion = "1.12.2",
