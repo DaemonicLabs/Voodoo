@@ -272,6 +272,7 @@ dependencies {
     testRuntimeOnly(kotlin("reflect", Versions.kotlin))
 
     testCompile(project(":dsl"))
+    testCompile(project(":poet"))
 
     compile(project(":core:core-dsl"))
     compile(project(":builder"))

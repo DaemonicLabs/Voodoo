@@ -29,7 +29,6 @@ import voodoo.provider.CurseProvider
 import voodoo.provider.Providers
 import voodoo.util.ExceptionHelper
 import voodoo.util.packToZip
-import java.io.File
 
 /**
  * Created by nikky on 30/03/18.

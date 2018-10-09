@@ -2,6 +2,7 @@ package voodoo.pack
 
 import com.skcraft.launcher.builder.FeaturePattern
 import com.skcraft.launcher.builder.PackageBuilder
+import com.skcraft.launcher.model.SKModpack
 import kotlinx.coroutines.experimental.CoroutineName
 import kotlinx.coroutines.experimental.Deferred
 import kotlinx.coroutines.experimental.async
@@ -12,7 +13,6 @@ import kotlinx.serialization.json.JSON
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
 import voodoo.pack.sk.SKLocation
-import com.skcraft.launcher.model.SKModpack
 import voodoo.pack.sk.SKPackages
 import voodoo.pack.sk.SKWorkspace
 import voodoo.pack.sk.SkPackageFragment

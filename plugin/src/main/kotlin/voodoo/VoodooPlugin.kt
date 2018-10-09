@@ -4,7 +4,6 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
@@ -77,6 +76,10 @@ open class VoodooPlugin : Plugin<Project> {
                 doLast {
                     println(PoetConstants.FULL_VERSION)
                 }
+            }
+
+            task<CreatePackTask>("createpack") {
+                packs = config.packDirectory
             }
 
             extensions.configure<SourceSetContainer> {

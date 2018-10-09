@@ -4,7 +4,6 @@ import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
 import voodoo.util.jenkins.downloadVoodoo
 import voodoo.util.packToZip
-import java.io.File
 import kotlin.system.exitProcess
 
 object MMCPack : AbstractPack() {
@@ -21,8 +20,15 @@ object MMCPack : AbstractPack() {
         val instanceDir = cacheDir.resolve("MMC").resolve(modpack.id)
         instanceDir.deleteRecursively()
 
-        val preLaunchCommand = "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
-        val minecraftDir = MMCUtil.installEmptyPack(modpack.title, modpack.id, icon = modpack.icon, instanceDir = instanceDir, preLaunchCommand = preLaunchCommand)
+        val preLaunchCommand =
+            "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
+        val minecraftDir = MMCUtil.installEmptyPack(
+            modpack.title,
+            modpack.id,
+            icon = modpack.icon,
+            instanceDir = instanceDir,
+            preLaunchCommand = preLaunchCommand
+        )
 
         logger.info("created pack in $minecraftDir")
         logger.info("tmp dir: $instanceDir")
@@ -35,12 +41,13 @@ object MMCPack : AbstractPack() {
         urlFile.copyTo(instanceDir.resolve("voodoo.url.txt"))
 
         val multimcInstaller = instanceDir.resolve("mmc-installer.jar")
-        val installer = downloadVoodoo(component = "multimc-installer", bootstrap = true, binariesDir = directories.cacheHome)
+        val installer =
+            downloadVoodoo(component = "multimc-installer", bootstrap = true, binariesDir = directories.cacheHome)
         installer.copyTo(multimcInstaller)
 
         val packignore = instanceDir.resolve(".packignore")
         packignore.writeText(
-                """.minecraft
+            """.minecraft
                   |mmc-pack.json
                 """.trimMargin()
         )

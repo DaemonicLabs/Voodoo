@@ -18,7 +18,6 @@ import voodoo.util.Downloader
 import voodoo.util.blankOr
 import voodoo.util.packToZip
 import voodoo.util.pool
-import java.io.File
 
 object MMCFatPack : AbstractPack() {
     override val label = "MultiMC Packer (frozen pack)"

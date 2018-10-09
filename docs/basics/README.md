@@ -13,33 +13,38 @@ fun main(args: Array<String>) = withDefaultMain(
     arguments = args,
     root = Constants.rootDir
 ) {
-    NestedPack(
-        id = "mypack",
+    nestedPack(
+        id = "awesomepack",
         mcVersion = "1.12.2"
-    )
+    ) {
+        
+    }
 }
 ```
 
-for the purpose of this guide we will only look at the returned `NestedPack` Expression
+for the purpose of this guide we will only look at the `nestedPack` call
 
-Lets make a Pack.. 
-we call it Awesome Pack
 
-```kotlin
-title = "Awesome Pack"
-```
-
-every pack also needs a id, preferably lowercase and without spaces
+**required** every pack needs a id, preferably lowercase and without spaces
 
 ```kotlin
 id = "awesome"
 ```
 
-we know its gonna be for 1.12.2
+**required** we know its gonna be for minecraft 1.12.2
 
 ```kotlin
 mcVersion = "1.12.2"
 ```
+
+the rest of the properties are optional
+
+The pack will be called `Awesome Pack`
+
+```kotlin
+title = "Awesome Pack"
+```
+
 
 and we want to use forge.. for now just the recommended version
 this supports `latest`, `recommended` or the build number eg. `2705`
@@ -73,15 +78,16 @@ this means it will look for a folder called `src` relative to `root`
 our pack now looks like this
 
 ```kotlin
-NestedPack(
+nestedpack(
     id = "awesome",
-    title = "Awesome Pack",
-    version = "1.0",
-    mcVersion = "1.12.2",
-    forge = "recommended",
-    authors = listOf("SomeDude", "OtherDude"),
+    mcVersion = "1.12.2"
+) {
+    title = "Awesome Pack"
+    version = "1.0"
+    forge = "recommended"
+    authors = listOf("SomeDude", "OtherDude")
     sourceDir = "src"
-)
+}
 ```
 
 one optional step is to define userFiles,
@@ -132,33 +138,6 @@ the root is always a single entry.. any entry can have child entries and all pro
 children
 in this case we use alpha-release on a root scope but specify the RFTools mods to only use releases and beta versions
 
-<!--
-## simple string and name notation
-
-so you have seen we can refer to mods by just their url slug.. which is usually the project name on curse lowercased and spaces replaced with `-`,
-
-but what if we want to specify more info ?
-the short form is gonna be expanded to the `id`
-
-```kotlin
-- opencomputers
-
-# is equivalent to
-
-- id: opencomputers
-```
-
-so you can add more properties
-
-```yaml
-- id: opencomputers
-  version: 1.2.3
-```
-
-this would restrict the files it downloads to those containing that string in the filename
-this is just a example.. all properties of a entry can be set like this
--->
-
 ## Providers
 
 well only having curse available would be boring..
@@ -187,10 +166,10 @@ Kinda self explaining.. jenkins needs the base url and the name of the job
 also supported but now shows is the `jenkinsFileNameRegex` it has a sane default but maybe you need to match a
 different file or make sure your generated docs are not used as mod jar? then use that
 
-```yaml
+```kotlin
 withProvider(JenkinsProvider) {
     jenkinsUrl = "https://ci.elytradev.com"
-}.list {
+}.list { // Jenkins provider context
     id("fruitPhone") job "elytra/FruitPhone/1.12.2"
     id("probeDataProvider") job "elytra/ProbeDataProvider/1.12"
     
@@ -213,7 +192,7 @@ they also make pack dev less portable
 anyway.. local entries will take a relative path and pull the file from the `localDir`
 
 ```kotlin
-withProvider(LocalProvider).list {
+withProvider(LocalProvider).list { // Local provider Context
     id("someMod") {
         name = "SomeMod"
         fileName = "SomeMod.jar"
@@ -228,7 +207,7 @@ withProvider(LocalProvider).list {
 you needed to make 2 packs .. one for clients and one for the server?
 well forget that crap..
 
-Voodoo will automatically only install the mods for the chosen side on export / packaging step for you
+Voodoo will automatically install the mods for the chosen side on export / packaging step for you
 
 ### Clientside
 

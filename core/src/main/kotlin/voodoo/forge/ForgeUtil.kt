@@ -18,7 +18,7 @@ import voodoo.util.Downloader
  */
 object ForgeUtil : KLogging() {
 
-    private val deferredData = GlobalScope.async { getForgeData() }
+    val deferredData = GlobalScope.async { getForgeData() }
 
     suspend fun getForgeBuild(version: String, mcVersion: String): Int {
         val data = deferredData.await()

@@ -68,6 +68,15 @@ rootProject.name = "YourModpackname"
 
 ## Modpack File
 
+### Automatic
+
+let the plugin automatically generate a pack skeleton
+```bash
+./gradlew createpack --id awesomepack --mcVersion 1.12.2 --title "Awesome Pack Demo"
+```
+
+### Manual
+
 ```kotlin
 import voodoo.*
 import voodoo.data.*
@@ -76,17 +85,24 @@ import voodoo.data.nested.*
 import voodoo.provider.*
 import voodoo.releaseTypes
 import voodoo.rootEntry
-import java.io.File
 import voodoo.withDefaultMain
 
 fun main(args: Array<String>) = withDefaultMain(
     arguments = args,
     root = Constants.rootDir
 ) {
-    NestedPack(
+    nestedPack(
         id = "mypack",
         mcVersion = "1.12.2"
-    )
+    ) {
+        title = "Awesome Pack Demo"
+        forge = Forge.mc1_12_2_recommended
+        authors = listOf("insert-author-name")
+        forge = 2768
+        root = rootEntry(CurseProvider) {
+        
+        }
+    }
 }
 ```
 
