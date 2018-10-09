@@ -8,7 +8,6 @@ import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.server.installer.ServerInstallerConstants.VERSION
-import voodoo.util.json
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -34,9 +33,7 @@ object Install : KLogging() {
             logger.info("pack file: $packFile")
             logger.info("cleanConfig: $cleanConfig")
 
-            val modpack: LockPack = json.parse(packFile.readText())
-            val rootFolder = packFile.absoluteFile.parentFile
-            modpack.loadEntries(rootFolder)
+            val modpack = LockPack.parse(packFile.absoluteFile)
 
             Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
         }

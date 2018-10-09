@@ -9,7 +9,6 @@ import voodoo.builder.resolve
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockPack
 import voodoo.provider.Providers
-import voodoo.util.json
 import voodoo.util.toJson
 import java.io.File
 import kotlin.system.exitProcess
@@ -22,10 +21,9 @@ import kotlin.system.exitProcess
 object Builder : KLogging() {
     fun build(
         modpack: ModPack,
-        targetFolder: File,
         name: String,
         targetFileName: String = "$name.lock.hjson",
-        targetFile: File = targetFolder.resolve(targetFileName),
+        targetFile: File = modpack.rootDir.resolve(targetFileName),
         vararg args: String
     ): LockPack = runBlocking {
         val parser = ArgParser(args)
@@ -40,7 +38,6 @@ object Builder : KLogging() {
             try {
                 resolve(
                     modpack,
-                    targetFolder,
                     updateAll = updateAll,
                     updateDependencies = updateDependencies,
                     updateEntries = entries
@@ -61,7 +58,6 @@ object Builder : KLogging() {
 
             logger.info("Creating locked pack...")
             val lockedPack = modpack.lock()
-            lockedPack.rootFolder = targetFolder
             lockedPack.entrySet.clear()
             lockedPack.entrySet += modpack.lockEntrySet
 
@@ -72,19 +68,6 @@ object Builder : KLogging() {
 
             lockedPack
         }
-    }
-
-    fun build(
-        packFile: File,
-        targetFolder: File,
-        name: String,
-        targetFileName: String = "$name.lock.hjson",
-        targetFile: File = targetFolder.resolve(targetFileName),
-        vararg args: String
-    ): LockPack {
-        val modpack: ModPack = json.parse(packFile.readText())
-//        modpack.loadEntries(targetFolder)
-        return build(modpack, targetFolder, name, targetFileName, targetFile, args = *args)
     }
 
     private class Arguments(parser: ArgParser) {

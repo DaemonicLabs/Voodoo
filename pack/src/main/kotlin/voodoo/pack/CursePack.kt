@@ -41,12 +41,11 @@ object CursePack : AbstractPack() {
 
     override suspend fun pack(
         modpack: LockPack,
-        folder: File,
         target: String?,
         clean: Boolean
     ) {
         val cacheDir = directories.cacheHome
-        val workspaceDir = folder.resolve(".curse")
+        val workspaceDir = modpack.rootDir.resolve(".curse")
         val modpackDir = workspaceDir.resolve(with(modpack) { "$id-$version" })
         val srcFolder = modpackDir.resolve("overrides")
 

@@ -93,7 +93,7 @@ object RoundTripSpek : Spek({
         }
         beforeEachTest {
             runBlocking {
-                Builder.build(modpack, rootFolder, "roundtrip", targetFilename)
+                Builder.build(modpack, "roundtrip", targetFilename)
             }
         }
         it("parse lockpack") {

@@ -7,7 +7,6 @@ import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.tester.MultiMCTester
-import voodoo.util.json
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -23,9 +22,7 @@ object TesterForDSL : KLogging() {
         arguments.run {
 
             logger.info("loading $modpackLockFile")
-            val modpack: LockPack = json.parse(modpackLockFile.readText())
-            val rootFolder = modpackLockFile.absoluteFile.parentFile
-            modpack.loadEntries(rootFolder)
+            val modpack = LockPack.parse(modpackLockFile.absoluteFile)
 
             val tester = when (methode) {
                 "mmc" -> MultiMCTester

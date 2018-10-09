@@ -9,6 +9,7 @@ import voodoo.tome.TomeEnv
 import java.io.File
 import kotlin.system.exitProcess
 import ModpackWrapper
+import voodoo.data.lock.LockPack
 
 private val logger = KotlinLogging.logger {}
 
@@ -64,15 +65,18 @@ fun withDefaultMain(
     val lockFile = root.resolve(lockFileName)
 
     val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
-        "import_debug" to { _ -> Importer.flatten(nestedPack, root, targetFileName = packFileName) },
+        "import_debug" to { _ -> Importer.flatten(nestedPack, targetFileName = packFileName) },
 //        "build_debug" to { args -> BuilderForDSL.build(packFile, rootDir, id, targetFileName = lockFileName, args = *args) },
         "build" to { args ->
-            val modpack = Importer.flatten(nestedPack, root)
-            val lockPack = Builder.build(modpack, root, id, targetFileName = lockFileName, args = *args)
+            val modpack = Importer.flatten(nestedPack)
+            val lockPack = Builder.build(modpack, name = id, /*targetFileName = lockFileName,*/ args = *args)
             Tome.generate(modpack, lockPack, mainEnv.tomeEnv)
             logger.info("finished")
         },
-        "pack" to { args -> Pack.pack(lockFile, root, args = *args) },
+        "pack" to { args ->
+            val modpack = LockPack.parse(lockFile.absoluteFile)
+            Pack.pack(modpack, *args)
+        },
         "test" to { args -> TesterForDSL.main(lockFile, args = *args) },
 //        "idea" to Idea::main, //TODO: generate gradle/idea project ?
         "version" to { _ ->

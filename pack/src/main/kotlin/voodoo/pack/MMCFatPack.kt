@@ -25,11 +25,10 @@ object MMCFatPack : AbstractPack() {
 
     override suspend fun pack(
         modpack: LockPack,
-        folder: File,
         target: String?,
         clean: Boolean
     ) {
-        val targetDir = folder.resolve(target ?: ".multimc")
+        val targetDir = modpack.rootDir.resolve(target ?: ".multimc")
         val cacheDir = directories.cacheHome
         val instanceDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id)
         val title = modpack.title.blankOr ?: modpack.id

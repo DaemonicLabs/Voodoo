@@ -15,7 +15,6 @@ abstract class AbstractPack : KLogging() {
 
     abstract suspend fun pack(
         modpack: LockPack,
-        folder: File,
         target: String?,
         clean: Boolean = true
     )
