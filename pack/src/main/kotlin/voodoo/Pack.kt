@@ -45,7 +45,6 @@ object Pack : KLogging() {
 
             packer.pack(
                 modpack = modpack,
-                folder = File(System.getProperty("user.dir")),
                 target = targetFolder,
                 clean = true
             )
@@ -53,18 +52,13 @@ object Pack : KLogging() {
         }
     }
 
-    suspend fun pack(packFile: File, rootFolder: File, vararg args: String) {
-        val modpack: LockPack = json.parse(packFile.readText())
-        pack(modpack, rootFolder, *args)
-    }
-
-    suspend fun pack(modpack: LockPack, rootFolder: File, vararg args: String) {
+    suspend fun pack(modpack: LockPack, vararg args: String) {
         logger.info("parsing arguments")
         val arguments = ArgumentsForDSL(ArgParser(args))
 
         arguments.run {
             logger.info("loading entries")
-            modpack.loadEntries(rootFolder)
+            modpack.loadEntries()
 
             val packer = packMap[methode.toLowerCase()] ?: run {
                 logger.error("no such packing methode: $methode")
@@ -73,7 +67,6 @@ object Pack : KLogging() {
 
             packer.pack(
                 modpack = modpack,
-                folder = rootFolder,
                 target = target,
                 clean = true
             )

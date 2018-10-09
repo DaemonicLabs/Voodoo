@@ -34,6 +34,8 @@ keep flat entries on disk for debugging purposes only
 
 # curse import -> kotlinpoet ?
 
+implement as gradle task / part of `poet`
+
 https://github.com/square/kotlinpoet
 requires more knowledge of how packs are going to be written
 and imports are going to work

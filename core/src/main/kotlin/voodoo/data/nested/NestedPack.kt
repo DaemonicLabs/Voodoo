@@ -11,7 +11,7 @@ import java.io.File
  * @author Nikky
  */
 data class NestedPack(
-    private val rootDir: File,
+    val rootDir: File,
     /**
      * unique identifier
      */
@@ -49,6 +49,8 @@ data class NestedPack(
             launch = launch,
             localDir = localDir,
             sourceDir = sourceDir
-        )
+        ).also {
+            it.rootDir = rootDir
+        }
     }
 }

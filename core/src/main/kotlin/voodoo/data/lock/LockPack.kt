@@ -17,6 +17,7 @@ import voodoo.data.flat.ModPack
 import voodoo.forge.ForgeUtil
 import voodoo.markdownTable
 import voodoo.util.blankOr
+import voodoo.util.json
 import java.io.File
 
 /**
@@ -93,24 +94,31 @@ data class LockPack(
                 it.isFile && it.name.endsWith(".lock.hjson")
             }
             .map { LockEntry.loadEntry(it) to it }
+
+        fun parse(packFile: File): LockPack {
+            val lockpack: LockPack = json.parse(LockPack.Companion, packFile.readText())
+            lockpack.rootDir = packFile.parentFile
+            lockpack.loadEntries()
+            return lockpack
+        }
     }
 
     @Transient
-    lateinit var rootFolder: File
+    lateinit var rootDir: File
 //        private set
 
     @Transient
     val sourceFolder: File
-        get() = rootFolder.resolve(sourceDir)
+        get() = rootDir.resolve(sourceDir)
     @Transient
     val localFolder: File
-        get() = rootFolder.resolve(localDir)
+        get() = rootDir.resolve(localDir)
 
     @Transient
     val entrySet: MutableSet<LockEntry> = mutableSetOf()
 
-    fun loadEntries(rootFolder: File = this.rootFolder) {
-        this.rootFolder = rootFolder
+    fun loadEntries(rootFolder: File = rootDir) {
+        this.rootDir = rootFolder
         val srcDir = rootFolder.resolve(sourceDir)
         LockPack.parseFiles(srcDir)
             .forEach { (lockEntry, file) ->
@@ -161,7 +169,7 @@ data class LockPack(
                     "MC Version" to "`$mcVersion`",
                     "Forge Version" to "`$forgeVersion`",
                     "Author" to "`${authors.joinToString(", ")}`",
-                    "Icon" to "<img src=\"${icon.relativeTo(rootFolder).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
+                    "Icon" to "<img src=\"${icon.relativeTo(rootDir).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
                 )
             )
         }

@@ -66,7 +66,7 @@ data class NestedEntry(
         val DEFAULT = NestedEntry()
     }
 
-    suspend fun flatten(parentFile: File): List<Entry> {
+    suspend fun flatten(parentFile: File? = null): List<Entry> {
         flatten("", parentFile)
 
         // remove duplicate entries
@@ -123,7 +123,7 @@ data class NestedEntry(
         }
     }
 
-    private suspend fun flatten(indent: String, parentFile: File) {
+    private suspend fun flatten(indent: String, parentFile: File? = null) {
         var parent = parentFile
         val toDelete = mutableListOf<NestedEntry>()
 

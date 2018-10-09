@@ -13,7 +13,6 @@ import voodoo.data.flat.ModPack
 import voodoo.memoize
 import voodoo.provider.Providers
 import voodoo.util.pool
-import java.io.File
 import java.util.Collections
 import kotlin.system.exitProcess
 
@@ -102,20 +101,19 @@ private fun processFeature(modPack: ModPack, feature: ExtendedFeaturePattern) {
 
 suspend fun resolve(
     modPack: ModPack,
-    folder: File,
     updateAll: Boolean = false,
     updateDependencies: Boolean = false,
     updateEntries: List<String> = listOf()
 ) {
 //    this.loadEntries(folder)
-    modPack.loadLockEntries(folder)
+    modPack.loadLockEntries()
 
-    val srcDir = folder.resolve(modPack.sourceDir)
+    val srcDir = modPack.rootDir.resolve(modPack.sourceDir)
 
     if (updateAll) {
         modPack.lockEntrySet.clear()
         // delete all lockfiles
-        folder.walkTopDown().asSequence()
+        srcDir.walkTopDown().asSequence()
             .filter {
                 it.isFile && it.name.endsWith(".lock.hjson")
             }

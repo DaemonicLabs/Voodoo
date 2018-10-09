@@ -15,11 +15,10 @@ object ServerPack : AbstractPack() {
 
     override suspend fun pack(
         modpack: LockPack,
-        folder: File,
         target: String?,
         clean: Boolean
     ) {
-        val serverDir = folder.resolve(target ?: "server_${modpack.id}")
+        val serverDir = modpack.rootDir.resolve(target ?: "server_${modpack.id}")
 
         if (clean) {
             logger.info("cleaning server directory $serverDir")

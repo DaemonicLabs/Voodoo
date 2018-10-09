@@ -9,11 +9,10 @@ import java.io.File
 object Importer : KLogging() {
     suspend fun flatten(
         nestedPack: NestedPack,
-        targetFolder: File,
         name: String = nestedPack.id.replace("[^\\w-]+".toRegex(), ""),
         targetFileName: String = "$name.pack.hjson"
     ) {
-        targetFolder.walkTopDown().asSequence()
+        nestedPack.rootDir.walkTopDown().asSequence()
             .filter {
                 it.isFile && it.name.endsWith(".entry.hjson")
             }
@@ -23,16 +22,16 @@ object Importer : KLogging() {
         val modpack = nestedPack.flatten()
         modpack.entrySet += nestedPack.root.flatten(File("parentFile"))
 
-        modpack.writeEntries(targetFolder)
-        val packFile = targetFolder.resolve(targetFileName)
+        modpack.writeEntries()
+        val packFile = nestedPack.rootDir.resolve(targetFileName)
 
         packFile.writeText(modpack.toJson)
     }
 
     suspend fun flatten(
-        nestedPack: NestedPack,
-        targetFolder: File
+        nestedPack: NestedPack
     ): ModPack {
+        val targetFolder = nestedPack.rootDir
         targetFolder.walkTopDown().asSequence()
             .filter {
                 it.isFile && it.name.endsWith(".entry.hjson")
@@ -41,7 +40,7 @@ object Importer : KLogging() {
                 it.delete()
             }
         val modpack = nestedPack.flatten()
-        modpack.entrySet += nestedPack.root.flatten(File("parentFile"))
+        modpack.entrySet += nestedPack.root.flatten()
         return modpack
     }
 }

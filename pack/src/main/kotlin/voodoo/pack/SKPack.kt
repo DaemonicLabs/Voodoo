@@ -35,12 +35,11 @@ object SKPack : AbstractPack() {
 
     override suspend fun pack(
         modpack: LockPack,
-        folder: File,
         target: String?,
         clean: Boolean
     ) {
         val cacheDir = directories.cacheHome
-        val workspaceDir = modpack.rootFolder.resolve("workspace").absoluteFile
+        val workspaceDir = modpack.rootDir.resolve("workspace").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.id)
 
         val skSrcFolder = modpackDir.resolve("src")
@@ -185,7 +184,7 @@ object SKPack : AbstractPack() {
             workspacePath.writeText(JSON.indented.stringify(workspace))
 
             val targetDir = if (target != null) {
-                folder.resolve(target)
+                modpack.rootDir.resolve(target)
             } else {
                 workspaceDir.resolve("_upload")
             }

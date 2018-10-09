@@ -10,9 +10,6 @@ pluginManagement {
             if (requested.id.id == "kotlinx-serialization") {
                 useModule("org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin:${requested.version}")
             }
-//            if (requested.id.id.startsWith("org.jetbrains.kotlin")) {
-//                useVersion(Versions.kotlin)
-//            }
         }
     }
 }

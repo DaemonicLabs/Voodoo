@@ -82,6 +82,9 @@ data class ModPack(
     }
 
     @Transient
+    lateinit var rootDir: File
+
+    @Transient
     val features: MutableList<ExtendedFeaturePattern> = mutableListOf()
 
     @Transient
@@ -120,7 +123,7 @@ data class ModPack(
     }
 
     // TODO: call from LockPack ?
-    fun loadLockEntries(folder: File) {
+    fun loadLockEntries(folder: File = rootDir) {
         val srcDir = folder.resolve(sourceDir)
         LockPack.parseFiles(srcDir)
             .forEach { (lockEntry, file) ->
@@ -130,14 +133,14 @@ data class ModPack(
             }
     }
 
-    fun writeEntries(rootFolder: File) {
+    fun writeEntries(rootFolder: File = rootDir) {
         val srcDir = rootFolder.resolve(sourceDir)
         entrySet.forEach { entry ->
             entry.serialize(srcDir)
         }
     }
 
-    suspend fun lock(): LockPack {
+    fun lock(): LockPack {
         return LockPack(
             id = id,
             title = title,
@@ -151,7 +154,9 @@ data class ModPack(
             localDir = localDir,
             sourceDir = sourceDir,
             features = features.sortedBy { it.feature.name }
-        )
+        ).also {
+            it.rootDir = rootDir
+        }
     }
 
     fun findEntryById(id: String) = entrySet.find { it.id == id }

@@ -1,17 +1,3 @@
-# maven and restrucure
-
-groupId: `moe.nikky.voodoo-branch`
-artifactId: path seperated by `-`
-
-goals:
-- depend only on DSL artifact
-- reuse utility functions for common tasks
-  - flatten
-  - build/resolve
-  - download
-  - deploy
-  - generate HTML/markdown
-  
 ## generated curse mods data
 
 option 1: 
@@ -21,17 +7,22 @@ option 1:
 option 2:
 - initialize new pack with separate script
 
+option 3:
+gradle task to create new pack
+
 ## Stages
 
 - compile NestedPack from DSL
-  - build
+  - build + tome
   - pack
-  - other tasks sing meta info
+  - other tasks using meta info
 
 
 ## Feature stuff
 
 ### add config files to entries ?
+
+// TODO needs testing / samples
 
 to add them later into a feature
 
