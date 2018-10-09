@@ -1,29 +1,32 @@
 import com.skcraft.launcher.model.modpack.Recommendation
-import voodoo.*
 import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.curse.FileType
-import voodoo.data.nested.NestedPack
 import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
 import voodoo.provider.JenkinsProvider
 import voodoo.provider.LocalProvider
-import java.io.File
+import voodoo.withDefaultMain
 
 fun main(args: Array<String>) = withDefaultMain(
     root = Constants.rootDir.resolve("run").resolve("awesomepack"),
     arguments = args
 ) {
-    NestedPack(
+    tome {
+        outputFolder = rootDir.resolve("docs").resolve("awesomepack")
+    }
 
+    // TODO nested pack DSL to avoid copying over values
+    nestedPack(
         id = "awesome",
-        title = "Awesome Pack",
-        version = "1.0",
-        mcVersion = "1.12.2",
-        forge = Forge.recommended,
-        authors = listOf("SomeDude", "OtherDude"),
-        sourceDir = "src",
-        localDir = "local",
+        mcVersion = "1.12.2"
+    ) {
+        title = "Awesome Pack"
+        version = "1.0"
+        forge = Forge.recommended
+        authors = listOf("SomeDude", "OtherDude")
+        sourceDir = "src"
+        localDir = "local"
         userFiles = UserFiles(
             include = listOf(
                 "options.txt",
@@ -31,7 +34,7 @@ fun main(args: Array<String>) = withDefaultMain(
                 "foamfix.cfg"
             ),
             exclude = listOf("")
-        ),
+        )
         root = rootEntry(CurseProvider) {
             validMcVersions = setOf("1.12.1", "1.12")
             optionals = false
@@ -147,7 +150,8 @@ fun main(args: Array<String>) = withDefaultMain(
                     }
 
                     id(Mod.minemenu) {
-                        description = "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
+                        description =
+                            "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
                     }
 
                     id(Mod.itemzoom) {
@@ -170,5 +174,5 @@ fun main(args: Array<String>) = withDefaultMain(
                 }
             }
         }
-    )
+    }
 }

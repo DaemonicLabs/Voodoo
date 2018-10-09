@@ -33,6 +33,7 @@ object RoundTripSpek : Spek({
 
         val nestedPack by memoized {
             NestedPack(
+                rootDir = rootFolder,
                 id = "some-id",
                 version = "1.0",
                 mcVersion = "1.12.2",

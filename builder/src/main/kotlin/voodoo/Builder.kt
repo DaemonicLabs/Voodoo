@@ -7,11 +7,11 @@ import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.builder.resolve
 import voodoo.data.flat.ModPack
+import voodoo.data.lock.LockPack
 import voodoo.provider.Providers
 import voodoo.util.json
 import voodoo.util.toJson
 import java.io.File
-import java.io.StringWriter
 import kotlin.system.exitProcess
 
 /**
@@ -27,7 +27,7 @@ object Builder : KLogging() {
         targetFileName: String = "$name.lock.hjson",
         targetFile: File = targetFolder.resolve(targetFileName),
         vararg args: String
-    ) = runBlocking {
+    ): LockPack = runBlocking {
         val parser = ArgParser(args)
         val arguments = Arguments(parser)
         parser.force()
@@ -70,23 +70,7 @@ object Builder : KLogging() {
             logger.info("Writing lock file... $targetFile")
             targetFile.writeText(lockedPack.toJson)
 
-            // generate modlist
-
-            logger.info("writing modlist")
-            val sw = StringWriter()
-            sw.append(lockedPack.report)
-            sw.append("\n")
-
-            modpack.lockEntrySet.sortedBy { it.name.toLowerCase() }.forEach { entry ->
-                val provider = Providers[entry.provider]
-                sw.append("\n\n")
-                sw.append(provider.report(entry))
-            }
-
-            val modlist = targetFile.absoluteFile.parentFile.resolve("modlist.md")
-            modlist.writeText(sw.toString())
-
-            logger.info("finished")
+            lockedPack
         }
     }
 
@@ -97,7 +81,7 @@ object Builder : KLogging() {
         targetFileName: String = "$name.lock.hjson",
         targetFile: File = targetFolder.resolve(targetFileName),
         vararg args: String
-    ) {
+    ): LockPack {
         val modpack: ModPack = json.parse(packFile.readText())
 //        modpack.loadEntries(targetFolder)
         return build(modpack, targetFolder, name, targetFileName, targetFile, args = *args)

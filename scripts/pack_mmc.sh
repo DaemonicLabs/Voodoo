@@ -5,7 +5,7 @@ PWD=$(pwd)
 
 cd $DIR
 
-$DIR/gradlew clean publishToMavenLocal :poet
+$DIR/gradlew clean publishToMavenLocal
 if [ ! $? -eq 0 ]; then
     echo "Error compiling voodoo"
     exit 1
@@ -16,15 +16,8 @@ pack=$1
 [ ! -e samples ] && mkdir samples
 cd samples
 
-[ ! -e run ] && mkdir run
-cd run
-
-echo
-echo "packaging $1 voodoo mmc"
-echo
-
-kscript "$DIR/samples/$pack.kt" pack mmc
+./gradlew "$pack" --args "build --updateAll - pack mmc"
 if [ ! $? -eq 0 ]; then
-    echo "Error Packing $pack"
+    echo "Error packing mmc of $pack"
     exit 1
 fi

@@ -130,12 +130,12 @@ object Poet : KLogging() {
         val constBuilder = TypeSpec.objectBuilder(name)
 
         val file = File::class.asClassName()
-        val rootDir = PropertySpec
+        val rootDirProperty = PropertySpec
             .builder("rootDir", file)
             .initializer("%T(%S)", file, rootDir.absoluteFile.path)
             .build()
 
-        constBuilder.addProperty(rootDir)
+        constBuilder.addProperty(rootDirProperty)
 
         save(constBuilder.build(), name, folder)
     }

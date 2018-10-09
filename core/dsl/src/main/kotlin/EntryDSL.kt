@@ -15,9 +15,6 @@ import voodoo.provider.UpdateJsonProvider
 import java.io.File
 import kotlin.reflect.KProperty0
 
-@DslMarker
-annotation class VoodooDSL
-
 @VoodooDSL
 abstract class Wrapper<P : ProviderBase>(
     val provider: P,
@@ -28,7 +25,6 @@ abstract class Wrapper<P : ProviderBase>(
     }
 
     suspend fun flatten(parent: File) = entry.flatten(parent)
-//    val flatten = entry::flatten
 
     var folder by property(entry::folder)
     var comment by property(entry::comment)

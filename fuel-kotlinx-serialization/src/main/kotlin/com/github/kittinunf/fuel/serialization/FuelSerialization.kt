@@ -14,23 +14,31 @@ import kotlinx.serialization.json.JSON
 import kotlinx.serialization.serializer
 import java.nio.charset.Charset
 
-val defaultJSON = JSON.plain
+inline fun <reified T : Any> Request.responseObject(
+    loader: KSerialLoader<T> = T::class.serializer(),
+    json: JSON = JSON.plain,
+    noinline deserializer: (Request, Response, Result<T, FuelError>) -> Unit
+) = response(kotlinxDeserializerOf(loader, json), deserializer)
 
-inline fun <reified T : Any> Request.responseObject(noinline handler: (Request, Response, Result<T, FuelError>) -> Unit, loader: KSerialLoader<T> = T::class.serializer(), json: JSON = defaultJSON) {
-    response(kotlinxDeserializerOf(loader, json), handler)
-}
+inline fun <reified T : Any> Request.responseObject(
+    deserializer: Handler<T>,
+    loader: KSerialLoader<T> = T::class.serializer(),
+    json: JSON = JSON.plain
+) = response(kotlinxDeserializerOf(loader, json), deserializer)
 
-inline fun <reified T : Any> Request.responseObject(handler: Handler<T>, loader: KSerialLoader<T> = T::class.serializer(), json: JSON = defaultJSON) = response(kotlinxDeserializerOf(loader, json), handler)
+inline fun <reified T : Any> Request.responseObject(
+    loader: KSerialLoader<T> = T::class.serializer(),
+    json: JSON = JSON.plain
+) = response(kotlinxDeserializerOf<T>(loader, json))
 
-inline fun <reified T : Any> Request.responseObject(loader: KSerialLoader<T> = T::class.serializer(), json: JSON = defaultJSON) = response(kotlinxDeserializerOf<T>(loader, json))
-
-inline fun <reified T : Any> kotlinxDeserializerOf(loader: KSerialLoader<T> = T::class.serializer(), json: JSON = defaultJSON) = object : ResponseDeserializable<T> {
-    override fun deserialize(reader: Reader): T? {
-        return deserialize(reader.readText())
-    }
-
+inline fun <reified T : Any> kotlinxDeserializerOf(loader: KSerialLoader<T> = T::class.serializer(), json: JSON = JSON.plain) = object :
+    ResponseDeserializable<T> {
     override fun deserialize(content: String): T? {
         return json.parse(loader, content)
+    }
+
+    override fun deserialize(reader: Reader): T? {
+        return deserialize(reader.readText())
     }
 
     override fun deserialize(bytes: ByteArray): T? {

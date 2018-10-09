@@ -1,27 +1,29 @@
 /* ktlint-disable no-wildcard-imports */
 import com.skcraft.launcher.model.modpack.Recommendation
-import voodoo.*
 import voodoo.data.Side
 import voodoo.data.UserFiles
-import voodoo.data.curse.*
-import voodoo.data.nested.*
-import voodoo.provider.*
-import java.io.File
+import voodoo.data.curse.FileType
+import voodoo.provider.CurseProvider
+import voodoo.provider.DirectProvider
+import voodoo.provider.JenkinsProvider
+import voodoo.withDefaultMain
+
 /* ktlint-enable no-wildcard-imports */
 
 fun main(args: Array<String>) = withDefaultMain(
     root = Constants.rootDir.resolve("run").resolve("cotm"),
     arguments = args
 ) {
-    NestedPack(
+    nestedPack(
         id = "cotm",
-        title = "Center of the Multiverse",
-        authors = listOf("AnsuzThuriaz", "Falkreon", "NikkyAi"),
-        version = "2.1.9",
-        mcVersion = "1.12.2", // TODO: generate sealed class with mc version -> see forge versions
-        forge = Forge.mc1_12_2.build2759,
-        icon = root.resolve("icon.png"),
-        sourceDir = "src",
+        mcVersion = "1.12.2"
+    ) {
+        title = "Center of the Multiverse"
+        authors = listOf("AnsuzThuriaz", "Falkreon", "NikkyAi")
+        version = "2.1.9"
+        forge = Forge.mc1_12_2.build2759
+        icon = rootDir.resolve("icon.png")
+        sourceDir = "src"
         userFiles = UserFiles(
             include = listOf(
                 "options.txt",
@@ -29,7 +31,7 @@ fun main(args: Array<String>) = withDefaultMain(
                 "foamfix.cfg"
             ),
             exclude = listOf("")
-        ),
+        )
         root = rootEntry(CurseProvider) {
             releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
             validMcVersions = setOf("1.12.1", "1.12")
@@ -442,5 +444,5 @@ fun main(args: Array<String>) = withDefaultMain(
                 }
             }
         }
-    )
+    }
 }

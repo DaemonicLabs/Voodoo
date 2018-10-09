@@ -1,6 +1,7 @@
 dependencies {
     compile(project(":core:core-dsl"))
     compile(project(":builder"))
+    compile(project(":tome"))
     compile(project(":pack"))
     compile(project(":pack:pack-tester"))
     compile(project(":importer"))
