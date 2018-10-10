@@ -23,11 +23,11 @@ fun poet(
     texturePacks: String = "TexturePack",
     slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
 ) {
-    class XY
-    println("classloader is of type:" + Thread.currentThread().contextClassLoader)
-    println("classloader is of type:" + ClassLoader.getSystemClassLoader())
-    println("classloader is of type:" + XY::class.java.classLoader)
-    Thread.currentThread().contextClassLoader = XY::class.java.classLoader
+//    class XY
+//    println("classloader is of type:" + Thread.currentThread().contextClassLoader)
+//    println("classloader is of type:" + ClassLoader.getSystemClassLoader())
+//    println("classloader is of type:" + XY::class.java.classLoader)
+    Thread.currentThread().contextClassLoader = Poet::class.java.classLoader
 
     runBlocking {
         Poet.generate(

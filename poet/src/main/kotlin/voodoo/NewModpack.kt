@@ -14,6 +14,7 @@ import voodoo.curse.CurseClient
 import voodoo.data.UserFiles
 import voodoo.data.curse.CurseConstants
 import voodoo.data.curse.FileID
+import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
 import voodoo.provider.CurseProvider
@@ -59,7 +60,7 @@ object NewModpack : KLogging() {
 
     fun CodeBlock.Builder.entry(entry: NestedEntry, default: NestedEntry, root: Boolean = false) {
         val provider = Providers[entry.provider]
-        val codeBlock = CodeBlock.builder().apply {
+        val entryBody = CodeBlock.builder().apply {
             entry.name.takeIf { it != default.name }?.let {
                 addStatement("name = %S", it)
             }
@@ -116,19 +117,16 @@ object NewModpack : KLogging() {
                         addStatement("curseMetaUrl = %S", it)
                     }
                     entry.curseReleaseTypes.takeIf { it != default.curseReleaseTypes }?.let { curseReleaseTypes ->
-                        val array = curseReleaseTypes.toTypedArray()
-                        when {
-                            curseReleaseTypes.size == 1 -> {
-                                addStatement("curseReleaseTypes = setOf(%L)", *array)
-                            }
-                            curseReleaseTypes.size == 2 -> {
-                                addStatement("curseReleaseTypes = setOf(%L, %L)", *array)
-                            }
-                            curseReleaseTypes.size == 3 -> {
-                                addStatement("curseReleaseTypes = setOf(%L, %L, %L)", *array)
-                            }
-                            else -> throw IllegalStateException("unexpected number of release types in set")
+                        val fileType = FileType::class.asClassName()
+                        val builder = CodeBlock.builder().add("releaseTypes = setOf(")
+                        curseReleaseTypes.forEachIndexed { index, releaseType ->
+                            if (index != 0) builder.add(", ")
+                            builder.add("%T.%L", fileType, releaseType)
                         }
+                        builder.add(")")
+                        add("%[")
+                        add(builder.build())
+                        add("\n%]")
                     }
                     entry.curseOptionalDependencies.takeIf { it != default.curseOptionalDependencies }?.let {
                         addStatement("curseOptionalDependencies = %L", it)
@@ -184,16 +182,20 @@ object NewModpack : KLogging() {
             when {
                 entry.id != default.id -> when (provider) {
                     is CurseProvider -> {
-                        val slug =
-                            runBlocking { CurseClient.getAddon(entry.curseProjectID, CurseConstants.PROXY_URL)!!.slug }
-                        val identifier = Poet.defaultSlugSanitizer(slug)
-                        if (codeBlock.isEmpty())
+                        val identifier = runBlocking {
+//                            logger.info(entry.id)
+//                            logger.info("project id: ${entry.curseProjectID}")
+                            val addon = CurseClient.getAddon(entry.curseProjectID, CurseConstants.PROXY_URL)
+                            val slug = addon!!.slug
+                            Poet.defaultSlugSanitizer(slug)
+                        }
+                        if (entryBody.isEmpty())
                             addStatement("%T(Mod.$identifier)", ClassName("", "id"))
                         else
                             beginControlFlow("%T(Mod.$identifier)", ClassName("", "id"))
                     }
                     else -> {
-                        if (codeBlock.isEmpty())
+                        if (entryBody.isEmpty())
                             addStatement("%T(%S)", ClassName("", "id"))
                         else
                             beginControlFlow("%T(%S)", ClassName("", "id"))
@@ -208,13 +210,13 @@ object NewModpack : KLogging() {
             }
         }
 
-        add(codeBlock)
+        add(entryBody)
 
-        if (!root && codeBlock.isNotEmpty()) endControlFlow()
+        if (!root && entryBody.isNotEmpty()) endControlFlow()
 
         entry.entries.takeUnless { it.isEmpty() }?.let { entries ->
             controlFlow("%T", ClassName("", if (root) "list" else ".list")) { listBuilder ->
-                entries.forEach { subEntry ->
+                entries.sortedBy { it.id.toLowerCase() }.forEach { subEntry ->
                     listBuilder.entry(subEntry, NestedEntry(entry.provider))
                 }
             }

@@ -156,6 +156,7 @@ object CurseClient : KLogging() {
     private val getAddonCache: MutableMap<Pair<ProjectID, String>, Addon?> = HashMap(1 shl 0)
 
     suspend fun getAddon(addonId: ProjectID, proxyUrl: String): Addon? {
+        if (!addonId.valid) throw IllegalStateException("invalid project id")
         val a = addonId to proxyUrl
         return getAddonCache.getOrPut(a) { getAddonCall(addonId, proxyUrl) }
     }

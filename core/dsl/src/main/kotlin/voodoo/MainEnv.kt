@@ -4,6 +4,7 @@ import ModpackWrapper
 import voodoo.data.nested.NestedPack
 import voodoo.tome.TomeEnv
 import java.io.File
+import VoodooDSL
 
 class MainEnv(
     val rootDir: File,
@@ -13,6 +14,7 @@ class MainEnv(
         tomeEnv.configureTome()
     }
 
+    @VoodooDSL
     fun nestedPack(id: String, mcVersion: String, packBuilder: ModpackWrapper.() -> Unit): NestedPack {
         val pack = NestedPack(
             rootDir = rootDir,

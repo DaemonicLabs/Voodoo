@@ -1,0 +1,16 @@
+*
+!.gitignore
+!gradle/
+
+
+!build.gradle.kts
+!settings.gradle.kts
+!gradlew
+!gradlew.bat
+
+!packs/
+
+packs/*.kt
+!packs/awesomepack.kt
+!packs/cotm.kt
+!packs/pokemans.kt
