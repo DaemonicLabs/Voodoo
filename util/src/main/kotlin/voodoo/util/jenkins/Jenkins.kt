@@ -21,7 +21,7 @@ suspend fun downloadVoodoo(
     component: String,
     bootstrap: Boolean = true,
     serverUrl: String = "https://ci.elytradev.com",
-    job: String = "elytra/Voodoo/rewrite", // TODO: switch to master once merged
+    job: String = "elytra/Voodoo/master", // TODO: switch to master once merged
     binariesDir: File
 ): File {
     val moduleName = "${if (bootstrap) "bootstrap-" else ""}$component"
