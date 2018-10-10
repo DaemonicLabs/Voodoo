@@ -278,7 +278,6 @@ dependencies {
     compile(project(":builder"))
     compile(project(":pack"))
     compile(project(":pack:pack-tester"))
-    compile(project(":importer"))
 }
 
 val cleanTest by tasks.getting(Delete::class)

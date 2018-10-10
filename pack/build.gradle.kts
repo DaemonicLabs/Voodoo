@@ -1,6 +1,4 @@
-apply(from = rootProject.file("base.gradle.kts"))
 dependencies {
-    compile(project(":core"))
     compile(project(":multimc"))
     compile(project(":builder"))
     compile(project(":skcraft"))

@@ -4,7 +4,7 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && cd .. && pwd )"
 
 cd $DIR
 
-$DIR/gradlew :generateDependencyGraph
+$DIR/gradlew :cleanGenerateDependencyGraph :generateDependencyGraph
 
-dot -Tpng build/reports/dependency-graph/dependency-graph.dot > dependency-graph.png
+dot -Tsvg build/reports/dependency-graph/dependency-graph.dot > dependency-graph.svg
 echo $DIR/dependency-graph.png
