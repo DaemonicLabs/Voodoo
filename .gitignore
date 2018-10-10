@@ -18,3 +18,5 @@ Gemfile\.lock
 dependency-graph\.png
 
 profile/
+
+dependency-graph\.svg

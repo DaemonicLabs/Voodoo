@@ -23,7 +23,4 @@ class MainEnv(
         wrapper.packBuilder()
         return pack
     }
-
-    @Deprecated("replaced with rootDir", ReplaceWith("rootDir"))
-    val root: File = rootDir
 }

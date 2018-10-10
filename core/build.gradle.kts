@@ -1,3 +1,4 @@
+apply(from = rootProject.file("cmd.gradle.kts"))
 dependencies {
     compile(project(":util"))
     compile(group = "org.apache.commons", name = "commons-compress", version = "1.18")
