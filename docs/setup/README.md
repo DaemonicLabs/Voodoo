@@ -92,7 +92,7 @@ fun main(args: Array<String>) = withDefaultMain(
     root = Constants.rootDir
 ) {
     nestedPack(
-        id = "mypack",
+        id = "awesomepack",
         mcVersion = "1.12.2"
     ) {
         title = "Awesome Pack Demo"
@@ -100,7 +100,7 @@ fun main(args: Array<String>) = withDefaultMain(
         authors = listOf("insert-author-name")
         forge = 2768
         root = rootEntry(CurseProvider) {
-        
+            TODO("to be implemented")
         }
     }
 }

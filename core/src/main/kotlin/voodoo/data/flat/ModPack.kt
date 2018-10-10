@@ -37,10 +37,7 @@ data class ModPack(
     val launch: LaunchModifier = LaunchModifier(),
     @Optional
     @Serializable(with = UserFiles.Companion::class)
-    var userFiles: UserFiles = UserFiles(),
-
-    @Optional var localDir: String = "local",
-    @Optional var sourceDir: String = "src"
+    var userFiles: UserFiles = UserFiles()
 ) {
     @Serializer(forClass = ModPack::class)
     companion object : KLogging() {
@@ -60,6 +57,7 @@ data class ModPack(
                 elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles, 8)
                 elemOutput.serialize(this.localDir, obj.localDir, 9)
                 elemOutput.serialize(this.sourceDir, obj.sourceDir, 10)
+                elemOutput.serialize(this.tomeDir, obj.tomeDir, 11)
             }
             elemOutput.writeEnd(serialClassDesc)
         }
@@ -80,6 +78,10 @@ data class ModPack(
             }
         }
     }
+
+    @Optional var localDir: String = "local"
+    @Optional var sourceDir: String = id
+    @Optional var tomeDir: String = id
 
     @Transient
     lateinit var rootDir: File

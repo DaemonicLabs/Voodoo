@@ -3,7 +3,7 @@ import voodoo.provider.CurseProvider
 import voodoo.withDefaultMain
 
 fun main(vararg args: String) = withDefaultMain(
-    root = Constants.rootDir,
+    root = Constants.rootDir.resolve("run"),
     arguments = args
 ) {
     nestedPack(

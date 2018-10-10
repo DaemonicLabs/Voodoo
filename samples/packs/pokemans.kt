@@ -8,7 +8,7 @@ import voodoo.provider.JenkinsProvider
 import voodoo.withDefaultMain
 
 fun main(args: Array<String>) = withDefaultMain(
-    root = Constants.rootDir.resolve("run").resolve("pokemans"),
+    root = Constants.rootDir.resolve("run"),
     arguments = args
 ) {
     nestedPack(

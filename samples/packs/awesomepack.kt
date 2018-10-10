@@ -9,23 +9,22 @@ import voodoo.provider.LocalProvider
 import voodoo.withDefaultMain
 
 fun main(args: Array<String>) = withDefaultMain(
-    root = Constants.rootDir.resolve("run").resolve("awesomepack"),
+    root = Constants.rootDir.resolve("run"),
     arguments = args
 ) {
     tome {
-        outputFolder = rootDir.resolve("docs").resolve("awesomepack")
+//        tomeRoot = rootDir.resolve("docs")
     }
 
     // TODO nested pack DSL to avoid copying over values
     nestedPack(
-        id = "awesome",
+        id = "awesomepack",
         mcVersion = "1.12.2"
     ) {
         title = "Awesome Pack"
         version = "1.0"
         forge = Forge.recommended
-        authors = listOf("SomeDude", "OtherDude")
-        sourceDir = "src"
+        authors = listOf("someone", "me")
         localDir = "local"
         userFiles = UserFiles(
             include = listOf(
