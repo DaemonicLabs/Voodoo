@@ -167,7 +167,7 @@ dependencies {
 kscript:
 ```kotlin
 #!/usr/bin/env kscript
-@file:DependsOnMaven("moe.nikky.voodoo-rewrite:dsl:0.4.0-174") // buildnumber needs to be updated menually
+@file:DependsOnMaven("moe.nikky.voodoo-master:dsl:0.4.0-174") // buildnumber needs to be updated menually
 @file:DependsOnMaven("ch.qos.logback:logback-classic:1.2.3")
 @file:MavenRepository("kotlinx","https://kotlin.bintray.com/kotlinx" )
 @file:MavenRepository("elytradev", "https://repo.elytradev.com")

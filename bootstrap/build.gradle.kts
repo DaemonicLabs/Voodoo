@@ -63,7 +63,7 @@ val compileKotlin by tasks.getting(KotlinCompile::class) {
             expand(
                     mapOf(
                             "JENKINS_URL" to "https://ci.elytradev.com",
-                            "JENKINS_JOB" to "elytra/Voodoo/rewrite",
+                            "JENKINS_JOB" to "elytra/Voodoo/master",
                             "MODULE_NAME" to moduleName,
                             "FILE_REGEX" to fileRegex
                     )
