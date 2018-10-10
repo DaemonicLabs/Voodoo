@@ -11,15 +11,16 @@ import java.io.StringWriter
 object Tome : KLogging() {
 
     fun generate(modpack: ModPack, lockPack: LockPack, tomeEnv: TomeEnv) {
-        val (outputFolder, modlistPath) = tomeEnv
+        val (tomeRoot, modlistPath) = tomeEnv
+        val tomeDir = tomeRoot.resolve(modpack.tomeDir)
 
         val modlistContent = tomeEnv.modlistToHtml(modpack, lockPack)
-        val modlist = outputFolder.resolve(modlistPath)
+        val modlist = tomeDir.resolve(modlistPath)
         modlist.parentFile.mkdirs()
         modlist.writeText(modlistContent)
     }
 
-    fun defaultMostlist(modpack: ModPack, lockPack: LockPack): String {
+    fun defaultModlist(modpack: ModPack, lockPack: LockPack): String {
         // generate modlist
 
         logger.info("writing modlist")

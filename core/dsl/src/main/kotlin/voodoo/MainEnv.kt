@@ -7,7 +7,7 @@ import java.io.File
 
 class MainEnv(
     val rootDir: File,
-    val tomeEnv: TomeEnv = TomeEnv(rootDir)
+    val tomeEnv: TomeEnv = TomeEnv(rootDir.resolve("docs"))
 ) {
     fun tome(configureTome: TomeEnv.() -> Unit) {
         tomeEnv.configureTome()

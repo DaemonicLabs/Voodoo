@@ -11,7 +11,7 @@ import voodoo.withDefaultMain
 /* ktlint-enable no-wildcard-imports */
 
 fun main(args: Array<String>) = withDefaultMain(
-    root = Constants.rootDir.resolve("run").resolve("cotm"),
+    root = Constants.rootDir.resolve("run"),
     arguments = args
 ) {
     nestedPack(
@@ -23,7 +23,6 @@ fun main(args: Array<String>) = withDefaultMain(
         version = "2.1.9"
         forge = Forge.mc1_12_2.build2759
         icon = rootDir.resolve("icon.png")
-        sourceDir = "src"
         userFiles = UserFiles(
             include = listOf(
                 "options.txt",

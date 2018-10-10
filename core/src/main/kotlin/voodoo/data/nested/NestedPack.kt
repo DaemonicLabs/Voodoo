@@ -32,7 +32,8 @@ data class NestedPack(
     var launch: LaunchModifier = LaunchModifier(),
     var root: NestedEntry = NestedEntry(),
     var localDir: String = "local",
-    var sourceDir: String = "src"
+    var sourceDir: String = id,
+    var tomeDir: String = id
 ) {
     companion object : KLogging()
 
@@ -46,11 +47,13 @@ data class NestedPack(
             forge = forge,
             mcVersion = mcVersion,
             userFiles = userFiles,
-            launch = launch,
-            localDir = localDir,
-            sourceDir = sourceDir
+            launch = launch
         ).also {
             it.rootDir = rootDir
+
+            it.localDir = localDir
+            it.sourceDir = sourceDir
+            it.tomeDir = tomeDir
         }
     }
 }

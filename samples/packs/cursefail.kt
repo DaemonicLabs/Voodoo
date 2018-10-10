@@ -5,7 +5,7 @@ import voodoo.withDefaultMain
 /* ktlint-enable no-wildcard-imports */
 
 fun main(args: Array<String>) = withDefaultMain(
-    root = Constants.rootDir.resolve("run").resolve("cursefail"),
+    root = Constants.rootDir.resolve("run"),
     arguments = args
 ) {
     nestedPack(
