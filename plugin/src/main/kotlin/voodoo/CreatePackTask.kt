@@ -16,8 +16,9 @@ import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
 import java.io.File
 
-open class CreatePackTask() : DefaultTask() {
-    lateinit var packs: File
+open class CreatePackTask : DefaultTask() {
+    lateinit var rootDir: File
+    lateinit var packsDir: File
 
     @Input
     @Option(option = "id", description = "modpack id")
@@ -58,7 +59,7 @@ open class CreatePackTask() : DefaultTask() {
             ForgeUtil.deferredData.await()
         }
 
-        val nestedPack = MainEnv(rootDir = packs).nestedPack(
+        val nestedPack = MainEnv(rootDir = rootDir).nestedPack(
             id = id ?: throw GradleException("id was null"),
             mcVersion = mcVersion ?: throw GradleException("mcVersion was null")
         ) {
@@ -77,7 +78,7 @@ open class CreatePackTask() : DefaultTask() {
         }
 
         NewModpack.createModpack(
-            folder = packs,
+            folder = packsDir,
             nestedPack = nestedPack
         )
     }

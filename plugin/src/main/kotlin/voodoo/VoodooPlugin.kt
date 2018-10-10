@@ -3,6 +3,7 @@ package voodoo
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.logging.LogLevel
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.configure
@@ -79,7 +80,12 @@ open class VoodooPlugin : Plugin<Project> {
             }
 
             task<CreatePackTask>("createpack") {
-                packs = config.packDirectory
+                rootDir = config.rootDir
+                packsDir = config.packDirectory
+            }
+            task<CurseImportTask>("import") {
+                rootDir = config.rootDir
+                packsDir = config.packDirectory
             }
 
             extensions.configure<SourceSetContainer> {

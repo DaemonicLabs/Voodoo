@@ -171,6 +171,7 @@ class EntriesList<T : ProviderBase>(val provider: T, val parent: GroupingEntry<T
     val entries: MutableList<Wrapper<*>> = mutableListOf()
 }
 
+@VoodooDSL
 fun <T : ProviderBase> rootEntry(provider: T, function: GroupingEntry<T>.() -> Unit): NestedEntry {
     val entry = NestedEntry()
     val env = GroupingEntry(entry = entry, provider = provider)
