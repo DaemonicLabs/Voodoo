@@ -37,6 +37,8 @@ open class VoodooPlugin : Plugin<Project> {
         }
 
         project.afterEvaluate {
+            config.packDirectory.mkdirs()
+
             val poet = task<PoetTask>("poet") {
                 targetFolder = rootDir.resolve(config.generatedSource)
             }
