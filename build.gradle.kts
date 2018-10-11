@@ -138,7 +138,7 @@ allprojects {
 
                 val shadowJar by tasks.getting(ShadowJar::class) {
                     classifier = ""
-                    archiveName = "$baseName-${Env.versionSuffix}.$extension"
+                    archiveName = "${project.name.toLowerCase()}-${Env.versionSuffix}.$extension"
                 }
 
                 val build by tasks.getting(Task::class) {
