@@ -68,12 +68,14 @@ object Poet : KLogging() {
         slugIdMap.entries.sortedBy { (slug, id) ->
             slug
         }.forEach { (slug, id) ->
+            val projectPage = "https://minecraft.curseforge.com/projects/$slug"
             objectBuilder.addProperty(
                 PropertySpec.builder(
                     slugSanitizer(slug),
                     Int::class,
                     KModifier.CONST
                 )
+                    .addKdoc("@see %L\n", projectPage)
                     .mutable(false)
                     .initializer("%L", id.value)
                     .build()

@@ -103,7 +103,7 @@ open class VoodooPlugin : Plugin<Project> {
                             classpath = runtimeClasspath
                             main = "${name.capitalize()}Kt"
                             this.description = name
-                            this.group = "voodooo"
+                            this.group = "voodoo"
                         }
 
 
