@@ -18,22 +18,22 @@ pipeline {
 	    stage("multimc-installer") {
 	        steps {
 	            sh './gradlew :multimc:multimc-installer:clean'
-	            sh './gradlew :multimc:multimc-installer:build'
+	            sh './gradlew :multimc:multimc-installer:shadowJar'
 	            archiveArtifacts artifacts:  'multimc/installer/build/libs/*jar'
 	        }
 	    }
 	    stage("server-installer") {
 	        steps {
 	            sh './gradlew :server-installer:clean'
-	            sh './gradlew :server-installer:build'
+	            sh './gradlew :server-installer:shadowJar'
 	            archiveArtifacts artifacts:  'server-installer/build/libs/*jar'
 	        }
 	    }
 	    stage("bootstrap") {
 	        steps {
 	            sh './gradlew :bootstrap:clean'
-	            // sh './gradlew :bootstrap:build -Ptarget=voodoo'
-	            sh './gradlew :bootstrap:build -Ptarget=multimc-installer'
+	            // sh './gradlew :bootstrap:shadowJar -Ptarget=voodoo'
+	            sh './gradlew :bootstrap:shadowJar -Ptarget=multimc-installer'
 	            // archiveArtifacts artifacts:  'bootstrap/build/libs/*voodoo*'
 	            archiveArtifacts artifacts:  'bootstrap/build/libs/*multimc-installer*'
 	        }

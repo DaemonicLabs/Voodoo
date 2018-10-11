@@ -150,6 +150,7 @@ data class Library(
 
     @Serializable
     data class OS(
+        @Optional var name: String? = null,
         @Optional var platform: Platform? = null,
         @Optional var version: Pattern? = null
     ) {
@@ -163,9 +164,16 @@ data class Library(
         companion object : KSerializer<OS> {
             override fun save(output: KOutput, obj: OS) {
                 val elemOutput = output.writeBegin(serialClassDesc)
+                obj.name?.let {
+                    elemOutput.writeStringElementValue(serialClassDesc, 0, it)
+                }
                 obj.platform?.let { platform ->
-                    elemOutput.writeElement(serialClassDesc, 0)
+                    elemOutput.writeElement(serialClassDesc, 1)
                     elemOutput.write(PlatformSerializer, platform)
+                }
+                obj.version?.let { version ->
+                    elemOutput.writeElement(serialClassDesc, 2)
+                    elemOutput.write(Pattern::class.serializer(), version)
                 }
 //                obj.version?.let { version ->
 //
