@@ -10,6 +10,7 @@ import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.joinAll
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.serializer
@@ -108,7 +109,7 @@ object Hex : KLogging() {
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val defaults = if (featureJson.exists()) {
             JSON.indented.parse(
-                HashMapSerializer(String.serializer(), Boolean::class.serializer()),
+                HashMapSerializer(String.serializer(), BooleanSerializer),
                 featureJson.readText()
             )
         } else {
@@ -122,7 +123,7 @@ object Hex : KLogging() {
             JSON.indented.stringify(
                 HashMapSerializer(
                     String.serializer(),
-                    Boolean::class.serializer()
+                    BooleanSerializer
                 ), features
             )
         )

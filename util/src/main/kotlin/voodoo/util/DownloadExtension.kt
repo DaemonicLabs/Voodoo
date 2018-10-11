@@ -31,19 +31,19 @@ suspend fun File.download(
 
     if (!cacheFile.exists() || !cacheFile.isFile) {
         var nextUrl = url
+        logger.info("url: $nextUrl")
         do {
             nextUrl = nextUrl.encoded
-            logger.info("url: $nextUrl")
             val (request, response, result) = nextUrl // .encode()
                 .httpGet().header("User-Agent" to Downloader.useragent)
                 .allowRedirects(false)
                 .awaitByteArrayResponse()
 
-            logger.info("status: ${response.statusCode}")
+            logger.debug("status: ${response.statusCode}")
             if (response.isStatusRedirection) {
                 nextUrl = response.headers["Location"]?.firstOrNull()
                     ?: throw IllegalStateException("missing Location header")
-                logger.info("next url: $nextUrl")
+                logger.debug("next url: $nextUrl")
                 continue
             }
             when (result) {

@@ -21,5 +21,5 @@ enum class Platform {
     @SerialName("solaris")
     SOLARIS,
     @SerialName("unknown")
-    UNKNOWN
+    UNKNOWN;
 }
