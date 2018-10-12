@@ -95,7 +95,6 @@ object Hex : KLogging() {
         var (_, _, forgeVersion) = modpack.versionManifest?.libraries?.find {
             it.name.startsWith(forgePrefix)
         }?.name.let { it ?: "::" }.split(':')
-        logger.info("forge version is '$forgeVersion'")
         if (forgeVersion.isBlank()) {
             logger.error("could not parse forge version in modpack")
             exitProcess(2)
