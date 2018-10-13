@@ -101,8 +101,7 @@ private fun processFeature(modPack: ModPack, feature: ExtendedFeaturePattern) {
 
 suspend fun resolve(
     modPack: ModPack,
-    updateAll: Boolean = false,
-    updateDependencies: Boolean = false,
+    noUpdate: Boolean = false,
     updateEntries: List<String> = listOf()
 ) {
 //    this.loadEntries(folder)
@@ -110,7 +109,7 @@ suspend fun resolve(
 
     val srcDir = modPack.rootDir.resolve(modPack.sourceDir)
 
-    if (updateAll) {
+    if (!noUpdate) {
         modPack.lockEntrySet.clear()
         // delete all lockfiles
         srcDir.walkTopDown().asSequence()
@@ -134,7 +133,7 @@ suspend fun resolve(
         }
     }
 
-    if (updateDependencies || updateAll) {
+    if (!noUpdate) {
         // remove all transient entries
         modPack.lockEntrySet.removeIf { (id, _) ->
             modPack.findEntryById(id)?.transient ?: true

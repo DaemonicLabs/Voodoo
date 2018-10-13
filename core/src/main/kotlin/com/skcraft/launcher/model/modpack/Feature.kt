@@ -25,7 +25,6 @@ data class Feature(
     @Serializable(with = FnPatternList.Companion::class)
     var files: FnPatternList = FnPatternList()
 ) {
-
     @Serializer(forClass = Feature::class)
     companion object : KSerializer<Feature> {
         override fun save(output: KOutput, obj: Feature) {
