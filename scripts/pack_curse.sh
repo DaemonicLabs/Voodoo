@@ -16,7 +16,7 @@ pack=$1
 [ ! -e samples ] && mkdir samples
 cd samples
 
-./gradlew "$pack" --args "build --updateAll - pack curse"
+./gradlew "$pack" --args "build - pack curse"
 if [ ! $? -eq 0 ]; then
     echo "Error packing curse of $pack"
     exit 1

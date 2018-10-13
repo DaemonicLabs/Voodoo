@@ -38,8 +38,7 @@ object Builder : KLogging() {
             try {
                 resolve(
                     modpack,
-                    updateAll = updateAll,
-                    updateDependencies = updateDependencies,
+                    noUpdate = noUpdate && entries.isEmpty(),
                     updateEntries = entries
                 )
             } catch (e: Exception) {
@@ -71,20 +70,14 @@ object Builder : KLogging() {
     }
 
     private class Arguments(parser: ArgParser) {
-        val updateDependencies by parser.flagging(
-            "--updateDependencies", "-d",
-            help = "update all dependencies"
-        )
-            .default(false)
-
-        val updateAll by parser.flagging(
-            "--updateAll", "-u",
-            help = "update all entries, implies updating dependencies"
+        val noUpdate by parser.flagging(
+            "--noUpdate",
+            help = "do not update entries"
         )
             .default(false)
 
         val entries by parser.adding(
-            "-E", help = "entries to update"
+            "-E", help = "select specific entries to update"
         )
     }
 }

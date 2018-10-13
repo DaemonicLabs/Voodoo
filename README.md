@@ -107,7 +107,7 @@ other samples: [samples](samples)
 [Voodoo Samples](https://github.com/NikkyAI/VoodooSamples)
 
 update the pack and write out the lockfiles \
-`./gradlew cotm --args "build --updateAll"`
+`./gradlew cotm --args "build"`
 
 to update just a few mods in the update step \
 `./gradlew cotm --args "build -E correlated -E magicArsenal"`
@@ -117,7 +117,7 @@ package for sklauncher \
 now you can just upload the contents of `workspace/_upload`
 
 or do all of the above
-`./gradlew cotm --args "build --updateAll - pack sk"`
+`./gradlew cotm --args "build - pack sk"`
 
 build and test with multimc \
 `./cotm.kt build - test mmc`
