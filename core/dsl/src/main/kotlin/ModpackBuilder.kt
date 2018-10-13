@@ -2,7 +2,7 @@ import voodoo.data.nested.NestedPack
 import voodoo.property
 
 @VoodooDSL
-data class ModpackWrapper(
+data class ModpackBuilder(
     val pack: NestedPack
 ) {
     var title by property(pack::title)

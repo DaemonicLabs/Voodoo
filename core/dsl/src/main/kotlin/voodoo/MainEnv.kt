@@ -1,6 +1,6 @@
 package voodoo
 
-import ModpackWrapper
+import ModpackBuilder
 import voodoo.data.nested.NestedPack
 import voodoo.tome.TomeEnv
 import java.io.File
@@ -15,13 +15,13 @@ class MainEnv(
     }
 
     @VoodooDSL
-    fun nestedPack(id: String, mcVersion: String, packBuilder: ModpackWrapper.() -> Unit): NestedPack {
+    fun nestedPack(id: String, mcVersion: String, packBuilder: ModpackBuilder.() -> Unit): NestedPack {
         val pack = NestedPack(
             rootDir = rootDir,
             id = id,
             mcVersion = mcVersion
         )
-        val wrapper = ModpackWrapper(pack)
+        val wrapper = ModpackBuilder(pack)
         wrapper.packBuilder()
         return pack
     }

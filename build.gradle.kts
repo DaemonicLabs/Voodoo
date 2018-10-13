@@ -65,7 +65,11 @@ allprojects {
 
 
         kotlin {
-            experimental.coroutines = Coroutines.ENABLE
+            experimental {
+                coroutines = Coroutines.ENABLE
+                // newInference = "enable" //1.3
+                // contracts = "enable" //1.3
+            }
         }
 //        configure<KotlinJvmProjectExtension> {
 //            experimental.coroutines = Coroutines.ENABLE
