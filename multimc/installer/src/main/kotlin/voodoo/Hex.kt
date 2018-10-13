@@ -1,7 +1,9 @@
 package voodoo
 
+import awaitObjectResponse
 import awaitStringResponse
 import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
 import com.skcraft.launcher.model.modpack.Manifest
 import com.xenomachina.argparser.ArgParser
@@ -57,13 +59,10 @@ object Hex : KLogging() {
 
         val (request, response, result) = packUrl.httpGet()
             .header("User-Agent" to CurseClient.useragent)
-            .awaitStringResponse()
-//            .awaitObjectResponse<Manifest>(kotlinxDeserializerOf(json = json))
+            .awaitObjectResponse<Manifest>(kotlinxDeserializerOf(json = json))
         val modpack: Manifest = when (result) {
             is Result.Success -> {
-                logger.debug("received json: ")
-                logger.debug(result.value)
-                json.parse(result.value)
+                result.value
             }
             is Result.Failure -> {
                 logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }

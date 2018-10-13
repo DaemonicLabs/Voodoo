@@ -20,6 +20,7 @@ data class Feature(
     @Optional var name: String = "",
     @Optional var selected: Boolean = false,
     @Optional var description: String = "",
+    @Serializable(with=EnumSerializer::class)
     @Optional var recommendation: Recommendation? = null,
     @Optional
     @Serializable(with = FnPatternList.Companion::class)
