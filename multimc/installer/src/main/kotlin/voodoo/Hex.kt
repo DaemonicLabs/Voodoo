@@ -1,7 +1,6 @@
 package voodoo
 
 import awaitObjectResponse
-import awaitStringResponse
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
@@ -71,13 +70,20 @@ object Hex : KLogging() {
         }
 
         val oldpackFile = instanceDir.resolve("voodoo.modpack.json")
-        val oldpack: Manifest? = if (!oldpackFile.exists())
-            null
-        else {
-            val pack: Manifest = json.parse(oldpackFile.readText())
-            logger.info("loaded old pack ${pack.name} ${pack.version}")
-            pack
-        }
+        val oldpack: Manifest? = oldpackFile.takeIf { it.exists() }
+            ?.let { packFile ->
+                try {
+                    json.parse<Manifest>(packFile.readText())
+                        .also { pack ->
+                            logger.info("loaded old pack ${pack.name} ${pack.version}")
+                        }
+                } catch (e: IllegalArgumentException) {
+                    logger.error(e.message)
+                    e.printStackTrace()
+                    oldpackFile.delete()
+                    null
+                }
+            }
 
         var forceDisplay = false
         if (oldpack != null) {
