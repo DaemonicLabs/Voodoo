@@ -1,13 +1,11 @@
 package voodoo
 
-import awaitObjectResponse
+import awaitStringResponse
 import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
 import com.skcraft.launcher.model.modpack.Manifest
 import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.joinAll
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.internal.BooleanSerializer
@@ -49,7 +47,7 @@ object Hex : KLogging() {
 
     private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
 
-    private val json = JSON(indented = true)
+    private val json = JSON(indented = true, nonstrict = true)
 
     private suspend fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
         logger.info("installing into $instanceId")
@@ -59,9 +57,14 @@ object Hex : KLogging() {
 
         val (request, response, result) = packUrl.httpGet()
             .header("User-Agent" to CurseClient.useragent)
-            .awaitObjectResponse<Manifest>(kotlinxDeserializerOf())
-        val modpack = when (result) {
-            is Result.Success -> result.value
+            .awaitStringResponse()
+//            .awaitObjectResponse<Manifest>(kotlinxDeserializerOf(json = json))
+        val modpack: Manifest = when (result) {
+            is Result.Success -> {
+                logger.debug("received json: ")
+                logger.debug(result.value)
+                json.parse(result.value)
+            }
             is Result.Failure -> {
                 logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
                 return
@@ -135,7 +138,7 @@ object Hex : KLogging() {
         val oldTaskList = Collections.synchronizedList(oldpack?.tasks?.toMutableList() ?: mutableListOf())
 
         runBlocking {
-            val jobs = modpack.tasks.map { task ->
+            for (task in modpack.tasks) {
                 launch(context = pool) {
                     val oldTask = oldTaskList.find { it.to == task.to }
 
@@ -216,9 +219,6 @@ object Hex : KLogging() {
                     }
                 }
             }
-
-            // iterate new tasks
-            jobs.joinAll()
         }
 
         // iterate old
