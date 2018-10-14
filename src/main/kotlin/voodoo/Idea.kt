@@ -116,7 +116,7 @@ fun launchIdeaWithKscriptlet(scriptFile: File, libs: List<File>): File {
         absoluteFile.parentFile
     }.apply { mkdirs() }
     val gradleScript = """
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+importer org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 buildscript {
     repositories {

@@ -129,41 +129,45 @@ object CurseProvider : ProviderBase("Curse Provider") {
         logger.info(entry.toString())
 
         for ((depAddonId, depType) in dependencies) {
-            logger.info("resolve Dep $depAddonId")
-            val depAddon = getAddon(depAddonId, entry.curseMetaUrl)
-            if (depAddon == null) {
-                logger.error("broken dependency type: '$depType' id: '$depAddonId' of entry: '${entry.id}'")
-                continue
-            }
+            if (depType == DependencyType.REQUIRED) {
+                logger.info("resolve Dep $depAddonId")
+                val depAddon = try {
+                    getAddon(depAddonId, entry.curseMetaUrl, fail = true)
+                } catch (e: Exception) {
+                    null
+                }
 
-//            val depends = entry.dependencies
-            var dependsSet = entry.dependencies[depType]?.toSet() ?: setOf<String>()
-            logger.info("get dependency $depType = $dependsSet + ${depAddon.slug}")
-            if (!dependsSet.contains(depAddon.slug)) {
-                val replacementSlug = entry.replaceDependencies[depAddon.slug]
-                if (replacementSlug != null) {
-                    if (replacementSlug.isNotBlank()) {
-                        logger.info("${entry.id} adding replaced dependency ${depAddon.id} ${depAddon.slug} -> $replacementSlug")
-                        dependsSet += replacementSlug
-                    } else {
-                        logger.info("ignoring dependency ${depAddon.id} ${depAddon.slug}")
-                    }
+                if (depAddon == null) {
+                    logger.error("broken dependency type: '$depType' id: '$depAddonId' of entry: '${entry.id}'")
                     continue
                 }
 
-                logger.info("${entry.id} adding dependency ${depAddon.id}  ${depAddon.slug}")
-                dependsSet += depAddon.slug
-            }
-            entry.dependencies[depType] = dependsSet.toList()
-            logger.info("set dependency $depType = $dependsSet")
+//            val depends = entry.dependencies
+                var dependsSet = entry.dependencies[depType]?.toSet() ?: setOf<String>()
+                logger.info("get dependency $depType = $dependsSet + ${depAddon.slug}")
+                if (!dependsSet.contains(depAddon.slug)) {
+                    val replacementSlug = entry.replaceDependencies[depAddon.slug]
+                    if (replacementSlug != null) {
+                        if (replacementSlug.isNotBlank()) {
+                            logger.info("${entry.id} adding replaced dependency ${depAddon.id} ${depAddon.slug} -> $replacementSlug")
+                            dependsSet += replacementSlug
+                        } else {
+                            logger.info("ignoring dependency ${depAddon.id} ${depAddon.slug}")
+                        }
+                        continue
+                    }
 
-            if (depType == DependencyType.REQUIRED || (entry.curseOptionalDependencies && depType == DependencyType.OPTIONAL)) {
+                    logger.info("${entry.id} adding dependency ${depAddon.id}  ${depAddon.slug}")
+                    dependsSet += depAddon.slug
+                }
+                entry.dependencies[depType] = dependsSet.toList()
+                logger.info("set dependency $depType = $dependsSet")
+
                 val depEntry = Entry(provider = CurseProvider.id, id = depAddon.slug).apply {
                     name = entry.name
                     side = entry.side
                     transient = true
                     curseReleaseTypes = entry.curseReleaseTypes
-                    curseOptionalDependencies = entry.curseOptionalDependencies
                 }
                 logger.debug("adding dependency: $depEntry")
                 addEntry.send(depEntry to depAddon.categorySection.path)

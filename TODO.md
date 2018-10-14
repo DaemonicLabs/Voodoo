@@ -25,7 +25,21 @@ requires testing the gradle setup before generating it
 - create framework
 - add pack
 
-- update kscript annotations/header
+- <s> update kscript annotations/header </s>
+
+# list optional dependencies gradle task
+
+list all optional dependencies of curse mods
+- curse mods only
+- print code to copy-paste
+
+use modalyzer on all mod jars
+
+# suggest forge version
+
+build first
+use modalyzer output of all jars
+suggest named forge versions (copy-paste ready)
 
 # deprecate flat entries
 

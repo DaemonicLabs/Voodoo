@@ -1,15 +1,16 @@
 package voodoo
 
-import ModpackBuilder
+import voodoo.dsl.builder.ModpackBuilder
 import voodoo.data.nested.NestedPack
 import voodoo.tome.TomeEnv
 import java.io.File
-import VoodooDSL
+import voodoo.dsl.VoodooDSL
 
 class MainEnv(
     val rootDir: File,
     val tomeEnv: TomeEnv = TomeEnv(rootDir.resolve("docs"))
 ) {
+    @VoodooDSL
     fun tome(configureTome: TomeEnv.() -> Unit) {
         tomeEnv.configureTome()
     }

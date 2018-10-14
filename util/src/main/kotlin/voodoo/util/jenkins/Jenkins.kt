@@ -51,8 +51,9 @@ suspend fun downloadVoodoo(
     val content = when (result) {
         is Result.Success -> result.value
         is Result.Failure -> {
-            Jenkins.logger.error { result.error }
-            Jenkins.logger.error("unable to download jarfile from $artifactUrl")
+            Jenkins.logger.error("artifactUrl: $artifactUrl")
+            Jenkins.logger.error("response: $response")
+            Jenkins.logger.error(result.error.exception) { "unable to download jarfile from $artifactUrl" }
             throw result.error.exception
         }
     }
@@ -62,7 +63,9 @@ suspend fun downloadVoodoo(
     return targetFile
 }
 
-class JenkinsServer(val serverUrl: String) {
+class JenkinsServer(
+    val serverUrl: String
+) {
     fun getUrl(job: String) = serverUrl + "/job/" + job.replace("/", "/job/")
 
     suspend fun getJob(job: String, useragent: String): Job? {
@@ -73,9 +76,9 @@ class JenkinsServer(val serverUrl: String) {
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
-                result.error.exception.printStackTrace()
-                Jenkins.logger.error { result.error }
-                Jenkins.logger.error("url: $requestURL")
+                Jenkins.logger.error("requestURL: $requestURL")
+                Jenkins.logger.error("response: $response")
+                Jenkins.logger.error(result.error.exception) { "unable to get job from $requestURL" }
                 null
             }
         }
@@ -88,16 +91,16 @@ data class Build(
     val url: String
 ) {
     suspend fun details(useragent: String): BuildWithDetails? {
-        val url = "$url/api/json"
-        val(request, response, result) = url.httpGet()
+        val buildUrl = "$url/api/json"
+        val(request, response, result) = buildUrl.httpGet()
             .header("User-Agent" to useragent)
             .awaitObjectResponse<BuildWithDetails>(kotlinxDeserializerOf(json = json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
-                result.error.exception.printStackTrace()
-                Jenkins.logger.error { result.error }
-                Jenkins.logger.error("build url: $url")
+                Jenkins.logger.error("buildUrl: $buildUrl")
+                Jenkins.logger.error("response: $response")
+                Jenkins.logger.error(result.error.exception) { "unable to get build from $buildUrl" }
                 null
             }
         }

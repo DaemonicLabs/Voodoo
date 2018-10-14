@@ -1,5 +1,10 @@
+package voodoo.dsl.builder
+
+import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
+import voodoo.dsl.VoodooDSL
 import voodoo.property
+import voodoo.provider.ProviderBase
 
 @VoodooDSL
 data class ModpackBuilder(
@@ -15,4 +20,15 @@ data class ModpackBuilder(
     var root by property(pack::root)
     var localDir by property(pack::localDir)
     var sourceDir by property(pack::sourceDir)
+
+    @VoodooDSL
+    fun <T> rootEntry(
+        provider: T,
+        initRoot: GroupBuilder<T>.() -> Unit
+    ): NestedEntry where T : ProviderBase {
+        val entry = NestedEntry()
+        val rootBuilder = GroupBuilder(entry = entry, provider = provider)
+        rootBuilder.initRoot()
+        return rootBuilder.entry
+    }
 }

@@ -85,7 +85,7 @@ open class VoodooPlugin : Plugin<Project> {
                 rootDir = config.rootDir
                 packsDir = config.packDirectory
             }
-            task<CurseImportTask>("import") {
+            task<CurseImportTask>("importer") {
                 rootDir = config.rootDir
                 packsDir = config.packDirectory
             }

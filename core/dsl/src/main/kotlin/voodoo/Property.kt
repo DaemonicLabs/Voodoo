@@ -7,14 +7,14 @@ import kotlin.reflect.KProperty
 
 typealias GetProperty<This, R> = This.() -> KMutableProperty0<R>
 
-inline fun <This, reified R> readOnly(
+inline fun <reified This, reified R> readOnly(
     crossinline getRef: GetProperty<This, R>
 ) =
     object : ReadOnlyProperty<This, R> {
         override fun getValue(thisRef: This, property: KProperty<*>) = thisRef.getRef().get()
     }
 
-inline fun <This, reified R> property(
+inline fun <reified This, reified R> property(
     crossinline getRef: GetProperty<This, R>
 ) =
     object : ReadWriteProperty<This, R> {

@@ -11,12 +11,13 @@ if [ ! $? -eq 0 ]; then
     exit 1
 fi
 
-pack=$1
+id=$1
+url=$2
 
 [ ! -e samples ] && mkdir samples
 cd samples
 
-./gradlew "$pack" --args "build - pack curse" -Si
+./gradlew import --id "$id" --url "$url" -Si
 if [ ! $? -eq 0 ]; then
     echo "Error packing curse of $pack"
     exit 1
