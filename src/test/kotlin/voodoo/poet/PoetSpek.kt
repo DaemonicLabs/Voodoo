@@ -1,14 +1,12 @@
 package voodoo.poet
 
-import group
-import id
+import Mod
 import list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import rootEntry
+import voodoo.MainEnv
 import voodoo.NewModpack
 import voodoo.data.Side
-import voodoo.data.nested.NestedPack
 import voodoo.provider.CurseProvider
 import java.io.File
 
@@ -16,30 +14,30 @@ object PoetSpek : Spek({
     describe("create nested pack") {
         val rootFolder by memoized {
             File("run").resolve("test").resolve("poet").absoluteFile.apply {
-//                deleteRecursively()
+                //                deleteRecursively()
                 mkdirs()
             }
         }
         val nestedpack by memoized {
-            NestedPack(
-                rootFolder,
+            MainEnv(rootDir = rootFolder).nestedPack(
                 id = "new-pack",
-                mcVersion = "1.12.2",
-                authors = listOf("blarb something", "nikky"),
+                mcVersion = "1.12.2"
+            ) {
+                authors = listOf("blarb something", "nikky")
                 root = rootEntry(CurseProvider) {
                     validMcVersions = setOf("1.12.1", "1.12")
                     list {
-                        id(Mod.wearableBackpacks)
-                        id(Mod.neat)
+                        add(Mod.wearableBackpacks)
+                        add(Mod.neat)
 
                         group {
                             side = Side.SERVER
                         }.list {
-                            id(Mod.btfuContinuousRsyncIncrementalBackup)
+                            add(Mod.btfuContinuousRsyncIncrementalBackup)
                         }
                     }
                 }
-            )
+            }
         }
 
         it("generate kotlin source") {

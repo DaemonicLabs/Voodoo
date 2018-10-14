@@ -64,7 +64,6 @@ data class Entry(
     // CURSE
     @Optional var curseMetaUrl: String = PROXY_URL,
     @Optional var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
-    @Optional var curseOptionalDependencies: Boolean = false,
     @Optional var curseProjectID: ProjectID = ProjectID.INVALID,
     @Optional var curseFileID: FileID = FileID.INVALID,
     // DIRECT
@@ -128,26 +127,25 @@ data class Entry(
                             EnumSerializer(FileType::class).set,
                             18
                         )
-                        elemOutput.serialize(this.curseOptionalDependencies, obj.curseOptionalDependencies, 19)
-                        elemOutput.serializeObj(this.curseProjectID, obj.curseProjectID, ProjectID.Companion, 20)
-                        elemOutput.serializeObj(this.curseFileID, obj.curseFileID, FileID.Companion, 21)
+                        elemOutput.serializeObj(this.curseProjectID, obj.curseProjectID, ProjectID.Companion, 19)
+                        elemOutput.serializeObj(this.curseFileID, obj.curseFileID, FileID.Companion, 20)
                     }
                     provider.equalsIgnoreCase("DIRECT") -> {
-                        elemOutput.serialize(this.url, obj.url, 22)
-                        elemOutput.serialize(this.useUrlTxt, obj.useUrlTxt, 23)
+                        elemOutput.serialize(this.url, obj.url, 21)
+                        elemOutput.serialize(this.useUrlTxt, obj.useUrlTxt, 22)
                     }
                     provider.equalsIgnoreCase("JENKINS") -> {
-                        elemOutput.serialize(this.jenkinsUrl, obj.jenkinsUrl, 24)
-                        elemOutput.serialize(this.job, obj.job, 25)
-                        elemOutput.serialize(this.buildNumber, obj.buildNumber, 26)
+                        elemOutput.serialize(this.jenkinsUrl, obj.jenkinsUrl, 23)
+                        elemOutput.serialize(this.job, obj.job, 24)
+                        elemOutput.serialize(this.buildNumber, obj.buildNumber, 25)
                     }
                     provider.equalsIgnoreCase("LOCAL") -> {
-                        elemOutput.serialize(this.fileSrc, obj.fileSrc, 27)
+                        elemOutput.serialize(this.fileSrc, obj.fileSrc, 26)
                     }
                     provider.equalsIgnoreCase("JSON") -> {
-                        elemOutput.serialize(this.updateJson, obj.updateJson, 28)
-                        elemOutput.serialize(this.updateChannel, obj.updateChannel, 29)
-                        elemOutput.serialize(this.template, obj.template, 30)
+                        elemOutput.serialize(this.updateJson, obj.updateJson, 27)
+                        elemOutput.serialize(this.updateChannel, obj.updateChannel, 28)
+                        elemOutput.serialize(this.template, obj.template, 29)
                     }
                 }
             }

@@ -5,9 +5,11 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
 import kotlinx.coroutines.experimental.channels.SendChannel
+import voodoo.curse.CurseClient
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import voodoo.data.provider.UpdateChannel
+import voodoo.data.provider.UpdateJson
 import voodoo.util.Downloader
 
 import java.io.File
@@ -18,13 +20,16 @@ import java.io.File
  */
 object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
     private suspend fun getUpdateJson(url: String): UpdateJson? {
-        val(request, response, result) = url.httpGet()
+        val (request, response, result) = url.httpGet()
             .header("User-Agent" to Downloader.useragent)
             .awaitObjectResponse<UpdateJson>(kotlinxDeserializerOf())
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
-                logger.error(result.error.exception) { result.error }
+                logger.error("getUpdateJson")
+                logger.error("url: $url")
+                logger.error("response: $response")
+                logger.error(result.error.exception) { "cold not get update json" }
                 result.error.exception.printStackTrace()
                 null
             }
@@ -79,8 +84,3 @@ object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
         return data
     }
 }
-
-data class UpdateJson(
-    val homepage: String = "",
-    val promos: Map<String, String> = emptyMap()
-)

@@ -45,7 +45,6 @@ data class NestedEntry(
     //  CURSE
     var curseMetaUrl: String = CurseConstants.PROXY_URL,
     var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
-    var curseOptionalDependencies: Boolean = false,
     var curseProjectID: ProjectID = ProjectID.INVALID,
     var curseFileID: FileID = FileID.INVALID,
     //  DIRECT
@@ -102,7 +101,6 @@ data class NestedEntry(
                 // CURSE
                 curseMetaUrl = it.curseMetaUrl,
                 curseReleaseTypes = it.curseReleaseTypes,
-                curseOptionalDependencies = it.curseOptionalDependencies,
                 curseProjectID = it.curseProjectID,
                 curseFileID = it.curseFileID,
                 // DIRECT
@@ -152,7 +150,6 @@ data class NestedEntry(
 //            //  CURSE
 //            if (entry.curseMetaUrl == DEFAULT.curseMetaUrl && curseMetaUrl != DEFAULT.curseMetaUrl) entry.curseMetaUrl = curseMetaUrl
 //            if (entry.curseReleaseTypes == DEFAULT.curseReleaseTypes && curseReleaseTypes != DEFAULT.curseReleaseTypes) entry.curseReleaseTypes = curseReleaseTypes
-//            if (entry.curseOptionalDependencies == DEFAULT.curseOptionalDependencies && curseOptionalDependencies != DEFAULT.curseOptionalDependencies) entry.curseOptionalDependencies = curseOptionalDependencies //  DIRECT
 //            if (entry.url == DEFAULT.url && url != DEFAULT.url) entry.url = url
 //            if (entry.useUrlTxt == DEFAULT.useUrlTxt && useUrlTxt != DEFAULT.useUrlTxt) entry.useUrlTxt = useUrlTxt
 //            //  JENKINS

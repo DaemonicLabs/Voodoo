@@ -15,7 +15,7 @@ pack=$1
 [ ! -e samples ] && mkdir samples
 cd samples
 
-./gradlew "$pack" --args "pack server -o '$DIR/run/.server/$pack'"
+./gradlew "$pack" --args "pack server -o '$DIR/run/.server/$pack'" -Si
 if [ ! $? -eq 0 ]; then
     echo "Error packing $pack server"
     exit 1

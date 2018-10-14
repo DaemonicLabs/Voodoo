@@ -1,4 +1,3 @@
-/* ktlint-disable no-wildcard-imports */
 import com.skcraft.launcher.model.modpack.Recommendation
 import voodoo.data.Side
 import voodoo.data.UserFiles
@@ -7,8 +6,6 @@ import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
 import voodoo.provider.JenkinsProvider
 import voodoo.withDefaultMain
-
-/* ktlint-enable no-wildcard-imports */
 
 fun main(args: Array<String>) = withDefaultMain(
     root = Constants.rootDir.resolve("run"),
@@ -37,7 +34,6 @@ fun main(args: Array<String>) = withDefaultMain(
             // TODO: use type URL ?
 //            metaUrl = "https://curse.nikky.moe/api"
 //            metaUrl = "https://curse.nikky.moe/api/"
-            optionals = false
             list {
                 // Vazkii
                 id(Mod.akashicTome)

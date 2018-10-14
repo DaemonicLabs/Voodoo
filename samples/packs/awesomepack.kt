@@ -5,7 +5,6 @@ import voodoo.data.curse.FileType
 import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
 import voodoo.provider.JenkinsProvider
-import voodoo.provider.LocalProvider
 import voodoo.withDefaultMain
 
 fun main(args: Array<String>) = withDefaultMain(
@@ -36,76 +35,65 @@ fun main(args: Array<String>) = withDefaultMain(
         )
         root = rootEntry(CurseProvider) {
             validMcVersions = setOf("1.12.1", "1.12")
-            optionals = false
             releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
             list {
-                id(Mod.thermalDynamics)
-                id(Mod.thermalexpansion)
-                id(Mod.thermalInnovation)
+                add(Mod.thermalDynamics)
+                add(Mod.thermalexpansion)
+                add(Mod.thermalInnovation)
 
-                group {
-                    releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
-                }.list {
-                    id(Mod.rftools)
-                    id(Mod.rftoolsDimensions)
-                }
+                + Mod::betterBuildersWands
 
                 withProvider(DirectProvider).list {
-                    id("betterBuilderWands") {
-                        name = "Better Builder's Wands"
-                        url =
-                            "https://centerofthemultiverse.net/launcher/mirror/BetterBuildersWands-1.12-0.11.1.245+69d0d70.jar"
-                    }
                     // inline url declration
-                    id("nutrition") url "https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar"
+                    add("nutrition") url "https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar"
                 }
 
                 withProvider(JenkinsProvider) {
                     jenkinsUrl = "https://ci.elytradev.com"
                 }.list {
-                    id("fruitPhone") job "elytra/FruitPhone/1.12.2"
-                    id("probeDataProvider") job "elytra/ProbeDataProvider/1.12"
+                    add("fruitPhone") job "elytra/FruitPhone/1.12.2"
+                    add("probeDataProvider") job "elytra/ProbeDataProvider/1.12"
 
-                    id("magicArselnal") {
+                    add("magicArselnal") {
                         name = "Magic Arsenal"
                         job = "elytra/MagicArsenal/master"
                     }
 
                     // without a job specfied, the id will be implicitely used as job
-                    id("elytra/MatterLink/master")
+                    add("elytra/MatterLink/master")
                 }
 
-                withProvider(LocalProvider).list {
-                    id("someMod") {
-                        name = "SomeMod"
-                        fileName = "SomeMod.jar"
-                        // relative to localDir
-                        fileSrc = "someMod/build/libs/SomeMod-1.0.jar"
-                    }
-                }
+//                withProvider(LocalProvider).list {
+//                    add("someMod") {
+//                        name = "SomeMod"
+//                        fileName = "SomeMod.jar"
+//                        // relative to localDir
+//                        fileSrc = "someMod/build/libs/SomeMod-1.0.jar"
+//                    }
+//                }
 
                 // sides
                 group {
                     side = Side.CLIENT
                 }.list {
-                    id(Mod.toastControl)
-                    id(Mod.wawlaWhatAreWeLookingAt)
-                    id(Mod.wailaHarvestability)
-                    id(Mod.jeiIntegration)
+                    add(Mod.toastControl)
+                    add(Mod.wawlaWhatAreWeLookingAt)
+                    add(Mod.wailaHarvestability)
+                    add(Mod.jeiIntegration)
                 }
 
                 group {
                     side = Side.SERVER
                 }.list {
-                    id(Mod.btfuContinuousRsyncIncrementalBackup)
-                    id(Mod.swingthroughgrass)
-                    id(Mod.colorchat)
-                    id(Mod.shadowfactsForgelin)
+                    add(Mod.btfuContinuousRsyncIncrementalBackup)
+                    add(Mod.swingthroughgrass)
+                    add(Mod.colorchat)
+                    add(Mod.shadowfactsForgelin)
 
                     withProvider(JenkinsProvider) {
                         jenkinsUrl = "https://ci.elytradev.com"
                     }.list {
-                        id("matterLink") job "elytra/MatterLink/master"
+                        add("matterLink") job "elytra/MatterLink/master"
                     }
                 }
 
@@ -116,22 +104,22 @@ fun main(args: Array<String>) = withDefaultMain(
                         recommendation = Recommendation.starred
                     }
                 }.list {
-                    id(Mod.journeymap) {
+                    add(Mod.journeymap) {
                         description =
                             "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
                     }
 
-                    id(Mod.mage) description "Configurable graphics enhancements. Highly recomended."
+                    add(Mod.mage) description "Configurable graphics enhancements. Highly recomended."
 
-                    id(Mod.neat) {
+                    add(Mod.neat) {
                         description = "Simple health and unit frames."
                     }
 
-                    id(Mod.clientTweaks) {
+                    add(Mod.clientTweaks) {
                         description = "Various client related fixes and tweaks, all in a handy menu."
                     }
 
-                    id(Mod.mouseTweaks) {
+                    add(Mod.mouseTweaks) {
                         description = "Add extra mouse gestures for inventories and crafting grids."
                     }
                 }
@@ -140,35 +128,37 @@ fun main(args: Array<String>) = withDefaultMain(
                         selected = false
                     }
                 }.list {
-                    id(Mod.itemScroller) {
+                    add(Mod.itemScroller) {
                         description = "Alternative to MouseTweaks."
                     }
 
-                    id(Mod.xaerosMinimap) {
+                    add(Mod.xaerosMinimap) {
                         description = "Lightweight alternative to JourneyMap."
                     }
 
-                    id(Mod.minemenu) {
+                    add(Mod.minemenu) {
                         description =
                             "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
                     }
 
-                    id(Mod.itemzoom) {
+                    add(Mod.itemzoom) {
                         description = "Check this if you like to get a closer look at item textures."
                     }
                 }
 
                 // resource packs
-                id(TexturePack::unity) {
+                add(TexturePack.unity) {
                     fileName = "Unity.zip"
                     // curse resource packs are automatically
                     // set to use the correct folder
                 }
 
-                withProvider(LocalProvider).list {
-                    id("slice") {
+                withProvider(DirectProvider).list {
+                    add("slice") {
                         folder = "resourcepacks"
-                        fileSrc = "ressourcepacks/Slice.zip"
+//                        fileSrc = "ressourcepacks/Slice.zip"
+                        url = "https://centerofthemultiverse.net/launcher/mirror/Slice.zip"
+                        fileName = "Slice.zip"
                     }
                 }
             }

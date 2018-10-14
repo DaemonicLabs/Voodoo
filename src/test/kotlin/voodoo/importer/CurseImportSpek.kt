@@ -1,13 +1,12 @@
-package voodoo.import
+package voodoo.importer
 
 import kotlinx.coroutines.experimental.runBlocking
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import voodoo.importer.CurseImporter
 import java.io.File
 
 object CurseImportSpek : Spek({
-    describe("import curse pack") {
+    describe("importer curse pack") {
         val rootFolder by memoized {
             File("run").resolve("test").resolve("importCurse").absoluteFile.apply {
                 deleteRecursively()
@@ -15,7 +14,7 @@ object CurseImportSpek : Spek({
             }
         }
 
-        it("import") {
+        it("importer") {
             runBlocking {
                 CurseImporter.import(
                     "stoneblock",

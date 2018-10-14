@@ -31,24 +31,6 @@ data class ModBundle(
 )
 
 object NewModpack : KLogging() {
-    fun CodeBlock.Builder.addGroup(buildGroup: (group: CodeBlock.Builder) -> Unit): CodeBlock.Builder {
-        beginControlFlow("group")
-        buildGroup(this)
-        return endControlFlow()
-    }
-
-    fun CodeBlock.Builder.addList(buildList: (group: CodeBlock.Builder) -> Unit) {
-        beginControlFlow(".list")
-        buildList(this)
-        endControlFlow()
-    }
-
-    fun CodeBlock.Builder.withProvider(buildGroup: (group: CodeBlock.Builder) -> Unit) {
-        beginControlFlow("group")
-        buildGroup(this)
-        endControlFlow()
-    }
-
     fun CodeBlock.Builder.controlFlow(
         controlFlow: String,
         vararg args: Any?,
@@ -58,7 +40,7 @@ object NewModpack : KLogging() {
             .apply(buildFlow)
             .endControlFlow()
 
-    fun CodeBlock.Builder.entry(entry: NestedEntry, default: NestedEntry, root: Boolean = false) {
+    private fun CodeBlock.Builder.entry(entry: NestedEntry, default: NestedEntry, root: Boolean = false) {
         val provider = Providers[entry.provider]
         val entryBody = CodeBlock.builder().apply {
             entry.name.takeIf { it != default.name }?.let {
@@ -128,9 +110,6 @@ object NewModpack : KLogging() {
                         add(builder.build())
                         add("\n%]")
                     }
-                    entry.curseOptionalDependencies.takeIf { it != default.curseOptionalDependencies }?.let {
-                        addStatement("curseOptionalDependencies = %L", it)
-                    }
 //                    entry.curseProjectID.takeIf { it != default.curseProjectID }?.let {
 //                        addStatement("curseProjectID = %T(%L)", ProjectID::class.asClassName(), it.value)
 //                    }
@@ -178,41 +157,54 @@ object NewModpack : KLogging() {
                 }
             }
         }.build()
-        if (!root) {
+
+        logger.info("provider: ${entry.provider}")
+        val builder = if (!root) {
             when {
+                // id changed
                 entry.id != default.id -> when (provider) {
                     is CurseProvider -> {
                         val identifier = runBlocking {
-//                            logger.info(entry.id)
+                            //                            logger.info(entry.id)
 //                            logger.info("project id: ${entry.curseProjectID}")
                             val addon = CurseClient.getAddon(entry.curseProjectID, CurseConstants.PROXY_URL)
                             val slug = addon!!.slug
                             Poet.defaultSlugSanitizer(slug)
                         }
                         if (entryBody.isEmpty())
-                            addStatement("%T(Mod.$identifier)", ClassName("", "id"))
+                            addStatement("+ Mod::$identifier")
                         else
-                            beginControlFlow("%T(Mod.$identifier)", ClassName("", "id"))
+                            beginControlFlow("%T(Mod.$identifier)", ClassName("", "add"))
                     }
                     else -> {
                         if (entryBody.isEmpty())
-                            addStatement("%T(%S)", ClassName("", "id"))
+                            addStatement("+%S", entry.id)
                         else
-                            beginControlFlow("%T(%S)", ClassName("", "id"))
+                            beginControlFlow("%T(%S)", ClassName("", "add"), entry.id)
                     }
                 }
-                entry.provider != default.provider -> beginControlFlow(
+                // provider changed
+                entry.provider != default.provider -> if (entryBody.isEmpty()) addStatement(
+                    "%T(%T)",
+                    ClassName("", "withProvider"),
+                    provider::class.asClassName()
+                ) else beginControlFlow(
                     "%T(%T)",
                     ClassName("", "withProvider"),
                     provider::class.asClassName()
                 )
+                // everything else
                 else -> beginControlFlow("%T", ClassName("", "group"))
             }
-        }
+        } else null
+
+        val indented = builder != null
 
         add(entryBody)
 
-        if (!root && entryBody.isNotEmpty()) endControlFlow()
+        if (indented && entryBody.isNotEmpty()) {
+            endControlFlow()
+        }
 
         entry.entries.takeUnless { it.isEmpty() }?.let { entries ->
             controlFlow("%T", ClassName("", if (root) "list" else ".list")) { listBuilder ->
@@ -221,6 +213,10 @@ object NewModpack : KLogging() {
                 }
             }
         }
+
+//        if (!indented || !entryBody.isNotEmpty()) {
+//            endControlFlow()
+//        }
     }
 
     fun createModpack(

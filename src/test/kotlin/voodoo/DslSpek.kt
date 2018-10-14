@@ -1,19 +1,15 @@
 package voodoo
 
 import Forge
-import id
 import job
 import kotlinx.coroutines.experimental.runBlocking
 import list
 import metaUrl
-import optionals
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import releaseTypes
-import rootEntry
 import voodoo.data.Side
 import voodoo.data.curse.FileType
-import voodoo.data.nested.NestedPack
 import voodoo.provider.CurseProvider
 import voodoo.provider.JenkinsProvider
 import withProvider
@@ -33,40 +29,36 @@ object DslSpek : Spek({
 //        }
 
         val nestedPack by memoized {
-            NestedPack(
-                rootDir = rootFolder,
+            MainEnv(rootDir = rootFolder).nestedPack(
                 id = "some-id",
-                version = "1.0",
-                mcVersion = "1.12.2",
+                mcVersion = "1.12.2"
+            ) {
+                version = "1.0"
                 // TODO: type = File
-                icon = File("icon.png"),
-                authors = listOf("dude", "and", "friends"),
+                icon = File("icon.png")
+                authors = listOf("dude", "and", "friends")
                 // TODO: type = {recommended, latest} | buildnumber, make sealed class
-                forge = Forge.recommended,
+                forge = Forge.recommended
                 root = rootEntry(CurseProvider) {
-                    optionals = false
                     releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
 
                     // TODO: use type URL ?
-                    metaUrl = "https://curse.nikky.moe"
+                    metaUrl = "https://curse.nikky.moe/api"
                     list {
-                        id("botania") optionals false
-
-                        id("rf-tools") {
-                            optionals = false
-                        }
+                        add(Mod.botania)
+                        add(Mod.rftools)
 
                         withProvider(JenkinsProvider) {
                             side = Side.SERVER
                         }.list {
-                            id("matterlink") job "elytra/matterlink/master"
-                            id("elytra/btfu/master")
+                            add("matterlink") job "elytra/matterlink/master"
+                            add("elytra/btfu/master")
                         }
 
 //                    include("other.kts")
                     }
                 }
-            )
+            }
         }
 
         val modpack by memoized {

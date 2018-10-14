@@ -1,7 +1,6 @@
 package voodoo.importer
 
 import fileSrc
-import id
 import kotlinx.coroutines.experimental.CoroutineName
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.coroutineScope
@@ -9,10 +8,7 @@ import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.serialization.json.JSON
 import list
-import org.slf4j.LoggerFactory
-import projectID
 import releaseTypes
-import rootEntry
 import voodoo.MainEnv
 import voodoo.NewModpack
 import voodoo.Poet
@@ -45,9 +41,6 @@ object CurseImporter : AbstractImporter() {
         rootDir: File,
         packsDir: File
     ) {
-        val slf4jLogger = LoggerFactory.getLogger("some-logger")
-        slf4jLogger.info("An info log message logged using SLF4j")
-
 //        Thread.currentThread().contextClassLoader = CurseImporter::class.java.classLoader
         val tmpName = modpackId.blankOr ?: UUID.randomUUID().toString()
 
@@ -89,7 +82,7 @@ object CurseImporter : AbstractImporter() {
                     curseChannel.send(
                         Triple(
                             Poet.defaultSlugSanitizer(addon.slug),
-                            Regex.fromLiteral(addonFile.fileName).pattern,
+                            Regex.escape(addonFile.fileName),
                             addon.id
                         )
                     )
@@ -129,9 +122,8 @@ object CurseImporter : AbstractImporter() {
                 releaseTypes = sortedSetOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
                 list {
                     curseEntries.forEach { (identifier, versionStr, curseProjectID) ->
-                        id(identifier) {
+                        add(curseProjectID.value) {
                             version = versionStr
-                            projectID = curseProjectID
                         }
                     }
                     val modsFolder = sourceFolder.resolve("mods")

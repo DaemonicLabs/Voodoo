@@ -1,12 +1,10 @@
 package voodoo.provider
 
-import id
 import kotlinx.coroutines.experimental.async
 import kotlinx.coroutines.experimental.runBlocking
 import list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import rootEntry
 import voodoo.MainEnv
 import voodoo.builder.resolve
 import voodoo.util.Directories

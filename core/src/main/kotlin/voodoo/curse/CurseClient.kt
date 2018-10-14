@@ -84,6 +84,9 @@ object CurseClient : KLogging() {
                 return result.value.data.addons
             }
             is Result.Failure -> {
+                logger.error("GetSlugIDPairs")
+                logger.error("url: $url")
+                logger.error("response: $response")
                 logger.error(result.error.exception) { "cold not request slug-id pairs" }
                 logger.error { request }
                 throw result.error.exception
@@ -120,6 +123,9 @@ object CurseClient : KLogging() {
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
+                logger.error("getAddonFileCall")
+                logger.error("url: $url")
+                logger.error("response: $response")
                 logger.error(result.error.exception) { result.error }
                 throw result.error.exception
                 null
@@ -145,6 +151,9 @@ object CurseClient : KLogging() {
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
+                logger.error("getAllFilesForAddonCall")
+                logger.error("url: $url")
+                logger.error("response: $response")
                 logger.error(result.error.exception) { result.error }
                 throw result.error.exception
                 emptyList()
@@ -155,13 +164,13 @@ object CurseClient : KLogging() {
     //    val getAddon = ::getAddonCall.memoizeSuspend()
     private val getAddonCache: MutableMap<Pair<ProjectID, String>, Addon?> = HashMap(1 shl 0)
 
-    suspend fun getAddon(addonId: ProjectID, proxyUrl: String): Addon? {
+    suspend fun getAddon(addonId: ProjectID, proxyUrl: String, fail: Boolean = true): Addon? {
         if (!addonId.valid) throw IllegalStateException("invalid project id")
         val a = addonId to proxyUrl
-        return getAddonCache.getOrPut(a) { getAddonCall(addonId, proxyUrl) }
+        return getAddonCache.getOrPut(a) { getAddonCall(addonId, proxyUrl, fail) }
     }
 
-    private suspend fun getAddonCall(addonId: ProjectID, proxyUrl: String): Addon? {
+    private suspend fun getAddonCall(addonId: ProjectID, proxyUrl: String, fail: Boolean = true): Addon? {
         val url = "$proxyUrl/addon/$addonId"
 
         logger.debug("get $url")
@@ -171,8 +180,11 @@ object CurseClient : KLogging() {
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
+                logger.error("getAddonCall")
+                logger.error("url: $url")
+                logger.error("response: $response")
                 logger.error(result.error.exception) { result.error }
-                throw result.error.exception
+                if (fail) throw result.error.exception
                 null
             }
         }
@@ -190,6 +202,9 @@ object CurseClient : KLogging() {
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
+                logger.error("getFileChangelog")
+                logger.error("url: $url")
+                logger.error("response: $response")
                 logger.error(result.error.exception) { result.error }
                 throw IllegalStateException("failed getting changelog", result.error.exception)
             }
@@ -247,7 +262,7 @@ object CurseClient : KLogging() {
 
         if (version.isNotBlank()) {
             files = files.filter { f ->
-                (f.fileName.contains(version, true) || f.fileName == version)
+                (f.fileName.contains(version.toRegex()) || f.fileName == version)
             }
             if (files.isEmpty()) {
                 logger.error("filtered files did not match version $version $oldFiles")
@@ -292,10 +307,13 @@ object CurseClient : KLogging() {
             val filesUrl = "$proxyUrl/addon/$addonId/files"
             logger.error(
                 "no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
-                    "files: $filesUrl mc version: $mcVersions version: $version \n" +
-                    "$addon"
+                    "files: $filesUrl mc version: $mcVersions version: $version"
             )
             logger.error("no file matching the parameters found for ${addon.name}")
+            logger.error("filtered by")
+            logger.error("mcVersions: $mcVersions")
+            logger.error("releaseTypes: $releaseTypes")
+            logger.error("filename: $re")
             kotlin.system.exitProcess(-1)
 //            return Triple(addonId, FileID.INVALID, "")
         }

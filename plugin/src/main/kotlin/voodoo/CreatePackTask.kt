@@ -1,6 +1,5 @@
 package voodoo
 
-import id
 import kotlinx.coroutines.experimental.runBlocking
 import list
 import org.gradle.api.DefaultTask
@@ -9,7 +8,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import projectID
-import rootEntry
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseConstants
 import voodoo.forge.ForgeUtil
@@ -69,8 +67,8 @@ open class CreatePackTask : DefaultTask() {
             root = rootEntry(CurseProvider) {
                 list {
                     filteredMods.forEach { (identifier, projectId) ->
-                        id(identifier) {
-                            projectID = projectId
+                        add(projectId.value) {
+//                            projectID = projectId
                         }
                     }
                 }

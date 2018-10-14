@@ -174,13 +174,15 @@ data class ModPack(
     }
 
     fun findLockEntryById(id: String) = lockEntrySet.find { it.id == id }
+
+    // TODO: replace set with actor or similar, avoid synchronized
     fun addOrMerge(
         entry: LockEntry,
         mergeOp: (new: LockEntry?, old: LockEntry) -> LockEntry = { old, new -> old ?: new }
     ): LockEntry {
-        logger.debug("waiting on synchrnoized")
+//        logger.debug("waiting on synchrnoized")
         val result2 = synchronized(lockEntrySet) {
-            logger.debug("entering synchronized")
+//            logger.debug("entering synchronized")
             val result = lockEntrySet.find { it.id == entry.id }?.let {
                 lockEntrySet -= it
                 mergeOp(it, entry)
@@ -188,7 +190,7 @@ data class ModPack(
             lockEntrySet += result
             result
         }
-        logger.debug("left synchronized")
+//        logger.debug("left synchronized")
         return result2
     }
 }
