@@ -3,11 +3,13 @@ import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.task
+import org.gradle.kotlin.dsl.withType
 import org.gradle.plugins.ide.idea.IdeaPlugin
 
 open class GeneratorPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         with(project) {
+
             val folder = outputFolder(project)
             project.getPlugins().withType(IdeaPlugin::class.java) {
                 model.apply {
@@ -26,9 +28,23 @@ open class GeneratorPlugin : Plugin<Project> {
                 extension = constExtension
             }
 
-//            tasks.findByName("compileKotlin")
-//                ?.dependsOn(generateConstants)
+//            tasks.withType<KotlinCompile> {
+//                kotlinOptions {
+//                    jvmTarget = "1.8"
+//                }
+//                dependsOn(generateConstants)
+//            }
+//
+//            extensions.configure<KotlinJvmProjectExtension> {
+//                //                (sourceSets as MutableCollection<KotlinSourceSet>).clear()
+//                sourceSets.maybeCreate("main").kotlin.apply {
+//                    srcDir(outputFolder(project))
+//                }
+////                sourceSets.create("test")
+//            }
 
+        }
+        project.afterEvaluate {
         }
     }
 

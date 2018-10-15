@@ -2,11 +2,11 @@ plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
     idea
-//    kotlin("jvm") version "1.2.61"
 }
 
 repositories {
     jcenter()
+    mavenCentral()
 }
 
 dependencies {
