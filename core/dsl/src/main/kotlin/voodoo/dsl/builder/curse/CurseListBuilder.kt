@@ -63,10 +63,15 @@ class CurseListBuilder<T>(
         return entryBuilder
     }
 
-    @Deprecated("renamed to add", ReplaceWith("add"), level = DeprecationLevel.WARNING)
+    @Deprecated("renamed to add", ReplaceWith("add(id)"), level = DeprecationLevel.WARNING)
+    fun id(
+        id: Int
+    ): EntryBuilder<T> = add(id)
+
+    @Deprecated("renamed to add {}", ReplaceWith("add(id, initEntry)"), level = DeprecationLevel.WARNING)
     fun id(
         id: Int,
-        initEntry: EntryBuilder<T>.() -> Unit = {}
+        initEntry: EntryBuilder<T>.() -> Unit
     ): EntryBuilder<T> = add(id, initEntry)
 
     /**
@@ -94,11 +99,47 @@ class CurseListBuilder<T>(
     // Deprecations
 
     @VoodooDSL
-    @Deprecated("String ids are no longer supported by curse, use constants", level = DeprecationLevel.ERROR)
+    @Deprecated(
+        "String ids are no longer supported by curse, use constants",
+        ReplaceWith("add(this)"),
+        level = DeprecationLevel.ERROR
+    )
     override operator fun String.unaryPlus(): EntryBuilder<T> = throw IllegalArgumentException()
 
-    @Deprecated("String ids are no longer supported by curse, use constants", level = DeprecationLevel.ERROR)
+    @Deprecated(
+        "String ids are no longer supported by curse, use constants",
+        ReplaceWith("id.unaryPlus()"),
+        level = DeprecationLevel.ERROR
+    )
     override fun add(
+        id: String
+    ): EntryBuilder<T> = throw IllegalArgumentException()
+
+    @Deprecated(
+        "String ids are no longer supported by curse, use constants",
+        ReplaceWith("add(id, initEntry)"),
+        level = DeprecationLevel.ERROR
+    )
+    override fun add(
+        id: String,
+        initEntry: EntryBuilder<T>.() -> Unit
+    ): EntryBuilder<T> = throw IllegalArgumentException()
+
+    @Deprecated(
+        "String ids are no longer supported by curse, use constants",
+        ReplaceWith("id.unaryPlus()"),
+        level = DeprecationLevel.ERROR
+    )
+    override fun id(
+        id: String
+    ): EntryBuilder<T> = throw IllegalArgumentException()
+
+    @Deprecated(
+        "String ids are no longer supported by curse, use constants",
+        ReplaceWith("add(id, initEntry)"),
+        level = DeprecationLevel.ERROR
+    )
+    override fun id(
         id: String,
         initEntry: EntryBuilder<T>.() -> Unit
     ): EntryBuilder<T> = throw IllegalArgumentException()

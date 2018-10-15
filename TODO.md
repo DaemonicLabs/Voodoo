@@ -14,9 +14,14 @@ https://github.com/korlibs/korte
 - markdown or html -> user choice
 </s>
 
+## diff
+
+copy state of the pack from git history, using tags
+
+diff on lockfilles
+
 # condense module graph
 improve buildspeed and publish speed in dev
-merge builder & importer
 
 # generate gradle setup
 
@@ -27,7 +32,8 @@ requires testing the gradle setup before generating it
 
 - <s> update kscript annotations/header </s>
 
-# list optional dependencies gradle task
+# analyse
+## list optional dependencies gradle task
 
 list all optional dependencies of curse mods
 - curse mods only
@@ -35,7 +41,7 @@ list all optional dependencies of curse mods
 
 use modalyzer on all mod jars
 
-# suggest forge version
+## suggest forge version
 
 build first
 use modalyzer output of all jars
@@ -44,7 +50,7 @@ suggest named forge versions (copy-paste ready)
 # deprecate flat entries
 
 entries are flattened fast enough from the nested format, thee is no reason for a multi step process anymore
-keep flat entries on disk for debugging purposes only
+write flat entries to disk for debugging purposes only
 
 # curse import -> kotlinpoet ?
 
