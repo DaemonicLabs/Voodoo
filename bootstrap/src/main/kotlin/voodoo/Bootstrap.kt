@@ -6,13 +6,13 @@
 
 package voodoo
 
-import bootstrap.FILE_REGEX
-import bootstrap.JENKINS_JOB
-import bootstrap.JENKINS_URL
-import bootstrap.MODULE_NAME
 import kotlinx.coroutines.experimental.runBlocking
 import mu.KLogging
 import voodoo.bootstrap.BootstrapConstants.VERSION
+import voodoo.bootstrap.Config.FILE_REGEX
+import voodoo.bootstrap.Config.JENKINS_JOB
+import voodoo.bootstrap.Config.JENKINS_URL
+import voodoo.bootstrap.Config.MODULE_NAME
 import voodoo.util.Directories
 import voodoo.util.download
 import voodoo.util.jenkins.JenkinsServer

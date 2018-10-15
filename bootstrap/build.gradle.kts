@@ -3,10 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     application
-}
-
-apply {
-    plugin("com.github.johnrengelman.shadow")
+    id("com.github.johnrengelman.shadow")
 }
 
 application {
@@ -42,9 +39,8 @@ if (project.hasProperty("target")) {
     fileName = _baseName
 }
 
-val buildNumber = System.getenv("BUILD_NUMBER")?.let { "-$it" } ?: ""
 base {
-    archivesBaseName = "$fileName$buildNumber"
+    archivesBaseName = "$fileName-${Env.versionSuffix}"
 }
 val shadowJar by tasks.getting(ShadowJar::class) {
     classifier = ""
@@ -55,19 +51,15 @@ val build by tasks.getting(Task::class) {
     dependsOn(shadowJar)
 }
 
-val compileKotlin by tasks.getting(KotlinCompile::class) {
-    doFirst {
-        copy {
-            from("src/template/kotlin/voodoo/")
-            into("$buildDir/generated-src/voodoo/")
-            expand(
-                    mapOf(
-                            "JENKINS_URL" to "https://ci.elytradev.com",
-                            "JENKINS_JOB" to "elytra/Voodoo/master",
-                            "MODULE_NAME" to moduleName,
-                            "FILE_REGEX" to fileRegex
-                    )
-            )
-        }
+configure<ConstantsExtension> {
+    constantsObject(
+        pkg = "voodoo.bootstrap",
+        className = "Config"
+    ) {
+        field("JENKINS_URL") value Env.buildNumber
+        field("JENKINS_URL") value Jenkins.jenkinsUrl
+        field("JENKINS_JOB") value Jenkins.jenkinsJob
+        field("MODULE_NAME") value moduleName
+        field("FILE_REGEX") value fileRegex
     }
 }

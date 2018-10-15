@@ -100,19 +100,41 @@ allprojects {
             version = ""
         }
 
+        val major: String by project
+        val minor: String by project
+        val patch: String by project
+
         if (project !in noConstants) {
 
             apply {
                 plugin("const-generator")
             }
 
-            val generateConstants by tasks.getting(GenerateConstantsTask::class) {
-                kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
+            val folder = listOf("voodoo") + when (project.depth) {
+                0 -> emptyList()
+                else -> project.name.split('-')
+            }
+            configure<ConstantsExtension> {
+                constantsObject(
+                    pkg = folder.joinToString("."),
+                    className = project.name
+                        .split("-")
+                        .joinToString("") {
+                            it.capitalize()
+                        } + "Constants"
+                ) {
+                    field("BUILD_NUMBER") value Env.buildNumber
+                    field("BUILD") value Env.versionSuffix
+                    field("MAJOR_VERSION") value major
+                    field("MINOR_VERSION") value minor
+                    field("PATCH_VERSION") value patch
+                    field("VERSION") value "$major.$minor.$patch"
+                    field("FULL_VERSION") value "$major.$minor.$patch-${Env.versionSuffix}"
+                }
             }
 
-            configure<ConstantsExtension> {
-
-                build = System.getenv("BUILD_NUMBER")
+            val generateConstants by tasks.getting(GenerateConstantsTask::class) {
+                kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
             }
 
             // TODO depend on kotlin tasks in the plugin
@@ -157,9 +179,6 @@ allprojects {
                 plugin("maven-publish")
             }
 
-            val major: String by project
-            val minor: String by project
-            val patch: String by project
             version = "$major.$minor.$patch-${Env.versionSuffix}"
 
             val sourcesJar by tasks.registering(Jar::class) {
