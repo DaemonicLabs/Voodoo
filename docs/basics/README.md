@@ -120,15 +120,15 @@ root = rootEntry(CurseProvider) {
     optionals = false
     releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
     list {
-        id(Mod.thermalDynamics)
-        id(Mod.thermalexpansion)
-        id(Mod.thermalInnovation)
+        add(Mod.thermalDynamics)
+        add(Mod.thermalexpansion)
+        add(Mod.thermalInnovation)
         
         group {
             releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
         }.list {
-            id(Mod.rftools)
-            id(Mod.rftoolsDimensions)
+            add(Mod.rftools)
+            add(Mod.rftoolsDimensions)
         }
     }
 }
@@ -151,12 +151,12 @@ Direct Entries require a url along with the name.. so a short notation is not po
 
 ```kotlin
 withProvider(DirectProvider).list {
-    id("betterBuilderWands") {
+    add("betterBuilderWands") {
         name = "Better Builder's Wands"
         url = "https://centerofthemultiverse.net/launcher/mirror/BetterBuildersWands-1.12-0.11.1.245+69d0d70.jar"
     }
     // inline url declration
-    id("nutrition") url "https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar"
+    add("nutrition") url "https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar"
 }
 ```
 
@@ -170,16 +170,16 @@ different file or make sure your generated docs are not used as mod jar? then us
 withProvider(JenkinsProvider) {
     jenkinsUrl = "https://ci.elytradev.com"
 }.list { // Jenkins provider context
-    id("fruitPhone") job "elytra/FruitPhone/1.12.2"
-    id("probeDataProvider") job "elytra/ProbeDataProvider/1.12"
+    add("fruitPhone") job "elytra/FruitPhone/1.12.2"
+    add("probeDataProvider") job "elytra/ProbeDataProvider/1.12"
     
-    id("magicArselnal") {
+    add("magicArselnal") {
         name = "Magic Arsenal"
         job = "elytra/MagicArsenal/master"
     }
     
     // without a job specfied, the id will be implicitely used as job
-    id("elytra/MatterLink/master")
+    add("elytra/MatterLink/master")
 }
 ```
 
@@ -193,7 +193,7 @@ anyway.. local entries will take a relative path and pull the file from the `loc
 
 ```kotlin
 withProvider(LocalProvider).list { // Local provider Context
-    id("someMod") {
+    add("someMod") {
         name = "SomeMod"
         fileName = "SomeMod.jar"
         // relative to localDir
@@ -213,14 +213,14 @@ Voodoo will automatically install the mods for the chosen side on export / packa
 
 just some of the basics.. all examples use curse, but they could be from any provider
 
-```yaml
+```kotlin
 group {
     side = Side.CLIENT
 }.list {
-    id(Mod.toastControl)
-    id(Mod.wawlaWhatAreWeLookingAt)
-    id(Mod.wailaHarvestability)
-    id(Mod.jeiIntegration)
+    add(Mod.toastControl)
+    add(Mod.wawlaWhatAreWeLookingAt)
+    add(Mod.wailaHarvestability)
+    add(Mod.jeiIntegration)
 }
 ```
 
@@ -228,19 +228,19 @@ group {
 
 Backup Solution and universal chatbridge
 
-```yaml
+```kotlin
 group {
     side = Side.SERVER
 }.list {
-    id(Mod.btfuContinuousRsyncIncrementalBackup)
-    id(Mod.swingthroughgrass)
-    id(Mod.colorchat)
-    id(Mod.shadowfactsForgelin)
+    add(Mod.btfuContinuousRsyncIncrementalBackup)
+    add(Mod.swingthroughgrass)
+    add(Mod.colorchat)
+    add(Mod.shadowfactsForgelin)
     
     withProvider(JenkinsProvider) {
         jenkinsUrl = "https://ci.elytradev.com"
     }.list {
-        id("matterLink") job "elytra/MatterLink/master"
+        add("matterLink") job "elytra/MatterLink/master"
     }
 }
 ```
@@ -263,22 +263,22 @@ group {
         recommendation = Recommendation.starred
     }
 }.list {
-    id(Mod.journeymap) {
+    add(Mod.journeymap) {
         description =
             "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
     }
 
-    id(Mod.mage) description "Configurable graphics enhancements. Highly recomended."
+    add(Mod.mage) description "Configurable graphics enhancements. Highly recomended."
 
-    id(Mod.neat) {
+    add(Mod.neat) {
         description = "Simple health and unit frames."
     }
 
-    id(Mod.clientTweaks) {
+    add(Mod.clientTweaks) {
         description = "Various client related fixes and tweaks, all in a handy menu."
     }
 
-    id(Mod.mouseTweaks) {
+    add(Mod.mouseTweaks) {
         description = "Add extra mouse gestures for inventories and crafting grids."
     }
 }
@@ -287,19 +287,19 @@ group {
         selected = false
     }
 }.list {
-    id(Mod.itemScroller) {
+    add(Mod.itemScroller) {
         description = "Alternative to MouseTweaks."
     }
 
-    id(Mod.xaerosMinimap) {
+    add(Mod.xaerosMinimap) {
         description = "Lightweight alternative to JourneyMap."
     }
 
-    id(Mod.minemenu) {
+    add(Mod.minemenu) {
         description = "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
     }
 
-    id(Mod.itemzoom) {
+    add(Mod.itemzoom) {
         description = "Check this if you like to get a closer look at item textures."
     } 
 }
@@ -307,15 +307,15 @@ group {
 
 finally we can not only download mods.. but also resource packs
 
-```yaml
-id(TexturePack::unity) {
+```kotlin
+add(TexturePack::unity) {
     fileName = "Unity.zip"
     // curse resource packs are automatically 
     // set to use the correct folder
 }
 
 withProvider(LocalProvider).list {
-    id("slice") {
+    add("slice") {
         folder = "resourcepacks"
         fileSrc = "ressourcepacks/Slice.zip"
     }

@@ -8,6 +8,7 @@ import voodoo.dsl.DslConstants.FULL_VERSION
 import java.io.File
 import kotlin.system.exitProcess
 import voodoo.data.lock.LockPack
+import voodoo.dsl.MainEnv
 
 private val logger = KotlinLogging.logger {}
 

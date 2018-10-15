@@ -7,9 +7,9 @@ import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
-import projectID
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseConstants
+import voodoo.dsl.MainEnv
 import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
 import java.io.File

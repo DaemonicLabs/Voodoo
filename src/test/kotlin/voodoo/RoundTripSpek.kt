@@ -11,6 +11,7 @@ import releaseTypes
 import voodoo.data.Side
 import voodoo.data.curse.FileType
 import voodoo.data.lock.LockPack
+import voodoo.dsl.MainEnv
 import voodoo.provider.CurseProvider
 import voodoo.provider.JenkinsProvider
 import voodoo.util.json
