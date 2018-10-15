@@ -19,6 +19,16 @@ open class ListBuilder<T>(
 //    ): EntryBuilder<T> = add(this, initEntry)
 
     @VoodooDSL
+    @Deprecated(
+        "prefer unaryPlus",
+        ReplaceWith("id.unaryPlus()"),
+        level = DeprecationLevel.WARNING
+    )
+    open fun add(
+        id: String
+    ) = add(id) {}
+
+    @VoodooDSL
     open fun add(
         id: String,
         initEntry: EntryBuilder<T>.() -> Unit = {}
@@ -30,10 +40,14 @@ open class ListBuilder<T>(
         return entryBuilder
     }
 
-    @Deprecated("renamed to add", ReplaceWith("add"), level = DeprecationLevel.WARNING)
-    fun id(
+    @Deprecated("renamed to unaryPlus", ReplaceWith("id.unaryPlus()"), level = DeprecationLevel.WARNING)
+    open fun id(
+        id: String
+    ): EntryBuilder<T> = add(id)
+    @Deprecated("renamed to add", ReplaceWith("add(id, initEntry)"), level = DeprecationLevel.WARNING)
+    open fun id(
         id: String,
-        initEntry: EntryBuilder<T>.() -> Unit = {}
+        initEntry: EntryBuilder<T>.() -> Unit
     ): EntryBuilder<T> = add(id, initEntry)
 
     @VoodooDSL

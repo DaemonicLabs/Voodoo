@@ -273,9 +273,9 @@ fun main(args: Array<String>) = withDefaultMain(
                 group {
                     side = Side.SERVER
                 }.list {
-                    id("btfu-continuous-rsync-incremental-backup")
-                    id("swingthroughgrass")
-                    id("colorchat")
+                    id(Mod.btfuContinuousRsyncIncrementalBackup)
+                    id(Mod.swingthroughgrass)
+                    id(Mod.colorchat)
                     withProvider(JenkinsProvider) {
                         jenkinsUrl = "https://ci.elytradev.com"
                     }.list {
