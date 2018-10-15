@@ -71,6 +71,7 @@ Docs & Guides
 - [Setup](docs/setup)
 - [Basics](docs/basics)
 - [Building](docs/building)
+- [Import](docs/import)
 - [Testing](docs/testing)
 - [Server](docs/server)
 
