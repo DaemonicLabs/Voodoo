@@ -12,6 +12,7 @@ import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.JSON
+import kotlinx.serialization.map
 import kotlinx.serialization.serializer
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
@@ -112,27 +113,20 @@ object Hex : KLogging() {
         }
         logger.info("forge version is $forgeVersion")
 
+        val mapSerializer = (String.serializer() to BooleanSerializer).map
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val defaults = if (featureJson.exists()) {
-            JSON.indented.parse(
-                HashMapSerializer(String.serializer(), BooleanSerializer),
-                featureJson.readText()
-            )
+            JSON.indented.parse(mapSerializer, featureJson.readText())
         } else {
-            mapOf<String, Boolean>()
+            mapOf()
         }
         val (features, reinstall) = selectFeatures(
             modpack.features, defaults, modpack.title.blankOr
                 ?: modpack.name!!, modpack.version!!, forceDisplay = forceDisplay, updating = oldpack != null
         )
         featureJson.writeText(
-            JSON.indented.stringify(
-                HashMapSerializer(
-                    String.serializer(),
-                    BooleanSerializer
-                ), features
-            )
+            JSON.indented.stringify(mapSerializer, features)
         )
         if (reinstall) {
             minecraftDir.deleteRecursively()

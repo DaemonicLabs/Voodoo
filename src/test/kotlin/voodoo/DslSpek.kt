@@ -10,6 +10,7 @@ import org.spekframework.spek2.style.specification.describe
 import releaseTypes
 import voodoo.data.Side
 import voodoo.data.curse.FileType
+import voodoo.dsl.MainEnv
 import voodoo.provider.CurseProvider
 import voodoo.provider.JenkinsProvider
 import withProvider

@@ -9,7 +9,7 @@ import kotlinx.coroutines.experimental.launch
 import kotlinx.serialization.json.JSON
 import list
 import releaseTypes
-import voodoo.MainEnv
+import voodoo.dsl.MainEnv
 import voodoo.NewModpack
 import voodoo.Poet
 import voodoo.curse.CurseClient

@@ -4,7 +4,7 @@ import Mod
 import list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import voodoo.MainEnv
+import voodoo.dsl.MainEnv
 import voodoo.NewModpack
 import voodoo.data.Side
 import voodoo.provider.CurseProvider

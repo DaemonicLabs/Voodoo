@@ -40,16 +40,6 @@ open class ListBuilder<T>(
         return entryBuilder
     }
 
-    @Deprecated("renamed to unaryPlus", ReplaceWith("id.unaryPlus()"), level = DeprecationLevel.WARNING)
-    open fun id(
-        id: String
-    ): EntryBuilder<T> = add(id)
-    @Deprecated("renamed to add", ReplaceWith("add(id, initEntry)"), level = DeprecationLevel.WARNING)
-    open fun id(
-        id: String,
-        initEntry: EntryBuilder<T>.() -> Unit
-    ): EntryBuilder<T> = add(id, initEntry)
-
     @VoodooDSL
     fun group(
         initGroup: GroupBuilder<T>.() -> Unit = {}
@@ -60,4 +50,17 @@ open class ListBuilder<T>(
         entries += groupBuilder
         return groupBuilder
     }
+
+    // TODO drop in 0.4.2
+
+    @Deprecated("renamed to unaryPlus", ReplaceWith("id.unaryPlus()"), level = DeprecationLevel.WARNING)
+    open fun id(
+        id: String
+    ): EntryBuilder<T> = add(id)
+
+    @Deprecated("renamed to add", ReplaceWith("add(id, initEntry)"), level = DeprecationLevel.WARNING)
+    open fun id(
+        id: String,
+        initEntry: EntryBuilder<T>.() -> Unit
+    ): EntryBuilder<T> = add(id, initEntry)
 }

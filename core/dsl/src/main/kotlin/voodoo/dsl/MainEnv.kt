@@ -1,10 +1,9 @@
-package voodoo
+package voodoo.dsl
 
 import voodoo.dsl.builder.ModpackBuilder
 import voodoo.data.nested.NestedPack
 import voodoo.tome.TomeEnv
 import java.io.File
-import voodoo.dsl.VoodooDSL
 
 class MainEnv(
     val rootDir: File,

@@ -7,29 +7,11 @@ this is still more boilerplate than i wish to use, [How to contribute](/#how-to-
 
 this guide attempts to make the project interchangeable useable from gradle and kscript
 
-## generating curse files
+## running poet
+
+generating curse, forge and other files
 
 Voodoo provides autocompletion for curse mods and forge by generating kotlin source files (using kotlinpoet)
-
-<!--
-using kscript:  
-`init.kt`
-```kotlin
-#!/usr/bin/env kscript
-@file:DependsOnMaven("moe.nikky.voodoo:dsl:0.4.0-SNAPSHOT")
-@file:DependsOnMaven("ch.qos.logback:logback-classic:1.3.0-alpha4") //seems that i need a explicit dependency on this.. yet another bugreport
-@file:MavenRepository("kotlinx","https://kotlin.bintray.com/kotlinx" )
-@file:MavenRepository("elytradev", "https://repo.elytradev.com")
-@file:KotlinOpts("-J-Xmx5g")
-@file:KotlinOpts("-J-server")
-
-import voodoo.poet
-import java.io.File
-
-//TODO: figure out how to use File relative to script location
-fun main(args: Array<String>) = cursePoet(root = File(".gen")) 
-```
--->
 
 ## gradle setup
 
@@ -38,7 +20,7 @@ fun main(args: Array<String>) = cursePoet(root = File(".gen"))
 `build.gradle.kts`
 ```kotlin
 plugins {
-    id("voodoo") version "0.4.0-SNAPSHOT"
+    id("voodoo") version "0.4.1-SNAPSHOT"
 }
 
 // for configuration of folders

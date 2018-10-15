@@ -90,13 +90,13 @@ class CurseListBuilder<T>(
         return entryBuilder
     }
 
+    // Deprecations
+
     @Deprecated("renamed to add", ReplaceWith("add"), level = DeprecationLevel.WARNING)
     fun id(
         idProperty: KProperty0<Int>,
         initEntry: EntryBuilder<T>.() -> Unit = {}
     ): EntryBuilder<T> = add(idProperty, initEntry)
-
-    // Deprecations
 
     @VoodooDSL
     @Deprecated(
@@ -104,7 +104,7 @@ class CurseListBuilder<T>(
         ReplaceWith("add(this)"),
         level = DeprecationLevel.ERROR
     )
-    override operator fun String.unaryPlus(): EntryBuilder<T> = throw IllegalArgumentException()
+    override operator fun String.unaryPlus(): EntryBuilder<T> = throw IllegalArgumentException("Deprecated")
 
     @Deprecated(
         "String ids are no longer supported by curse, use constants",
@@ -113,7 +113,7 @@ class CurseListBuilder<T>(
     )
     override fun add(
         id: String
-    ): EntryBuilder<T> = throw IllegalArgumentException()
+    ): EntryBuilder<T> = throw IllegalArgumentException("Deprecated")
 
     @Deprecated(
         "String ids are no longer supported by curse, use constants",
@@ -123,7 +123,7 @@ class CurseListBuilder<T>(
     override fun add(
         id: String,
         initEntry: EntryBuilder<T>.() -> Unit
-    ): EntryBuilder<T> = throw IllegalArgumentException()
+    ): EntryBuilder<T> = throw IllegalArgumentException("Deprecated")
 
     @Deprecated(
         "String ids are no longer supported by curse, use constants",
@@ -132,7 +132,7 @@ class CurseListBuilder<T>(
     )
     override fun id(
         id: String
-    ): EntryBuilder<T> = throw IllegalArgumentException()
+    ): EntryBuilder<T> = throw IllegalArgumentException("Deprecated")
 
     @Deprecated(
         "String ids are no longer supported by curse, use constants",
@@ -142,5 +142,5 @@ class CurseListBuilder<T>(
     override fun id(
         id: String,
         initEntry: EntryBuilder<T>.() -> Unit
-    ): EntryBuilder<T> = throw IllegalArgumentException()
+    ): EntryBuilder<T> = throw IllegalArgumentException("Deprecated")
 }
