@@ -114,7 +114,11 @@ object CurseImporter : AbstractImporter() {
             title = manifest.name
             version = manifest.version
             // TODO pick correct forge version number
-//            forge = null
+            manifest.minecraft.modLoaders.forEach { logger.info { it } }
+            forge = manifest.minecraft.modLoaders.find {
+                it.primary && it.id.startsWith("forge-")
+            }?.id?.substringAfterLast('.')?.toIntOrNull()
+            sourceDir = source
             sourceDir = source
             localDir = local
             root = rootEntry(CurseProvider) {

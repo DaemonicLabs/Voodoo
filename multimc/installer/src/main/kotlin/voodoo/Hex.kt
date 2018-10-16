@@ -10,7 +10,6 @@ import kotlinx.coroutines.experimental.delay
 import kotlinx.coroutines.experimental.launch
 import kotlinx.coroutines.experimental.runBlocking
 import kotlinx.serialization.internal.BooleanSerializer
-import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.map
 import kotlinx.serialization.serializer

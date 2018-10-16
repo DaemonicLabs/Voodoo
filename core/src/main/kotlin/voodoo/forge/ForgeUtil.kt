@@ -30,6 +30,31 @@ object ForgeUtil : KLogging() {
         }
     }
 
+    suspend fun mcVersionsMap(): Map<String, Map<String, Int>> {
+        val forgeData = deferredData.await()
+        return forgeData.mcversion.entries.associate { (version, numbers) ->
+            val versionIdentifier = "mc" + version.replace('.', '_')
+            val versions = numbers.associateBy { number ->
+                val buildIdentifier = "build$number"
+                buildIdentifier
+            }
+            versionIdentifier to versions
+        }
+    }
+
+    suspend fun promoMap(): Map<String, Int> {
+        val forgeData = deferredData.await()
+        return forgeData.promos.mapKeys { (key, version) ->
+            val keyIdentifier = key.replace('-', '_').replace('.', '_').run {
+                if (this.first().isDigit())
+                    "mc$this"
+                else
+                    this
+            }
+            keyIdentifier
+        }
+    }
+
     suspend fun forgeVersionOf(build: Int?): ForgeVersion? {
         if (build == null || build <= 0) return null
         return forgeVersionOf(build)

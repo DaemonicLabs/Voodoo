@@ -105,23 +105,17 @@ object Poet : KLogging() {
             PropertySpec.builder("WEBPATH", String::class, KModifier.CONST).initializer("%S", forgeData.webpath).build()
         forgeBuilder.addProperty(webpath)
 
-        for ((version, numbers) in forgeData.mcversion) {
-            val versionIdentifier = "mc" + version.replace('.', '_')
+        val mcVersions = ForgeUtil.mcVersionsMap()
+        for ((versionIdentifier, numbers) in mcVersions) {
             val versionBuilder = TypeSpec.objectBuilder(versionIdentifier)
-            for (number in numbers) {
-                val buildIdentifier = "build$number"
+            for ((buildIdentifier, number) in numbers) {
                 versionBuilder.addProperty(buildProperty(buildIdentifier, number))
             }
             forgeBuilder.addType(versionBuilder.build())
         }
 
-        for ((key, number) in forgeData.promos) {
-            val keyIdentifier = key.replace('-', '_').replace('.', '_').run {
-                if (this.first().isDigit())
-                    "mc$this"
-                else
-                    this
-            }
+        val promos = ForgeUtil.promoMap()
+        for ((keyIdentifier, number) in promos) {
             forgeBuilder.addProperty(buildProperty(keyIdentifier, number))
         }
 
