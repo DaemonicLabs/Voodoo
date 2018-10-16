@@ -17,6 +17,8 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
+import voodoo.forge.ForgeUtil
+import voodoo.importer.CurseImporter
 import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
 import voodoo.provider.JenkinsProvider
@@ -158,15 +160,12 @@ object NewModpack : KLogging() {
             }
         }.build()
 
-        logger.info("provider: ${entry.provider}")
         val builder = if (!root) {
             when {
-                // id changed
+            // id changed
                 entry.id != default.id -> when (provider) {
                     is CurseProvider -> {
                         val identifier = runBlocking {
-                            //                            logger.info(entry.id)
-//                            logger.info("project id: ${entry.curseProjectID}")
                             val addon = CurseClient.getAddon(entry.curseProjectID, CurseConstants.PROXY_URL)
                             val slug = addon!!.slug
                             Poet.defaultSlugSanitizer(slug)
@@ -183,7 +182,7 @@ object NewModpack : KLogging() {
                             beginControlFlow("%T(%S)", ClassName("", "add"), entry.id)
                     }
                 }
-                // provider changed
+            // provider changed
                 entry.provider != default.provider -> if (entryBody.isEmpty()) addStatement(
                     "%T(%T)",
                     ClassName("", "withProvider"),
@@ -193,7 +192,7 @@ object NewModpack : KLogging() {
                     ClassName("", "withProvider"),
                     provider::class.asClassName()
                 )
-                // everything else
+            // everything else
                 else -> beginControlFlow("%T", ClassName("", "group"))
             }
         } else null
@@ -257,8 +256,28 @@ object NewModpack : KLogging() {
                     nestedPack.authors.takeIf { it != default.authors }?.let { authors ->
                         nestedBuilder.addStatement("authors = listOf(%L)", authors.joinToString { """"$it"""" })
                     }
-                    nestedPack.forge.takeIf { it != default.forge }?.let {
-                        nestedBuilder.addStatement("forge = %L", it)
+                    nestedPack.forge.takeIf { it != default.forge }?.let { forge ->
+                        logger.info("guessing forge literal for $forge")
+                        val forgeLiteral = runBlocking {
+                            val promos = ForgeUtil.promoMap()
+                            for ((identifier, number) in promos) {
+                                if (forge == number) return@runBlocking identifier
+                            }
+                            val mcVersions = ForgeUtil.mcVersionsMap()
+                            for ((_, mapping) in mcVersions) {
+                                for ((identifier, number) in mapping) {
+                                    if (forge == number) return@runBlocking identifier
+                                }
+                            }
+                            null
+                        }
+                        logger.info("forge literal guess: $forgeLiteral")
+
+                        if (forgeLiteral != null) {
+                            nestedBuilder.addStatement("forge = Forge.%L", forgeLiteral)
+                        } else {
+                            nestedBuilder.addStatement("forge = %L", forge)
+                        }
                     }
                     nestedPack.userFiles.takeIf { it != default.userFiles }?.let { userFiles ->
                         nestedBuilder.addStatement(
