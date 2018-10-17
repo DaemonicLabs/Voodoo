@@ -6,13 +6,14 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import java.io.FilenameFilter
 
 plugins {
-    kotlin("jvm") version Versions.kotlin
+    kotlin("jvm") version Kotlin.version
     application
     idea
     `maven-publish`
     `project-report`
     id("const-generator")
-    id("kotlinx-serialization") version Versions.serialization
+//    id("kotlinx-serialization") version Versions.serialization
+    id(Serialization.id) version Serialization.version
     id("com.github.johnrengelman.shadow") version "2.0.4"
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
     id("org.jmailen.kotlinter") version "1.17.0"
@@ -41,8 +42,8 @@ allprojects {
     configurations.all {
         resolutionStrategy.eachDependency {
             if (requested.group == "org.jetbrains.kotlin") {
-                useVersion(Versions.kotlin)
-                because("We use kotlin version ${Versions.kotlin}")
+                useVersion(Kotlin.version)
+                because("We use kotlin version ${Kotlin.version}")
             }
         }
     }
@@ -281,18 +282,18 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8", Versions.kotlin))
+    implementation(kotlin("stdlib-jdk8", Kotlin.version))
 
-    testImplementation(group = "org.spekframework.spek2", name = "spek-dsl-jvm", version = Versions.spek)
-    testRuntimeOnly(group = "org.spekframework.spek2", name = "spek-runner-junit5", version = Versions.spek)
+    testImplementation(Spek.dependencyDsl)
+    testImplementation(Spek.dependencyRunner)
 
-    testImplementation(kotlin("test", Versions.kotlin))
+    testImplementation(kotlin("test", Kotlin.version))
 
     // https=//mvnrepository.com/artifact/org.junit.platform/junit-platform-engine
-    testImplementation(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
+    testImplementation(Spek.dependencyJUnit5)
 
     // spek requires kotlin-reflect, can be omitted if already in the classpath
-    testRuntimeOnly(kotlin("reflect", Versions.kotlin))
+    testRuntimeOnly(kotlin("reflect", Kotlin.version))
 
     testCompile(project(":dsl"))
     testCompile(project(":poet"))
@@ -313,6 +314,6 @@ tasks.withType<Test> {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "4.10.2"
-    distributionType = Wrapper.DistributionType.ALL
+    gradleVersion = Gradle.version
+    distributionType = Gradle.distributionType // Wrapper.DistributionType.ALL
 }

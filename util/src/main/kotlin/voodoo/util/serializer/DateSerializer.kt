@@ -2,10 +2,8 @@ package voodoo.util.serializer
 
 import kotlinx.serialization.KInput
 import kotlinx.serialization.KOutput
-import kotlinx.serialization.KSerialClassDesc
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
-import kotlinx.serialization.internal.SerialClassDescImpl
 import java.util.Date
 
 @Serializer(forClass = Date::class)

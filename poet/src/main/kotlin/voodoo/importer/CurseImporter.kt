@@ -10,7 +10,7 @@ import kotlinx.serialization.json.JSON
 import list
 import releaseTypes
 import voodoo.dsl.MainEnv
-import voodoo.NewModpack
+import voodoo.PoetPack
 import voodoo.Poet
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseConstants.PROXY_URL
@@ -164,7 +164,7 @@ object CurseImporter : AbstractImporter() {
             }
         }
 
-        NewModpack.createModpack(
+        PoetPack.createModpack(
             folder = packsDir,
             nestedPack = nestedPack
         )

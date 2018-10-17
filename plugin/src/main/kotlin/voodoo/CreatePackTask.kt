@@ -75,7 +75,7 @@ open class CreatePackTask : DefaultTask() {
             }
         }
 
-        NewModpack.createModpack(
+        PoetPack.createModpack(
             folder = packsDir,
             nestedPack = nestedPack
         )
