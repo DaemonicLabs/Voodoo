@@ -5,7 +5,7 @@ import list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.dsl.MainEnv
-import voodoo.NewModpack
+import voodoo.PoetPack
 import voodoo.data.Side
 import voodoo.provider.CurseProvider
 import java.io.File
@@ -41,7 +41,7 @@ object PoetSpek : Spek({
         }
 
         it("generate kotlin source") {
-            NewModpack.createModpack(
+            PoetPack.createModpack(
                 rootFolder,
                 nestedpack
             )

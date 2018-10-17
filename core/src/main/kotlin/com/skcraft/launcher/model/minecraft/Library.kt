@@ -117,19 +117,15 @@ data class Library(
         } else String.format("%s-%s.jar", artifact, version)
     }
 
-    fun getPath(environment: Environment): String {
-        val builder = StringBuilder()
-        builder.append(group.replace('.', '/'))
-        builder.append("/")
-        builder.append(artifact)
-        builder.append("/")
-        builder.append(version)
-        builder.append("/")
-        builder.append(getFilename(environment))
-        var path = builder.toString()
-        path = path.replace("\${arch}", environment.archBits)
-        return path
-    }
+    fun getPath(environment: Environment): String = buildString {
+        append(group.replace('.', '/'))
+        append("/")
+        append(artifact)
+        append("/")
+        append(version)
+        append("/")
+        append(getFilename(environment))
+    }.replace("\${arch}", environment.archBits)
 
     @Serializable
     data class Rule(

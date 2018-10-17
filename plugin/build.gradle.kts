@@ -8,7 +8,7 @@ plugins {
 
 dependencies {
     compile(project(":poet"))
-    compile(group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version = Versions.kotlin)
+    compile(group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version = Kotlin.version)
 }
 
 val major: String by project

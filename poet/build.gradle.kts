@@ -3,10 +3,10 @@ plugins {
 }
 
 application {
-    mainClassName = "voodoo.NewModpackKt"
+    mainClassName = "voodoo.PoetPackKt"
 }
 
 dependencies {
     compile(project(":core:core-dsl"))
-    compile(group = "com.squareup", name = "kotlinpoet", version = Versions.poet)
+    compile(Poet.dependency)
 }

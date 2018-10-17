@@ -18,7 +18,6 @@ import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
 import voodoo.forge.ForgeUtil
-import voodoo.importer.CurseImporter
 import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
 import voodoo.provider.JenkinsProvider
@@ -27,12 +26,7 @@ import voodoo.provider.Providers
 import voodoo.provider.UpdateJsonProvider
 import java.io.File
 
-data class ModBundle(
-    val identifier: String,
-    val properties: List<(CodeBlock.Builder) -> Unit> = listOf()
-)
-
-object NewModpack : KLogging() {
+object PoetPack : KLogging() {
     fun CodeBlock.Builder.controlFlow(
         controlFlow: String,
         vararg args: Any?,
@@ -222,7 +216,7 @@ object NewModpack : KLogging() {
         folder: File,
         nestedPack: NestedPack
     ) {
-        Thread.currentThread().contextClassLoader = NewModpack::class.java.classLoader
+        Thread.currentThread().contextClassLoader = PoetPack::class.java.classLoader
         val mainFunCall = CodeBlock.builder()
             .controlFlow(
                 """return %T(
