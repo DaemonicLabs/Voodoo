@@ -10,7 +10,11 @@ import java.io.File
  * Created by nikky on 28/03/18.
  * @author Nikky
  */
-data class NestedPack(
+data class NestedPack
+@Deprecated("use builder function nestedPack(id, mcVersion) {}",
+    ReplaceWith("nestedPack(id, mcVersion) {}"),
+    level = DeprecationLevel.WARNING)
+constructor(
     val rootDir: File,
     /**
      * unique identifier

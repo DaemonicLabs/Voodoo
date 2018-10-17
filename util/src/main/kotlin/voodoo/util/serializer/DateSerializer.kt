@@ -10,8 +10,6 @@ import java.util.Date
 
 @Serializer(forClass = Date::class)
 object DateSerializer : KSerializer<Date> {
-    override val serialClassDesc: KSerialClassDesc = SerialClassDescImpl("java.util.Date")
-
     override fun save(output: KOutput, obj: Date) {
         output.writeLongValue(obj.time)
     }
