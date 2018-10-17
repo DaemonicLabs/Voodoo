@@ -3,7 +3,6 @@ import org.gradle.api.publish.maven.internal.publication.DefaultMavenPublication
 plugins {
     `java-gradle-plugin`
     id("org.gradle.kotlin.kotlin-dsl") version "1.0-rc-6"
-//    id("org.gradle.kotlin.kotlin-dsl.precompiled-script-plugins") version "1.0-rc-6"
     `maven-publish`
 }
 

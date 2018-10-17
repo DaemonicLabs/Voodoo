@@ -91,6 +91,7 @@ data class ModPack(
 
     @Transient
     val entrySet: MutableSet<Entry> = Collections.synchronizedSet(mutableSetOf())
+
     @Transient
     val lockEntrySet: MutableSet<LockEntry> = Collections.synchronizedSet(mutableSetOf())
 
