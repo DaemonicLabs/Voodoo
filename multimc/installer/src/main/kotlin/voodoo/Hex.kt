@@ -64,6 +64,8 @@ object Hex : KLogging() {
                 result.value
             }
             is Result.Failure -> {
+                logger.error("packUrl: $packUrl")
+                logger.error("response: $response")
                 logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
                 return
             }
