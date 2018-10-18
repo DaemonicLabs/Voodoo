@@ -33,18 +33,15 @@ data class Library(
                 elemOutput.writeStringElementValue(serialClassDesc, 1, url)
             }
             obj.natives?.let { natives ->
-                elemOutput.writeElement(serialClassDesc, 2)
-                elemOutput.write(HashMapSerializer(String.serializer(), String.serializer()), natives)
+                elemOutput.writeSerializableElementValue(serialClassDesc, 2, HashMapSerializer(String.serializer(), String.serializer()), natives)
             }
             obj.extract?.let { extract ->
-                elemOutput.writeElement(serialClassDesc, 3)
-                elemOutput.write(Extract::class.serializer(), extract)
+                elemOutput.writeSerializableElementValue(serialClassDesc, 3, Extract::class.serializer(), extract)
             }
             obj.rules?.filter {
                     it.action != null || it.os != null
                 }?.let { rules ->
-                    elemOutput.writeElement(serialClassDesc, 4)
-                    elemOutput.write(Rule::class.serializer().list, rules)
+                    elemOutput.writeSerializableElementValue(serialClassDesc, 4, Rule::class.serializer().list, rules)
             }
             elemOutput.writeEnd(serialClassDesc)
         }
@@ -164,16 +161,11 @@ data class Library(
                     elemOutput.writeStringElementValue(serialClassDesc, 0, it)
                 }
                 obj.platform?.let { platform ->
-                    elemOutput.writeElement(serialClassDesc, 1)
-                    elemOutput.write(PlatformSerializer, platform)
+                    elemOutput.writeSerializableElementValue(serialClassDesc, 1, PlatformSerializer, platform)
                 }
                 obj.version?.let { version ->
-                    elemOutput.writeElement(serialClassDesc, 2)
-                    elemOutput.write(Pattern::class.serializer(), version)
+                    elemOutput.writeSerializableElementValue(serialClassDesc, 2, Pattern::class.serializer(), version)
                 }
-//                obj.version?.let { version ->
-//
-//                }
                 elemOutput.writeEnd(serialClassDesc)
             }
         }

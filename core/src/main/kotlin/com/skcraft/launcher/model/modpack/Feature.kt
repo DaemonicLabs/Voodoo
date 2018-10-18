@@ -7,13 +7,8 @@
 package com.skcraft.launcher.model.modpack
 
 import com.skcraft.launcher.builder.FnPatternList
-import kotlinx.serialization.KOutput
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Optional
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
+import kotlinx.serialization.*
 import kotlinx.serialization.internal.EnumSerializer
-import kotlinx.serialization.serializer
 
 @Serializable
 data class Feature(
@@ -40,7 +35,7 @@ data class Feature(
             if (obj.files != FnPatternList()) {
                 elemOutput.writeSerializableElementValue(serialClassDesc, 4, FnPatternList::class.serializer(), obj.files)
             }
-            output.writeEnd(serialClassDesc)
+            elemOutput.writeEnd(serialClassDesc)
         }
     }
 }

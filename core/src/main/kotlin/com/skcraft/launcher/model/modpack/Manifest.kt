@@ -94,20 +94,16 @@ data class Manifest(
                 elemOutput.writeStringElementValue(serialClassDesc, 7, gameVersion)
             }
             obj.launchModifier?.let { launchModifier ->
-                elemOutput.writeElement(serialClassDesc, 8)
-                elemOutput.write(LaunchModifier::class.serializer(), launchModifier)
+                elemOutput.writeSerializableElementValue(serialClassDesc, 8, LaunchModifier::class.serializer(), launchModifier)
             }
             obj.features.takeUnless { it.isEmpty() }?.let { features ->
-                elemOutput.writeElement(serialClassDesc, 9)
-                elemOutput.write(Feature::class.serializer().list, features)
+                elemOutput.writeSerializableElementValue(serialClassDesc, 9, Feature::class.serializer().list, features)
             }
             obj.tasks.takeUnless { it.isEmpty() }?.let { tasks ->
-                elemOutput.writeElement(serialClassDesc, 10)
-                elemOutput.write(FileInstall::class.serializer().list, tasks)
+                elemOutput.writeSerializableElementValue(serialClassDesc, 10, FileInstall::class.serializer().list, tasks)
             }
             obj.versionManifest?.let { versionManifest ->
-                elemOutput.writeElement(serialClassDesc, 11)
-                elemOutput.write(VersionManifest::class.serializer(), versionManifest)
+                elemOutput.writeSerializableElementValue(serialClassDesc, 11, VersionManifest::class.serializer(), versionManifest)
             }
             elemOutput.writeEnd(serialClassDesc)
         }

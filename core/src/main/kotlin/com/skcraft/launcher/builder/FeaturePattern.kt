@@ -31,20 +31,14 @@ data class FeaturePattern(
     companion object {
         override fun save(output: KOutput, obj: FeaturePattern) {
             val elemOutput = output.writeBegin(serialClassDesc)
-
-            elemOutput.writeElement(serialClassDesc, 0)
-            elemOutput.write(Feature.Companion, obj.feature)
-
-            elemOutput.writeElement(serialClassDesc, 1)
-            elemOutput.write(FnPatternList.Companion, obj.filePatterns)
-
+            elemOutput.writeSerializableElementValue(serialClassDesc, 0, Feature.Companion, obj.feature)
+            elemOutput.writeSerializableElementValue(serialClassDesc, 1, FnPatternList.Companion, obj.filePatterns)
             elemOutput.writeEnd(serialClassDesc)
         }
 
         private fun <T : Any?> KOutput.serializeObj(default: T?, actual: T, saver: KSerialSaver<T>, index: Int) {
             if (default != actual || default != null) {
-                this.writeElement(ExtendedFeaturePattern.serialClassDesc, index)
-                this.write(saver, actual)
+                this.writeSerializableElementValue(serialClassDesc, index, saver, actual)
             }
         }
     }

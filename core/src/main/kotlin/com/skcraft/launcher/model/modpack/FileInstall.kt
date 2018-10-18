@@ -41,8 +41,7 @@ data class FileInstall(
             val elemOutput = output.writeBegin(serialClassDesc)
             elemOutput.writeStringElementValue(serialClassDesc, 8, obj.type)
             obj.conditionWhen?.let { conditionWhen ->
-                elemOutput.writeElement(serialClassDesc, 7)
-                elemOutput.write(Condition::class.serializer(), conditionWhen)
+                elemOutput.writeSerializableElementValue(serialClassDesc, 7, Condition::class.serializer(), conditionWhen)
             }
             obj.version?.let { version ->
                 elemOutput.writeStringElementValue(serialClassDesc, 0, version)
@@ -55,8 +54,7 @@ data class FileInstall(
                 elemOutput.writeBooleanElementValue(serialClassDesc, 5, obj.isUserFile)
             }
             obj.manifest?.let { manifest ->
-                elemOutput.writeElement(serialClassDesc, 6)
-                elemOutput.write(Manifest::class.serializer(), manifest)
+                elemOutput.writeSerializableElementValue(serialClassDesc, 6, Manifest::class.serializer(), manifest)
             }
             elemOutput.writeEnd(serialClassDesc)
         }
