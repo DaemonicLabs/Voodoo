@@ -34,8 +34,7 @@ val runnableProjects = listOf(
     project("server-installer") to "voodoo.server.Install"
 )
 val noConstants = listOf(
-    project("skcraft"),
-    project("fuel-kotlinx-serialization")
+    project("skcraft")
 )
 
 allprojects {

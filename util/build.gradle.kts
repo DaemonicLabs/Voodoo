@@ -6,7 +6,7 @@ dependencies {
 
     compile(Fuel.dependency)
     compile(Fuel.dependencyCoroutines)
-    compile(project(":fuel-kotlinx-serialization"))
+    compile(Fuel.dependencySerialization)
 
     compile(Logging.dependency)
     compile(Logging.dependencyLogbackClassic)

@@ -4,7 +4,6 @@ import awaitObjectResponse
 import awaitStringResponse
 import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.fuel.serialization.jsonBody
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
 import kotlinx.coroutines.experimental.runBlocking
