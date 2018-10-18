@@ -34,9 +34,9 @@ object SKPack : AbstractPack() {
     override val label = "SK Packer"
 
     override suspend fun pack(
-        modpack: LockPack,
-        target: String?,
-        clean: Boolean
+            modpack: LockPack,
+            target: String?,
+            clean: Boolean
     ) {
         val cacheDir = directories.cacheHome
         val workspaceDir = modpack.rootDir.resolve("workspace").absoluteFile
@@ -129,9 +129,9 @@ object SKPack : AbstractPack() {
                         }!!
 
                         feature.files.include += targetFile.relativeTo(skSrcFolder).path
-                            .replace('\\', '/')
-                            .replace("[", "\\[")
-                            .replace("]", "\\]")
+                                .replace('\\', '/')
+                                .replace("[", "\\[")
+                                .replace("]", "\\]")
                         logger.info("includes = ${feature.files.include}")
                     }
 
@@ -141,8 +141,8 @@ object SKPack : AbstractPack() {
                     logger.info("processed properties $feature")
 
                     FeaturePattern(
-                        feature = feature.feature,
-                        filePatterns = feature.files
+                            feature = feature.feature,
+                            filePatterns = feature.files
                     )
                 }
             }
@@ -153,12 +153,12 @@ object SKPack : AbstractPack() {
             val features = deferredFeatures.awaitAll()
 
             val skmodpack = SKModpack(
-                name = modpack.id,
-                title = modpack.title,
-                gameVersion = modpack.mcVersion,
-                userFiles = modpack.userFiles,
-                launch = modpack.launch,
-                features = features
+                    name = modpack.id,
+                    title = modpack.title,
+                    gameVersion = modpack.mcVersion,
+                    userFiles = modpack.userFiles,
+                    launch = modpack.launch,
+                    features = features
             )
 
             val modpackPath = modpackDir.resolve("modpack.json")
@@ -171,7 +171,7 @@ object SKPack : AbstractPack() {
             val workspacePath = workspaceMetaFolder.resolve("workspace.json")
             val workspace = if (workspacePath.exists()) {
                 try {
-                    JSON.parse<SKWorkspace>(workspacePath.readText())
+                    JSON.indented.parse<SKWorkspace>(workspacePath.readText())
                 } catch (e: Exception) {
                     logger.error("failed parsing: $workspacePath", e)
                     SKWorkspace()
@@ -192,15 +192,16 @@ object SKPack : AbstractPack() {
             val manifestDest = targetDir.resolve("${modpack.id}.json")
 
             val uniqueVersion = "${modpack.version}." + DateTimeFormatter
-                .ofPattern("yyyyMMddHHmm")
-                .withZone(ZoneOffset.UTC)
-                .format(Instant.now())
+                    .ofPattern("yyyyMMddHHmm")
+                    .withZone(ZoneOffset.UTC)
+                    .format(Instant.now())
 
             PackageBuilder.main(
-                "--version", uniqueVersion,
-                "--input", modpackDir.path,
-                "--output", targetDir.path,
-                "--manifest-dest", manifestDest.path
+                    "--version", uniqueVersion,
+                    "--input", modpackDir.path,
+                    "--output", targetDir.path,
+                    "--manifest-dest", manifestDest.path,
+                    "--pretty-print"
             )
 
             // regenerate packages.json
@@ -212,12 +213,12 @@ object SKPack : AbstractPack() {
             }
 
             val packFragment = packages.packages.find { it.name == modpack.id }
-                ?: SkPackageFragment(
-                    title = modpack.title,
-                    name = modpack.id,
-                    version = uniqueVersion,
-                    location = "${modpack.id}.json"
-                ).apply { packages.packages += this }
+                    ?: SkPackageFragment(
+                            title = modpack.title,
+                            name = modpack.id,
+                            version = uniqueVersion,
+                            location = "${modpack.id}.json"
+                    ).apply { packages.packages += this }
             packFragment.version = uniqueVersion
             packagesFile.writeText(JSON.indented.stringify(packages))
 
