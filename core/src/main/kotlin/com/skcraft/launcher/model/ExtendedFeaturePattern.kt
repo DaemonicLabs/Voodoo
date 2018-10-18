@@ -27,13 +27,8 @@ data class ExtendedFeaturePattern(
     companion object {
         override fun save(output: KOutput, obj: ExtendedFeaturePattern) {
             val elemOutput = output.writeBegin(serialClassDesc)
-
-            elemOutput.writeElement(serialClassDesc, 0)
-            elemOutput.write(String.serializer().set, obj.entries)
-
-            elemOutput.writeElement(serialClassDesc, 1)
-            elemOutput.write(Feature.Companion, obj.feature)
-
+            elemOutput.writeSerializableElementValue(serialClassDesc, 0, String.serializer().set, obj.entries)
+            elemOutput.writeSerializableElementValue(serialClassDesc, 1, Feature.Companion, obj.feature)
             with(ExtendedFeaturePattern(obj.entries, obj.feature)) {
                 elemOutput.serializeObj(this.files, obj.files, FnPatternList.Companion, 2)
             }
@@ -43,8 +38,7 @@ data class ExtendedFeaturePattern(
 
         private fun <T : Any?> KOutput.serializeObj(default: T?, actual: T, saver: KSerialSaver<T>, index: Int) {
             if (default != actual || default != null) {
-                this.writeElement(serialClassDesc, index)
-                this.write(saver, actual)
+                this.writeSerializableElementValue(serialClassDesc, index, saver, actual)
             }
         }
     }

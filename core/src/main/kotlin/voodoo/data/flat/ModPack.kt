@@ -73,8 +73,7 @@ data class ModPack(
 
         private fun <T : Any?> KOutput.serializeObj(default: T?, actual: T, saver: KSerialSaver<T>, index: Int) {
             if (default != actual || default != null) {
-                this.writeElement(serialClassDesc, index)
-                this.write(saver, actual)
+                this.writeSerializableElementValue(serialClassDesc, index, saver, actual)
             }
         }
     }

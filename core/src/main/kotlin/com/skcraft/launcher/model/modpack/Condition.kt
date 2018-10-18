@@ -53,8 +53,7 @@ class Condition(
         override fun save(output: KOutput, obj: Condition) {
             val elemOutput = output.writeBegin(serialClassDesc)
             elemOutput.writeStringElementValue(serialClassDesc, 0, obj.ifSwitch)
-            elemOutput.writeElement(serialClassDesc, 1)
-            elemOutput.write(String.serializer().list, obj.features)
+            elemOutput.writeSerializableElementValue(serialClassDesc, 1, String.serializer().list, obj.features)
             elemOutput.writeEnd(serialClassDesc)
         }
 

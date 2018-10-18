@@ -64,8 +64,7 @@ data class VersionManifest(
 
         private fun <T : Any?> KOutput.serializeObj(default: T?, actual: T?, saver: KSerialSaver<T>, index: Int) {
             if ((default != actual || default != null) && actual != null) {
-                this.writeElement(serialClassDesc, index)
-                this.write(saver, actual)
+                this.writeSerializableElementValue(serialClassDesc, index, saver, actual)
             }
         }
     }

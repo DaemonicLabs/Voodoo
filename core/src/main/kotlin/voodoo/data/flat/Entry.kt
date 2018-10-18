@@ -149,7 +149,7 @@ data class Entry(
                     }
                 }
             }
-            output.writeEnd(serialClassDesc)
+            elemOutput.writeEnd(serialClassDesc)
         }
 
         private inline fun <reified T : Any> KOutput.serialize(default: T, actual: T, index: Int) {
@@ -159,16 +159,14 @@ data class Entry(
                     is Int -> this.writeIntElementValue(serialClassDesc, index, actual)
                     is Boolean -> this.writeBooleanElementValue(serialClassDesc, index, actual)
                     else -> {
-                        this.writeElement(serialClassDesc, index)
-                        this.write(T::class.serializer(), default)
+                        this.writeSerializableElementValue(serialClassDesc, index, T::class.serializer(), actual)
                     }
                 }
         }
 
         private fun <T : Any?> KOutput.serializeObj(default: T, actual: T, saver: KSerialSaver<T>, index: Int) {
             if (default != actual) {
-                this.writeElement(serialClassDesc, index)
-                this.write(saver, actual)
+                this.writeSerializableElementValue(serialClassDesc, index, saver, actual)
             }
         }
 

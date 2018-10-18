@@ -43,12 +43,10 @@ data class FnPatternList(
         override fun save(output: KOutput, obj: FnPatternList) {
             val elemOutput = output.writeBegin(serialClassDesc)
             obj.include.takeUnless { it.isEmpty() }?.let {
-                elemOutput.writeElement(serialClassDesc, 0)
-                elemOutput.write(String.serializer().list, it)
+                elemOutput.writeSerializableElementValue(serialClassDesc, 0, String.serializer().list, it)
             }
             obj.exclude.takeUnless { it.isEmpty() }?.let {
-                elemOutput.writeElement(serialClassDesc, 1)
-                elemOutput.write(String.serializer().list, it)
+                elemOutput.writeSerializableElementValue(serialClassDesc, 1, String.serializer().list, it)
             }
 
             elemOutput.writeEnd(serialClassDesc)
