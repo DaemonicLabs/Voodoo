@@ -23,7 +23,6 @@ include("util")
 include("builder", "tome", "pack", "pack:tester")
 include("server-installer")
 include("bootstrap")
-include("fuel-kotlinx-serialization")
 
 include("skcraft")
 

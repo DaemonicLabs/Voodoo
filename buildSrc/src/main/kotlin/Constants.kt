@@ -41,9 +41,10 @@ object Poet {
 }
 
 object Fuel {
-    const val version = "1.15.0"
+    const val version = "1.15.1"
     val dependency = create(group = "com.github.kittinunf.fuel", name = "fuel", version = version)
     val dependencyCoroutines = create(group = "com.github.kittinunf.fuel", name = "fuel-coroutines", version = version)
+    val dependencySerialization = create(group = "com.github.kittinunf.fuel", name = "fuel-kotlinx-serialization", version = version)
 }
 
 object Argparser {
