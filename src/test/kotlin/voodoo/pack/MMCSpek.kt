@@ -12,21 +12,27 @@ import kotlin.test.fail
 
 object MMCSpek : Spek({
     describe("load pack") {
-        it("something") {
+        val modpack by memoized {
             val packUrl = "https://launcher.towerdevs.xyz/descentfrozenhell.json"
             println("pack url: $packUrl")
 
             val (request, response, result) = packUrl.httpGet()
-                .header("User-Agent" to CurseClient.useragent)
-                .responseString()
-            val modpack = when (result) {
+                    .header("User-Agent" to CurseClient.useragent)
+                    .responseString()
+            when (result) {
                 is Result.Success -> JSON(nonstrict = true).parse<Manifest>(result.value)
                 is Result.Failure -> {
                     logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
                     fail("http request failed")
                 }
             }
+        }
+        it("load") {
             println(modpack)
+        }
+        it("pack") {
+            val jsonString = JSON(indented = true).stringify(modpack)
+            println(jsonString)
         }
     }
 })

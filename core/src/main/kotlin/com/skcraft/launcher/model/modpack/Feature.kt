@@ -35,12 +35,10 @@ data class Feature(
             if (obj.description != "")
                 elemOutput.writeStringElementValue(serialClassDesc, 2, obj.description)
             if (obj.recommendation != null) {
-                elemOutput.writeElement(serialClassDesc, 3)
-                elemOutput.write(EnumSerializer(Recommendation::class), obj.recommendation!!)
+                elemOutput.writeSerializableElementValue(serialClassDesc, 3, EnumSerializer(Recommendation::class), obj.recommendation!!)
             }
             if (obj.files != FnPatternList()) {
-                elemOutput.writeElement(serialClassDesc, 4)
-                elemOutput.write(FnPatternList::class.serializer(), obj.files)
+                elemOutput.writeSerializableElementValue(serialClassDesc, 4, FnPatternList::class.serializer(), obj.files)
             }
             output.writeEnd(serialClassDesc)
         }

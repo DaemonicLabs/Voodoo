@@ -13,7 +13,7 @@ plugins {
     `project-report`
     id("const-generator")
 //    id("kotlinx-serialization") version Versions.serialization
-    id(Serialization.id) version Serialization.version
+    id(Serialization.plugin) version Serialization.version
     id("com.github.johnrengelman.shadow") version "2.0.4"
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
     id("org.jmailen.kotlinter") version "1.17.0"
