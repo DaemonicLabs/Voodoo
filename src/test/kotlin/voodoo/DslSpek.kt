@@ -10,7 +10,7 @@ import org.spekframework.spek2.style.specification.describe
 import releaseTypes
 import voodoo.data.Side
 import voodoo.data.curse.FileType
-import voodoo.dsl.MainEnv
+import voodoo.script.MainScriptEnv
 import voodoo.provider.CurseProvider
 import voodoo.provider.JenkinsProvider
 import withProvider
@@ -30,7 +30,7 @@ object DslSpek : Spek({
 //        }
 
         val nestedPack by memoized {
-            MainEnv(rootDir = rootFolder).nestedPack(
+            MainScriptEnv(rootDir = rootFolder).nestedPack(
                 id = "some-id",
                 mcVersion = "1.12.2"
             ) {

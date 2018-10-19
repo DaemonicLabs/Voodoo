@@ -9,7 +9,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JSON
 import list
 import releaseTypes
-import voodoo.dsl.MainEnv
+import voodoo.script.MainScriptEnv
 import voodoo.PoetPack
 import voodoo.Poet
 import voodoo.curse.CurseClient
@@ -104,7 +104,7 @@ object CurseImporter : AbstractImporter() {
 //        val forge = manifest.minecraft.modLoaders
 //            .find { it.id.startsWith("forge-") }?.id?.substringAfterLast('.')
 
-        val nestedPack = MainEnv(
+        val nestedPack = MainScriptEnv(
             rootDir = rootDir
         ).nestedPack(
             id = modpackId,

@@ -14,7 +14,9 @@ dependencies {
 val major: String by project
 val minor: String by project
 val patch: String by project
-version = "$major.$minor.$patch-${Env.versionSuffix}"
+val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "SNAPSHOT" } ?: "dev"
+version = "$major.$minor.$patch-$versionSuffix"
+//version = "$major.$minor.$patch-${Env.versionSuffix}"
 
 gradlePlugin {
     plugins {
@@ -43,6 +45,7 @@ publishing {
             artifact(sourcesJar.get())
             artifact(javadocJar.get())
             groupId = "moe.nikky.voodoo${Env.branch}"
+            version = "$major.$minor.$patch-${Env.versionSuffix}"
         }
 //        maybeCreate("voodooPoetPluginMarkerMaven", MavenPublication::class.java).apply {
 //            val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "SNAPSHOT" } ?: "dev"
