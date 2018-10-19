@@ -1,11 +1,11 @@
 package voodoo.importer
 
 import fileSrc
-import kotlinx.coroutines.experimental.CoroutineName
-import kotlinx.coroutines.experimental.channels.Channel
-import kotlinx.coroutines.experimental.coroutineScope
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JSON
 import list
 import releaseTypes
@@ -126,7 +126,7 @@ object CurseImporter : AbstractImporter() {
                 releaseTypes = sortedSetOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
                 list {
                     curseEntries.forEach { (identifier, versionStr, curseProjectID) ->
-                        add(curseProjectID.value) {
+                        add(curseProjectID.value) configure {
                             version = versionStr
                         }
                     }
@@ -152,7 +152,7 @@ object CurseImporter : AbstractImporter() {
                                 file.copyTo(targetFile, overwrite = true)
                                 logger.info("adding local entry for ${relative.path}")
 
-                                id(file.nameWithoutExtension) {
+                                +file.nameWithoutExtension configure {
                                     fileSrc = relative.path
                                     folder = file.parentFile.relativeTo(sourceFolder).path
                                 }

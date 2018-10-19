@@ -3,7 +3,7 @@ package voodoo
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.tester.MultiMCTester

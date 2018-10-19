@@ -5,8 +5,8 @@ package voodoo
  * @author Nikky
  */
 
-import kotlinx.coroutines.experimental.CoroutineName
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 
 object Voodoo : KLogging() {

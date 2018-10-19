@@ -6,7 +6,7 @@
  */
 package com.skcraft.launcher.model.modpack
 
-import kotlinx.serialization.KOutput
+import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
@@ -37,26 +37,26 @@ data class FileInstall(
 
     @Serializer(forClass = FileInstall::class)
     companion object : KSerializer<FileInstall> {
-        override fun save(output: KOutput, obj: FileInstall) {
-            val elemOutput = output.writeBegin(serialClassDesc)
-            elemOutput.writeStringElementValue(serialClassDesc, 8, obj.type)
+        override fun serialize(output: Encoder, obj: FileInstall) {
+            val elemOutput = output.beginStructure(descriptor)
+            elemOutput.encodeStringElement(descriptor, 8, obj.type)
             obj.conditionWhen?.let { conditionWhen ->
-                elemOutput.writeSerializableElementValue(serialClassDesc, 7, Condition::class.serializer(), conditionWhen)
+                elemOutput.encodeSerializableElement(descriptor, 7, Condition::class.serializer(), conditionWhen)
             }
             obj.version?.let { version ->
-                elemOutput.writeStringElementValue(serialClassDesc, 0, version)
+                elemOutput.encodeStringElement(descriptor, 0, version)
             }
-            elemOutput.writeStringElementValue(serialClassDesc, 1, obj.hash)
-            elemOutput.writeStringElementValue(serialClassDesc, 2, obj.location)
-            elemOutput.writeStringElementValue(serialClassDesc, 3, obj.to)
-            if (obj.size != 0L) elemOutput.writeLongElementValue(serialClassDesc, 4, obj.size)
+            elemOutput.encodeStringElement(descriptor, 1, obj.hash)
+            elemOutput.encodeStringElement(descriptor, 2, obj.location)
+            elemOutput.encodeStringElement(descriptor, 3, obj.to)
+            if (obj.size != 0L) elemOutput.encodeLongElement(descriptor, 4, obj.size)
             if (obj.isUserFile) {
-                elemOutput.writeBooleanElementValue(serialClassDesc, 5, obj.isUserFile)
+                elemOutput.encodeBooleanElement(descriptor, 5, obj.isUserFile)
             }
             obj.manifest?.let { manifest ->
-                elemOutput.writeSerializableElementValue(serialClassDesc, 6, Manifest::class.serializer(), manifest)
+                elemOutput.encodeSerializableElement(descriptor, 6, Manifest::class.serializer(), manifest)
             }
-            elemOutput.writeEnd(serialClassDesc)
+            elemOutput.endStructure(descriptor)
         }
     }
 }

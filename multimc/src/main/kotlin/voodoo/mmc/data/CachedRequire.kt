@@ -1,6 +1,7 @@
 package voodoo.mmc.data
 
-import kotlinx.serialization.KOutput
+import kotlinx.serialization.CompositeEncoder
+import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
@@ -15,20 +16,20 @@ data class CachedRequire(
     @Serializer(forClass = CachedRequire::class)
     companion object : KSerializer<CachedRequire> {
         private val DEFAULT = CachedRequire()
-        override fun save(output: KOutput, obj: CachedRequire) {
-            val elemOutput = output.writeBegin(serialClassDesc)
+        override fun serialize(output: Encoder, obj: CachedRequire) {
+            val elemOutput = output.beginStructure(descriptor)
             elemOutput.serialize(DEFAULT.uid, obj.uid, 0)
             elemOutput.serialize(DEFAULT.suggests, obj.suggests, 1)
             elemOutput.serialize(DEFAULT.equals, obj.equals, 2)
-            elemOutput.writeEnd(serialClassDesc)
+            elemOutput.endStructure(descriptor)
         }
 
-        private inline fun <reified T : Any> KOutput.serialize(default: T, actual: T, index: Int) {
+        private inline fun <reified T : Any> CompositeEncoder.serialize(default: T, actual: T, index: Int) {
             if (default != actual) {
                 when (actual) {
-                    is String -> this.writeStringElementValue(serialClassDesc, index, actual)
-                    is Int -> this.writeIntElementValue(serialClassDesc, index, actual)
-                    is Boolean -> this.writeBooleanElementValue(serialClassDesc, index, actual)
+                    is String -> this.encodeStringElement(descriptor, index, actual)
+                    is Int -> this.encodeIntElement(descriptor, index, actual)
+                    is Boolean -> this.encodeBooleanElement(descriptor, index, actual)
                 }
             }
         }

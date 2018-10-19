@@ -2,8 +2,8 @@ package voodoo
 
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
-import kotlinx.coroutines.experimental.cancel
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.builder.resolve
 import voodoo.data.flat.ModPack

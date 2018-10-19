@@ -1,7 +1,7 @@
 package voodoo
 
-import kotlinx.coroutines.experimental.CoroutineName
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import voodoo.data.nested.NestedPack
 import voodoo.dsl.DslConstants.FULL_VERSION

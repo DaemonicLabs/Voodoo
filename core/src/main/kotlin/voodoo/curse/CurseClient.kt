@@ -6,9 +6,9 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
-import kotlinx.coroutines.experimental.runBlocking
-import kotlinx.serialization.SerialContext
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.context.SimpleModule
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
 import mu.KLogging
@@ -20,16 +20,19 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
 import voodoo.util.serializer.DateSerializer
-import java.util.*
+import java.util.Date
+import java.util.HashMap
 
 /**
  * Created by nikky on 30/01/18.
  * @author Nikky
  */
 object CurseClient : KLogging() {
-    private val json = JSON(context = SerialContext().apply {
-        registerSerializer(Date::class, DateSerializer)
-    })
+    private val json = JSON().apply {
+        install(
+            SimpleModule(Date::class, DateSerializer)
+        )
+    }
     //    const val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10"
     const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
@@ -37,32 +40,32 @@ object CurseClient : KLogging() {
 
     @Serializable
     data class GraphQLRequest(
-            val query: String,
-            val operationName: String,
-            val variables: Map<String, Any> = emptyMap()
+        val query: String,
+        val operationName: String,
+        val variables: Map<String, Any> = emptyMap()
     )
 
     @Serializable
     data class SlugIdPair(
-            val id: Int,
-            val slug: String
+        val id: Int,
+        val slug: String
     )
 
     @Serializable
     data class WrapperAddonResult(
-            val addons: List<SlugIdPair>
+        val addons: List<SlugIdPair>
     )
 
     @Serializable
     data class GraphQlResult(
-            val data: WrapperAddonResult
+        val data: WrapperAddonResult
     )
 
     suspend fun graphQLRequest(additionalFilter: String = ""): List<SlugIdPair> {
         val url = "https://curse.nikky.moe/graphql"
         logger.debug("post $url")
         val requestBody = GraphQLRequest(
-                query = """
+            query = """
                     |{
                     |  addons(gameID: 432 $additionalFilter) {
                     |    id
@@ -70,13 +73,13 @@ object CurseClient : KLogging() {
                     |  }
                     |}
                 """.trimMargin(),
-                operationName = "GetSlugIDPairs"
+            operationName = "GetSlugIDPairs"
         )
         val (request, response, result) = Fuel.post(url)
-                .apply { headers.clear() }
-                .jsonBody(body = JSON.stringify(requestBody))
-                .header("User-Agent" to useragent)
-                .awaitObjectResponse<GraphQlResult>(kotlinxDeserializerOf())
+            .apply { headers.clear() }
+            .jsonBody(body = JSON.stringify(requestBody))
+            .header("User-Agent" to useragent)
+            .awaitObjectResponse<GraphQlResult>(kotlinxDeserializerOf())
 
         when (result) {
             is Result.Success -> {
@@ -85,6 +88,7 @@ object CurseClient : KLogging() {
             is Result.Failure -> {
                 logger.error("GetSlugIDPairs")
                 logger.error("url: $url")
+                logger.error("cUrl: ${request.cUrlString()}")
                 logger.error("response: $response")
                 logger.error(result.error.exception) { "cold not request slug-id pairs" }
                 logger.error { request }
@@ -96,8 +100,8 @@ object CurseClient : KLogging() {
     private suspend fun initSlugIdMap(): Map<String, ProjectID> {
         val grapqhQlResult = graphQLRequest()
         return grapqhQlResult.groupBy(
-                { it.slug },
-                { it.id }).mapValues {
+            { it.slug },
+            { it.id }).mapValues {
             // (slug, list) ->
             ProjectID(it.value.first())
         }
@@ -117,13 +121,14 @@ object CurseClient : KLogging() {
         logger.debug("get $url")
 
         val (request, response, result) = url.httpGet()
-                .header("User-Agent" to useragent)
-                .awaitObjectResponse<AddonFile>(kotlinxDeserializerOf(json = json))
+            .header("User-Agent" to useragent)
+            .awaitObjectResponse<AddonFile>(kotlinxDeserializerOf(json = json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
                 logger.error("getAddonFileCall")
                 logger.error("url: $url")
+                logger.error("cUrl: ${request.cUrlString()}")
                 logger.error("response: $response")
                 logger.error(result.error.exception) { result.error }
                 throw result.error.exception
@@ -145,13 +150,14 @@ object CurseClient : KLogging() {
 
         logger.debug("get $url")
         val (request, response, result) = url.httpGet()
-                .header("User-Agent" to useragent)
-                .awaitObjectResponse<List<AddonFile>>(kotlinxDeserializerOf(AddonFile.serializer().list, json))
+            .header("User-Agent" to useragent)
+            .awaitObjectResponse<List<AddonFile>>(kotlinxDeserializerOf(AddonFile.serializer().list, json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
                 logger.error("getAllFilesForAddonCall")
                 logger.error("url: $url")
+                logger.error("cUrl: ${request.cUrlString()}")
                 logger.error("response: $response")
                 logger.error(result.error.exception) { result.error }
                 throw result.error.exception
@@ -174,13 +180,14 @@ object CurseClient : KLogging() {
 
         logger.debug("get $url")
         val (request, response, result) = url.httpGet()
-                .header("User-Agent" to useragent)
-                .awaitObjectResponse<Addon>(kotlinxDeserializerOf(json = json))
+            .header("User-Agent" to useragent)
+            .awaitObjectResponse<Addon>(kotlinxDeserializerOf(json = json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
                 logger.error("getAddonCall")
                 logger.error("url: $url")
+                logger.error("cUrl: ${request.cUrlString()}")
                 logger.error("response: $response")
                 logger.error(result.error.exception) { result.error }
                 if (fail) throw result.error.exception
@@ -196,13 +203,14 @@ object CurseClient : KLogging() {
 
         logger.debug("get $url")
         val (request, response, result) = url.httpGet()
-                .header("User-Agent" to useragent)
-                .awaitStringResponse()
+            .header("User-Agent" to useragent)
+            .awaitStringResponse()
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
                 logger.error("getFileChangelog")
                 logger.error("url: $url")
+                logger.error("cUrl: ${request.cUrlString()}")
                 logger.error("response: $response")
                 logger.error(result.error.exception) { result.error }
                 throw IllegalStateException("failed getting changelog", result.error.exception)
@@ -212,19 +220,19 @@ object CurseClient : KLogging() {
 
     suspend fun getAddonBySlug(slug: String, proxyUrl: String = PROXY_URL): Addon? {
         slugIdMap[slug]
-                ?.let { getAddon(it, proxyUrl) }
-                ?.let {
-                    return it
-                }
+            ?.let { getAddon(it, proxyUrl) }
+            ?.let {
+                return it
+            }
 //        slugIdMap = initSlugIdMap()
         return slugIdMap[slug]
-                ?.let { getAddon(it, proxyUrl) }
+            ?.let { getAddon(it, proxyUrl) }
     }
 
     suspend fun findFile(
-            entry: Entry,
-            mcVersion: String,
-            proxyUrl: String = PROXY_URL
+        entry: Entry,
+        mcVersion: String,
+        proxyUrl: String = PROXY_URL
     ): Triple<ProjectID, FileID, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
         val slug = entry.id // TODO: maybe make into separate property
@@ -235,7 +243,7 @@ object CurseClient : KLogging() {
 
         val addon = if (!addonId.valid) {
             slug.takeUnless { it.isBlank() }
-                    ?.let { getAddonBySlug(it, proxyUrl) }
+                ?.let { getAddonBySlug(it, proxyUrl) }
         } else {
             getAddon(addonId, proxyUrl)
         }
@@ -305,8 +313,8 @@ object CurseClient : KLogging() {
         if (file == null) {
             val filesUrl = "$proxyUrl/addon/$addonId/files"
             logger.error(
-                    "no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
-                            "files: $filesUrl mc version: $mcVersions version: $version"
+                "no matching version found for ${addon.name} addon_url: ${addon.webSiteURL} " +
+                        "files: $filesUrl mc version: $mcVersions version: $version"
             )
             logger.error("no file matching the parameters found for ${addon.name}")
             logger.error("filtered by")

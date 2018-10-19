@@ -20,25 +20,25 @@ object Gradle {
 }
 
 object Kotlin {
-    const val version = "1.3.0-rc-116"//"1.3.0-rc-190"
+    const val version = "1.3.0-rc-116" //"1.3.0-rc-146"
     object Dsl {
         const val version = "1.0-rc-12"
     }
 }
 
 object Coroutines {
-    const val version = "0.30.0-eap13"
+    const val version = "0.30.2-eap13"
     val dependency = create(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = version)
 }
 
 object Serialization {
-    const val version = "0.8.0-rc13"
+    const val version = "0.8.2-rc13"
     const val plugin = "kotlinx-serialization"
     const val module = "org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin"
     val dependency = create(group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-runtime", version = version)
 }
 
-object Poet {
+object Kotlinpoet {
     const val version = "1.0.0-RC1"
     val dependency = create(group = "com.squareup", name = "kotlinpoet", version = version)
 }

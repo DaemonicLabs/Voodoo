@@ -3,12 +3,12 @@ package voodoo.pack
 import com.skcraft.launcher.builder.FeaturePattern
 import com.skcraft.launcher.builder.PackageBuilder
 import com.skcraft.launcher.model.SKModpack
-import kotlinx.coroutines.experimental.CoroutineName
-import kotlinx.coroutines.experimental.Deferred
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.awaitAll
-import kotlinx.coroutines.experimental.coroutineScope
-import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.serialization.json.JSON
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
@@ -34,9 +34,9 @@ object SKPack : AbstractPack() {
     override val label = "SK Packer"
 
     override suspend fun pack(
-            modpack: LockPack,
-            target: String?,
-            clean: Boolean
+        modpack: LockPack,
+        target: String?,
+        clean: Boolean
     ) {
         val cacheDir = directories.cacheHome
         val workspaceDir = modpack.rootDir.resolve("workspace").absoluteFile

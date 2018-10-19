@@ -2,10 +2,11 @@ package com.skcraft.launcher.model
 
 import com.skcraft.launcher.builder.FnPatternList
 import com.skcraft.launcher.model.modpack.Feature
-import kotlinx.serialization.KOutput
-import kotlinx.serialization.KSerialSaver
+import kotlinx.serialization.CompositeEncoder
+import kotlinx.serialization.Encoder
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.serializer
 import kotlinx.serialization.set
@@ -25,20 +26,24 @@ data class ExtendedFeaturePattern(
 ) {
     @Serializer(forClass = ExtendedFeaturePattern::class)
     companion object {
-        override fun save(output: KOutput, obj: ExtendedFeaturePattern) {
-            val elemOutput = output.writeBegin(serialClassDesc)
-            elemOutput.writeSerializableElementValue(serialClassDesc, 0, String.serializer().set, obj.entries)
-            elemOutput.writeSerializableElementValue(serialClassDesc, 1, Feature.Companion, obj.feature)
+        override fun serialize(output: Encoder, obj: ExtendedFeaturePattern) {
+            val elemOutput = output.beginStructure(descriptor)
+            elemOutput.encodeSerializableElement(descriptor, 0, String.serializer().set, obj.entries)
+            elemOutput.encodeSerializableElement(descriptor, 1, Feature.Companion, obj.feature)
             with(ExtendedFeaturePattern(obj.entries, obj.feature)) {
                 elemOutput.serializeObj(this.files, obj.files, FnPatternList.Companion, 2)
             }
-
-            elemOutput.writeEnd(serialClassDesc)
+            elemOutput.endStructure(descriptor)
         }
 
-        private fun <T : Any?> KOutput.serializeObj(default: T?, actual: T, saver: KSerialSaver<T>, index: Int) {
-            if (default != actual || default != null) {
-                this.writeSerializableElementValue(serialClassDesc, index, saver, actual)
+        private fun <T : Any> CompositeEncoder.serializeObj(
+            default: T?,
+            actual: T?,
+            saver: SerializationStrategy<T>,
+            index: Int
+        ) {
+            if (default != actual && actual != null) {
+                this.encodeSerializableElement(descriptor, index, saver, actual)
             }
         }
     }

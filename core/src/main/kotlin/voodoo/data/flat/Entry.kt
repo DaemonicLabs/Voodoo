@@ -1,18 +1,20 @@
 package voodoo.data.flat
 
 import com.skcraft.launcher.model.modpack.Feature
-import kotlinx.serialization.KOutput
-import kotlinx.serialization.KSerialSaver
+import kotlinx.serialization.CompositeEncoder
+import kotlinx.serialization.Encoder
 import kotlinx.serialization.Optional
-import kotlinx.serialization.SerialContext
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
 import kotlinx.serialization.UpdateMode
 import kotlinx.serialization.internal.EnumSerializer
 import kotlinx.serialization.internal.HashMapSerializer
+import kotlinx.serialization.internal.StringSerializer
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
+import kotlinx.serialization.map
 import kotlinx.serialization.serializer
 import kotlinx.serialization.set
 import mu.KLogging
@@ -33,10 +35,8 @@ import java.io.File
  * @author Nikky
  */
 
-// @JsonInclude(JsonInclude.Include.NON_DEFAULT)
 @Serializable
 data class Entry(
-    // @JsonInclude(JsonInclude.Include.ALWAYS)
     val provider: String,
     var id: String,
     @Optional var name: String = "", // TODO add `by provider.getDisplayname(this)`
@@ -46,6 +46,7 @@ data class Entry(
     @Optional @Serializable(with = Feature.Companion::class) var feature: Feature? = null,
     @Optional var side: Side = Side.BOTH,
     @Optional var websiteUrl: String = "",
+    // TODO dependency declarations
     @Optional var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
     @Optional var replaceDependencies: Map<String, String> = mapOf(),
     // @JsonInclude(JsonInclude.Include.ALWAYS)
@@ -81,28 +82,27 @@ data class Entry(
     @Optional var template: String = ""
 ) {
 
+    // TODO: remove serializibility
     @Serializer(forClass = Entry::class)
     companion object : KLogging() {
-        override fun save(output: KOutput, obj: Entry) {
-            val elemOutput = output.writeBegin(serialClassDesc)
-            elemOutput.writeStringElementValue(serialClassDesc, 0, obj.provider)
-            elemOutput.writeStringElementValue(serialClassDesc, 1, obj.id)
+        override fun serialize(output: Encoder, obj: Entry) {
+            val elemOutput = output.beginStructure(descriptor)
+            elemOutput.encodeStringElement(descriptor, 0, obj.provider)
+            elemOutput.encodeStringElement(descriptor, 1, obj.id)
             with(Entry(provider = obj.provider, id = obj.id)) {
                 elemOutput.serialize(this.name, obj.name, 2)
                 elemOutput.serialize(this.folder, obj.folder, 3)
                 elemOutput.serialize(this.comment, obj.comment, 4)
                 elemOutput.serialize(this.description, obj.description, 5)
                 if (this.feature != obj.feature) {
-                    elemOutput.writeElement(serialClassDesc, 6)
-                    elemOutput.write(Feature::class.serializer(), obj.feature!!)
+                    elemOutput.serializeObj(this.feature, obj.feature, Feature::class.serializer(), 6)
                 }
                 elemOutput.serializeObj(this.side, obj.side, EnumSerializer(Side::class), 7)
                 elemOutput.serialize(this.websiteUrl, obj.websiteUrl, 8)
                 elemOutput.serializeObj(
-                    this.dependencies.toMap(), obj.dependencies.toMap(), HashMapSerializer(
-                        EnumSerializer(DependencyType::class),
-                        String.serializer().list
-                    ), 9
+                    this.dependencies.toMap(), obj.dependencies.toMap(),
+                    (EnumSerializer(DependencyType::class) to StringSerializer.list).map,
+                    9
                 )
                 elemOutput.serializeObj(
                     this.replaceDependencies, obj.replaceDependencies, HashMapSerializer(
@@ -114,10 +114,10 @@ data class Entry(
                 elemOutput.serialize(this.transient, obj.transient, 12)
                 elemOutput.serialize(this.version, obj.version, 13)
                 if (this.fileName != obj.fileName) {
-                    elemOutput.writeStringElementValue(serialClassDesc, 14, obj.fileName!!)
+                    elemOutput.encodeStringElement(descriptor, 14, obj.fileName!!)
                 }
                 elemOutput.serialize(this.fileNameRegex, obj.fileNameRegex, 15)
-                elemOutput.serializeObj(this.validMcVersions, obj.validMcVersions, String.serializer().set, 16)
+                elemOutput.serializeObj(this.validMcVersions, obj.validMcVersions, StringSerializer.set, 16)
                 when {
                     provider.equalsIgnoreCase("CURSE") -> {
                         elemOutput.serialize(this.curseMetaUrl, obj.curseMetaUrl, 17)
@@ -149,36 +149,42 @@ data class Entry(
                     }
                 }
             }
-            elemOutput.writeEnd(serialClassDesc)
+            elemOutput.endStructure(descriptor)
         }
 
-        private inline fun <reified T : Any> KOutput.serialize(default: T, actual: T, index: Int) {
+        private inline fun <reified T : Any> CompositeEncoder.serialize(default: T, actual: T, index: Int) {
             if (default != actual)
                 when (actual) {
-                    is String -> this.writeStringElementValue(serialClassDesc, index, actual)
-                    is Int -> this.writeIntElementValue(serialClassDesc, index, actual)
-                    is Boolean -> this.writeBooleanElementValue(serialClassDesc, index, actual)
+                    is String -> this.encodeStringElement(descriptor, index, actual)
+                    is Int -> this.encodeIntElement(descriptor, index, actual)
+                    is Boolean -> this.encodeBooleanElement(descriptor, index, actual)
                     else -> {
-                        this.writeSerializableElementValue(serialClassDesc, index, T::class.serializer(), actual)
+                        this.encodeSerializableElement(descriptor, index, T::class.serializer(), actual)
                     }
                 }
         }
 
-        private fun <T : Any?> KOutput.serializeObj(default: T, actual: T, saver: KSerialSaver<T>, index: Int) {
-            if (default != actual) {
-                this.writeSerializableElementValue(serialClassDesc, index, saver, actual)
+        private fun <T : Any> CompositeEncoder.serializeObj(
+            default: T?,
+            actual: T?,
+            saver: SerializationStrategy<T>,
+            index: Int
+        ) {
+            if (default != actual && actual != null) {
+                this.encodeSerializableElement(descriptor, index, saver, actual)
             }
         }
 
         private val json = JSON(
             indented = true,
             updateMode = UpdateMode.BANNED,
-            nonstrict = true,
+            strictMode = false,
             unquoted = true,
-            indent = "  ",
-            context = SerialContext().apply {
-                registerSerializer(Side::class, Side.Companion)
-            })
+            indent = "  "
+//            context = SerialContext().apply {
+//                registerSerializer(Side::class, Side.Companion)
+//            }
+        )
     }
 
     @Transient

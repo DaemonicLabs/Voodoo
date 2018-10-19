@@ -2,7 +2,7 @@ package voodoo
 
 import Forge
 import job
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import list
 import metaUrl
 import org.spekframework.spek2.Spek
@@ -52,8 +52,7 @@ object DslSpek : Spek({
                         withProvider(JenkinsProvider) {
                             side = Side.SERVER
                         }.list {
-                            add("matterlink") job "elytra/matterlink/master"
-                            add("elytra/btfu/master")
+                            +"matterlink" job "elytra/matterlink/master"
                         }
 
 //                    include("other.kts")

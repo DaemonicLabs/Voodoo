@@ -1,27 +1,38 @@
 package voodoo.util
 
 import awaitByteArrayResponse
+import com.github.kittinunf.fuel.core.FuelManager
+import com.github.kittinunf.fuel.core.interceptors.redirectResponseInterceptor
 import com.github.kittinunf.fuel.core.isStatusRedirection
+import com.github.kittinunf.fuel.httpDownload
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import kotlinx.io.IOException
 import mu.KLogger
 import mu.KLogging
 import voodoo.util.UtilConstants.VERSION
+import voodoo.util.redirect.fixedRedirectResponseInterceptor
 import java.io.File
+import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 30/03/18.
  * @author Nikky
  */
 object Downloader : KLogging() {
-    const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
+    const val useragent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" //""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
+
+    val manager = FuelManager()
+
+    init {
+        manager.removeResponseInterceptor(redirectResponseInterceptor(manager))
+        manager.addResponseInterceptor(fixedRedirectResponseInterceptor(manager))
+    }
 }
 
 suspend fun File.download(
     url: String,
     cacheDir: File,
-    validator: (file: File) -> Boolean = { true },
+    validator: (file: File) -> Boolean = { false },
     logger: KLogger = Downloader.logger
 ) {
     val cacheFile = cacheDir.resolve(this.name)
@@ -29,41 +40,30 @@ suspend fun File.download(
     logger.debug("cacheFile $cacheFile")
     if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
 
-    if (!cacheFile.exists() || !cacheFile.isFile) {
-        var nextUrl = url
-        logger.info("url: $nextUrl")
-        do {
-            nextUrl = nextUrl.encoded
-            val (request, response, result) = nextUrl // .encode()
-                .httpGet().header("User-Agent" to Downloader.useragent)
-                .allowRedirects(false)
-                .awaitByteArrayResponse()
+    if(cacheFile.exists() && cacheFile.isFile && validator(cacheFile)) {
+        logger.info("file: $cacheFile exists and validated")
+    } else {
+        val (request, response, result) = Downloader.manager.download(url.encoded)
+            .header("User-Agent" to Downloader.useragent)
+            .awaitByteArrayResponse()
 
-            logger.debug("status: ${response.statusCode}")
-            if (response.isStatusRedirection) {
-                nextUrl = response.headers["Location"]?.firstOrNull()
-                    ?: throw IllegalStateException("missing Location header")
-                logger.debug("next url: $nextUrl")
-                continue
+        when (result) {
+            is Result.Success -> {
+                cacheDir.mkdirs()
+                cacheFile.parentFile.mkdirs()
+                cacheFile.writeBytes(result.value)
             }
-            when (result) {
-                is Result.Success -> {
-                    cacheDir.mkdirs()
-                    cacheFile.parentFile.mkdirs()
-                    cacheFile.writeBytes(result.value)
-                }
-                is Result.Failure -> {
-                    result.error.exception.printStackTrace()
-//                    logger.error(result.error.exception) { result.error }
-                    logger.error("invalid statusCode {} from {}", response.statusCode, url.encoded)
-                    logger.error("connection url: {}", request.url)
-                    logger.error("content: {}", result.component1())
-                    logger.error("error: {}", result.error.toString())
-                    throw IOException(result.error.toString(), result.error.exception)
-                }
+            is Result.Failure -> {
+                logger.error("invalid statusCode {} from {}", response.statusCode, url.encoded)
+                logger.error("connection url: ${request.url}")
+                logger.error("cUrl: ${request.cUrlString()}")
+                logger.error("response: $response")
+//                    logger.error("content: {}", result.component1())
+                logger.error("error: {}", result.error.toString())
+                logger.error(result.error.exception) { "Download Failed" }
+                exitProcess(-1)
             }
-            break
-        } while (true)
+        }
     }
 
     logger.debug("saving $url -> $this")

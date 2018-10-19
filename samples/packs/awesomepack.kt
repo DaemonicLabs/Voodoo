@@ -12,7 +12,7 @@ fun main(args: Array<String>) = withDefaultMain(
     arguments = args
 ) {
     tome {
-//        tomeRoot = rootDir.resolve("docs")
+        //        tomeRoot = rootDir.resolve("docs")
     }
 
     // TODO nested pack DSL to avoid copying over values
@@ -41,26 +41,26 @@ fun main(args: Array<String>) = withDefaultMain(
                 add(Mod.thermalexpansion)
                 add(Mod.thermalInnovation)
 
-                + Mod::betterBuildersWands
+                +Mod::betterBuildersWands
 
                 withProvider(DirectProvider).list {
                     // inline url declration
-                    add("nutrition") url "https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar"
+                    +"nutrition" url "https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar"
                 }
 
                 withProvider(JenkinsProvider) {
                     jenkinsUrl = "https://ci.elytradev.com"
                 }.list {
-                    add("fruitPhone") job "elytra/FruitPhone/1.12.2"
-                    add("probeDataProvider") job "elytra/ProbeDataProvider/1.12"
+                    +"fruitPhone" job "elytra/FruitPhone/1.12.2"
+                    +"probeDataProvider" job "elytra/ProbeDataProvider/1.12"
 
-                    add("magicArselnal") {
+                    + "magicArselnal" configure {
                         name = "Magic Arsenal"
                         job = "elytra/MagicArsenal/master"
                     }
 
                     // without a job specfied, the id will be implicitely used as job
-                    add("elytra/MatterLink/master")
+                    +"elytra/MatterLink/master"
                 }
 
 //                withProvider(LocalProvider).list {
@@ -93,7 +93,7 @@ fun main(args: Array<String>) = withDefaultMain(
                     withProvider(JenkinsProvider) {
                         jenkinsUrl = "https://ci.elytradev.com"
                     }.list {
-                        add("matterLink") job "elytra/MatterLink/master"
+                        +"matterLink" job "elytra/MatterLink/master"
                     }
                 }
 
@@ -104,22 +104,22 @@ fun main(args: Array<String>) = withDefaultMain(
                         recommendation = Recommendation.starred
                     }
                 }.list {
-                    add(Mod.journeymap) {
+                    add(Mod.journeymap) configure {
                         description =
-                            "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
+                                "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
                     }
 
                     add(Mod.mage) description "Configurable graphics enhancements. Highly recomended."
 
-                    add(Mod.neat) {
+                    add(Mod.neat) configure {
                         description = "Simple health and unit frames."
                     }
 
-                    add(Mod.clientTweaks) {
+                    add(Mod.clientTweaks) configure {
                         description = "Various client related fixes and tweaks, all in a handy menu."
                     }
 
-                    add(Mod.mouseTweaks) {
+                    add(Mod.mouseTweaks) configure {
                         description = "Add extra mouse gestures for inventories and crafting grids."
                     }
                 }
@@ -128,33 +128,33 @@ fun main(args: Array<String>) = withDefaultMain(
                         selected = false
                     }
                 }.list {
-                    add(Mod.itemScroller) {
+                    add(Mod.itemScroller) configure {
                         description = "Alternative to MouseTweaks."
                     }
 
-                    add(Mod.xaerosMinimap) {
+                    add(Mod.xaerosMinimap) configure {
                         description = "Lightweight alternative to JourneyMap."
                     }
 
-                    add(Mod.minemenu) {
+                    add(Mod.minemenu) configure {
                         description =
-                            "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
+                                "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
                     }
 
-                    add(Mod.itemzoom) {
+                    add(Mod.itemzoom) configure {
                         description = "Check this if you like to get a closer look at item textures."
                     }
                 }
 
                 // resource packs
-                add(TexturePack.unity) {
+                add(TexturePack.unity) configure {
                     fileName = "Unity.zip"
                     // curse resource packs are automatically
                     // set to use the correct folder
                 }
 
                 withProvider(DirectProvider).list {
-                    add("slice") {
+                    +"slice" configure {
                         folder = "resourcepacks"
 //                        fileSrc = "ressourcepacks/Slice.zip"
                         url = "https://centerofthemultiverse.net/launcher/mirror/Slice.zip"

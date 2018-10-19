@@ -1,10 +1,10 @@
 package voodoo.pack
 
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.coroutineScope
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.joinAll
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.joinAll
+import kotlinx.coroutines.launch
 import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.JSON

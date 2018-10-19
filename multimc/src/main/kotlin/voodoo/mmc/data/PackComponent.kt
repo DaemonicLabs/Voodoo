@@ -1,6 +1,7 @@
 package voodoo.mmc.data
 
-import kotlinx.serialization.KOutput
+import kotlinx.serialization.CompositeEncoder
+import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
@@ -21,29 +22,28 @@ data class PackComponent(
     @Serializer(forClass = PackComponent::class)
     companion object : KSerializer<PackComponent> {
         private val DEFAULT = PackComponent()
-        override fun save(output: KOutput, obj: PackComponent) {
-            val elemOutput = output.writeBegin(serialClassDesc)
+        override fun serialize(output: Encoder, obj: PackComponent) {
+            val elemOutput = output.beginStructure(descriptor)
             elemOutput.serialize(DEFAULT.uid, obj.uid, 0)
             elemOutput.serialize(DEFAULT.version, obj.version, 1)
             elemOutput.serialize(DEFAULT.cachedName, obj.cachedName, 2)
             if (DEFAULT.cachedRequires != obj.cachedRequires) {
                 val listSerializer = CachedRequire.list
-                elemOutput.writeElement(serialClassDesc, 3)
-                listSerializer.save(elemOutput, obj.cachedRequires)
+                elemOutput.encodeSerializableElement(descriptor, 3, listSerializer, obj.cachedRequires)
             }
             elemOutput.serialize(DEFAULT.cachedVersion, obj.cachedVersion, 4)
             elemOutput.serialize(DEFAULT.important, obj.important, 5)
             elemOutput.serialize(DEFAULT.cachedVolatile, obj.cachedVolatile, 6)
             elemOutput.serialize(DEFAULT.dependencyOnly, obj.dependencyOnly, 7)
-            elemOutput.writeEnd(serialClassDesc)
+            elemOutput.endStructure(descriptor)
         }
 
-        private inline fun <reified T : Any> KOutput.serialize(default: T, actual: T, index: Int) {
+        private inline fun <reified T : Any> CompositeEncoder.serialize(default: T, actual: T, index: Int) {
             if (default != actual) {
                 when (actual) {
-                    is String -> this.writeStringElementValue(serialClassDesc, index, actual)
-                    is Int -> this.writeIntElementValue(serialClassDesc, index, actual)
-                    is Boolean -> this.writeBooleanElementValue(serialClassDesc, index, actual)
+                    is String -> this.encodeStringElement(descriptor, index, actual)
+                    is Int -> this.encodeIntElement(descriptor, index, actual)
+                    is Boolean -> this.encodeBooleanElement(descriptor, index, actual)
                 }
             }
         }

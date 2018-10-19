@@ -1,6 +1,7 @@
 package voodoo.dsl.builder
 
 import voodoo.data.nested.NestedEntry
+import voodoo.dsl.VoodooDSL
 import voodoo.property
 import voodoo.provider.ProviderBase
 
@@ -11,6 +12,12 @@ class EntryBuilder<T>(
 //    var id by property(entry::id)
     var name by property(entry::name)
     var websiteUrl by property(entry::websiteUrl)
+
+    @VoodooDSL
+    infix fun configure(configureEntry: EntryBuilder<T>.() -> Unit) : EntryBuilder<T> {
+        configureEntry()
+        return this
+    }
 
     infix fun name(s: String) = apply {
         name = s

@@ -7,6 +7,7 @@ import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.maven
 import org.gradle.kotlin.dsl.repositories
 import org.gradle.kotlin.dsl.task
 import org.gradle.kotlin.dsl.withType
@@ -28,8 +29,16 @@ open class VoodooPlugin : Plugin<Project> {
             }
             repositories {
                 jcenter()
-                maven { url = uri("https://repo.elytradev.com") }
-                maven { url = uri("https://kotlin.bintray.com/kotlinx") }
+                mavenCentral()
+                maven(url = "https://dl.bintray.com/kotlin/kotlin-eap") {
+                    name = "kotlin-eap"
+                }
+                maven(url = "https://kotlin.bintray.com/kotlinx") {
+                    name = "kotlinx"
+                }
+                maven(url = "https://repo.elytradev.com") {
+                    name = "elytradev"
+                }
             }
 
             extensions.create<VoodooExtension>("voodoo", project)
@@ -44,6 +53,7 @@ open class VoodooPlugin : Plugin<Project> {
 
             tasks.withType<KotlinCompile> {
                 kotlinOptions {
+                    languageVersion = "1.3"
                     jvmTarget = "1.8"
                 }
                 dependsOn(poet)

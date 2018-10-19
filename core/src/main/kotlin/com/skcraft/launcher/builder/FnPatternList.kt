@@ -6,7 +6,7 @@
  */
 package com.skcraft.launcher.builder
 
-import kotlinx.serialization.KOutput
+import kotlinx.serialization.Encoder
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
@@ -40,16 +40,16 @@ data class FnPatternList(
 
     @Serializer(forClass = FnPatternList::class)
     companion object {
-        override fun save(output: KOutput, obj: FnPatternList) {
-            val elemOutput = output.writeBegin(serialClassDesc)
+        override fun serialize(output: Encoder, obj: FnPatternList) {
+            val elemOutput = output.beginStructure(descriptor)
             obj.include.takeUnless { it.isEmpty() }?.let {
-                elemOutput.writeSerializableElementValue(serialClassDesc, 0, String.serializer().list, it)
+                elemOutput.encodeSerializableElement(descriptor, 0, String.serializer().list, it)
             }
             obj.exclude.takeUnless { it.isEmpty() }?.let {
-                elemOutput.writeSerializableElementValue(serialClassDesc, 1, String.serializer().list, it)
+                elemOutput.encodeSerializableElement(descriptor, 1, String.serializer().list, it)
             }
 
-            elemOutput.writeEnd(serialClassDesc)
+            elemOutput.endStructure(descriptor)
         }
 
         private val DEFAULT_FLAGS = EnumSet.of<FnMatch.Flag>(FnMatch.Flag.CASEFOLD, FnMatch.Flag.PERIOD)

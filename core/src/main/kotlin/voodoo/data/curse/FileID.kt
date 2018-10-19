@@ -1,14 +1,14 @@
 package voodoo.data.curse
 
-import kotlinx.serialization.KInput
-import kotlinx.serialization.KOutput
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.internal.PrimitiveDesc
+import kotlinx.serialization.Serializer
 
 // TODO: inline
 @Serializable(with = FileID.Companion::class)
-class FileID(val value: Int) {
+data class FileID(val value: Int) {
     override fun toString(): String {
         return value.toString()
     }
@@ -16,15 +16,16 @@ class FileID(val value: Int) {
     val valid: Boolean
         get() = value > 0
 
+    @Serializer(forClass = FileID::class)
     companion object : KSerializer<FileID> {
-        override val serialClassDesc = PrimitiveDesc("FileID")
+//        override val descriptor = PrimitiveDesc("FileID")
 
-        override fun load(input: KInput): FileID {
-            return FileID(input.readIntValue())
+        override fun deserialize(input: Decoder): FileID {
+            return FileID(input.decodeInt())
         }
 
-        override fun save(output: KOutput, obj: FileID) {
-            output.writeIntValue(obj.value)
+        override fun serialize(output: Encoder, obj: FileID) {
+            output.encodeInt(obj.value)
         }
 
         val INVALID = FileID(-1)

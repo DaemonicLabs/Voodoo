@@ -11,7 +11,12 @@ open class ListBuilder<T>(
 ) where T : ProviderBase {
     internal val entries: MutableList<AbstractBuilder<*>> = mutableListOf()
 
-    open operator fun String.unaryPlus(): EntryBuilder<T> = add(this)
+    open operator fun String.unaryPlus(): EntryBuilder<T> {
+        val entry = NestedEntry(id = this)
+        val entryBuilder = EntryBuilder(provider = provider, entry = entry)
+        entries += entryBuilder
+        return entryBuilder
+    }
 
     // TODO enable after testing
 //    open operator fun String.invoke(
@@ -21,24 +26,23 @@ open class ListBuilder<T>(
     @VoodooDSL
     @Deprecated(
         "prefer unaryPlus",
-        ReplaceWith("id.unaryPlus()"),
+        ReplaceWith("+ id"),
         level = DeprecationLevel.WARNING
     )
     open fun add(
         id: String
-    ) = add(id) {}
+    ) = id.unaryPlus()
 
     @VoodooDSL
+    @Deprecated(
+        "use inline configure",
+        ReplaceWith("add(id) configure initEntry"),
+        level = DeprecationLevel.ERROR
+    )
     open fun add(
         id: String,
         initEntry: EntryBuilder<T>.() -> Unit = {}
-    ): EntryBuilder<T> {
-        val entry = NestedEntry(id = id)
-        val entryBuilder = EntryBuilder(provider = provider, entry = entry)
-        entryBuilder.initEntry()
-        entries += entryBuilder
-        return entryBuilder
-    }
+    ) = id.unaryPlus().configure(initEntry)
 
     @VoodooDSL
     fun group(
@@ -50,17 +54,4 @@ open class ListBuilder<T>(
         entries += groupBuilder
         return groupBuilder
     }
-
-    // TODO drop in 0.4.2
-
-    @Deprecated("renamed to unaryPlus", ReplaceWith("id.unaryPlus()"), level = DeprecationLevel.WARNING)
-    open fun id(
-        id: String
-    ): EntryBuilder<T> = add(id)
-
-    @Deprecated("renamed to add", ReplaceWith("add(id, initEntry)"), level = DeprecationLevel.WARNING)
-    open fun id(
-        id: String,
-        initEntry: EntryBuilder<T>.() -> Unit
-    ): EntryBuilder<T> = add(id, initEntry)
 }

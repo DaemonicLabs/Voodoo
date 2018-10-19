@@ -2,10 +2,11 @@ package voodoo.data.flat
 
 import com.skcraft.launcher.model.ExtendedFeaturePattern
 import com.skcraft.launcher.model.launcher.LaunchModifier
-import kotlinx.serialization.KOutput
-import kotlinx.serialization.KSerialSaver
+import kotlinx.serialization.CompositeEncoder
+import kotlinx.serialization.Encoder
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
 import kotlinx.serialization.list
@@ -41,10 +42,10 @@ data class ModPack(
 ) {
     @Serializer(forClass = ModPack::class)
     companion object : KLogging() {
-        override fun save(output: KOutput, obj: ModPack) {
-            val elemOutput = output.writeBegin(serialClassDesc)
-            elemOutput.writeStringElementValue(serialClassDesc, 0, obj.id)
-            elemOutput.writeStringElementValue(serialClassDesc, 1, obj.mcVersion)
+        override fun serialize(output: Encoder, obj: ModPack) {
+            val elemOutput = output.beginStructure(descriptor)
+            elemOutput.encodeStringElement(descriptor, 0, obj.id)
+            elemOutput.encodeStringElement(descriptor, 1, obj.mcVersion)
             with(ModPack(obj.id, obj.mcVersion)) {
                 elemOutput.serialize(this.title, obj.title, 2)
                 elemOutput.serialize(this.version, obj.version, 3)
@@ -59,28 +60,36 @@ data class ModPack(
                 elemOutput.serialize(this.sourceDir, obj.sourceDir, 10)
                 elemOutput.serialize(this.tomeDir, obj.tomeDir, 11)
             }
-            elemOutput.writeEnd(serialClassDesc)
+            elemOutput.endStructure(descriptor)
         }
 
-        private inline fun <reified T : Any> KOutput.serialize(default: T?, actual: T, index: Int) {
+        private inline fun <reified T : Any> CompositeEncoder.serialize(default: T?, actual: T, index: Int) {
             if (default != actual) {
                 when (actual) {
-                    is String -> this.writeStringElementValue(serialClassDesc, index, actual)
-                    is Int -> this.writeIntElementValue(serialClassDesc, index, actual)
+                    is String -> this.encodeStringElement(descriptor, index, actual)
+                    is Int -> this.encodeIntElement(descriptor, index, actual)
                 }
             }
         }
 
-        private fun <T : Any?> KOutput.serializeObj(default: T?, actual: T, saver: KSerialSaver<T>, index: Int) {
-            if (default != actual || default != null) {
-                this.writeSerializableElementValue(serialClassDesc, index, saver, actual)
+        private inline fun <reified T : Any> CompositeEncoder.serializeObj(
+            default: T?,
+            actual: T?,
+            saver: SerializationStrategy<T>,
+            index: Int
+        ) {
+            if (default != actual && actual != null) {
+                this.encodeSerializableElement(descriptor, index, saver, actual)
             }
         }
     }
 
-    @Optional var localDir: String = "local"
-    @Optional var sourceDir: String = id
-    @Optional var tomeDir: String = id
+    @Optional
+    var localDir: String = "local"
+    @Optional
+    var sourceDir: String = id
+    @Optional
+    var tomeDir: String = id
 
     @Transient
     lateinit var rootDir: File
@@ -182,7 +191,7 @@ data class ModPack(
     ): LockEntry {
 //        logger.debug("waiting on synchrnoized")
         val result2 = synchronized(lockEntrySet) {
-//            logger.debug("entering synchronized")
+            //            logger.debug("entering synchronized")
             val result = lockEntrySet.find { it.id == entry.id }?.let {
                 lockEntrySet -= it
                 mergeOp(it, entry)

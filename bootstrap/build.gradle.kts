@@ -1,14 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-plugins {
-    application
-    id("com.github.johnrengelman.shadow")
-}
-
-application {
-    mainClassName = "voodoo.BootstrapKt"
-}
 version = project.version
 
 dependencies {

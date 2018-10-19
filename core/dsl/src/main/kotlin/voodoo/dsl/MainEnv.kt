@@ -16,6 +16,7 @@ class MainEnv(
 
     @VoodooDSL
     fun nestedPack(id: String, mcVersion: String, packBuilder: ModpackBuilder.() -> Unit): NestedPack {
+        @Suppress("deprecated")
         val pack = NestedPack(
             rootDir = rootDir,
             id = id,

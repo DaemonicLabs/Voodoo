@@ -1,6 +1,6 @@
 package voodoo
 
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import list
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
@@ -67,7 +67,7 @@ open class CreatePackTask : DefaultTask() {
             root = rootEntry(CurseProvider) {
                 list {
                     filteredMods.forEach { (identifier, projectId) ->
-                        add(projectId.value) {
+                        add(projectId.value) configure {
 //                            projectID = projectId
                         }
                     }
