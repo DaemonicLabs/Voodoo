@@ -127,7 +127,7 @@ root = rootEntry(CurseProvider) {
         group {
             releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
         }.list {
-            add(Mod.rftools)
+            addMod.rftools)
             add(Mod.rftoolsDimensions)
         }
     }
@@ -151,12 +151,12 @@ Direct Entries require a url along with the name.. so a short notation is not po
 
 ```kotlin
 withProvider(DirectProvider).list {
-    add("betterBuilderWands") {
+    +"betterBuilderWands" configure {
         name = "Better Builder's Wands"
         url = "https://centerofthemultiverse.net/launcher/mirror/BetterBuildersWands-1.12-0.11.1.245+69d0d70.jar"
     }
     // inline url declration
-    add("nutrition") url "https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar"
+    +"nutrition" url "https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar"
 }
 ```
 
@@ -170,16 +170,16 @@ different file or make sure your generated docs are not used as mod jar? then us
 withProvider(JenkinsProvider) {
     jenkinsUrl = "https://ci.elytradev.com"
 }.list { // Jenkins provider context
-    add("fruitPhone") job "elytra/FruitPhone/1.12.2"
-    add("probeDataProvider") job "elytra/ProbeDataProvider/1.12"
+    +"fruitPhone" job "elytra/FruitPhone/1.12.2"
+    +"probeDataProvider" job "elytra/ProbeDataProvider/1.12"
     
-    add("magicArselnal") {
+    +"magicArsenal" configure {
         name = "Magic Arsenal"
         job = "elytra/MagicArsenal/master"
     }
     
     // without a job specfied, the id will be implicitely used as job
-    add("elytra/MatterLink/master")
+    +"elytra/MatterLink/master"
 }
 ```
 
@@ -193,7 +193,7 @@ anyway.. local entries will take a relative path and pull the file from the `loc
 
 ```kotlin
 withProvider(LocalProvider).list { // Local provider Context
-    add("someMod") {
+    +"someMod" configure {
         name = "SomeMod"
         fileName = "SomeMod.jar"
         // relative to localDir
@@ -211,7 +211,7 @@ Voodoo will automatically install the mods for the chosen side on export / packa
 
 ### Clientside
 
-just some of the basics.. all examples use curse, but they could be from any provider
+just some of the basics.. all examples use curse mods, but they could be from any provider
 
 ```kotlin
 group {
@@ -240,7 +240,9 @@ group {
     withProvider(JenkinsProvider) {
         jenkinsUrl = "https://ci.elytradev.com"
     }.list {
-        add("matterLink") job "elytra/MatterLink/master"
+        +"matterLink" configure {
+            job = "elytra/MatterLink/master"
+        } 
     }
 }
 ```
@@ -263,22 +265,22 @@ group {
         recommendation = Recommendation.starred
     }
 }.list {
-    add(Mod.journeymap) {
+    add(Mod.journeymap) configure {
         description =
             "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
     }
 
     add(Mod.mage) description "Configurable graphics enhancements. Highly recomended."
 
-    add(Mod.neat) {
+    add(Mod.neat) configure {
         description = "Simple health and unit frames."
     }
 
-    add(Mod.clientTweaks) {
+    add(Mod.clientTweaks) configure {
         description = "Various client related fixes and tweaks, all in a handy menu."
     }
 
-    add(Mod.mouseTweaks) {
+    add(Mod.mouseTweaks) configure {
         description = "Add extra mouse gestures for inventories and crafting grids."
     }
 }
@@ -287,19 +289,19 @@ group {
         selected = false
     }
 }.list {
-    add(Mod.itemScroller) {
+    add(Mod.itemScroller) configure {
         description = "Alternative to MouseTweaks."
     }
 
-    add(Mod.xaerosMinimap) {
+    add(Mod.xaerosMinimap) configure {
         description = "Lightweight alternative to JourneyMap."
     }
 
-    add(Mod.minemenu) {
+    add(Mod.minemenu) configure {
         description = "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
     }
 
-    add(Mod.itemzoom) {
+    add(Mod.itemzoom) configure {
         description = "Check this if you like to get a closer look at item textures."
     } 
 }
@@ -308,14 +310,14 @@ group {
 finally we can not only download mods.. but also resource packs
 
 ```kotlin
-add(TexturePack::unity) {
++TexturePack::unity configure {
     fileName = "Unity.zip"
     // curse resource packs are automatically 
     // set to use the correct folder
 }
 
 withProvider(LocalProvider).list {
-    add("slice") {
+    +"slice" configure {
         folder = "resourcepacks"
         fileSrc = "ressourcepacks/Slice.zip"
     }

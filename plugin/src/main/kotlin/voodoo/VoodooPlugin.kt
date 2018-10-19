@@ -45,10 +45,10 @@ open class VoodooPlugin : Plugin<Project> {
         }
 
         project.afterEvaluate {
-            config.packDirectory.mkdirs()
+            config.actualPackDir.mkdirs()
 
             val poet = task<PoetTask>("poet") {
-                targetFolder = rootDir.resolve(config.generatedSource)
+                targetFolder = rootDir.resolve(config.actualGeneratedSrc)
             }
 
             tasks.withType<KotlinCompile> {
@@ -78,7 +78,7 @@ open class VoodooPlugin : Plugin<Project> {
 
             extensions.configure<IdeaModel> {
                 module {
-                    generatedSourceDirs.add(config.generatedSource)
+                    generatedSourceDirs.add(config.actualGeneratedSrc)
                 }
             }
 
@@ -92,11 +92,11 @@ open class VoodooPlugin : Plugin<Project> {
 
             task<CreatePackTask>("createpack") {
                 rootDir = config.rootDir
-                packsDir = config.packDirectory
+                packsDir = config.actualPackDir
             }
             task<CurseImportTask>("importer") {
                 rootDir = config.rootDir
-                packsDir = config.packDirectory
+                packsDir = config.actualPackDir
             }
 
             extensions.configure<SourceSetContainer> {
@@ -104,7 +104,7 @@ open class VoodooPlugin : Plugin<Project> {
 //                val mainRessources = maybeCreate("main").resources
 
                 val runtimeClasspath = maybeCreate("main").runtimeClasspath
-                config.packDirectory
+                config.actualPackDir
                     .listFiles(FilenameFilter { _, name -> name.endsWith(".kt") })
                     .forEach { sourceFile ->
                         val name = sourceFile.nameWithoutExtension

@@ -4,9 +4,9 @@ plugins {
 }
 
 voodoo {
-//    rootDir =
-//    generatedSource = project.file(".src")
-//    packDirectory = project.file("packs")
+    rootDir = project.rootDir.resolve("run")
+    packDirectory = { rootDir -> rootDir.resolve("packs") }
+//    generatedSource = { rootDir -> rootDir.resolve(".voodoo") }
 }
 
 // only required for plugin dev

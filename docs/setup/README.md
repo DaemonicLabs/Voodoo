@@ -17,16 +17,26 @@ Voodoo provides autocompletion for curse mods and forge by generating kotlin sou
 
 [sample project](https://github.com/NikkyAI/VoodooSamples)
 
+required gradle version is **5**  
+`5.0-milestone-1`
+
 `build.gradle.kts`
 ```kotlin
 plugins {
-    id("voodoo") version "0.4.1-SNAPSHOT"
+    id("voodoo") version "0.4.2-SNAPSHOT"
 }
 
 // for configuration of folders
+// these are the defaults
 voodoo {
-//    generatedSource = project.file(".voodoo")
-//    packDirectory = project.file("packs")
+//    rootDir = project.rootDir
+//    generatedSource = { rootDir -> rootDir.resolve(".voodoo") }
+//    packDirectory = { ootDir -> rootDir.resolve("packs") }
+}
+
+tasks.withType<Wrapper> {
+     gradleVersion = "5.0-milestone-1"
+     distributionType = Wrapper.DistributionType.ALL
 }
 ```
 

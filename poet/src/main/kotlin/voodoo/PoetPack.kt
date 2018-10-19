@@ -166,15 +166,15 @@ object PoetPack : KLogging() {
                             Poet.defaultSlugSanitizer(slug)
                         }
                         if (entryBody.isEmpty())
-                            addStatement("+ Mod::$identifier")
+                            addStatement("+Mod::$identifier")
                         else
-                            beginControlFlow("%T(Mod.$identifier)", ClassName("", "add"))
+                            beginControlFlow("+Mod::$identifier configure")
                     }
                     else -> {
                         if (entryBody.isEmpty())
                             addStatement("+%S", entry.id)
                         else
-                            beginControlFlow("%T(%S)", ClassName("", "add"), entry.id)
+                            beginControlFlow("+%S configure", entry.id)
                     }
                 }
             // provider changed
@@ -324,7 +324,7 @@ object PoetPack : KLogging() {
             .build()
         folder.mkdirs()
         fileSpec.writeTo(folder)
-        logger.info { folder }
         logger.info { fileSpec }
+        logger.info ("written to ${folder.resolve(nestedPack.id + ".kt")}")
     }
 }
