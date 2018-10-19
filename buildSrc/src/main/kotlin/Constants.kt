@@ -15,21 +15,24 @@ fun create(
 }
 
 object Gradle {
-    const val version = "4.10.2"
+    const val version = "5.0-milestone-1"
     val distributionType = Wrapper.DistributionType.ALL
 }
 
 object Kotlin {
-    const val version = "1.2.71"
+    const val version = "1.3.0-rc-116"//"1.3.0-rc-190"
+    object Dsl {
+        const val version = "1.0-rc-12"
+    }
 }
 
 object Coroutines {
-    const val version = "0.30.0"
+    const val version = "0.30.0-eap13"
     val dependency = create(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = version)
 }
 
 object Serialization {
-    const val version = "0.6.2"
+    const val version = "0.8.0-rc13"
     const val plugin = "kotlinx-serialization"
     const val module = "org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin"
     val dependency = create(group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-runtime", version = version)
@@ -41,7 +44,7 @@ object Poet {
 }
 
 object Fuel {
-    const val version = "1.15.1"
+    const val version = "1.16.0"
     val dependency = create(group = "com.github.kittinunf.fuel", name = "fuel", version = version)
     val dependencyCoroutines = create(group = "com.github.kittinunf.fuel", name = "fuel-coroutines", version = version)
     val dependencySerialization = create(group = "com.github.kittinunf.fuel", name = "fuel-kotlinx-serialization", version = version)

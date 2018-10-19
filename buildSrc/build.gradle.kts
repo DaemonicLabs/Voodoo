@@ -1,10 +1,12 @@
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
+//    id("org.gradle.kotlin.kotlin-dsl") version "1.0-rc-12"
     idea
 }
 
 repositories {
+    maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
     jcenter()
     mavenCentral()
 }
@@ -15,13 +17,14 @@ dependencies {
 
 configure<GradlePluginDevelopmentExtension> {
     plugins {
-        this.register("voodoo-poet") {
-            id = "voodoo-poet"
-            implementationClass = "moe.nikky.voodoo.PoetPlugin"
-        }
-        this.register("const-generator") {
-            id = "const-generator"
-            implementationClass = "GeneratorPlugin"
+//        register("oodooPoet") {
+//            id = "voodoo.poet"
+//            implementationClass = "moe.nikky.voodoo.PoetPlugin"
+//        }
+//        this.create()
+        create("constGenerator") {
+            id = "constantsGenerator"
+            implementationClass = "plugin.GeneratorPlugin"
         }
     }
 }

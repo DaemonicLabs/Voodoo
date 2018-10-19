@@ -2,7 +2,7 @@ import org.gradle.api.publish.maven.internal.publication.DefaultMavenPublication
 
 plugins {
     `java-gradle-plugin`
-    id("org.gradle.kotlin.kotlin-dsl") version "1.0-rc-6"
+    id("org.gradle.kotlin.kotlin-dsl") version Kotlin.Dsl.version
     `maven-publish`
 }
 
@@ -44,10 +44,10 @@ publishing {
             artifact(javadocJar.get())
             groupId = "moe.nikky.voodoo${Env.branch}"
         }
-        maybeCreate("voodooPoetPluginMarkerMaven", MavenPublication::class.java).apply {
-            val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "SNAPSHOT" } ?: "dev"
-            version = "$major.$minor.$patch-$versionSuffix"
-        }
+//        maybeCreate("voodooPoetPluginMarkerMaven", MavenPublication::class.java).apply {
+//            val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "SNAPSHOT" } ?: "dev"
+//            version = "$major.$minor.$patch-$versionSuffix"
+//        }
     }
 }
 

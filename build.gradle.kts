@@ -3,6 +3,7 @@ import org.gradle.api.publish.maven.internal.publication.MavenPublicationInterna
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
+import plugin.GenerateConstantsTask
 import java.io.FilenameFilter
 
 plugins {
@@ -11,16 +12,15 @@ plugins {
     idea
     `maven-publish`
     `project-report`
-    id("const-generator")
-//    id("kotlinx-serialization") version Versions.serialization
-    id(Serialization.plugin) version Serialization.version
+    constantsGenerator apply false
+    id(Serialization.plugin) version Kotlin.version
     id("com.github.johnrengelman.shadow") version "2.0.4"
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
     id("org.jmailen.kotlinter") version "1.17.0"
 }
 
 println(
-    """
+        """
 *******************************************
  You are building Voodoo Toolset ! 
 
@@ -29,12 +29,12 @@ println(
 """
 )
 val runnableProjects = listOf(
-    rootProject to "voodoo.Voodoo",
-    project("multimc:multimc-installer") to "voodoo.Hex",
-    project("server-installer") to "voodoo.server.Install"
+        rootProject to "voodoo.Voodoo",
+        project("multimc:multimc-installer") to "voodoo.Hex",
+        project("server-installer") to "voodoo.server.Install"
 )
 val noConstants = listOf(
-    project("skcraft")
+        project("skcraft")
 )
 
 allprojects {
@@ -51,8 +51,8 @@ allprojects {
         mavenCentral()
         jcenter()
 //        mavenLocal()
-//        maven { setUrl("http://dl.bintray.com/kotlin/kotlin-eap") }
-        maven { url = uri("https://kotlin.bintray.com/kotlinx") }
+        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
+        maven(url = "https://kotlin.bintray.com/kotlinx")
     }
 
     if (project != project(":plugin")) {
@@ -67,13 +67,10 @@ allprojects {
         kotlin {
             experimental {
                 coroutines = Coroutines.ENABLE
-                // newInference = "enable" //1.3
-                // contracts = "enable" //1.3
+//                newInference = "enable" //1.3
+//                contracts = "enable" //1.3
             }
         }
-//        configure<KotlinJvmProjectExtension> {
-//            experimental.coroutines = Coroutines.ENABLE
-//        }
 
         tasks.withType<KotlinCompile> {
             kotlinOptions {
@@ -107,7 +104,7 @@ allprojects {
         if (project !in noConstants) {
 
             apply {
-                plugin("const-generator")
+                plugin("constantsGenerator")
             }
 
             val folder = listOf("voodoo") + when (project.depth) {
@@ -116,12 +113,12 @@ allprojects {
             }
             configure<ConstantsExtension> {
                 constantsObject(
-                    pkg = folder.joinToString("."),
-                    className = project.name
-                        .split("-")
-                        .joinToString("") {
-                            it.capitalize()
-                        } + "Constants"
+                        pkg = folder.joinToString("."),
+                        className = project.name
+                                .split("-")
+                                .joinToString("") {
+                                    it.capitalize()
+                                } + "Constants"
                 ) {
                     field("BUILD_NUMBER") value Env.buildNumber
                     field("BUILD") value Env.versionSuffix
@@ -227,8 +224,8 @@ allprojects {
             }
 
             rootProject.file("private.gradle")
-                .takeIf { it.exists() }
-                ?.let { apply(from = it) }
+                    .takeIf { it.exists() }
+                    ?.let { apply(from = it) }
         }
     }
 }
@@ -261,17 +258,17 @@ val compileTestKotlin by tasks.getting(KotlinCompile::class) {
 sourceSets {
     val runtimeClasspath = maybeCreate("test").runtimeClasspath
     packs
-        .listFiles(FilenameFilter { _, name -> name.endsWith(".kt") })
-        .forEach { sourceFile ->
-            val name = sourceFile.nameWithoutExtension
-            task<JavaExec>(name.toLowerCase()) {
-                workingDir = rootDir.resolve("samples").apply { mkdirs() }
-                classpath = runtimeClasspath
-                main = "${name.capitalize()}Kt"
-                description = name
-                group = "voodooo"
+            .listFiles(FilenameFilter { _, name -> name.endsWith(".kt") })
+            .forEach { sourceFile ->
+                val name = sourceFile.nameWithoutExtension
+                task<JavaExec>(name.toLowerCase()) {
+                    workingDir = rootDir.resolve("samples").apply { mkdirs() }
+                    classpath = runtimeClasspath
+                    main = "${name.capitalize()}Kt"
+                    description = name
+                    group = "voodooo"
+                }
             }
-        }
 }
 
 // SPEK
