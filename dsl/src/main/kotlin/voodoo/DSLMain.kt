@@ -8,14 +8,14 @@ import voodoo.dsl.DslConstants.FULL_VERSION
 import java.io.File
 import kotlin.system.exitProcess
 import voodoo.data.lock.LockPack
-import voodoo.dsl.MainEnv
+import voodoo.script.MainScriptEnv
 
 private val logger = KotlinLogging.logger {}
 
 fun withDefaultMain(
     arguments: Array<out String>,
     root: File, // = File(System.getProperty("user.dir")),
-    configureMain: MainEnv.() -> NestedPack // = { throw IllegalStateException("no nested pack provided") }
+    configureMain: MainScriptEnv.() -> NestedPack // = { throw IllegalStateException("no nested pack provided") }
 ) {
     // TODO: set system property "user.dir" to rootDir
 
@@ -23,16 +23,16 @@ fun withDefaultMain(
 //    println("classloader is of type:" + Thread.currentThread().contextClassLoader)
 //    println("classloader is of type:" + ClassLoader.getSystemClassLoader())
 //    println("classloader is of type:" + XY::class.java.classLoader)
-    Thread.currentThread().contextClassLoader = MainEnv::class.java.classLoader
+    Thread.currentThread().contextClassLoader = MainScriptEnv::class.java.classLoader
 
     if (arguments.firstOrNull() == "dump-srcRoot") {
-        val nestedPack = MainEnv(rootDir = root).configureMain()
+        val nestedPack = MainScriptEnv(rootDir = root).configureMain()
         val srcRoot = root.resolve(nestedPack.sourceDir)
         println("srcRoot=$srcRoot")
         exitProcess(0)
     }
 
-    val mainEnv = MainEnv(rootDir = root)
+    val mainEnv = MainScriptEnv(rootDir = root)
     val nestedPack = mainEnv.configureMain()
     val id = nestedPack.id
     val packFileName = "$id.pack.hjson"

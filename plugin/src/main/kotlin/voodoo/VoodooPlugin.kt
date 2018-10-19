@@ -45,10 +45,10 @@ open class VoodooPlugin : Plugin<Project> {
         }
 
         project.afterEvaluate {
-            config.actualPackDir.mkdirs()
+            config.getPackDir.mkdirs()
 
             val poet = task<PoetTask>("poet") {
-                targetFolder = rootDir.resolve(config.actualGeneratedSrc)
+                targetFolder = rootDir.resolve(config.getGeneratedSrc)
             }
 
             tasks.withType<KotlinCompile> {
@@ -68,8 +68,8 @@ open class VoodooPlugin : Plugin<Project> {
             extensions.configure<KotlinJvmProjectExtension> {
                 //                (sourceSets as MutableCollection<KotlinSourceSet>).clear()
                 sourceSets.maybeCreate("main").kotlin.apply {
-                    srcDir(config.packDirectory)
-                    srcDir(config.generatedSource)
+                    srcDir(config.getPackDir)
+                    srcDir(config.getGeneratedSrc)
                 }
 //                sourceSets.create("test")
             }
@@ -78,7 +78,7 @@ open class VoodooPlugin : Plugin<Project> {
 
             extensions.configure<IdeaModel> {
                 module {
-                    generatedSourceDirs.add(config.actualGeneratedSrc)
+                    generatedSourceDirs.add(config.getGeneratedSrc)
                 }
             }
 
@@ -92,11 +92,11 @@ open class VoodooPlugin : Plugin<Project> {
 
             task<CreatePackTask>("createpack") {
                 rootDir = config.rootDir
-                packsDir = config.actualPackDir
+                packsDir = config.getPackDir
             }
             task<CurseImportTask>("importer") {
                 rootDir = config.rootDir
-                packsDir = config.actualPackDir
+                packsDir = config.getPackDir
             }
 
             extensions.configure<SourceSetContainer> {
@@ -104,7 +104,7 @@ open class VoodooPlugin : Plugin<Project> {
 //                val mainRessources = maybeCreate("main").resources
 
                 val runtimeClasspath = maybeCreate("main").runtimeClasspath
-                config.actualPackDir
+                config.getPackDir
                     .listFiles(FilenameFilter { _, name -> name.endsWith(".kt") })
                     .forEach { sourceFile ->
                         val name = sourceFile.nameWithoutExtension

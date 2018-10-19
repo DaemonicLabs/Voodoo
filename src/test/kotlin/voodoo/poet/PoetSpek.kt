@@ -4,7 +4,7 @@ import Mod
 import list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import voodoo.dsl.MainEnv
+import voodoo.script.MainScriptEnv
 import voodoo.PoetPack
 import voodoo.data.Side
 import voodoo.provider.CurseProvider
@@ -19,7 +19,7 @@ object PoetSpek : Spek({
             }
         }
         val nestedpack by memoized {
-            MainEnv(rootDir = rootFolder).nestedPack(
+            MainScriptEnv(rootDir = rootFolder).nestedPack(
                 id = "new-pack",
                 mcVersion = "1.12.2"
             ) {

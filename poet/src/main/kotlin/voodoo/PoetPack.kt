@@ -17,7 +17,7 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
-import voodoo.dsl.MainEnv
+import voodoo.script.MainScriptEnv
 import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
@@ -234,7 +234,7 @@ object PoetPack : KLogging() {
                     nestedPack.id,
                     nestedPack.mcVersion
                 ) { nestedBuilder ->
-                    val default = MainEnv(rootDir = nestedPack.rootDir).nestedPack(
+                    val default = MainScriptEnv(rootDir = nestedPack.rootDir).nestedPack(
                         id = nestedPack.id,
                         mcVersion = nestedPack.mcVersion
                     ) {}

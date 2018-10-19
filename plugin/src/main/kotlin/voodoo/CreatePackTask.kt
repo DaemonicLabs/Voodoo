@@ -9,7 +9,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseConstants
-import voodoo.dsl.MainEnv
+import voodoo.script.MainScriptEnv
 import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
 import java.io.File
@@ -57,7 +57,7 @@ open class CreatePackTask : DefaultTask() {
             ForgeUtil.deferredData.await()
         }
 
-        val nestedPack = MainEnv(rootDir = rootDir).nestedPack(
+        val nestedPack = MainScriptEnv(rootDir = rootDir).nestedPack(
             id = id ?: throw GradleException("id was null"),
             mcVersion = mcVersion ?: throw GradleException("mcVersion was null")
         ) {

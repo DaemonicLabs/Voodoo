@@ -11,7 +11,7 @@ import releaseTypes
 import voodoo.data.Side
 import voodoo.data.curse.FileType
 import voodoo.data.lock.LockPack
-import voodoo.dsl.MainEnv
+import voodoo.script.MainScriptEnv
 import voodoo.provider.CurseProvider
 import voodoo.provider.JenkinsProvider
 import voodoo.util.json
@@ -29,7 +29,7 @@ object RoundTripSpek : Spek({
         }
 
         val nestedPack by memoized {
-            MainEnv(rootDir = rootFolder).nestedPack(
+            MainScriptEnv(rootDir = rootFolder).nestedPack(
                 id = "some-id",
                 mcVersion = "1.12.2"
             ) {
@@ -60,17 +60,17 @@ object RoundTripSpek : Spek({
                                 selected = false
                             }
                         }.list {
-                            add(Mod.laggoggles) {
+                            add(Mod.laggoggles) configure {
                                 description =
                                     "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                             }
 
-                            add(Mod.sampler) {
+                            add(Mod.sampler) configure {
                                 description =
                                     "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                             }
 
-                            add(Mod.openeye) {
+                            add(Mod.openeye) configure {
                                 description =
                                     "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
                             }

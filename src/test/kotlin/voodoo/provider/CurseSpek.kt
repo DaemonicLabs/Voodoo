@@ -5,7 +5,7 @@ import kotlinx.coroutines.runBlocking
 import list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import voodoo.dsl.MainEnv
+import voodoo.script.MainScriptEnv
 import voodoo.builder.resolve
 import voodoo.util.Directories
 import java.io.File
@@ -23,7 +23,7 @@ object CurseSpek : Spek({
         }
 
         val nestedpack by memoized {
-            MainEnv(rootDir = rootFolder).nestedPack(
+            MainScriptEnv(rootDir = rootFolder).nestedPack(
                 id = "curse_spek",
                 mcVersion = "1.12.2"
             ) {
