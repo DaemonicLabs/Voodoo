@@ -6,9 +6,9 @@ import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
 import com.skcraft.launcher.model.modpack.Manifest
 import com.xenomachina.argparser.ArgParser
-import kotlinx.coroutines.experimental.delay
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.map
@@ -48,7 +48,7 @@ object Hex : KLogging() {
 
     private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
 
-    private val json = JSON(indented = true, nonstrict = true)
+    private val json = JSON(indented = true, strictMode = false)
 
     private suspend fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
         logger.info("installing into $instanceId")
@@ -65,6 +65,7 @@ object Hex : KLogging() {
             }
             is Result.Failure -> {
                 logger.error("packUrl: $packUrl")
+                logger.error("cUrl: ${request.cUrlString()}")
                 logger.error("response: $response")
                 logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
                 return

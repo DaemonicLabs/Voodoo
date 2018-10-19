@@ -8,7 +8,7 @@ import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.asClassName
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.data.UserFiles
@@ -17,6 +17,7 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
+import voodoo.dsl.MainEnv
 import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
@@ -233,11 +234,10 @@ object PoetPack : KLogging() {
                     nestedPack.id,
                     nestedPack.mcVersion
                 ) { nestedBuilder ->
-                    val default = NestedPack(
-                        rootDir = nestedPack.rootDir,
+                    val default = MainEnv(rootDir = nestedPack.rootDir).nestedPack(
                         id = nestedPack.id,
                         mcVersion = nestedPack.mcVersion
-                    )
+                    ) {}
                     nestedPack.title.takeIf { it != default.title }?.let {
                         nestedBuilder.addStatement("title = %S", it)
                     }

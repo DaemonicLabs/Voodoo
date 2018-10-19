@@ -8,7 +8,7 @@ package com.skcraft.launcher.model.modpack
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import com.skcraft.launcher.model.minecraft.VersionManifest
-import kotlinx.serialization.KOutput
+import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialName
@@ -69,43 +69,43 @@ data class Manifest(
     companion object : KSerializer<Manifest> {
         val MIN_PROTOCOL_VERSION = 2
 
-        override fun save(output: KOutput, obj: Manifest) {
-            val elemOutput = output.writeBegin(serialClassDesc)
+        override fun serialize(output: Encoder, obj: Manifest) {
+            val elemOutput = output.beginStructure(descriptor)
             obj.title?.let { title ->
-                elemOutput.writeStringElementValue(serialClassDesc, 1, title)
+                elemOutput.encodeStringElement(descriptor, 1, title)
             }
             obj.name?.let { name ->
-                elemOutput.writeStringElementValue(serialClassDesc, 2, name)
+                elemOutput.encodeStringElement(descriptor, 2, name)
             }
             obj.version?.let { version ->
-                elemOutput.writeStringElementValue(serialClassDesc, 3, version)
+                elemOutput.encodeStringElement(descriptor, 3, version)
             }
-            elemOutput.writeIntElementValue(serialClassDesc, 0, obj.minimumVersion)
+            elemOutput.encodeIntElement(descriptor, 0, obj.minimumVersion)
             obj.baseUrl?.let { baseUrl ->
-                elemOutput.writeStringElementValue(serialClassDesc, 4, baseUrl.toString())
+                elemOutput.encodeStringElement(descriptor, 4, baseUrl.toString())
             }
             obj.librariesLocation?.let { librariesLocation ->
-                elemOutput.writeStringElementValue(serialClassDesc, 5, librariesLocation)
+                elemOutput.encodeStringElement(descriptor, 5, librariesLocation)
             }
             obj.objectsLocation?.let { objectsLocation ->
-                elemOutput.writeStringElementValue(serialClassDesc, 6, objectsLocation)
+                elemOutput.encodeStringElement(descriptor, 6, objectsLocation)
             }
             obj.gameVersion?.let { gameVersion ->
-                elemOutput.writeStringElementValue(serialClassDesc, 7, gameVersion)
+                elemOutput.encodeStringElement(descriptor, 7, gameVersion)
             }
             obj.launchModifier?.let { launchModifier ->
-                elemOutput.writeSerializableElementValue(serialClassDesc, 8, LaunchModifier::class.serializer(), launchModifier)
+                elemOutput.encodeSerializableElement(descriptor, 8, LaunchModifier::class.serializer(), launchModifier)
             }
             obj.features.takeUnless { it.isEmpty() }?.let { features ->
-                elemOutput.writeSerializableElementValue(serialClassDesc, 9, Feature::class.serializer().list, features)
+                elemOutput.encodeSerializableElement(descriptor, 9, Feature::class.serializer().list, features)
             }
             obj.tasks.takeUnless { it.isEmpty() }?.let { tasks ->
-                elemOutput.writeSerializableElementValue(serialClassDesc, 10, FileInstall::class.serializer().list, tasks)
+                elemOutput.encodeSerializableElement(descriptor, 10, FileInstall::class.serializer().list, tasks)
             }
             obj.versionManifest?.let { versionManifest ->
-                elemOutput.writeSerializableElementValue(serialClassDesc, 11, VersionManifest::class.serializer(), versionManifest)
+                elemOutput.encodeSerializableElement(descriptor, 11, VersionManifest::class.serializer(), versionManifest)
             }
-            elemOutput.writeEnd(serialClassDesc)
+            elemOutput.endStructure(descriptor)
         }
     }
 }

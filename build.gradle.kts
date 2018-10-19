@@ -14,7 +14,7 @@ plugins {
     `project-report`
     constantsGenerator apply false
     id(Serialization.plugin) version Kotlin.version
-    id("com.github.johnrengelman.shadow") version "2.0.4"
+    id("com.github.johnrengelman.shadow") version "2.0.4" apply false
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
     id("org.jmailen.kotlinter") version "1.17.0"
 }
@@ -31,7 +31,8 @@ println(
 val runnableProjects = listOf(
         rootProject to "voodoo.Voodoo",
         project("multimc:multimc-installer") to "voodoo.Hex",
-        project("server-installer") to "voodoo.server.Install"
+        project("server-installer") to "voodoo.server.Install",
+        project("bootstrap") to "voodoo.BootstrapKt"
 )
 val noConstants = listOf(
         project("skcraft")
@@ -66,7 +67,6 @@ allprojects {
 
         kotlin {
             experimental {
-                coroutines = Coroutines.ENABLE
 //                newInference = "enable" //1.3
 //                contracts = "enable" //1.3
             }
@@ -74,7 +74,7 @@ allprojects {
 
         tasks.withType<KotlinCompile> {
             kotlinOptions {
-                languageVersion = "1.2"
+                languageVersion = "1.3"
                 jvmTarget = "1.8"
             }
         }
@@ -142,11 +142,14 @@ allprojects {
             runnableProjects.find { it.first == project }?.let { (_, mainClass) ->
                 apply {
                     plugin("application")
-                    plugin("com.github.johnrengelman.shadow")
                 }
 
                 application {
                     mainClassName = mainClass
+                }
+
+                apply {
+                    plugin("com.github.johnrengelman.shadow")
                 }
 
                 val runDir = rootProject.file("run")

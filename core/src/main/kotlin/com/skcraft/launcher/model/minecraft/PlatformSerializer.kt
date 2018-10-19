@@ -7,8 +7,8 @@
 package com.skcraft.launcher.model.minecraft
 
 import com.skcraft.launcher.util.Platform
-import kotlinx.serialization.KInput
-import kotlinx.serialization.KOutput
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
 
@@ -16,8 +16,8 @@ import java.io.IOException
 
 @Serializer(forClass = Platform::class)
 object PlatformSerializer : KSerializer<Platform> {
-    override fun load(input: KInput): Platform {
-        val text = input.readStringValue()
+    override fun deserialize(input: Decoder): Platform {
+        val text = input.decodeString()
         return when {
             text.equals("windows", ignoreCase = true) -> Platform.WINDOWS
             text.equals("linux", ignoreCase = true) -> Platform.LINUX
@@ -27,8 +27,8 @@ object PlatformSerializer : KSerializer<Platform> {
         }
     }
 
-    override fun save(output: KOutput, obj: Platform) {
-        output.writeStringValue(
+    override fun serialize(output: Encoder, obj: Platform) {
+        output.encodeString(
             when (obj) {
                 Platform.WINDOWS -> "windows"
                 Platform.MAC_OS_X -> "osx"

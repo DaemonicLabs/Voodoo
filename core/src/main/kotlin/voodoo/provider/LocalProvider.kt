@@ -1,6 +1,6 @@
 package voodoo.provider
 
-import kotlinx.coroutines.experimental.channels.SendChannel
+import kotlinx.coroutines.channels.SendChannel
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import java.io.File

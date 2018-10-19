@@ -1,7 +1,7 @@
 package voodoo.provider
 
-import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.runBlocking
 import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
 import voodoo.curse.CurseClient.getAddon

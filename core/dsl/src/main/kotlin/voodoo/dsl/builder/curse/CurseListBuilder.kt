@@ -1,8 +1,8 @@
 package voodoo.dsl.builder.curse
 
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
@@ -24,11 +24,15 @@ class CurseListBuilder<T>(
     }
 
     @VoodooDSL
-    operator fun KProperty0<Int>.unaryPlus() {
-        add(this)
+    operator fun KProperty0<Int>.unaryPlus(): EntryBuilder<T> {
+        val entry = NestedEntry(id = this.name, curseProjectID = ProjectID(this.get()))
+        val entryBuilder = EntryBuilder(provider = provider, entry = entry)
+        entries += entryBuilder
+        return entryBuilder
     }
 
-//    TODO: 1.3 and inline classes should enable this
+
+//    TODO: 1.3 and inline classes could enable this
 //    @VoodooDSL
 //    operator fun Int.unaryPlus() {
 //        add(this)
@@ -46,11 +50,10 @@ class CurseListBuilder<T>(
 //        initEntry: EntryBuilder<T>.() -> Unit = {}
 //    ) = add(this, initEntry)
 
-    // TODO: replace int with inline class
+    // TODO: replace int with inline class to use unaryPlus
     @VoodooDSL
     fun add(
-        id: Int,
-        initEntry: EntryBuilder<T>.() -> Unit = {}
+        id: Int
     ): EntryBuilder<T> {
         val slugMap = runBlocking {
             deferredSlugMap.await()
@@ -58,89 +61,44 @@ class CurseListBuilder<T>(
         // TODO: sanitize slug , see Poet
         val entry = NestedEntry(id = slugMap[id]!!, curseProjectID = ProjectID(id))
         val entryBuilder = EntryBuilder(provider = provider, entry = entry)
-        entryBuilder.initEntry()
         entries += entryBuilder
         return entryBuilder
     }
 
-    @Deprecated("renamed to add", ReplaceWith("add(id)"), level = DeprecationLevel.WARNING)
-    fun id(
-        id: Int
-    ): EntryBuilder<T> = add(id)
-
-    @Deprecated("renamed to add {}", ReplaceWith("add(id, initEntry)"), level = DeprecationLevel.WARNING)
-    fun id(
-        id: Int,
-        initEntry: EntryBuilder<T>.() -> Unit
-    ): EntryBuilder<T> = add(id, initEntry)
 
     /**
      * Curse specific list function
      * allows for curse specific adding of entries
      */
     @VoodooDSL
+    @Deprecated(
+        "prefer unaryPlus",
+        ReplaceWith("+ idProperty"),
+        level = DeprecationLevel.WARNING
+    )
     fun add(
-        idProperty: KProperty0<Int>,
-        initEntry: EntryBuilder<T>.() -> Unit = {}
-    ): EntryBuilder<T> {
-        val entry = NestedEntry(id = idProperty.name, curseProjectID = ProjectID(idProperty.get()))
-        val entryBuilder = EntryBuilder(provider = provider, entry = entry)
-        entryBuilder.initEntry()
-        entries += entryBuilder
-        return entryBuilder
-    }
-
-    // Deprecations
-
-    @Deprecated("renamed to add", ReplaceWith("add"), level = DeprecationLevel.WARNING)
-    fun id(
-        idProperty: KProperty0<Int>,
-        initEntry: EntryBuilder<T>.() -> Unit = {}
-    ): EntryBuilder<T> = add(idProperty, initEntry)
+        idProperty: KProperty0<Int>
+    ) = idProperty.unaryPlus()
 
     @VoodooDSL
     @Deprecated(
-        "String ids are no longer supported by curse, use constants",
-        ReplaceWith("add(this)"),
+        "use inline configure",
+        ReplaceWith("add(id) configure initEntry"),
         level = DeprecationLevel.ERROR
     )
-    override operator fun String.unaryPlus(): EntryBuilder<T> = throw IllegalArgumentException("Deprecated")
+    fun add(
+        id: Int,
+        initEntry: EntryBuilder<T>.() -> Unit = {}
+    ) = add(id).configure(initEntry)
 
+    @VoodooDSL
     @Deprecated(
-        "String ids are no longer supported by curse, use constants",
-        ReplaceWith("id.unaryPlus()"),
+        "use inline configure",
+        ReplaceWith("add(idProperty) configure initEntry"),
         level = DeprecationLevel.ERROR
     )
-    override fun add(
-        id: String
-    ): EntryBuilder<T> = throw IllegalArgumentException("Deprecated")
-
-    @Deprecated(
-        "String ids are no longer supported by curse, use constants",
-        ReplaceWith("add(id, initEntry)"),
-        level = DeprecationLevel.ERROR
-    )
-    override fun add(
-        id: String,
-        initEntry: EntryBuilder<T>.() -> Unit
-    ): EntryBuilder<T> = throw IllegalArgumentException("Deprecated")
-
-    @Deprecated(
-        "String ids are no longer supported by curse, use constants",
-        ReplaceWith("id.unaryPlus()"),
-        level = DeprecationLevel.ERROR
-    )
-    override fun id(
-        id: String
-    ): EntryBuilder<T> = throw IllegalArgumentException("Deprecated")
-
-    @Deprecated(
-        "String ids are no longer supported by curse, use constants",
-        ReplaceWith("add(id, initEntry)"),
-        level = DeprecationLevel.ERROR
-    )
-    override fun id(
-        id: String,
-        initEntry: EntryBuilder<T>.() -> Unit
-    ): EntryBuilder<T> = throw IllegalArgumentException("Deprecated")
+    fun add(
+        idProperty: KProperty0<Int>,
+        initEntry: EntryBuilder<T>.() -> Unit = {}
+    ) = add(idProperty).configure(initEntry)
 }

@@ -8,7 +8,7 @@ package com.skcraft.launcher.model.minecraft
 
 import com.skcraft.launcher.util.Environment
 import com.skcraft.launcher.util.Platform
-import kotlinx.serialization.KOutput
+import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialName
@@ -26,24 +26,24 @@ data class Library(
 ) {
     @Serializer(forClass = Library::class)
     companion object : KSerializer<Library> {
-        override fun save(output: KOutput, obj: Library) {
-            val elemOutput = output.writeBegin(serialClassDesc)
-            elemOutput.writeStringElementValue(serialClassDesc, 0, obj.name)
+        override fun serialize(output: Encoder, obj: Library) {
+            val elemOutput = output.beginStructure(descriptor)
+            elemOutput.encodeStringElement(descriptor, 0, obj.name)
             obj.baseUrl?.let { url ->
-                elemOutput.writeStringElementValue(serialClassDesc, 1, url)
+                elemOutput.encodeStringElement(descriptor, 1, url)
             }
             obj.natives?.let { natives ->
-                elemOutput.writeSerializableElementValue(serialClassDesc, 2, HashMapSerializer(String.serializer(), String.serializer()), natives)
+                elemOutput.encodeSerializableElement(descriptor, 2, HashMapSerializer(String.serializer(), String.serializer()), natives)
             }
             obj.extract?.let { extract ->
-                elemOutput.writeSerializableElementValue(serialClassDesc, 3, Extract::class.serializer(), extract)
+                elemOutput.encodeSerializableElement(descriptor, 3, Extract::class.serializer(), extract)
             }
             obj.rules?.filter {
                     it.action != null || it.os != null
                 }?.let { rules ->
-                    elemOutput.writeSerializableElementValue(serialClassDesc, 4, Rule::class.serializer().list, rules)
+                    elemOutput.encodeSerializableElement(descriptor, 4, Rule::class.serializer().list, rules)
             }
-            elemOutput.writeEnd(serialClassDesc)
+            elemOutput.endStructure(descriptor)
         }
 
         fun String.split() =
@@ -155,18 +155,18 @@ data class Library(
 
         @Serializer(forClass = OS::class)
         companion object : KSerializer<OS> {
-            override fun save(output: KOutput, obj: OS) {
-                val elemOutput = output.writeBegin(serialClassDesc)
+            override fun serialize(output: Encoder, obj: OS) {
+                val elemOutput = output.beginStructure(descriptor)
                 obj.name?.let {
-                    elemOutput.writeStringElementValue(serialClassDesc, 0, it)
+                    elemOutput.encodeStringElement(descriptor, 0, it)
                 }
                 obj.platform?.let { platform ->
-                    elemOutput.writeSerializableElementValue(serialClassDesc, 1, PlatformSerializer, platform)
+                    elemOutput.encodeSerializableElement(descriptor, 1, PlatformSerializer, platform)
                 }
                 obj.version?.let { version ->
-                    elemOutput.writeSerializableElementValue(serialClassDesc, 2, Pattern::class.serializer(), version)
+                    elemOutput.encodeSerializableElement(descriptor, 2, Pattern::class.serializer(), version)
                 }
-                elemOutput.writeEnd(serialClassDesc)
+                elemOutput.endStructure(descriptor)
             }
         }
     }

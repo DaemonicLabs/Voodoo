@@ -6,12 +6,12 @@
 
 package com.skcraft.launcher.model.modpack
 
-import kotlinx.serialization.KOutput
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Optional
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.SerialName
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
 import java.util.ArrayList
@@ -47,19 +47,22 @@ class Condition(
 
     @Serializer(forClass = Condition::class)
     companion object : KSerializer<Condition> {
-        fun requireAny(features: MutableList<Feature> = ArrayList()) = Condition("requireAny", features.map { feature -> feature.name })
-        fun requireAll(features: MutableList<Feature> = ArrayList()) = Condition("requireAll", features.map { feature -> feature.name })
+        fun requireAny(features: MutableList<Feature> = ArrayList()) =
+            Condition("requireAny", features.map { feature -> feature.name })
 
-        override fun save(output: KOutput, obj: Condition) {
-            val elemOutput = output.writeBegin(serialClassDesc)
-            elemOutput.writeStringElementValue(serialClassDesc, 0, obj.ifSwitch)
-            elemOutput.writeSerializableElementValue(serialClassDesc, 1, String.serializer().list, obj.features)
-            elemOutput.writeEnd(serialClassDesc)
+        fun requireAll(features: MutableList<Feature> = ArrayList()) =
+            Condition("requireAll", features.map { feature -> feature.name })
+
+        override fun serialize(output: Encoder, obj: Condition) {
+            val elemOutput = output.beginStructure(descriptor)
+            elemOutput.encodeStringElement(descriptor, 0, obj.ifSwitch)
+            elemOutput.encodeSerializableElement(descriptor, 1, String.serializer().list, obj.features)
+            elemOutput.endStructure(descriptor)
         }
 
-//        override fun load(input: KInput): Condition {
-//            val inputElem = input.readBegin(serialClassDesc)
-//            val ifSwitch = inputElem.readStringElementValue(serialClassDesc, 0)
+//        override fun deserialize(input: Decoder): Condition {
+//            val inputElem = input.readBegin(descriptor)
+//            val ifSwitch = inputElem.readStringElementValue(descriptor, 0)
 //            return when(ifSwitch) {
 //                "requireAny" -> RequireAny::class.serializer().load(input)
 //                "requireAll" -> RequireAll::class.serializer().load(input)

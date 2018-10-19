@@ -6,7 +6,7 @@
 
 package voodoo
 
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.bootstrap.BootstrapConstants.VERSION
 import voodoo.bootstrap.Config.FILE_REGEX

@@ -1,7 +1,7 @@
 package voodoo.provider
 
-import kotlinx.coroutines.experimental.channels.SendChannel
-import kotlinx.coroutines.experimental.delay
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.delay
 import voodoo.core.CoreConstants.VERSION
 import voodoo.data.Quadruple
 import voodoo.data.flat.Entry

@@ -4,8 +4,8 @@ import awaitObjectResponse
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.async
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.serialization.Serializable
 import mu.KLogging
 import voodoo.data.ForgeVersion
@@ -90,6 +90,10 @@ object ForgeUtil : KLogging() {
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
+                logger.error("getForgeData")
+                logger.error("url: $url")
+                logger.error("cUrl: ${request.cUrlString()}")
+                logger.error("response: $response")
                 ProviderBase.logger.error { result.error }
                 throw result.error.exception
             }

@@ -14,7 +14,7 @@ import java.io.File
 
 object Jenkins : KLogging()
 
-private val json = JSON(nonstrict = true)
+private val json = JSON(strictMode = false)
 private val useragent = "voodoo/${UtilConstants.VERSION}"
 
 suspend fun downloadVoodoo(
@@ -77,6 +77,7 @@ class JenkinsServer(
             is Result.Success -> result.value
             is Result.Failure -> {
                 Jenkins.logger.error("requestURL: $requestURL")
+                Jenkins.logger.error("cUrl: ${request.cUrlString()}")
                 Jenkins.logger.error("response: $response")
                 Jenkins.logger.error(result.error.exception) { "unable to get job from $requestURL" }
                 null
@@ -99,6 +100,7 @@ data class Build(
             is Result.Success -> result.value
             is Result.Failure -> {
                 Jenkins.logger.error("buildUrl: $buildUrl")
+                Jenkins.logger.error("cUrl: ${request.cUrlString()}")
                 Jenkins.logger.error("response: $response")
                 Jenkins.logger.error(result.error.exception) { "unable to get build from $buildUrl" }
                 null

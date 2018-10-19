@@ -17,16 +17,15 @@ import com.skcraft.launcher.model.minecraft.VersionManifest
 import com.skcraft.launcher.model.modpack.Manifest
 import com.skcraft.launcher.util.Environment
 import com.xenomachina.argparser.ArgParser
-import kotlinx.coroutines.experimental.Job
-import kotlinx.coroutines.experimental.launch
-import kotlinx.coroutines.experimental.newFixedThreadPoolContext
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.newFixedThreadPoolContext
+import kotlinx.coroutines.runBlocking
 import kotlinx.io.IOException
 import kotlinx.io.InputStream
 import mu.KLogging
 import voodoo.util.Directories
 import voodoo.util.copyInputStreamToFile
-import kotlinx.serialization.SerialContext
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
@@ -58,9 +57,9 @@ constructor(
         "com.skcraft.launcher.propertiesFile"
     )
     private val json: JSON = if (isPrettyPrint) {
-        JSON(indented = true, nonstrict = true, context = SerialContext())
+        JSON(indented = true, strictMode = false)
     } else {
-        JSON(nonstrict = true, context = SerialContext())
+        JSON(strictMode = false)
     }
     private val applicator: PropertiesApplicator =
         PropertiesApplicator(manifest)
@@ -204,8 +203,10 @@ constructor(
                                 val bytes = when (result) {
                                     is Result.Success -> result.value
                                     is Result.Failure -> {
-                                        logger.warn("Could not get file from $url: ${response.statusCode}")
-                                        logger.error { result.error }
+                                        logger.error("downloadLibraries")
+                                        logger.error("url: $url")
+                                        logger.error("cUrl: ${request.cUrlString()}")
+                                        logger.error(result.error.exception) { "Could not get file from $url: ${response.statusCode}" }
                                         continue@loop
                                     }
                                 }
@@ -285,7 +286,11 @@ constructor(
                     json.parse<VersionManifest>(jsonString)
                 }
                 is Result.Failure -> {
-                    logger.error { "cannot parse manifest from $url error: ${result.error}" }
+                    logger.error("readVersionManifest")
+                    logger.error("url: $url")
+                    logger.error("cUrl: ${request.cUrlString()}")
+                    logger.error("response: $response")
+                    logger.error(result.error.exception) { "cannot parse manifest from $url" }
                     throw result.error.exception
                 }
             }

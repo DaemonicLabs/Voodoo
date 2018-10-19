@@ -20,7 +20,7 @@ object MMCSpek : Spek({
                     .header("User-Agent" to CurseClient.useragent)
                     .responseString()
             when (result) {
-                is Result.Success -> JSON(nonstrict = true).parse<Manifest>(result.value)
+                is Result.Success -> JSON(strictMode = false).parse<Manifest>(result.value)
                 is Result.Failure -> {
                     logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
                     fail("http request failed")

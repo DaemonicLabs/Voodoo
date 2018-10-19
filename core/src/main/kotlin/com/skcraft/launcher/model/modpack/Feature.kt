@@ -7,8 +7,13 @@
 package com.skcraft.launcher.model.modpack
 
 import com.skcraft.launcher.builder.FnPatternList
-import kotlinx.serialization.*
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Optional
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
 import kotlinx.serialization.internal.EnumSerializer
+import kotlinx.serialization.serializer
 
 @Serializable
 data class Feature(
@@ -22,20 +27,25 @@ data class Feature(
 ) {
     @Serializer(forClass = Feature::class)
     companion object : KSerializer<Feature> {
-        override fun save(output: KOutput, obj: Feature) {
-            val elemOutput = output.writeBegin(serialClassDesc)
+        override fun serialize(output: Encoder, obj: Feature) {
+            val elemOutput = output.beginStructure(descriptor)
             if (obj.name.isNotEmpty())
-                elemOutput.writeStringElementValue(serialClassDesc, 0, obj.name)
-            elemOutput.writeBooleanElementValue(serialClassDesc, 1, obj.selected)
+                elemOutput.encodeStringElement(descriptor, 0, obj.name)
+            elemOutput.encodeBooleanElement(descriptor, 1, obj.selected)
             if (obj.description != "")
-                elemOutput.writeStringElementValue(serialClassDesc, 2, obj.description)
+                elemOutput.encodeStringElement(descriptor, 2, obj.description)
             if (obj.recommendation != null) {
-                elemOutput.writeSerializableElementValue(serialClassDesc, 3, EnumSerializer(Recommendation::class), obj.recommendation!!)
+                elemOutput.encodeSerializableElement(
+                    descriptor,
+                    3,
+                    EnumSerializer(Recommendation::class),
+                    obj.recommendation!!
+                )
             }
             if (obj.files != FnPatternList()) {
-                elemOutput.writeSerializableElementValue(serialClassDesc, 4, FnPatternList::class.serializer(), obj.files)
+                elemOutput.encodeSerializableElement(descriptor, 4, FnPatternList::class.serializer(), obj.files)
             }
-            elemOutput.writeEnd(serialClassDesc)
+            elemOutput.endStructure(descriptor)
         }
     }
 }

@@ -1,8 +1,8 @@
 package voodoo.util
 
-import kotlinx.coroutines.experimental.CoroutineExceptionHandler
-import kotlinx.coroutines.experimental.cancel
-import kotlinx.coroutines.experimental.newFixedThreadPoolContext
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.newFixedThreadPoolContext
 import mu.KLogging
 
 object ExceptionHelper : KLogging() {

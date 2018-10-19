@@ -1,7 +1,7 @@
 package voodoo.provider
 
-import kotlinx.coroutines.experimental.async
-import kotlinx.coroutines.experimental.runBlocking
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
@@ -30,7 +30,7 @@ object CurseSpek : Spek({
                 title = "Curse Spek"
                 root = rootEntry(CurseProvider) {
                     list {
-                        id(Mod.matterlink)
+                        add(Mod.matterlink)
                     }
                 }
             }

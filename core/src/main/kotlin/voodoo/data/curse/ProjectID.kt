@@ -1,10 +1,9 @@
 package voodoo.data.curse
 
-import kotlinx.serialization.KInput
-import kotlinx.serialization.KOutput
-import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.internal.PrimitiveDesc
+import kotlinx.serialization.Serializer
 
 // TODO: inline
 @Serializable(with = ProjectID.Companion::class)
@@ -16,15 +15,14 @@ data class ProjectID(val value: Int) {
     val valid: Boolean
         get() = value > 0
 
-    companion object : KSerializer<ProjectID> {
-        override val serialClassDesc = PrimitiveDesc("ProjectID")
-
-        override fun load(input: KInput): ProjectID {
-            return ProjectID(input.readIntValue())
+    @Serializer(forClass = ProjectID::class)
+    companion object {
+        override fun deserialize(input: Decoder): ProjectID {
+            return ProjectID(input.decodeInt())
         }
 
-        override fun save(output: KOutput, obj: ProjectID) {
-            output.writeIntValue(obj.value)
+        override fun serialize(output: Encoder, obj: ProjectID) {
+            output.encodeInt(obj.value)
         }
 
         val INVALID = ProjectID(-1)

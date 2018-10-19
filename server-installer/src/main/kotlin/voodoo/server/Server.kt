@@ -1,8 +1,8 @@
 package voodoo.server
 
-import kotlinx.coroutines.experimental.CoroutineName
-import kotlinx.coroutines.experimental.coroutineScope
-import kotlinx.coroutines.experimental.launch
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
