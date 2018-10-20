@@ -52,6 +52,7 @@ suspend fun downloadVoodoo(
         is Result.Success -> result.value
         is Result.Failure -> {
             Jenkins.logger.error("artifactUrl: $artifactUrl")
+            Jenkins.logger.error("cUrl: ${request.cUrlString()}")
             Jenkins.logger.error("response: $response")
             Jenkins.logger.error(result.error.exception) { "unable to download jarfile from $artifactUrl" }
             throw result.error.exception

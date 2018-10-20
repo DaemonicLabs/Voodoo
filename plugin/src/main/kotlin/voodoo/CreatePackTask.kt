@@ -9,6 +9,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseConstants
+import voodoo.dsl.ID
 import voodoo.script.MainScriptEnv
 import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
@@ -67,7 +68,7 @@ open class CreatePackTask : DefaultTask() {
             root = rootEntry(CurseProvider) {
                 list {
                     filteredMods.forEach { (identifier, projectId) ->
-                        add(projectId.value) configure {
+                        +ID(projectId.value) configure {
 //                            projectID = projectId
                         }
                     }

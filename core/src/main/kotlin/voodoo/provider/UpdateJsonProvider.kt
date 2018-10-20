@@ -27,6 +27,7 @@ object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
             is Result.Failure -> {
                 logger.error("getUpdateJson")
                 logger.error("url: $url")
+                logger.error("cUrl: ${request.cUrlString()}")
                 logger.error("response: $response")
                 logger.error(result.error.exception) { "cold not get update json" }
                 result.error.exception.printStackTrace()

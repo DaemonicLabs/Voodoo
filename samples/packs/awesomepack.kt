@@ -41,7 +41,7 @@ fun main(args: Array<String>) = withDefaultMain(
                 add(Mod.thermalexpansion)
                 add(Mod.thermalInnovation)
 
-                +Mod::betterBuildersWands
+                +Mod.betterBuildersWands
 
                 withProvider(DirectProvider).list {
                     // inline url declration

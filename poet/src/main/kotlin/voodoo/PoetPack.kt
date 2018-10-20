@@ -325,6 +325,6 @@ object PoetPack : KLogging() {
         folder.mkdirs()
         fileSpec.writeTo(folder)
         logger.info { fileSpec }
-        logger.info ("written to ${folder.resolve(nestedPack.id + ".kt")}")
+        logger.info("written to ${folder.resolve(nestedPack.id + ".kt")}")
     }
 }
