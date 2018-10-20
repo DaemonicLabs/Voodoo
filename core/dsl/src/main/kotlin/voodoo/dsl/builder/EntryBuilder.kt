@@ -14,7 +14,7 @@ class EntryBuilder<T>(
     var websiteUrl by property(entry::websiteUrl)
 
     @VoodooDSL
-    infix fun configure(configureEntry: EntryBuilder<T>.() -> Unit) : EntryBuilder<T> {
+    infix fun configure(configureEntry: EntryBuilder<T>.() -> Unit): EntryBuilder<T> {
         configureEntry()
         return this
     }

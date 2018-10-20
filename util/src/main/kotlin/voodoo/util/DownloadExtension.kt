@@ -3,13 +3,9 @@ package voodoo.util
 import awaitByteArrayResponse
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.core.interceptors.redirectResponseInterceptor
-import com.github.kittinunf.fuel.core.isStatusRedirection
-import com.github.kittinunf.fuel.httpDownload
-import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogger
 import mu.KLogging
-import voodoo.util.UtilConstants.VERSION
 import voodoo.util.redirect.fixedRedirectResponseInterceptor
 import java.io.File
 import kotlin.system.exitProcess
@@ -19,7 +15,7 @@ import kotlin.system.exitProcess
  * @author Nikky
  */
 object Downloader : KLogging() {
-    const val useragent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" //""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
+    const val useragent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" // ""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
     val manager = FuelManager()
 
@@ -40,7 +36,7 @@ suspend fun File.download(
     logger.debug("cacheFile $cacheFile")
     if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
 
-    if(cacheFile.exists() && cacheFile.isFile && validator(cacheFile)) {
+    if (cacheFile.exists() && cacheFile.isFile && validator(cacheFile)) {
         logger.info("file: $cacheFile exists and validated")
     } else {
         val (request, response, result) = Downloader.manager.download(url.encoded)

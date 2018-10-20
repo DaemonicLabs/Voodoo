@@ -1,6 +1,8 @@
 package voodoo
 
+import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
@@ -63,7 +65,7 @@ object Poet : KLogging() {
         slugSanitizer: (String) -> String,
         folder: File
     ) {
-//        val curseModType = CurseMod::class.asTypeName()
+        val idType = ClassName("voodoo.dsl", "ID")
         val objectBuilder = TypeSpec.objectBuilder(name)
         slugIdMap.entries.sortedBy { (slug, id) ->
             slug
@@ -72,12 +74,20 @@ object Poet : KLogging() {
             objectBuilder.addProperty(
                 PropertySpec.builder(
                     slugSanitizer(slug),
-                    Int::class,
-                    KModifier.CONST
+//                    Int::class
+                    idType
                 )
+//                    .addAnnotation(JvmSynthetic::class)
                     .addKdoc("@see %L\n", projectPage)
                     .mutable(false)
-                    .initializer("%L", id.value)
+//                    .initializer("%T(%L)", idType, id.value)
+//                    .initializer("%L", id.value)
+                    .getter(
+                        FunSpec.getterBuilder()
+                            .addModifiers(KModifier.INLINE)
+                            .addCode("return %T(%L)", idType, id.value)
+                            .build()
+                    )
                     .build()
             )
         }
@@ -122,7 +132,7 @@ object Poet : KLogging() {
         save(forgeBuilder.build(), name, folder)
     }
 
-    internal suspend fun generateConstants(
+    internal fun generateConstants(
         name: String = "Constants",
         rootDir: File,
         folder: File
@@ -138,6 +148,15 @@ object Poet : KLogging() {
         constBuilder.addProperty(rootDirProperty)
 
         save(constBuilder.build(), name, folder)
+    }
+
+    private fun save(source: FileSpec, name: String, folder: File) {
+        val path = folder.apply {
+            absoluteFile.parentFile.mkdirs()
+        }.absoluteFile
+        val targetFile = path.resolve("$name.kt")
+        source.writeTo(path)
+        logger.info("written to $targetFile")
     }
 
     private fun save(type: TypeSpec, name: String, folder: File) {

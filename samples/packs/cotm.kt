@@ -423,7 +423,7 @@ fun main(args: Array<String>) = withDefaultMain(
 
                         // Resource packs
                         // TODO: add curse resource packs
-                        +TexturePack::unity configure {
+                        +TexturePack.unity configure {
                             fileName = "Unity.zip"
                             description =
                                 "Multi-mod compatible resource pack. Very nice, but does have some broken textures here and there."

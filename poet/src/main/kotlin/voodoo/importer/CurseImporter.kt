@@ -17,6 +17,7 @@ import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.FileType
 import voodoo.data.curse.ProjectID
+import voodoo.dsl.ID
 import voodoo.provider.CurseProvider
 import voodoo.provider.LocalProvider
 import voodoo.util.UnzipUtility.unzip
@@ -126,7 +127,7 @@ object CurseImporter : AbstractImporter() {
                 releaseTypes = sortedSetOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
                 list {
                     curseEntries.forEach { (identifier, versionStr, curseProjectID) ->
-                        add(curseProjectID.value) configure {
+                        +ID(curseProjectID.value) configure {
                             version = versionStr
                         }
                     }

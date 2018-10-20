@@ -56,6 +56,14 @@ allprojects {
         maven(url = "https://kotlin.bintray.com/kotlinx")
     }
 
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+            languageVersion = "1.3"
+            jvmTarget = "1.8"
+            freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
+        }
+    }
+
     if (project != project(":plugin")) {
         apply {
             plugin("kotlin")
@@ -72,12 +80,6 @@ allprojects {
             }
         }
 
-        tasks.withType<KotlinCompile> {
-            kotlinOptions {
-                languageVersion = "1.3"
-                jvmTarget = "1.8"
-            }
-        }
 
         java {
             sourceCompatibility = JavaVersion.VERSION_1_8
