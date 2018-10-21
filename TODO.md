@@ -1,3 +1,10 @@
+# Scripting
+
+- [x] Script Definition
+- [ ] Script Host
+- [ ] Call Script host from gradle
+- [ ] Compile Script Host with gradle
+
 # documentation generator | tome
 
 use html-dsl in .kts files
@@ -52,15 +59,10 @@ suggest named forge versions (copy-paste ready)
 entries are flattened fast enough from the nested format, thee is no reason for a multi step process anymore
 write flat entries to disk for debugging purposes only
 
-# curse import -> kotlinpoet ?
+# curse import
 
-implement as gradle task / part of `poet`
+- match client and server pack contents
 
-https://github.com/square/kotlinpoet
-requires more knowledge of how packs are going to be written
-and imports are going to work
-
-generate the NestedPack
 
 # config tweaks
 
