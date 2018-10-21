@@ -235,7 +235,7 @@ allprojects {
     }
 }
 
-val genSrc = rootDir.resolve("samples").resolve(".voodoo")
+val genSrc = rootDir.resolve("samples").resolve("run").resolve(".voodoo")
 val packs = rootDir.resolve("samples").resolve("packs")
 kotlin.sourceSets.maybeCreate("test").kotlin.apply {
     srcDirs(packs)
