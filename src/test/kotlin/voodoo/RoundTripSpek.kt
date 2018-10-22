@@ -44,9 +44,9 @@ object RoundTripSpek : Spek({
                     // TODO: use type URL ?
                     metaUrl = "https://curse.nikky.moe"
                     list {
-                        add(Mod.botania)
+                        +(Mod.botania)
 
-                        add(Mod.rftools)
+                        +(Mod.rftools)
 
                         withProvider(JenkinsProvider) {
                             side = Side.SERVER
@@ -60,17 +60,17 @@ object RoundTripSpek : Spek({
                                 selected = false
                             }
                         }.list {
-                            add(Mod.laggoggles) configure {
+                            +(Mod.laggoggles) configure {
                                 description =
                                     "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                             }
 
-                            add(Mod.sampler) configure {
+                            +(Mod.sampler) configure {
                                 description =
                                     "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                             }
 
-                            add(Mod.openeye) configure {
+                            +(Mod.openeye) configure {
                                 description =
                                     "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
                             }

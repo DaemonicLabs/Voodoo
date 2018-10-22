@@ -27,7 +27,7 @@ object Kotlin {
 }
 
 object Coroutines {
-    const val version = "0.30.2-eap13"
+    const val version = "1.0.0-RC1" // ""0.30.2-eap13"
     val dependency = create(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = version)
 }
 

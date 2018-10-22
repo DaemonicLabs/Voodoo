@@ -27,13 +27,13 @@ object PoetSpek : Spek({
                 root = rootEntry(CurseProvider) {
                     validMcVersions = setOf("1.12.1", "1.12")
                     list {
-                        add(Mod.wearableBackpacks)
-                        add(Mod.neat)
+                        +(Mod.wearableBackpacks)
+                        +(Mod.neat)
 
                         group {
                             side = Side.SERVER
                         }.list {
-                            add(Mod.btfuContinuousRsyncIncrementalBackup)
+                            +(Mod.btfuContinuousRsyncIncrementalBackup)
                         }
                     }
                 }
