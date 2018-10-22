@@ -23,7 +23,7 @@ include("core", "core:dsl")
 include("dsl")
 include("multimc", "multimc:installer")
 include("util")
-include("builder", "tome", "pack", "pack:tester")
+include("tome", "pack", "pack:tester")
 include("server-installer")
 include("bootstrap")
 
@@ -40,6 +40,7 @@ fun prefixProject(project: ProjectDescriptor, prefix: String) {
     }
 }
 
+// TODO move into publishing
 rootProject.children.forEach { child ->
     child.children.forEach { grandchild ->
         prefixProject(grandchild, child.name)
