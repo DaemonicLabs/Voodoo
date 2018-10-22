@@ -5,6 +5,12 @@
 - [ ] Call Script host from gradle
 - [ ] Compile Script Host with gradle
 
+# Reorganize buildscripts / Repo
+
+- no code in the root project
+- all dependencies in `buildSrc`
+- move kotlin `src` one level higher (`src/main/kotlin` is unnecessary)
+
 # documentation generator | tome
 
 use html-dsl in .kts files

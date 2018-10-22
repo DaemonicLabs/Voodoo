@@ -33,7 +33,7 @@ nestedPack(
         validMcVersions = setOf("1.12.1", "1.12")
         releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
         list {
-            add(Mod.mage)
+            +(Mod.mage)
 
             group {
                 releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
@@ -90,9 +90,9 @@ nestedPack(
             group {
                 side = Side.SERVER
             }.list {
-                add(Mod.btfuContinuousRsyncIncrementalBackup)
-                add(Mod.swingthroughgrass)
-                add(Mod.colorchat)
+                +(Mod.btfuContinuousRsyncIncrementalBackup)
+                +(Mod.swingthroughgrass)
+                +(Mod.colorchat)
                 +Mod.shadowfactsForgelin configure {}
 
                 withProvider(JenkinsProvider) {
@@ -109,22 +109,22 @@ nestedPack(
                     recommendation = Recommendation.starred
                 }
             }.list {
-                add(Mod.journeymap) configure {
+                +(Mod.journeymap) configure {
                     description =
                             "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
                 }
 
-                add(Mod.mage) description "Configurable graphics enhancements. Highly recomended."
+                +(Mod.mage) description "Configurable graphics enhancements. Highly recomended."
 
-                add(Mod.neat) configure {
+                +(Mod.neat) configure {
                     description = "Simple health and unit frames."
                 }
 
-                add(Mod.clientTweaks) configure {
+                +(Mod.clientTweaks) configure {
                     description = "Various client related fixes and tweaks, all in a handy menu."
                 }
 
-                add(Mod.mouseTweaks) configure {
+                +(Mod.mouseTweaks) configure {
                     description = "Add extra mouse gestures for inventories and crafting grids."
                 }
             }
@@ -133,26 +133,26 @@ nestedPack(
                     selected = false
                 }
             }.list {
-                add(Mod.itemScroller) configure {
+                +(Mod.itemScroller) configure {
                     description = "Alternative to MouseTweaks."
                 }
 
-                add(Mod.xaerosMinimap) configure {
+                +(Mod.xaerosMinimap) configure {
                     description = "Lightweight alternative to JourneyMap."
                 }
 
-                add(Mod.minemenu) configure {
+                +(Mod.minemenu) configure {
                     description =
                             "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
                 }
 
-                add(Mod.itemzoom) configure {
+                +(Mod.itemzoom) configure {
                     description = "Check this if you like to get a closer look at item textures."
                 }
             }
 
             // resource packs
-            add(TexturePack.unity) configure {
+            +(TexturePack.unity) configure {
                 fileName = "Unity.zip"
                 // curse resource packs are automatically
                 // set to use the correct folder
