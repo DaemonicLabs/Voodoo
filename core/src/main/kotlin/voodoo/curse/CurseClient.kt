@@ -11,6 +11,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.context.SimpleModule
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
+import kotlinx.serialization.serializer
 import mu.KLogging
 import voodoo.core.CoreConstants.VERSION
 import voodoo.data.curse.Addon
@@ -151,7 +152,7 @@ object CurseClient : KLogging() {
         logger.debug("get $url")
         val (request, response, result) = url.httpGet()
             .header("User-Agent" to useragent)
-            .awaitObjectResponse<List<AddonFile>>(kotlinxDeserializerOf(AddonFile.serializer().list, json))
+            .awaitObjectResponse<List<AddonFile>>(kotlinxDeserializerOf(AddonFile::class.serializer().list, json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
