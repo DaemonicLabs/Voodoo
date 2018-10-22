@@ -55,23 +55,26 @@ allprojects {
         maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
         maven(url = "https://kotlin.bintray.com/kotlinx")
     }
-
-    tasks.withType<KotlinCompile> {
-        kotlinOptions {
-            languageVersion = "1.3"
-            jvmTarget = "1.8"
-            freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
-        }
+    apply {
+        plugin("idea")
+        plugin("org.jmailen.kotlinter")
     }
+
+    setupDependencies(this)
 
     if (project != project(":plugin")) {
         apply {
             plugin("kotlin")
             plugin("kotlinx-serialization")
-            plugin("idea")
-            plugin("org.jmailen.kotlinter")
         }
 
+        tasks.withType<KotlinCompile> {
+            kotlinOptions {
+                languageVersion = "1.3"
+                jvmTarget = "1.8"
+                freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
+            }
+        }
 
         kotlin {
             experimental {
@@ -283,26 +286,26 @@ repositories {
 }
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8", Kotlin.version))
-
-    testImplementation(Spek.dependencyDsl)
-    testImplementation(Spek.dependencyRunner)
-
-    testImplementation(kotlin("test", Kotlin.version))
-
-    // https=//mvnrepository.com/artifact/org.junit.platform/junit-platform-engine
-    testImplementation(Spek.dependencyJUnit5)
-
-    // spek requires kotlin-reflect, can be omitted if already in the classpath
-    testRuntimeOnly(kotlin("reflect", Kotlin.version))
-
-    testCompile(project(":dsl"))
-    testCompile(project(":poet"))
-
-    compile(project(":core:core-dsl"))
-    compile(project(":builder"))
-    compile(project(":pack"))
-    compile(project(":pack:pack-tester"))
+//    implementation(kotlin("stdlib-jdk8", Kotlin.version))
+//
+//    testImplementation(Spek.dependencyDsl)
+//    testImplementation(Spek.dependencyRunner)
+//
+//    testImplementation(kotlin("test", Kotlin.version))
+//
+//    // https=//mvnrepository.com/artifact/org.junit.platform/junit-platform-engine
+//    testImplementation(Spek.dependencyJUnit5)
+//
+//    // spek requires kotlin-reflect, can be omitted if already in the classpath
+//    testRuntimeOnly(kotlin("reflect", Kotlin.version))
+//
+//    testCompile(project(":dsl"))
+//    testCompile(project(":poet"))
+//
+//    compile(project(":core:core-dsl"))
+//    compile(project(":core"))
+//    compile(project(":pack"))
+//    compile(project(":pack:pack-tester"))
 }
 
 val cleanTest by tasks.getting(Delete::class)

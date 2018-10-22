@@ -13,7 +13,7 @@ open class GeneratorPlugin : Plugin<Project> {
         with(project) {
 
             val folder = outputFolder(project)
-            project.getPlugins().withType(IdeaPlugin::class.java) {
+            project.plugins.withType(IdeaPlugin::class.java) {
                 model.apply {
                     module {
                         generatedSourceDirs.add(folder)

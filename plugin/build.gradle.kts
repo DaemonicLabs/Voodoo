@@ -2,13 +2,8 @@ import org.gradle.api.publish.maven.internal.publication.DefaultMavenPublication
 
 plugins {
     `java-gradle-plugin`
-    id("org.gradle.kotlin.kotlin-dsl") version Kotlin.Dsl.version
+    `kotlin-dsl`
     `maven-publish`
-}
-
-dependencies {
-    compile(project(":poet"))
-    compile(group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version = Kotlin.version)
 }
 
 val major: String by project

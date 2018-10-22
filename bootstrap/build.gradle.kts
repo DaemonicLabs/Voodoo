@@ -3,10 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 version = project.version
 
-dependencies {
-    compile(project(":util"))
-}
-
 var moduleName = ""
 var fileRegex = ""
 var fileName = "unconfigured"

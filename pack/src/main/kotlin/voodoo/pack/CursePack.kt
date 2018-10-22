@@ -27,7 +27,6 @@ import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
 import voodoo.provider.Providers
-import voodoo.util.ExceptionHelper
 import voodoo.util.packToZip
 
 /**
@@ -138,8 +137,8 @@ object CursePack : AbstractPack() {
                                 continue
                             }
                             val projectPage =
-                                runBlocking(context = ExceptionHelper.context) { provider.getProjectPage(entry) }
-                            val authors = runBlocking(context = ExceptionHelper.context) { provider.getAuthors(entry) }
+                                runBlocking { provider.getProjectPage(entry) }
+                            val authors = runBlocking { provider.getAuthors(entry) }
                             val authorString = if (authors.isNotEmpty()) " (by ${authors.joinToString(", ")})" else ""
 
                             li {

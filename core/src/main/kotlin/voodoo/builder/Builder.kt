@@ -1,11 +1,10 @@
-package voodoo
+package voodoo.builder
 
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
-import voodoo.builder.resolve
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockPack
 import voodoo.provider.Providers
