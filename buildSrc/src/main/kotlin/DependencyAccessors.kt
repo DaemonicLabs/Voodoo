@@ -59,7 +59,7 @@ fun Project.setupDependencies(target: Project = this) {
     }
     logger.lifecycle("setting up dependencies of $this on $target")
     when (this) {
-        rootProject -> {
+        rootProject.project(":voodoo") -> {
             dependencies {
                 implementation(kotlin("stdlib-jdk8", Kotlin.version))
 

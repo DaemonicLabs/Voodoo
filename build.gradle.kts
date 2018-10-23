@@ -8,19 +8,19 @@ import java.io.FilenameFilter
 
 plugins {
     kotlin("jvm") version Kotlin.version
+    id(Serialization.plugin) version Kotlin.version
     application
     idea
     `maven-publish`
     `project-report`
     constantsGenerator apply false
-    id(Serialization.plugin) version Kotlin.version
     id("com.github.johnrengelman.shadow") version "2.0.4" apply false
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
     id("org.jmailen.kotlinter") version "1.17.0"
 }
 
 println(
-        """
+    """
 *******************************************
  You are building Voodoo Toolset ! 
 
@@ -29,16 +29,16 @@ println(
 """
 )
 val runnableProjects = listOf(
-        rootProject to "voodoo.Voodoo",
-        project("multimc:multimc-installer") to "voodoo.Hex",
-        project("server-installer") to "voodoo.server.Install",
-        project("bootstrap") to "voodoo.BootstrapKt"
+    project("voodoo") to "voodoo.Voodoo",
+    project("multimc:multimc-installer") to "voodoo.Hex",
+    project("server-installer") to "voodoo.server.Install",
+    project("bootstrap") to "voodoo.BootstrapKt"
 )
 val noConstants = listOf(
-        project("skcraft")
+    project("skcraft")
 )
 
-allprojects {
+subprojects {
     configurations.all {
         resolutionStrategy.eachDependency {
             if (requested.group == "org.jetbrains.kotlin") {
@@ -78,7 +78,7 @@ allprojects {
 
         kotlin {
             experimental {
-//                newInference = "enable" //1.3
+                //                newInference = "enable" //1.3
 //                contracts = "enable" //1.3
             }
         }
@@ -118,12 +118,12 @@ allprojects {
             }
             configure<ConstantsExtension> {
                 constantsObject(
-                        pkg = folder.joinToString("."),
-                        className = project.name
-                                .split("-")
-                                .joinToString("") {
-                                    it.capitalize()
-                                } + "Constants"
+                    pkg = folder.joinToString("."),
+                    className = project.name
+                        .split("-")
+                        .joinToString("") {
+                            it.capitalize()
+                        } + "Constants"
                 ) {
                     field("BUILD_NUMBER") value Env.buildNumber
                     field("BUILD") value Env.versionSuffix
@@ -145,17 +145,13 @@ allprojects {
             }
 
             runnableProjects.find { it.first == project }?.let { (_, mainClass) ->
-                apply {
-                    plugin("application")
-                }
+                apply(plugin = "application")
 
                 application {
                     mainClassName = mainClass
                 }
 
-                apply {
-                    plugin("com.github.johnrengelman.shadow")
-                }
+                apply(plugin = "com.github.johnrengelman.shadow")
 
                 val runDir = rootProject.file("run")
 
@@ -180,9 +176,7 @@ allprojects {
 
         // publishing
         if (project != project(":bootstrap")) {
-            apply {
-                plugin("maven-publish")
-            }
+            apply(plugin = "maven-publish")
 
             version = "$major.$minor.$patch-${Env.versionSuffix}"
 
@@ -232,89 +226,10 @@ allprojects {
             }
 
             rootProject.file("private.gradle")
-                    .takeIf { it.exists() }
-                    ?.let { apply(from = it) }
+                .takeIf { it.exists() }
+                ?.let { apply(from = it) }
         }
     }
-}
-
-val genSrc = rootDir.resolve("samples").resolve("run").resolve(".voodoo")
-val packs = rootDir.resolve("samples").resolve("packs")
-kotlin.sourceSets.maybeCreate("test").kotlin.apply {
-    srcDirs(packs)
-    srcDirs(genSrc)
-}
-idea {
-    module {
-        generatedSourceDirs.add(genSrc)
-    }
-}
-
-val poet = task<JavaExec>("poet") {
-    main = "voodoo.PoetKt"
-    args = listOf(genSrc.parentFile.path, genSrc.path)
-    classpath = project(":poet").sourceSets["main"].runtimeClasspath
-
-    group = "build"
-    dependsOn(":poet:classes")
-}
-
-val compileTestKotlin by tasks.getting(KotlinCompile::class) {
-    dependsOn(poet)
-}
-
-sourceSets {
-    val runtimeClasspath = maybeCreate("test").runtimeClasspath
-    packs
-            .listFiles(FilenameFilter { _, name -> name.endsWith(".kt") })
-            .forEach { sourceFile ->
-                val name = sourceFile.nameWithoutExtension
-                task<JavaExec>(name.toLowerCase()) {
-                    workingDir = rootDir.resolve("samples").apply { mkdirs() }
-                    classpath = runtimeClasspath
-                    main = "${name.capitalize()}Kt"
-                    description = name
-                    group = "voodooo"
-                }
-            }
-}
-
-// SPEK
-
-repositories {
-    maven { setUrl("https://dl.bintray.com/spekframework/spek-dev") }
-}
-
-dependencies {
-//    implementation(kotlin("stdlib-jdk8", Kotlin.version))
-//
-//    testImplementation(Spek.dependencyDsl)
-//    testImplementation(Spek.dependencyRunner)
-//
-//    testImplementation(kotlin("test", Kotlin.version))
-//
-//    // https=//mvnrepository.com/artifact/org.junit.platform/junit-platform-engine
-//    testImplementation(Spek.dependencyJUnit5)
-//
-//    // spek requires kotlin-reflect, can be omitted if already in the classpath
-//    testRuntimeOnly(kotlin("reflect", Kotlin.version))
-//
-//    testCompile(project(":dsl"))
-//    testCompile(project(":poet"))
-//
-//    compile(project(":core:core-dsl"))
-//    compile(project(":core"))
-//    compile(project(":pack"))
-//    compile(project(":pack:pack-tester"))
-}
-
-val cleanTest by tasks.getting(Delete::class)
-
-tasks.withType<Test> {
-    useJUnitPlatform {
-        includeEngines("spek2")
-    }
-    dependsOn(cleanTest)
 }
 
 tasks.withType<Wrapper> {
