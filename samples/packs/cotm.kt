@@ -36,204 +36,204 @@ fun main(args: Array<String>) = withDefaultMain(
 //            metaUrl = "https://curse.nikky.moe/api/"
             list {
                 // Vazkii
-                add(Mod.akashicTome)
-                add(Mod.botania)
-                add(Mod.psi)
-                add(Mod.quark)
-                add(Mod.morphOTool)
+                +(Mod.akashicTome)
+                +(Mod.botania)
+                +(Mod.psi)
+                +(Mod.quark)
+                +(Mod.morphOTool)
 
                 // Sangar
-                add(Mod.architect)
-                add(Mod.bedrockores)
+                +(Mod.architect)
+                +(Mod.bedrockores)
 
                 // HellFirePvP
-                add(Mod.astralSorcery)
+                +(Mod.astralSorcery)
 
                 // Nuchaz
-                add(Mod.bibliocraft)
+                +(Mod.bibliocraft)
 
                 // Binnie
-                add(Mod.binniesMods)
+                +(Mod.binniesMods)
 
                 // chiselTeam
-                add(Mod.chisel)
+                +(Mod.chisel)
 
                 // AlgorithmX2
-                add(Mod.chiselsBits)
+                +(Mod.chiselsBits)
 
                 // jaredlll08
-                add(Mod.clumps)
+                +(Mod.clumps)
 
                 // TheIllusiveC4
-                add(Mod.comforts)
+                +(Mod.comforts)
 
                 // BlayTheNinth
-                add(Mod.cookingForBlockheads)
-                add(Mod.farmingForBlockheads)
+                +(Mod.cookingForBlockheads)
+                +(Mod.farmingForBlockheads)
 
                 // ZLainSama
-                add(Mod.cosmeticArmorReworked)
+                +(Mod.cosmeticArmorReworked)
 
                 // jaredlll08
-                add(Mod.diamondGlass)
+                +(Mod.diamondGlass)
 
                 // copygirl
-                add(Mod.wearableBackpacks)
+                +(Mod.wearableBackpacks)
 
                 // mezz
-                add(Mod.jei)
+                +(Mod.jei)
 
                 // Benimatic
-                add(Mod.theTwilightForest)
+                +(Mod.theTwilightForest)
 
                 // The_Wabbit
-                add(Mod.upsizerMod)
+                +(Mod.upsizerMod)
 
                 // Viesis
-                add(Mod.viescraftAirships)
+                +(Mod.viescraftAirships)
 
                 // Team CoFH
-                add(Mod.thermalDynamics)
-                add(Mod.thermalexpansion)
-                add(Mod.thermalInnovation)
+                +(Mod.thermalDynamics)
+                +(Mod.thermalexpansion)
+                +(Mod.thermalInnovation)
 
                 group {
                     // because some alphas are buggy
                     releaseTypes = setOf(FileType.BETA, FileType.RELEASE)
                 }.list {
                     // McJTY
-                    add(Mod.rftools)
-                    add(Mod.rftoolsDimensions)
+                    +(Mod.rftools)
+                    +(Mod.rftoolsDimensions)
                 }
 
                 // Mr_Crayfish
-                add(Mod.mrcrayfishFurnitureMod)
+                +(Mod.mrcrayfishFurnitureMod)
 
                 // zabi94
-                add(Mod.extraAlchemy)
-                add(Mod.nomoreglowingpots)
+                +(Mod.extraAlchemy)
+                +(Mod.nomoreglowingpots)
 
                 // CrazyPants
-                add(Mod.enderIo)
+                +(Mod.enderIo)
 
                 // Subaraki
-                add(Mod.paintings)
+                +(Mod.paintings)
 
                 // azanor
-                add(Mod.thaumcraft)
-                add(Mod.baubles)
+                +(Mod.thaumcraft)
+                +(Mod.baubles)
 
                 // asie
-                add(Mod.charsetLib)
-                add(Mod.charsetTweaks)
-                add(Mod.charsetBlockCarrying)
-                add(Mod.charsetTablet)
-                add(Mod.charsetCrafting)
-                add(Mod.charsetAudio)
-                add(Mod.charsetStorageLocks)
-                add(Mod.charsetTools)
-                add(Mod.charsetpatches)
-                add(Mod.charsetImmersion)
-                add(Mod.foamfixForMinecraft)
-                add(Mod.unlimitedChiselWorks)
-                add(Mod.unlimitedChiselWorksBotany)
-                add(Mod.simplelogicGates)
-                add(Mod.simplelogicWires)
+                +(Mod.charsetLib)
+                +(Mod.charsetTweaks)
+                +(Mod.charsetBlockCarrying)
+                +(Mod.charsetTablet)
+                +(Mod.charsetCrafting)
+                +(Mod.charsetAudio)
+                +(Mod.charsetStorageLocks)
+                +(Mod.charsetTools)
+                +(Mod.charsetpatches)
+                +(Mod.charsetImmersion)
+                +(Mod.foamfixForMinecraft)
+                +(Mod.unlimitedChiselWorks)
+                +(Mod.unlimitedChiselWorksBotany)
+                +(Mod.simplelogicGates)
+                +(Mod.simplelogicWires)
 
-                add(Mod.enderStorage18)
-                add(Mod.exchangers)
-                add(Mod.extraBitManipulation)
-                add(Mod.extraUtilities)
-                add(Mod.fairyLights)
-                add(Mod.forestry)
-                add(Mod.ftbUtilities)
-                add(Mod.ftblib)
-                add(Mod.gendustry)
-                add(Mod.hwyla)
-                add(Mod.initialInventory)
-                add(Mod.inventoryTweaks)
-                add(Mod.ironChests)
-                add(Mod.redstonePaste)
-                add(Mod.mmmmmmmmmmmm)
-                add(Mod.kleeslabs)
-                add(Mod.magicBees)
-                add(Mod.malisisdoors)
-                add(Mod.mobGrindingUtils)
-                add(Mod.natura)
-                add(Mod.naturesCompass)
-                add(Mod.netherex)
-                add(Mod.netherportalfix)
-                add(Mod.stimmedcowNomorerecipeconflict)
-                add(Mod.notenoughids)
-                add(Mod.opencomputers)
-                add(Mod.openblocks)
-                add(Mod.packingTape)
-                add(Mod.pamsHarvestcraft)
-                add(Mod.passthroughSigns)
-                add(Mod.platforms)
-                add(Mod.randomThings)
-                add(Mod.randomtweaks)
-                add(Mod.rangedPumps)
-                add(Mod.recurrentComplex)
-                add(Mod.redstoneFlux)
-                add(Mod.roguelikeDungeons)
-                add(Mod.roots)
-                add(Mod.scannable)
-                add(Mod.simpleSponge)
-                add(Mod.spartanShields)
-                add(Mod.storageDrawers)
-                add(Mod.storageDrawersExtras)
-                add(Mod.tails)
-                add(Mod.tammodized)
-                add(Mod.angryPixelTheBetweenlandsMod)
-                add(Mod.tinkersConstruct)
-                add(Mod.tinkersToolLeveling)
-                add(Mod.extremeReactors)
-                add(Mod.zerocore)
-                add(Mod.toolBelt)
-                add(Mod.torchmaster)
-                add(Mod.roboticparts)
-                add(Mod.woot)
-                add(Mod.quickLeafDecay)
-                add(Mod.bloodMagic)
-                add(Mod.colorfulwater)
-                add(Mod.constructsArmory)
-                add(Mod.simpleVoidWorld)
-                add(Mod.yoyos)
-                add(Mod.badWitherNoCookieReloaded)
-                add(Mod.waystones)
-                add(Mod.aetherLegacy)
-                add(Mod.corpseComplex)
-                add(Mod.thaumcraftInventoryScanning)
-                add(Mod.peckish)
-                add(Mod.electroblobsWizardry)
-                add(Mod.reliquaryV13)
-                add(Mod.cookiecore)
-                add(Mod.thaumcraft)
-                add(Mod.fastworkbench)
-                add(Mod.dimensionaldoors)
-                add(Mod.betterBuildersWands)
-                add(Mod.antighost)
-                add(Mod.loginShield)
-                add(Mod.caliper)
-                add(Mod.refinedStorage)
-                add(Mod.flopper)
-                add(Mod.catwalks4)
-                add(Mod.wallJump)
-                add(Mod.magicalMap)
-                add(Mod.pewter)
-                add(Mod.theErebus)
-                add(Mod.grapplingHookMod)
-                add(Mod.embersRekindled)
+                +(Mod.enderStorage18)
+                +(Mod.exchangers)
+                +(Mod.extraBitManipulation)
+                +(Mod.extraUtilities)
+                +(Mod.fairyLights)
+                +(Mod.forestry)
+                +(Mod.ftbUtilities)
+                +(Mod.ftblib)
+                +(Mod.gendustry)
+                +(Mod.hwyla)
+                +(Mod.initialInventory)
+                +(Mod.inventoryTweaks)
+                +(Mod.ironChests)
+                +(Mod.redstonePaste)
+                +(Mod.mmmmmmmmmmmm)
+                +(Mod.kleeslabs)
+                +(Mod.magicBees)
+                +(Mod.malisisdoors)
+                +(Mod.mobGrindingUtils)
+                +(Mod.natura)
+                +(Mod.naturesCompass)
+                +(Mod.netherex)
+                +(Mod.netherportalfix)
+                +(Mod.stimmedcowNomorerecipeconflict)
+                +(Mod.notenoughids)
+                +(Mod.opencomputers)
+                +(Mod.openblocks)
+                +(Mod.packingTape)
+                +(Mod.pamsHarvestcraft)
+                +(Mod.passthroughSigns)
+                +(Mod.platforms)
+                +(Mod.randomThings)
+                +(Mod.randomtweaks)
+                +(Mod.rangedPumps)
+                +(Mod.recurrentComplex)
+                +(Mod.redstoneFlux)
+                +(Mod.roguelikeDungeons)
+                +(Mod.roots)
+                +(Mod.scannable)
+                +(Mod.simpleSponge)
+                +(Mod.spartanShields)
+                +(Mod.storageDrawers)
+                +(Mod.storageDrawersExtras)
+                +(Mod.tails)
+                +(Mod.tammodized)
+                +(Mod.angryPixelTheBetweenlandsMod)
+                +(Mod.tinkersConstruct)
+                +(Mod.tinkersToolLeveling)
+                +(Mod.extremeReactors)
+                +(Mod.zerocore)
+                +(Mod.toolBelt)
+                +(Mod.torchmaster)
+                +(Mod.roboticparts)
+                +(Mod.woot)
+                +(Mod.quickLeafDecay)
+                +(Mod.bloodMagic)
+                +(Mod.colorfulwater)
+                +(Mod.constructsArmory)
+                +(Mod.simpleVoidWorld)
+                +(Mod.yoyos)
+                +(Mod.badWitherNoCookieReloaded)
+                +(Mod.waystones)
+                +(Mod.aetherLegacy)
+                +(Mod.corpseComplex)
+                +(Mod.thaumcraftInventoryScanning)
+                +(Mod.peckish)
+                +(Mod.electroblobsWizardry)
+                +(Mod.reliquaryV13)
+                +(Mod.cookiecore)
+                +(Mod.thaumcraft)
+                +(Mod.fastworkbench)
+                +(Mod.dimensionaldoors)
+                +(Mod.betterBuildersWands)
+                +(Mod.antighost)
+                +(Mod.loginShield)
+                +(Mod.caliper)
+                +(Mod.refinedStorage)
+                +(Mod.flopper)
+                +(Mod.catwalks4)
+                +(Mod.wallJump)
+                +(Mod.magicalMap)
+                +(Mod.pewter)
+                +(Mod.theErebus)
+                +(Mod.grapplingHookMod)
+                +(Mod.embersRekindled)
 
-                add(Mod.ariente)
+                +(Mod.ariente)
 
                 // Pulled due to outstanding issues
 
                 // Unused mods
-                // add(Mod.justEnoughDimensions)
-                // add(Mod.crafttweaker)
-                // add(Mod.modtweaker)
+                // +(Mod.justEnoughDimensions)
+                // +(Mod.crafttweaker)
+                // +(Mod.modtweaker)
 
                 withProvider(DirectProvider).list {
                     +"nutrition" url "https://github.com/WesCook/Nutrition/releases/download/v3.5.0/Nutrition-1.12.2-3.5.0.jar"
@@ -261,7 +261,7 @@ fun main(args: Array<String>) = withDefaultMain(
                     // TODO dependency  fruit-phone -> probe-data-provider
 
                     // Job is private - mirroring now
-                    // add("correlated") job "Correlated2-Dev"
+                    // +("correlated") job "Correlated2-Dev"
 
                     // Darkevilmac
                     +"architecture-craft" job "elytra/ArchitectureCraft/1.12"
@@ -272,9 +272,9 @@ fun main(args: Array<String>) = withDefaultMain(
                 group {
                     side = Side.SERVER
                 }.list {
-                    add(Mod.btfuContinuousRsyncIncrementalBackup)
-                    add(Mod.swingthroughgrass)
-                    add(Mod.colorchat)
+                    +(Mod.btfuContinuousRsyncIncrementalBackup)
+                    +(Mod.swingthroughgrass)
+                    +(Mod.colorchat)
                     withProvider(JenkinsProvider) {
                         jenkinsUrl = "https://ci.elytradev.com"
                     }.list {
@@ -288,15 +288,15 @@ fun main(args: Array<String>) = withDefaultMain(
                         selected = false
                     }
                 }.list {
-                    add(Mod.laggoggles) configure {
+                    +(Mod.laggoggles) configure {
                         description =
                             "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                     }
-                    add(Mod.sampler) configure {
+                    +(Mod.sampler) configure {
                         description =
                             "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                     }
-                    add(Mod.openeye) configure {
+                    +(Mod.openeye) configure {
                         description =
                             "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
                     }
@@ -304,25 +304,25 @@ fun main(args: Array<String>) = withDefaultMain(
                 group {
                     side = Side.CLIENT
                 }.list {
-                    add(Mod.toastControl)
-                    add(Mod.wawlaWhatAreWeLookingAt)
-                    add(Mod.wailaHarvestability)
-                    add(Mod.jeiIntegration)
-                    add(Mod.appleskin)
-                    add(Mod.betterfps)
-                    add(Mod.nonausea)
-                    add(Mod.betterPlacement)
-                    add(Mod.controlling)
-                    add(Mod.customMainMenu)
-                    add(Mod.defaultOptions)
-                    add(Mod.fullscreenWindowedBorderlessForMinecraft)
-                    add(Mod.modNameTooltip)
-                    add(Mod.reauth)
-                    add(Mod.cleanview)
-                    add(Mod.craftingTweaks)
+                    +(Mod.toastControl)
+                    +(Mod.wawlaWhatAreWeLookingAt)
+                    +(Mod.wailaHarvestability)
+                    +(Mod.jeiIntegration)
+                    +(Mod.appleskin)
+                    +(Mod.betterfps)
+                    +(Mod.nonausea)
+                    +(Mod.betterPlacement)
+                    +(Mod.controlling)
+                    +(Mod.customMainMenu)
+                    +(Mod.defaultOptions)
+                    +(Mod.fullscreenWindowedBorderlessForMinecraft)
+                    +(Mod.modNameTooltip)
+                    +(Mod.reauth)
+                    +(Mod.cleanview)
+                    +(Mod.craftingTweaks)
 
                     // Way2muchnoise
-                    add(Mod.betterAdvancements)
+                    +(Mod.betterAdvancements)
                     // OPT-OUT
                     group {
                         feature {
@@ -330,43 +330,43 @@ fun main(args: Array<String>) = withDefaultMain(
                             recommendation = Recommendation.starred
                         }
                     }.list {
-                        add(Mod.journeymap) configure {
+                        +(Mod.journeymap) configure {
                             description = "Mod-compatible mini-map."
                         }
-                        add(Mod.mage) configure {
+                        +(Mod.mage) configure {
                             description = "Configurable graphics enhancements. Highly recomended."
                         }
-                        add(Mod.neat) configure {
+                        +(Mod.neat) configure {
                             description = "Simple health and unit frames."
                         }
-                        add(Mod.clientTweaks) configure {
+                        +(Mod.clientTweaks) configure {
                             description = "Various client related fixes and tweaks, all in a handy menu."
                         }
-                        add(Mod.mouseTweaks) configure {
+                        +(Mod.mouseTweaks) configure {
                             description = "Add extra mouse gestures for inventories and crafting grids."
                         }
-                        add(Mod.thaumicJei) configure {
+                        +(Mod.thaumicJei) configure {
                             description = "JEI Integration for Thaumcraft."
                         }
-                        add(Mod.jeiBees) configure {
+                        +(Mod.jeiBees) configure {
                             description = "JEI Integration for Forestry/Gendustry Bees."
                         }
-                        add(Mod.justEnoughHarvestcraft) configure {
+                        +(Mod.justEnoughHarvestcraft) configure {
                             description = "JEI Integration for Pam's HarvestCraft."
                         }
-                        add(Mod.justEnoughResourcesJer) configure {
+                        +(Mod.justEnoughResourcesJer) configure {
                             description = "JEI Integration that gives drop-rates for mobs, dungeonloot, etc."
                         }
-                        add(Mod.vise) configure {
+                        +(Mod.vise) configure {
                             description = "More granular control over UI/HUD elements."
                         }
-                        add(Mod.smoothFont) configure {
+                        +(Mod.smoothFont) configure {
                             description = "It smoothes fonts."
                         }
-                        add(Mod.inventoryTweaks) configure {
+                        +(Mod.inventoryTweaks) configure {
                             description = "Adds amll changes to invetory handling to minor conviniences."
                         }
-                        add(Mod.nofov) configure {
+                        +(Mod.nofov) configure {
                             description = "Removes dynamic FOV shifting due to ingame effects."
                         }
                     }
@@ -376,48 +376,48 @@ fun main(args: Array<String>) = withDefaultMain(
                             selected = false
                         }
                     }.list {
-                        add(Mod.itemScroller) configure {
+                        +(Mod.itemScroller) configure {
                             description = "Alternative to MouseTweaks."
                         }
-                        add(Mod.xaerosMinimap) configure {
+                        +(Mod.xaerosMinimap) configure {
                             description = "Alternative to MouseTweaks."
                         }
-                        add(Mod.minemenu) configure {
+                        +(Mod.minemenu) configure {
                             description =
                                 "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
                         }
-                        add(Mod.itemzoom) configure {
+                        +(Mod.itemzoom) configure {
                             description = "Check this if you like to get a closer look at item textures."
                         }
-                        add(Mod.lightLevelOverlayReloaded) configure {
+                        +(Mod.lightLevelOverlayReloaded) configure {
                             description = "Smol light-level overlay if you aren't using Dynamic Surroundings."
                         }
-                        add(Mod.durabilityShow) configure {
+                        +(Mod.durabilityShow) configure {
                             description = "Toggle-able item/tool/armor durability HUD. Duplicates with RPG-HUD."
                         }
-                        add(Mod.fancyBlockParticles) configure {
+                        +(Mod.fancyBlockParticles) configure {
                             description =
                                 "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps. (Defaults set to be less intrusive.)"
                         }
-                        add(Mod.dynamicSurroundings) configure {
+                        +(Mod.dynamicSurroundings) configure {
                             description =
                                 "Caution: Resource heavy. Quite nice, has a lot of configurable features that add immersive sound/visual effects. Includes light-level overlay. (Defaults set to remove some sounds and generally be better.)"
                         }
-                        add(Mod.rpgHud) configure {
+                        +(Mod.rpgHud) configure {
                             description =
                                 "Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)"
                         }
-                        add(Mod.betterFoliage) configure {
+                        +(Mod.betterFoliage) configure {
                             description =
                                 "Improves the fauna in the world. Very heavy, but very pretty. (Sane defaults set.)"
                         }
-                        add(Mod.keyboardWizard) configure {
+                        +(Mod.keyboardWizard) configure {
                             description = "Visual keybind manager."
                         }
-                        add(Mod.chunkAnimator) configure {
+                        +(Mod.chunkAnimator) configure {
                             description = "Configurable chunk pop-in animator."
                         }
-                        add(Mod.fasterLadderClimbing) configure {
+                        +(Mod.fasterLadderClimbing) configure {
                             description = "Helps you control ladder climb speed and allows you to go a bit faster."
                         }
 

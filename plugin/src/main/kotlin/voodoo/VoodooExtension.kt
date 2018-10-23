@@ -15,7 +15,7 @@ open class VoodooExtension(project: Project) {
     }
 
     private var generatedSourceCall: (rootDir: File) -> File = { rootDir.resolve(".voodoo") }
-    private var packDirectoryCall: (rootDir: File) -> File =  { rootDir.resolve("packs") }
+    private var packDirectoryCall: (rootDir: File) -> File = { rootDir.resolve("packs") }
 
     internal val getGeneratedSrc: File get() = generatedSourceCall(rootDir)
     internal val getPackDir: File get() = packDirectoryCall(rootDir)
