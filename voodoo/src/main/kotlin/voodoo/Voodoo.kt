@@ -8,6 +8,7 @@ package voodoo
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
+import voodoo.voodoo.VoodooConstants
 
 object Voodoo : KLogging() {
     val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
