@@ -65,10 +65,10 @@ fun Project.setupDependencies(target: Project = this) {
                 implementation(kotlin("scripting-jvm-host", Kotlin.version))
                 implementation(kotlin("script-util", Kotlin.version))
 
+                testImplementation(kotlin("test", Kotlin.version))
+
                 testImplementation(Spek.dependencyDsl)
                 testImplementation(Spek.dependencyRunner)
-
-                testImplementation(kotlin("test", Kotlin.version))
 
                 // https=//mvnrepository.com/artifact/org.junit.platform/junit-platform-engine
                 testImplementation(Spek.dependencyJUnit5)
@@ -83,6 +83,10 @@ fun Project.setupDependencies(target: Project = this) {
                 implementation(project(":core"))
                 implementation(project(":pack"))
                 implementation(project(":pack:pack-tester"))
+
+                testImplementation(Coroutines.dependency)
+                testImplementation(project(":core"))
+                testImplementation(project(":pack"))
             }
         }
         rootProject.project(":bootstrap") -> {
