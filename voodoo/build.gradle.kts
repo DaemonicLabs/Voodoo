@@ -42,11 +42,8 @@ sourceSets {
         }
 }
 
-application {
-
-}
-
-tasks.withType<JavaExec>() {
+val run by tasks.getting(JavaExec::class)
+run.apply {
     workingDir = rootDir.resolve("samples")
     args = listOf("newscript.voodoo.kts", "build")
 }
