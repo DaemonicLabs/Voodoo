@@ -27,13 +27,6 @@ fun withDefaultMain(
 //    println("classloader is of type:" + XY::class.java.classLoader)
     Thread.currentThread().contextClassLoader = MainScriptEnv::class.java.classLoader
 
-    if (arguments.firstOrNull() == "dump-srcRoot") {
-        val nestedPack = MainScriptEnv(rootDir = root).configureMain()
-        val srcRoot = root.resolve(nestedPack.sourceDir)
-        println("srcRoot=$srcRoot")
-        exitProcess(0)
-    }
-
     val mainEnv = MainScriptEnv(rootDir = root)
     val nestedPack = mainEnv.configureMain()
     val id = nestedPack.id

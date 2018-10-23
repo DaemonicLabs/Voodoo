@@ -20,7 +20,8 @@ object Gradle {
 }
 
 object Kotlin {
-    const val version = "1.3.0-rc-116"
+    const val version = "1.3.0-rc-190"
+//    const val version = "1.3.0-rc-116"
     object Dsl {
         const val version = "1.0-rc-12"
     }

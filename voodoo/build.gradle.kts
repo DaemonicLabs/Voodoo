@@ -1,4 +1,3 @@
-
 import java.io.FilenameFilter
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -41,6 +40,15 @@ sourceSets {
                 group = "voodooo"
             }
         }
+}
+
+application {
+
+}
+
+tasks.withType<JavaExec>() {
+    workingDir = rootDir.resolve("samples")
+    args = listOf("newscript.voodoo.kts", "build")
 }
 
 // SPEK

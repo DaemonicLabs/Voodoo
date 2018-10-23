@@ -12,7 +12,7 @@ plugins {
     `project-report`
     kotlin("jvm") version Kotlin.version
     constantsGenerator apply false
-    id("com.github.johnrengelman.shadow") version "2.0.4" apply false
+    id("com.github.johnrengelman.shadow") version "4.0.0" apply false
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
     id("org.jmailen.kotlinter") version "1.17.0"
     id(Serialization.plugin) version Kotlin.version
@@ -114,7 +114,7 @@ subprojects {
                 plugin("constantsGenerator")
             }
 
-            val folder = project.name.split('-')
+            val folder = listOf("voodoo") + project.name.split('-')
             configure<ConstantsExtension> {
                 constantsObject(
                     pkg = folder.joinToString("."),

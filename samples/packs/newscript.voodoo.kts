@@ -2,16 +2,11 @@ import com.skcraft.launcher.model.modpack.Recommendation
 import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.curse.FileType
-import voodoo.provider.CurseProvider
-import voodoo.provider.DirectProvider
-import voodoo.provider.JenkinsProvider
-import voodoo.provider.LocalProvider
 
 docs {
     //        tomeRoot = rootDir.resolve("docs")
 }
 
-// TODO nested pack DSL to avoid copying over values
 nestedPack(
     id = "newdsl",
     mcVersion = "1.12.2"
