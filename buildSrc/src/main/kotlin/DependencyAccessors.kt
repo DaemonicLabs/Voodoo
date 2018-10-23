@@ -61,7 +61,9 @@ fun Project.setupDependencies(target: Project = this) {
     when (this) {
         rootProject.project(":voodoo") -> {
             dependencies {
-                implementation(kotlin("stdlib-jdk8", Kotlin.version))
+                api(kotlin("stdlib-jdk8", Kotlin.version))
+                implementation(kotlin("scripting-jvm-host", Kotlin.version))
+                implementation(kotlin("script-util", Kotlin.version))
 
                 testImplementation(Spek.dependencyDsl)
                 testImplementation(Spek.dependencyRunner)
@@ -77,10 +79,10 @@ fun Project.setupDependencies(target: Project = this) {
                 testImplementation(project(":dsl"))
                 testImplementation(project(":poet"))
 
-                compile(project(":core:core-dsl"))
-                compile(project(":core"))
-                compile(project(":pack"))
-                compile(project(":pack:pack-tester"))
+                api(project(":core:core-dsl"))
+                implementation(project(":core"))
+                implementation(project(":pack"))
+                implementation(project(":pack:pack-tester"))
             }
         }
         rootProject.project(":bootstrap") -> {
@@ -99,8 +101,7 @@ fun Project.setupDependencies(target: Project = this) {
         rootProject.project(":core:core-dsl") -> {
             dependencies {
                 compile(project(":tome"))
-                compile(kotlin("scripting-common", Kotlin.version))
-                compile(kotlin("scripting-jvm", Kotlin.version))
+                implementation(kotlin("scripting-jvm", Kotlin.version))
             }
         }
         rootProject.project(":dsl") -> {
