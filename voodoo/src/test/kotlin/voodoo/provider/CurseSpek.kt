@@ -30,7 +30,7 @@ object CurseSpek : Spek({
                 title = "Curse Spek"
                 root = rootEntry(CurseProvider) {
                     list {
-                        add(Mod.matterlink)
+                        +(Mod.matterlink)
                     }
                 }
             }

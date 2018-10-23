@@ -20,14 +20,14 @@ object Gradle {
 }
 
 object Kotlin {
-    const val version = "1.3.0-rc-116" //"1.3.0-rc-146"
+    const val version = "1.3.0-rc-116"
     object Dsl {
         const val version = "1.0-rc-12"
     }
 }
 
 object Coroutines {
-    const val version = "1.0.0-RC1" // ""0.30.2-eap13"
+    const val version = "1.0.0-RC1"
     val dependency = create(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = version)
 }
 

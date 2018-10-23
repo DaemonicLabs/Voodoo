@@ -3,13 +3,14 @@
 - [x] Script Definition
 - [ ] Script Host
 - [ ] Call Script host from gradle
-- [ ] Compile Script Host with gradle
+- [ ] Compile Script Host with gradle-plugin ?
+- [ ] Voodoo Wrapper task for script host
 
 # Reorganize buildscripts / Repo
 
-- no code in the root project
-- all dependencies in `buildSrc`
-- move kotlin `src` one level higher (`src/main/kotlin` is unnecessary)
+- [x] no code in the root project
+- [ ] all dependencies in `buildSrc`
+- [ ] move kotlin `src` one level higher (`src/main/kotlin` is unnecessary)
 
 # documentation generator | tome
 

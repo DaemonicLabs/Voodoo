@@ -46,8 +46,8 @@ object DslSpek : Spek({
                     // TODO: use type URL ?
                     metaUrl = "https://curse.nikky.moe/api"
                     list {
-                        add(Mod.botania)
-                        add(Mod.rftools)
+                        +(Mod.botania)
+                        +(Mod.rftools)
 
                         withProvider(JenkinsProvider) {
                             side = Side.SERVER

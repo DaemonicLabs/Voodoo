@@ -64,7 +64,6 @@ open class VoodooPlugin : Plugin<Project> {
                 targetCompatibility = JavaVersion.VERSION_1_8
             }
 
-
             extensions.configure<KotlinJvmProjectExtension> {
                 //                (sourceSets as MutableCollection<KotlinSourceSet>).clear()
                 sourceSets.maybeCreate("main").kotlin.apply {
@@ -73,8 +72,6 @@ open class VoodooPlugin : Plugin<Project> {
                 }
 //                sourceSets.create("test")
             }
-
-
 
             extensions.configure<IdeaModel> {
                 module {
@@ -115,7 +112,6 @@ open class VoodooPlugin : Plugin<Project> {
                             this.group = "voodoo"
                         }
 
-
 //                        val out = ByteArrayOutputStream()
 //                        println("executing ${name}Kt")
 //                        project.javaexec {
@@ -123,7 +119,7 @@ open class VoodooPlugin : Plugin<Project> {
 //                            main = "${name}Kt"
 //                            args = listOf("dump-root")
 //                            standardOutput = out
-////                            dependsOn(poet)
+//  //                          dependsOn(poet)
 //                        }
 //                        val outString = String(out.toByteArray())
 //                        println("output: $outString")

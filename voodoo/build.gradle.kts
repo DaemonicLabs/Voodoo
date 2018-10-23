@@ -2,14 +2,6 @@
 import java.io.FilenameFilter
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-plugins {
-    kotlin("jvm")
-}
-
-repositories {
-    maven(url = "https://dl.bintray.com/spekframework/spek-dev")
-}
-
 val genSrc = rootDir.resolve("samples").resolve("run").resolve(".voodoo")
 val packs = rootDir.resolve("samples").resolve("packs")
 kotlin.sourceSets.maybeCreate("test").kotlin.apply {
@@ -54,7 +46,7 @@ sourceSets {
 // SPEK
 
 repositories {
-    maven { setUrl("https://dl.bintray.com/spekframework/spek-dev") }
+    maven(url = "https://dl.bintray.com/spekframework/spek-dev")
 }
 
 val cleanTest by tasks.getting(Delete::class)

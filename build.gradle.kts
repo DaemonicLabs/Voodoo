@@ -7,16 +7,15 @@ import plugin.GenerateConstantsTask
 import java.io.FilenameFilter
 
 plugins {
-    kotlin("jvm") version Kotlin.version
-    id(Serialization.plugin) version Kotlin.version
-    application
     idea
     `maven-publish`
     `project-report`
+    kotlin("jvm") version Kotlin.version
     constantsGenerator apply false
     id("com.github.johnrengelman.shadow") version "2.0.4" apply false
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
     id("org.jmailen.kotlinter") version "1.17.0"
+    id(Serialization.plugin) version Kotlin.version
 }
 
 println(
@@ -28,7 +27,7 @@ println(
 *******************************************
 """
 )
-val runnableProjects = listOf(
+val runnableProjects = mapOf(
     project("voodoo") to "voodoo.Voodoo",
     project("multimc:multimc-installer") to "voodoo.Hex",
     project("server-installer") to "voodoo.server.Install",
@@ -37,6 +36,16 @@ val runnableProjects = listOf(
 val noConstants = listOf(
     project("skcraft")
 )
+
+allprojects {
+    repositories {
+        mavenCentral()
+        jcenter()
+//        mavenLocal()
+        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
+        maven(url = "https://kotlin.bintray.com/kotlinx")
+    }
+}
 
 subprojects {
     configurations.all {
@@ -48,19 +57,12 @@ subprojects {
         }
     }
 
-    repositories {
-        mavenCentral()
-        jcenter()
-//        mavenLocal()
-        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
-        maven(url = "https://kotlin.bintray.com/kotlinx")
-    }
+    setupDependencies(this)
+
     apply {
         plugin("idea")
         plugin("org.jmailen.kotlinter")
     }
-
-    setupDependencies(this)
 
     if (project != project(":plugin")) {
         apply {
@@ -112,10 +114,7 @@ subprojects {
                 plugin("constantsGenerator")
             }
 
-            val folder = listOf("voodoo") + when (project.depth) {
-                0 -> emptyList()
-                else -> project.name.split('-')
-            }
+            val folder = project.name.split('-')
             configure<ConstantsExtension> {
                 constantsObject(
                     pkg = folder.joinToString("."),
@@ -144,10 +143,10 @@ subprojects {
                 dependsOn(generateConstants)
             }
 
-            runnableProjects.find { it.first == project }?.let { (_, mainClass) ->
-                apply(plugin = "application")
+            runnableProjects[project]?.let { mainClass ->
+                apply<ApplicationPlugin>()
 
-                application {
+                configure<JavaApplication> {
                     mainClassName = mainClass
                 }
 
