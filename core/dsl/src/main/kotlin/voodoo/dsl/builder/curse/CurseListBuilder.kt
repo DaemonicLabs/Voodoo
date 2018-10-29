@@ -1,5 +1,6 @@
 package voodoo.dsl.builder.curse
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
@@ -17,18 +18,21 @@ class CurseListBuilder<T>(
     override val provider: T,
     override val parent: GroupBuilder<T>
 ) : ListBuilder<T>(provider, parent) where T : CurseProvider {
-    private val deferredSlugMap = GlobalScope.async {
-        CurseClient.graphQLRequest().map { (id, slug) ->
-            id to slug
+    private val deferredIdToSlugMap = GlobalScope.async(Dispatchers.IO) {
+        CurseClient.deferredSlugIdMap.await().map { (id, slug) ->
+            slug.value to id
         }.toMap()
     }
 
     @VoodooDSL
     operator fun ID.unaryPlus(): EntryBuilder<T> {
-        val slugMap = runBlocking {
-            deferredSlugMap.await()
+        val idToSlugMap = runBlocking {
+            deferredIdToSlugMap.await()
         }
-        val entry = NestedEntry(id = slugMap[id]!!, curseProjectID = ProjectID(id))
+        val stringId = idToSlugMap[id] ?: run {
+            throw NullPointerException("no id: '$id' found in idToSlugMap")
+        }
+        val entry = NestedEntry(id = stringId, curseProjectID = ProjectID(id))
         val entryBuilder = EntryBuilder(provider = provider, entry = entry)
         entries += entryBuilder
         return entryBuilder

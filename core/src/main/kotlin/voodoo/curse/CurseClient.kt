@@ -6,7 +6,13 @@ import com.github.kittinunf.fuel.Fuel
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.CoroutineStart
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.context.SimpleModule
 import kotlinx.serialization.json.JSON
@@ -23,12 +29,14 @@ import voodoo.data.flat.Entry
 import voodoo.util.serializer.DateSerializer
 import java.util.Date
 import java.util.HashMap
+import kotlin.coroutines.CoroutineContext
 
 /**
  * Created by nikky on 30/01/18.
  * @author Nikky
  */
-object CurseClient : KLogging() {
+object CurseClient : KLogging(), CoroutineScope {
+    override val coroutineContext: CoroutineContext = Job()
     private val json = JSON().apply {
         install(
             SimpleModule(Date::class, DateSerializer)
@@ -37,7 +45,7 @@ object CurseClient : KLogging() {
     //    const val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10"
     const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
-    private val slugIdMap: Map<String, ProjectID> by lazy { runBlocking { initSlugIdMap() } }
+    val deferredSlugIdMap: Deferred<Map<String, ProjectID>> = async(Dispatchers.IO, CoroutineStart.LAZY) { initSlugIdMap() }
 
     @Serializable
     data class GraphQLRequest(
@@ -64,22 +72,20 @@ object CurseClient : KLogging() {
 
     suspend fun graphQLRequest(additionalFilter: String = ""): List<SlugIdPair> {
         val url = "https://curse.nikky.moe/graphql"
-        logger.debug("post $url")
+        logger.debug("post $url $additionalFilter")
         val requestBody = GraphQLRequest(
-            query = """
-                    |{
+            query = """{
                     |  addons(gameID: 432 $additionalFilter) {
                     |    id
                     |    slug
                     |  }
-                    |}
-                """.trimMargin(),
+                    |}""".trimMargin().replace("\n", ""),
             operationName = "GetSlugIDPairs"
         )
         val (request, response, result) = Fuel.post(url)
-            .apply { headers.clear() }
             .jsonBody(body = JSON.stringify(requestBody))
-            .header("User-Agent" to useragent)
+            .apply { headers.clear() }
+            .header("User-Agent" to useragent, "Content-Type" to "application/json")
             .awaitObjectResponse<GraphQlResult>(kotlinxDeserializerOf())
 
         when (result) {
@@ -90,17 +96,18 @@ object CurseClient : KLogging() {
                 logger.error("GetSlugIDPairs")
                 logger.error("url: $url")
                 logger.error("cUrl: ${request.cUrlString()}")
+                logger.error("request: $request")
                 logger.error("response: $response")
-                logger.error(result.error.exception) { "cold not request slug-id pairs" }
+                logger.error(result.error.exception) { "could not request slug-id pairs" }
                 logger.error { request }
                 throw result.error.exception
             }
         }
     }
 
-    private suspend fun initSlugIdMap(): Map<String, ProjectID> {
+    private suspend fun initSlugIdMap(): Map<String, ProjectID> = coroutineScope {
         val grapqhQlResult = graphQLRequest()
-        return grapqhQlResult.groupBy(
+        grapqhQlResult.groupBy(
             { it.slug },
             { it.id }).mapValues {
             // (slug, list) ->
@@ -220,6 +227,7 @@ object CurseClient : KLogging() {
     }
 
     suspend fun getAddonBySlug(slug: String, proxyUrl: String = PROXY_URL): Addon? {
+        val slugIdMap = deferredSlugIdMap.await()
         slugIdMap[slug]
             ?.let { getAddon(it, proxyUrl) }
             ?.let {

@@ -171,12 +171,12 @@ object Poet : KLogging() {
     }
 
     suspend fun requestMods(): Map<String, ProjectID> =
-        CurseClient.graphQLRequest("gameID: 432, section: MC_ADDONS").map { (id, slug) ->
+        CurseClient.graphQLRequest("section: MC_ADDONS").map { (id, slug) ->
             slug to ProjectID(id)
         }.toMap()
 
     suspend fun requestResourcePacks(): Map<String, ProjectID> =
-        CurseClient.graphQLRequest("gameID: 432, section: TEXTURE_PACKS").map { (id, slug) ->
+        CurseClient.graphQLRequest("section: TEXTURE_PACKS").map { (id, slug) ->
             slug to ProjectID(id)
         }.toMap()
 }
