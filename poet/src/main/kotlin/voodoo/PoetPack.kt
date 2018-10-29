@@ -17,7 +17,6 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
-import voodoo.script.MainScriptEnv
 import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
@@ -25,6 +24,7 @@ import voodoo.provider.JenkinsProvider
 import voodoo.provider.LocalProvider
 import voodoo.provider.Providers
 import voodoo.provider.UpdateJsonProvider
+import voodoo.script.MainScriptEnv
 import java.io.File
 
 object PoetPack : KLogging() {
@@ -157,7 +157,7 @@ object PoetPack : KLogging() {
 
         val builder = if (!root) {
             when {
-            // id changed
+                // id changed
                 entry.id != default.id -> when (provider) {
                     is CurseProvider -> {
                         val identifier = runBlocking {
@@ -177,7 +177,7 @@ object PoetPack : KLogging() {
                             beginControlFlow("+%S configure", entry.id)
                     }
                 }
-            // provider changed
+                // provider changed
                 entry.provider != default.provider -> if (entryBody.isEmpty()) addStatement(
                     "%T(%T)",
                     ClassName("", "withProvider"),
@@ -187,7 +187,7 @@ object PoetPack : KLogging() {
                     ClassName("", "withProvider"),
                     provider::class.asClassName()
                 )
-            // everything else
+                // everything else
                 else -> beginControlFlow("%T", ClassName("", "group"))
             }
         } else null

@@ -42,7 +42,7 @@ object Builder : KLogging() {
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
-                coroutineContext.cancel(e)
+                coroutineContext.cancel()
                 exitProcess(1)
             }
 

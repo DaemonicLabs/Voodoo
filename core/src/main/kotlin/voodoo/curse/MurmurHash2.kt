@@ -19,7 +19,10 @@ object MurmurHash2 {
     @Throws(IOException::class)
     fun computeFileHash(path: String, normalizeWhitespace: Boolean = true): UInt {
         FileChannel.open(Paths.get(path), StandardOpenOption.READ).use { ch ->
-            val len = if (normalizeWhitespace) computeNormalizedLength(Channels.newInputStream(ch.position(0)), null) else ch!!.size()
+            val len = if (normalizeWhitespace) computeNormalizedLength(
+                Channels.newInputStream(ch.position(0)),
+                null
+            ) else ch!!.size()
             return computeHash(BufferedInputStream(Channels.newInputStream(ch.position(0))), len, normalizeWhitespace)
         }
     }

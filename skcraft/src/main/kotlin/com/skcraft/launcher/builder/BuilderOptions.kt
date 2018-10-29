@@ -14,39 +14,39 @@ class BuilderOptions(parser: ArgParser) {
     // Configuration
     // Override config
     val name by parser.storing("--name", help = "")
-            .default<String?>(null)
+        .default<String?>(null)
     val title: String? by parser.storing("--title", help = "")
-            .default<String?>(null)
+        .default<String?>(null)
     val gameVersion: String? by parser.storing("--mc-version", help = "")
-            .default<String?>(null)
+        .default<String?>(null)
     // Required
     val version: String by parser.storing("--version", help = "")
     val manifestPath: File by parser.storing("--manifest-dest", help = "") { File(this) }
     // Overall paths
     val inputPath: File? by parser.storing("--input", "-i", help = "") { File(this) }
-            .default<File?>(null)
+        .default<File?>(null)
     val outputPath: File? by parser.storing("--output", "-o", help = "") { File(this) }
-            .default<File?>(null)
+        .default<File?>(null)
     // Input paths
     val configPath by parser.storing("--config", help = "") { File(this) }
-            .default { File(inputPath!!, DEFAULT_CONFIG_FILENAME) }
+        .default { File(inputPath!!, DEFAULT_CONFIG_FILENAME) }
     val versionManifestPath by parser.storing("--version-file", help = "") { File(this) }
-            .default { File(inputPath!!, DEFAULT_VERSION_FILENAME) }
+        .default { File(inputPath!!, DEFAULT_VERSION_FILENAME) }
     val filesDir by parser.storing("--files", help = "") { File(this) }
-            .default { File(inputPath!!, DEFAULT_SRC_DIRNAME) }
+        .default { File(inputPath!!, DEFAULT_SRC_DIRNAME) }
     val loadersDir by parser.storing("--loaders", help = "") { File(this) }
-            .default { File(inputPath!!, DEFAULT_LOADERS_DIRNAME) }
+        .default { File(inputPath!!, DEFAULT_LOADERS_DIRNAME) }
     // Output paths
 
     val objectsDir by parser.storing("--objects-dest", help = "") { File(this) }
-            .default { File(outputPath!!, objectsLocation) }
+        .default { File(outputPath!!, objectsLocation) }
     val librariesDir by parser.storing("--libraries-dest", help = "") { File(this) }
-            .default { File(outputPath!!, librariesLocation) }
+        .default { File(outputPath!!, librariesLocation) }
     val librariesLocation: String by parser.storing("--libs-url", help = "").default("libraries")
     val objectsLocation: String by parser.storing("--objects-url", help = "").default("objects")
     // Misc
     val isPrettyPrinting by parser.flagging("--pretty-print", help = "")
-            .default(false)
+        .default(false)
 
     companion object {
         const val DEFAULT_CONFIG_FILENAME = "modpack.json"

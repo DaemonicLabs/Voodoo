@@ -45,7 +45,8 @@ object CurseClient : KLogging(), CoroutineScope {
     //    const val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10"
     const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
-    val deferredSlugIdMap: Deferred<Map<String, ProjectID>> = async(Dispatchers.IO, CoroutineStart.LAZY) { initSlugIdMap() }
+    val deferredSlugIdMap: Deferred<Map<String, ProjectID>> =
+        async(Dispatchers.IO, CoroutineStart.LAZY) { initSlugIdMap() }
 
     @Serializable
     data class GraphQLRequest(

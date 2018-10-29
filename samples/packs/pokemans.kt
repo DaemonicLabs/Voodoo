@@ -72,16 +72,16 @@ fun main(args: Array<String>) = withDefaultMain(
                     .list {
                         +"pixelmonDark" configure {
                             url =
-                                "https://meowface.org/craft/repo/objects/db/5d/db5db11bcda204362d62705b1d5f4e5783f95c2c"
+                                    "https://meowface.org/craft/repo/objects/db/5d/db5db11bcda204362d62705b1d5f4e5783f95c2c"
                             fileName = "PixelmonDark2.4.jar"
                         }
                         +"gameShark" configure {
                             url =
-                                "https://meowface.org/craft/repo/objects/b9/21/b9216143fd5214c31e109b24fb1513eb8b23bc77"
+                                    "https://meowface.org/craft/repo/objects/b9/21/b9216143fd5214c31e109b24fb1513eb8b23bc77"
                             fileName = "Gameshark-1.10.2-5.0.0.jar"
                         }
-        //                            +("gameShark") url "https://pixelmonMod.com/mirror/sidemods/gameshark/5.2.0/gameshark-1.12.2-5.2.0-universal.jar"
-        //                        }
+                        //                            +("gameShark") url "https://pixelmonMod.com/mirror/sidemods/gameshark/5.2.0/gameshark-1.12.2-5.2.0-universal.jar"
+                        //                        }
                     }
 
                 group {
@@ -97,7 +97,7 @@ fun main(args: Array<String>) = withDefaultMain(
                             description = "lightweight minimap"
                         }
                         // infix notation
-        //                        +(Mod.xaerosMinimap) description "lightweight minimap"
+                        //                        +(Mod.xaerosMinimap) description "lightweight minimap"
                     }
                     group {
                         feature {

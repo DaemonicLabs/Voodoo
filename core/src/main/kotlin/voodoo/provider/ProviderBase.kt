@@ -16,7 +16,7 @@ abstract class ProviderBase(
     open val name: String
 ) {
     val id: String
-    get() = Providers.getId(this)!!
+        get() = Providers.getId(this)!!
 
     override fun toString() = "name: $name, id: $id"
 
@@ -69,8 +69,8 @@ abstract class ProviderBase(
     }
 
     open fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> = mutableListOf(
-            "Provider" to "`${entry.provider}`",
-            "Version" to "`${entry.version()}`"
+        "Provider" to "`${entry.provider}`",
+        "Version" to "`${entry.version()}`"
     )
 
     open fun validate(lockEntry: LockEntry): Boolean {

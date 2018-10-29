@@ -103,7 +103,12 @@ data class Manifest(
                 elemOutput.encodeSerializableElement(descriptor, 10, FileInstall::class.serializer().list, tasks)
             }
             obj.versionManifest?.let { versionManifest ->
-                elemOutput.encodeSerializableElement(descriptor, 11, VersionManifest::class.serializer(), versionManifest)
+                elemOutput.encodeSerializableElement(
+                    descriptor,
+                    11,
+                    VersionManifest::class.serializer(),
+                    versionManifest
+                )
             }
             elemOutput.endStructure(descriptor)
         }

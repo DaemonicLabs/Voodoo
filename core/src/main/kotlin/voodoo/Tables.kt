@@ -5,5 +5,5 @@ private val Any?.clean: String
 
 fun <A, B> markdownTable(header: Pair<A, B>, content: List<Pair<A, B>>) =
     "${header.first.clean} | ${header.second.clean}\n" +
-        "---|---\n" +
-        content.joinToString(separator = "\n") { "${it.first.clean} | ${it.second.clean}" }
+            "---|---\n" +
+            content.joinToString(separator = "\n") { "${it.first.clean} | ${it.second.clean}" }

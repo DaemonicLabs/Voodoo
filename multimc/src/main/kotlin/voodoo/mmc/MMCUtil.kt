@@ -90,8 +90,8 @@ object MMCUtil : KLogging() {
                     logger.error("make sure to add the multimc install location to the PATH")
                     logger.error(
                         "go to `Control Panel\\All Control Panel Items\\System`" +
-                            " >> Advanced system settings" +
-                            " >> Environment Variables"
+                                " >> Advanced system settings" +
+                                " >> Environment Variables"
                     )
                     logger.info("once added restart the shell and try to execute `multimc`")
                     exitProcess(1)

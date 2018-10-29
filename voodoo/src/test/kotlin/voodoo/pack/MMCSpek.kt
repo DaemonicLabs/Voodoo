@@ -17,8 +17,8 @@ object MMCSpek : Spek({
             println("pack url: $packUrl")
 
             val (request, response, result) = packUrl.httpGet()
-                    .header("User-Agent" to CurseClient.useragent)
-                    .responseString()
+                .header("User-Agent" to CurseClient.useragent)
+                .responseString()
             when (result) {
                 is Result.Success -> JSON(strictMode = false).parse<Manifest>(result.value)
                 is Result.Failure -> {

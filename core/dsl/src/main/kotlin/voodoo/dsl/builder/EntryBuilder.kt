@@ -9,7 +9,7 @@ class EntryBuilder<T>(
     provider: T,
     entry: NestedEntry
 ) : AbstractBuilder<T>(provider, entry) where T : ProviderBase {
-//    var id by property(entry::id)
+    //    var id by property(entry::id)
     var name by property(entry::name)
     var websiteUrl by property(entry::websiteUrl)
 

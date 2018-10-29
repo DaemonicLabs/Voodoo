@@ -54,7 +54,7 @@ class XDGDirectories(private val appName: String) : Directories {
 
     override val pluginHome: File by lazy {
         File(dataHome, "plugins")
-                .apply { mkdirs() }
+            .apply { mkdirs() }
     }
 
     /**

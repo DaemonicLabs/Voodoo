@@ -45,7 +45,7 @@ suspend fun downloadVoodoo(
     val artifactUrl = build.url + "artifact/" + artifact.relativePath
     val tmpFile = File(binariesDir, "$moduleName-$buildNumber.tmp")
     val targetFile = File(binariesDir, "$moduleName-$buildNumber.jar")
-    val(request, response, result) = artifactUrl.httpGet()
+    val (request, response, result) = artifactUrl.httpGet()
         .header("User-Agent" to useragent)
         .awaitByteArrayResponse()
     val content = when (result) {
@@ -71,7 +71,7 @@ class JenkinsServer(
 
     suspend fun getJob(job: String, useragent: String): Job? {
         val requestURL = getUrl(job) + "/api/json"
-        val(request, response, result) = requestURL.httpGet()
+        val (request, response, result) = requestURL.httpGet()
             .header("User-Agent" to useragent)
             .awaitObjectResponse<Job>(kotlinxDeserializerOf(json = json))
         return when (result) {
@@ -94,7 +94,7 @@ data class Build(
 ) {
     suspend fun details(useragent: String): BuildWithDetails? {
         val buildUrl = "$url/api/json"
-        val(request, response, result) = buildUrl.httpGet()
+        val (request, response, result) = buildUrl.httpGet()
             .header("User-Agent" to useragent)
             .awaitObjectResponse<BuildWithDetails>(kotlinxDeserializerOf(json = json))
         return when (result) {

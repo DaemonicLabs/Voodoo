@@ -84,7 +84,7 @@ object ForgeUtil : KLogging() {
 
     suspend fun getForgeData(): ForgeData {
         val url = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/json"
-        val(request, response, result) = url.httpGet()
+        val (request, response, result) = url.httpGet()
             .header("User-Agent" to Downloader.useragent)
             .awaitObjectResponse<ForgeData>(kotlinxDeserializerOf())
         return when (result) {

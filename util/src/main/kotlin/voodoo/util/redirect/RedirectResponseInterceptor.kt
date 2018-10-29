@@ -10,9 +10,11 @@ import java.net.URI
 import java.net.URL
 import javax.net.ssl.HttpsURLConnection
 
-private val redirectStatusWithGets = listOf(HttpsURLConnection.HTTP_MOVED_PERM,
+private val redirectStatusWithGets = listOf(
+    HttpsURLConnection.HTTP_MOVED_PERM,
     HttpsURLConnection.HTTP_MOVED_TEMP,
-    HttpsURLConnection.HTTP_SEE_OTHER)
+    HttpsURLConnection.HTTP_SEE_OTHER
+)
 
 fun fixedRedirectResponseInterceptor(manager: FuelManager) =
     { next: (Request, Response) -> Response ->

@@ -1,6 +1,7 @@
 package voodoo
 
 import Forge
+import Mod
 import job
 import kotlinx.coroutines.runBlocking
 import list
@@ -10,9 +11,9 @@ import org.spekframework.spek2.style.specification.describe
 import releaseTypes
 import voodoo.data.Side
 import voodoo.data.curse.FileType
-import voodoo.script.MainScriptEnv
 import voodoo.provider.CurseProvider
 import voodoo.provider.JenkinsProvider
+import voodoo.script.MainScriptEnv
 import withProvider
 import java.io.File
 

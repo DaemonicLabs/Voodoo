@@ -1,5 +1,6 @@
 package voodoo.provider
 
+import MurmurHash2
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
 import voodoo.curse.CurseClient
@@ -108,11 +109,6 @@ object CurseProvider : ProviderBase("Curse Provider") {
         return addon?.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
     }
 
-//    override fun getThumbnail(entry: NestedEntry): String {
-//        val addon = CurseClient.getAddonByName(entry.id, entry.curseMetaUrl)!!
-//        return addon.attachments?.firstOrNull { it.default }?.thumbnailUrl ?: ""
-//    }
-
     private suspend fun resolveDependencies(
         addonId: ProjectID,
         fileId: FileID,
@@ -120,9 +116,9 @@ object CurseProvider : ProviderBase("Curse Provider") {
         addEntry: SendChannel<Pair<Entry, String>>
     ) {
         val addon = getAddon(addonId, entry.curseMetaUrl)
-                ?: throw IllegalStateException("addon $addonId could not be resolved, entry: $entry")
+            ?: throw IllegalStateException("addon $addonId could not be resolved, entry: $entry")
         val addonFile = getAddonFile(addonId, fileId, entry.curseMetaUrl)
-                ?: throw IllegalStateException("addon file $addonId:$fileId could not be resolved, entry: $entry")
+            ?: throw IllegalStateException("addon file $addonId:$fileId could not be resolved, entry: $entry")
         val dependencies = addonFile.dependencies ?: return
 
         logger.info("dependencies of ${entry.id} ${addonFile.dependencies}")
@@ -181,19 +177,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
 
     private fun isOptionalCall(entry: Entry): Boolean {
         ProviderBase.logger.info("test optional of ${entry.id}")
-//        logger.info(entry.toString())
         return entry.transient || entry.optional
-//        for ((depType, entryList) in entry.provides) {
-//            if (depType != DependencyType.REQUIRED) continue
-//            if (entryList.isEmpty()) return false
-//            ProviderBase.logger.info("type: $depType list: $entryList")
-//            for (entryName in entryList) {
-//                val providerEntry = modpack.entries.firstOrNull { it.id == entryName }!!
-//                val tmpResult = isOptional(providerEntry, modpack)
-//                if (!tmpResult) return false
-//            }
-//        }
-//        return false
     }
 
     val isOptional = CurseProvider::isOptionalCall.memoize()
@@ -206,25 +190,16 @@ object CurseProvider : ProviderBase("Curse Provider") {
         }
         val targetFile = targetFolder.resolve(entry.fileName ?: addonFile.fileNameOnDisk)
         targetFile.download(
-                addonFile.downloadURL,
-                cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),
-                validator = { file ->
-                   false // addonFile.packageFingerprint.toUInt() != MurmurHash2.computeFileHash(file.path, true)
-                }
+            addonFile.downloadURL,
+            cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),
+            validator = { file ->
+                addonFile.packageFingerprint.toUInt() != MurmurHash2.computeFileHash(file.path, true)
+            }
         )
         val fileFingerprint = MurmurHash2.computeFileHash(targetFile.path, true)
-//        val fileFingerprintKt = Murmur2HashKtKt.computeFileHash(targetFile.path, true)
 
         if (addonFile.packageFingerprint.toUInt() != fileFingerprint) {
             logger.error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
-
-//            logger.info(targetFile.readText())
-//            targetFile.delete()
-            val failedFolder = File("hashfail")
-            failedFolder.mkdirs()
-            targetFile.copyTo(failedFolder.resolve(targetFile.name), true)
-            failedFolder.resolve(targetFile.name + ".hash.txt").writeText("${addonFile.packageFingerprint}")
-
             throw IllegalStateException("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
         }
 

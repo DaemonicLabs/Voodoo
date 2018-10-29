@@ -10,34 +10,34 @@ class WindowsDirectories(private val appName: String) : Directories {
 
     override val dataHome: File by lazy {
         File(home, "Data")
-                .apply { mkdirs() }
+            .apply { mkdirs() }
     }
 
     override val configHome: File by lazy {
         File(home, "Config")
-                .apply { mkdirs() }
+            .apply { mkdirs() }
     }
 
     override val cacheHome: File by lazy {
         File(home, "Cache")
-                .apply { mkdirs() }
+            .apply { mkdirs() }
     }
 
     override val pluginHome: File by lazy {
         File(home, "Plugins")
-                .apply { mkdirs() }
+            .apply { mkdirs() }
     }
 
     override val runtimeDir: File by lazy {
         File(home, "Runtime")
-                .apply {
-                    if (!hasUsedRuntimeDir) {
-                        hasUsedRuntimeDir = true
+            .apply {
+                if (!hasUsedRuntimeDir) {
+                    hasUsedRuntimeDir = true
 //                        Directories.deleteOnExit(f)
-                        deleteDirectoryOnExit()
-                    }
-                    mkdirs()
+                    deleteDirectoryOnExit()
                 }
+                mkdirs()
+            }
     }
 
     private val home: File by lazy {
