@@ -16,7 +16,7 @@ import kotlin.system.exitProcess
  */
 object Downloader : KLogging() {
     const val useragent =
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" // ""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
+            "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" // ""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
     val manager = FuelManager()
 
@@ -28,10 +28,10 @@ object Downloader : KLogging() {
 }
 
 suspend fun File.download(
-    url: String,
-    cacheDir: File,
-    validator: (file: File) -> Boolean = { false },
-    logger: KLogger = Downloader.logger
+        url: String,
+        cacheDir: File,
+        validator: (file: File) -> Boolean = { false },
+        logger: KLogger = Downloader.logger
 ) {
     val cacheFile = cacheDir.resolve(this.name)
     logger.info("downloading $url -> ${this@download}")
@@ -44,8 +44,8 @@ suspend fun File.download(
     } else {
         val (request, response, result) = try {
             Downloader.manager.request(Method.GET, url)
-                .header("User-Agent" to Downloader.useragent)
-                .response()
+                    .header("User-Agent" to Downloader.useragent)
+                    .response()
         } catch (e: ClassCastException) {
             e.printStackTrace()
             logger.error(e) { "failed for url: $url" }
@@ -55,7 +55,7 @@ suspend fun File.download(
             exitProcess(-2)
         }
 
-            when (result) {
+        when (result) {
             is Result.Success -> {
                 cacheDir.mkdirs()
                 cacheFile.parentFile.mkdirs()
@@ -97,6 +97,6 @@ suspend fun File.download(
 
 val String.encoded: String
     get() = this
-        .replace(" ", "%20")
-        .replace("[", "%5b")
-        .replace("]", "%5d")
+            .replace(" ", "%20")
+            .replace("[", "%5b")
+            .replace("]", "%5d")
