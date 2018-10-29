@@ -73,10 +73,11 @@ constructor(
     }
 
     @Throws(IOException::class)
-    fun scan(dir: File?) {
+    fun scan(dir: File) {
         logSection("Scanning for .info.json files...")
+        dir.mkdirs()
         val scanner = FileInfoScanner()
-        scanner.walk(dir!!)
+        scanner.walk(dir)
         for (pattern in scanner.patterns) {
             applicator.register(pattern)
         }
