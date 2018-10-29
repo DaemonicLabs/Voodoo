@@ -46,7 +46,7 @@ object Voodoo : KLogging() {
 //                compilerOptions.append("-Jvm-Target 1.8")
 //                jvm {
 //                    dependenciesFromCurrentContext(wholeClasspath = true)
-////                dependencies.append(JvmDependency(voodooDir))
+// //                dependencies.append(JvmDependency(voodooDir))
 //                    javaHome(File("/usr/lib/jvm/intellij-jdk")) // TODO use environment variable
 //                }
 //            }
@@ -100,7 +100,6 @@ object Voodoo : KLogging() {
 //    val packFile = rootDir.resolve(packFileName)
         val lockFileName = "$id.lock.hjson"
         val lockFile = rootDir.resolve(lockFileName)
-
 
         val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
             "import_debug" to { _ -> Importer.flatten(nestedPack, targetFileName = packFileName) },

@@ -3,9 +3,7 @@ package voodoo.util
 import awaitByteArrayResponse
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.core.Method
-import com.github.kittinunf.fuel.core.interceptors.redirectResponseInterceptor
 import com.github.kittinunf.fuel.core.interceptors.validatorResponseInterceptor
-import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogger
 import mu.KLogging
@@ -48,7 +46,7 @@ suspend fun File.download(
                 .header("User-Agent" to Downloader.useragent)
                 .awaitByteArrayResponse()
 
-            when(result) {
+            when (result) {
             is Result.Success -> {
                 cacheDir.mkdirs()
                 cacheFile.parentFile.mkdirs()
