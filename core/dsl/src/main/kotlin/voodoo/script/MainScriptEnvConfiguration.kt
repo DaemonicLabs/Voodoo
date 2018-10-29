@@ -9,9 +9,4 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         "voodoo.dsl.*",
         "voodoo.provider.*"
     )
-//    compilerOptions.append("jvm-target", "1.8")
-//    jvm {
-//        dependenciesFromCurrentContext(wholeClasspath = true)
-//        javaHome(File("/usr/lib/jvm/intellij-jdk")) // TODO use environment variable
-//    }
 })

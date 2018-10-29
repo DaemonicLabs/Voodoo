@@ -1,6 +1,5 @@
 package voodoo.util
 
-import awaitByteArrayResponse
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.fuel.core.interceptors.validatorResponseInterceptor
@@ -16,7 +15,8 @@ import kotlin.system.exitProcess
  * @author Nikky
  */
 object Downloader : KLogging() {
-    const val useragent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" // ""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
+    const val useragent =
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" // ""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
     val manager = FuelManager()
 
@@ -38,13 +38,22 @@ suspend fun File.download(
     logger.debug("cacheFile $cacheFile")
     if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
 
+    logger.debug("validating $cacheFile existence and hash")
     if (cacheFile.exists() && cacheFile.isFile && validator(cacheFile)) {
         logger.info("file: $cacheFile exists and validated")
     } else {
-        val (request, response, result) = Downloader.manager.request(
-            Method.GET, url.encoded)
+        val (request, response, result) = try {
+            Downloader.manager.request(Method.GET, url)
                 .header("User-Agent" to Downloader.useragent)
-                .awaitByteArrayResponse()
+                .response()
+        } catch (e: ClassCastException) {
+            e.printStackTrace()
+            logger.error(e) { "failed for url: $url" }
+            val ex = IllegalStateException("failed for url: $url")
+            ex.addSuppressed(e)
+            throw ex
+            exitProcess(-2)
+        }
 
             when (result) {
             is Result.Success -> {
