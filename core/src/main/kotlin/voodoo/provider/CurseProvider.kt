@@ -209,7 +209,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
                 addonFile.downloadURL,
                 cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),
                 validator = { file ->
-                    addonFile.packageFingerprint.toUInt() != MurmurHash2.computeFileHash(file.path, true)
+                   false // addonFile.packageFingerprint.toUInt() != MurmurHash2.computeFileHash(file.path, true)
                 }
         )
         val fileFingerprint = MurmurHash2.computeFileHash(targetFile.path, true)
