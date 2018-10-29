@@ -1,8 +1,8 @@
 package voodoo.script
 
-import voodoo.dsl.builder.ModpackBuilder
 import voodoo.data.nested.NestedPack
 import voodoo.dsl.VoodooDSL
+import voodoo.dsl.builder.ModpackBuilder
 import voodoo.tome.TomeEnv
 import java.io.File
 import kotlin.script.experimental.annotations.KotlinScript
@@ -22,8 +22,10 @@ open class MainScriptEnv(
     }
 
     @VoodooDSL
-    @Deprecated("renamed to docs",
-        ReplaceWith("docs(configureTome)"))
+    @Deprecated(
+        "renamed to docs",
+        ReplaceWith("docs(configureTome)")
+    )
     fun tome(configureTome: TomeEnv.() -> Unit) {
         tomeEnv.configureTome()
     }
@@ -32,13 +34,14 @@ open class MainScriptEnv(
 
     @VoodooDSL
     fun nestedPack(id: String, mcVersion: String, packBuilder: ModpackBuilder.() -> Unit): NestedPack {
+        rootDir.resolve("icon.png")
         @Suppress("deprecated")
         val pack = NestedPack(
             rootDir = rootDir,
             id = id,
             mcVersion = mcVersion
         )
-        val wrapper = ModpackBuilder(pack!!)
+        val wrapper = ModpackBuilder(pack)
         wrapper.packBuilder()
         packs += pack
         return pack

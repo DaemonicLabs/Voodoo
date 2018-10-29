@@ -1,9 +1,9 @@
 import org.gradle.api.tasks.wrapper.Wrapper
 
 fun create(
-        group: String,
-        name: String,
-        version: String? = null
+    group: String,
+    name: String,
+    version: String? = null
 ): String = buildString {
     append(group)
     append(':')
@@ -21,7 +21,8 @@ object Gradle {
 
 object Kotlin {
     const val version = "1.3.0-rc-190"
-//    const val version = "1.3.0-rc-116"
+
+    //    const val version = "1.3.0-rc-116"
     object Dsl {
         const val version = "1.0-rc-12"
     }
@@ -48,7 +49,8 @@ object Fuel {
     const val version = "1.16.0"
     val dependency = create(group = "com.github.kittinunf.fuel", name = "fuel", version = version)
     val dependencyCoroutines = create(group = "com.github.kittinunf.fuel", name = "fuel-coroutines", version = version)
-    val dependencySerialization = create(group = "com.github.kittinunf.fuel", name = "fuel-kotlinx-serialization", version = version)
+    val dependencySerialization =
+        create(group = "com.github.kittinunf.fuel", name = "fuel-kotlinx-serialization", version = version)
 }
 
 object Argparser {

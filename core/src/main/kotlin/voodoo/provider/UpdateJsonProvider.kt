@@ -10,7 +10,6 @@ import voodoo.data.lock.LockEntry
 import voodoo.data.provider.UpdateChannel
 import voodoo.data.provider.UpdateJson
 import voodoo.util.Downloader
-
 import java.io.File
 
 /**

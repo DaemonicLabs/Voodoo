@@ -9,33 +9,33 @@ class BareDirectories(private val appName: String) : Directories {
 
     override val dataHome: File by lazy {
         File(home, "data")
-                .apply { mkdirs() }
+            .apply { mkdirs() }
     }
 
     override val configHome: File by lazy {
         File(home, "config")
-                .apply { mkdirs() }
+            .apply { mkdirs() }
     }
 
     override val cacheHome: File by lazy {
         File(home, "cache")
-                .apply { mkdirs() }
+            .apply { mkdirs() }
     }
 
     override val pluginHome: File by lazy {
         File(home, "plugins")
-                .apply { mkdirs() }
+            .apply { mkdirs() }
     }
 
     override val runtimeDir: File by lazy {
         File(home, "runtime")
-                .apply {
-                    if (!hasUsedRuntimeDir) {
-                        hasUsedRuntimeDir = true
-                        deleteDirectoryOnExit()
-                    }
-                    mkdirs()
+            .apply {
+                if (!hasUsedRuntimeDir) {
+                    hasUsedRuntimeDir = true
+                    deleteDirectoryOnExit()
                 }
+                mkdirs()
+            }
     }
 
     private val home: File by lazy {

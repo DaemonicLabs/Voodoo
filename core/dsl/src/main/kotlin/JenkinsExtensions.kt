@@ -18,8 +18,8 @@ var EntryBuilder<JenkinsProvider>.buildNumber
         entry.buildNumber = it
     }
 
-inline infix fun <reified T> T.job(s: String) where T: EntryBuilder<JenkinsProvider> =
+inline infix fun <reified T> T.job(s: String) where T : EntryBuilder<JenkinsProvider> =
     apply { entry.job = s }
 
-inline infix fun <reified T> T.buildNumber(i: Int) where T: EntryBuilder<JenkinsProvider> =
+inline infix fun <reified T> T.buildNumber(i: Int) where T : EntryBuilder<JenkinsProvider> =
     apply { entry.buildNumber = i }

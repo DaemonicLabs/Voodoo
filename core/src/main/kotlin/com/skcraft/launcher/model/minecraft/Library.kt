@@ -14,11 +14,11 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
-import kotlinx.serialization.internal.HashMapSerializer
-import kotlinx.serialization.serializer
-import kotlinx.serialization.list
-import java.util.regex.Pattern
 import kotlinx.serialization.Transient
+import kotlinx.serialization.internal.HashMapSerializer
+import kotlinx.serialization.list
+import kotlinx.serialization.serializer
+import java.util.regex.Pattern
 
 @Serializable
 data class Library(
@@ -33,15 +33,20 @@ data class Library(
                 elemOutput.encodeStringElement(descriptor, 1, url)
             }
             obj.natives?.let { natives ->
-                elemOutput.encodeSerializableElement(descriptor, 2, HashMapSerializer(String.serializer(), String.serializer()), natives)
+                elemOutput.encodeSerializableElement(
+                    descriptor,
+                    2,
+                    HashMapSerializer(String.serializer(), String.serializer()),
+                    natives
+                )
             }
             obj.extract?.let { extract ->
                 elemOutput.encodeSerializableElement(descriptor, 3, Extract::class.serializer(), extract)
             }
             obj.rules?.filter {
-                    it.action != null || it.os != null
-                }?.let { rules ->
-                    elemOutput.encodeSerializableElement(descriptor, 4, Rule::class.serializer().list, rules)
+                it.action != null || it.os != null
+            }?.let { rules ->
+                elemOutput.encodeSerializableElement(descriptor, 4, Rule::class.serializer().list, rules)
             }
             elemOutput.endStructure(descriptor)
         }

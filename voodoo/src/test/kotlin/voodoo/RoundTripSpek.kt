@@ -1,6 +1,7 @@
 package voodoo
 
 import Forge
+import Mod
 import job
 import kotlinx.coroutines.runBlocking
 import list
@@ -12,9 +13,9 @@ import voodoo.builder.Builder
 import voodoo.data.Side
 import voodoo.data.curse.FileType
 import voodoo.data.lock.LockPack
-import voodoo.script.MainScriptEnv
 import voodoo.provider.CurseProvider
 import voodoo.provider.JenkinsProvider
+import voodoo.script.MainScriptEnv
 import voodoo.util.json
 import withProvider
 import java.io.File
@@ -63,17 +64,17 @@ object RoundTripSpek : Spek({
                         }.list {
                             +(Mod.laggoggles) configure {
                                 description =
-                                    "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
+                                        "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                             }
 
                             +(Mod.sampler) configure {
                                 description =
-                                    "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
+                                        "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                             }
 
                             +(Mod.openeye) configure {
                                 description =
-                                    "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
+                                        "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
                             }
                         }
 

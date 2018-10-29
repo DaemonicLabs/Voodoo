@@ -54,7 +54,7 @@ fun main(args: Array<String>) = withDefaultMain(
                     +"fruitPhone" job "elytra/FruitPhone/1.12.2"
                     +"probeDataProvider" job "elytra/ProbeDataProvider/1.12"
 
-                    + "magicArselnal" configure {
+                    +"magicArselnal" configure {
                         name = "Magic Arsenal"
                         job = "elytra/MagicArsenal/master"
                     }

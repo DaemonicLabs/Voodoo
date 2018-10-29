@@ -11,7 +11,6 @@ import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
-
 import java.io.IOException
 
 @Serializer(forClass = Platform::class)

@@ -12,8 +12,8 @@ import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
 import voodoo.mmc.MMCUtil
 import voodoo.provider.Providers
-import voodoo.util.blankOr
 import voodoo.util.Downloader
+import voodoo.util.blankOr
 import voodoo.util.pool
 import java.io.File
 import java.io.IOException

@@ -10,8 +10,7 @@ fun packToZip(sourceDir: Path, zipFilePath: Path) {
 
     val zipFile = Files.createFile(zipFilePath)
 
-    ZipOutputStream(Files.newOutputStream(zipFile)).use {
-        stream ->
+    ZipOutputStream(Files.newOutputStream(zipFile)).use { stream ->
         Files.walk(sourceDir).filter { path -> !Files.isDirectory(path) }.forEach { path ->
             val zipEntry = ZipEntry(path.toString().substring(sourceDir.toString().length + 1))
 

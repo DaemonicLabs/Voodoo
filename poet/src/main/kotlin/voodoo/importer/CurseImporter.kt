@@ -9,9 +9,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JSON
 import list
 import releaseTypes
-import voodoo.script.MainScriptEnv
-import voodoo.PoetPack
 import voodoo.Poet
+import voodoo.PoetPack
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.CurseManifest
@@ -20,6 +19,7 @@ import voodoo.data.curse.ProjectID
 import voodoo.dsl.ID
 import voodoo.provider.CurseProvider
 import voodoo.provider.LocalProvider
+import voodoo.script.MainScriptEnv
 import voodoo.util.UnzipUtility.unzip
 import voodoo.util.blankOr
 import voodoo.util.download

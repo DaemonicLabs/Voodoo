@@ -6,6 +6,7 @@ package voodoo.data
  */
 enum class Side(@Transient val flag: Int) {
     CLIENT(1), SERVER(2), BOTH(3);
+
     infix operator fun plus(other: Side) = Side.values().find { it.flag == this.flag or other.flag }!!
 
 //    companion object : KSerializer<Side> {

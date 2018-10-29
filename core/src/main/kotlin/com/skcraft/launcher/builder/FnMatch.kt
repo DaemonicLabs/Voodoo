@@ -57,7 +57,7 @@ object FnMatch {
         var flags = flags
         var c: Char
 
-        loop@while (true) {
+        loop@ while (true) {
             if (patternPos >= pattern.length) {
                 return if (flags.contains(Flag.LEADING_DIR) && string[stringPos] == '/') {
                     true
@@ -79,7 +79,7 @@ object FnMatch {
                 }
                 '*' -> {
                     /* Collapse multiple stars. */
-                    while (patternPos < pattern.length && pattern[patternPos].let { c = it ; it == '*' }) {
+                    while (patternPos < pattern.length && pattern[patternPos].let { c = it; it == '*' }) {
                         patternPos++
                     }
 
@@ -154,7 +154,10 @@ object FnMatch {
             if (stringPos >= string.length) {
                 return false
             }
-            if (c != string[stringPos] && !(flags.contains(Flag.CASEFOLD) && Character.toLowerCase(c) == Character.toLowerCase(string[stringPos]))) {
+            if (c != string[stringPos] && !(flags.contains(Flag.CASEFOLD) && Character.toLowerCase(c) == Character.toLowerCase(
+                    string[stringPos]
+                ))
+            ) {
                 return false
             }
             ++stringPos
@@ -223,7 +226,8 @@ object FnMatch {
                 c = Character.toLowerCase(c)
             }
             if (pattern[patternPos] == '-' &&
-                    patternPos + 1 < pattern.length && pattern[patternPos + 1] != ']') {
+                patternPos + 1 < pattern.length && pattern[patternPos + 1] != ']'
+            ) {
                 c2 = pattern[patternPos + 1]
                 patternPos += 2
                 if (c2 == '\\' && !flags.contains(Flag.NOESCAPE)) {

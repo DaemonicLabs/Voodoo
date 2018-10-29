@@ -23,13 +23,13 @@ import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.io.IOException
 import kotlinx.io.InputStream
-import mu.KLogging
-import voodoo.util.Directories
-import voodoo.util.copyInputStreamToFile
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
+import mu.KLogging
+import voodoo.util.Directories
 import voodoo.util.Downloader
+import voodoo.util.copyInputStreamToFile
 import java.io.Closeable
 import java.io.File
 import java.util.Properties
@@ -187,7 +187,7 @@ constructor(
                         }
                         sources.addAll(mavenRepos!!)
                         // Try each repository
-                        loop@for (baseUrl in sources) {
+                        loop@ for (baseUrl in sources) {
                             var pathname = library.getPath(env)
                             // Some repositories compress their files
                             val compressors = BuilderUtils.getCompressors(baseUrl)
@@ -198,7 +198,7 @@ constructor(
                             val tempFile = File.createTempFile("launcherlib", null)
                             try {
                                 logger.info("Downloading library " + library.name + " from " + url + "...")
-                                val(request, response, result) = url.httpGet()
+                                val (request, response, result) = url.httpGet()
                                     .header("User-Agent" to Downloader.useragent)
                                     .awaitByteArrayResponse()
                                 val bytes = when (result) {
@@ -275,7 +275,7 @@ constructor(
             val url = String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion)
             logger.info("Fetching version manifest from $url...")
 
-            val(request, response, result) = url.httpGet()
+            val (request, response, result) = url.httpGet()
                 .header("User-Agent" to Downloader.useragent)
                 .awaitStringResponse()
             manifest.versionManifest = when (result) {

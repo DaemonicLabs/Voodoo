@@ -15,22 +15,22 @@ class MacDirectories(private val appName: String) : Directories {
 
     override val dataHome: File by lazy {
         File(configHome, "Data")
-                .apply { mkdirs() }
+            .apply { mkdirs() }
     }
 
     override val configHome: File by lazy {
         File(getLibrary("Preferences"), appName)
-                .apply { mkdirs() }
+            .apply { mkdirs() }
     }
 
     override val cacheHome: File by lazy {
         File(getLibrary("Caches"), appName)
-                .apply { mkdirs() }
+            .apply { mkdirs() }
     }
 
     override val pluginHome: File by lazy {
         File(getLibrary("Application Support"), appName)
-                .apply { mkdirs() }
+            .apply { mkdirs() }
     }
 
     private fun getLibrary(base: String): File {

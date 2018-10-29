@@ -11,9 +11,11 @@ import java.io.File
  * @author Nikky
  */
 data class NestedPack
-@Deprecated("use builder function nestedPack(id, mcVersion) {}",
+@Deprecated(
+    "use builder function nestedPack(id, mcVersion) {}",
     ReplaceWith("nestedPack(id, mcVersion) {}"),
-    level = DeprecationLevel.WARNING)
+    level = DeprecationLevel.WARNING
+)
 constructor(
     val rootDir: File,
     /**
