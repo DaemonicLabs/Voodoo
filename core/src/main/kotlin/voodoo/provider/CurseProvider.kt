@@ -6,7 +6,6 @@ import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
 import voodoo.curse.CurseClient.getAddon
 import voodoo.curse.CurseClient.getAddonFile
-import voodoo.curse.Murmur2Hash
 import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
@@ -23,6 +22,7 @@ import kotlin.system.exitProcess
  * Created by nikky on 30/12/17.
  * @author Nikky
  */
+@ExperimentalUnsignedTypes
 object CurseProvider : ProviderBase("Curse Provider") {
     private val resolved = Collections.synchronizedList(mutableListOf<String>())
 
@@ -120,9 +120,9 @@ object CurseProvider : ProviderBase("Curse Provider") {
         addEntry: SendChannel<Pair<Entry, String>>
     ) {
         val addon = getAddon(addonId, entry.curseMetaUrl)
-            ?: throw IllegalStateException("addon $addonId could not be resolved, entry: $entry")
+                ?: throw IllegalStateException("addon $addonId could not be resolved, entry: $entry")
         val addonFile = getAddonFile(addonId, fileId, entry.curseMetaUrl)
-            ?: throw IllegalStateException("addon file $addonId:$fileId could not be resolved, entry: $entry")
+                ?: throw IllegalStateException("addon file $addonId:$fileId could not be resolved, entry: $entry")
         val dependencies = addonFile.dependencies ?: return
 
         logger.info("dependencies of ${entry.id} ${addonFile.dependencies}")
@@ -206,20 +206,26 @@ object CurseProvider : ProviderBase("Curse Provider") {
         }
         val targetFile = targetFolder.resolve(entry.fileName ?: addonFile.fileNameOnDisk)
         targetFile.download(
-            addonFile.downloadURL,
-            cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),
-            validator = { file ->
-                addonFile.packageFingerprint != Murmur2Hash.computeFileHash(file.path, true)
-            }
+                addonFile.downloadURL,
+                cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),
+                validator = { file ->
+                    addonFile.packageFingerprint.toUInt() != MurmurHash2.computeFileHash(file.path, true)
+                }
         )
-        val fileFingerprint = Murmur2Hash.computeFileHash(targetFile.path, true)
+        val fileFingerprint = MurmurHash2.computeFileHash(targetFile.path, true)
+//        val fileFingerprintKt = Murmur2HashKtKt.computeFileHash(targetFile.path, true)
 
-        if (addonFile.packageFingerprint != fileFingerprint) {
-            logger.error("[${entry.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: $fileFingerprint")
+        if (addonFile.packageFingerprint.toUInt() != fileFingerprint) {
+            logger.error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
 
 //            logger.info(targetFile.readText())
 //            targetFile.delete()
-//            throw IllegalStateException("[${entry.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: $fileFingerprint ")
+            val failedFolder = File("hashfail")
+            failedFolder.mkdirs()
+            targetFile.copyTo(failedFolder.resolve(targetFile.name), true)
+            failedFolder.resolve(targetFile.name + ".hash.txt").writeText("${addonFile.packageFingerprint}")
+
+            throw IllegalStateException("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
         }
 
         return Pair(addonFile.downloadURL, targetFile)
