@@ -45,6 +45,8 @@ allprojects {
         maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
         maven(url = "https://kotlin.bintray.com/kotlinx")
     }
+
+//    kotlinDslPluginOptions.progressive.set(ProgressiveModeState.ENABLED)
 }
 
 subprojects {
@@ -64,18 +66,24 @@ subprojects {
         plugin("org.jmailen.kotlinter")
     }
 
+    tasks.withType<KotlinCompile> {
+        kotlinOptions {
+//            apiVersion = "1.3"
+            languageVersion = "1.3"
+            jvmTarget = "1.8"
+            freeCompilerArgs = listOf(
+                "-XXLanguage:+InlineClasses",
+                "-XXLanguage:+NewInference",
+                "-XXLanguage:+SamConversionForKotlinFunctions",
+                "-progressive"
+            )
+        }
+    }
+
     if (project != project(":plugin")) {
         apply {
             plugin("kotlin")
             plugin("kotlinx-serialization")
-        }
-
-        tasks.withType<KotlinCompile> {
-            kotlinOptions {
-                languageVersion = "1.3"
-                jvmTarget = "1.8"
-                freeCompilerArgs = listOf("-XXLanguage:+InlineClasses")
-            }
         }
 
         kotlin {

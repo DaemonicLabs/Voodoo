@@ -41,7 +41,9 @@ fun main(args: Array<String>) = withDefaultMain(
                 +(Mod.thermalexpansion)
                 +(Mod.thermalInnovation)
 
-                +Mod.betterBuildersWands
+                +Mod.minecolonies configure {
+
+                }
 
                 withProvider(DirectProvider).list {
                     // inline url declration

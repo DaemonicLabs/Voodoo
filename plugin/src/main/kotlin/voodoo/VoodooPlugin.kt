@@ -25,7 +25,7 @@ open class VoodooPlugin : Plugin<Project> {
 
             dependencies.apply {
                 add("compile", create(group = "moe.nikky.voodoo", name = "dsl", version = PoetConstants.FULL_VERSION))
-                add("compile", create(group = "com.github.holgerbrandl", name = "kscript-annotations", version = "1.+"))
+//                add("compile", create(group = "com.github.holgerbrandl", name = "kscript-annotations", version = "1.+"))
             }
             repositories {
                 jcenter()

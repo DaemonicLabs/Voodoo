@@ -15,14 +15,12 @@ fun create(
 }
 
 object Gradle {
-    const val version = "5.0-milestone-1"
+    const val version = "5.0-rc-1"
     val distributionType = Wrapper.DistributionType.ALL
 }
 
 object Kotlin {
     const val version = "1.3.0-rc-190"
-
-    //    const val version = "1.3.0-rc-116"
     object Dsl {
         const val version = "1.0-rc-12"
     }

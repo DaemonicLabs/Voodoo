@@ -18,7 +18,7 @@ Voodoo provides autocompletion for curse mods and forge by generating kotlin sou
 [sample project](https://github.com/NikkyAI/VoodooSamples)
 
 required gradle version is **5**  
-`5.0-milestone-1`
+`5.0-rc-1`
 
 `build.gradle.kts`
 ```kotlin
@@ -35,7 +35,7 @@ voodoo {
 }
 
 tasks.withType<Wrapper> {
-     gradleVersion = "5.0-milestone-1"
+     gradleVersion = "5.0-rc-1"
      distributionType = Wrapper.DistributionType.ALL
 }
 ```
@@ -44,8 +44,8 @@ tasks.withType<Wrapper> {
 ```kotlin
 pluginManagement {
     repositories {
-        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap") { name = "kotlin-eap" }
-        maven(url = "https://kotlin.bintray.com/kotlinx") { name = "kotlinx" }
+        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap") { name = "kotlin-eap" } // TODO remove
+        maven(url = "https://kotlin.bintray.com/kotlinx") { name = "kotlinx" } // TODO remove
         maven(url = "https://repo.elytradev.com") { name = "elytradev" }
         gradlePluginPortal()
     }
