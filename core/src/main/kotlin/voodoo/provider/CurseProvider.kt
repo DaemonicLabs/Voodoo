@@ -23,7 +23,6 @@ import kotlin.system.exitProcess
  * Created by nikky on 30/12/17.
  * @author Nikky
  */
-@ExperimentalUnsignedTypes
 object CurseProvider : ProviderBase("Curse Provider") {
     private val resolved = Collections.synchronizedList(mutableListOf<String>())
 
@@ -182,6 +181,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
 
     val isOptional = CurseProvider::isOptionalCall.memoize()
 
+    @ExperimentalUnsignedTypes
     override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
         val addonFile = getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)
         if (addonFile == null) {
