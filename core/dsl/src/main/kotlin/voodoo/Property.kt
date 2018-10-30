@@ -14,7 +14,7 @@ inline fun <reified This, reified R> readOnly(
         override fun getValue(thisRef: This, property: KProperty<*>) = thisRef.getRef().get()
     }
 
-inline fun <reified This, reified R> property(
+inline fun <reified This, reified R> lazyProperty(
     crossinline getRef: GetProperty<This, R>
 ) =
     object : ReadWriteProperty<This, R> {

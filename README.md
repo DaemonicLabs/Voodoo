@@ -157,14 +157,15 @@ Voodoo is available on the elytradev maven
 gradle:
 ```kotlin
 repositories {
-    maven { setUrl("https://repo.elytradev.com") }
-    maven { setUrl("https://kotlin.bintray.com/kotlinx") }
+    maven(url = "https://repo.elytradev.com")
+    maven(url = "https://kotlin.bintray.com/kotlinx")
 }
 dependencies {
     compile(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.0+")
 }
 ```
 
+<!--
 kscript:
 ```kotlin
 #!/usr/bin/env kscript
@@ -174,7 +175,7 @@ kscript:
 @file:MavenRepository("elytradev", "https://repo.elytradev.com")
 //COMPILER_OPTS -jvm-target 1.8
 ```
-
+-->
 for builds not on master add the branch name to the groupId
 eg. `moe.nikky.voodoo-rewrite`
 

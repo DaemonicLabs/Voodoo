@@ -3,13 +3,13 @@ import voodoo.data.curse.FileType
 import voodoo.data.curse.ProjectID
 import voodoo.dsl.builder.AbstractBuilder
 import voodoo.dsl.builder.EntryBuilder
-import voodoo.property
+import voodoo.lazyProperty
 import voodoo.provider.CurseProvider
 
-var AbstractBuilder<CurseProvider>.metaUrl: String by property { entry::curseMetaUrl }
-var AbstractBuilder<CurseProvider>.releaseTypes: Set<FileType> by property { entry::curseReleaseTypes }
-var AbstractBuilder<CurseProvider>.projectID: ProjectID by property { entry::curseProjectID }
-var AbstractBuilder<CurseProvider>.fileID: FileID by property { entry::curseFileID }
+var AbstractBuilder<CurseProvider>.metaUrl: String by lazyProperty { entry::curseMetaUrl }
+var AbstractBuilder<CurseProvider>.releaseTypes: Set<FileType> by lazyProperty { entry::curseReleaseTypes }
+var AbstractBuilder<CurseProvider>.projectID: ProjectID by lazyProperty { entry::curseProjectID }
+var AbstractBuilder<CurseProvider>.fileID: FileID by lazyProperty { entry::curseFileID }
 
 // var AbstractBuilder<CurseProvider>.metaUrl
 //     get() = this.entry.curseMetaUrl
