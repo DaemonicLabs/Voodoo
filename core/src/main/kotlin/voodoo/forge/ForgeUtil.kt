@@ -9,7 +9,6 @@ import kotlinx.coroutines.async
 import kotlinx.serialization.Serializable
 import mu.KLogging
 import voodoo.data.ForgeVersion
-import voodoo.provider.ProviderBase
 import voodoo.util.Downloader
 
 /**
@@ -18,7 +17,9 @@ import voodoo.util.Downloader
  */
 object ForgeUtil : KLogging() {
 
-    val deferredData = GlobalScope.async { getForgeData() }
+    val deferredData by lazy {
+        GlobalScope.async { getForgeData() }
+    }
 
     suspend fun getForgeBuild(version: String, mcVersion: String): Int {
         val data = deferredData.await()
@@ -82,20 +83,22 @@ object ForgeUtil : KLogging() {
         )
     }
 
-    suspend fun getForgeData(): ForgeData {
+    private suspend fun getForgeData(): ForgeData {
         val url = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/json"
-        val (request, response, result) = url.httpGet()
-            .header("User-Agent" to Downloader.useragent)
-            .awaitObjectResponse(kotlinxDeserializerOf(ForgeData.serializer()))
-        return when (result) {
-            is Result.Success -> result.value
-            is Result.Failure -> {
-                logger.error("getForgeData")
-                logger.error("url: $url")
-                logger.error("cUrl: ${request.cUrlString()}")
-                logger.error("response: $response")
-                ProviderBase.logger.error { result.error }
-                throw result.error.exception
+        loop@ while(true) {
+            val (request, response, result) = url.httpGet()
+                .header("User-Agent" to Downloader.useragent)
+                .awaitObjectResponse(kotlinxDeserializerOf(loader = ForgeData.serializer()))
+            when (result) {
+                is Result.Success -> return result.value
+                is Result.Failure -> {
+                    logger.error("getForgeData")
+                    logger.error("url: $url")
+                    logger.error("cUrl: ${request.cUrlString()}")
+                    logger.error("response: $response")
+                    logger.error { result.error }
+                    continue@loop
+                }
             }
         }
     }
