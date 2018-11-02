@@ -25,7 +25,7 @@ object Importer : KLogging() {
         modpack.writeEntries()
         val packFile = nestedPack.rootDir.resolve(targetFileName)
 
-        packFile.writeText(modpack.toJson)
+        packFile.writeText(modpack.toJson(ModPack.serializer()))
     }
 
     suspend fun flatten(

@@ -162,7 +162,7 @@ object SKPack : AbstractPack() {
             )
 
             val modpackPath = modpackDir.resolve("modpack.json")
-            modpackPath.writeText(JSON.indented.stringify(skmodpack))
+            modpackPath.writeText(JSON.indented.stringify(SKModpack.serializer(), skmodpack))
 
             // add to workspace.json
             logger.info("adding ${modpack.id} to workpace.json", modpack.id)
@@ -171,7 +171,7 @@ object SKPack : AbstractPack() {
             val workspacePath = workspaceMetaFolder.resolve("workspace.json")
             val workspace = if (workspacePath.exists()) {
                 try {
-                    JSON.indented.parse<SKWorkspace>(workspacePath.readText())
+                    JSON.indented.parse<SKWorkspace>(SKWorkspace.serializer(), workspacePath.readText())
                 } catch (e: Exception) {
                     logger.error("failed parsing: $workspacePath", e)
                     SKWorkspace()
@@ -181,7 +181,7 @@ object SKPack : AbstractPack() {
             }
             workspace.packs += SKLocation(modpack.id)
 
-            workspacePath.writeText(JSON.indented.stringify(workspace))
+            workspacePath.writeText(JSON.indented.stringify(SKWorkspace.serializer(), workspace))
 
             val targetDir = if (target != null) {
                 modpack.rootDir.resolve(target)
@@ -207,7 +207,7 @@ object SKPack : AbstractPack() {
             // regenerate packages.json
             val packagesFile = targetDir.resolve("packages.json")
             val packages: SKPackages = if (packagesFile.exists()) {
-                JSON.indented.parse(packagesFile.readText())
+                JSON.indented.parse(SKPackages.serializer(), packagesFile.readText())
             } else {
                 SKPackages()
             }
@@ -220,7 +220,7 @@ object SKPack : AbstractPack() {
                     location = "${modpack.id}.json"
                 ).apply { packages.packages += this }
             packFragment.version = uniqueVersion
-            packagesFile.writeText(JSON.indented.stringify(packages))
+            packagesFile.writeText(JSON.indented.stringify(SKPackages.serializer(), packages))
 
             logger.info("finished")
         }

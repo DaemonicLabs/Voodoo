@@ -7,7 +7,9 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.internal.HashMapSerializer
+import kotlinx.serialization.internal.StringSerializer
 import kotlinx.serialization.json.JSON
+import kotlinx.serialization.map
 import kotlinx.serialization.serializer
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
@@ -83,7 +85,7 @@ object MMCFatPack : AbstractPack() {
         logger.debug("result: features: $features")
         if (!features.isEmpty()) {
             featureJson.createNewFile()
-            featureJson.writeText(json.stringify(features))
+            featureJson.writeText(json.stringify((StringSerializer to BooleanSerializer).map, features))
         }
         if (reinstall) {
             minecraftDir.deleteRecursively()

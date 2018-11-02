@@ -17,7 +17,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.context.SimpleModule
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
-import kotlinx.serialization.serializer
 import mu.KLogging
 import voodoo.core.CoreConstants.VERSION
 import voodoo.data.curse.Addon
@@ -84,10 +83,10 @@ object CurseClient : KLogging(), CoroutineScope {
             operationName = "GetSlugIDPairs"
         )
         val (request, response, result) = Fuel.post(url)
-            .jsonBody(body = JSON.stringify(requestBody))
+            .jsonBody(body = JSON.stringify(GraphQLRequest.serializer(), requestBody))
             .apply { headers.clear() }
             .header("User-Agent" to useragent, "Content-Type" to "application/json")
-            .awaitObjectResponse<GraphQlResult>(kotlinxDeserializerOf())
+            .awaitObjectResponse(kotlinxDeserializerOf(loader = GraphQlResult.serializer()))
 
         when (result) {
             is Result.Success -> {
@@ -131,7 +130,7 @@ object CurseClient : KLogging(), CoroutineScope {
 
         val (request, response, result) = url.httpGet()
             .header("User-Agent" to useragent)
-            .awaitObjectResponse<AddonFile>(kotlinxDeserializerOf(json = json))
+            .awaitObjectResponse(kotlinxDeserializerOf(loader = AddonFile.serializer(), json = json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
@@ -160,7 +159,7 @@ object CurseClient : KLogging(), CoroutineScope {
         logger.debug("get $url")
         val (request, response, result) = url.httpGet()
             .header("User-Agent" to useragent)
-            .awaitObjectResponse<List<AddonFile>>(kotlinxDeserializerOf(AddonFile::class.serializer().list, json))
+            .awaitObjectResponse(kotlinxDeserializerOf(AddonFile.serializer().list, json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
@@ -190,7 +189,7 @@ object CurseClient : KLogging(), CoroutineScope {
         logger.debug("get $url")
         val (request, response, result) = url.httpGet()
             .header("User-Agent" to useragent)
-            .awaitObjectResponse<Addon>(kotlinxDeserializerOf(json = json))
+            .awaitObjectResponse(kotlinxDeserializerOf(loader = Addon.serializer(), json = json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {

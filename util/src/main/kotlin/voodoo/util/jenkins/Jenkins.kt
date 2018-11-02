@@ -7,6 +7,7 @@ import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializer
 import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.util.UtilConstants
@@ -21,7 +22,7 @@ suspend fun downloadVoodoo(
     component: String,
     bootstrap: Boolean = true,
     serverUrl: String = "https://ci.elytradev.com",
-    job: String = "elytra/Voodoo/master", // TODO: switch to master once merged
+    job: String = "elytra/Voodoo/master",
     binariesDir: File
 ): File {
     val moduleName = "${if (bootstrap) "bootstrap-" else ""}$component"
@@ -73,7 +74,7 @@ class JenkinsServer(
         val requestURL = getUrl(job) + "/api/json"
         val (request, response, result) = requestURL.httpGet()
             .header("User-Agent" to useragent)
-            .awaitObjectResponse<Job>(kotlinxDeserializerOf(json = json))
+            .awaitObjectResponse<Job>(kotlinxDeserializerOf(loader = Job.serializer(), json = json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
@@ -96,7 +97,7 @@ data class Build(
         val buildUrl = "$url/api/json"
         val (request, response, result) = buildUrl.httpGet()
             .header("User-Agent" to useragent)
-            .awaitObjectResponse<BuildWithDetails>(kotlinxDeserializerOf(json = json))
+            .awaitObjectResponse(kotlinxDeserializerOf(loader = BuildWithDetails.serializer(), json = json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {

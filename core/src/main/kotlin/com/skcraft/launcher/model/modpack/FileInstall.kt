@@ -41,7 +41,7 @@ data class FileInstall(
             val elemOutput = output.beginStructure(descriptor)
             elemOutput.encodeStringElement(descriptor, 8, obj.type)
             obj.conditionWhen?.let { conditionWhen ->
-                elemOutput.encodeSerializableElement(descriptor, 7, Condition::class.serializer(), conditionWhen)
+                elemOutput.encodeSerializableElement(descriptor, 7, Condition.serializer(), conditionWhen)
             }
             obj.version?.let { version ->
                 elemOutput.encodeStringElement(descriptor, 0, version)
@@ -54,7 +54,7 @@ data class FileInstall(
                 elemOutput.encodeBooleanElement(descriptor, 5, obj.isUserFile)
             }
             obj.manifest?.let { manifest ->
-                elemOutput.encodeSerializableElement(descriptor, 6, Manifest::class.serializer(), manifest)
+                elemOutput.encodeSerializableElement(descriptor, 6, Manifest.serializer(), manifest)
             }
             elemOutput.endStructure(descriptor)
         }

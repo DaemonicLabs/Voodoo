@@ -58,7 +58,7 @@ object Hex : KLogging() {
 
         val (request, response, result) = packUrl.httpGet()
             .header("User-Agent" to CurseClient.useragent)
-            .awaitObjectResponse<Manifest>(kotlinxDeserializerOf(json = json))
+            .awaitObjectResponse(kotlinxDeserializerOf(loader = Manifest.serializer(), json = json))
         val modpack: Manifest = when (result) {
             is Result.Success -> {
                 result.value
@@ -76,7 +76,7 @@ object Hex : KLogging() {
         val oldpack: Manifest? = oldpackFile.takeIf { it.exists() }
             ?.let { packFile ->
                 try {
-                    json.parse<Manifest>(packFile.readText())
+                    json.parse(Manifest.serializer(), packFile.readText())
                         .also { pack ->
                             logger.info("loaded old pack ${pack.name} ${pack.version}")
                         }
@@ -232,7 +232,7 @@ object Hex : KLogging() {
         // set minecraft and forge versions
         val mmcPackPath = instanceDir.resolve("mmc-pack.json")
         val mmcPack = if (mmcPackPath.exists()) {
-            json.parse(mmcPackPath.readText())
+            json.parse(MultiMCPack.serializer(), mmcPackPath.readText())
         } else MultiMCPack()
         mmcPack.components = listOf(
             PackComponent(
@@ -246,10 +246,10 @@ object Hex : KLogging() {
                 important = true
             )
         ) + mmcPack.components
-        mmcPackPath.writeText(json.stringify(mmcPack))
+        mmcPackPath.writeText(json.stringify(MultiMCPack.serializer(), mmcPack))
 
         oldpackFile.createNewFile()
-        oldpackFile.writeText(json.stringify(modpack))
+        oldpackFile.writeText(json.stringify(Manifest.serializer(), modpack))
     }
 
     private class Arguments(parser: ArgParser) {

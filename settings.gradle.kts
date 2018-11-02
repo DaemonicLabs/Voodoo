@@ -1,8 +1,9 @@
 pluginManagement {
     repositories {
-        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
-        maven(url = "https://kotlin.bintray.com/kotlinx")
-        mavenLocal()
+        maven(url = "https://kotlin.bintray.com/kotlinx") {
+            name = "kotlinx"
+        }
+        mavenCentral()
         gradlePluginPortal()
     }
     resolutionStrategy {

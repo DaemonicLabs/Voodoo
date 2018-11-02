@@ -186,7 +186,7 @@ object CursePack : AbstractPack() {
             )
             val json = JSON(indented = true)
             val manifestFile = modpackDir.resolve("manifest.json")
-            manifestFile.writeText(json.stringify(curseManifest))
+            manifestFile.writeText(json.stringify(CurseManifest.serializer(), curseManifest))
 
             val cursePackFile = workspaceDir.resolve(with(modpack) { "$id-$version.zip" })
 

@@ -43,7 +43,7 @@ data class Feature(
                 )
             }
             if (obj.files != FnPatternList()) {
-                elemOutput.encodeSerializableElement(descriptor, 4, FnPatternList::class.serializer(), obj.files)
+                elemOutput.encodeSerializableElement(descriptor, 4, FnPatternList.serializer(), obj.files)
             }
             elemOutput.endStructure(descriptor)
         }
