@@ -9,5 +9,4 @@ import kotlinx.serialization.json.JSON
  */
 val json = JSON(indented = true, unquoted = true)
 
-inline fun <reified T : Any> T.toJson(serializer: SerializationStrategy<T>): String
-        = json.stringify(serializer, this)
+inline fun <reified T : Any> T.toJson(serializer: SerializationStrategy<T>): String = json.stringify(serializer, this)

@@ -164,5 +164,5 @@ data class LockEntry(
         }
     }
 
-    fun serialize(): String = json.stringify(LockEntry.serializer(),this)
+    fun serialize(): String = json.stringify(LockEntry.serializer(), this)
 }
