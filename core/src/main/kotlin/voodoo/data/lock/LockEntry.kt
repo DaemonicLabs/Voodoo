@@ -112,8 +112,6 @@ data class LockEntry(
                 }
                 elemOutput.serializeObj(this.side, obj.side, EnumSerializer(Side::class), 3)
                 elemOutput.serialize(this.curseMetaUrl, obj.curseMetaUrl, 4)
-//                elemOutput.serializeObj(this.projectID, obj.projectID, ProjectID.Companion, 5)
-//                elemOutput.serializeObj(this.fileID, obj.fileID, FileID.Companion, 6)
                 elemOutput.serialize(this.projectID.value, obj.projectID.value, 5)
                 elemOutput.serialize(this.fileID.value, obj.fileID.value, 6)
                 elemOutput.serialize(this.url, obj.url, 7)
@@ -162,9 +160,9 @@ data class LockEntry(
 
         fun loadEntry(file: File): LockEntry {
 //            logger.debug ("parsing; ${file.readText()}")
-            return json.parse(file.readText())
+            return json.parse(LockEntry.serializer(), file.readText())
         }
     }
 
-    fun serialize(): String = json.stringify(this)
+    fun serialize(): String = json.stringify(LockEntry.serializer(),this)
 }

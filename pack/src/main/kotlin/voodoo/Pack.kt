@@ -34,7 +34,7 @@ object Pack : KLogging() {
 
         arguments.run {
             logger.info("loading $modpackLockFile")
-            val modpack: LockPack = json.parse(modpackLockFile.readText())
+            val modpack: LockPack = json.parse(LockPack.serializer(), modpackLockFile.readText())
             val rootFolder = modpackLockFile.absoluteFile.parentFile
             modpack.loadEntries(rootFolder)
 

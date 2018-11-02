@@ -53,7 +53,7 @@ object CurseImporter : AbstractImporter() {
         val extractFolder = cacheHome.resolve(tmpName)
         unzip(zipFile.absolutePath, extractFolder.absolutePath)
 
-        val manifest = JSON.parse<CurseManifest>(extractFolder.resolve("manifest.json").readText())
+        val manifest = JSON.parse(CurseManifest.serializer(), extractFolder.resolve("manifest.json").readText())
 
         val validMcVersions = mutableSetOf<String>()
 

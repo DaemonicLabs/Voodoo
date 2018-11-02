@@ -95,7 +95,7 @@ data class Entry(
                 elemOutput.serialize(this.comment, obj.comment, 4)
                 elemOutput.serialize(this.description, obj.description, 5)
                 if (this.feature != obj.feature) {
-                    elemOutput.serializeObj(this.feature, obj.feature, Feature::class.serializer(), 6)
+                    elemOutput.serializeObj(this.feature, obj.feature, Feature.serializer(), 6)
                 }
                 elemOutput.serializeObj(this.side, obj.side, EnumSerializer(Side::class), 7)
                 elemOutput.serialize(this.websiteUrl, obj.websiteUrl, 8)
@@ -159,7 +159,7 @@ data class Entry(
                     is Int -> this.encodeIntElement(descriptor, index, actual)
                     is Boolean -> this.encodeBooleanElement(descriptor, index, actual)
                     else -> {
-                        this.encodeSerializableElement(descriptor, index, T::class.serializer(), actual)
+                        throw UnsupportedOperationException("please use serializeObj for complex objects")
                     }
                 }
         }
@@ -202,7 +202,7 @@ data class Entry(
     fun serialize(sourceFolder: File) {
         val file = sourceFolder.resolve(folder).resolve("$cleanId.entry.hjson").absoluteFile
         file.absoluteFile.parentFile.mkdirs()
-        file.writeText(json.stringify(this))
+        file.writeText(json.stringify(Entry.serializer(), this))
     }
 
     fun lock(block: LockEntry.() -> Unit): LockEntry {

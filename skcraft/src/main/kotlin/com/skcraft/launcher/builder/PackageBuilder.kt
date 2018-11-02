@@ -23,6 +23,7 @@ import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.io.IOException
 import kotlinx.io.InputStream
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.JSON
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
@@ -118,7 +119,7 @@ constructor(
                 // Read file
                 var data = jarFile.getInputStream(profileEntry).bufferedReader().use { it.readText() }
                 data = data.replace(",\\s*\\}".toRegex(), "}") // Fix issues with trailing commas
-                val profile: InstallProfile = json.parse(data)
+                val profile: InstallProfile = json.parse(InstallProfile.serializer(), data)
                 val version = manifest.versionManifest
                 // Copy tweak class arguments
                 val args = profile.versionInfo.minecraftArguments
@@ -258,7 +259,7 @@ constructor(
     @Throws(IOException::class)
     fun readConfig(path: File?) {
         if (path != null) {
-            val config = read<BuilderConfig>(path)
+            val config = read(path, BuilderConfig.serializer())
             config.update(manifest)
             config.registerProperties(applicator)
         }
@@ -268,7 +269,7 @@ constructor(
     private suspend fun readVersionManifest(path: File?) {
         logSection("Reading version manifest...")
         if (path!!.exists()) {
-            val versionManifest = read<VersionManifest>(path)
+            val versionManifest = read(path, VersionManifest.serializer())
             manifest.versionManifest = versionManifest
             logger.info("Loaded version manifest from " + path.absolutePath)
         } else {
@@ -284,7 +285,7 @@ constructor(
                     val tmp = File.createTempFile("lib", ".json")
                     tmp.writeText(jsonString)
                     logger.info("parsing json: $tmp")
-                    json.parse<VersionManifest>(jsonString)
+                    json.parse(VersionManifest.serializer(), jsonString)
                 }
                 is Result.Failure -> {
                     logger.error("readVersionManifest")
@@ -308,18 +309,18 @@ constructor(
         }
         validateManifest()
         path.absoluteFile.parentFile.mkdirs()
-        path.writeText(json.stringify(manifest))
+        path.writeText(json.stringify(Manifest.serializer(), manifest))
 //        json!!.writeValue(path, manifest)
         logger.info("Wrote manifest to " + path.absolutePath)
     }
 
     @Throws(IOException::class)
-    private inline fun <reified V : Any> read(path: File?): V {
+    private inline fun <reified V : Any> read(path: File?, deserializer: DeserializationStrategy<V>): V {
         try {
             return if (path == null) {
                 V::class.java.newInstance()
             } else {
-                json.parse(path.readText())
+                json.parse(deserializer, path.readText())
 //                mapper.readValue(path, V::class.java)
             }
         } catch (e: InstantiationException) {

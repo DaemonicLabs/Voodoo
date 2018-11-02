@@ -62,7 +62,7 @@ object Builder : KLogging() {
             lockedPack.writeLockEntries()
 
             logger.info("Writing lock file... $targetFile")
-            targetFile.writeText(lockedPack.toJson)
+            targetFile.writeText(lockedPack.toJson(LockPack.serializer()))
 
             lockedPack
         }

@@ -54,12 +54,12 @@ object MMCUtil : KLogging() {
         val mmcConfigurationFile = configHome.resolve("multimc.hjson")
         logger.info("loading multimc config $mmcConfigurationFile")
         mmcConfig = when {
-            mmcConfigurationFile.exists() -> json.parse(mmcConfigurationFile.readText())
+            mmcConfigurationFile.exists() -> json.parse(MMCConfiguration.serializer(), mmcConfigurationFile.readText())
             else -> MMCConfiguration()
         }
 
         mmcConfigurationFile.parentFile.mkdirs()
-        mmcConfigurationFile.writeText(mmcConfig.toJson)
+        mmcConfigurationFile.writeText(mmcConfig.toJson(MMCConfiguration.serializer()))
     }
 
     fun startInstance(name: String) {
@@ -174,7 +174,7 @@ object MMCUtil : KLogging() {
         // set minecraft and forge versions
         val mmcPackPath = instanceDir.resolve("mmc-pack.json")
         val mmcPack = if (mmcPackPath.exists()) {
-            json.parse(mmcPackPath.readText())
+            json.parse(MultiMCPack.serializer(), mmcPackPath.readText())
         } else MultiMCPack()
 
         if (mcVersion != null) {
@@ -196,7 +196,7 @@ object MMCUtil : KLogging() {
                 )
             ) + mmcPack.components
         }
-        mmcPackPath.writeText(json.stringify(mmcPack))
+        mmcPackPath.writeText(json.stringify(MultiMCPack.serializer(), mmcPack))
 
         val cfgFile = instanceDir.resolve("instance.cfg")
         val cfg = if (cfgFile.exists())

@@ -20,7 +20,7 @@ object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
     private suspend fun getUpdateJson(url: String): UpdateJson? {
         val (request, response, result) = url.httpGet()
             .header("User-Agent" to Downloader.useragent)
-            .awaitObjectResponse<UpdateJson>(kotlinxDeserializerOf())
+            .awaitObjectResponse(kotlinxDeserializerOf(loader = UpdateJson.serializer()))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {

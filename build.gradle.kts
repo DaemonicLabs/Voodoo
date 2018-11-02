@@ -39,11 +39,14 @@ val noConstants = listOf(
 
 allprojects {
     repositories {
+        maven(url = "https://jitpack.io") {
+            name = "jitpack"
+        }
         mavenCentral()
         jcenter()
-//        mavenLocal()
-        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
-        maven(url = "https://kotlin.bintray.com/kotlinx")
+        maven(url = "https://kotlin.bintray.com/kotlinx") {
+            name = "KotlinX"
+        }
     }
 
 //    kotlinDslPluginOptions.progressive.set(ProgressiveModeState.ENABLED)
@@ -68,7 +71,7 @@ subprojects {
 
     tasks.withType<KotlinCompile> {
         kotlinOptions {
-//            apiVersion = "1.3"
+            apiVersion = "1.3"
             languageVersion = "1.3"
             jvmTarget = "1.8"
             freeCompilerArgs = listOf(

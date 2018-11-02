@@ -6,7 +6,11 @@
 
 package com.skcraft.launcher.util
 
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
 import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializer
+import java.io.IOException
 
 /**
  * Indicates the platform.
@@ -22,4 +26,31 @@ enum class Platform {
     SOLARIS,
     @SerialName("unknown")
     UNKNOWN;
+
+    @Serializer(forClass = Platform::class)
+    companion object {
+        fun serializer() = Platform
+        override fun deserialize(input: Decoder): Platform {
+            val text = input.decodeString()
+            return when {
+                text.equals("windows", ignoreCase = true) -> Platform.WINDOWS
+                text.equals("linux", ignoreCase = true) -> Platform.LINUX
+                text.equals("solaris", ignoreCase = true) -> Platform.SOLARIS
+                text.equals("osx", ignoreCase = true) -> Platform.MAC_OS_X
+                else -> throw IOException("Unknown platform: $text")
+            }
+        }
+
+        override fun serialize(output: Encoder, obj: Platform) {
+            output.encodeString(
+                when (obj) {
+                    Platform.WINDOWS -> "windows"
+                    Platform.MAC_OS_X -> "osx"
+                    Platform.LINUX -> "linux"
+                    Platform.SOLARIS -> "solaris"
+                    Platform.UNKNOWN -> ""
+                }
+            )
+        }
+    }
 }

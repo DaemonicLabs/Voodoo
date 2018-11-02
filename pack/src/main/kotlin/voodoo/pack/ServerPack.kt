@@ -65,7 +65,7 @@ object ServerPack : AbstractPack() {
         }
 
         val packFile = serverDir.resolve("pack.lock.hjson")
-        packFile.writeText(modpack.toJson)
+        packFile.writeText(modpack.toJson(LockPack.serializer()))
 
         logger.info("packaging installer jar")
         val installer =

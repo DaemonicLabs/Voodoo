@@ -41,12 +41,12 @@ data class Library(
                 )
             }
             obj.extract?.let { extract ->
-                elemOutput.encodeSerializableElement(descriptor, 3, Extract::class.serializer(), extract)
+                elemOutput.encodeSerializableElement(descriptor, 3, Extract.serializer(), extract)
             }
             obj.rules?.filter {
                 it.action != null || it.os != null
             }?.let { rules ->
-                elemOutput.encodeSerializableElement(descriptor, 4, Rule::class.serializer().list, rules)
+                elemOutput.encodeSerializableElement(descriptor, 4, Rule.serializer().list, rules)
             }
             elemOutput.endStructure(descriptor)
         }
@@ -136,7 +136,6 @@ data class Library(
         @Optional
         var os: OS? = null
     ) {
-
         fun matches(environment: Environment): Boolean {
             return if (os == null) {
                 true
@@ -153,9 +152,9 @@ data class Library(
         @Optional var version: Pattern? = null
     ) {
         fun matches(environment: Environment): Boolean {
-            return (platform == null || platform == environment.platform) && (version == null || version!!.matcher(
+            return (platform == null || platform == environment.platform) && version?.matcher(
                 environment.platformVersion
-            ).matches())
+            )?.matches()?: true
         }
 
         @Serializer(forClass = OS::class)
@@ -166,10 +165,10 @@ data class Library(
                     elemOutput.encodeStringElement(descriptor, 0, it)
                 }
                 obj.platform?.let { platform ->
-                    elemOutput.encodeSerializableElement(descriptor, 1, PlatformSerializer, platform)
+                    elemOutput.encodeSerializableElement(descriptor, 1, Platform.serializer(), platform)
                 }
                 obj.version?.let { version ->
-                    elemOutput.encodeSerializableElement(descriptor, 2, Pattern::class.serializer(), version)
+                    elemOutput.encodeSerializableElement(descriptor, 2, PatternSerializer, version)
                 }
                 elemOutput.endStructure(descriptor)
             }
