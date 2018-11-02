@@ -154,7 +154,7 @@ data class Library(
         fun matches(environment: Environment): Boolean {
             return (platform == null || platform == environment.platform) && version?.matcher(
                 environment.platformVersion
-            )?.matches()?: true
+            )?.matches() ?: true
         }
 
         @Serializer(forClass = OS::class)

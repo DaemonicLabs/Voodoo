@@ -94,9 +94,9 @@ object RoundTripSpek : Spek({
             }
         }
         it("parse lockpack") {
-            val jsonText = json.stringify(lockpack)
+            val jsonText = json.stringify(LockPack.serializer(), lockpack)
             println(jsonText)
-            val parsedLockPack = json.parse<LockPack>(jsonText)
+            val parsedLockPack = json.parse(LockPack.serializer(), jsonText)
             parsedLockPack.rootDir = rootFolder
             println(lockpack)
             println(parsedLockPack)

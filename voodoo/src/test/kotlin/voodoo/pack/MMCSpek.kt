@@ -20,7 +20,7 @@ object MMCSpek : Spek({
                 .header("User-Agent" to CurseClient.useragent)
                 .responseString()
             when (result) {
-                is Result.Success -> JSON(strictMode = false).parse<Manifest>(result.value)
+                is Result.Success -> JSON(strictMode = false).parse(Manifest.serializer(), result.value)
                 is Result.Failure -> {
                     logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
                     fail("http request failed")
@@ -31,7 +31,7 @@ object MMCSpek : Spek({
             println(modpack)
         }
         it("pack") {
-            val jsonString = JSON(indented = true).stringify(modpack)
+            val jsonString = JSON(indented = true).stringify(Manifest.serializer(), modpack)
             println(jsonString)
         }
     }
