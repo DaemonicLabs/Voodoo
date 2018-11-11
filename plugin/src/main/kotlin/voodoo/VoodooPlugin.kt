@@ -19,7 +19,7 @@ import java.io.FilenameFilter
 
 open class VoodooPlugin : Plugin<Project> {
     override fun apply(project: Project) {
-        val config = project.run {
+        val voodooExtension = project.run {
             pluginManager.apply("kotlin")
             pluginManager.apply("idea")
 
@@ -45,10 +45,10 @@ open class VoodooPlugin : Plugin<Project> {
         }
 
         project.afterEvaluate {
-            config.getPackDir.mkdirs()
+            voodooExtension.getPackDir.mkdirs()
 
             val poet = task<PoetTask>("poet") {
-                targetFolder = rootDir.resolve(config.getGeneratedSrc)
+                targetFolder = rootDir.resolve(voodooExtension.getGeneratedSrc)
             }
 
             tasks.withType<KotlinCompile> {
@@ -67,15 +67,15 @@ open class VoodooPlugin : Plugin<Project> {
             extensions.configure<KotlinJvmProjectExtension> {
                 //                (sourceSets as MutableCollection<KotlinSourceSet>).clear()
                 sourceSets.maybeCreate("main").kotlin.apply {
-                    srcDir(config.getPackDir)
-                    srcDir(config.getGeneratedSrc)
+                    srcDir(voodooExtension.getPackDir)
+                    srcDir(voodooExtension.getGeneratedSrc)
                 }
 //                sourceSets.create("test")
             }
 
             extensions.configure<IdeaModel> {
                 module {
-                    generatedSourceDirs.add(config.getGeneratedSrc)
+                    generatedSourceDirs.add(voodooExtension.getGeneratedSrc)
                 }
             }
 
@@ -88,12 +88,12 @@ open class VoodooPlugin : Plugin<Project> {
             }
 
             task<CreatePackTask>("createpack") {
-                rootDir = config.rootDir
-                packsDir = config.getPackDir
+                rootDir = voodooExtension.rootDir
+                packsDir = voodooExtension.getPackDir
             }
             task<CurseImportTask>("importer") {
-                rootDir = config.rootDir
-                packsDir = config.getPackDir
+                rootDir = voodooExtension.rootDir
+                packsDir = voodooExtension.getPackDir
             }
 
             extensions.configure<SourceSetContainer> {
@@ -101,7 +101,7 @@ open class VoodooPlugin : Plugin<Project> {
 //                val mainRessources = maybeCreate("main").resources
 
                 val runtimeClasspath = maybeCreate("main").runtimeClasspath
-                config.getPackDir
+                voodooExtension.getPackDir
                     .listFiles(FilenameFilter { _, name -> name.endsWith(".kt") })
                     .forEach { sourceFile ->
                         val name = sourceFile.nameWithoutExtension
@@ -112,23 +112,17 @@ open class VoodooPlugin : Plugin<Project> {
                             this.group = "voodoo"
                         }
 
-//                        val out = ByteArrayOutputStream()
-//                        println("executing ${name}Kt")
-//                        project.javaexec {
-//                            classpath = runtimeClasspath
-//                            main = "${name}Kt"
-//                            args = listOf("dump-root")
-//                            standardOutput = out
-//  //                          dependsOn(poet)
-//                        }
-//                        val outString = String(out.toByteArray())
-//                        println("output: $outString")
-//                        val lastLine = outString.trim().substringAfterLast('\n')
-//                        println("lastLine: $lastLine")
-//                        if (lastLine.startsWith("root=")) {
-//                            val path = lastLine.substringAfter('=')
-//                            mainRessources.srcDir(file(path))
-//                        }
+                        voodooExtension.tasks.forEach { customTask ->
+                            val (taskName, taskDescription, arguments) = customTask
+                            task<VoodooTask>(taskName + "_" + name) {
+                                classpath = runtimeClasspath
+                                main = "${name.capitalize()}Kt"
+                                description = taskDescription
+                                group = name
+                                val nestedArgs = arguments.map { it.split(" ") }
+                                args = nestedArgs.reduceRight {acc, list -> acc + "-" + list}
+                            }
+                        }
                     }
             }
         }
