@@ -1,6 +1,7 @@
 package voodoo
 
 import org.gradle.api.Project
+import voodoo.data.CustomTask
 import java.io.File
 
 open class VoodooExtension(project: Project) {
@@ -12,6 +13,13 @@ open class VoodooExtension(project: Project) {
 
     fun packDirectory(resolver: (rootDir: File) -> File) {
         packDirectoryCall = resolver
+    }
+
+    internal var tasks: List<CustomTask> = listOf()
+        private set
+
+    fun addTask(name: String, description: String = "custom task $name", parameters: List<String>) {
+        tasks += CustomTask(name, description, parameters)
     }
 
     private var generatedSourceCall: (rootDir: File) -> File = { rootDir.resolve(".voodoo") }
