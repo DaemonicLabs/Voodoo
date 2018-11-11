@@ -1,24 +1,56 @@
 import com.skcraft.launcher.model.modpack.Recommendation
+import kotlinx.coroutines.runBlocking
+import voodoo.Tome
 import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.curse.FileType
 import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
 import voodoo.provider.JenkinsProvider
+import voodoo.provider.Providers
 import voodoo.withDefaultMain
 
 fun main(args: Array<String>) = withDefaultMain(
-    root = Constants.rootDir.resolve("run"),
+    root = Constants.rootDir,
     arguments = args
 ) {
+    docs {
+        tomeRoot = rootDir.resolve("tome")
+        add("credits.md")  { modpack, lockPack ->
+            Tome.logger.info("writing modlist")
+            buildString {
+                append("""# ${lockPack.title()}
+                    |**Authors:** ${lockPack.authors.joinToString(", ")}
+                    |
+                    |""".trimMargin())
+
+                runBlocking {
+                    modpack.lockEntrySet.sortedBy { it.name.toLowerCase() }.forEach { entry ->
+                        val provider = Providers[entry.provider]
+                        val thumbnailUrl = provider.getThumbnail(entry)
+                        val title = provider.generateName(entry)
+                        val projectPage = provider.getProjectPage(entry)
+                        val modAuthors = provider.getAuthors(entry)
+                        if(thumbnailUrl.isNotEmpty())
+                            append("""<img src="$thumbnailUrl" width=100 style="margin:0;margin-right:16px">""")
+                        append("""[**$title**]($projectPage)  \
+                            |**Author(s):** ${modAuthors.joinToString(", ")}
+                            |  \
+                            |""".trimMargin())
+                    }
+                }
+
+            }
+        }
+    }
     nestedPack(
         id = "cotm",
         mcVersion = "1.12.2"
     ) {
         title = "Center of the Multiverse"
         authors = listOf("AnsuzThuriaz", "Falkreon", "NikkyAi")
-        version = "2.1.9"
-        forge = Forge.mc1_12_2.build2759
+        version = "2.2"
+        forge = Forge.mc1_12_2.build2772
         icon = rootDir.resolve("icon.png")
         userFiles = UserFiles(
             include = listOf(
@@ -74,9 +106,6 @@ fun main(args: Array<String>) = withDefaultMain(
                 // ZLainSama
                 +(Mod.cosmeticArmorReworked)
 
-                // jaredlll08
-                +(Mod.diamondGlass)
-
                 // copygirl
                 +(Mod.wearableBackpacks)
 
@@ -97,14 +126,11 @@ fun main(args: Array<String>) = withDefaultMain(
                 +(Mod.thermalexpansion)
                 +(Mod.thermalInnovation)
 
-                group {
-                    // because some alphas are buggy
-                    releaseTypes = setOf(FileType.BETA, FileType.RELEASE)
-                }.list {
-                    // McJTY
-                    +(Mod.rftools)
-                    +(Mod.rftoolsDimensions)
-                }
+                // mcjty
+                +(Mod.rftools)
+                +(Mod.rftoolsDimensions)
+                +(Mod.ariente)
+                +(Mod.theOneProbe)
 
                 // Mr_Crayfish
                 +(Mod.mrcrayfishFurnitureMod)
@@ -139,6 +165,7 @@ fun main(args: Array<String>) = withDefaultMain(
                 +(Mod.unlimitedChiselWorksBotany)
                 +(Mod.simplelogicGates)
                 +(Mod.simplelogicWires)
+                +(Mod.preston)
 
                 +(Mod.enderStorage18)
                 +(Mod.exchangers)
@@ -202,7 +229,7 @@ fun main(args: Array<String>) = withDefaultMain(
                 +(Mod.yoyos)
                 +(Mod.badWitherNoCookieReloaded)
                 +(Mod.waystones)
-                +(Mod.aetherLegacy)
+                +(Mod.theAetherIi)
                 +(Mod.corpseComplex)
                 +(Mod.thaumcraftInventoryScanning)
                 +(Mod.peckish)
@@ -211,6 +238,7 @@ fun main(args: Array<String>) = withDefaultMain(
                 +(Mod.cookiecore)
                 +(Mod.thaumcraft)
                 +(Mod.fastworkbench)
+                +(Mod.fastfurnace)
                 +(Mod.dimensionaldoors)
                 +(Mod.betterBuildersWands)
                 +(Mod.antighost)
@@ -224,9 +252,13 @@ fun main(args: Array<String>) = withDefaultMain(
                 +(Mod.pewter)
                 +(Mod.theErebus)
                 +(Mod.grapplingHookMod)
-                +(Mod.embersRekindled)
-
-                +(Mod.ariente)
+                +(Mod.embers)
+                +(Mod.outfox)
+                +(Mod.chococraft)
+                +(Mod.portality)
+                +(Mod.modularPowersuits)
+                +(Mod.huntingDimension)
+                +(Mod.surge)
 
                 // Pulled due to outstanding issues
 
@@ -236,9 +268,31 @@ fun main(args: Array<String>) = withDefaultMain(
                 // +(Mod.modtweaker)
 
                 withProvider(DirectProvider).list {
-                    +"nutrition" url "https://github.com/WesCook/Nutrition/releases/download/v3.5.0/Nutrition-1.12.2-3.5.0.jar"
-                    +"correlated" url "https://centerofthemultiverse.net/launcher/mirror/Correlated-1.12.2-2.1.143.jar"
+                    +"nutrition" configure {
+                        url = "https://github.com/WesCook/Nutrition/releases/download/v4.0.0/Nutrition-1.12.2-4.0.0.jar"
+                    }
+                    +"galacticraftCore" configure {
+                        url="https://ci.micdoodle8.com/job/Galacticraft-1.12/181/artifact/Forge/build/libs/GalacticraftCore-1.12.2-4.0.1.181.jar"
+                    }
+                    +"galacticraftPlanets" configure {
+                        url = "https://ci.micdoodle8.com/job/Galacticraft-1.12/181/artifact/Forge/build/libs/Galacticraft-Planets-1.12.2-4.0.1.181.jar"
+                    }
+                    +"micdoodleCore" configure {
+                        url = "https://ci.micdoodle8.com/job/Galacticraft-1.12/181/artifact/Forge/build/libs/MicdoodleCore-1.12.2-4.0.1.181.jar"
+                    }
                 }
+
+//                withProvider(JenkinsProvider) {
+//                    jenkinsUrl = "https://ci.micdoodle8.com"
+//                }.list {
+//                    +"micdoodleCore" configure {
+//                        job = "Galacticraft-1.12"
+//                        this.
+//                    }
+//                        +"galacticraftPlanets" job "Galacticraft-1.12"
+//                        +"galacticraftCore" job "Galacticraft-1.12"
+//                    }
+//                }
 
                 withProvider(JenkinsProvider) {
                     jenkinsUrl = "https://ci.elytradev.com"
@@ -250,23 +304,14 @@ fun main(args: Array<String>) = withDefaultMain(
                     // Falkreon
                     +"thermionics" job "elytra/Thermionics/master"
                     +"termionics-world" job "elytra/ThermionicsWorld/master"
-                    // TODO dependency  termionics-world -> thermionics
                     +"engination" job "elytra/Engination/master"
                     +"magic-arsenal" job "elytra/MagicArsenal/master"
 
                     // unascribed
                     +"glass-hearts" job "elytra/GlassHearts/1.12.1"
-                    +"probe-data-provider" job "elytra/ProbeDataProvider/1.12"
-                    +"fruit-phone" job "elytra/FruitPhone/1.12.2"
-                    // TODO dependency  fruit-phone -> probe-data-provider
-
-                    // Job is private - mirroring now
-                    // +("correlated") job "Correlated2-Dev"
 
                     // Darkevilmac
                     +"architecture-craft" job "elytra/ArchitectureCraft/1.12"
-
-                    +"matterlink" job "elytra/MatterLink/master"
                 }
 
                 group {
@@ -290,15 +335,15 @@ fun main(args: Array<String>) = withDefaultMain(
                 }.list {
                     +(Mod.laggoggles) configure {
                         description =
-                                "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
+                            "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                     }
                     +(Mod.sampler) configure {
                         description =
-                                "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
+                            "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                     }
                     +(Mod.openeye) configure {
                         description =
-                                "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
+                            "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
                     }
                 }
                 group {
@@ -323,6 +368,7 @@ fun main(args: Array<String>) = withDefaultMain(
 
                     // Way2muchnoise
                     +(Mod.betterAdvancements)
+
                     // OPT-OUT
                     group {
                         feature {
@@ -366,7 +412,7 @@ fun main(args: Array<String>) = withDefaultMain(
                         +(Mod.inventoryTweaks) configure {
                             description = "Adds amll changes to invetory handling to minor conviniences."
                         }
-                        +(Mod.nofov) configure {
+                        +(Mod.customFov) configure {
                             description = "Removes dynamic FOV shifting due to ingame effects."
                         }
                     }
@@ -384,7 +430,7 @@ fun main(args: Array<String>) = withDefaultMain(
                         }
                         +(Mod.minemenu) configure {
                             description =
-                                    "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
+                                "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu."
                         }
                         +(Mod.itemzoom) configure {
                             description = "Check this if you like to get a closer look at item textures."
@@ -397,19 +443,19 @@ fun main(args: Array<String>) = withDefaultMain(
                         }
                         +(Mod.fancyBlockParticles) configure {
                             description =
-                                    "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps. (Defaults set to be less intrusive.)"
+                                "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps. (Defaults set to be less intrusive.)"
                         }
                         +(Mod.dynamicSurroundings) configure {
                             description =
-                                    "Caution: Resource heavy. Quite nice, has a lot of configurable features that add immersive sound/visual effects. Includes light-level overlay. (Defaults set to remove some sounds and generally be better.)"
+                                "Caution: Resource heavy. Quite nice, has a lot of configurable features that add immersive sound/visual effects. Includes light-level overlay. (Defaults set to remove some sounds and generally be better.)"
                         }
                         +(Mod.rpgHud) configure {
                             description =
-                                    "Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)"
+                                "Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)"
                         }
                         +(Mod.betterFoliage) configure {
                             description =
-                                    "Improves the fauna in the world. Very heavy, but very pretty. (Sane defaults set.)"
+                                "Improves the fauna in the world. Very heavy, but very pretty. (Sane defaults set.)"
                         }
                         +(Mod.keyboardWizard) configure {
                             description = "Visual keybind manager."
@@ -426,7 +472,7 @@ fun main(args: Array<String>) = withDefaultMain(
                         +TexturePack.unity configure {
                             fileName = "Unity.zip"
                             description =
-                                    "Multi-mod compatible resource pack. Very nice, but does have some broken textures here and there."
+                                "Multi-mod compatible resource pack. Very nice, but does have some broken textures here and there."
                         }
                         withProvider(DirectProvider).list {
                             +"slice" configure {

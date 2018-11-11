@@ -6,13 +6,13 @@ import voodoo.data.lock.LockPack
 import java.io.File
 
 data class TomeEnv(
-    var tomeRoot: File,
-    var modlistPath: String = "modlist.md"
+    var tomeRoot: File
 ) {
-    var modlistToHtml: (modpack: ModPack, lockPack: LockPack) -> String = Tome::defaultModlist
+    internal var generators: Map<String, (modpack: ModPack, lockPack: LockPack) -> String> =
+        mapOf("modlist.md" to Tome::defaultModlist)
         private set
 
-    fun modlist(toHtml: (modpack: ModPack, lockPack: LockPack) -> String) {
-        modlistToHtml = toHtml
+    fun add(file: String, toHtml: (modpack: ModPack, lockPack: LockPack) -> String) {
+        generators += (file to toHtml)
     }
 }

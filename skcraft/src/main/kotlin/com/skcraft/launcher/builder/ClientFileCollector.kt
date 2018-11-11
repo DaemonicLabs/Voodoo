@@ -56,7 +56,7 @@ class ClientFileCollector(
             location = urlFile.readLines().first()
             copy = false
         } else {
-//            location = hash.chunked(4).joinToString("/")
+//            location = hash.chunked(2).joinToString("/")
             location = hash.substring(0, 2) + "/" + hash.substring(2, 4) + "/" + hash
         }
         val destPath = File(destDir, location)
