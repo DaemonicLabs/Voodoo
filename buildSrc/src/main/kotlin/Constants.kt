@@ -44,11 +44,11 @@ object Kotlinpoet {
 }
 
 object Fuel {
-    const val version = "feature~implicitReflection-SNAPSHOT"
-    //""438e124a12"
-//    const val version = "1.16.0"
-    private const val group = "com.github.NikkyAi.Fuel"
-//    private const val group = "com.github.kittinunf.fuel"
+//    const val version = "-SNAPSHOT"
+    const val version = "2ae065cfea"
+//    const val version = "feature~implicitReflection-SNAPSHOT"
+//    private const val group = "com.github.NikkyAi.Fuel"
+    private const val group = "com.github.kittinunf.fuel"
     val dependency = create(group = group, name = "fuel", version = version)
     val dependencyCoroutines = create(group = group, name = "fuel-coroutines", version = version)
     val dependencySerialization = create(group = group, name = "fuel-kotlinx-serialization", version = version)
