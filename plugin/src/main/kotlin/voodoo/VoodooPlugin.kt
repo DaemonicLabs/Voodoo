@@ -120,7 +120,7 @@ open class VoodooPlugin : Plugin<Project> {
                                 description = taskDescription
                                 group = name
                                 val nestedArgs = arguments.map { it.split(" ") }
-                                args = nestedArgs.reduceRight {acc, list -> acc + "-" + list}
+                                args = nestedArgs.reduceRight { acc, list -> acc + "-" + list }
                             }
                         }
                     }

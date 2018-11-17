@@ -20,8 +20,8 @@ cd samples
 [ ! -e run ] && mkdir run
 cd run
 
-[ ! -e "$DIR/run/.server/$pack" ] && echo "server pack does not exist" && exit -1
-cd ".server/$pack"
+[ ! -e "$DIR/samples/run/.server/$pack" ] && echo "server pack does not exist" && exit -1
+cd "$DIR/samples/run/.server/$pack"
 
 echo
 echo "installing $1 server"
@@ -29,7 +29,7 @@ echo
 
 cd "$DIR/run/.server/$pack"
 
-java -jar $DIR/server-installer/build/libs/server-installer.jar "$DIR/run/.server/${pack}_run" --file pack.lock.hjson --clean
+java -jar $DIR/server-installer/build/libs/server-installer-dev.jar "$DIR/samples/run/.server/${pack}_run" --file pack.lock.hjson --clean
 # $DIR/gradlew -p "$DIR" :server-installer:run --args "'$DIR/run/.server/${pack}_run' --file '.server/$pack/pack.lock.hjson' --clean"
 if [ ! $? -eq 0 ]; then
     echo "Error Installing $pack"
