@@ -159,7 +159,7 @@ data class LockEntry(
         }
 
         fun loadEntry(file: File): LockEntry {
-//            logger.debug ("parsing; ${file.readText()}")
+            logger.debug("parsing; $file")
             return json.parse(LockEntry.serializer(), file.readText())
         }
     }

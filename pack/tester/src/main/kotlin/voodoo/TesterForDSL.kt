@@ -22,7 +22,8 @@ object TesterForDSL : KLogging() {
         arguments.run {
 
             logger.info("loading $modpackLockFile")
-            val modpack = LockPack.parse(modpackLockFile.absoluteFile)
+            // TODO: load proper rootDir
+            val modpack = LockPack.parse(modpackLockFile.absoluteFile, File("."))
 
             val tester = when (methode) {
                 "mmc" -> MultiMCTester

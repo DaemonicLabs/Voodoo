@@ -33,7 +33,8 @@ object Install : KLogging() {
             logger.info("pack file: $packFile")
             logger.info("cleanConfig: $cleanConfig")
 
-            val modpack = LockPack.parse(packFile.absoluteFile)
+            // TODO: load proper rootDir
+            val modpack = LockPack.parse(packFile.absoluteFile, File("."))
 
             Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
         }
@@ -52,7 +53,7 @@ object Install : KLogging() {
 
         val packFile by parser.storing(
             "--file", "-f",
-            help = "input pack lock.json"
+            help = "input pack lock.pack.json"
         ) { File(this) }
             .default(File("pack.lock.hjson"))
 

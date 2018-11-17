@@ -37,7 +37,6 @@ object Voodoo : KLogging() {
         }
 
         val rootDir = File(".")
-        val voodooDir = rootDir.resolve("run").resolve(".voodoo")
 //        voodooDir.listFiles().forEach { file ->
 //            val evalu = ScriptEvaluationConfiguration {
 //
@@ -91,15 +90,16 @@ object Voodoo : KLogging() {
             exitProcess(1)
         }
 
-        val mainEnv = MainScriptEnv(rootDir = File("."))
+        val mainEnv = MainScriptEnv(rootDir = rootDir)
 
         val nestedPack = mainEnv.nestedPack("abc", "1.12.2") {}
 
+        val packDir = mainEnv.rootDir
         val id = nestedPack.id
         val packFileName = "$id.pack.hjson"
-//    val packFile = rootDir.resolve(packFileName)
+//    val packFile = packDir.resolve(packFileName)
         val lockFileName = "$id.lock.hjson"
-        val lockFile = rootDir.resolve(lockFileName)
+        val lockFile = packDir.resolve(lockFileName)
 
         val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
             "import_debug" to { _ -> Importer.flatten(nestedPack, targetFileName = packFileName) },
@@ -111,7 +111,7 @@ object Voodoo : KLogging() {
                 logger.info("finished")
             },
             "pack" to { args ->
-                val modpack = LockPack.parse(lockFile.absoluteFile)
+                val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
                 Pack.pack(modpack, *args)
             },
             "test" to { args -> TesterForDSL.main(lockFile, args = *args) },

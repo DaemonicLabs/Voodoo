@@ -11,18 +11,20 @@ import voodoo.provider.Providers
 import voodoo.withDefaultMain
 
 fun main(args: Array<String>) = withDefaultMain(
-    root = Constants.rootDir,
+    root = Constants.rootDir.resolve("run"),
     arguments = args
 ) {
     docs {
         tomeRoot = rootDir.resolve("tome")
-        add("credits.md")  { modpack, lockPack ->
+        add("credits.md") { modpack, lockPack ->
             Tome.logger.info("writing modlist")
             buildString {
-                append("""# ${lockPack.title()}
+                append(
+                    """# ${lockPack.title()}
                     |**Authors:** ${lockPack.authors.joinToString(", ")}
                     |
-                    |""".trimMargin())
+                    |""".trimMargin()
+                )
 
                 runBlocking {
                     modpack.lockEntrySet.sortedBy { it.name.toLowerCase() }.forEach { entry ->
@@ -31,12 +33,14 @@ fun main(args: Array<String>) = withDefaultMain(
                         val title = provider.generateName(entry)
                         val projectPage = provider.getProjectPage(entry)
                         val modAuthors = provider.getAuthors(entry)
-                        if(thumbnailUrl.isNotEmpty())
+                        if (thumbnailUrl.isNotEmpty())
                             append("""<img src="$thumbnailUrl" width=100 style="margin:0;margin-right:16px">""")
-                        append("""[**$title**]($projectPage)  \
+                        append(
+                            """[**$title**]($projectPage)  \
                             |**Author(s):** ${modAuthors.joinToString(", ")}
                             |  \
-                            |""".trimMargin())
+                            |""".trimMargin()
+                        )
                     }
                 }
 
@@ -49,7 +53,7 @@ fun main(args: Array<String>) = withDefaultMain(
     ) {
         title = "Center of the Multiverse"
         authors = listOf("AnsuzThuriaz", "Falkreon", "NikkyAi")
-        version = "2.2"
+        version = "2.2.0"
         forge = Forge.mc1_12_2.build2772
         icon = rootDir.resolve("icon.png")
         userFiles = UserFiles(
@@ -63,9 +67,6 @@ fun main(args: Array<String>) = withDefaultMain(
         root = rootEntry(CurseProvider) {
             releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
             validMcVersions = setOf("1.12.1", "1.12")
-            // TODO: use type URL ?
-//            metaUrl = "https://curse.nikky.moe/api"
-//            metaUrl = "https://curse.nikky.moe/api/"
             list {
                 // Vazkii
                 +(Mod.akashicTome)
@@ -163,8 +164,6 @@ fun main(args: Array<String>) = withDefaultMain(
                 +(Mod.foamfixForMinecraft)
                 +(Mod.unlimitedChiselWorks)
                 +(Mod.unlimitedChiselWorksBotany)
-                +(Mod.simplelogicGates)
-                +(Mod.simplelogicWires)
                 +(Mod.preston)
 
                 +(Mod.enderStorage18)
@@ -229,7 +228,7 @@ fun main(args: Array<String>) = withDefaultMain(
                 +(Mod.yoyos)
                 +(Mod.badWitherNoCookieReloaded)
                 +(Mod.waystones)
-                +(Mod.theAetherIi)
+                +(Mod.aetherLegacy)
                 +(Mod.corpseComplex)
                 +(Mod.thaumcraftInventoryScanning)
                 +(Mod.peckish)
@@ -259,6 +258,12 @@ fun main(args: Array<String>) = withDefaultMain(
                 +(Mod.modularPowersuits)
                 +(Mod.huntingDimension)
                 +(Mod.surge)
+                +(Mod.environmentalTech)
+                +(Mod.blockcraftery)
+                +(Mod.stygianEndBiomeExpansion)
+                +(Mod.theMidnight)
+                +(Mod.popcornSmelting)
+                +(Mod.armoryExpansion)
 
                 // Pulled due to outstanding issues
 
@@ -272,13 +277,16 @@ fun main(args: Array<String>) = withDefaultMain(
                         url = "https://github.com/WesCook/Nutrition/releases/download/v4.0.0/Nutrition-1.12.2-4.0.0.jar"
                     }
                     +"galacticraftCore" configure {
-                        url="https://ci.micdoodle8.com/job/Galacticraft-1.12/181/artifact/Forge/build/libs/GalacticraftCore-1.12.2-4.0.1.181.jar"
+                        url =
+                            "https://ci.micdoodle8.com/job/Galacticraft-1.12/181/artifact/Forge/build/libs/GalacticraftCore-1.12.2-4.0.1.181.jar"
                     }
                     +"galacticraftPlanets" configure {
-                        url = "https://ci.micdoodle8.com/job/Galacticraft-1.12/181/artifact/Forge/build/libs/Galacticraft-Planets-1.12.2-4.0.1.181.jar"
+                        url =
+                            "https://ci.micdoodle8.com/job/Galacticraft-1.12/181/artifact/Forge/build/libs/Galacticraft-Planets-1.12.2-4.0.1.181.jar"
                     }
                     +"micdoodleCore" configure {
-                        url = "https://ci.micdoodle8.com/job/Galacticraft-1.12/181/artifact/Forge/build/libs/MicdoodleCore-1.12.2-4.0.1.181.jar"
+                        url =
+                            "https://ci.micdoodle8.com/job/Galacticraft-1.12/181/artifact/Forge/build/libs/MicdoodleCore-1.12.2-4.0.1.181.jar"
                     }
                 }
 
@@ -468,7 +476,6 @@ fun main(args: Array<String>) = withDefaultMain(
                         }
 
                         // Resource packs
-                        // TODO: add curse resource packs
                         +TexturePack.unity configure {
                             fileName = "Unity.zip"
                             description =

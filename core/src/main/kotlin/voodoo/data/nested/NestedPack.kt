@@ -1,6 +1,7 @@
 package voodoo.data.nested
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
+import kotlinx.serialization.Transient
 import mu.KLogging
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
@@ -42,6 +43,13 @@ constructor(
     var tomeDir: String = id
 ) {
     companion object : KLogging()
+
+    @Transient
+    val sourceFolder: File
+        get() = rootDir.resolve(sourceDir)
+    @Transient
+    val localFolder: File
+        get() = rootDir.resolve(localDir)
 
     fun flatten(): ModPack {
         return ModPack(

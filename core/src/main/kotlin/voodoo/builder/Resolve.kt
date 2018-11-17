@@ -87,8 +87,16 @@ private fun processFeature(modPack: ModPack, feature: ExtendedFeaturePattern) {
             }
             var depNames = entry.dependencies.values.flatten()
             logger.info("depNames: $depNames")
-            depNames = depNames.filter { d ->
-                modPack.entrySet.any { entry -> entry.id == d && entry.optional }
+            depNames = depNames.filter { dependencyId ->
+                val dependants = modPack.entrySet.filter { otherEntry ->
+                    otherEntry.dependencies[DependencyType.REQUIRED]?.any {
+                        it == dependencyId
+                    } ?: false
+                }
+                val allOptionalDependants = dependants.all {
+                        filteredEntry -> filteredEntry.optional
+                }
+                allOptionalDependants && modPack.entrySet.any { entry -> entry.id == dependencyId && entry.optional }
             }
             logger.info("filtered dependency names: $depNames")
             for (dep in depNames) {
@@ -248,21 +256,34 @@ suspend fun resolve(
 
     // resolve features
     for (feature in modPack.features) {
-        logger.info("processed feature ${feature.feature.name}")
+        logger.info("processing feature ${feature.feature.name}")
         for (id in feature.entries) {
             logger.info("processing feature entry $id")
+            val featureEntry = modPack.findEntryById(id)!!
             val dependencies = modPack.getDependencies(id)
-            feature.entries += dependencies.asSequence().filter {
-                logger.debug("testing ${it.id}")
-                it.optional && !feature.entries.contains(it.id)
+            logger.info("required dependencies of $id: ${featureEntry.dependencies[DependencyType.REQUIRED]}")
+            logger.info("optional dependencies of $id: ${featureEntry.dependencies[DependencyType.OPTIONAL]}")
+            feature.entries += dependencies.asSequence().filter { entry ->
+                logger.debug("  testing ${entry.id}")
+                // find all other entries that depend on this dependency
+                val dependants = modPack.entrySet.filter { otherEntry ->
+                    otherEntry.dependencies[DependencyType.REQUIRED]?.any {
+                        it == entry.id
+                    } ?: false
+                }
+                logger.debug("  dependants to optional of ${entry.id}: ${dependants.associate { it.id to it.optional }}")
+                val allOptionalDependants = dependants.all { filteredEntry -> filteredEntry.optional }
+                entry.optional && !feature.entries.contains(entry.id) && allOptionalDependants
             }.map { it.id }
         }
         logger.info("build entry: ${feature.entries.first()}")
         val mainEntry = modPack.findEntryById(feature.entries.first())!!
         feature.feature.description = mainEntry.description
 
-        logger.info("processed feature $feature")
+        logger.info("processed feature ${feature.feature.name}")
     }
+
+//    exitProcess(-1)
 
     // TODO: rethink history, since packs are now mainly file based
 }

@@ -54,7 +54,7 @@ object SKPack : AbstractPack() {
             logger.debug("cp -r $packSrc $skSrcFolder")
             packSrc.copyRecursively(skSrcFolder, overwrite = true)
             skSrcFolder.walkBottomUp().forEach {
-                if (it.name.endsWith(".entry.hjson") || it.name.endsWith(".lock.hjson"))
+                if (it.name.endsWith(".entry.hjson") || it.name.endsWith(".lock.hjson") || it.name.endsWith(".lock.pack.hjson"))
                     it.delete()
                 if (it.isDirectory && it.listFiles().isEmpty()) {
                     it.delete()
@@ -118,6 +118,7 @@ object SKPack : AbstractPack() {
                     logger.info("processing properties: ${feature.feature.name}")
                     for (id in feature.entries) {
                         logger.info(id)
+                        logger.info("$id targetfiles: $targetFiles")
 
                         val targetFile = targetFiles[id]?.let { targetFile ->
                             targetFile.parentFile.let { parent ->
