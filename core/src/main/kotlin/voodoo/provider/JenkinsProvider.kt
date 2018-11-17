@@ -92,7 +92,10 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
 
         return build.artifacts.find {
             re.matches(it.fileName)
-        }!!
+        } ?: run {
+            logger.error("artifacts: ${build.artifacts.map { it.fileName }}")
+            throw IllegalStateException("no artifact matching $re found")
+        }
     }
 
     private val buildCache: MutableMap<Triple<String, String, Int>, BuildWithDetails> =
