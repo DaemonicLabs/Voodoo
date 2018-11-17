@@ -4,8 +4,12 @@ import awaitObjectResponse
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
+import com.skcraft.launcher.model.modpack.FileInstall
 import com.skcraft.launcher.model.modpack.Manifest
 import com.xenomachina.argparser.ArgParser
+import kotlinx.coroutines.ObsoleteCoroutinesApi
+import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -25,7 +29,6 @@ import voodoo.util.download
 import voodoo.util.pool
 import java.awt.Toolkit
 import java.io.File
-import java.util.Collections
 import kotlin.system.exitProcess
 
 /**
@@ -50,6 +53,7 @@ object Hex : KLogging() {
 
     private val json = JSON(indented = true, strictMode = false)
 
+    @UseExperimental(ObsoleteCoroutinesApi::class)
     private suspend fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
         logger.info("installing into $instanceId")
         val urlFile = instanceDir.resolve("voodoo.url.txt")
@@ -136,9 +140,17 @@ object Hex : KLogging() {
 
         val objectsUrl = packUrl.substringBeforeLast('/') + "/" + modpack.objectsLocation
 
-        val oldTaskList = Collections.synchronizedList(oldpack?.tasks?.toMutableList() ?: mutableListOf())
+        val oldTaskList = (oldpack?.tasks?.toMutableList() ?: mutableListOf()) as List<FileInstall>
 
-        runBlocking {
+        coroutineScope {
+            val oldTasksRemover = actor<FileInstall> {
+                oldTaskList as MutableList
+                for (msg in channel) {
+                    logger.info("removing ${msg.to}")
+                    oldTaskList.remove(msg)
+                }
+            }
+
             for (task in modpack.tasks) {
                 launch(context = pool) {
                     val oldTask = oldTaskList.find { it.to == task.to }
@@ -175,17 +187,23 @@ object Hex : KLogging() {
 
                             if (task.isUserFile && oldTask.isUserFile) {
                                 logger.info("task ${task.to} is a userfile, will not be modified")
-                                oldTask.let { oldTaskList.remove(it) }
+                                oldTask.let {
+                                    oldTasksRemover.send(it)
+                                }
                                 return@launch
                             }
                             if (oldTask.hash == task.hash && target.isFile && target.sha1Hex() == task.hash) {
                                 logger.info("task ${task.to} file did not change and sha1 hash matches")
-                                oldTask.let { oldTaskList.remove(it) }
+                                oldTask.let {
+                                    oldTasksRemover.send(it)
+                                }
                                 return@launch
                             } else {
                                 // mismatching hash.. override file
                                 logger.info("task ${task.to} mismatching hash.. reset and override file")
-                                oldTask.let { oldTaskList.remove(it) }
+                                oldTask.let {
+                                    oldTasksRemover.send(it)
+                                }
                                 target.delete()
                                 target.parentFile.mkdirs()
                                 target.download(url, cacheFolder)
@@ -203,7 +221,9 @@ object Hex : KLogging() {
                         target.parentFile.mkdirs()
                         target.download(url, cacheFolder)
 
-                        oldTask?.let { oldTaskList.remove(it) }
+                        oldTask?.let {
+                            oldTasksRemover.send(it)
+                        }
                     }
 
                     if (target.exists()) {
@@ -220,6 +240,7 @@ object Hex : KLogging() {
                     }
                 }.join()
             }
+            oldTasksRemover.close()
         }
 
         // iterate old
