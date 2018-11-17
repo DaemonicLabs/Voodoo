@@ -44,10 +44,9 @@ object Kotlinpoet {
 }
 
 object Fuel {
-//    const val version = "-SNAPSHOT"
-    const val version = "2ae065cfea"
-//    const val version = "feature~implicitReflection-SNAPSHOT"
-//    private const val group = "com.github.NikkyAi.Fuel"
+    //    const val version = "-SNAPSHOT"
+    const val version = "c5239e5db9"
+    //    private const val group = "com.github.NikkyAi.Fuel"
     private const val group = "com.github.kittinunf.fuel"
     val dependency = create(group = group, name = "fuel", version = version)
     val dependencyCoroutines = create(group = group, name = "fuel-coroutines", version = version)
