@@ -34,7 +34,6 @@ open class MainScriptEnv(
 
     @VoodooDSL
     fun nestedPack(id: String, mcVersion: String, packBuilder: ModpackBuilder.() -> Unit): NestedPack {
-        rootDir.resolve("icon.png")
         @Suppress("deprecated")
         val pack = NestedPack(
             rootDir = rootDir,

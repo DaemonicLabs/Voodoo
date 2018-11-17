@@ -47,16 +47,17 @@ open class VoodooPlugin : Plugin<Project> {
         project.afterEvaluate {
             voodooExtension.getPackDir.mkdirs()
 
-            val poet = task<PoetTask>("poet") {
-                targetFolder = rootDir.resolve(voodooExtension.getGeneratedSrc)
-            }
+            poet(rootDir = project.rootDir, root = voodooExtension.getGeneratedSrc)
+//            val poet = task<PoetTask>("poet") {
+//                targetFolder = rootDir.resolve(voodooExtension.getGeneratedSrc)
+//            }
 
             tasks.withType<KotlinCompile> {
                 kotlinOptions {
                     languageVersion = "1.3"
                     jvmTarget = "1.8"
                 }
-                dependsOn(poet)
+//                dependsOn(poet)
             }
 
             extensions.configure<JavaPluginExtension> {
@@ -88,11 +89,11 @@ open class VoodooPlugin : Plugin<Project> {
             }
 
             task<CreatePackTask>("createpack") {
-                rootDir = voodooExtension.rootDir
+                rootDir = voodooExtension.getRootDir
                 packsDir = voodooExtension.getPackDir
             }
             task<CurseImportTask>("importer") {
-                rootDir = voodooExtension.rootDir
+                rootDir = voodooExtension.getRootDir
                 packsDir = voodooExtension.getPackDir
             }
 

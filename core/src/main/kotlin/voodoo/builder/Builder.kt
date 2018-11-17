@@ -21,8 +21,8 @@ object Builder : KLogging() {
     fun build(
         modpack: ModPack,
         name: String,
-        targetFileName: String = "$name.lock.hjson",
-        targetFile: File = modpack.rootDir.resolve(targetFileName),
+        targetFileName: String = "$name.lock.pack.hjson",
+        targetFile: File = modpack.sourceFolder.resolve(targetFileName),
         vararg args: String
     ): LockPack = runBlocking {
         val parser = ArgParser(args)
@@ -62,6 +62,7 @@ object Builder : KLogging() {
             lockedPack.writeLockEntries()
 
             logger.info("Writing lock file... $targetFile")
+            targetFile.parentFile.mkdirs()
             targetFile.writeText(lockedPack.toJson(LockPack.serializer()))
 
             lockedPack

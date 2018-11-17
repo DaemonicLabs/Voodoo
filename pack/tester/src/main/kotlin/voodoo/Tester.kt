@@ -22,7 +22,8 @@ object Tester : KLogging() {
         arguments.run {
 
             logger.info("loading $modpackLockFile")
-            val modpack = LockPack.parse(modpackLockFile.absoluteFile)
+            // TODO: load proper rootDir
+            val modpack = LockPack.parse(modpackLockFile.absoluteFile, File("."))
 
             val tester = when (methode) {
                 "mmc" -> MultiMCTester
@@ -46,7 +47,7 @@ object Tester : KLogging() {
 
         val modpackLockFile by parser.positional(
             "FILE",
-            help = "input pack .lock.hjson"
+            help = "input pack .lock.pack.hjson"
         ) { File(this) }
 
         val clean by parser.flagging(

@@ -1,10 +1,10 @@
 plugins {
     wrapper
-    id("voodoo") version "0.4.3-dev"
+    id("voodoo") version "0.4.4-dev"
 }
 
 voodoo {
-    rootDir = project.rootDir.resolve("run")
+    rootDir { project.rootDir.resolve("run") }
     packDirectory { project.rootDir.resolve("packs") }
 //    generatedSource = { rootDir -> rootDir.resolve(".voodoo") }
 

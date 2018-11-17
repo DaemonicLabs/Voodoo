@@ -12,9 +12,9 @@ import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
+import mu.KLogging
 import voodoo.data.Side
 import voodoo.data.UserFiles
-import voodoo.data.flat.ModPack
 import voodoo.forge.ForgeUtil
 import voodoo.markdownTable
 import voodoo.util.blankOr
@@ -47,7 +47,7 @@ data class LockPack(
     val features: List<ExtendedFeaturePattern> = emptyList()
 ) {
     @Serializer(forClass = LockPack::class)
-    companion object {
+    companion object : KLogging() {
         override fun serialize(output: Encoder, obj: LockPack) {
             val elemOutput = output.beginStructure(descriptor)
             elemOutput.encodeStringElement(descriptor, 0, obj.id)
@@ -100,9 +100,9 @@ data class LockPack(
             }
             .map { LockEntry.loadEntry(it) to it }
 
-        fun parse(packFile: File): LockPack {
+        fun parse(packFile: File, rootDir: File): LockPack {
             val lockpack: LockPack = json.parse(LockPack.Companion, packFile.readText())
-            lockpack.rootDir = packFile.parentFile
+            lockpack.rootDir = rootDir
             lockpack.loadEntries()
             return lockpack
         }
@@ -136,8 +136,6 @@ data class LockPack(
 
     fun writeLockEntries() {
         entrySet.forEach { lockEntry ->
-            ModPack.logger.info("saving: ${lockEntry.id} , file: ${lockEntry.serialFile} , entry: $lockEntry")
-
             val folder = sourceFolder.resolve(lockEntry.serialFile).absoluteFile.parentFile
 
             val targetFolder = if (folder.toPath().none { it.toString() == "_CLIENT" || it.toString() == "_SERVER" }) {
@@ -154,6 +152,8 @@ data class LockPack(
 
             targetFolder.mkdirs()
             val targetFile = targetFolder.resolve(lockEntry.serialFile.name)
+
+            logger.info("saving: ${lockEntry.id} , file: $targetFile , entry: $lockEntry")
 
             targetFile.writeText(lockEntry.serialize())
         }

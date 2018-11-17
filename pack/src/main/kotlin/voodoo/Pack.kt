@@ -10,7 +10,6 @@ import voodoo.pack.MMCPack
 import voodoo.pack.MMCStaticPack
 import voodoo.pack.SKPack
 import voodoo.pack.ServerPack
-import voodoo.util.json
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -29,28 +28,28 @@ object Pack : KLogging() {
         "curse" to CursePack
     )
 
-    suspend fun main(vararg args: String) {
-        val arguments = Arguments(ArgParser(args))
-
-        arguments.run {
-            logger.info("loading $modpackLockFile")
-            val modpack: LockPack = json.parse(LockPack.serializer(), modpackLockFile.readText())
-            val rootFolder = modpackLockFile.absoluteFile.parentFile
-            modpack.loadEntries(rootFolder)
-
-            val packer = packMap[methode.toLowerCase()] ?: run {
-                logger.error("no such packing methode: $methode")
-                exitProcess(-1)
-            }
-
-            packer.pack(
-                modpack = modpack,
-                target = targetFolder,
-                clean = true
-            )
-            logger.info("finished packaging")
-        }
-    }
+//    suspend fun main(vararg args: String) {
+//        val arguments = Arguments(ArgParser(args))
+//
+//        arguments.run {
+//            logger.info("loading $modpackLockFile")
+//            val modpack: LockPack = json.parse(LockPack.serializer(), modpackLockFile.readText())
+//            val rootFolder = modpackLockFile.absoluteFile.parentFile
+//            modpack.loadEntries(rootFolder)
+//
+//            val packer = packMap[methode.toLowerCase()] ?: run {
+//                logger.error("no such packing methode: $methode")
+//                exitProcess(-1)
+//            }
+//
+//            packer.pack(
+//                modpack = modpack,
+//                target = targetFolder,
+//                clean = true
+//            )
+//            logger.info("finished packaging")
+//        }
+//    }
 
     suspend fun pack(modpack: LockPack, vararg args: String) {
         logger.info("parsing arguments")

@@ -30,21 +30,21 @@ fun withDefaultMain(
     val nestedPack = mainEnv.configureMain()
     val id = nestedPack.id
     val packFileName = "$id.pack.hjson"
-//    val packFile = rootDir.resolve(packFileName)
-    val lockFileName = "$id.lock.hjson"
-    val lockFile = root.resolve(lockFileName)
+//    val packFile = nestedPack.sourceFolder..resolve(packFileName)
+    val lockFileName = "$id.lock.pack.hjson"
+    val lockFile = nestedPack.sourceFolder.resolve(lockFileName)
 
     val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
         "import_debug" to { _ -> Importer.flatten(nestedPack, targetFileName = packFileName) },
 //        "build_debug" to { args -> BuilderForDSL.build(packFile, rootDir, id, targetFileName = lockFileName, args = *args) },
         "build" to { args ->
             val modpack = Importer.flatten(nestedPack)
-            val lockPack = Builder.build(modpack, name = id, /*targetFileName = lockFileName,*/ args = *args)
+            val lockPack = Builder.build(modpack, name = id, targetFileName = lockFileName, args = *args)
             Tome.generate(modpack, lockPack, mainEnv.tomeEnv)
             logger.info("finished")
         },
         "pack" to { args ->
-            val modpack = LockPack.parse(lockFile.absoluteFile)
+            val modpack = LockPack.parse(lockFile.absoluteFile, root)
             Pack.pack(modpack, *args)
         },
         "test" to { args -> TesterForDSL.main(lockFile, args = *args) },

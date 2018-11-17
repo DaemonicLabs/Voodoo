@@ -92,6 +92,13 @@ data class ModPack(
     var tomeDir: String = id
 
     @Transient
+    val sourceFolder: File
+        get() = rootDir.resolve(sourceDir)
+    @Transient
+    val localFolder: File
+        get() = rootDir.resolve(localDir)
+
+    @Transient
     lateinit var rootDir: File
 
     @Transient

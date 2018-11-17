@@ -5,14 +5,16 @@ import voodoo.data.CustomTask
 import java.io.File
 
 open class VoodooExtension(project: Project) {
-    var rootDir: File = project.rootDir
+    fun rootDir(resolver: () -> File) {
+        rootDirResolver = resolver
+    }
 
     fun generatedSource(resolver: (rootDir: File) -> File) {
-        generatedSourceCall = resolver
+        generatedSourceResolver = resolver
     }
 
     fun packDirectory(resolver: (rootDir: File) -> File) {
-        packDirectoryCall = resolver
+        packDirectoryResolver = resolver
     }
 
     internal var tasks: List<CustomTask> = listOf()
@@ -22,9 +24,11 @@ open class VoodooExtension(project: Project) {
         tasks += CustomTask(name, description, parameters)
     }
 
-    private var generatedSourceCall: (rootDir: File) -> File = { rootDir.resolve(".voodoo") }
-    private var packDirectoryCall: (rootDir: File) -> File = { rootDir.resolve("packs") }
+    private var rootDirResolver: () -> File = { project.rootDir }
+    private var generatedSourceResolver: (rootDir: File) -> File = { getRootDir.resolve(".voodoo") }
+    private var packDirectoryResolver: (rootDir: File) -> File = { getRootDir.resolve("packs") }
 
-    internal val getGeneratedSrc: File get() = generatedSourceCall(rootDir)
-    internal val getPackDir: File get() = packDirectoryCall(rootDir)
+    internal val getRootDir: File get() = rootDirResolver()
+    internal val getGeneratedSrc: File get() = generatedSourceResolver(getRootDir)
+    internal val getPackDir: File get() = packDirectoryResolver(getRootDir)
 }
