@@ -13,7 +13,6 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.internal.EnumSerializer
-import kotlinx.serialization.serializer
 
 @Serializable
 data class Feature(

@@ -8,7 +8,6 @@ package com.skcraft.launcher.builder
 
 import com.skcraft.launcher.builder.ClientFileCollector.Companion.getDirectoryBehavior
 import kotlinx.serialization.json.JSON
-import kotlinx.serialization.parse
 import mu.KLogging
 import org.apache.commons.io.FilenameUtils.getBaseName
 import org.apache.commons.io.FilenameUtils.getPath
