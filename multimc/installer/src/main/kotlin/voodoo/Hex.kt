@@ -218,7 +218,7 @@ object Hex : KLogging() {
                     } else {
                         logger.error("file $target was not created")
                     }
-                }
+                }.join()
             }
         }
 
