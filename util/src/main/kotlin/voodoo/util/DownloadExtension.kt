@@ -1,10 +1,8 @@
 package voodoo.util
 
 import awaitByteArrayResponse
-import awaitObjectResponse
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.core.Method
-import com.github.kittinunf.fuel.core.awaitResponse
 import com.github.kittinunf.fuel.core.interceptors.validatorResponseInterceptor
 import com.github.kittinunf.result.Result
 import mu.KLogger

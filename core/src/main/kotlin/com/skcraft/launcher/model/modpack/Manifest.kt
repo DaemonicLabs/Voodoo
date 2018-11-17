@@ -15,7 +15,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.list
-import kotlinx.serialization.serializer
 import java.net.URL
 
 @Serializable

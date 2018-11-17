@@ -1,10 +1,7 @@
 package voodoo
 
-import org.apache.tools.ant.types.Commandline
-import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.TaskAction
-import org.gradle.api.tasks.options.Option
 
 open class VoodooTask : JavaExec() {
 //    @Input
