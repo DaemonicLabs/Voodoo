@@ -17,17 +17,9 @@ var EntryBuilder<JenkinsProvider>.buildNumber
     set(it) {
         entry.buildNumber = it
     }
-var EntryBuilder<JenkinsProvider>.fileNameRegex
-    get() = entry.fileNameRegex
-    set(it) {
-        entry.fileNameRegex = it
-    }
 
 inline infix fun <reified T> T.job(s: String) where T : EntryBuilder<JenkinsProvider> =
     apply { entry.job = s }
 
 inline infix fun <reified T> T.buildNumber(i: Int) where T : EntryBuilder<JenkinsProvider> =
     apply { entry.buildNumber = i }
-
-inline infix fun <reified T> T.fileNameRegex(r: String?) where T : EntryBuilder<JenkinsProvider> =
-    apply { entry.fileNameRegex = r }
