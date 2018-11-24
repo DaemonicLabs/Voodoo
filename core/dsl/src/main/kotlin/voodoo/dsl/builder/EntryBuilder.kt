@@ -12,6 +12,7 @@ class EntryBuilder<T>(
     //    var id by property(entry::id)
     var name by property(entry::name)
     var websiteUrl by property(entry::websiteUrl)
+    var fileNameRegex by property(entry::fileNameRegex)
 
     @VoodooDSL
     infix fun configure(configureEntry: EntryBuilder<T>.() -> Unit): EntryBuilder<T> {
@@ -25,5 +26,9 @@ class EntryBuilder<T>(
 
     infix fun websiteUrl(s: String) = apply {
         websiteUrl = s
+    }
+
+    infix fun fileNameRegex(r: String?) = apply {
+        entry.fileNameRegex = r
     }
 }
