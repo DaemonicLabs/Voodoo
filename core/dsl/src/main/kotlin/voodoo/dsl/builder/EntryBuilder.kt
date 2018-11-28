@@ -29,6 +29,6 @@ class EntryBuilder<T>(
     }
 
     infix fun fileNameRegex(r: String?) = apply {
-        entry.fileNameRegex = r
+        fileNameRegex = r
     }
 }

@@ -163,6 +163,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
                     side = entry.side
                     transient = true
                     curseReleaseTypes = entry.curseReleaseTypes
+                    curseProjectID = depAddon.id
                 }
                 logger.debug("adding dependency: $depEntry")
                 addEntry.send(depEntry to depAddon.categorySection.path)
