@@ -10,7 +10,6 @@ import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.internal.BooleanSerializer
@@ -94,16 +93,16 @@ object Hex : KLogging() {
 
         var forceDisplay = false
         if (oldpack != null) {
-            if (oldpack.version == modpack.version) {
-                logger.info("no update required ? hold shift to force a update")
-                delay(1000)
+//            if (oldpack.version == modpack.version) {
+//                logger.info("no update required ? hold shift to force a update")
+//                delay(1000)
 //                return //TODO: make dialog close continue when no update is required ?
 //                if(kit.getLockingKeyState(KeyEvent.VK_CAPS_LOCK)) {
 //                    forceDisplay = true
 //                } else {
 //                    exitProcess(0)
 //                }
-            }
+//            }
         }
 
         val forgePrefix = "net.minecraftforge:forge:"

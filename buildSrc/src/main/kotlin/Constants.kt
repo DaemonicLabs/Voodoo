@@ -15,7 +15,7 @@ fun create(
 }
 
 object Gradle {
-    const val version = "5.0-rc-1"
+    const val version = "5.0"
     val distributionType = Wrapper.DistributionType.ALL
 }
 

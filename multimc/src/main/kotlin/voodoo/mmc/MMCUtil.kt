@@ -32,6 +32,7 @@ import javax.swing.JDialog
 import javax.swing.JFrame
 import javax.swing.JLabel
 import javax.swing.JPanel
+import javax.swing.JScrollPane
 import javax.swing.JToggleButton
 import javax.swing.SwingConstants
 import javax.swing.UIManager
@@ -266,7 +267,7 @@ object MMCUtil : KLogging() {
                             gridx = 0
                             gridy = row
                             weightx = 0.001
-                            weighty = 0.001
+                            weighty = 1.0
                             anchor = GridBagConstraints.LINE_START
                             fill = GridBagConstraints.BOTH
                             ipady = 4
@@ -294,7 +295,7 @@ object MMCUtil : KLogging() {
                             gridx = 1
                             gridy = row
                             weightx = 0.001
-                            weighty = 0.001
+                            weighty = 1.0
                             anchor = GridBagConstraints.LINE_START
                             fill = GridBagConstraints.BOTH
                             ipady = 4
@@ -347,11 +348,12 @@ object MMCUtil : KLogging() {
                     feature.name to ::select
                 }.toList().toMap()
 
-                add(panel, BorderLayout.CENTER)
+                val scrollPane = JScrollPane(panel)
+                add(scrollPane, BorderLayout.CENTER)
                 val buttonPane = JPanel(GridBagLayout())
 
                 val buttonResetDefault = JButton("Reset to Default").apply {
-                    addActionListener { _ ->
+                    addActionListener {
                         setter.forEach { (name, function) ->
                             val selected = features.find { feature -> feature.name == name }!!.selected
                             function(selected)
