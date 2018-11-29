@@ -20,6 +20,7 @@ import java.awt.Dialog
 import java.awt.GridBagConstraints
 import java.awt.GridBagLayout
 import java.awt.Insets
+import java.awt.Rectangle
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.io.File
@@ -461,8 +462,25 @@ object MMCUtil : KLogging() {
         }
         logger.info("created dialog")
 
+        val mmcStateFile = configHome.resolve("mmc.state.json")
+        println(mmcStateFile)
+        val mmcState = mmcStateFile.takeIf { it.exists() }
+            ?.let {
+                json.parse(MMCState.serializer(), it.readText())
+            }
+        val bounds = mmcState?.bounds
+        if(bounds != null) {
+            dialog.setBounds(Rectangle(bounds.x, bounds.y, bounds.width, bounds.height))
+        } else {
+            dialog.setLocationRelativeTo(null)
+        }
+
         dialog.isVisible = true
         dialog.dispose()
+
+        // save statw
+        mmcStateFile.writeText(json.stringify(MMCState.serializer(), MMCState(bounds = Bounds(dialog.bounds))))
+
         return features.associateBy({ it.name }, { toggleButtons[it.name]!!.isSelected }) to reinstall
     }
 }
