@@ -11,21 +11,21 @@ pipeline {
 	    stage("voodoo") {
 	        steps {
 	            sh './gradlew clean'
-	            sh './gradlew test'
+	            sh './gradlew test -S'
 	            // archiveArtifacts artifacts:  'build/libs/*jar'
 	        }
 	    }
 	    stage("multimc-installer") {
 	        steps {
 	            sh './gradlew :multimc:multimc-installer:clean'
-	            sh './gradlew :multimc:multimc-installer:shadowJar'
+	            sh './gradlew :multimc:multimc-installer:shadowJar -S'
 	            archiveArtifacts artifacts:  'multimc/installer/build/libs/*jar'
 	        }
 	    }
 	    stage("server-installer") {
 	        steps {
 	            sh './gradlew :server-installer:clean'
-	            sh './gradlew :server-installer:shadowJar'
+	            sh './gradlew :server-installer:shadowJar -S'
 	            archiveArtifacts artifacts:  'server-installer/build/libs/*jar'
 	        }
 	    }
@@ -33,7 +33,7 @@ pipeline {
 	        steps {
 	            sh './gradlew :bootstrap:clean'
 	            // sh './gradlew :bootstrap:shadowJar -Ptarget=voodoo'
-	            sh './gradlew :bootstrap:shadowJar -Ptarget=multimc-installer'
+	            sh './gradlew :bootstrap:shadowJar -Ptarget=multimc-installer -S'
 	            // archiveArtifacts artifacts:  'bootstrap/build/libs/*voodoo*'
 	            archiveArtifacts artifacts:  'bootstrap/build/libs/*multimc-installer*'
 	        }
@@ -43,7 +43,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'privateGradlePublish', variable: 'PRIVATEGRADLE')]) {
                     sh '''
                         cp "$PRIVATEGRADLE" private.gradle
-                        ./gradlew publish
+                        ./gradlew publish -S
                     '''
                 }
             }
