@@ -1,9 +1,10 @@
 package voodoo.util
 
-import awaitByteArrayResponse
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.core.Method
+import com.github.kittinunf.fuel.core.extensions.cUrlString
 import com.github.kittinunf.fuel.core.interceptors.validatorResponseInterceptor
+import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
 import com.github.kittinunf.result.Result
 import mu.KLogger
 import mu.KLogging
@@ -46,7 +47,7 @@ suspend fun File.download(
         val (request, response, result) = try {
             Downloader.manager.request(Method.GET, url)
                 .header("User-Agent" to Downloader.useragent)
-                .awaitByteArrayResponse()
+                .awaitByteArrayResponseResult()
         } catch (e: ClassCastException) {
             e.printStackTrace()
             logger.error(e) { "failed for url: $url" }

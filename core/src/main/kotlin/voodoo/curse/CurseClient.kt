@@ -1,8 +1,10 @@
 package voodoo.curse
 
-import awaitObjectResponse
-import awaitStringResponse
 import com.github.kittinunf.fuel.Fuel
+import com.github.kittinunf.fuel.core.extensions.cUrlString
+import com.github.kittinunf.fuel.core.extensions.jsonBody
+import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
+import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
@@ -41,7 +43,6 @@ object CurseClient : KLogging(), CoroutineScope {
             SimpleModule(Date::class, DateSerializer)
         )
     }
-    //    const val FEED_URL = "http://clientupdate-v6.cursecdn.com/feed/addons/432/v10"
     const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
     val deferredSlugIdMap: Deferred<Map<String, ProjectID>> =
@@ -86,7 +87,7 @@ object CurseClient : KLogging(), CoroutineScope {
             .jsonBody(body = JSON.stringify(GraphQLRequest.serializer(), requestBody))
             .apply { headers.clear() }
             .header("User-Agent" to useragent, "Content-Type" to "application/json")
-            .awaitObjectResponse(kotlinxDeserializerOf(loader = GraphQlResult.serializer()))
+            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = GraphQlResult.serializer()))
 
         when (result) {
             is Result.Success -> {
@@ -130,7 +131,7 @@ object CurseClient : KLogging(), CoroutineScope {
 
         val (request, response, result) = url.httpGet()
             .header("User-Agent" to useragent)
-            .awaitObjectResponse(kotlinxDeserializerOf(loader = AddonFile.serializer(), json = json))
+            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = AddonFile.serializer(), json = json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
@@ -159,7 +160,7 @@ object CurseClient : KLogging(), CoroutineScope {
         logger.debug("get $url")
         val (request, response, result) = url.httpGet()
             .header("User-Agent" to useragent)
-            .awaitObjectResponse(kotlinxDeserializerOf(AddonFile.serializer().list, json))
+            .awaitObjectResponseResult(kotlinxDeserializerOf(AddonFile.serializer().list, json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
@@ -189,7 +190,7 @@ object CurseClient : KLogging(), CoroutineScope {
         logger.debug("get $url")
         val (request, response, result) = url.httpGet()
             .header("User-Agent" to useragent)
-            .awaitObjectResponse(kotlinxDeserializerOf(loader = Addon.serializer(), json = json))
+            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = Addon.serializer(), json = json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
@@ -212,7 +213,7 @@ object CurseClient : KLogging(), CoroutineScope {
         logger.debug("get $url")
         val (request, response, result) = url.httpGet()
             .header("User-Agent" to useragent)
-            .awaitStringResponse()
+            .awaitStringResponseResult()
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {

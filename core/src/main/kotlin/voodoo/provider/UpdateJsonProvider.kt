@@ -1,6 +1,7 @@
 package voodoo.provider
 
-import awaitObjectResponse
+import com.github.kittinunf.fuel.core.extensions.cUrlString
+import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
@@ -20,7 +21,7 @@ object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
     private suspend fun getUpdateJson(url: String): UpdateJson? {
         val (request, response, result) = url.httpGet()
             .header("User-Agent" to Downloader.useragent)
-            .awaitObjectResponse(kotlinxDeserializerOf(loader = UpdateJson.serializer()))
+            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = UpdateJson.serializer()))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {

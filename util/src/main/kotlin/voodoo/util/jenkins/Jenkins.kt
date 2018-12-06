@@ -1,7 +1,8 @@
 package voodoo.util.jenkins
 
-import awaitByteArrayResponse
-import awaitObjectResponse
+import com.github.kittinunf.fuel.core.extensions.cUrlString
+import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
+import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
@@ -47,7 +48,7 @@ suspend fun downloadVoodoo(
     val targetFile = File(binariesDir, "$moduleName-$buildNumber.jar")
     val (request, response, result) = artifactUrl.httpGet()
         .header("User-Agent" to useragent)
-        .awaitByteArrayResponse()
+        .awaitByteArrayResponseResult()
     val content = when (result) {
         is Result.Success -> result.value
         is Result.Failure -> {
@@ -73,7 +74,7 @@ class JenkinsServer(
         val requestURL = getUrl(job) + "/api/json"
         val (request, response, result) = requestURL.httpGet()
             .header("User-Agent" to useragent)
-            .awaitObjectResponse<Job>(kotlinxDeserializerOf(loader = Job.serializer(), json = json))
+            .awaitObjectResponseResult<Job>(kotlinxDeserializerOf(loader = Job.serializer(), json = json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
@@ -96,7 +97,7 @@ data class Build(
         val buildUrl = "$url/api/json"
         val (request, response, result) = buildUrl.httpGet()
             .header("User-Agent" to useragent)
-            .awaitObjectResponse(kotlinxDeserializerOf(loader = BuildWithDetails.serializer(), json = json))
+            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = BuildWithDetails.serializer(), json = json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {

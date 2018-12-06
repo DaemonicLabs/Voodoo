@@ -18,39 +18,38 @@ private val redirectStatusWithGets = listOf(
 
 fun fixedRedirectResponseInterceptor(manager: FuelManager) =
     { next: (Request, Response) -> Response ->
-        { request: Request, response: Response ->
+        inner@{ request: Request, response: Response ->
+            if (!response.isStatusRedirection || request.executionOptions.allowRedirects == false) {
+                return@inner next(request, response)
+            }
 
-            if (response.isStatusRedirection && request.isAllowRedirects) {
-                val redirectedUrl = response.headers["Location"]
+            val redirectedUrl = response.headers["Location"]
 
-                val newMethod = when {
-                    response.statusCode in redirectStatusWithGets -> Method.GET
-                    else -> request.method
-                }
+            val newMethod = when {
+                response.statusCode in redirectStatusWithGets -> Method.GET
+                else -> request.method
+            }
 
-                val redirectedUrlString = redirectedUrl.first().encoded
-                if (!redirectedUrlString.isEmpty()) {
-                    val newUrl = if (URI(redirectedUrlString).isAbsolute) {
-                        URL(redirectedUrlString)
-                    } else {
-                        URL(request.url, redirectedUrlString)
-                    }
-                    val newHeaders = request.headers.toMutableMap()
-
-                    val encoding = Encoding(httpMethod = newMethod, urlString = newUrl.toString())
-
-                    // check whether it is the same host or not
-                    if (newUrl.host != request.url.host) {
-                        newHeaders.remove("Authorization")
-                    }
-
-                    // redirect
-                    next(request, manager.request(encoding).header(newHeaders).response().second)
+            val redirectedUrlString = redirectedUrl.first().encoded
+            if (!redirectedUrlString.isEmpty()) {
+                val newUrl = if (URI(redirectedUrlString).isAbsolute) {
+                    URL(redirectedUrlString)
                 } else {
-                    // there is no location detected, just passing along
-                    next(request, response)
+                    URL(request.url, redirectedUrlString)
                 }
+                val newHeaders = request.headers.toMutableMap()
+
+                val encoding = Encoding(httpMethod = newMethod, urlString = newUrl.toString())
+
+                // check whether it is the same host or not
+                if (newUrl.host != request.url.host) {
+                    newHeaders.remove("Authorization")
+                }
+
+                // redirect
+                next(request, manager.request(encoding).header(newHeaders).response().second)
             } else {
+                // there is no location detected, just passing along
                 next(request, response)
             }
         }

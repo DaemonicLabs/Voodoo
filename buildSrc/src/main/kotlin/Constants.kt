@@ -20,34 +20,33 @@ object Gradle {
 }
 
 object Kotlin {
-    const val version = "1.3.0"
+    const val version = "1.3.10"
 //    object Dsl {
 //        const val version = "1.0-rc-12"
 //    }
 }
 
 object Coroutines {
-    const val version = "1.0.0"
+    const val version = "1.0.1"
     val dependency = create(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = version)
 }
 
 object Serialization {
-    const val version = "0.9.0"
+    const val version = "0.9.1"
     const val plugin = "kotlinx-serialization"
     const val module = "org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin"
     val dependency = create(group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-runtime", version = version)
 }
 
 object Kotlinpoet {
-    const val version = "1.0.0-RC1"
+    const val version = "1.0.0-RC3"
     val dependency = create(group = "com.squareup", name = "kotlinpoet", version = version)
 }
 
 object Fuel {
     //    const val version = "-SNAPSHOT"
-    const val version = "c5239e5db9"
-    //    private const val group = "com.github.NikkyAi.Fuel"
-    private const val group = "com.github.kittinunf.fuel"
+    const val version = "7b56b22799"
+    private const val group = "com.github.kittinunf.Fuel"
     val dependency = create(group = group, name = "fuel", version = version)
     val dependencyCoroutines = create(group = group, name = "fuel-coroutines", version = version)
     val dependencySerialization = create(group = group, name = "fuel-kotlinx-serialization", version = version)

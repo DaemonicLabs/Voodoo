@@ -1,6 +1,7 @@
 package voodoo.forge
 
-import awaitObjectResponse
+import com.github.kittinunf.fuel.core.extensions.cUrlString
+import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
@@ -88,7 +89,7 @@ object ForgeUtil : KLogging() {
         loop@ while (true) {
             val (request, response, result) = url.httpGet()
                 .header("User-Agent" to Downloader.useragent)
-                .awaitObjectResponse(kotlinxDeserializerOf(loader = ForgeData.serializer()))
+                .awaitObjectResponseResult(kotlinxDeserializerOf(loader = ForgeData.serializer()))
             when (result) {
                 is Result.Success -> return result.value
                 is Result.Failure -> {
