@@ -103,9 +103,9 @@ object PoetPack : KLogging() {
                             builder.add("%T.%L", fileType, releaseType)
                         }
                         builder.add(")")
-                        add("%[")
+                        add("«")
                         add(builder.build())
-                        add("\n%]")
+                        add("\n»")
                     }
 //                    entry.curseProjectID.takeIf { it != default.curseProjectID }?.let {
 //                        addStatement("curseProjectID = %T(%L)", ProjectID::class.asClassName(), it.value)

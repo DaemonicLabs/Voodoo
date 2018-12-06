@@ -6,8 +6,9 @@
  */
 package com.skcraft.launcher.builder
 
-import awaitByteArrayResponse
-import awaitStringResponse
+import com.github.kittinunf.fuel.core.extensions.cUrlString
+import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
+import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.skcraft.launcher.LauncherUtils
@@ -201,7 +202,7 @@ constructor(
                                 logger.info("Downloading library " + library.name + " from " + url + "...")
                                 val (request, response, result) = url.httpGet()
                                     .header("User-Agent" to Downloader.useragent)
-                                    .awaitByteArrayResponse()
+                                    .awaitByteArrayResponseResult()
                                 val bytes = when (result) {
                                     is Result.Success -> result.value
                                     is Result.Failure -> {
@@ -278,7 +279,7 @@ constructor(
 
             val (request, response, result) = url.httpGet()
                 .header("User-Agent" to Downloader.useragent)
-                .awaitStringResponse()
+                .awaitStringResponseResult()
             manifest.versionManifest = when (result) {
                 is Result.Success -> {
                     val jsonString = result.value.replace("\n", "").replace(" ", "")

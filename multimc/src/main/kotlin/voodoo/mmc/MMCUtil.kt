@@ -469,7 +469,7 @@ object MMCUtil : KLogging() {
                 json.parse(MMCState.serializer(), it.readText())
             }
         val bounds = mmcState?.bounds
-        if(bounds != null) {
+        if (bounds != null) {
             dialog.setBounds(Rectangle(bounds.x, bounds.y, bounds.width, bounds.height))
         } else {
             dialog.setLocationRelativeTo(null)

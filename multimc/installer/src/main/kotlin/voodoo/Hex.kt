@@ -1,6 +1,7 @@
 package voodoo
 
-import awaitObjectResponse
+import com.github.kittinunf.fuel.core.extensions.cUrlString
+import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
@@ -61,7 +62,7 @@ object Hex : KLogging() {
 
         val (request, response, result) = packUrl.httpGet()
             .header("User-Agent" to CurseClient.useragent)
-            .awaitObjectResponse(kotlinxDeserializerOf(loader = Manifest.serializer(), json = json))
+            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = Manifest.serializer(), json = json))
         val modpack: Manifest = when (result) {
             is Result.Success -> {
                 result.value
