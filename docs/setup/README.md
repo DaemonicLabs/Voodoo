@@ -5,15 +5,15 @@
 Lets set up the framework of using voodoo
 this is still more boilerplate than i wish to use, [How to contribute](/#how-to-contribute)
 
-this guide attempts to make the project interchangeable useable from gradle and kscript
-
-## running poet
-
-generating curse, forge and other files
-
-Voodoo provides autocompletion for curse mods and forge by generating kotlin source files (using kotlinpoet)
-
 ## gradle setup
+
+Setting up a Voodoo project/workspace
+
+### Easy
+
+fork [sample project](https://github.com/NikkyAI/VoodooSamples)
+
+### Manual
 
 [sample project](https://github.com/NikkyAI/VoodooSamples)
 
@@ -57,9 +57,19 @@ rootProject.name = "YourModpackname"
 [build.gradle.kts](build.gradle.kts)  
 [settings.gradle.kts](build.gradle.kts)  
 [gradle.properties](gradle.properties)  
+
+## running poet
+
+generating curse, forge and other files
+
+Voodoo provides autocompletion for curse mods and forge by generating kotlin source files (using kotlinpoet)
+
+execute `gradlew poet`
 -->
 
 ## Modpack File
+
+Creatng a new modpack within the workspace
 
 ### Automatic
 
@@ -70,6 +80,7 @@ let the plugin automatically generate a pack skeleton
 
 ### Manual
 
+`packs/awesomepack.kt`
 ```kotlin
 import voodoo.*
 import voodoo.data.*
