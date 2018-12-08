@@ -20,6 +20,6 @@ repositories {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "5.0-rc-1"
+    gradleVersion = "5.0"
     distributionType = Wrapper.DistributionType.ALL
 }

@@ -44,9 +44,9 @@ tasks.withType<Wrapper> {
 ```kotlin
 pluginManagement {
     repositories {
-        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap") { name = "kotlin-eap" } // TODO remove
-        maven(url = "https://kotlin.bintray.com/kotlinx") { name = "kotlinx" } // TODO remove
+        maven(url = "https://kotlin.bintray.com/kotlinx") { name = "kotlinx" }
         maven(url = "https://repo.elytradev.com") { name = "elytradev" }
+        maven(url = "https://jitpack.io") { name = "jitpack" }
         gradlePluginPortal()
     }
 }
@@ -91,7 +91,6 @@ fun main(args: Array<String>) = withDefaultMain(
         title = "Awesome Pack Demo"
         forge = Forge.mc1_12_2_recommended
         authors = listOf("insert-author-name")
-        forge = 2768
         root = rootEntry(CurseProvider) {
             TODO("to be implemented")
         }
