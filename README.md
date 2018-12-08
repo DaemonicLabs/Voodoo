@@ -96,6 +96,22 @@ use `-dev` on the plugin version and add `mavenLocal()` to the dependencies of p
 [build.gradle.kts](https://github.com/elytra/Voodoo/blob/master/samples/build.gradle.kts)  
 [settings.gradle.kts](https://github.com/elytra/Voodoo/blob/master/samples/settings.gradle.kts)  
 
+Task Shortcuts
+--------------
+
+for all tasks shortcuts can be registered in the `build.gradle.kts`
+```kotlin
+voodoo {
+    addTask(name = "rebuildAndTestMMC", parameters = listOf("build", "test mmc"))
+    addTask(name = "build", parameters = listOf("build"))
+    addTask(name = "sk", parameters = listOf("pack sk"))
+    addTask(name = "server", parameters = listOf("pack server"))
+    addTask(name = "buildAndPackAll", parameters = listOf("build", "pack sk", "pack server", "pack mmc"))
+}
+```
+these tasks will be registered for each modpack, eg `cotm_rebuildAndTestMMC` would 
+execute cotm to build the pack and then open the multimc5 test client
+
 Usage examples
 --------------
 
@@ -126,7 +142,7 @@ build and test with multimc \
 ## Server Deployment
 
 create a server package \
-`./cotm.kt pack server -o ".server"`
+`./gradlew cotm pack server -o ".server"`
 
 that creates a server *package* in `.server/`
  1. upload that package to **different** folder on your minecraft server
@@ -142,10 +158,10 @@ this will:
 ## MultiMC Integration / Deployment
 
 To run a test instance use \
-`./cotm.kt pack test mmc`
+`./gradlew cotm test mmc`
 
 to compile a minimalistic MMC pack that selfupdates using the skcraft data \
-`./cotm.kt pack pack mmc` \
+`./gradlew cotm pack mmc` \
 this expects a file `multimc/${packname}.url.txt` that points at the previously uploaded skcraft pack \
 more specifically the json file of the pack
 
