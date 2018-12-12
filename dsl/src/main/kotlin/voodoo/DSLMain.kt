@@ -47,7 +47,10 @@ fun withDefaultMain(
             val modpack = LockPack.parse(lockFile.absoluteFile, root)
             Pack.pack(modpack, *args)
         },
-        "test" to { args -> TesterForDSL.main(lockFile, args = *args) },
+        "test" to { args ->
+            val modpack = LockPack.parse(lockFile.absoluteFile, root)
+            TesterForDSL.main(modpack, args = *args)
+        },
 //        "idea" to Idea::main, //TODO: generate gradle/idea project ?
         "version" to { _ ->
             logger.info(FULL_VERSION)

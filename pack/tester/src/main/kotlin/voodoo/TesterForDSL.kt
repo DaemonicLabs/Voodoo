@@ -16,14 +16,14 @@ import kotlin.system.exitProcess
  */
 
 object TesterForDSL : KLogging() {
-    fun main(modpackLockFile: File, vararg args: String) = runBlocking {
+    fun main(modpack: LockPack, vararg args: String) = runBlocking {
         val arguments = Arguments(ArgParser(args))
 
         arguments.run {
 
-            logger.info("loading $modpackLockFile")
+//            logger.info("loading $modpackLockFile")
             // TODO: load proper rootDir
-            val modpack = LockPack.parse(modpackLockFile.absoluteFile, File("."))
+//            val modpack = LockPack.parse(modpackLockFile.absoluteFile, File("."))
 
             val tester = when (methode) {
                 "mmc" -> MultiMCTester
