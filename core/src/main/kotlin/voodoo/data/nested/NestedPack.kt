@@ -44,6 +44,12 @@ constructor(
 ) {
     companion object : KLogging()
 
+    init {
+        if(!rootDir.isAbsolute) {
+            throw IllegalStateException("rootDir: '$rootDir' is not absolute")
+        }
+    }
+
     @Transient
     val sourceFolder: File
         get() = rootDir.resolve(sourceDir)
