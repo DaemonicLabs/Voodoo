@@ -17,7 +17,7 @@ object CurseSpek : Spek({
         val cacheDir by memoized { directories.cacheHome }
 
         val rootFolder by memoized {
-            File("run").resolve("test").resolve("curse").apply {
+            File("run").resolve("test").resolve("curse").absoluteFile.apply {
                 deleteRecursively()
                 mkdirs()
             }
