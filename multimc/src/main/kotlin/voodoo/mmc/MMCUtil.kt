@@ -59,6 +59,7 @@ object MMCUtil : KLogging() {
             mmcConfigurationFile.exists() -> json.parse(MMCConfiguration.serializer(), mmcConfigurationFile.readText())
             else -> MMCConfiguration()
         }
+        logger.info("loaded config: $mmcConfig")
 
         mmcConfigurationFile.parentFile.mkdirs()
         mmcConfigurationFile.writeText(mmcConfig.toJson(MMCConfiguration.serializer()))
@@ -82,6 +83,7 @@ object MMCUtil : KLogging() {
      * Finds the MultiMC data loccation
      */
     fun findDir(): File {
+        logger.info("os.name: ${System.getProperty("os.name")}")
         dir = dir ?: when {
             Platform.isWindows -> {
                 val location = "where ${mmcConfig.binary}".runCommand()
