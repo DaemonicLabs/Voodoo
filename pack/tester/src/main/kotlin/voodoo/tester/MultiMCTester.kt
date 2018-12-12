@@ -36,7 +36,7 @@ object MultiMCTester : AbstractTester() {
         val instanceDir = multimcDir.resolve("instances").resolve(folder)
 
         if (clean) {
-            logger.info("cleaning old instance dir")
+            logger.info("cleaning old instance dir ($instanceDir)")
             instanceDir.deleteRecursively()
         }
 
@@ -53,8 +53,8 @@ object MultiMCTester : AbstractTester() {
         val modsDir = minecraftDir.resolve("mods")
         modsDir.deleteRecursively()
 
-        Downloader.logger.info("copying files into minecraft dir")
         val minecraftSrcDir = modpack.sourceFolder
+        Downloader.logger.info("copying files into minecraft dir ('$minecraftSrcDir' => '$minecraftDir')")
         if (minecraftSrcDir.exists()) {
             minecraftSrcDir.copyRecursively(minecraftDir, overwrite = true)
         }
