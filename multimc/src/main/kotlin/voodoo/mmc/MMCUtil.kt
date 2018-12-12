@@ -159,6 +159,8 @@ object MMCUtil : KLogging() {
     ): File {
         instanceDir.mkdirs()
 
+        logger.info("instance dir: '$instanceDir'")
+
         val minecraftDir = instanceDir.resolve(".minecraft")
         minecraftDir.mkdirs()
 
