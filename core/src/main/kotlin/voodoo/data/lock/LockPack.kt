@@ -101,6 +101,9 @@ data class LockPack(
             .map { LockEntry.loadEntry(it) to it }
 
         fun parse(packFile: File, rootDir: File): LockPack {
+            if (!rootDir.isAbsolute) {
+                throw IllegalStateException("rootDir: '$rootDir' is not absolute")
+            }
             val lockpack: LockPack = json.parse(LockPack.Companion, packFile.readText())
             lockpack.rootDir = rootDir
             lockpack.loadEntries()

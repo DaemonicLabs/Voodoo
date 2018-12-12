@@ -45,7 +45,7 @@ constructor(
     companion object : KLogging()
 
     init {
-        if(!rootDir.isAbsolute) {
+        if (!rootDir.isAbsolute) {
             throw IllegalStateException("rootDir: '$rootDir' is not absolute")
         }
     }
