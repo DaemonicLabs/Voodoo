@@ -34,7 +34,7 @@ object Install : KLogging() {
             logger.info("cleanConfig: $cleanConfig")
 
             // TODO: load proper rootDir
-            val modpack = LockPack.parse(packFile.absoluteFile, File("."))
+            val modpack = LockPack.parse(packFile.absoluteFile, File(".").absoluteFile)
 
             Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
         }
