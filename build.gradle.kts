@@ -79,8 +79,6 @@ subprojects {
             jvmTarget = "1.8"
             freeCompilerArgs = listOf(
                 "-XXLanguage:+InlineClasses",
-                "-XXLanguage:+NewInference",
-                "-XXLanguage:+SamConversionForKotlinFunctions",
                 "-progressive"
             )
         }
