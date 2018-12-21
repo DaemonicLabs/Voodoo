@@ -12,12 +12,7 @@ import java.io.File
  * @author Nikky
  */
 data class NestedPack
-@Deprecated(
-    "use builder function nestedPack(id, mcVersion) {}",
-    ReplaceWith("nestedPack(id, mcVersion) {}"),
-    level = DeprecationLevel.WARNING
-)
-constructor(
+internal constructor(
     val rootDir: File,
     /**
      * unique identifier
@@ -42,7 +37,17 @@ constructor(
     var sourceDir: String = id,
     var tomeDir: String = id
 ) {
-    companion object : KLogging()
+    companion object : KLogging() {
+        fun create(rootDir: File, id: String, mcVersion: String, builder: (NestedPack) -> Unit): NestedPack {
+            val pack = NestedPack(
+                rootDir = rootDir,
+                id = id,
+                mcVersion = mcVersion
+            )
+            builder(pack)
+            return pack
+        }
+    }
 
     init {
         if (!rootDir.isAbsolute) {

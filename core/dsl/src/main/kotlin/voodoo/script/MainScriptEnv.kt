@@ -34,14 +34,15 @@ open class MainScriptEnv(
 
     @VoodooDSL
     fun nestedPack(id: String, mcVersion: String, packBuilder: ModpackBuilder.() -> Unit): NestedPack {
-        @Suppress("deprecated")
-        val pack = NestedPack(
+        val pack = NestedPack.create(
             rootDir = rootDir,
             id = id,
             mcVersion = mcVersion
-        )
-        val wrapper = ModpackBuilder(pack)
-        wrapper.packBuilder()
+        ) {
+            val wrapper = ModpackBuilder(it)
+            wrapper.packBuilder()
+        }
+
         packs += pack
         return pack
     }

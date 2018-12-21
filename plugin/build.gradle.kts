@@ -49,6 +49,3 @@ publishing {
     }
 }
 
-rootProject.file("private.gradle")
-    .takeIf { it.exists() }
-    ?.let { apply(from = it) }
