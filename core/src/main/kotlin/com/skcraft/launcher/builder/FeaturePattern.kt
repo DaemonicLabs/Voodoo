@@ -27,8 +27,8 @@ data class FeaturePattern(
 
     @Serializer(forClass = FeaturePattern::class)
     companion object {
-        override fun serialize(output: Encoder, obj: FeaturePattern) {
-            val elemOutput = output.beginStructure(descriptor)
+        override fun serialize(encoder: Encoder, obj: FeaturePattern) {
+            val elemOutput = encoder.beginStructure(descriptor)
             elemOutput.encodeSerializableElement(descriptor, 0, Feature.Companion, obj.feature)
             elemOutput.encodeSerializableElement(descriptor, 1, FnPatternList.Companion, obj.filePatterns)
             elemOutput.endStructure(descriptor)

@@ -20,12 +20,12 @@ data class FileID(val value: Int) {
     companion object : KSerializer<FileID> {
 //        override val descriptor = PrimitiveDesc("FileID")
 
-        override fun deserialize(input: Decoder): FileID {
-            return FileID(input.decodeInt())
+        override fun deserialize(decoder: Decoder): FileID {
+            return FileID(decoder.decodeInt())
         }
 
-        override fun serialize(output: Encoder, obj: FileID) {
-            output.encodeInt(obj.value)
+        override fun serialize(encoder: Encoder, obj: FileID) {
+            encoder.encodeInt(obj.value)
         }
 
         val INVALID = FileID(-1)

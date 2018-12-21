@@ -8,11 +8,11 @@ import java.util.Date
 
 @Serializer(forClass = Date::class)
 object DateSerializer : KSerializer<Date> {
-    override fun serialize(output: Encoder, obj: Date) {
-        output.encodeLong(obj.time)
+    override fun serialize(encoder: Encoder, obj: Date) {
+        encoder.encodeLong(obj.time)
     }
 
-    override fun deserialize(input: Decoder): Date {
-        return Date(input.decodeLong())
+    override fun deserialize(decoder: Decoder): Date {
+        return Date(decoder.decodeLong())
     }
 }

@@ -36,8 +36,8 @@ data class FileInstall(
 
     @Serializer(forClass = FileInstall::class)
     companion object : KSerializer<FileInstall> {
-        override fun serialize(output: Encoder, obj: FileInstall) {
-            val elemOutput = output.beginStructure(descriptor)
+        override fun serialize(encoder: Encoder, obj: FileInstall) {
+            val elemOutput = encoder.beginStructure(descriptor)
             elemOutput.encodeStringElement(descriptor, 8, obj.type)
             obj.conditionWhen?.let { conditionWhen ->
                 elemOutput.encodeSerializableElement(descriptor, 7, Condition.serializer(), conditionWhen)

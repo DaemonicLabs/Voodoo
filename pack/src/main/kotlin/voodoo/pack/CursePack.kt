@@ -17,7 +17,7 @@ import kotlinx.html.html
 import kotlinx.html.li
 import kotlinx.html.stream.createHTML
 import kotlinx.html.ul
-import kotlinx.serialization.json.JSON
+import kotlinx.serialization.json.Json
 import voodoo.data.Side
 import voodoo.data.curse.CurseFile
 import voodoo.data.curse.CurseManifest
@@ -165,7 +165,7 @@ object CursePack : AbstractPack() {
             modListFile.writeText(html)
 
             val curseManifest = CurseManifest(
-                name = modpack.title,
+                name = modpack.title ?: modpack.id,
                 version = modpack.version,
                 author = modpack.authors.joinToString(", "),
                 minecraft = CurseMinecraft(
@@ -184,7 +184,7 @@ object CursePack : AbstractPack() {
                 files = curseMods,
                 overrides = "overrides"
             )
-            val json = JSON(indented = true)
+            val json = Json(indented = true, encodeDefaults = false)
             val manifestFile = modpackDir.resolve("manifest.json")
             manifestFile.writeText(json.stringify(CurseManifest.serializer(), curseManifest))
 

@@ -30,8 +30,8 @@ enum class Platform {
     @Serializer(forClass = Platform::class)
     companion object {
         fun serializer() = Platform
-        override fun deserialize(input: Decoder): Platform {
-            val text = input.decodeString()
+        override fun deserialize(decoder: Decoder): Platform {
+            val text = decoder.decodeString()
             return when {
                 text.equals("windows", ignoreCase = true) -> Platform.WINDOWS
                 text.equals("linux", ignoreCase = true) -> Platform.LINUX
@@ -41,8 +41,8 @@ enum class Platform {
             }
         }
 
-        override fun serialize(output: Encoder, obj: Platform) {
-            output.encodeString(
+        override fun serialize(encoder: Encoder, obj: Platform) {
+            encoder.encodeString(
                 when (obj) {
                     Platform.WINDOWS -> "windows"
                     Platform.MAC_OS_X -> "osx"

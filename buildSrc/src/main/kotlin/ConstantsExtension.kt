@@ -1,4 +1,6 @@
-class ConstantsBuilder(val pkg: String, val className: String) {
+import java.io.Serializable
+
+class ConstantsBuilder(val pkg: String, val className: String) : Serializable {
     var fields: Map<String, Any> = mapOf()
         private set
 
@@ -13,7 +15,7 @@ class ConstantsBuilder(val pkg: String, val className: String) {
     }
 }
 
-data class ConstantField(
+data class ConstantField (
     val name: String
 )
 

@@ -11,13 +11,13 @@ import java.time.format.DateTimeFormatter
 
 @Serializer(forClass = LocalDateTime::class)
 object TimestampSerializer : KSerializer<LocalDateTime> {
-    override fun serialize(output: Encoder, obj: LocalDateTime) {
+    override fun serialize(encoder: Encoder, obj: LocalDateTime) {
         val epoch = obj.atZone(ZoneId.of("UTC")).toInstant().toEpochMilli()
-        output.encodeLong(epoch)
+        encoder.encodeLong(epoch)
     }
 
-    override fun deserialize(input: Decoder): LocalDateTime {
-        val timestamp = input.decodeString()
+    override fun deserialize(decoder: Decoder): LocalDateTime {
+        val timestamp = decoder.decodeString()
         return timestamp.toLongOrNull()?.let { milliseconds ->
             LocalDateTime.ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("UTC"))
         } ?: LocalDateTime.parse(timestamp, DateTimeFormatter.ISO_OFFSET_DATE_TIME)

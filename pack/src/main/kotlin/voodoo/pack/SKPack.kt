@@ -9,7 +9,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.serialization.json.JSON
+import kotlinx.serialization.json.Json
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
 import voodoo.pack.sk.SKLocation
@@ -155,7 +155,7 @@ object SKPack : AbstractPack() {
 
             val skmodpack = SKModpack(
                 name = modpack.id,
-                title = modpack.title,
+                title = modpack.title ?: "",
                 gameVersion = modpack.mcVersion,
                 userFiles = modpack.userFiles,
                 launch = modpack.launch,
@@ -163,7 +163,7 @@ object SKPack : AbstractPack() {
             )
 
             val modpackPath = modpackDir.resolve("modpack.json")
-            modpackPath.writeText(JSON.indented.stringify(SKModpack.serializer(), skmodpack))
+            modpackPath.writeText(Json.indented.stringify(SKModpack.serializer(), skmodpack))
 
             // add to workspace.json
             logger.info("adding ${modpack.id} to workpace.json", modpack.id)
@@ -172,7 +172,7 @@ object SKPack : AbstractPack() {
             val workspacePath = workspaceMetaFolder.resolve("workspace.json")
             val workspace = if (workspacePath.exists()) {
                 try {
-                    JSON.indented.parse<SKWorkspace>(SKWorkspace.serializer(), workspacePath.readText())
+                    Json.indented.parse<SKWorkspace>(SKWorkspace.serializer(), workspacePath.readText())
                 } catch (e: Exception) {
                     logger.error("failed parsing: $workspacePath", e)
                     SKWorkspace()
@@ -182,7 +182,7 @@ object SKPack : AbstractPack() {
             }
             workspace.packs += SKLocation(modpack.id)
 
-            workspacePath.writeText(JSON.indented.stringify(SKWorkspace.serializer(), workspace))
+            workspacePath.writeText(Json.indented.stringify(SKWorkspace.serializer(), workspace))
 
             val targetDir = if (target != null) {
                 modpack.rootDir.resolve(target)
@@ -208,20 +208,20 @@ object SKPack : AbstractPack() {
             // regenerate packages.json
             val packagesFile = targetDir.resolve("packages.json")
             val packages: SKPackages = if (packagesFile.exists()) {
-                JSON.indented.parse(SKPackages.serializer(), packagesFile.readText())
+                Json.indented.parse(SKPackages.serializer(), packagesFile.readText())
             } else {
                 SKPackages()
             }
 
             val packFragment = packages.packages.find { it.name == modpack.id }
                 ?: SkPackageFragment(
-                    title = modpack.title,
+                    title = modpack.title ?: "",
                     name = modpack.id,
                     version = uniqueVersion,
                     location = "${modpack.id}.json"
                 ).apply { packages.packages += this }
             packFragment.version = uniqueVersion
-            packagesFile.writeText(JSON.indented.stringify(SKPackages.serializer(), packages))
+            packagesFile.writeText(Json.indented.stringify(SKPackages.serializer(), packages))
 
             logger.info("finished")
         }

@@ -26,8 +26,8 @@ data class Library(
 ) {
     @Serializer(forClass = Library::class)
     companion object : KSerializer<Library> {
-        override fun serialize(output: Encoder, obj: Library) {
-            val elemOutput = output.beginStructure(descriptor)
+        override fun serialize(encoder: Encoder, obj: Library) {
+            val elemOutput = encoder.beginStructure(descriptor)
             elemOutput.encodeStringElement(descriptor, 0, obj.name)
             obj.baseUrl?.let { url ->
                 elemOutput.encodeStringElement(descriptor, 1, url)
@@ -149,6 +149,7 @@ data class Library(
     data class OS(
         @Optional var name: String? = null,
         @Optional var platform: Platform? = null,
+        @Serializable(with=PatternSerializer::class)
         @Optional var version: Pattern? = null
     ) {
         fun matches(environment: Environment): Boolean {
@@ -159,8 +160,8 @@ data class Library(
 
         @Serializer(forClass = OS::class)
         companion object : KSerializer<OS> {
-            override fun serialize(output: Encoder, obj: OS) {
-                val elemOutput = output.beginStructure(descriptor)
+            override fun serialize(encoder: Encoder, obj: OS) {
+                val elemOutput = encoder.beginStructure(descriptor)
                 obj.name?.let {
                     elemOutput.encodeStringElement(descriptor, 0, it)
                 }

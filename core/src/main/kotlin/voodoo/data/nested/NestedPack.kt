@@ -30,7 +30,7 @@ constructor(
     /**
      * display name
      */
-    var title: String = "",
+    var title: String? = null,
     var version: String = "1.0",
     var icon: File = rootDir.resolve("icon.png"),
     var authors: List<String> = emptyList(),

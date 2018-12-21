@@ -26,8 +26,8 @@ data class Feature(
 ) {
     @Serializer(forClass = Feature::class)
     companion object : KSerializer<Feature> {
-        override fun serialize(output: Encoder, obj: Feature) {
-            val elemOutput = output.beginStructure(descriptor)
+        override fun serialize(encoder: Encoder, obj: Feature) {
+            val elemOutput = encoder.beginStructure(descriptor)
             if (obj.name.isNotEmpty())
                 elemOutput.encodeStringElement(descriptor, 0, obj.name)
             elemOutput.encodeBooleanElement(descriptor, 1, obj.selected)

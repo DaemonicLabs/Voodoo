@@ -17,10 +17,13 @@ import java.io.File
 import kotlin.script.experimental.api.ScriptEvaluationConfiguration
 import kotlin.script.experimental.api.compilerOptions
 import kotlin.script.experimental.api.constructorArgs
+import kotlin.script.experimental.api.dependencies
 import kotlin.script.experimental.api.resultOrNull
 import kotlin.script.experimental.host.toScriptSource
+import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
 import kotlin.script.experimental.jvm.javaHome
+import kotlin.script.experimental.jvm.jdkHome
 import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
@@ -63,8 +66,17 @@ object Voodoo : KLogging() {
         val config = createJvmCompilationConfigurationFromTemplate<MainScriptEnv> {
             jvm {
                 dependenciesFromCurrentContext(wholeClasspath = true)
-//                dependencies.append(JvmDependency(voodooDir))
-                javaHome(File("/usr/lib/jvm/intellij-jdk")) // TODO use environment variable
+                dependencies.append(
+                    JvmDependency(
+                        File(".voodoo/Constants.kt"),
+                        File(".voodoo/Forge.kt"),
+                        File(".voodoo/Mod.kt"),
+                        File(".voodoo/TexturePack.kt")
+                    )
+                )
+                val JDK_HOME = System.getenv("JAVA_HOME")
+                    ?: throw IllegalStateException("please set JAVA_HOME to the installed jdk")
+                jdkHome(File(JDK_HOME))
             }
             compilerOptions.append("--jvm-target", "1.8")
         }
@@ -116,7 +128,8 @@ object Voodoo : KLogging() {
             },
             "test" to { args ->
                 val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
-                TesterForDSL.main(modpack, args = *args) },
+                TesterForDSL.main(modpack, args = *args)
+            },
 //        "idea" to Idea::main, //TODO: generate gradle/idea project ?
             "version" to { _ ->
                 logger.info(VoodooConstants.FULL_VERSION)

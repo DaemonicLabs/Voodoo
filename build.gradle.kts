@@ -14,7 +14,7 @@ plugins {
     constantsGenerator apply false
     id("com.github.johnrengelman.shadow") version "4.0.0" apply false
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
-    id("org.jmailen.kotlinter") version "1.17.0"
+//    id("org.jmailen.kotlinter") version "1.17.0"
     id(Serialization.plugin) version Kotlin.version
 }
 
@@ -42,6 +42,9 @@ allprojects {
         maven(url = "https://jitpack.io") {
             name = "jitpack"
         }
+        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap/") {
+            name = "Kotlin EAP"
+        }
         mavenCentral()
         jcenter()
         maven(url = "https://kotlin.bintray.com/kotlinx") {
@@ -66,7 +69,7 @@ subprojects {
 
     apply {
         plugin("idea")
-        plugin("org.jmailen.kotlinter")
+//        plugin("org.jmailen.kotlinter")
     }
 
     tasks.withType<KotlinCompile> {

@@ -13,6 +13,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
+import kotlinx.serialization.internal.HashSetSerializer
 import kotlinx.serialization.set
 import voodoo.util.serializer.TimestampSerializer
 import java.time.LocalDateTime
@@ -28,7 +29,7 @@ data class VersionManifest(
     @Optional var minecraftArguments: String? = null,
     @Optional var mainClass: String? = null,
     @Optional var minimumLauncherVersion: Int = 0,
-    @Optional var libraries: HashSet<Library> = hashSetOf()
+    @Optional @Serializable(with= HashSetSerializer::class) var libraries: HashSet<Library> = hashSetOf()
 ) {
 
     @Transient
@@ -37,8 +38,8 @@ data class VersionManifest(
 
     @Serializer(forClass = VersionManifest::class)
     companion object {
-        override fun serialize(output: Encoder, obj: VersionManifest) {
-            val elemOutput = output.beginStructure(descriptor)
+        override fun serialize(encoder: Encoder, obj: VersionManifest) {
+            val elemOutput = encoder.beginStructure(descriptor)
             with(VersionManifest()) {
                 elemOutput.serialize(this.id, obj.id, 0)
                 elemOutput.serializeObj(this.time, obj.time, TimestampSerializer, 1)

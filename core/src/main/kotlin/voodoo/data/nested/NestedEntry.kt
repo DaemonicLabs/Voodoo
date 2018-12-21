@@ -30,11 +30,11 @@ data class NestedEntry(
     var feature: Feature? = null,
     var side: Side = Side.BOTH,
     var websiteUrl: String = "",
-//        var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
-    @Deprecated("waiting to be redone")
-    var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
-    @Deprecated("waiting to be redone")
-    var replaceDependencies: Map<String, String> = mapOf(),
+//    var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+//    @Deprecated("waiting to be redone")
+//    var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+//    @Deprecated("waiting to be redone")
+//    var replaceDependencies: Map<String, String> = mapOf(),
     var packageType: PackageType = PackageType.MOD,
     var transient: Boolean = false, // this entry got added as dependency for something else
     var version: String = "", // TODO: use regex only ?
@@ -89,8 +89,8 @@ data class NestedEntry(
                 feature = it.feature,
                 side = it.side,
                 websiteUrl = it.websiteUrl,
-                dependencies = it.dependencies,
-                replaceDependencies = it.replaceDependencies,
+//                dependencies = it.dependencies,
+//                replaceDependencies = it.replaceDependencies,
                 //                optional = it.optional,
                 packageType = it.packageType,
                 transient = it.transient,

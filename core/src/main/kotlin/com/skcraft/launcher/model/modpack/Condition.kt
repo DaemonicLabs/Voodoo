@@ -53,8 +53,8 @@ class Condition(
         fun requireAll(features: MutableList<Feature> = ArrayList()) =
             Condition("requireAll", features.map { feature -> feature.name })
 
-        override fun serialize(output: Encoder, obj: Condition) {
-            val elemOutput = output.beginStructure(descriptor)
+        override fun serialize(encoder: Encoder, obj: Condition) {
+            val elemOutput = encoder.beginStructure(descriptor)
             elemOutput.encodeStringElement(descriptor, 0, obj.ifSwitch)
             elemOutput.encodeSerializableElement(descriptor, 1, String.serializer().list, obj.features)
             elemOutput.endStructure(descriptor)

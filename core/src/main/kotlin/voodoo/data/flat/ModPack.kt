@@ -2,19 +2,14 @@ package voodoo.data.flat
 
 import com.skcraft.launcher.model.ExtendedFeaturePattern
 import com.skcraft.launcher.model.launcher.LaunchModifier
-import kotlinx.serialization.CompositeEncoder
-import kotlinx.serialization.Encoder
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationStrategy
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
-import kotlinx.serialization.list
-import kotlinx.serialization.serializer
 import mu.KLogging
 import voodoo.data.UserFiles
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
+import voodoo.util.serializer.FileSerializer
 import java.io.File
 import java.util.Collections
 
@@ -27,61 +22,60 @@ import java.util.Collections
 data class ModPack(
     var id: String,
     var mcVersion: String,
-    @Optional var title: String = "",
+    @Optional var title: String? = null,
     @Optional var version: String = "1.0",
-    @Optional var icon: File = File("icon.png"),
+    @Optional @Serializable(with = FileSerializer::class)
+    var icon: File = File("icon.png"),
     @Optional val authors: List<String> = emptyList(),
     @Optional var forge: Int? = null,
     // var forgeBuild: Int = -1,
-    @Optional
-    @Serializable(with = LaunchModifier.Companion::class)
+    @Optional @Serializable(with = LaunchModifier.Companion::class)
     val launch: LaunchModifier = LaunchModifier(),
-    @Optional
-    @Serializable(with = UserFiles.Companion::class)
+    @Optional @Serializable(with = UserFiles.Companion::class)
     var userFiles: UserFiles = UserFiles()
 ) {
-    @Serializer(forClass = ModPack::class)
+    //    @Serializer(forClass = ModPack::class)
     companion object : KLogging() {
-        override fun serialize(output: Encoder, obj: ModPack) {
-            val elemOutput = output.beginStructure(descriptor)
-            elemOutput.encodeStringElement(descriptor, 0, obj.id)
-            elemOutput.encodeStringElement(descriptor, 1, obj.mcVersion)
-            with(ModPack(obj.id, obj.mcVersion)) {
-                elemOutput.serialize(this.title, obj.title, 2)
-                elemOutput.serialize(this.version, obj.version, 3)
-                elemOutput.serialize(this.icon, obj.icon, 4)
-                elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 5)
-                obj.forge?.also { forge ->
-                    elemOutput.serialize(this.forge, forge, 6)
-                }
-                elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier, 7)
-                elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles, 8)
-                elemOutput.serialize(this.localDir, obj.localDir, 9)
-                elemOutput.serialize(this.sourceDir, obj.sourceDir, 10)
-                elemOutput.serialize(this.tomeDir, obj.tomeDir, 11)
-            }
-            elemOutput.endStructure(descriptor)
-        }
-
-        private inline fun <reified T : Any> CompositeEncoder.serialize(default: T?, actual: T, index: Int) {
-            if (default != actual) {
-                when (actual) {
-                    is String -> this.encodeStringElement(descriptor, index, actual)
-                    is Int -> this.encodeIntElement(descriptor, index, actual)
-                }
-            }
-        }
-
-        private inline fun <reified T : Any> CompositeEncoder.serializeObj(
-            default: T?,
-            actual: T?,
-            saver: SerializationStrategy<T>,
-            index: Int
-        ) {
-            if (default != actual && actual != null) {
-                this.encodeSerializableElement(descriptor, index, saver, actual)
-            }
-        }
+//        override fun serialize(output: Encoder, obj: ModPack) {
+//            val elemOutput = output.beginStructure(descriptor)
+//            elemOutput.encodeStringElement(descriptor, 0, obj.id)
+//            elemOutput.encodeStringElement(descriptor, 1, obj.mcVersion)
+//            with(ModPack(obj.id, obj.mcVersion)) {
+//                elemOutput.serialize(this.title, obj.title, 2)
+//                elemOutput.serialize(this.version, obj.version, 3)
+//                elemOutput.serialize(this.icon, obj.icon, 4)
+//                elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 5)
+//                obj.forge?.also { forge ->
+//                    elemOutput.serialize(this.forge, forge, 6)
+//                }
+//                elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier, 7)
+//                elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles, 8)
+//                elemOutput.serialize(this.localDir, obj.localDir, 9)
+//                elemOutput.serialize(this.sourceDir, obj.sourceDir, 10)
+//                elemOutput.serialize(this.tomeDir, obj.tomeDir, 11)
+//            }
+//            elemOutput.endStructure(descriptor)
+//        }
+//
+//        private inline fun <reified T : Any> CompositeEncoder.serialize(default: T?, actual: T, index: Int) {
+//            if (default != actual) {
+//                when (actual) {
+//                    is String -> this.encodeStringElement(descriptor, index, actual)
+//                    is Int -> this.encodeIntElement(descriptor, index, actual)
+//                }
+//            }
+//        }
+//
+//        private inline fun <reified T : Any> CompositeEncoder.serializeObj(
+//            default: T?,
+//            actual: T?,
+//            saver: SerializationStrategy<T>,
+//            index: Int
+//        ) {
+//            if (default != actual && actual != null) {
+//                this.encodeSerializableElement(descriptor, index, saver, actual)
+//            }
+//        }
     }
 
     @Optional

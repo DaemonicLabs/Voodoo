@@ -32,9 +32,7 @@ open class GeneratorPlugin : Plugin<Project> {
             }
 
             val constExtension = extensions.create("constants", ConstantsExtension::class.java)
-            val generateConstants = task<GenerateConstantsTask>("generateConstants") {
-                extension = constExtension
-            }
+            val generateConstants = task<GenerateConstantsTask>("generateConstants") {}
 
         }
         project.afterEvaluate {

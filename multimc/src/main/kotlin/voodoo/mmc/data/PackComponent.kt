@@ -22,8 +22,8 @@ data class PackComponent(
     @Serializer(forClass = PackComponent::class)
     companion object : KSerializer<PackComponent> {
         private val DEFAULT = PackComponent()
-        override fun serialize(output: Encoder, obj: PackComponent) {
-            val elemOutput = output.beginStructure(descriptor)
+        override fun serialize(encoder: Encoder, obj: PackComponent) {
+            val elemOutput = encoder.beginStructure(descriptor)
             elemOutput.serialize(DEFAULT.uid, obj.uid, 0)
             elemOutput.serialize(DEFAULT.version, obj.version, 1)
             elemOutput.serialize(DEFAULT.cachedName, obj.cachedName, 2)

@@ -7,12 +7,12 @@ import kotlinx.serialization.Serializer
 import java.io.File
 
 @Serializer(forClass = File::class)
-class FileSerializer : KSerializer<File> {
-    override fun serialize(output: Encoder, obj: File) {
-        output.encodeString(obj.path)
+object FileSerializer : KSerializer<File> {
+    override fun serialize(encoder: Encoder, obj: File) {
+        encoder.encodeString(obj.path)
     }
 
-    override fun deserialize(input: Decoder): File {
-        return File(input.decodeString())
+    override fun deserialize(decoder: Decoder): File {
+        return File(decoder.decodeString())
     }
 }

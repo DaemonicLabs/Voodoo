@@ -51,7 +51,7 @@ object Hex : KLogging() {
 
     private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
 
-    private val json = JSON(indented = true, strictMode = false)
+    private val json = JSON(indented = true, strictMode = false, encodeDefaults = false)
 
     @UseExperimental(ObsoleteCoroutinesApi::class)
     private suspend fun install(instanceId: String, instanceDir: File, minecraftDir: File) {

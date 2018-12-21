@@ -16,8 +16,8 @@ data class CachedRequire(
     @Serializer(forClass = CachedRequire::class)
     companion object : KSerializer<CachedRequire> {
         private val DEFAULT = CachedRequire()
-        override fun serialize(output: Encoder, obj: CachedRequire) {
-            val elemOutput = output.beginStructure(descriptor)
+        override fun serialize(encoder: Encoder, obj: CachedRequire) {
+            val elemOutput = encoder.beginStructure(descriptor)
             elemOutput.serialize(DEFAULT.uid, obj.uid, 0)
             elemOutput.serialize(DEFAULT.suggests, obj.suggests, 1)
             elemOutput.serialize(DEFAULT.equals, obj.equals, 2)
