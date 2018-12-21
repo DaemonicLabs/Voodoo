@@ -6,16 +6,17 @@ import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JSON
+import kotlinx.serialization.json.Json
 import mu.KLogging
 import voodoo.util.UtilConstants
 import java.io.File
 
 object Jenkins : KLogging()
 
-private val json = JSON(strictMode = false)
+private val json = Json(strictMode = false, encodeDefaults = false)
 private val useragent = "voodoo/${UtilConstants.VERSION}"
 
 suspend fun downloadVoodoo(
@@ -95,9 +96,10 @@ data class Build(
 ) {
     suspend fun details(useragent: String): BuildWithDetails? {
         val buildUrl = "$url/api/json"
+        val deserializationStrategy: DeserializationStrategy<BuildWithDetails> = BuildWithDetails.serializer()
         val (request, response, result) = buildUrl.httpGet()
             .header("User-Agent" to useragent)
-            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = BuildWithDetails.serializer(), json = json))
+            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = deserializationStrategy, json = json))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {

@@ -7,11 +7,11 @@ import java.util.regex.Pattern
 
 @Serializer(forClass = Pattern::class)
 object PatternSerializer {
-    override fun deserialize(input: Decoder): Pattern {
-        return Pattern.compile(input.decodeString())
+    override fun deserialize(decoder: Decoder): Pattern {
+        return Pattern.compile(decoder.decodeString())
     }
 
-    override fun serialize(output: Encoder, obj: Pattern) {
-        output.encodeString(obj.pattern())
+    override fun serialize(encoder: Encoder, obj: Pattern) {
+        encoder.encodeString(obj.pattern())
     }
 }

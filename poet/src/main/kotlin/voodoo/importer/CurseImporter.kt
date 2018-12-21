@@ -6,7 +6,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JSON
+import kotlinx.serialization.json.Json
 import list
 import releaseTypes
 import voodoo.Poet
@@ -53,7 +53,7 @@ object CurseImporter : AbstractImporter() {
         val extractFolder = cacheHome.resolve(tmpName)
         unzip(zipFile.absolutePath, extractFolder.absolutePath)
 
-        val manifest = JSON.parse(CurseManifest.serializer(), extractFolder.resolve("manifest.json").readText())
+        val manifest = Json.parse(CurseManifest.serializer(), extractFolder.resolve("manifest.json").readText())
 
         val validMcVersions = mutableSetOf<String>()
 

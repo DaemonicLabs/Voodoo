@@ -4,7 +4,7 @@ import com.skcraft.launcher.model.modpack.Feature
 import com.skcraft.launcher.model.modpack.Recommendation
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JSON
+import kotlinx.serialization.json.Json
 import mu.KLogging
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
@@ -145,7 +145,7 @@ object MMCUtil : KLogging() {
      * @return Minecraft Directory
      */
     fun installEmptyPack(
-        name: String,
+        name: String?,
         folder: String,
         icon: File? = null,
         mcVersion: String? = null,
@@ -175,7 +175,7 @@ object MMCUtil : KLogging() {
             "default"
         }
 
-        val json = JSON(indented = true)
+        val json = Json(indented = true)
 
         // set minecraft and forge versions
         val mmcPackPath = instanceDir.resolve("mmc-pack.json")
@@ -211,7 +211,7 @@ object MMCUtil : KLogging() {
             sortedMapOf<String, String>()
 
         cfg["InstanceType"] = "OneSix"
-        cfg["name"] = name
+        cfg["name"] = name ?: folder
         cfg["iconKey"] = iconKey
 
         if (preLaunchCommand != null) {

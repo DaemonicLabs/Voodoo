@@ -26,8 +26,8 @@ data class ExtendedFeaturePattern(
 ) {
     @Serializer(forClass = ExtendedFeaturePattern::class)
     companion object {
-        override fun serialize(output: Encoder, obj: ExtendedFeaturePattern) {
-            val elemOutput = output.beginStructure(descriptor)
+        override fun serialize(encoder: Encoder, obj: ExtendedFeaturePattern) {
+            val elemOutput = encoder.beginStructure(descriptor)
             elemOutput.encodeSerializableElement(descriptor, 0, String.serializer().set, obj.entries)
             elemOutput.encodeSerializableElement(descriptor, 1, Feature.Companion, obj.feature)
             with(ExtendedFeaturePattern(obj.entries, obj.feature)) {

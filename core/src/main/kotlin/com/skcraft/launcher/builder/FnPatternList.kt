@@ -40,8 +40,8 @@ data class FnPatternList(
 
     @Serializer(forClass = FnPatternList::class)
     companion object {
-        override fun serialize(output: Encoder, obj: FnPatternList) {
-            val elemOutput = output.beginStructure(descriptor)
+        override fun serialize(encoder: Encoder, obj: FnPatternList) {
+            val elemOutput = encoder.beginStructure(descriptor)
             obj.include.takeUnless { it.isEmpty() }?.let {
                 elemOutput.encodeSerializableElement(descriptor, 0, String.serializer().list, it)
             }

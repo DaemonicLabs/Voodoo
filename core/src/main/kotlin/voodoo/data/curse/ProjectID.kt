@@ -17,12 +17,12 @@ data class ProjectID(val value: Int) {
 
     @Serializer(forClass = ProjectID::class)
     companion object {
-        override fun deserialize(input: Decoder): ProjectID {
-            return ProjectID(input.decodeInt())
+        override fun deserialize(decoder: Decoder): ProjectID {
+            return ProjectID(decoder.decodeInt())
         }
 
-        override fun serialize(output: Encoder, obj: ProjectID) {
-            output.encodeInt(obj.value)
+        override fun serialize(encoder: Encoder, obj: ProjectID) {
+            encoder.encodeInt(obj.value)
         }
 
         val INVALID = ProjectID(-1)

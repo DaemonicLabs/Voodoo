@@ -17,7 +17,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.context.SimpleModule
-import kotlinx.serialization.json.JSON
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.list
 import mu.KLogging
 import voodoo.core.CoreConstants.VERSION
@@ -38,10 +38,10 @@ import kotlin.coroutines.CoroutineContext
  */
 object CurseClient : KLogging(), CoroutineScope {
     override val coroutineContext: CoroutineContext = Job()
-    private val json = JSON().apply {
-        install(
-            SimpleModule(Date::class, DateSerializer)
-        )
+    private val json = Json().apply {
+//        install(
+//            SimpleModule(Date::class, DateSerializer)
+//        )
     }
     const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
@@ -84,7 +84,7 @@ object CurseClient : KLogging(), CoroutineScope {
             operationName = "GetSlugIDPairs"
         )
         val (request, response, result) = Fuel.post(url)
-            .jsonBody(body = JSON.stringify(GraphQLRequest.serializer(), requestBody))
+            .jsonBody(body = Json.stringify(GraphQLRequest.serializer(), requestBody))
             .apply { headers.clear() }
             .header("User-Agent" to useragent, "Content-Type" to "application/json")
             .awaitObjectResponseResult(kotlinxDeserializerOf(loader = GraphQlResult.serializer()))
