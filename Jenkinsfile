@@ -8,6 +8,7 @@ pipeline {
 	        steps {
 	            sh 'git submodule update --init --recursive'
                 sh 'rm private.gradle || true'
+	            sh './gradlew --stop'
 	            sh './gradlew clean'
 	        }
 	    }

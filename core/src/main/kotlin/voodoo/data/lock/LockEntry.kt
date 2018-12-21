@@ -6,12 +6,7 @@ import kotlinx.serialization.Encoder
 import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialId
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationStrategy
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
-import kotlinx.serialization.UpdateMode
-import kotlinx.serialization.internal.EnumSerializer
-import kotlinx.serialization.json.JSON
 import mu.KLogging
 import voodoo.data.Side
 import voodoo.data.curse.CurseConstants.PROXY_URL
