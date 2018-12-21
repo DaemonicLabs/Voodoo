@@ -1,6 +1,7 @@
 pipeline {
     agent any
 	stages {
+	    env.GRADLE_OPTS = '-Dkotlin.compiler.execution.strategy="in-process"'
 	    stage("init") {
 	        steps {
 	            sh 'git submodule update --init --recursive'
