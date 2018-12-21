@@ -8,12 +8,12 @@ pipeline {
 	        steps {
 	            sh 'git submodule update --init --recursive'
                 sh 'rm private.gradle || true'
-	            sh './gradlew --stop'
 	            sh './gradlew clean'
 	        }
 	    }
 	    stage("voodoo") {
 	        steps {
+	            sh 'java -version'
 	            sh './gradlew clean'
 	            sh './gradlew test -S'
 	            // archiveArtifacts artifacts:  'build/libs/*jar'

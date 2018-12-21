@@ -77,10 +77,11 @@ subprojects {
             apiVersion = "1.3"
             languageVersion = "1.3"
             jvmTarget = "1.8"
-//            freeCompilerArgs = listOf(
-//                "-XXLanguage:+InlineClasses",
-//                "-progressive"
-//            )
+            freeCompilerArgs = listOf(
+                "-XX:SamConversionForKotlinFunctions",
+                "-XXLanguage:+InlineClasses",
+                "-progressive"
+            )
         }
     }
 
