@@ -66,6 +66,7 @@ object Voodoo : KLogging() {
         val config = createJvmCompilationConfigurationFromTemplate<MainScriptEnv> {
             jvm {
                 dependenciesFromCurrentContext(wholeClasspath = true)
+                // TODO: importedScripts instead of dependencies
                 dependencies.append(
                     JvmDependency(
                         File(".voodoo/Constants.kt"),
