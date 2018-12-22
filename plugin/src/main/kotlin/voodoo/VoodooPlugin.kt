@@ -30,6 +30,9 @@ open class VoodooPlugin : Plugin<Project> {
             repositories {
                 jcenter()
                 mavenCentral()
+                maven(url = "https://dl.bintray.com/kotlin/kotlin-eap") {
+                    name = "Kotlin EAP"
+                }
                 maven(url = "https://kotlin.bintray.com/kotlinx") {
                     name = "kotlinx"
                 }
@@ -66,12 +69,10 @@ open class VoodooPlugin : Plugin<Project> {
             }
 
             extensions.configure<KotlinJvmProjectExtension> {
-                //                (sourceSets as MutableCollection<KotlinSourceSet>).clear()
                 sourceSets.maybeCreate("main").kotlin.apply {
                     srcDir(voodooExtension.getPackDir)
                     srcDir(voodooExtension.getGeneratedSrc)
                 }
-//                sourceSets.create("test")
             }
 
             extensions.configure<IdeaModel> {
