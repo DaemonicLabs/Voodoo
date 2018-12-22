@@ -1,8 +1,8 @@
 pipeline {
     agent any
-    environment {
-        // GRADLE_OPTS = '-Dkotlin.compiler.execution.strategy="in-process"'
-    }
+    // environment {
+    //     GRADLE_OPTS = '-Dkotlin.compiler.execution.strategy="in-process"'
+    // }
 	stages {
 	    stage("init") {
 	        steps {
