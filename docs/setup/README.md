@@ -18,12 +18,12 @@ fork [sample project](https://github.com/NikkyAI/VoodooSamples)
 [sample project](https://github.com/NikkyAI/VoodooSamples)
 
 required gradle version is **5**  
-`5.0`
+`5.1-rc-1`
 
 `build.gradle.kts`
 ```kotlin
 plugins {
-    id("voodoo") version "0.4.2-SNAPSHOT"
+    id("voodoo") version "0.4.5-SNAPSHOT"
 }
 
 // for configuration of folders
@@ -32,18 +32,22 @@ voodoo {
 //    rootDir = project.rootDir
 //    generatedSource = { rootDir -> rootDir.resolve(".voodoo") }
 //    packDirectory = { ootDir -> rootDir.resolve("packs") }
-}
 
-tasks.withType<Wrapper> {
-     gradleVersion = "5.0"
-     distributionType = Wrapper.DistributionType.ALL
+    addTask(name = "build", parameters = listOf("build"))
+    addTask(name = "testMMC", parameters = listOf("test mmc"))
+    addTask(name = "sk", parameters = listOf("pack sk"))
+    addTask(name = "packServer", parameters = listOf("pack server"))
+    addTask(name = "buildAndPackAll", parameters = listOf("build", "pack sk", "pack server", "pack mmc"))
 }
 ```
+
+`gradle wrapper --gradle-version 5.0 --distribution-type all`
 
 `settings.gradle.kts`
 ```kotlin
 pluginManagement {
     repositories {
+        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap") { name = "Kotlin EAP" }
         maven(url = "https://kotlin.bintray.com/kotlinx") { name = "kotlinx" }
         maven(url = "https://repo.elytradev.com") { name = "elytradev" }
         maven(url = "https://jitpack.io") { name = "jitpack" }
