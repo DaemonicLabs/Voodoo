@@ -18,13 +18,14 @@ fun withDefaultMain(
     root: File, // = File(System.getProperty("user.dir")),
     configureMain: MainScriptEnv.() -> NestedPack // = { throw IllegalStateException("no nested pack provided") }
 ) {
-    // TODO: set system property "user.dir" to rootDir
+    // TODO: set system property "user.dir" to rootDir ?
 
     // classloader switching necessary for kscript
 //    println("classloader is of type:" + Thread.currentThread().contextClassLoader)
 //    println("classloader is of type:" + ClassLoader.getSystemClassLoader())
 //    println("classloader is of type:" + XY::class.java.classLoader)
-    Thread.currentThread().contextClassLoader = MainScriptEnv::class.java.classLoader
+    // mot supporting kscript anymore..
+//    Thread.currentThread().contextClassLoader = MainScriptEnv::class.java.classLoader
 
     val mainEnv = MainScriptEnv(rootDir = root)
     val nestedPack = mainEnv.configureMain()

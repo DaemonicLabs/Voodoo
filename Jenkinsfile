@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        GRADLE_OPTS = '-Dkotlin.compiler.execution.strategy="in-process"'
+        // GRADLE_OPTS = '-Dkotlin.compiler.execution.strategy="in-process"'
     }
 	stages {
 	    stage("init") {
@@ -13,7 +13,6 @@ pipeline {
 	    }
 	    stage("voodoo") {
 	        steps {
-	            sh 'java -version'
 	            sh './gradlew clean'
 	            sh './gradlew test -S'
 	            // archiveArtifacts artifacts:  'build/libs/*jar'
