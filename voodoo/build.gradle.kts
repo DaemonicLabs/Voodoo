@@ -42,12 +42,10 @@ sourceSets {
         }
 }
 
-val run by tasks.getting(JavaExec::class)
-run.apply {
+val run = tasks.getByName<JavaExec>("run") {
     workingDir = rootDir.resolve("samples")
     args = listOf("newscript.voodoo.kts", "build")
 }
-
 // SPEK
 
 repositories {

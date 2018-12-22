@@ -14,7 +14,9 @@ import voodoo.data.lock.LockPack
 import voodoo.script.MainScriptEnv
 import voodoo.voodoo.VoodooConstants
 import java.io.File
+import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.ScriptEvaluationConfiguration
+import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.api.compilerOptions
 import kotlin.script.experimental.api.constructorArgs
 import kotlin.script.experimental.api.dependencies
@@ -22,7 +24,6 @@ import kotlin.script.experimental.api.resultOrNull
 import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
-import kotlin.script.experimental.jvm.javaHome
 import kotlin.script.experimental.jvm.jdkHome
 import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
@@ -68,40 +69,58 @@ object Voodoo : KLogging() {
                 dependenciesFromCurrentContext(wholeClasspath = true)
                 // TODO: importedScripts instead of dependencies
                 dependencies.append(
-                    JvmDependency(
-                        File(".voodoo/Constants.kt"),
-                        File(".voodoo/Forge.kt"),
-                        File(".voodoo/Mod.kt"),
-                        File(".voodoo/TexturePack.kt")
-                    )
+                    JvmDependency(File("/home/nikky/dev/Voodoo/samples/build/classes/kotlin/main"))
+
+//                        File(".voodoo/Constants.kt"),
+//                        File(".voodoo/Forge.kt"),
+//                        File(".voodoo/Mod.kt"),
+//                        File(".voodoo/TexturePack.kt")
                 )
+
+
                 val JDK_HOME = System.getenv("JAVA_HOME")
                     ?: throw IllegalStateException("please set JAVA_HOME to the installed jdk")
                 jdkHome(File(JDK_HOME))
             }
-            compilerOptions.append("--jvm-target", "1.8")
+//            compilerOptions.append("-jvm-target", "1.8")
+            compilerOptions.append("-jvm-target", "1.8")
         }
         println("config entries")
         config.entries().forEach {
             println("    $it")
         }
 
-        val evalu = ScriptEvaluationConfiguration {
+        val evaluationConfig = ScriptEvaluationConfiguration {
             constructorArgs(rootDir)
         }
 
-        var scriptContent = File("packs").resolve(script).readText()
+        val scriptFile = File("packs").resolve(script)
+        val absoluteScriptFile = scriptFile.absoluteFile
+        val scriptContent = scriptFile.readText()
         val scriptSource = scriptContent.toScriptSource()
-        val result = BasicJvmScriptingHost().eval(scriptSource, config, evalu)
+        val result = BasicJvmScriptingHost().eval(scriptSource, config, evaluationConfig)
+
+        fun SourceCode.Location.posToString() = "(${start.line}, ${start.col})"
 
         for (report in result.reports) {
             println(report)
+            val severityIndicator = when(report.severity) {
+                ScriptDiagnostic.Severity.FATAL -> "fatal"
+                ScriptDiagnostic.Severity.ERROR -> "e"
+                ScriptDiagnostic.Severity.WARNING -> "w"
+                ScriptDiagnostic.Severity.INFO -> "i"
+                ScriptDiagnostic.Severity.DEBUG -> "d"
+            }
+            println("$severityIndicator: $absoluteScriptFile: ${report.location?.posToString()}: ${report.message}")
+            report.exception?.printStackTrace()
         }
         println(result)
         val evalResult = result.resultOrNull() ?: run {
             logger.error("evaluation failed")
             exitProcess(1)
         }
+
+        println(evalResult)
 
         val mainEnv = MainScriptEnv(rootDir = rootDir)
 

@@ -30,7 +30,7 @@ open class MainScriptEnv(
         tomeEnv.configureTome()
     }
 
-    internal var packs: List<NestedPack> = listOf()
+    internal val packs: MutableList<NestedPack> = mutableListOf()
 
     @VoodooDSL
     fun nestedPack(id: String, mcVersion: String, packBuilder: ModpackBuilder.() -> Unit): NestedPack {
