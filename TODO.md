@@ -1,10 +1,8 @@
 # Scripting
 
 - [x] Script Definition
-- [ ] Script Host
-- [ ] Call Script host from gradle
-- [ ] Compile Script Host with gradle-plugin ?
-- [ ] Voodoo Wrapper task for script host
+- [ ] parse script folder and init pack with filename as `id`
+- [ ] add extra scripts for defining tome / doc generators
 
 # Reorganize buildscripts / Repo
 
@@ -16,17 +14,10 @@
 
 use html-dsl in .kts files
 maybe css-dsl
-search for markdown-dsl
+search for markdown-dsl or make one
 
 copy generated files into github pages docs folder
 or other targets
-
-<s>
-https://github.com/korlibs/korte
-
-- liquid templating
-- markdown or html -> user choice
-</s>
 
 ## diff
 
@@ -39,6 +30,7 @@ improve buildspeed and publish speed in dev
 
 # generate gradle setup
 
+needs to be done outside.. maybe via kotlin-js
 requires testing the gradle setup before generating it
 
 - create framework
@@ -83,7 +75,7 @@ examples:
 # multim mc integration
 
 trigger by holding **shift**
-figre out alternative ways of detecting keyboard state at startup
+figure out alternative ways of detecting keyboard state at startup
 
 options:
   - change feature selection
