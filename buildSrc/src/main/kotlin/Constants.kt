@@ -41,7 +41,7 @@ object Kotlinpoet {
 }
 
 object Fuel {
-    const val version = "127d9e5f70"
+    const val version = "bfbe44ca48"
     private const val group = "com.github.NikkyAi.Fuel"
 //    private const val group = "com.github.kittinunf.Fuel"
     val dependency = create(group = group, name = "fuel", version = version)
