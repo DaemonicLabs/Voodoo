@@ -24,7 +24,14 @@ open class VoodooPlugin : Plugin<Project> {
             pluginManager.apply("idea")
 
             dependencies.apply {
-                add("compile", create(group = "moe.nikky.voodoo", name = "dsl", version = PoetConstants.FULL_VERSION))
+                add(
+                    "implementation",
+                    create(group = "moe.nikky.voodoo", name = "dsl", version = PoetConstants.FULL_VERSION)
+                )
+                add(
+                    "implementation",
+                    create(group = "moe.nikky.voodoo", name = "voodoo", version = PoetConstants.FULL_VERSION)
+                )
 //                add("compile", create(group = "com.github.holgerbrandl", name = "kscript-annotations", version = "1.+"))
             }
             repositories {
@@ -99,28 +106,27 @@ open class VoodooPlugin : Plugin<Project> {
             }
 
             extensions.configure<SourceSetContainer> {
-                // TODO discover all pack root locations, register as resource folder
-//                val mainRessources = maybeCreate("main").resources
-
                 val runtimeClasspath = maybeCreate("main").runtimeClasspath
                 voodooExtension.getPackDir
-                    .listFiles(FilenameFilter { _, name -> name.endsWith(".kt") })
+                    .listFiles(FilenameFilter { _, name -> name.endsWith(".voodoo.kts") })
                     .forEach { sourceFile ->
-                        val name = sourceFile.nameWithoutExtension
-                        task<VoodooTask>(name.toLowerCase()) {
+                        val id = sourceFile.name.substringBeforeLast(".voodoo.kts")
+                        task<VoodooTask>(id.toLowerCase()) {
+                            scriptFile = sourceFile
                             classpath = runtimeClasspath
-                            main = "${name.capitalize()}Kt"
-                            this.description = name
-                            this.group = "voodoo"
+                            main = "voodoo.Voodoo"
+                            description = id
+                            group = "voodoo"
                         }
 
                         voodooExtension.tasks.forEach { customTask ->
                             val (taskName, taskDescription, arguments) = customTask
-                            task<VoodooTask>(taskName + "_" + name) {
+                            task<VoodooTask>(taskName + "_" + id) {
+                                scriptFile = sourceFile
                                 classpath = runtimeClasspath
-                                main = "${name.capitalize()}Kt"
+                                main = "voodoo.Voodoo"
                                 description = taskDescription
-                                group = name
+                                group = id
                                 val nestedArgs = arguments.map { it.split(" ") }
                                 args = nestedArgs.reduceRight { acc, list -> acc + "-" + list }
                             }

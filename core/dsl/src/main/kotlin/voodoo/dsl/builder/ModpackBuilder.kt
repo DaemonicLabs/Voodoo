@@ -7,9 +7,10 @@ import voodoo.property
 import voodoo.provider.ProviderBase
 
 @VoodooDSL
-data class ModpackBuilder(
+open class ModpackBuilder(
     val pack: NestedPack
 ) {
+    var mcVersion by property(pack::mcVersion)
     var title by property(pack::title)
     var version by property(pack::version)
     var icon by property(pack::icon)
@@ -21,6 +22,8 @@ data class ModpackBuilder(
     var localDir by property(pack::localDir)
     var sourceDir by property(pack::sourceDir)
 
+    // TODO allow calling only once per script
+    // TODO: also set root
     @VoodooDSL
     fun <T> rootEntry(
         provider: T,

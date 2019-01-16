@@ -13,10 +13,12 @@ import java.io.File
 
 private val logger = KotlinLogging.logger {}
 
+@Deprecated("use .voodoo.kts scripts instead")
 fun withDefaultMain(
     arguments: Array<out String>,
     root: File, // = File(System.getProperty("user.dir")),
-    configureMain: MainScriptEnv.() -> NestedPack // = { throw IllegalStateException("no nested pack provided") }
+    id: String,
+    configureMain: MainScriptEnv.() -> Unit // = { throw IllegalStateException("no nested pack provided") }
 ) {
     // TODO: set system property "user.dir" to rootDir ?
 
@@ -27,9 +29,9 @@ fun withDefaultMain(
     // mot supporting kscript anymore..
 //    Thread.currentThread().contextClassLoader = MainScriptEnv::class.java.classLoader
 
-    val mainEnv = MainScriptEnv(rootDir = root)
-    val nestedPack = mainEnv.configureMain()
-    val id = nestedPack.id
+    val mainEnv = MainScriptEnv(rootDir = root, id = id)
+    mainEnv.configureMain()
+    val nestedPack = mainEnv.pack
     val packFileName = "$id.pack.hjson"
 //    val packFile = nestedPack.sourceFolder..resolve(packFileName)
     val lockFileName = "$id.lock.pack.hjson"

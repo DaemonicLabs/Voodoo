@@ -35,42 +35,23 @@ object Voodoo : KLogging() {
     fun main(vararg fullArgs: String) {
 
         val arguments = fullArgs.drop(1)
-        val script = fullArgs.getOrNull(0) ?: run {
+        val script = fullArgs.getOrNull(0)?.apply {
+            require(isNotBlank()) { "configuration script name cannot be blank" }
+            require(endsWith(".voodoo.kts")) { "configuration script filename must end with .voodoo.kts" }
+        } ?: run {
             logger.error("configuration script must be the first parameter")
             exitProcess(1)
         }
-
+        val id = script.substringBeforeLast(".voodoo.kts").apply {
+            require(isNotBlank()) { "the script file must contain a id in the filename" }
+        }
 
         val rootDir = File(".").absoluteFile
         val generatedFiles = poet(rootDir = rootDir)
 
-//        voodooDir.listFiles().forEach { file ->
-//            val evalu = ScriptEvaluationConfiguration {
-//
-//            }
-//            val config = createJvmCompilationConfigurationFromTemplate<ConstScript> {
-//                compilerOptions.append("-Jvm-Target 1.8")
-//                jvm {
-//                    dependenciesFromCurrentContext(wholeClasspath = true)
-// //                dependencies.append(JvmDependency(voodooDir))
-//                    javaHome(File("/usr/lib/jvm/intellij-jdk")) // TODO use environment variable
-//                }
-//            }
-//            val result = BasicJvmScriptingHost().eval(file.readText().toScriptSource(), config, evalu)
-//            println(result)
-//            val evalResult = result.resultOrNull() ?: run {
-//                logger.error("evaluation failed")
-//                exitProcess(1)
-//            }
-//            println(evalResult)
-//            println(evalResult.returnValue)
-//            println(evalResult.returnValue.javaClass)
-//        }
-
         val config = createJvmCompilationConfigurationFromTemplate<MainScriptEnv> {
             jvm {
                 dependenciesFromCurrentContext(wholeClasspath = true)
-
 
                 importScripts.append(
                     *generatedFiles.map { it.toScriptSource() }.toTypedArray()
@@ -89,7 +70,7 @@ object Voodoo : KLogging() {
         }
 
         val evaluationConfig = ScriptEvaluationConfiguration {
-            constructorArgs.append(rootDir)
+            constructorArgs.append(rootDir, id)
         }
 
         println("evaluationConfig entries")
@@ -128,7 +109,7 @@ object Voodoo : KLogging() {
         println("resultValue = '${resultValue}'")
         println("resultValue::class = '${resultValue::class}'")
 
-        when (resultValue) {
+        val scriptEnv = when (resultValue) {
             is ResultValue.Value -> {
                 println("resultValue.name = '${resultValue.name}'")
                 println("resultValue.value = '${resultValue.value}'")
@@ -140,17 +121,20 @@ object Voodoo : KLogging() {
                 val env = resultValue.value as MainScriptEnv
                 println(env)
                 println(env.rootDir)
+                env
+            }
+            is ResultValue.Unit -> {
+                logger.error("evaluation failed")
+                exitProcess(-1)
             }
         }
-        exitProcess(0)
 
 
-        val mainEnv = MainScriptEnv(rootDir = rootDir)
+        val mainEnv = MainScriptEnv(rootDir = rootDir, id = id)
 
-        val nestedPack = mainEnv.nestedPack("abc", "1.12.2") {}
+        val nestedPack = scriptEnv.pack
 
         val packDir = mainEnv.rootDir
-        val id = nestedPack.id
         val packFileName = "$id.pack.hjson"
 //    val packFile = packDir.resolve(packFileName)
         val lockFileName = "$id.lock.hjson"

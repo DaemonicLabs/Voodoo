@@ -18,11 +18,9 @@ object PoetSpek : Spek({
                 mkdirs()
             }
         }
-        val nestedpack by memoized {
-            MainScriptEnv(rootDir = rootFolder).nestedPack(
-                id = "new-pack",
+        val scriptEnv by memoized {
+            MainScriptEnv(rootDir = rootFolder,  id = "new-pack").apply {
                 mcVersion = "1.12.2"
-            ) {
                 authors = listOf("blarb something", "nikky")
                 root = rootEntry(CurseProvider) {
                     validMcVersions = setOf("1.12.1", "1.12")
@@ -40,10 +38,14 @@ object PoetSpek : Spek({
             }
         }
 
+        val nestedPack by memoized {
+            scriptEnv.pack
+        }
+
         it("generate kotlin source") {
             PoetPack.createModpack(
                 rootFolder,
-                nestedpack
+                nestedPack
             )
         }
     }

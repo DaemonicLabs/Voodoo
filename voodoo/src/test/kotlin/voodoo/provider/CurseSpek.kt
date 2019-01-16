@@ -23,11 +23,9 @@ object CurseSpek : Spek({
             }
         }
 
-        val nestedpack by memoized {
-            MainScriptEnv(rootDir = rootFolder).nestedPack(
-                id = "curse_spek",
+        val scriptEnv by memoized {
+            MainScriptEnv(rootDir = rootFolder, id = "curse_spek").apply {
                 mcVersion = "1.12.2"
-            ) {
                 title = "Curse Spek"
                 root = rootEntry(CurseProvider) {
                     list {
@@ -37,8 +35,12 @@ object CurseSpek : Spek({
             }
         }
 
+        val nestedPack by memoized {
+            scriptEnv.pack
+        }
+
         val modpack by memoized {
-            nestedpack.flatten()
+            nestedPack.flatten()
         }
 
         context("build pack") {

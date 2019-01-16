@@ -30,11 +30,9 @@ object DslSpek : Spek({
 //            fileForResource("/voodoo/dslSpek").copyRecursively(rootFolder)
 //        }
 
-        val nestedPack by memoized {
-            MainScriptEnv(rootDir = rootFolder).nestedPack(
-                id = "some-id",
+        val scriptEnv by memoized {
+            MainScriptEnv(rootDir = rootFolder, id = "some-id").apply {
                 mcVersion = "1.12.2"
-            ) {
                 version = "1.0"
                 // TODO: type = File
                 icon = File("icon.png")
@@ -62,6 +60,9 @@ object DslSpek : Spek({
             }
         }
 
+        val nestedPack by memoized {
+            scriptEnv.pack
+        }
         val modpack by memoized {
             nestedPack.flatten()
         }

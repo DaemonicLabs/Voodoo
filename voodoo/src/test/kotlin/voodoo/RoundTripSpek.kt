@@ -31,11 +31,9 @@ object RoundTripSpek : Spek({
             }
         }
 
-        val nestedPack by memoized {
-            MainScriptEnv(rootDir = rootFolder).nestedPack(
-                id = "some-id",
+        val scriptEnv by memoized {
+            MainScriptEnv(rootDir = rootFolder, id = "some-id").apply {
                 mcVersion = "1.12.2"
-            ) {
                 version = "1.0"
                 icon = rootFolder.resolve("icon.png").relativeTo(rootFolder)
                 authors = listOf("dude", "and", "friends")
@@ -87,7 +85,7 @@ object RoundTripSpek : Spek({
 
         val targetFilename = "roundtrip.lock.json"
         val modpack by memoized {
-            nestedPack.flatten()
+            scriptEnv.pack.flatten()
         }
         val lockpack by memoized {
             runBlocking {

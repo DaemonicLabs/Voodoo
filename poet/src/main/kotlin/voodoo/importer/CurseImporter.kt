@@ -105,12 +105,11 @@ object CurseImporter : AbstractImporter() {
 //        val forge = manifest.minecraft.modLoaders
 //            .find { it.id.startsWith("forge-") }?.id?.substringAfterLast('.')
 
-        val nestedPack = MainScriptEnv(
-            rootDir = rootDir
-        ).nestedPack(
-            id = modpackId,
+        val scriptEnv = MainScriptEnv(
+            rootDir = rootDir,
+            id = modpackId
+        ).apply {
             mcVersion = manifest.minecraft.version
-        ) {
             authors = listOf(manifest.author)
             title = manifest.name
             version = manifest.version
@@ -167,7 +166,7 @@ object CurseImporter : AbstractImporter() {
 
         PoetPack.createModpack(
             folder = packsDir,
-            nestedPack = nestedPack
+            nestedPack = scriptEnv.pack
         )
 
 //        val modpack = Importer.flatten(nestedPack)
