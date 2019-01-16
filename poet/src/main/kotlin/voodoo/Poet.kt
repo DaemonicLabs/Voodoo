@@ -19,36 +19,35 @@ fun main(vararg args: String) {
 }
 
 fun poet(
-    rootDir: File = File(System.getProperty("user.dir")).resolve(".voodoo"),
+    rootDir: File = File(System.getProperty("user.dir")),
     root: File = rootDir.resolve(".voodoo"),
     mods: String = "Mod",
     texturePacks: String = "TexturePack",
     slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
-) {
+): List<File> {
 //    class XY
 //    println("classloader is of type:" + Thread.currentThread().contextClassLoader)
 //    println("classloader is of type:" + ClassLoader.getSystemClassLoader())
 //    println("classloader is of type:" + XY::class.java.classLoader)
     Thread.currentThread().contextClassLoader = Poet::class.java.classLoader
 
-    runBlocking {
-        Poet.generate(
-            name = mods,
-            slugIdMap = Poet.requestMods(),
-            slugSanitizer = slugSanitizer,
-            folder = root
+    return runBlocking {
+        listOf(
+            Poet.generate(
+                name = mods,
+                slugIdMap = Poet.requestMods(),
+                slugSanitizer = slugSanitizer,
+                folder = root
+            ),
+            Poet.generate(
+                name = texturePacks,
+                slugIdMap = Poet.requestResourcePacks(),
+                slugSanitizer = slugSanitizer,
+                folder = root
+            ),
+            Poet.generateForge("Forge", folder = root),
+            Poet.generateConstants("Constants", rootDir, root)
         )
-
-        Poet.generate(
-            name = texturePacks,
-            slugIdMap = Poet.requestResourcePacks(),
-            slugSanitizer = slugSanitizer,
-            folder = root
-        )
-
-        Poet.generateForge("Forge", folder = root)
-
-        Poet.generateConstants("Constants", rootDir, root)
     }
 }
 
@@ -64,7 +63,7 @@ object Poet : KLogging() {
         slugIdMap: Map<String, ProjectID>,
         slugSanitizer: (String) -> String,
         folder: File
-    ) {
+    ) : File {
         val idType = ClassName("voodoo.dsl", "ID")
         val objectBuilder = TypeSpec.objectBuilder(name)
         slugIdMap.entries.sortedBy { (slug, id) ->
@@ -92,13 +91,13 @@ object Poet : KLogging() {
             )
         }
 
-        save(objectBuilder.build(), name, folder)
+        return save(objectBuilder.build(), name, folder)
     }
 
     internal suspend fun generateForge(
         name: String = "Forge",
         folder: File
-    ) {
+    ): File {
         val forgeData = runBlocking {
             ForgeUtil.deferredData.await()
         }
@@ -129,14 +128,14 @@ object Poet : KLogging() {
             forgeBuilder.addProperty(buildProperty(keyIdentifier, number))
         }
 
-        save(forgeBuilder.build(), name, folder)
+        return save(forgeBuilder.build(), name, folder)
     }
 
     internal fun generateConstants(
         name: String = "Constants",
         rootDir: File,
         folder: File
-    ) {
+    ) : File {
         val constBuilder = TypeSpec.objectBuilder(name)
 
         val file = File::class.asClassName()
@@ -147,19 +146,20 @@ object Poet : KLogging() {
 
         constBuilder.addProperty(rootDirProperty)
 
-        save(constBuilder.build(), name, folder)
+        return save(constBuilder.build(), name, folder)
     }
 
-    private fun save(source: FileSpec, name: String, folder: File) {
+    private fun save(source: FileSpec, name: String, folder: File) : File  {
         val path = folder.apply {
             absoluteFile.parentFile.mkdirs()
         }.absoluteFile
         val targetFile = path.resolve("$name.kt")
         source.writeTo(path)
         logger.info("written to $targetFile")
+        return targetFile
     }
 
-    private fun save(type: TypeSpec, name: String, folder: File) {
+    private fun save(type: TypeSpec, name: String, folder: File) : File {
         folder.mkdirs()
         val source = FileSpec.get("", type)
         val path = folder.apply {
@@ -168,6 +168,7 @@ object Poet : KLogging() {
         val targetFile = path.resolve("$name.kt")
         source.writeTo(path)
         logger.info("written to $targetFile")
+        return targetFile
     }
 
     suspend fun requestMods(): Map<String, ProjectID> =

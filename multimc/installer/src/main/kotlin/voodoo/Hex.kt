@@ -11,10 +11,11 @@ import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.internal.BooleanSerializer
-import kotlinx.serialization.json.JSON
+import kotlinx.serialization.json.Json
 import kotlinx.serialization.map
 import kotlinx.serialization.serializer
 import mu.KLogging
@@ -51,7 +52,7 @@ object Hex : KLogging() {
 
     private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
 
-    private val json = JSON(indented = true, strictMode = false, encodeDefaults = true)
+    private val json = Json(indented = true, strictMode = false, encodeDefaults = true)
 
     @UseExperimental(ObsoleteCoroutinesApi::class)
     private suspend fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
@@ -94,16 +95,22 @@ object Hex : KLogging() {
 
         var forceDisplay = false
         if (oldpack != null) {
-//            if (oldpack.version == modpack.version) {
-//                logger.info("no update required ? hold shift to force a update")
-//                delay(1000)
-//                return //TODO: make dialog close continue when no update is required ?
+            if (oldpack.version == modpack.version) {
+                logger.info("no update required ? hold shift to force a update")
+                // TODO: show timeout
+
+                delay(1000)
+                return //TODO: make dialog close continue when no update is required ?
 //                if(kit.getLockingKeyState(KeyEvent.VK_CAPS_LOCK)) {
 //                    forceDisplay = true
 //                } else {
-//                    exitProcess(0)
+//                    return
 //                }
-//            }
+            } else {
+                logger.info("old pack version mismatched")
+            }
+        } else {
+            logger.info("no old pack found")
         }
 
         val forgePrefix = "net.minecraftforge:forge:"
@@ -123,7 +130,7 @@ object Hex : KLogging() {
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val defaults = if (featureJson.exists()) {
-            JSON.indented.parse(mapSerializer, featureJson.readText())
+            Json.indented.parse(mapSerializer, featureJson.readText())
         } else {
             mapOf()
         }
@@ -132,7 +139,7 @@ object Hex : KLogging() {
                 ?: modpack.name!!, modpack.version!!, forceDisplay = forceDisplay, updating = oldpack != null
         )
         featureJson.writeText(
-            JSON.indented.stringify(mapSerializer, features)
+            Json.indented.stringify(mapSerializer, features)
         )
         if (reinstall) {
             minecraftDir.deleteRecursively()

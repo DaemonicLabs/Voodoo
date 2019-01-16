@@ -13,9 +13,10 @@ import kotlin.script.experimental.annotations.KotlinScript
     compilationConfiguration = MainScriptEnvConfiguration::class
 )
 open class MainScriptEnv(
-    val rootDir: File,
-    val tomeEnv: TomeEnv = TomeEnv(rootDir.resolve("docs"))
+    val rootDir: File
 ) {
+    val tomeEnv: TomeEnv = TomeEnv(rootDir.resolve("docs"))
+
     @VoodooDSL
     fun docs(configureTome: TomeEnv.() -> Unit) {
         tomeEnv.configureTome()

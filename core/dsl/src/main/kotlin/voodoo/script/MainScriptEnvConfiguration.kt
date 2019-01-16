@@ -16,19 +16,19 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         "voodoo.dsl.*",
         "voodoo.provider.*"
     )
-    jvm {
-
-    }
-    ide {
-        dependenciesSources.append(
-            JvmDependency(
-                File(".voodoo/Constants.kt"),
-                File(".voodoo/Forge.kt"),
-                File(".voodoo/Mod.kt"),
-                File(".voodoo/TexturePack.kt")
-            )
-        )
-    }
+//    jvm {
+//
+//    }
+//    ide {
+//        dependenciesSources.append(
+//            JvmDependency(
+//                File(".voodoo/Constants.kt"),
+//                File(".voodoo/Forge.kt"),
+//                File(".voodoo/Mod.kt"),
+//                File(".voodoo/TexturePack.kt")
+//            )
+//        )
+//    }
     compilerOptions.append("-jvm-target 1.8")
 //    refineConfiguration {
 //        onAnnotations(DependsOn::class, Repository::class, handler = ::configureMavenDepsOnAnnotations)

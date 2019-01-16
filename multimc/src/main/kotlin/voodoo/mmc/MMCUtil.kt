@@ -474,7 +474,7 @@ object MMCUtil : KLogging() {
             }
         val bounds = mmcState?.bounds
         if (bounds != null) {
-            dialog.setBounds(Rectangle(bounds.x, bounds.y, bounds.width, bounds.height))
+            dialog.bounds = Rectangle(bounds.x, bounds.y, bounds.width, bounds.height)
         } else {
             dialog.setLocationRelativeTo(null)
         }

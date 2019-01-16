@@ -15,12 +15,12 @@ fun create(
 }
 
 object Gradle {
-    const val version = "5.1-rc-1"
+    const val version = "5.1.1"
     val distributionType = Wrapper.DistributionType.ALL
 }
 
 object Kotlin {
-    const val version = "1.3.20-eap-52"
+    const val version = "1.3.20-eap-100"
 }
 
 object Coroutines {
