@@ -20,8 +20,8 @@ import kotlin.system.exitProcess
 object Builder : KLogging() {
     fun build(
         modpack: ModPack,
-        name: String,
-        targetFileName: String = "$name.lock.pack.hjson",
+        id: String,
+        targetFileName: String = "$id.lock.pack.hjson",
         targetFile: File = modpack.sourceFolder.resolve(targetFileName),
         vararg args: String
     ): LockPack = runBlocking {

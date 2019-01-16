@@ -7,7 +7,7 @@ import voodoo.dsl.builder.curse.CurseListBuilder
 import voodoo.provider.CurseProvider
 import voodoo.provider.ProviderBase
 
-inline infix fun <reified W : AbstractBuilder<P>, P : ProviderBase> W.description(s: String) =
+infix fun <W : AbstractBuilder<P>, P : ProviderBase> W.description(s: String) =
     apply { description = s }
 
 /**

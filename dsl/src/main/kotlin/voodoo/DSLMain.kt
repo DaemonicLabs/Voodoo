@@ -6,7 +6,6 @@ import mu.KotlinLogging
 import voodoo.builder.Builder
 import voodoo.builder.Importer
 import voodoo.data.lock.LockPack
-import voodoo.data.nested.NestedPack
 import voodoo.dsl.DslConstants.FULL_VERSION
 import voodoo.script.MainScriptEnv
 import java.io.File
@@ -42,7 +41,7 @@ fun withDefaultMain(
 //        "build_debug" to { args -> BuilderForDSL.build(packFile, rootDir, id, targetFileName = lockFileName, args = *args) },
         "build" to { args ->
             val modpack = Importer.flatten(nestedPack)
-            val lockPack = Builder.build(modpack, name = id, targetFileName = lockFileName, args = *args)
+            val lockPack = Builder.build(modpack, id = id, targetFileName = lockFileName, args = *args)
             Tome.generate(modpack, lockPack, mainEnv.tomeEnv)
             logger.info("finished")
         },

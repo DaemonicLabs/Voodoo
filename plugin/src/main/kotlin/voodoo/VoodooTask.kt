@@ -30,6 +30,7 @@ open class VoodooTask() : JavaExec() {
         }
         args = fullArgs
         println("executing: $args")
+        println("workingDir: $workingDir")
 
         super.exec()
     }
