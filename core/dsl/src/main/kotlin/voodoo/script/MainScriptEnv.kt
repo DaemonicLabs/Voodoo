@@ -13,8 +13,12 @@ import kotlin.script.experimental.annotations.KotlinScript
     compilationConfiguration = MainScriptEnvConfiguration::class
 )
 open class MainScriptEnv(
-    val rootDir: File
-) {
+    val rootDir: File,
+    val id: String
+) : ModpackBuilder(NestedPack.create(
+    rootDir = rootDir,
+    id = id
+)) {
     val tomeEnv: TomeEnv = TomeEnv(rootDir.resolve("docs"))
 
     @VoodooDSL
@@ -29,22 +33,5 @@ open class MainScriptEnv(
     )
     fun tome(configureTome: TomeEnv.() -> Unit) {
         tomeEnv.configureTome()
-    }
-
-    internal val packs: MutableList<NestedPack> = mutableListOf()
-
-    @VoodooDSL
-    fun nestedPack(id: String, mcVersion: String, packBuilder: ModpackBuilder.() -> Unit): NestedPack {
-        val pack = NestedPack.create(
-            rootDir = rootDir,
-            id = id,
-            mcVersion = mcVersion
-        ) {
-            val wrapper = ModpackBuilder(it)
-            wrapper.packBuilder()
-        }
-
-        packs += pack
-        return pack
     }
 }

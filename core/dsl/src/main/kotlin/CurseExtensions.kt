@@ -32,11 +32,11 @@ var AbstractBuilder<CurseProvider>.fileID: FileID by lazyProperty { entry::curse
 //         entry.curseFileID = it
 //     }
 
-inline infix fun <reified T> T.releaseTypes(set: Set<FileType>) where T : EntryBuilder<CurseProvider> =
+infix fun <T> T.releaseTypes(set: Set<FileType>) where T : EntryBuilder<CurseProvider> =
     apply { entry.curseReleaseTypes = set }
 
-inline infix fun <reified T> T.projectID(id: ProjectID) where T : EntryBuilder<CurseProvider> =
+infix fun <T> T.projectID(id: ProjectID) where T : EntryBuilder<CurseProvider> =
     apply { entry.curseProjectID = id }
 
-inline infix fun <reified T> T.fileID(id: FileID) where T : EntryBuilder<CurseProvider> =
+infix fun <T> T.fileID(id: FileID) where T : EntryBuilder<CurseProvider> =
     apply { entry.curseFileID = id }

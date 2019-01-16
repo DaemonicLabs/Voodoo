@@ -21,7 +21,7 @@ internal constructor(
     /**
      * Minecraft Version
      */
-    var mcVersion: String,
+    var mcVersion: String? = null,
     /**
      * display name
      */
@@ -38,11 +38,10 @@ internal constructor(
     var tomeDir: String = id
 ) {
     companion object : KLogging() {
-        fun create(rootDir: File, id: String, mcVersion: String, builder: (NestedPack) -> Unit): NestedPack {
+        fun create(rootDir: File, id: String, builder: (NestedPack) -> Unit = {}): NestedPack {
             val pack = NestedPack(
                 rootDir = rootDir,
-                id = id,
-                mcVersion = mcVersion
+                id = id
             )
             builder(pack)
             return pack
@@ -70,7 +69,7 @@ internal constructor(
             icon = icon,
             authors = authors,
             forge = forge,
-            mcVersion = mcVersion,
+            mcVersion = mcVersion ?: throw IllegalStateException("mcVersion must be set for pack '$id'"),
             userFiles = userFiles,
             launch = launch
         ).also {

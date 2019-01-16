@@ -58,10 +58,11 @@ open class CreatePackTask : DefaultTask() {
             ForgeUtil.deferredData.await()
         }
 
-        val nestedPack = MainScriptEnv(rootDir = rootDir).nestedPack(
-            id = id ?: throw GradleException("id was null"),
+        val scriptEnv = MainScriptEnv(
+            rootDir = rootDir,
+            id = id ?: throw GradleException("id was null")
+        ).apply {
             mcVersion = mcVersion ?: throw GradleException("mcVersion was null")
-        ) {
             title = titleStr ?: id!!.capitalize()
             authors = listOf(System.getProperty("user.name"))
             forge = forgeData.promos["$mcVersion-recommended"]
@@ -75,6 +76,8 @@ open class CreatePackTask : DefaultTask() {
                 }
             }
         }
+
+        val nestedPack = scriptEnv.pack
 
         PoetPack.createModpack(
             folder = packsDir,

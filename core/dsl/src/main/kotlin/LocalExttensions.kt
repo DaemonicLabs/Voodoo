@@ -8,5 +8,5 @@ var EntryBuilder<LocalProvider>.fileSrc
         entry.fileSrc = it
     }
 
-inline infix fun <reified T> T.fileSrc(s: String) where T : EntryBuilder<LocalProvider> =
+infix fun <T> T.fileSrc(s: String) where T : EntryBuilder<LocalProvider> =
     apply { entry.fileSrc = s }

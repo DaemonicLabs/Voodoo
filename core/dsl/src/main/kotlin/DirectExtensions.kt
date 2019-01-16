@@ -15,8 +15,8 @@ var AbstractBuilder<DirectProvider>.useUrlTxt
         entry.useUrlTxt = it
     }
 
-inline infix fun <reified T> T.url(s: String) where T : EntryBuilder<DirectProvider> =
+infix fun <T> T.url(s: String) where T : EntryBuilder<DirectProvider> =
     apply { entry.url = s }
 
-inline infix fun <reified T> T.useUrlTxt(b: Boolean) where T : EntryBuilder<DirectProvider> =
+infix fun <T> T.useUrlTxt(b: Boolean) where T : EntryBuilder<DirectProvider> =
     apply { entry.useUrlTxt = b }
