@@ -42,11 +42,15 @@ object Voodoo : KLogging() {
             logger.error("configuration script must be the first parameter")
             exitProcess(1)
         }
-        val id = script.substringBeforeLast(".voodoo.kts").apply {
+        val scriptFile = File(script)
+        require(scriptFile.exists()) { "script file does not exists" }
+        val scriptFileName = scriptFile.name
+
+        val id = scriptFileName.substringBeforeLast(".voodoo.kts").apply {
             require(isNotBlank()) { "the script file must contain a id in the filename" }
         }
 
-        val rootDir = File(".").absoluteFile
+        val rootDir = File(System.getProperty("user.dir")).absoluteFile
         val generatedFiles = poet(rootDir = rootDir)
 
         val config = createJvmCompilationConfigurationFromTemplate<MainScriptEnv> {
@@ -78,10 +82,12 @@ object Voodoo : KLogging() {
             println("    $it")
         }
 
-        val scriptFile = File("packs").resolve(script)
+//        val scriptFile = File("packs").resolve(scriptFileName)
         val absoluteScriptFile = scriptFile.absoluteFile
         val scriptContent = scriptFile.readText()
         val scriptSource = scriptContent.toScriptSource()
+
+        println("compiling script, please be patient")
         val result = BasicJvmScriptingHost().eval(scriptSource, config, evaluationConfig)
 
         fun SourceCode.Location.posToString() = "(${start.line}, ${start.col})"
@@ -137,7 +143,7 @@ object Voodoo : KLogging() {
         val packDir = mainEnv.rootDir
         val packFileName = "$id.pack.hjson"
 //    val packFile = packDir.resolve(packFileName)
-        val lockFileName = "$id.lock.hjson"
+        val lockFileName = "$id.lock.pack.hjson"
         val lockFile = packDir.resolve(lockFileName)
 
         val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
@@ -145,7 +151,7 @@ object Voodoo : KLogging() {
 //        "build_debug" to { args -> BuilderForDSL.build(packFile, rootDir, id, targetFileName = lockFileName, args = *args) },
             "build" to { args ->
                 val modpack = Importer.flatten(nestedPack)
-                val lockPack = Builder.build(modpack, name = id, /*targetFileName = lockFileName,*/ args = *args)
+                val lockPack = Builder.build(modpack, id = id, /*targetFileName = lockFileName,*/ args = *args)
                 Tome.generate(modpack, lockPack, mainEnv.tomeEnv)
                 logger.info("finished")
             },
