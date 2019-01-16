@@ -41,19 +41,23 @@ nestedPack(
             withProvider(DirectProvider).list {
                 +"betterBuilderWands" configure {
                     name = "Better Builder's Wands"
-                    url =
-                            "https://centerofthemultiverse.net/launcher/mirror/BetterBuildersWands-1.12-0.11.1.245+69d0d70.jar"
+                    url = "https://centerofthemultiverse.net/launcher/mirror/BetterBuildersWands-1.12-0.11.1.245+69d0d70.jar"
                 }
                 // inline url declration
-                +"nutrition" url "https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar"
+                +"nutrition" configure {
+                    url = "https://github.com/WesCook/Nutrition/releases/download/v3.4.0/Nutrition-1.12.2-3.4.0.jar"
+                }
             }
 
             withProvider(JenkinsProvider) {
                 jenkinsUrl = "https://ci.elytradev.com"
             }.list {
-                +"fruitPhone" job "elytra/FruitPhone/1.12.2"
-                +"probeDataProvider" job "elytra/ProbeDataProvider/1.12"
-
+                +"fruitPhone" configure {
+                    job = "elytra/FruitPhone/1.12.2"
+                }
+                +"probeDataProvider" configure {
+                    job = "elytra/ProbeDataProvider/1.12"
+                }
                 +"magicArsenal" configure {
                     name = "Magic Arsenal"
                     job = "elytra/MagicArsenal/master"
@@ -93,7 +97,9 @@ nestedPack(
                 withProvider(JenkinsProvider) {
                     jenkinsUrl = "https://ci.elytradev.com"
                 }.list {
-                    +"matterLink" job "elytra/MatterLink/master"
+                    +"matterLink" configure {
+                        job = "elytra/MatterLink/master"
+                    }
                 }
             }
 
@@ -109,7 +115,9 @@ nestedPack(
                             "You know what this is. Only disable if you really need to save RAM or don't like minimaps."
                 }
 
-                +(Mod.mage) description "Configurable graphics enhancements. Highly recomended."
+                +(Mod.mage) configure {
+                    description = "Configurable graphics enhancements. Highly recomended."
+                }
 
                 +(Mod.neat) configure {
                     description = "Simple health and unit frames."
@@ -162,4 +170,3 @@ nestedPack(
         }
     }
 }
-

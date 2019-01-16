@@ -77,7 +77,7 @@ fun Project.setupDependencies(target: Project = this) {
                 testRuntimeOnly(kotlin("reflect", Kotlin.version))
 
                 testImplementation(project(":dsl"))
-                testImplementation(project(":poet"))
+                implementation(project(":poet"))
 
                 api(project(":core:core-dsl"))
                 implementation(project(":core"))

@@ -14,15 +14,15 @@ import voodoo.data.lock.LockPack
 import voodoo.script.MainScriptEnv
 import voodoo.voodoo.VoodooConstants
 import java.io.File
+import kotlin.script.experimental.api.ResultValue
 import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.ScriptEvaluationConfiguration
 import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.api.compilerOptions
 import kotlin.script.experimental.api.constructorArgs
-import kotlin.script.experimental.api.dependencies
+import kotlin.script.experimental.api.importScripts
 import kotlin.script.experimental.api.resultOrNull
 import kotlin.script.experimental.host.toScriptSource
-import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
 import kotlin.script.experimental.jvm.jdkHome
 import kotlin.script.experimental.jvm.jvm
@@ -40,7 +40,10 @@ object Voodoo : KLogging() {
             exitProcess(1)
         }
 
-        val rootDir = File(".")
+
+        val rootDir = File(".").absoluteFile
+        val generatedFiles = poet(rootDir = rootDir)
+
 //        voodooDir.listFiles().forEach { file ->
 //            val evalu = ScriptEvaluationConfiguration {
 //
@@ -67,16 +70,11 @@ object Voodoo : KLogging() {
         val config = createJvmCompilationConfigurationFromTemplate<MainScriptEnv> {
             jvm {
                 dependenciesFromCurrentContext(wholeClasspath = true)
-                // TODO: importedScripts instead of dependencies
-                dependencies.append(
-                    JvmDependency(File("/home/nikky/dev/Voodoo/samples/build/classes/kotlin/main"))
 
-//                        File(".voodoo/Constants.kt"),
-//                        File(".voodoo/Forge.kt"),
-//                        File(".voodoo/Mod.kt"),
-//                        File(".voodoo/TexturePack.kt")
+
+                importScripts.append(
+                    *generatedFiles.map { it.toScriptSource() }.toTypedArray()
                 )
-
 
                 val JDK_HOME = System.getenv("JAVA_HOME")
                     ?: throw IllegalStateException("please set JAVA_HOME to the installed jdk")
@@ -91,7 +89,12 @@ object Voodoo : KLogging() {
         }
 
         val evaluationConfig = ScriptEvaluationConfiguration {
-            constructorArgs(rootDir)
+            constructorArgs.append(rootDir)
+        }
+
+        println("evaluationConfig entries")
+        evaluationConfig.entries().forEach {
+            println("    $it")
         }
 
         val scriptFile = File("packs").resolve(script)
@@ -104,7 +107,7 @@ object Voodoo : KLogging() {
 
         for (report in result.reports) {
             println(report)
-            val severityIndicator = when(report.severity) {
+            val severityIndicator = when (report.severity) {
                 ScriptDiagnostic.Severity.FATAL -> "fatal"
                 ScriptDiagnostic.Severity.ERROR -> "e"
                 ScriptDiagnostic.Severity.WARNING -> "w"
@@ -120,7 +123,27 @@ object Voodoo : KLogging() {
             exitProcess(1)
         }
 
-        println(evalResult)
+
+        val resultValue = evalResult.returnValue
+        println("resultValue = '${resultValue}'")
+        println("resultValue::class = '${resultValue::class}'")
+
+        when (resultValue) {
+            is ResultValue.Value -> {
+                println("resultValue.name = '${resultValue.name}'")
+                println("resultValue.value = '${resultValue.value}'")
+                println("resultValue.type = '${resultValue.type}'")
+
+                println("resultValue.value::class = '${resultValue.value!!::class}'")
+
+
+                val env = resultValue.value as MainScriptEnv
+                println(env)
+                println(env.rootDir)
+            }
+        }
+        exitProcess(0)
+
 
         val mainEnv = MainScriptEnv(rootDir = rootDir)
 
