@@ -1,5 +1,3 @@
-import org.gradle.api.publish.maven.internal.publication.DefaultMavenPublication
-
 plugins {
     `java-gradle-plugin`
     `kotlin-dsl`
@@ -9,8 +7,9 @@ plugins {
 val major: String by project
 val minor: String by project
 val patch: String by project
-//version = "$major.$minor.$patch-$versionSuffix"
-version = "$major.$minor.$patch-${Env.versionSuffix}"
+// use SNAPSHOT on CI and dev locally
+val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "SNAPSHOT" } ?: "dev"
+version = "$major.$minor.$patch-$versionSuffix"
 
 gradlePlugin {
     plugins {
