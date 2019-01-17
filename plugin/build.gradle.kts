@@ -7,7 +7,7 @@ plugins {
 val major: String by project
 val minor: String by project
 val patch: String by project
-// use SNAPSHOT on CI and dev locally
+// use "SNAPSHOT" on CI and "dev" locally
 val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "SNAPSHOT" } ?: "dev"
 version = "$major.$minor.$patch-$versionSuffix"
 
@@ -47,3 +47,6 @@ publishing {
     }
 }
 
+rootProject.file("private.gradle")
+    .takeIf { it.exists() }
+    ?.let { apply(from = it) }
