@@ -96,11 +96,13 @@ object Hex : KLogging() {
         var forceDisplay = false
         if (oldpack != null) {
             if (oldpack.version == modpack.version) {
-                logger.info("no update required ? hold shift to force a update")
+                logger.info("no update required ? hold shift to force a update (WIP)")
                 // TODO: show timeout
 
-                delay(1000)
-                return //TODO: make dialog close continue when no update is required ?
+//                delay(1000)
+//                return //TODO: make dialog close continue when no update is required ?
+
+                // get the key state somehow
 //                if(kit.getLockingKeyState(KeyEvent.VK_CAPS_LOCK)) {
 //                    forceDisplay = true
 //                } else {
