@@ -126,7 +126,6 @@ object Voodoo : KLogging() {
 
                 val env = resultValue.value as MainScriptEnv
                 println(env)
-                println(env.rootDir)
                 env
             }
             is ResultValue.Unit -> {

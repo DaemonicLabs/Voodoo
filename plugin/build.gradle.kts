@@ -9,9 +9,8 @@ plugins {
 val major: String by project
 val minor: String by project
 val patch: String by project
-val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "SNAPSHOT" } ?: "dev"
-version = "$major.$minor.$patch-$versionSuffix"
-//version = "$major.$minor.$patch-${Env.versionSuffix}"
+//version = "$major.$minor.$patch-$versionSuffix"
+version = "$major.$minor.$patch-${Env.versionSuffix}"
 
 gradlePlugin {
     plugins {
