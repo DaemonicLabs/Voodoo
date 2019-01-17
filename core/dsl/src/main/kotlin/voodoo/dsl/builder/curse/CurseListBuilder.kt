@@ -24,6 +24,10 @@ class CurseListBuilder<T>(
         }.toMap()
     }
 
+    /**
+     * Curse specific list function
+     * allows for curse specific adding of entries
+     */
     @VoodooDSL
     operator fun ID.unaryPlus(): EntryBuilder<T> {
         val idToSlugMap = runBlocking {
@@ -37,16 +41,4 @@ class CurseListBuilder<T>(
         entries += entryBuilder
         return entryBuilder
     }
-
-    /**
-     * Curse specific list function
-     * allows for curse specific adding of entries
-     */
-    @VoodooDSL
-    @Deprecated(
-        "prefer unaryPlus",
-        ReplaceWith("+ id"),
-        level = DeprecationLevel.WARNING
-    )
-    fun add(id: ID) = id.unaryPlus()
 }

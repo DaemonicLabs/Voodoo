@@ -4,32 +4,15 @@
 
 ## Requirements
 
-assuming you have a `.kt` framework file set up
+assuming you have your gradle set up and a `.voodoo.kts` file ready
 [Setup](../setup)
 
-you should have a kotlin file with content similar to
-```kotlin
-fun main(args: Array<String>) = withDefaultMain(
-    arguments = args,
-    root = Constants.rootDir
-) {
-    nestedPack(
-        id = "awesomepack",
-        mcVersion = "1.12.2"
-    ) {
-        
-    }
-}
-```
+every pack needs a id, preferably lowercase and without spaces, the id is extracted from the filename
+for this guide we will pick the id `awesomepack`
 
-for the purpose of this guide we will only look at the `nestedPack` call
+you can start out with a kotlin script file `packs/awesomepack.voodoo.kts`)
 
-
-**required** every pack needs a id, preferably lowercase and without spaces
-
-```kotlin
-id = "awesome"
-```
+for the purpose of this guide we will only look at the pack creation and skip documentation, modlist generation, etc
 
 **required** we know its gonna be for minecraft 1.12.2
 
@@ -50,7 +33,7 @@ and we want to use forge.. for now just the recommended version
 this supports `latest`, `recommended` or the build number eg. `2705`
 
 ```kotlin
-forge = "recommended"
+forge = Forge.recommended
 ```
 
 lets make sure you ae properly credited too..
@@ -66,28 +49,17 @@ lets start at 1.0
 version = "1.0"
 ```
 
-where will the pack find files ? that means.. configs, scripts, more configs and a bunch of config files
-
-```kotlin
-sourceDir = "src"
-```
-
 this means it will look for a folder called `src` relative to `root`
 
 
 our pack now looks like this
 
 ```kotlin
-nestedpack(
-    id = "awesome",
-    mcVersion = "1.12.2"
-) {
-    title = "Awesome Pack"
-    version = "1.0"
-    forge = "recommended"
-    authors = listOf("SomeDude", "OtherDude")
-    sourceDir = "src"
-}
+mcVersion = "1.12.2"
+title = "Awesome Pack"
+version = "1.0"
+forge = Forge.recommended
+authors = listOf("SomeDude", "OtherDude")
 ```
 
 one optional step is to define userFiles,
@@ -327,6 +299,6 @@ withProvider(LocalProvider).list {
 this also showcases you can modify the filename and/or the target folder of files
 we modify the filename of Unity because then we can provide default options that have Unity.zip enabled by default
 
-the pack definition file may now look like [samples/awesomepack.kt](https://github.com/elytra/Voodoo/blob/master/samples/awesomepack.kt)
+the pack definition file may now look like [samples/awesomepack.voodoo.kts](https://github.com/elytra/Voodoo/blob/master/samples/awesomepack.voodoo.kts)
 
 continue with [Build the Pack](../building)

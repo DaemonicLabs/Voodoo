@@ -123,22 +123,6 @@ other samples: [samples](samples)
 
 [Voodoo Samples](https://github.com/NikkyAI/VoodooSamples)
 
-update the pack and write out the lockfiles \
-`./gradlew cotm --args "build"`
-
-to update just a few mods in the update step \
-`./gradlew cotm --args "build -E correlated -E magicArsenal"`
-
-package for sklauncher \
-`./gradlew cotm --args "pack sk"`
-now you can just upload the contents of `workspace/_upload`
-
-or do all of the above
-`./gradlew cotm --args "build - pack sk"`
-
-build and test with multimc \
-`./cotm.kt build - test mmc`
-
 ## Server Deployment
 
 create a server package \
@@ -147,7 +131,8 @@ create a server package \
 that creates a server *package* in `.server/`
  1. upload that package to **different** folder on your minecraft server
  2. stop the minecraft server and
- 3. execute the server installer with the actual location of your minecraft server installation
+ 3. execute the server installer with the actual location of your minecraft server installation \
+    eg. `java -jar server-installer ../actualServer`
 
 this will:
  - update configs/files
@@ -169,29 +154,21 @@ Maven
 -----
 
 Voodoo is available on the elytradev maven
-
+(recommended usage is via gradle plugin, see [docs/setup](docs/setup) )
 gradle:
 ```kotlin
 repositories {
-    maven(url = "https://repo.elytradev.com")
-    maven(url = "https://kotlin.bintray.com/kotlinx")
+    maven(url = "https://repo.elytradev.com") { name = "elytradev" }   
+    maven(url = "https://dl.bintray.com/kotlin/kotlin-eap/") { name = "Kotlin EAP" }
+    maven(url = "https://kotlin.bintray.com/kotlinx") { name = "kotlinx" }
+    maven(url = "https://jitpack.io") {name = "jitpack" }
 }
 dependencies {
-    compile(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.0+")
+    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4+")
 }
 ```
 
-<!--
-kscript:
-```kotlin
-#!/usr/bin/env kscript
-@file:DependsOnMaven("moe.nikky.voodoo-master:dsl:0.4.0-174") // buildnumber needs to be updated menually
-@file:DependsOnMaven("ch.qos.logback:logback-classic:1.2.3")
-@file:MavenRepository("kotlinx","https://kotlin.bintray.com/kotlinx" )
-@file:MavenRepository("elytradev", "https://repo.elytradev.com")
-//COMPILER_OPTS -jvm-target 1.8
-```
--->
+
 for builds not on master add the branch name to the groupId
 eg. `moe.nikky.voodoo-rewrite`
 
@@ -210,12 +187,7 @@ How to contribute?
 
 buy me a drink: [![Patreon](https://img.shields.io/badge/Patreon-Nikkyai-red.svg?style=flat-square)](https://www.patreon.com/NikkyAi)
 
-## Improve kscript
-
-[contribute to kscript](https://github.com/holgerbrandl/kscript#how-to-contribute)
-[dynamic verisons in kscript](https://github.com/holgerbrandl/kscript/issues/166)
-
 ## Improve kotlin scripting
 
-[KT-27051](https://youtrack.jetbrains.com/issue/KT-27051)
-[KT-27050](https://youtrack.jetbrains.com/issue/KT-27050)
+[KT-27815](https://youtrack.jetbrains.com/issue/KT-27815)
+[KT-28916](https://youtrack.jetbrains.com/issue/KT-28916)

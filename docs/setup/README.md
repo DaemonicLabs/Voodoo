@@ -18,7 +18,7 @@ fork [sample project](https://github.com/NikkyAI/VoodooSamples)
 [sample project](https://github.com/NikkyAI/VoodooSamples)
 
 required gradle version is **5**  
-`5.1-rc-1`
+recommended: `5.1.1`
 
 `build.gradle.kts`
 ```kotlin
@@ -26,13 +26,16 @@ plugins {
     id("voodoo") version "0.4.5-SNAPSHOT"
 }
 
+voodoo {
+
 // for configuration of folders
 // these are the defaults
-voodoo {
+
 //    rootDir = project.rootDir
 //    generatedSource = { rootDir -> rootDir.resolve(".voodoo") }
 //    packDirectory = { ootDir -> rootDir.resolve("packs") }
 
+// task shorthands
     addTask(name = "build", parameters = listOf("build"))
     addTask(name = "testMMC", parameters = listOf("test mmc"))
     addTask(name = "sk", parameters = listOf("pack sk"))
@@ -42,6 +45,9 @@ voodoo {
 ```
 
 `gradle wrapper --gradle-version 5.0 --distribution-type all`
+
+sadly ou still have to add quite a bit to the pluginManagement block,
+but i think this is the most compatible solution still
 
 `settings.gradle.kts`
 ```kotlin
@@ -84,7 +90,7 @@ let the plugin automatically generate a pack skeleton
 
 ### Manual
 
-`packs/awesomepack.kt`
+`packs/awesomepack.voodoo.kts`
 ```kotlin
 import voodoo.*
 import voodoo.data.*
@@ -95,21 +101,12 @@ import voodoo.releaseTypes
 import voodoo.rootEntry
 import voodoo.withDefaultMain
 
-fun main(args: Array<String>) = withDefaultMain(
-    arguments = args,
-    root = Constants.rootDir
-) {
-    nestedPack(
-        id = "awesomepack",
-        mcVersion = "1.12.2"
-    ) {
-        title = "Awesome Pack Demo"
-        forge = Forge.mc1_12_2_recommended
-        authors = listOf("insert-author-name")
-        root = rootEntry(CurseProvider) {
-            TODO("to be implemented")
-        }
-    }
+mcVersion = "1.12.2"
+title = "Awesome Pack Demo"
+forge = Forge.mc1_12_2_recommended
+authors = listOf("insert-author-name")
+root = rootEntry(CurseProvider) {
+    TODO("to be implemented")
 }
 ```
 
