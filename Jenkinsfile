@@ -46,7 +46,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'privateGradlePublish', variable: 'PRIVATEGRADLE')]) {
                     sh '''
                         cp "$PRIVATEGRADLE" private.gradle
-                        ./gradlew publish -S
+                        ./gradlew cleanPublish publish -S
                     '''
                 }
             }
