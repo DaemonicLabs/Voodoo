@@ -6,6 +6,7 @@
 
 package voodoo
 
+import com.github.kittinunf.fuel.core.HttpException
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.bootstrap.BootstrapConstants.VERSION
@@ -38,6 +39,7 @@ object Bootstrap : KLogging() {
 
     private val directories: Directories = Directories.get(moduleName = "$MODULE_NAME-bootstrap")
     private val binariesDir: File = directories.cacheHome.resolve(jobKey.replace('/', '_'))
+    private val lastFile: File = binariesDir.resolve("newest")
 
     fun cleanup() {
         val files = binariesDir.listFiles { pathname -> pathname.name.endsWith(".tmp") }
@@ -82,7 +84,18 @@ object Bootstrap : KLogging() {
     @Throws(Throwable::class)
     suspend fun launch(vararg originalArgs: String) {
         logger.info("Downloading the $MODULE_NAME binary...")
-        val file = download()
+        val file = try {
+            download().apply {
+                assert(exists()) { "downloaded files does not seem to exist" }
+                copyTo(lastFile, overwrite = true)
+            }
+        } catch(e: HttpException) {
+            logger.error("cannot download $jobKey from $jenkinsUrl, trying to reuse last binary", e)
+            lastFile
+        }
+
+        require(file.exists()) { "binary $file does not exist" }
+
 
         logger.info("Loaded " + file.path)
         val java = arrayOf(System.getProperty("java.home"), "bin", "java").joinToString(File.separator)
