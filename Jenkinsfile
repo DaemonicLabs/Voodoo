@@ -9,7 +9,6 @@ pipeline {
 	            sh 'git submodule update --init --recursive'
                 sh 'rm private.gradle || true'
 	            sh './gradlew clean'
-	            sh 'find . -name "*.voodoo.kts" -delete'
 	        }
 	    }
 	    stage("voodoo") {

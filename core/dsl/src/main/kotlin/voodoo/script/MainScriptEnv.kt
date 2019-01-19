@@ -12,7 +12,7 @@ import kotlin.script.experimental.annotations.KotlinScript
     fileExtension = "voodoo.kts",
     compilationConfiguration = MainScriptEnvConfiguration::class
 )
-class MainScriptEnv(
+open class MainScriptEnv(
     val rootDir: File,
     val id: String
 ) : ModpackBuilder(NestedPack.create(
