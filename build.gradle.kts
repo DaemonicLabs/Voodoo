@@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import plugin.GenerateConstantsTask
 
 plugins {
+    wrapper
     idea
     `maven-publish`
     `project-report`
@@ -137,6 +138,7 @@ subprojects {
                         it.capitalize()
                     } + "Constants"
             ) {
+                field("GRADLE_VERSION") value Gradle.version
                 field("BUILD_NUMBER") value Env.buildNumber
                 field("BUILD") value Env.versionSuffix
                 field("MAJOR_VERSION") value major
