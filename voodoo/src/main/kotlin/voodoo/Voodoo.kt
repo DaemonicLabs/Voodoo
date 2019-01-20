@@ -41,6 +41,11 @@ object Voodoo : KLogging() {
 
         logger.debug("system.properties: ${System.getProperties()}")
 
+        if (fullArgs.isEmpty()) {
+            GradleSetup.main()
+            exitProcess(0)
+        }
+
         val arguments = fullArgs.drop(1)
         val script = fullArgs.getOrNull(0)?.apply {
             require(isNotBlank()) { "configuration script name cannot be blank" }
@@ -58,7 +63,8 @@ object Voodoo : KLogging() {
         }
 
         val rootDir = (System.getProperty("voodoo.rootDir") ?: System.getProperty("user.dir")).asFile.absoluteFile
-        val generatedFilesDir = System.getProperty("voodoo.generatedSrc")?.asFile ?: rootDir.resolve(".voodoo").absoluteFile
+        val generatedFilesDir =
+            System.getProperty("voodoo.generatedSrc")?.asFile ?: rootDir.resolve(".voodoo").absoluteFile
         val generatedFiles = poet(rootDir = rootDir, generatedSrcDir = generatedFilesDir)
 
         val docDir = System.getProperty("voodoo.docDir")?.asFile ?: rootDir.resolve("docs")
@@ -153,7 +159,7 @@ object Voodoo : KLogging() {
                 printCommands(null)
                 return
             }
-            voodoo.logger.info("executing command [${argChunk.joinToString()}]")
+            logger.info("executing command [${argChunk.joinToString()}]")
             val remainingArgs = argChunk.drop(1).toTypedArray()
 
             val function = funcs[command.toLowerCase()]
@@ -167,90 +173,90 @@ object Voodoo : KLogging() {
             }
         }
     }
-}
 
-private fun initTome(docDir: File): TomeEnv {
-    val tomeEnv = TomeEnv(docDir)
+    private fun initTome(docDir: File): TomeEnv {
+        val tomeEnv = TomeEnv(docDir)
 
-    val tomeScripts = docDir.listFiles { file -> file.name.endsWith(".tome.kts") }
+        val tomeScripts = docDir.listFiles { file -> file.name.endsWith(".tome.kts") }
 
-    val config = createJvmCompilationConfigurationFromTemplate<TomeScript> {
-        jvm {
-            dependenciesFromCurrentContext(wholeClasspath = true)
+        val config = createJvmCompilationConfigurationFromTemplate<TomeScript> {
+            jvm {
+                dependenciesFromCurrentContext(wholeClasspath = true)
 
-            val JDK_HOME = System.getenv("JAVA_HOME")
-                ?: throw IllegalStateException("please set JAVA_HOME to the installed jdk")
-            jdkHome(File(JDK_HOME))
-        }
+                val JDK_HOME = System.getenv("JAVA_HOME")
+                    ?: throw IllegalStateException("please set JAVA_HOME to the installed jdk")
+                jdkHome(File(JDK_HOME))
+            }
 //            compilerOptions.append("-jvm-target", "1.8")
-        compilerOptions.append("-jvm-target", "1.8")
-    }
-
-    tomeScripts.forEach { scriptFile ->
-        require(scriptFile.exists()) { "script file does not exists" }
-        val scriptFileName = scriptFile.name
-
-        val id = scriptFileName.substringBeforeLast(".tome.kts").apply {
-            require(isNotBlank()) { "the script file must contain a id in the filename" }
+            compilerOptions.append("-jvm-target", "1.8")
         }
 
-        val evaluationConfig = ScriptEvaluationConfiguration {
-            constructorArgs.append(id)
+        tomeScripts.forEach { scriptFile ->
+            require(scriptFile.exists()) { "script file does not exists" }
+            val scriptFileName = scriptFile.name
+
+            val id = scriptFileName.substringBeforeLast(".tome.kts").apply {
+                require(isNotBlank()) { "the script file must contain a id in the filename" }
+            }
+
+            val evaluationConfig = ScriptEvaluationConfiguration {
+                constructorArgs.append(id)
+            }
+
+            val scriptSource = scriptFile.toScriptSource()
+
+            println("compiling script, please be patient")
+            val result = BasicJvmScriptingHost().eval(scriptSource, config, evaluationConfig)
+
+            val tomeScriptEnv = result.get<TomeScript>(scriptFile)
+
+            tomeEnv.add(tomeScriptEnv.fileName, tomeScriptEnv.generateHtml)
         }
 
-        val scriptSource = scriptFile.toScriptSource()
-
-        println("compiling script, please be patient")
-        val result = BasicJvmScriptingHost().eval(scriptSource, config, evaluationConfig)
-
-        val tomeScriptEnv = result.get<TomeScript>(scriptFile)
-
-        tomeEnv.add(tomeScriptEnv.fileName, tomeScriptEnv.generateHtml)
+        return tomeEnv
     }
 
-    return tomeEnv
-}
+    fun <T> ResultWithDiagnostics<EvaluationResult>.get(scriptFile: File): T {
+        fun SourceCode.Location.posToString() = "(${start.line}, ${start.col})"
 
-fun <T> ResultWithDiagnostics<EvaluationResult>.get(scriptFile: File): T {
-    fun SourceCode.Location.posToString() = "(${start.line}, ${start.col})"
-
-    for (report in reports) {
-        println(report)
-        val severityIndicator = when (report.severity) {
-            ScriptDiagnostic.Severity.FATAL -> "fatal"
-            ScriptDiagnostic.Severity.ERROR -> "e"
-            ScriptDiagnostic.Severity.WARNING -> "w"
-            ScriptDiagnostic.Severity.INFO -> "i"
-            ScriptDiagnostic.Severity.DEBUG -> "d"
+        for (report in reports) {
+            println(report)
+            val severityIndicator = when (report.severity) {
+                ScriptDiagnostic.Severity.FATAL -> "fatal"
+                ScriptDiagnostic.Severity.ERROR -> "e"
+                ScriptDiagnostic.Severity.WARNING -> "w"
+                ScriptDiagnostic.Severity.INFO -> "i"
+                ScriptDiagnostic.Severity.DEBUG -> "d"
+            }
+            println("$severityIndicator: ${scriptFile.absoluteFile}: ${report.location?.posToString()}: ${report.message}")
+            report.exception?.printStackTrace()
         }
-        println("$severityIndicator: ${scriptFile.absoluteFile}: ${report.location?.posToString()}: ${report.message}")
-        report.exception?.printStackTrace()
-    }
-    println(this)
-    val evalResult = resultOrNull() ?: run {
-        Voodoo.logger.error("evaluation failed")
-        exitProcess(1)
-    }
-
-    val resultValue = evalResult.returnValue
-    println("resultValue = '${resultValue}'")
-    println("resultValue::class = '${resultValue::class}'")
-
-    return when (resultValue) {
-        is ResultValue.Value -> {
-            println("resultValue.name = '${resultValue.name}'")
-            println("resultValue.value = '${resultValue.value}'")
-            println("resultValue.type = '${resultValue.type}'")
-
-            println("resultValue.value::class = '${resultValue.value!!::class}'")
-
-            val env = resultValue.value as T
-            println(env)
-            env
+        println(this)
+        val evalResult = resultOrNull() ?: run {
+            Voodoo.logger.error("evaluation failed")
+            exitProcess(1)
         }
-        is ResultValue.Unit -> {
-            logger.error("evaluation failed")
-            exitProcess(-1)
+
+        val resultValue = evalResult.returnValue
+        println("resultValue = '${resultValue}'")
+        println("resultValue::class = '${resultValue::class}'")
+
+        return when (resultValue) {
+            is ResultValue.Value -> {
+                println("resultValue.name = '${resultValue.name}'")
+                println("resultValue.value = '${resultValue.value}'")
+                println("resultValue.type = '${resultValue.type}'")
+
+                println("resultValue.value::class = '${resultValue.value!!::class}'")
+
+                val env = resultValue.value as T
+                println(env)
+                env
+            }
+            is ResultValue.Unit -> {
+                logger.error("evaluation failed")
+                exitProcess(-1)
+            }
         }
     }
 }
