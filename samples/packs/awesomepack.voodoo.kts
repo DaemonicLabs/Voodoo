@@ -21,8 +21,7 @@ userFiles = UserFiles(
     ),
     exclude = listOf("")
 )
-//TODO: refactor to non-repeatable `root { }` call
-root = rootEntry(CurseProvider) {
+root(CurseProvider) {
     validMcVersions = setOf("1.12.1", "1.12")
     releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
     list {

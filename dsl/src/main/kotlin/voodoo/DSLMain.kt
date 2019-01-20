@@ -42,7 +42,8 @@ fun withDefaultMain(
         "build" to { args ->
             val modpack = Importer.flatten(nestedPack)
             val lockPack = Builder.build(modpack, id = id, targetFileName = lockFileName, args = *args)
-            Tome.generate(modpack, lockPack, mainEnv.tomeEnv)
+            // TODO: tome refactor
+            //  Tome.generate(modpack, lockPack, mainEnv.tomeEnv)
             logger.info("finished")
         },
         "pack" to { args ->

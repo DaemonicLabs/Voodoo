@@ -34,6 +34,10 @@ val noConstants = listOf(
     project("skcraft")
 )
 
+idea {
+    
+}
+
 allprojects {
     repositories {
         maven(url = "https://jitpack.io") {

@@ -10,10 +10,10 @@ import java.io.StringWriter
 
 object Tome : KLogging() {
 
-    fun generate(modpack: ModPack, lockPack: LockPack, tomeEnv: TomeEnv) {
-        val tomeDir = tomeEnv.tomeRoot.resolve(modpack.tomeDir)
+    suspend fun generate(modpack: ModPack, lockPack: LockPack, tomeEnv: TomeEnv) {
+        val tomeDir = tomeEnv.docRoot.resolve(modpack.tomeDir)
 
-        tomeEnv.generators.forEach { file, generator ->
+        for ((file, generator) in tomeEnv.generators) {
             logger.info("generating $file")
             val fileContent = generator(modpack, lockPack)
             val targetFile = tomeDir.resolve(file)
@@ -22,7 +22,7 @@ object Tome : KLogging() {
         }
     }
 
-    fun defaultModlist(modpack: ModPack, lockPack: LockPack): String {
+    suspend fun defaultModlist(modpack: ModPack, lockPack: LockPack): String {
         // generate modlist
 
         logger.info("writing modlist")

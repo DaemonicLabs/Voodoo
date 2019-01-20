@@ -27,7 +27,7 @@ object CurseSpek : Spek({
             MainScriptEnv(rootDir = rootFolder, id = "curse_spek").apply {
                 mcVersion = "1.12.2"
                 title = "Curse Spek"
-                root = rootEntry(CurseProvider) {
+                root(CurseProvider) {
                     list {
                         +(Mod.matterlink)
                     }

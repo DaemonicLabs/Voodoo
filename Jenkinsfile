@@ -13,9 +13,10 @@ pipeline {
 	    }
 	    stage("voodoo") {
 	        steps {
-	            sh './gradlew clean'
+				sh './gradlew :voodoo:clean'
+				sh './gradlew :voodoo:shadowJar -S'
 	            sh './gradlew test -S'
-	            // archiveArtifacts artifacts:  'build/libs/*jar'
+	            archiveArtifacts artifacts:  'build/libs/*jar'
 	        }
 	    }
 	    stage("multimc-installer") {
@@ -35,9 +36,9 @@ pipeline {
 	    stage("bootstrap") {
 	        steps {
 	            sh './gradlew :bootstrap:clean'
-	            // sh './gradlew :bootstrap:shadowJar -Ptarget=voodoo'
+	            sh './gradlew :bootstrap:shadowJar -Ptarget=voodoo -S'
 	            sh './gradlew :bootstrap:shadowJar -Ptarget=multimc-installer -S'
-	            // archiveArtifacts artifacts:  'bootstrap/build/libs/*voodoo*'
+	            archiveArtifacts artifacts:  'bootstrap/build/libs/*voodoo*'
 	            archiveArtifacts artifacts:  'bootstrap/build/libs/*multimc-installer*'
 	        }
 	    }
@@ -46,7 +47,7 @@ pipeline {
                 withCredentials([file(credentialsId: 'privateGradlePublish', variable: 'PRIVATEGRADLE')]) {
                     sh '''
                         cp "$PRIVATEGRADLE" private.gradle
-                        ./gradlew cleanPublish publish -S
+                        ./gradlew publish -S
                     '''
                 }
             }

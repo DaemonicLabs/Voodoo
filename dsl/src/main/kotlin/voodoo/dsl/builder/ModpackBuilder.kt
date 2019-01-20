@@ -5,6 +5,7 @@ import voodoo.data.nested.NestedPack
 import voodoo.dsl.VoodooDSL
 import voodoo.property
 import voodoo.provider.ProviderBase
+import voodoo.readOnly
 
 @VoodooDSL
 open class ModpackBuilder(
@@ -18,12 +19,26 @@ open class ModpackBuilder(
     var forge by property(pack::forge)
     var userFiles by property(pack::userFiles)
     var launch by property(pack::launch)
-    var root by property(pack::root)
+    val root by readOnly(pack::root)
     var localDir by property(pack::localDir)
     var sourceDir by property(pack::sourceDir)
 
+    private var rootInitialized = false
+
     // TODO allow calling only once per script
     // TODO: also set root
+    @VoodooDSL
+    fun <T> root(
+        provider: T,
+        initRoot: GroupBuilder<T>.() -> Unit
+    ) where T : ProviderBase {
+        require(!rootInitialized) { "root was already initialized for ${pack.id}" }
+        val entry = NestedEntry()
+        val rootBuilder = GroupBuilder(entry = entry, provider = provider)
+        rootBuilder.initRoot()
+        pack.root = rootBuilder.entry
+    }
+
     @VoodooDSL
     fun <T> rootEntry(
         provider: T,
