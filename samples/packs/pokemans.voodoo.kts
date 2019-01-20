@@ -8,7 +8,7 @@ import voodoo.provider.JenkinsProvider
 import voodoo.withDefaultMain
 
 fun main(args: Array<String>) = withDefaultMain(
-    root = Constants.rootDir.resolve("run"),
+    root = Constants.rootDir,
     arguments = args,
     id = "pokemans"
 ) {
@@ -25,7 +25,7 @@ fun main(args: Array<String>) = withDefaultMain(
         ),
         exclude = listOf()
     )
-    root = rootEntry(CurseProvider) {
+    root(CurseProvider) {
         releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
         list {
             // TODO: group mods by category (eg. tweakers)
@@ -110,7 +110,7 @@ fun main(args: Array<String>) = withDefaultMain(
                 jenkinsUrl = "https://ci.elytradev.com"
             }.list {
                 +"probe-data-provider" job "elytra/ProbeDataProvider/1.10.2"
-                +"fruit-phone" job "elytra/FruitPhone/1.10.2"
+                +"fruit-phon`e" job "elytra/FruitPhone/1.10.2"
 
                 group {
                     side = Side.SERVER

@@ -6,6 +6,7 @@ plugins {
 voodoo {
     rootDir { project.rootDir.resolve("run") }
     packDirectory { project.rootDir.resolve("packs") }
+//    tomeDirectory { project.rootDir.resolve("docs") }
 //    generatedSource = { rootDir -> rootDir.resolve(".voodoo") }
 
     addTask(name = "build", parameters = listOf("build"))
@@ -20,6 +21,6 @@ repositories {
 }
 
 tasks.withType<Wrapper> {
-    gradleVersion = "5.0"
+    gradleVersion = "5.1.1"
     distributionType = Wrapper.DistributionType.ALL
 }

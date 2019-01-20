@@ -6,14 +6,14 @@ use a tweakClass for forge (bundle bootstrapper in tweakClass ?)
 # Scripting
 
 - [x] Script Definition
-- [ ] parse script folder and init pack with filename as `id`
+- [x] parse script folder and init pack with filename as `id`
 - [ ] add extra scripts for defining tome / doc generators
 
 # Reorganize buildscripts / Repo
 
 - [x] no code in the root project
-- [ ] all dependencies in `buildSrc`
-- [ ] move kotlin `src` one level higher (`src/main/kotlin` is unnecessary)
+- [x] all dependencies in `buildSrc`
+- [ ] move kotlin `src` one level higher ? (`src/main/kotlin` is unnecessary)
 
 # documentation generator | tome
 

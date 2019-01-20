@@ -15,12 +15,12 @@ import voodoo.forge.ForgeUtil
 import java.io.File
 
 fun main(vararg args: String) {
-    poet(rootDir = File(args[0]), root = File(args[1]))
+    poet(rootDir = File(args[0]), generatedSrcDir = File(args[1]))
 }
 
 fun poet(
     rootDir: File = File(System.getProperty("user.dir")),
-    root: File = rootDir.resolve(".voodoo"),
+    generatedSrcDir: File = rootDir.resolve(".voodoo"),
     mods: String = "Mod",
     texturePacks: String = "TexturePack",
     slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
@@ -37,16 +37,16 @@ fun poet(
                 name = mods,
                 slugIdMap = Poet.requestMods(),
                 slugSanitizer = slugSanitizer,
-                folder = root
+                folder = generatedSrcDir
             ),
             Poet.generate(
                 name = texturePacks,
                 slugIdMap = Poet.requestResourcePacks(),
                 slugSanitizer = slugSanitizer,
-                folder = root
+                folder = generatedSrcDir
             ),
-            Poet.generateForge("Forge", folder = root),
-            Poet.generateConstants("Constants", rootDir, root)
+            Poet.generateForge("Forge", folder = generatedSrcDir),
+            Poet.generateConstants("Constants", rootDir, generatedSrcDir)
         )
     }
 }

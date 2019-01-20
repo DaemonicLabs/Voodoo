@@ -22,7 +22,7 @@ object PoetSpek : Spek({
             MainScriptEnv(rootDir = rootFolder,  id = "new-pack").apply {
                 mcVersion = "1.12.2"
                 authors = listOf("blarb something", "nikky")
-                root = rootEntry(CurseProvider) {
+                root(CurseProvider) {
                     validMcVersions = setOf("1.12.1", "1.12")
                     list {
                         +(Mod.wearableBackpacks)

@@ -10,3 +10,6 @@ fun File.copyInputStreamToFile(inputStream: InputStream) {
         }
     }
 }
+
+val String.asFile
+    get() = this.let { File(it) }

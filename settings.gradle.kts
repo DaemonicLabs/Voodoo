@@ -20,7 +20,7 @@ pluginManagement {
 rootProject.name = "voodoo-parent"
 
 include("voodoo")
-include("core", "core:dsl")
+include("core")
 include("dsl")
 include("multimc", "multimc:installer")
 include("util")

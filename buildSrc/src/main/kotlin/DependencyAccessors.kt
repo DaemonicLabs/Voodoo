@@ -79,7 +79,7 @@ fun Project.setupDependencies(target: Project = this) {
                 testImplementation(project(":dsl"))
                 implementation(project(":poet"))
 
-                api(project(":core:core-dsl"))
+                api(project(":dsl"))
                 implementation(project(":core"))
                 implementation(project(":pack"))
                 implementation(project(":pack:pack-tester"))
@@ -102,18 +102,13 @@ fun Project.setupDependencies(target: Project = this) {
                 compile(Argparser.dependency)
             }
         }
-        rootProject.project(":core:core-dsl") -> {
-            dependencies {
-                compile(project(":tome"))
-                implementation(kotlin("scripting-jvm", Kotlin.version))
-            }
-        }
         rootProject.project(":dsl") -> {
             dependencies {
-                compile(project(":core:core-dsl"))
-                compile(project(":core"))
-                compile(project(":pack:pack-tester"))
-                compile(Kotlinpoet.dependency)
+                api(project(":core"))
+                api(project(":tome"))
+                implementation(kotlin("scripting-jvm", Kotlin.version))
+                api(project(":pack:pack-tester"))
+                api(Kotlinpoet.dependency)
             }
         }
         rootProject.project(":multimc") -> {
@@ -149,7 +144,7 @@ fun Project.setupDependencies(target: Project = this) {
         }
         rootProject.project(":poet") -> {
             dependencies {
-                compile(project(":core:core-dsl"))
+                compile(project(":dsl"))
                 compile(Kotlinpoet.dependency)
             }
         }

@@ -56,8 +56,9 @@ open class VoodooPlugin : Plugin<Project> {
 
         project.afterEvaluate {
             voodooExtension.getPackDir.mkdirs()
+            voodooExtension.getDocDir.mkdirs()
 
-            poet(rootDir = project.rootDir, root = voodooExtension.getGeneratedSrc)
+            poet(rootDir = project.rootDir, generatedSrcDir = voodooExtension.getGeneratedSrc)
 //            val poet = task<PoetTask>("poet") {
 //                targetFolder = rootDir.resolve(voodooExtension.getGeneratedSrc)
 //            }
@@ -78,6 +79,7 @@ open class VoodooPlugin : Plugin<Project> {
             extensions.configure<KotlinJvmProjectExtension> {
                 sourceSets.maybeCreate("main").kotlin.apply {
                     srcDir(voodooExtension.getPackDir)
+                    srcDir(voodooExtension.getDocDir)
                     srcDir(voodooExtension.getGeneratedSrc)
                 }
             }
@@ -114,9 +116,11 @@ open class VoodooPlugin : Plugin<Project> {
                         task<VoodooTask>(id.toLowerCase()) {
                             scriptFile = sourceFile
                             classpath = runtimeClasspath
-                            main = "voodoo.Voodoo"
                             description = id
-                            group = "voodoo"
+
+                            systemProperty("voodoo.rootDir", voodooExtension.getRootDir)
+                            systemProperty("voodoo.docDir", voodooExtension.getDocDir)
+                            systemProperty("voodoo.generatedSrc", voodooExtension.getGeneratedSrc)
                         }
 
                         voodooExtension.tasks.forEach { customTask ->
@@ -124,14 +128,19 @@ open class VoodooPlugin : Plugin<Project> {
                             task<VoodooTask>(taskName + "_" + id) {
                                 scriptFile = sourceFile
                                 classpath = runtimeClasspath
-                                main = "voodoo.Voodoo"
                                 description = taskDescription
                                 group = id
                                 val nestedArgs = arguments.map { it.split(" ") }
                                 args = nestedArgs.reduceRight { acc, list -> acc + "-" + list }
+
+                                systemProperty("voodoo.rootDir", voodooExtension.getRootDir)
+                                systemProperty("voodoo.docDir", voodooExtension.getDocDir)
+                                systemProperty("voodoo.generatedSrc", voodooExtension.getGeneratedSrc)
                             }
                         }
                     }
+
+                // TODO: add tasks based on tome scripts ?
             }
         }
     }

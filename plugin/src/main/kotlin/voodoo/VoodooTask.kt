@@ -7,9 +7,8 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import java.io.File
 
-open class VoodooTask() : JavaExec() {
-//    @Input
-//    val tasks: MutableList<List<String>> = mutableListOf()
+open class VoodooTask : JavaExec() {
+    //TODO: pass custom root, pack and tome directories
 
     @Input
     @Option(option = "script", description = "voodoo script file")
@@ -17,6 +16,7 @@ open class VoodooTask() : JavaExec() {
 
     init {
         group = "voodoo"
+        main = "voodoo.Voodoo"
     }
 
     @TaskAction

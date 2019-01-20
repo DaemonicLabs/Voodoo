@@ -66,7 +66,7 @@ open class CreatePackTask : DefaultTask() {
             title = titleStr ?: id!!.capitalize()
             authors = listOf(System.getProperty("user.name"))
             forge = forgeData.promos["$mcVersion-recommended"]
-            root = rootEntry(CurseProvider) {
+            root(CurseProvider) {
                 list {
                     filteredMods.forEach { (identifier, projectId) ->
                         +ID(projectId.value) configure {

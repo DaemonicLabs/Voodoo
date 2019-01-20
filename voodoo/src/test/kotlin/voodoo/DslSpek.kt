@@ -39,7 +39,7 @@ object DslSpek : Spek({
                 authors = listOf("dude", "and", "friends")
                 // TODO: type = {recommended, latest} | buildnumber, make sealed class
                 forge = Forge.recommended
-                root = rootEntry(CurseProvider) {
+                root(CurseProvider) {
                     releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
 
                     // TODO: use type URL ?

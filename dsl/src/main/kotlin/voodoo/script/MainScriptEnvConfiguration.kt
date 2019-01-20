@@ -1,12 +1,8 @@
 package voodoo.script
 
-import java.io.File
 import kotlin.script.experimental.api.ScriptCompilationConfiguration
 import kotlin.script.experimental.api.compilerOptions
 import kotlin.script.experimental.api.defaultImports
-import kotlin.script.experimental.api.importScripts
-import kotlin.script.experimental.host.toScriptSource
-import kotlin.script.experimental.jvm.jvm
 
 object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
     defaultImports.append(

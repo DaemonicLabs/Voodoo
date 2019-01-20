@@ -6,13 +6,17 @@ import voodoo.data.lock.LockPack
 import java.io.File
 
 data class TomeEnv(
-    var tomeRoot: File
+    var docRoot: File
 ) {
-    internal var generators: Map<String, (modpack: ModPack, lockPack: LockPack) -> String> =
-        mapOf("modlist.md" to Tome::defaultModlist)
+    internal var generators: MutableMap<String, suspend (modpack: ModPack, lockPack: LockPack) -> String> =
+        mutableMapOf("modlist.md" to Tome::defaultModlist)
         private set
 
-    fun add(file: String, toHtml: (modpack: ModPack, lockPack: LockPack) -> String) {
-        generators += (file to toHtml)
+    fun add(file: String, toHtml: suspend (modpack: ModPack, lockPack: LockPack) -> String) {
+        generators[file] = toHtml
+    }
+
+    override fun toString(): String {
+        return "tomeEnv(docRoot=$docRoot, generators=$generators)"
     }
 }
