@@ -307,6 +307,7 @@ object PoetPack : KLogging() {
         val scriptFile = folder.resolve("${nestedPack.id}.voodoo.kts")
 
         if(scriptFile.exists()) {
+            logger.error { "file: $scriptFile already exists" }
             throw IllegalStateException("file: $scriptFile already exists")
         }
         scriptFile.writeText(packScript)
