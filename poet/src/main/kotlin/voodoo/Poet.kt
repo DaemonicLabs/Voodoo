@@ -45,8 +45,7 @@ fun poet(
                 slugSanitizer = slugSanitizer,
                 folder = generatedSrcDir
             ),
-            Poet.generateForge("Forge", folder = generatedSrcDir),
-            Poet.generateConstants("Constants", rootDir, generatedSrcDir)
+            Poet.generateForge("Forge", folder = generatedSrcDir)
         )
     }
 }
@@ -129,24 +128,6 @@ object Poet : KLogging() {
         }
 
         return save(forgeBuilder.build(), name, folder)
-    }
-
-    internal fun generateConstants(
-        name: String = "Constants",
-        rootDir: File,
-        folder: File
-    ) : File {
-        val constBuilder = TypeSpec.objectBuilder(name)
-
-        val file = File::class.asClassName()
-        val rootDirProperty = PropertySpec
-            .builder("rootDir", file)
-            .initializer("%T(%S)", file, rootDir.absoluteFile.path)
-            .build()
-
-        constBuilder.addProperty(rootDirProperty)
-
-        return save(constBuilder.build(), name, folder)
     }
 
     private fun save(source: FileSpec, name: String, folder: File) : File  {

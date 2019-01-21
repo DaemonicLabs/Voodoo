@@ -11,6 +11,22 @@ Setting up a Voodoo project/workspace
 
 ### Easy
 
+download `bootstrap-voodoo.jar` from [jenkins](https://jenkins.modmuss50.me/job/NikkyAI/job/DaemonicLabs/job/Voodoo/job/master/)
+
+optionally install `idea` and `gradle` (it will help a lot)
+
+```bash
+java -jar bootstrap-voodoo.jar 
+```
+
+this might work for a bit (the main jar it downloads is huge)  
+eventually it will ask for a project folder, pick a new/empty folder.  
+It will create a gradle project there  
+It will install the gradle-wrapper if `gradle` is installed  
+and it will open the project with `idea` if IntelliJ Idea is installed  
+
+### Medium
+
 fork [sample project](https://github.com/NikkyAI/VoodooSamples)
 
 ### Manual
@@ -31,9 +47,10 @@ voodoo {
 // for configuration of folders
 // these are the defaults
 
-//    rootDir = project.rootDir
-//    generatedSource = { rootDir -> rootDir.resolve(".voodoo") }
-//    packDirectory = { ootDir -> rootDir.resolve("packs") }
+//    rootDir { project.rootDir }
+//    generatedSource { rootDir -> rootDir.resolve(".voodoo") }
+//    packDirectory { ootDir -> rootDir.resolve("packs") }
+//    docDirectory { project.rootDir.resolve("docs") }
 
 // task shorthands
     addTask(name = "build", parameters = listOf("build"))
@@ -63,20 +80,6 @@ pluginManagement {
 rootProject.name = "YourModpackname"
 ```
 
-<!--
-[build.gradle.kts](build.gradle.kts)  
-[settings.gradle.kts](build.gradle.kts)  
-[gradle.properties](gradle.properties)  
-
-## running poet
-
-generating curse, forge and other files
-
-Voodoo provides autocompletion for curse mods and forge by generating kotlin source files (using kotlinpoet)
-
-execute `gradlew poet`
--->
-
 ## Modpack File
 
 Creatng a new modpack within the workspace
@@ -92,21 +95,12 @@ let the plugin automatically generate a pack skeleton
 
 `packs/awesomepack.voodoo.kts`
 ```kotlin
-import voodoo.*
-import voodoo.data.*
-import voodoo.data.curse.*
-import voodoo.data.nested.*
-import voodoo.provider.*
-import voodoo.releaseTypes
-import voodoo.rootEntry
-import voodoo.withDefaultMain
-
 mcVersion = "1.12.2"
 title = "Awesome Pack Demo"
 forge = Forge.mc1_12_2_recommended
 authors = listOf("insert-author-name")
 root = rootEntry(CurseProvider) {
-    TODO("to be implemented")
+    TODO("add mods here")
 }
 ```
 

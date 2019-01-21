@@ -9,11 +9,10 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         "voodoo.*",
         "voodoo.dsl.*",
         "voodoo.provider.*",
-        "voodoo.data.Side",
-        "voodoo.data.UserFiles",
-        "voodoo.data.curse.FileType",
-        "voodoo.provider.CurseProvider",
-        "voodoo.provider.JenkinsProvider"
+        "voodoo.data.*",
+        "voodoo.data.curse.*",
+        "voodoo.provider.*",
+        "com.skcraft.launcher.model.modpack.Recommendation"
     )
         // does not work dynamical or relative
 //    jvm {
