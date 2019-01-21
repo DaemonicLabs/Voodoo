@@ -1,25 +1,25 @@
 package voodoo
 
 import mu.KLogging
+import voodoo.util.Directories
+import voodoo.util.asFile
 import java.io.File
 import javax.swing.JFileChooser
-import javax.swing.filechooser.FileFilter
 import kotlin.system.exitProcess
 
 object ProjectSelector : KLogging() {
-
+    private val directories = Directories.get(moduleName = "project-selector")
+    val lastSelectedFile = directories.cacheHome.resolve("lastSelected.txt")
     fun select(): File {
-        val chooser = JFileChooser(File("."))
+        val lastSelected = lastSelectedFile.takeIf { it.exists() }
+            ?.readText()
+            ?.asFile
+            ?.takeIf { it.exists() }
+            ?.let { it.parentFile }
+        val chooser = JFileChooser(lastSelected ?: File("."))
         chooser.dialogType = JFileChooser.OPEN_DIALOG
-        chooser.choosableFileFilters.forEach {
-            chooser.removeChoosableFileFilter(it)
-        }
-        val directoryFilter =  object : FileFilter() {
-            override fun getDescription() = "Directories"
-            override fun accept(f: File): Boolean = f.isDirectory
-        }
-        chooser.addChoosableFileFilter(directoryFilter)
-        chooser.fileFilter = directoryFilter
+        chooser.fileSelectionMode = JFileChooser.DIRECTORIES_ONLY
+        chooser.isAcceptAllFileFilterUsed = false
         val option = chooser.showDialog(null, "Select project folder")
         val file = when (option) {
             JFileChooser.CANCEL_OPTION -> {
@@ -37,6 +37,8 @@ object ProjectSelector : KLogging() {
                 throw IllegalStateException("unhandled option: $option")
             }
         }
+
+        lastSelectedFile.writeText(file.absolutePath)
 
         return file
     }

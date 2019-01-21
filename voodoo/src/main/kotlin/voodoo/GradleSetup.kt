@@ -2,6 +2,7 @@ package voodoo
 
 import mu.KLogging
 import voodoo.ShellUtils.requireInPath
+import voodoo.util.Directories
 import voodoo.voodoo.VoodooConstants
 import java.io.BufferedReader
 import java.io.File
@@ -34,7 +35,7 @@ object GradleSetup : KLogging() {
 
         val buildScript = """
             plugins {
-                id("voodoo") version "${VoodooConstants.FULL_VERSION}"
+                id("voodoo") version "${VoodooConstants.VERSION}-SNAPSHOT"
             }
 
             voodoo {
