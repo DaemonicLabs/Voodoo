@@ -43,7 +43,7 @@ object CurseClient : KLogging(), CoroutineScope {
 //            SimpleModule(Date::class, DateSerializer)
 //        )
     }
-    const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
+    const val useragent = "voodoo/$VERSION (https://github.com/DaemonicLabs/Voodoo)"
 
     val deferredSlugIdMap: Deferred<Map<String, ProjectID>> =
         async(Dispatchers.IO, CoroutineStart.LAZY) { initSlugIdMap() }

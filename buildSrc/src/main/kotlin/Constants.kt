@@ -78,6 +78,6 @@ object Apache {
 }
 
 object Jenkins {
-    const val jenkinsUrl: String = "https://ci.elytradev.com"
-    const val jenkinsJob: String = "elytra/Voodoo/master"
+    const val url: String = "https://jenkins.modmuss50.me"
+    const val job: String = "NikkyAi/DaemonicLabs/Voodoo/master"
 }

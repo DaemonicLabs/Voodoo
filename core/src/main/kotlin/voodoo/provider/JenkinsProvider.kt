@@ -22,7 +22,7 @@ import java.util.Collections
  */
 
 object JenkinsProvider : ProviderBase("Jenkins Provider") {
-    const val useragent = "voodoo/$VERSION (https://github.com/elytra/Voodoo)"
+    const val useragent = "voodoo/$VERSION (https://github.com/DaemonicLabs/Voodoo)"
 
     override suspend fun resolve(
         entry: Entry,

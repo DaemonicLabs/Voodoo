@@ -4,7 +4,5 @@ object Env {
         ?.let { "-$it" }
         ?: ""
 
-    val versionSuffix = System.getenv("BUILD_NUMBER") ?: "dev"
-
-    val buildNumber = System.getenv("BUILD_NUMBER")?.toIntOrNull() ?: -1
+    val isCI = System.getenv("BUILD_NUMBER") != null
 }

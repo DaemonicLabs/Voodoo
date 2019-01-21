@@ -10,10 +10,12 @@ import KotlinxHtml
 import Logging
 import Serialization
 import Spek
+import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
+import org.gradle.kotlin.dsl.accessors.runtime.addDependencyTo
 
 //private fun DependencyHandler.project(
 //    path: String,
@@ -26,6 +28,12 @@ import org.gradle.api.artifacts.dsl.DependencyHandler
 private fun DependencyHandler.compile(dependencyNotation: Any): Dependency? =
     add("compile", dependencyNotation)
 
+private fun DependencyHandler.compile(
+    dependencyNotation: String,
+    dependencyConfiguration: Action<ExternalModuleDependency> = Action {}
+): ExternalModuleDependency = addDependencyTo(
+    this, "compile", dependencyNotation, dependencyConfiguration
+)
 private fun DependencyHandler.implementation(dependencyNotation: Any): Dependency? =
     add("implementation", dependencyNotation)
 
@@ -76,10 +84,9 @@ fun Project.setupDependencies(target: Project = this) {
                 // spek requires kotlin-reflect, can be omitted if already in the classpath
                 testRuntimeOnly(kotlin("reflect", Kotlin.version))
 
-                testImplementation(project(":dsl"))
+                api(project(":dsl"))
                 implementation(project(":poet"))
 
-                api(project(":dsl"))
                 implementation(project(":core"))
                 implementation(project(":pack"))
                 implementation(project(":pack:pack-tester"))
@@ -179,7 +186,9 @@ fun Project.setupDependencies(target: Project = this) {
                 compile(Fuel.dependencySerialization)
 
                 compile(Logging.dependency)
-                compile(Logging.dependencyLogbackClassic)
+                compile(Logging.dependencyLogbackClassic) {
+                    exclude(group = "com.com.mail", module = "javax.mail")
+                }
             }
         }
         else -> throw IllegalStateException("unhandled project ${this@setupDependencies.displayName}")
