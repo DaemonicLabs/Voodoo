@@ -4,7 +4,7 @@
 
 ## Requirements
 
-assuming you have a `.kt` file ready to use from
+assuming you have a `.voodoo.kts` file ready to use from
 [Basics](../basics)
 
 ## Building with gradle

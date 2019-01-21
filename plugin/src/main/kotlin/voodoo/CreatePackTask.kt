@@ -21,15 +21,15 @@ open class CreatePackTask : DefaultTask() {
 
     @Input
     @Option(option = "id", description = "modpack id")
-    var id: String? = null
+    var id: String = "rename_me"
 
     @Input
     @Option(option = "title", description = "modpack title (optional)")
-    var titleStr: String? = null
+    var titleStr: String = ""
 
     @Input
     @Option(option = "mcVersion", description = "minecraft version")
-    var mcVersion: String? = null
+    var mcVersion: String = "1.12.2"
 
     init {
         group = "voodoo"
@@ -48,7 +48,7 @@ open class CreatePackTask : DefaultTask() {
             Poet.defaultSlugSanitizer(key)
         }.toList().shuffled().take(10)
 
-        val filteredMods = runBlocking {
+        val randomMods = runBlocking {
             modIdentifiers.filter { (_, projectId) ->
                 val files = CurseClient.getAllFilesForAddon(projectId, CurseConstants.PROXY_URL)
                 files.any { file -> file.gameVersion.contains(mcVersion) }
@@ -62,13 +62,13 @@ open class CreatePackTask : DefaultTask() {
             rootDir = rootDir,
             id = id ?: throw GradleException("id was null")
         ).apply {
-            mcVersion = mcVersion ?: throw GradleException("mcVersion was null")
-            title = titleStr ?: id!!.capitalize()
+            mcVersion = this@CreatePackTask.mcVersion ?: throw GradleException("mcVersion was null")
+            title = titleStr.takeIf { it.isNotBlank() } ?: id.capitalize()
             authors = listOf(System.getProperty("user.name"))
             forge = forgeData.promos["$mcVersion-recommended"]
             root(CurseProvider) {
                 list {
-                    filteredMods.forEach { (identifier, projectId) ->
+                    randomMods.forEach { (identifier, projectId) ->
                         +ID(projectId.value) configure {
                             //                            projectID = projectId
                         }

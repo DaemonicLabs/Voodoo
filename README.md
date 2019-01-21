@@ -1,7 +1,6 @@
-<!--[![Discord](https://img.shields.io/discord/176780432371744769.svg?style=for-the-badge&label=%23ai-dev&logo=discord)](https://discord.gg/SRFkHfp)-->
 [![Discord](https://img.shields.io/discord/342696338556977153.svg?style=for-the-badge&logo=discord)](https://discord.gg/SRFkHfp)
-[![Jenkins](https://img.shields.io/jenkins/s/https/ci.elytradev.com/job/elytra/job/Voodoo/job/master.svg?style=for-the-badge&label=Jenkins%20Build&logo=Jenkins)](https://ci.elytradev.com/job/elytra/job/Voodoo/job/master/lastSuccessfulBuild/artifact/)
-[![GitHub issues](https://img.shields.io/github/issues/elytra/Voodoo.svg?style=for-the-badge&logo=github)](https://github.com/elytra/Voodoo/issues)
+[![Jenkins](https://img.shields.io/jenkins/s/https/jenkins.modmuss50.me/job/NikkyAI/job/DaemonicLabs/job/Voodoo/job/master.svg?style=for-the-badge&label=Jenkins%20Build&logo=Jenkins)](https://jenkins.modmuss50.me/job/NikkyAI/job/DaemonicLabs/job/Voodoo/job/master)
+[![GitHub issues](https://img.shields.io/github/issues/DaemonicLabs/Voodoo.svg?style=for-the-badge&logo=github)](https://github.com/DaemonicLabs/Voodoo/issues)
 [![Patreon](https://img.shields.io/badge/Patreon-Nikkyai-red.svg?style=for-the-badge&logo=Patreon)](https://www.patreon.com/NikkyAi)
 
 [TOC levels=2,2]: # " "
@@ -66,7 +65,7 @@ a pack and upload it to curse, it will just be a much slower process due to appr
 Docs & Guides
 -------------
 
-[https://elytra.github.io/Voodoo](https://elytra.github.io/Voodoo)
+[https://daemoniclabs.github.io/Voodoo](https://daemoniclabs.github.io/Voodoo)
 
 - [Setup](docs/setup)
 - [Basics](docs/basics)
@@ -93,8 +92,8 @@ windows: `./gradlew.bat publishToMavenLocal`
 
 use `-dev` on the plugin version and add `mavenLocal()` to the dependencies of plugins and in the main buildscript
 
-[build.gradle.kts](https://github.com/elytra/Voodoo/blob/master/samples/build.gradle.kts)  
-[settings.gradle.kts](https://github.com/elytra/Voodoo/blob/master/samples/settings.gradle.kts)  
+[build.gradle.kts](https://github.com/DaemonicLabs/Voodoo/blob/master/samples/build.gradle.kts)  
+[settings.gradle.kts](https://github.com/DaemonicLabs/Voodoo/blob/master/samples/settings.gradle.kts)  
 
 Task Shortcuts
 --------------
@@ -117,7 +116,7 @@ Usage examples
 
 examples based on [Center of the Multiverse](https://github.com/elytra/Center-of-the-Multiverse)
 
-Learn how to define your `$pack.kt` in [docs/setup](docs/setup)
+Learn how to define your `$pack.voodoo.kts` in [docs/setup](docs/setup)
 
 other samples: [samples](samples) 
 
@@ -143,25 +142,26 @@ this will:
 ## MultiMC Integration / Deployment
 
 To run a test instance use \
-`./gradlew cotm test mmc`
+`./gradlew cotm --args "test mmc"`
 
 to compile a minimalistic MMC pack that selfupdates using the skcraft data \
-`./gradlew cotm pack mmc` \
+`./gradlew cotm --args "pack mmc"` \
 this expects a file `multimc/${packname}.url.txt` that points at the previously uploaded skcraft pack \
 more specifically the json file of the pack
 
 Maven
 -----
 
-Voodoo is available on the elytradev maven
+Voodoo is available on modmuss50's maven
 (recommended usage is via gradle plugin, see [docs/setup](docs/setup) )
 gradle:
 ```kotlin
 repositories {
-    maven(url = "https://repo.elytradev.com") { name = "elytradev" }   
+    maven(url = "https://maven.modmuss50.me") { name = "modmuss50" }   
     maven(url = "https://dl.bintray.com/kotlin/kotlin-eap/") { name = "Kotlin EAP" }
     maven(url = "https://kotlin.bintray.com/kotlinx") { name = "kotlinx" }
-    maven(url = "https://jitpack.io") {name = "jitpack" }
+    maven(url = "https://jitpack.io") { name = "jitpack" }
+    mavenCentral()
 }
 dependencies {
     implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4+")
@@ -175,7 +175,7 @@ eg. `moe.nikky.voodoo-rewrite`
 Support
 -------
 
-Feel welcome to post ideas and suggestions to our [tracker](https://github.com/elytra/Voodoo/issues).
+Feel welcome to post ideas and suggestions to our [tracker](https://github.com/DaemonicLabs/Voodoo/issues).
 
 More advanced use-cases are (soon to be) documented in the [complementary user guide](docs/user_guide)
 

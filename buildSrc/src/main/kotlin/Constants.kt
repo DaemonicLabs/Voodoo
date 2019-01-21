@@ -36,7 +36,7 @@ object Serialization {
 }
 
 object Kotlinpoet {
-    const val version = "1.0.0"
+    const val version = "1.0.1"
     val dependency = create(group = "com.squareup", name = "kotlinpoet", version = version)
 }
 

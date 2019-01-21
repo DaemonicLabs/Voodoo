@@ -134,7 +134,6 @@ object Voodoo : KLogging() {
                 val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
                 TesterForDSL.main(modpack, args = *args)
             },
-//        "idea" to Idea::main, //TODO: generate gradle/idea project ?
             "version" to { _ ->
                 logger.info(VoodooConstants.FULL_VERSION)
             }

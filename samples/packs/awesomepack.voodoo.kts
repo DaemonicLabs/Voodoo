@@ -1,11 +1,4 @@
 import com.skcraft.launcher.model.modpack.Recommendation
-import voodoo.data.Side
-import voodoo.data.UserFiles
-import voodoo.data.curse.FileType
-import voodoo.provider.CurseProvider
-import voodoo.provider.DirectProvider
-import voodoo.provider.JenkinsProvider
-import voodoo.withDefaultMain
 
 mcVersion = "1.12.2"
 title = "Awesome Pack"

@@ -2,7 +2,6 @@ package voodoo
 
 import mu.KLogging
 import voodoo.ShellUtils.requireInPath
-import voodoo.util.Directories
 import voodoo.voodoo.VoodooConstants
 import java.io.BufferedReader
 import java.io.File
@@ -11,7 +10,6 @@ import java.io.InputStream
 import java.io.InputStreamReader
 import java.nio.file.Files
 import java.util.function.Consumer
-import kotlin.system.exitProcess
 
 object GradleSetup : KLogging() {
     @JvmStatic
@@ -35,18 +33,41 @@ object GradleSetup : KLogging() {
 
         val buildScript = """
             plugins {
+                kotlin("jvm") version "${VoodooConstants.KOTLIN_VERSION}"
                 id("voodoo") version "${VoodooConstants.VERSION}-SNAPSHOT"
+                idea
             }
 
             voodoo {
                 addTask(name = "build", parameters = listOf("build"))
-                addTask(name = "sk", parameters = listOf("pack sk"))
-                addTask(name = "server", parameters = listOf("pack server"))
+                addTask(name = "pack_sk", parameters = listOf("pack sk"))
+                addTask(name = "pack_mmc", parameters = listOf("pack mmc"))
+                addTask(name = "pack_mmc-static", parameters = listOf("pack mmc-static"))
+                addTask(name = "pack_mmc-fat", parameters = listOf("pack mmc-fat"))
+                addTask(name = "pack_server", parameters = listOf("pack server"))
+                addTask(name = "pack_curse", parameters = listOf("pack curse"))
+                addTask(name = "test_mmc", parameters = listOf("test mmc"))
                 addTask(name = "buildAndPackAll", parameters = listOf("build", "pack sk", "pack server", "pack mmc"))
             }
 
             repositories {
-                mavenLocal()
+                maven(url = "http://maven.modmuss50.me/") {
+                    name = "modmuss50"
+                }
+                maven(url = "https://dl.bintray.com/kotlin/kotlin-eap") {
+                    name = "Kotlin EAP"
+                }
+                maven(url = "https://kotlin.bintray.com/kotlinx") {
+                    name = "kotlinx"
+                }
+                maven(url = "https://jitpack.io") {
+                    name = "jitpack"
+                }
+                mavenCentral()
+            }
+
+            dependencies {
+                implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "${VoodooConstants.VERSION}-SNAPSHOT")
             }
         """.trimIndent()
 
@@ -56,10 +77,18 @@ object GradleSetup : KLogging() {
         val settings = """
             pluginManagement {
                 repositories {
-                    maven(url = "https://maven.modmuss50.me") { name = "modmuss50" }
-                    maven(url = "https://dl.bintray.com/kotlin/kotlin-eap") { name = "kotlin eap" }
-                    maven(url = "https://kotlin.bintray.com/kotlinx") { name = "kotlinx" }
-                    maven(url = "https://jitpack.io") { name = "jitpack" }
+                    maven(url = "http://maven.modmuss50.me/") {
+                        name = "modmuss50"
+                    }
+                    maven(url = "https://dl.bintray.com/kotlin/kotlin-eap") {
+                        name = "Kotlin EAP"
+                    }
+                    maven(url = "https://kotlin.bintray.com/kotlinx") {
+                        name = "kotlinx"
+                    }
+                    maven(url = "https://jitpack.io") {
+                        name = "jitpack"
+                    }
                     mavenCentral()
                     gradlePluginPortal()
                 }
@@ -98,9 +127,11 @@ object GradleSetup : KLogging() {
 data class ProcessResult(val command: String, val exitCode: Int, val stdout: String, val stderr: String) {
     override fun toString(): String {
         return """
-            Exit Code   : ${exitCode}Comand      : $command
+            Exit Code   : $exitCode
+            Comand      : $command
             Stdout      : $stdout
-            Stderr      : """.trimIndent() + "\n" + stderr
+            Stderr      : $stderr
+            """.trimIndent()
     }
 }
 
@@ -145,11 +176,6 @@ fun runProcess(
     }
 }
 
-fun quit(status: Int): Nothing {
-    print(if (status == 0) "true" else "false")
-    exitProcess(status)
-}
-
 internal class StreamGobbler(private val inputStream: InputStream, private val consumeInputLine: Consumer<String>) :
     Thread() {
 
@@ -159,7 +185,7 @@ internal class StreamGobbler(private val inputStream: InputStream, private val c
 }
 
 internal open class StringBuilderConsumer : Consumer<String> {
-    val sb = StringBuilder()
+    private val sb = StringBuilder()
 
     override fun accept(t: String) {
         sb.appendln(t)

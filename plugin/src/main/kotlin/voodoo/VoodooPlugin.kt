@@ -4,11 +4,10 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.GradleBuild
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.maven
-import org.gradle.kotlin.dsl.repositories
 import org.gradle.kotlin.dsl.task
 import org.gradle.kotlin.dsl.withType
 import org.gradle.plugins.ide.idea.model.IdeaModel
@@ -20,36 +19,6 @@ import java.io.FilenameFilter
 open class VoodooPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val voodooExtension = project.run {
-            pluginManager.apply("kotlin")
-            pluginManager.apply("idea")
-
-            dependencies.apply {
-                add(
-                    "implementation",
-                    create(group = "moe.nikky.voodoo", name = "dsl", version = PoetConstants.FULL_VERSION)
-                )
-                add(
-                    "implementation",
-                    create(group = "moe.nikky.voodoo", name = "voodoo", version = PoetConstants.FULL_VERSION)
-                )
-            }
-            repositories {
-                jcenter()
-                mavenCentral()
-                maven(url = "https://dl.bintray.com/kotlin/kotlin-eap") {
-                    name = "Kotlin EAP"
-                }
-                maven(url = "https://kotlin.bintray.com/kotlinx") {
-                    name = "kotlinx"
-                }
-                maven(url = "http://maven.modmuss50.me/") {
-                    name = "modmuss50"
-                }
-                maven(url = "https://jitpack.io") {
-                    name = "jitpack"
-                }
-            }
-
             extensions.create<VoodooExtension>("voodoo", project)
         }
 
@@ -89,7 +58,7 @@ open class VoodooPlugin : Plugin<Project> {
                 }
             }
 
-            task("voodooVersion") {
+            task<GradleBuild>("voodooVersion") {
                 group = "voodoo"
                 description = "prints the used voodoo version"
                 doLast {
@@ -100,8 +69,12 @@ open class VoodooPlugin : Plugin<Project> {
             task<CreatePackTask>("createpack") {
                 rootDir = voodooExtension.getRootDir
                 packsDir = voodooExtension.getPackDir
+
+                doLast {
+                    logger.lifecycle("created pack $id")
+                }
             }
-            task<CurseImportTask>("importer") {
+            task<CurseImportTask>("importCurse") {
                 rootDir = voodooExtension.getRootDir
                 packsDir = voodooExtension.getPackDir
             }
@@ -116,6 +89,7 @@ open class VoodooPlugin : Plugin<Project> {
                             scriptFile = sourceFile
                             classpath = runtimeClasspath
                             description = id
+                            group = id
 
                             systemProperty("voodoo.rootDir", voodooExtension.getRootDir)
                             systemProperty("voodoo.docDir", voodooExtension.getDocDir)
@@ -124,7 +98,7 @@ open class VoodooPlugin : Plugin<Project> {
 
                         voodooExtension.tasks.forEach { customTask ->
                             val (taskName, taskDescription, arguments) = customTask
-                            task<VoodooTask>(taskName + "_" + id) {
+                            task<VoodooTask>(id  + "_" + taskName) {
                                 scriptFile = sourceFile
                                 classpath = runtimeClasspath
                                 description = taskDescription
@@ -138,8 +112,6 @@ open class VoodooPlugin : Plugin<Project> {
                             }
                         }
                     }
-
-                // TODO: add tasks based on tome scripts ?
             }
         }
     }

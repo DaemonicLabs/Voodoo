@@ -151,6 +151,7 @@ subprojects {
                 field("JENKINS_URL") value Jenkins.url
                 field("JENKINS_JOB") value Jenkins.job
                 field("GRADLE_VERSION") value Gradle.version
+                field("KOTLIN_VERSION") value Kotlin.version
                 field("BUILD_NUMBER") value buildnumber
                 field("BUILD") value versionSuffix
                 field("MAJOR_VERSION") value major
