@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import moe.nikky.counter.CounterExtension
 import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import plugin.GenerateConstantsTask
@@ -9,6 +10,7 @@ plugins {
     `maven-publish`
     `project-report`
     kotlin("jvm") version Kotlin.version
+    id("moe.nikky.persistentCounter") version "0.0.7-SNAPSHOT"
     constantsGenerator apply false
     id("com.github.johnrengelman.shadow") version "4.0.0" apply false
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
@@ -34,10 +36,6 @@ val runnableProjects = mapOf(
 val noConstants = listOf(
     project("skcraft")
 )
-
-idea {
-    
-}
 
 allprojects {
     repositories {
@@ -90,6 +88,7 @@ subprojects {
     apply {
         plugin("kotlin")
         plugin("kotlinx-serialization")
+        plugin("moe.nikky.persistentCounter")
     }
 
     kotlin {
@@ -111,16 +110,27 @@ subprojects {
         }
     }
 
-    base {
-        archivesBaseName = "${project.name.toLowerCase()}-${Env.versionSuffix}"
-    }
-    val jar by tasks.getting(Jar::class) {
-        version = ""
-    }
-
     val major: String by project
     val minor: String by project
     val patch: String by project
+
+    counter {
+        variable(id = "buildnumber", key = "$major.$minor.$patch")
+    }
+    val counter: CounterExtension = extensions.getByType()
+    val buildnumber by counter.map
+
+    val versionSuffix = if(Env.isCI) "$buildnumber" else "dev"
+
+    val fullVersion = "$major.$minor.$patch-$versionSuffix"
+
+    base {
+        archivesBaseName = "${project.name.toLowerCase()}-$versionSuffix"
+    }
+    val jar by tasks.getting(Jar::class) {
+       archiveVersion.set("")
+    }
+
 
     if (project !in noConstants) {
 
@@ -138,14 +148,16 @@ subprojects {
                         it.capitalize()
                     } + "Constants"
             ) {
+                field("JENKINS_URL") value Jenkins.url
+                field("JENKINS_JOB") value Jenkins.job
                 field("GRADLE_VERSION") value Gradle.version
-                field("BUILD_NUMBER") value Env.buildNumber
-                field("BUILD") value Env.versionSuffix
+                field("BUILD_NUMBER") value buildnumber
+                field("BUILD") value versionSuffix
                 field("MAJOR_VERSION") value major
                 field("MINOR_VERSION") value minor
                 field("PATCH_VERSION") value patch
                 field("VERSION") value "$major.$minor.$patch"
-                field("FULL_VERSION") value "$major.$minor.$patch-${Env.versionSuffix}"
+                field("FULL_VERSION") value fullVersion
             }
         }
 
@@ -153,7 +165,7 @@ subprojects {
             kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
         }
 
-        // TODO depend on kotlin tasks in the plugin
+        // TODO depend on kotlin tasks in the plugin ?
         tasks.withType<KotlinCompile> {
             dependsOn(generateConstants)
         }
@@ -178,8 +190,8 @@ subprojects {
             }
 
             val shadowJar by tasks.getting(ShadowJar::class) {
-                classifier = ""
-                archiveName = "${project.name.toLowerCase()}-${Env.versionSuffix}.$extension"
+                archiveClassifier.set("")
+                archiveFileName.set("${project.name.toLowerCase()}-$versionSuffix.$extension")
             }
 
             val build by tasks.getting(Task::class) {
@@ -192,7 +204,7 @@ subprojects {
     if (project != project(":bootstrap")) {
         apply(plugin = "maven-publish")
 
-        version = "$major.$minor.$patch-${Env.versionSuffix}"
+        version = fullVersion
 
         val sourcesJar by tasks.registering(Jar::class) {
             classifier = "sources"
@@ -236,6 +248,17 @@ subprojects {
                     }
 //                        pom.name.set(declaration.getDisplayName())
 //                        pom.getDescription().set(declaration.getDescription())
+                }
+            }
+            repositories {
+                maven(url = "http://mavenupload.modmuss50.me/") {
+                    val mavenPass: String? = project.properties["mavenPass"] as String?
+                    mavenPass?.let {
+                        credentials {
+                            username = "buildslave"
+                            password = mavenPass
+                        }
+                    }
                 }
             }
         }

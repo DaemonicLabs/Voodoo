@@ -22,8 +22,8 @@ private val useragent = "voodoo/${UtilConstants.VERSION}"
 suspend fun downloadVoodoo(
     component: String,
     bootstrap: Boolean = true,
-    serverUrl: String = "https://ci.elytradev.com",
-    job: String = "elytra/Voodoo/master",
+    serverUrl: String = UtilConstants.JENKINS_URL,
+    job: String = UtilConstants.JENKINS_JOB,
     binariesDir: File
 ): File {
     val moduleName = "${if (bootstrap) "bootstrap-" else ""}$component"

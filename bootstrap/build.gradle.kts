@@ -1,5 +1,4 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 version = project.version
 
@@ -28,7 +27,7 @@ if (project.hasProperty("target")) {
 }
 
 base {
-    archivesBaseName = "$fileName-${Env.versionSuffix}"
+    archivesBaseName = fileName
 }
 val shadowJar by tasks.getting(ShadowJar::class) {
     classifier = ""
@@ -44,9 +43,8 @@ configure<ConstantsExtension> {
         pkg = "voodoo.bootstrap",
         className = "Config"
     ) {
-        field("JENKINS_URL") value Env.buildNumber
-        field("JENKINS_URL") value Jenkins.jenkinsUrl
-        field("JENKINS_JOB") value Jenkins.jenkinsJob
+        field("JENKINS_URL") value Jenkins.url
+        field("JENKINS_JOB") value Jenkins.job
         field("MODULE_NAME") value moduleName
         field("FILE_REGEX") value fileRegex
     }
