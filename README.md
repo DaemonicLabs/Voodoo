@@ -120,7 +120,7 @@ Learn how to define your `$pack.voodoo.kts` in [docs/setup](docs/setup)
 
 other samples: [samples](samples) 
 
-[Voodoo Samples](https://github.com/NikkyAI/VoodooSamples)
+[Voodoo Samples](https://github.com/DaeminicLabs/VoodooSamples)
 
 ## Server Deployment
 
