@@ -97,8 +97,7 @@ subprojects {
 //                contracts = "enable" //1.3
         }
     }
-
-
+    
     java {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -120,17 +119,18 @@ subprojects {
     val counter: CounterExtension = extensions.getByType()
     val buildnumber by counter.map
 
-    val versionSuffix = if(Env.isCI) "$buildnumber" else "dev"
+    val versionSuffix = if (Env.isCI) "$buildnumber" else "dev"
 
     val fullVersion = "$major.$minor.$patch-$versionSuffix"
 
+    version = fullVersion
+
     base {
-        archivesBaseName = "${project.name.toLowerCase()}-$versionSuffix"
+        archivesBaseName = project.name.toLowerCase()
     }
     val jar by tasks.getting(Jar::class) {
-       archiveVersion.set("")
+        archiveVersion.set("")
     }
-
 
     if (project !in noConstants) {
 
@@ -191,7 +191,8 @@ subprojects {
 
             val shadowJar by tasks.getting(ShadowJar::class) {
                 archiveClassifier.set("")
-                archiveFileName.set("${project.name.toLowerCase()}-$versionSuffix.$extension")
+//                archiveVersion.set(fullVersion)
+//                archiveFileName.set("${project.name.toLowerCase()}-$versionSuffix.${archiveExtension.getOrNull()}")
             }
 
             val build by tasks.getting(Task::class) {
@@ -204,17 +205,15 @@ subprojects {
     if (project != project(":bootstrap")) {
         apply(plugin = "maven-publish")
 
-        version = fullVersion
-
         val sourcesJar by tasks.registering(Jar::class) {
-            classifier = "sources"
+            archiveClassifier.set("sources")
             from(sourceSets["main"].allSource)
         }
 
 //            // fails due to Jankson
         val javadoc by tasks.getting(Javadoc::class) {}
         val javadocJar by tasks.registering(Jar::class) {
-            classifier = "javadoc"
+            archiveClassifier.set("javadoc")
             from(javadoc)
         }
 
@@ -227,7 +226,7 @@ subprojects {
                     groupId = "moe.nikky.voodoo${Env.branch}"
                     artifactId = project.name.toLowerCase()
                 }
-                
+
                 create("snapshot", MavenPublication::class.java) {
                     val publication = this as MavenPublicationInternal
                     publication.isAlias = true
@@ -262,10 +261,6 @@ subprojects {
                 }
             }
         }
-
-        rootProject.file("private.gradle")
-            .takeIf { it.exists() }
-            ?.let { apply(from = it) }
     }
 
 }

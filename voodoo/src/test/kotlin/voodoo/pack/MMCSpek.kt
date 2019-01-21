@@ -4,11 +4,13 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.skcraft.launcher.model.modpack.Manifest
 import kotlinx.serialization.json.Json
+import mu.KotlinLogging
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.curse.CurseClient
-import voodoo.logger
 import kotlin.test.fail
+
+private val logger = KotlinLogging.logger {}
 
 object MMCSpek : Spek({
     describe("load pack") {

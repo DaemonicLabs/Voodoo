@@ -7,18 +7,21 @@ pipeline {
 	    stage("init") {
 	        steps {
 	            sh 'git submodule update --init --recursive'
-                sh 'rm private.gradle || true'
-	            sh './gradlew clean'
 	        }
 	    }
-	    stage("voodoo") {
-	        steps {
+		stage("test") {
+			steps {
+                sh './gradlew clean'
+				sh './gradlew test -S'
+			}
+		}
+		stage("voodoo") {
+			steps {
 				sh './gradlew :voodoo:clean'
 				sh './gradlew :voodoo:shadowJar -S'
-	            sh './gradlew test -S'
-	            archiveArtifacts artifacts:  'build/libs/*jar'
-	        }
-	    }
+				archiveArtifacts artifacts:  'build/libs/*jar'
+			}
+		}
 	    stage("multimc-installer") {
 	        steps {
 	            sh './gradlew :multimc:multimc-installer:clean'
@@ -42,15 +45,15 @@ pipeline {
 	            archiveArtifacts artifacts:  'bootstrap/build/libs/*multimc-installer*'
 	        }
 	    }
-	    stage('Deploy') {
+	    stage('publish') {
             steps {
-                withCredentials([file(credentialsId: 'privateGradlePublish', variable: 'PRIVATEGRADLE')]) {
-                    sh '''
-                        cp "$PRIVATEGRADLE" private.gradle
-                        ./gradlew publish -S
-                    '''
-                }
+                sh './gradlew publish -S'
             }
         }
+		stage('counter') {
+			steps {
+				sh './gradlew buildnumberIncrease'
+			}
+		}
 	}
 }

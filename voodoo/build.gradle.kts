@@ -1,3 +1,28 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+val genSrc = projectDir.resolve("build").resolve("gen-test-src")
+kotlin.sourceSets.maybeCreate("test").kotlin.apply {
+    srcDirs(genSrc)
+}
+idea {
+    module {
+        generatedSourceDirs.add(genSrc)
+    }
+}
+
+val poet = task<JavaExec>("poet") {
+    main = "voodoo.PoetKt"
+    args = listOf(genSrc.parentFile.path, genSrc.path)
+    classpath = project(":poet").sourceSets["main"].runtimeClasspath
+
+    group = "build"
+    dependsOn(":poet:classes")
+}
+
+val compileTestKotlin by tasks.getting(KotlinCompile::class) {
+    dependsOn(poet)
+}
+
 // SPEK
 
 repositories {
