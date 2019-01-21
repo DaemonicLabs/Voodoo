@@ -14,12 +14,12 @@ object PoetSpek : Spek({
     describe("create nested pack") {
         val rootFolder by memoized {
             File("run").resolve("test").resolve("poet").absoluteFile.apply {
-                //                deleteRecursively()
+                deleteRecursively()
                 mkdirs()
             }
         }
         val scriptEnv by memoized {
-            MainScriptEnv(rootDir = rootFolder,  id = "new-pack").apply {
+            MainScriptEnv(rootDir = rootFolder, id = "new-pack").apply {
                 mcVersion = "1.12.2"
                 authors = listOf("blarb something", "nikky")
                 root(CurseProvider) {
@@ -48,5 +48,7 @@ object PoetSpek : Spek({
                 nestedPack
             )
         }
+
+        // TODO: compile generated file
     }
 })
