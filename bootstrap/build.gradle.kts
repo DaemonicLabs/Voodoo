@@ -11,12 +11,12 @@ if (project.hasProperty("target")) {
     val (_moduleName, _fileRegex, _baseName) = when (target) {
         "voodoo" -> Triple(
                 "voodoo",
-                """^[Vv]oodoo(-[^-]*)?\.jar$""",
+                """^[Vv]oodoo(-.+)?\.jar$""",
                 "bootstrap-voodoo"
         )
         "multimc-installer" -> Triple(
                 "multimc-installer",
-                """^[Mm]ultimc-[Ii]nstaller(-[^-]*)\.jar$""",
+                """^[Mm]ultimc-[Ii]nstaller(-.+)\.jar$""",
                 "bootstrap-multimc-installer"
         )
         else -> throw InvalidUserDataException("invalid target property")
