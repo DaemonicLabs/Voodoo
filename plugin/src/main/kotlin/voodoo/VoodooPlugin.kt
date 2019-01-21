@@ -32,7 +32,6 @@ open class VoodooPlugin : Plugin<Project> {
                     "implementation",
                     create(group = "moe.nikky.voodoo", name = "voodoo", version = PoetConstants.FULL_VERSION)
                 )
-//                add("compile", create(group = "com.github.holgerbrandl", name = "kscript-annotations", version = "1.+"))
             }
             repositories {
                 jcenter()
@@ -43,8 +42,8 @@ open class VoodooPlugin : Plugin<Project> {
                 maven(url = "https://kotlin.bintray.com/kotlinx") {
                     name = "kotlinx"
                 }
-                maven(url = "https://repo.elytradev.com") {
-                    name = "elytradev"
+                maven(url = "http://maven.modmuss50.me/") {
+                    name = "modmuss50"
                 }
                 maven(url = "https://jitpack.io") {
                     name = "jitpack"
