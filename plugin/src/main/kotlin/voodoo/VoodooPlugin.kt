@@ -19,6 +19,8 @@ import java.io.FilenameFilter
 open class VoodooPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val voodooExtension = project.run {
+//            pluginManager.apply("kotlin")
+            pluginManager.apply("idea")
             extensions.create<VoodooExtension>("voodoo", project)
         }
 
@@ -47,7 +49,7 @@ open class VoodooPlugin : Plugin<Project> {
             extensions.configure<KotlinJvmProjectExtension> {
                 sourceSets.maybeCreate("main").kotlin.apply {
                     srcDir(voodooExtension.getPackDir)
-                    srcDir(voodooExtension.getDocDir)
+                    srcDir(voodooExtension.getTomeDir)
                     srcDir(voodooExtension.getGeneratedSrc)
                 }
             }
