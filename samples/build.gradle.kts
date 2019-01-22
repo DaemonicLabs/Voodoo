@@ -7,6 +7,7 @@ plugins {
 voodoo {
     rootDir { project.rootDir.resolve("run") }
     packDirectory { project.rootDir.resolve("packs") }
+    tomeDirectory { project.rootDir.resolve("tome") }
 //    docDirectory { project.rootDir.resolve("docs") }
 //    generatedSource { rootDir -> rootDir.resolve(".voodoo") }
 
@@ -34,6 +35,7 @@ repositories {
         name = "jitpack"
     }
     mavenCentral()
+    jcenter()
 }
 
 dependencies {

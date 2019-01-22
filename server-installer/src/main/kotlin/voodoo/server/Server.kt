@@ -19,7 +19,7 @@ import java.io.File
  */
 
 object Server {
-    private val directories = Directories.get()
+    private val directories = Directories.get("server")
 
     suspend fun install(
         modpack: LockPack,
