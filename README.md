@@ -191,3 +191,7 @@ buy me a drink: [![Patreon](https://img.shields.io/badge/Patreon-Nikkyai-red.svg
 
 [KT-27815](https://youtrack.jetbrains.com/issue/KT-27815)
 [KT-28916](https://youtrack.jetbrains.com/issue/KT-28916)
+
+## improve kotlin code generation
+
+[kotlinpoet-608](https://github.com/square/kotlinpoet/issues/608)

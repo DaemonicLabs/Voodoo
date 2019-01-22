@@ -57,6 +57,17 @@ private fun DependencyHandler.`compile`(
     add("compile", it)
 }
 
+private fun DependencyHandler.`api`(
+    group: String,
+    name: String,
+    version: String? = null,
+    configuration: String? = null,
+    classifier: String? = null,
+    ext: String? = null
+): ExternalModuleDependency = create(group, name, version, configuration, classifier, ext).also {
+    add("api", it)
+}
+
 private fun dependOn(project: Project) {
     // TODO
 }
@@ -120,33 +131,33 @@ fun Project.setupDependencies(target: Project = this) {
         }
         rootProject.project(":multimc") -> {
             dependencies {
-                compile(project(":core"))
+                api(project(":core"))
             }
         }
         rootProject.project(":multimc:multimc-installer") -> {
             dependencies {
-                compile(project(":multimc"))
-                compile(group = "commons-codec", name = "commons-codec", version = "+")
+                api(project(":multimc"))
+                api(group = "commons-codec", name = "commons-codec", version = "+")
             }
         }
         rootProject.project(":pack") -> {
             dependencies {
-                compile(project(":multimc"))
-                compile(project(":core"))
-                compile(project(":skcraft"))
+                api(project(":multimc"))
+                api(project(":core"))
+                api(project(":skcraft"))
 
-                compile(KotlinxHtml.dependency)
+                api(KotlinxHtml.dependency)
             }
         }
         rootProject.project(":pack:pack-tester") -> {
             dependencies {
-                compile(project(":pack"))
+                api(project(":pack"))
             }
         }
         rootProject.project(":plugin") -> {
             dependencies {
-                compile(project(":poet"))
-                compile(group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version = Kotlin.version)
+                api(project(":poet"))
+                api(group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version = Kotlin.version)
             }
         }
         rootProject.project(":poet") -> {
