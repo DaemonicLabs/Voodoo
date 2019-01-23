@@ -198,7 +198,7 @@ group {
 
 ### Serverside
 
-Backup Solution and universal chatbridge
+Backup Solutions and universal chatbridge
 
 ```kotlin
 group {
