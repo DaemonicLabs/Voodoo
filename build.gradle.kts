@@ -9,6 +9,7 @@ plugins {
     `maven-publish`
     `project-report`
     kotlin("jvm") version Kotlin.version
+    kotlin("plugin.scripting") version Kotlin.version
     id("moe.nikky.persistentCounter") version "0.0.7-SNAPSHOT"
     constantsGenerator apply false
     id("com.github.johnrengelman.shadow") version "4.0.0" apply false
@@ -88,6 +89,11 @@ subprojects {
         plugin("kotlin")
         plugin("kotlinx-serialization")
         plugin("moe.nikky.persistentCounter")
+
+        if(project == project(":dsl")) {
+//            plugin("plugin.scripting")
+            plugin("org.jetbrains.kotlin.plugin.scripting")
+        }
     }
 
     kotlin {
