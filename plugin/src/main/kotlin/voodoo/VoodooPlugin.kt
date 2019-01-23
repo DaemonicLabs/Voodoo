@@ -19,8 +19,8 @@ import java.io.FilenameFilter
 open class VoodooPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val voodooExtension = project.run {
-//            pluginManager.apply("kotlin")
-            pluginManager.apply("idea")
+            pluginManager.apply("org.gradle.idea")
+            pluginManager.apply("org.jetbrains.kotlin.jvm")
             extensions.create<VoodooExtension>("voodoo", project)
         }
 
@@ -64,7 +64,7 @@ open class VoodooPlugin : Plugin<Project> {
                 group = "voodoo"
                 description = "prints the used voodoo version"
                 doLast {
-                    println(PoetConstants.FULL_VERSION)
+                    logger.lifecycle("version: ${PoetConstants.FULL_VERSION}")
                 }
             }
 

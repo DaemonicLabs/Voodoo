@@ -1,6 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import moe.nikky.counter.CounterExtension
-import org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import plugin.GenerateConstantsTask
 
@@ -211,7 +210,6 @@ subprojects {
             from(sourceSets["main"].allSource)
         }
 
-//            // fails due to Jankson
         val javadoc by tasks.getting(Javadoc::class) {}
         val javadocJar by tasks.registering(Jar::class) {
             archiveClassifier.set("javadoc")
@@ -220,34 +218,12 @@ subprojects {
 
         publishing {
             publications {
-                val coordinates = create("default", MavenPublication::class.java) {
+                create("default", MavenPublication::class.java) {
                     from(components["java"])
                     artifact(sourcesJar.get())
                     artifact(javadocJar.get())
                     groupId = "moe.nikky.voodoo${Env.branch}"
                     artifactId = project.name.toLowerCase()
-                }
-
-                create("snapshot", MavenPublication::class.java) {
-                    val publication = this as MavenPublicationInternal
-                    publication.isAlias = true
-                    groupId = "moe.nikky.voodoo${Env.branch}"
-                    artifactId = project.name.toLowerCase()
-                    version = "$major.$minor.$patch-SNAPSHOT"
-                    pom.withXml {
-                        val root = asElement()
-                        val document = root.ownerDocument
-                        val dependencies = root.appendChild(document.createElement("dependencies"))
-                        val dependency = dependencies.appendChild(document.createElement("dependency"))
-                        val groupId = dependency.appendChild(document.createElement("groupId"))
-                        groupId.textContent = coordinates.groupId
-                        val artifactId = dependency.appendChild(document.createElement("artifactId"))
-                        artifactId.textContent = coordinates.artifactId
-                        val version = dependency.appendChild(document.createElement("version"))
-                        version.setTextContent(coordinates.version)
-                    }
-//                        pom.name.set(declaration.getDisplayName())
-//                        pom.getDescription().set(declaration.getDescription())
                 }
             }
             repositories {
