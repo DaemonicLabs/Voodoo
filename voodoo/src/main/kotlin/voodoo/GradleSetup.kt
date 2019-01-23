@@ -33,9 +33,9 @@ object GradleSetup : KLogging() {
 
         val buildScript = """
             plugins {
-                kotlin("jvm") version "${VoodooConstants.KOTLIN_VERSION}"
+                // kotlin("jvm") version "${VoodooConstants.KOTLIN_VERSION}" // automatically applied
+                // idea // automatically applied
                 id("voodoo") version "${VoodooConstants.VERSION}-SNAPSHOT"
-                idea
             }
 
             voodoo {
@@ -67,7 +67,8 @@ object GradleSetup : KLogging() {
             }
 
             dependencies {
-                implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "${VoodooConstants.VERSION}-SNAPSHOT")
+                implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "${VoodooConstants.VERSION}+")
+                implementation(group = "moe.nikky.voodoo", name = "dsl", version = "${VoodooConstants.VERSION}+")
             }
         """.trimIndent()
 
