@@ -13,8 +13,8 @@ Setting up a Voodoo project/workspace
 
 download `bootstrap-voodoo.jar` from [jenkins](https://jenkins.modmuss50.me/job/NikkyAI/job/DaemonicLabs/job/Voodoo/job/master/)
 
-optionally install `idea` https://www.jetbrains.com/idea/download
-and `gradle` https://gradle.org/install/
+optionally install `idea` [IntelliJ Idea Download](https://www.jetbrains.com/idea/download)
+and `gradle` [Gradle Download](https://gradle.org/install/)
 (it will help a lot)
 
 ```bash

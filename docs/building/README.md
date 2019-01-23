@@ -9,7 +9,7 @@ assuming you have a `.voodoo.kts` file ready to use from
 
 ## Building with gradle
 
-the voodoo plugin will detect any `*.kt` files in the configured pack folder
+the voodoo plugin will detect any `*.voodoo.kts` files in the configured pack folder
 and generate gradle tasks for them  
 `awesomepack.kt` woud generate the task name `awesomepack` it is always lowercase
 
