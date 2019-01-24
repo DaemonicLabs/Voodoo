@@ -1,5 +1,0 @@
-theme: jekyll-theme-midnight
-plugins:
-  - jemoji
-exclude:
-  - run/

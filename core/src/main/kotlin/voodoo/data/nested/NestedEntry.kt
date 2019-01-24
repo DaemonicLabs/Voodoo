@@ -78,45 +78,45 @@ data class NestedEntry(
             } else
                 ids += it.id
         }
-        return this.entries.asSequence().filter { it.enabled }.map { it ->
+        return this.entries.asSequence().filter { it.enabled }.map {entry ->
             Entry(
-                it.provider,
-                id = it.id,
-                name = it.name,
-                folder = it.folder,
-                comment = it.comment,
-                description = it.description,
-                feature = it.feature,
-                side = it.side,
-                websiteUrl = it.websiteUrl,
+                entry.provider,
+                id = entry.id,
+                name = entry.name,
+                folder = entry.folder,
+                comment = entry.comment,
+                description = entry.description,
+                feature = entry.feature,
+                side = entry.side,
+                websiteUrl = entry.websiteUrl,
 //                dependencies = it.dependencies,
 //                replaceDependencies = it.replaceDependencies,
                 //                optional = it.optional,
-                packageType = it.packageType,
-                transient = it.transient,
-                version = it.version,
-                fileName = it.fileName,
+                packageType = entry.packageType,
+                transient = entry.transient,
+                version = entry.version,
+                fileName = entry.fileName,
                 //                fileNameRegex = it.fileNameRegex,
-                validMcVersions = it.validMcVersions,
+                validMcVersions = entry.validMcVersions,
                 // CURSE
-                curseMetaUrl = it.curseMetaUrl,
-                curseReleaseTypes = it.curseReleaseTypes,
-                curseProjectID = it.curseProjectID,
-                curseFileID = it.curseFileID,
+                curseMetaUrl = entry.curseMetaUrl,
+                curseReleaseTypes = entry.curseReleaseTypes,
+                curseProjectID = entry.curseProjectID,
+                curseFileID = entry.curseFileID,
                 // DIRECT
-                url = it.url,
-                useUrlTxt = it.useUrlTxt, // JENKINS
-                jenkinsUrl = it.jenkinsUrl,
-                job = it.job,
-                buildNumber = it.buildNumber,
+                url = entry.url,
+                useUrlTxt = entry.useUrlTxt, // JENKINS
+                jenkinsUrl = entry.jenkinsUrl,
+                job = entry.job,
+                buildNumber = entry.buildNumber,
                 // LOCAL
-                fileSrc = it.fileSrc,
+                fileSrc = entry.fileSrc,
                 // UPDATE JSON
-                updateJson = it.updateJson,
-                updateChannel = it.updateChannel,
-                template = it.template
+                updateJson = entry.updateJson,
+                updateChannel = entry.updateChannel,
+                template = entry.template
             ).apply {
-                it.fileNameRegex?.let {
+                entry.fileNameRegex?.let {
                     fileNameRegex = it
                 }
             }
@@ -124,7 +124,6 @@ data class NestedEntry(
     }
 
     private suspend fun flatten(indent: String, parentFile: File? = null) {
-        var parent = parentFile
         val toDelete = mutableListOf<NestedEntry>()
 
         entries.forEach { entry ->
@@ -191,7 +190,7 @@ data class NestedEntry(
                 }
             }
 
-            entry.flatten("$indent|  ", parent)
+            entry.flatten("$indent|  ", parentFile)
             if (entry.entries.isNotEmpty() || entry.id.isBlank()) {
                 toDelete += entry
             }
