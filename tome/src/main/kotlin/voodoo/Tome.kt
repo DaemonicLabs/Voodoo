@@ -11,12 +11,12 @@ import java.io.StringWriter
 object Tome : KLogging() {
 
     suspend fun generate(modpack: ModPack, lockPack: LockPack, tomeEnv: TomeEnv) {
-        val tomeDir = tomeEnv.docRoot.resolve(modpack.tomeDir)
+        val docDir = tomeEnv.docRoot.resolve(modpack.docDir)
 
         for ((file, generator) in tomeEnv.generators) {
             logger.info("generating $file")
             val fileContent = generator(modpack, lockPack)
-            val targetFile = tomeDir.resolve(file)
+            val targetFile = docDir.resolve(file)
             targetFile.parentFile.mkdirs()
             targetFile.writeText(fileContent)
         }

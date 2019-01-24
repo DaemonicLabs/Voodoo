@@ -13,7 +13,4 @@ import kotlinx.serialization.Serializer
 data class UserFiles(
     @Optional var include: List<String> = listOf("options.txt", "optionsshaders.txt"),
     @Optional var exclude: List<String> = emptyList()
-) {
-    @Serializer(forClass = UserFiles::class)
-    companion object
-}
+)

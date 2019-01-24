@@ -1,5 +1,6 @@
 package voodoo.dsl.builder
 
+import voodoo.data.PackOptions
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
 import voodoo.dsl.VoodooDSL
@@ -23,10 +24,12 @@ open class ModpackBuilder(
     var localDir by property(pack::localDir)
     var sourceDir by property(pack::sourceDir)
 
+    fun pack(configurePack: PackOptions.() -> Unit) {
+        pack.packOptions.configurePack()
+    }
+
     private var rootInitialized = false
 
-    // TODO allow calling only once per script
-    // TODO: also set root
     @VoodooDSL
     fun <T> root(
         provider: T,

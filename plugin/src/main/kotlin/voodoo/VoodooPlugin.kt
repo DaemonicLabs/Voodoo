@@ -94,7 +94,7 @@ open class VoodooPlugin : Plugin<Project> {
                             group = id
 
                             systemProperty("voodoo.rootDir", voodooExtension.getRootDir)
-                            systemProperty("voodoo.tomeDir", voodooExtension.getTomeDir)
+                            systemProperty("voodoo.docDir", voodooExtension.getTomeDir)
                             systemProperty("voodoo.docDir", voodooExtension.getDocDir)
                             systemProperty("voodoo.generatedSrc", voodooExtension.getGeneratedSrc)
                         }
@@ -110,7 +110,7 @@ open class VoodooPlugin : Plugin<Project> {
                                 args = nestedArgs.reduceRight { acc, list -> acc + "-" + list }
 
                                 systemProperty("voodoo.rootDir", voodooExtension.getRootDir)
-                                systemProperty("voodoo.tomeDir", voodooExtension.getTomeDir)
+                                systemProperty("voodoo.docDir", voodooExtension.getTomeDir)
                                 systemProperty("voodoo.docDir", voodooExtension.getDocDir)
                                 systemProperty("voodoo.generatedSrc", voodooExtension.getGeneratedSrc)
                             }

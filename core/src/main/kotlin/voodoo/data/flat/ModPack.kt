@@ -6,6 +6,7 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import mu.KLogging
+import voodoo.data.PackOptions
 import voodoo.data.UserFiles
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
@@ -29,61 +30,18 @@ data class ModPack(
     @Optional val authors: List<String> = emptyList(),
     @Optional var forge: Int? = null,
     // var forgeBuild: Int = -1,
-    @Optional @Serializable(with = LaunchModifier.Companion::class)
-    val launch: LaunchModifier = LaunchModifier(),
-    @Optional @Serializable(with = UserFiles.Companion::class)
-    var userFiles: UserFiles = UserFiles()
+    @Optional val launch: LaunchModifier = LaunchModifier(),
+    @Optional var userFiles: UserFiles = UserFiles(),
+    @Optional var packOptions: PackOptions = PackOptions()
 ) {
-    //    @Serializer(forClass = ModPack::class)
-    companion object : KLogging() {
-//        override fun serialize(output: Encoder, obj: ModPack) {
-//            val elemOutput = output.beginStructure(descriptor)
-//            elemOutput.encodeStringElement(descriptor, 0, obj.id)
-//            elemOutput.encodeStringElement(descriptor, 1, obj.mcVersion)
-//            with(ModPack(obj.id, obj.mcVersion)) {
-//                elemOutput.serialize(this.title, obj.title, 2)
-//                elemOutput.serialize(this.version, obj.version, 3)
-//                elemOutput.serialize(this.icon, obj.icon, 4)
-//                elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 5)
-//                obj.forge?.also { forge ->
-//                    elemOutput.serialize(this.forge, forge, 6)
-//                }
-//                elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier, 7)
-//                elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles, 8)
-//                elemOutput.serialize(this.localDir, obj.localDir, 9)
-//                elemOutput.serialize(this.sourceDir, obj.sourceDir, 10)
-//                elemOutput.serialize(this.tomeDir, obj.tomeDir, 11)
-//            }
-//            elemOutput.endStructure(descriptor)
-//        }
-//
-//        private inline fun <reified T : Any> CompositeEncoder.serialize(default: T?, actual: T, index: Int) {
-//            if (default != actual) {
-//                when (actual) {
-//                    is String -> this.encodeStringElement(descriptor, index, actual)
-//                    is Int -> this.encodeIntElement(descriptor, index, actual)
-//                }
-//            }
-//        }
-//
-//        private inline fun <reified T : Any> CompositeEncoder.serializeObj(
-//            default: T?,
-//            actual: T?,
-//            saver: SerializationStrategy<T>,
-//            index: Int
-//        ) {
-//            if (default != actual && actual != null) {
-//                this.encodeSerializableElement(descriptor, index, saver, actual)
-//            }
-//        }
-    }
+    companion object : KLogging()
 
     @Optional
     var localDir: String = "local"
     @Optional
     var sourceDir: String = id
     @Optional
-    var tomeDir: String = id
+    var docDir: String = id
 
     @Transient
     val sourceFolder: File
@@ -165,7 +123,8 @@ data class ModPack(
             userFiles = userFiles,
             localDir = localDir,
             sourceDir = sourceDir,
-            features = features.sortedBy { it.feature.name }
+            features = features.sortedBy { it.feature.name },
+            packOptions = packOptions
         ).also {
             it.rootDir = rootDir
         }

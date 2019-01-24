@@ -3,6 +3,7 @@ package voodoo.data.nested
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.Transient
 import mu.KLogging
+import voodoo.data.PackOptions
 import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
 import java.io.File
@@ -35,7 +36,8 @@ internal constructor(
     var root: NestedEntry = NestedEntry(),
     var localDir: String = "local",
     var sourceDir: String = id,
-    var tomeDir: String = id
+    var docDir: String = id,
+    var packOptions: PackOptions = PackOptions()
 ) {
     companion object : KLogging() {
         fun create(rootDir: File, id: String, builder: (NestedPack) -> Unit = {}): NestedPack {
@@ -71,13 +73,14 @@ internal constructor(
             forge = forge,
             mcVersion = mcVersion ?: throw IllegalStateException("mcVersion must be set for pack '$id'"),
             userFiles = userFiles,
-            launch = launch
+            launch = launch,
+            packOptions = packOptions
         ).also {
             it.rootDir = rootDir
 
             it.localDir = localDir
             it.sourceDir = sourceDir
-            it.tomeDir = tomeDir
+            it.docDir = docDir
         }
     }
 }

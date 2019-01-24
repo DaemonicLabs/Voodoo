@@ -28,7 +28,7 @@ object MMCFatPack : AbstractPack() {
         target: String?,
         clean: Boolean
     ) {
-        val targetDir = modpack.rootDir.resolve(target ?: ".multimc")
+        val targetDir = modpack.rootDir.resolve(target ?: ".multimcOptions")
         val cacheDir = directories.cacheHome
         val instanceDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id)
         val title = modpack.title.blankOr ?: modpack.id
