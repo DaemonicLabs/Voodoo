@@ -81,7 +81,7 @@ object Voodoo : KLogging() {
         val packFileName = "$id.pack.hjson"
 //    val packFile = packDir.resolve(packFileName)
         val lockFileName = "$id.lock.pack.hjson"
-        val lockFile = packDir.resolve(lockFileName)
+        val lockFile = scriptEnv.pack.sourceFolder.resolve(lockFileName)
 
         val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
             "import_debug" to { _ -> Importer.flatten(nestedPack, targetFileName = packFileName) },
