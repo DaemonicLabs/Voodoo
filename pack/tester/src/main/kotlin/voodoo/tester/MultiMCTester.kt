@@ -31,7 +31,6 @@ object MultiMCTester : AbstractTester() {
         val title = "${modpack.title.blankOr ?: modpack.id} Test Instance"
 
         val cacheDir = directories.cacheHome
-        val mmcConfigDir = File("multimcOptions")
         val multimcDir = MMCUtil.findDir()
         val instanceDir = multimcDir.resolve("instances").resolve(folder)
 
