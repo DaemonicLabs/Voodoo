@@ -29,7 +29,7 @@ object Coroutines {
 }
 
 object Serialization {
-    const val version = "0.10.0-eap-1"
+    const val version = "0.10.0"
     const val plugin = "kotlinx-serialization"
     const val module = "org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin"
     val dependency = create(group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-runtime", version = version)

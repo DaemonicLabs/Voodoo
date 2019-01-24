@@ -2,12 +2,16 @@
 
 use a tweakClass for forge (bundle bootstrapper in tweakClass ?)
 
+# MCUpdater support
+
+- [ ] ensure url pointers work for fastpack
+- [ ] download fastpack and execute it as `java -jar` process
 
 # Scripting
 
 - [x] Script Definition
 - [x] parse script folder and init pack with filename as `id`
-- [ ] add extra scripts for defining tome / doc generators
+- [x] add extra scripts for defining tome / doc generators
 
 # Reorganize buildscripts / Repo
 
@@ -31,19 +35,10 @@ copy state of the pack from git history, using tags
 diff on lockfilles
 
 # condense module graph
-improve buildspeed and publish speed in dev
 
-# generate gradle setup
+improve buildspeed
 
-needs to be done outside.. maybe via kotlin-js
-requires testing the gradle setup before generating it
-
-- create framework
-- add pack
-
-- <s> update kscript annotations/header </s>
-
-# analyse
+# analyze
 ## list optional dependencies gradle task
 
 list all optional dependencies of curse mods
@@ -58,15 +53,10 @@ build first
 use modalyzer output of all jars
 suggest named forge versions (copy-paste ready)
 
-# deprecate flat entries
-
-entries are flattened fast enough from the nested format, thee is no reason for a multi step process anymore
-write flat entries to disk for debugging purposes only
-
 # curse import
 
-- match client and server pack contents
-
+- match client and server pack contents to determine mods that are common or clientside
+- currently impossible to find which projects mods are from that are server-only
 
 # config tweaks
 
@@ -80,13 +70,13 @@ examples:
 # multim mc integration
 
 trigger by holding **shift**
-figure out alternative ways of detecting keyboard state at startup
+figure out alternative ways of detecting keyboard state   **without listeners**
 
 options:
   - change feature selection
   - force reinstall
-  
-  
+
+
 sort out windows file locking issues
 
 # misc
@@ -95,9 +85,10 @@ curse-server zip export
 
 # coroutines
 
-ensure proper use of CoroutineContext everzwhere
+ensure proper use of CoroutineContext everywhere
 
 ## Actors
+
 - use Actors instead of synchronized mutable lists
 https://github.com/Kotlin/kotlinx.coroutines/blob/master/coroutines-guide.md#actors
 since the actor is in its own coroutine context it can modify its private state without locking issues
