@@ -39,6 +39,9 @@ val noConstants = listOf(
 
 allprojects {
     repositories {
+        maven(url = "https://jitpack.io") {
+            name = "jitpack"
+        }
         maven(url = "https://dl.bintray.com/kotlin/kotlin-eap/") {
             name = "Kotlin EAP"
         }
