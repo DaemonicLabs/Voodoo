@@ -10,6 +10,7 @@ import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
 import voodoo.util.Platform
+import voodoo.util.json
 import voodoo.util.serializer.FileSerializer
 import voodoo.util.toJson
 import java.awt.BorderLayout
@@ -52,17 +53,17 @@ object MMCUtil : KLogging() {
     val mmcConfig: MMCConfiguration
 
     init {
-        val json = Json(indented = true, unquoted = true, encodeDefaults = true)
+        val jsonWithDefaults = Json(indented = true, unquoted = true, encodeDefaults = true)
         val mmcConfigurationFile = configHome.resolve("multimc.hjson")
         logger.info("loading multimcOptions config $mmcConfigurationFile")
         mmcConfig = when {
-            mmcConfigurationFile.exists() -> json.parse(MMCConfiguration.serializer(), mmcConfigurationFile.readText())
+            mmcConfigurationFile.exists() -> jsonWithDefaults.parse(MMCConfiguration.serializer(), mmcConfigurationFile.readText())
             else -> MMCConfiguration()
         }
         logger.info("loaded config: $mmcConfig")
 
         mmcConfigurationFile.parentFile.mkdirs()
-        mmcConfigurationFile.writeText(mmcConfig.toJson(MMCConfiguration.serializer(), json))
+        mmcConfigurationFile.writeText(jsonWithDefaults.stringify(MMCConfiguration.serializer(), mmcConfig))
     }
 
     fun startInstance(name: String) {
