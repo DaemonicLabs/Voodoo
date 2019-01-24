@@ -10,7 +10,7 @@ import com.skcraft.launcher.model.modpack.FileInstall
 import com.skcraft.launcher.model.modpack.Manifest
 import mu.KLogging
 import org.apache.commons.io.FilenameUtils
-import voodoo.util.toHex
+import voodoo.util.toHexString
 import java.io.File
 import java.io.IOException
 import java.security.MessageDigest
@@ -42,7 +42,7 @@ class ClientFileCollector(
         }
         val sha1 = MessageDigest.getInstance("SHA-1")
         val bytes = file.readBytes()
-        val hash = sha1.digest(bytes).toHex()
+        val hash = sha1.digest(bytes).toHexString()
         val to = FilenameUtils.separatorsToUnix(FilenameUtils.normalize(relPath))
         // url.txt override file
         val urlFile = File(file.absoluteFile.parentFile, file.name + URL_FILE_SUFFIX)

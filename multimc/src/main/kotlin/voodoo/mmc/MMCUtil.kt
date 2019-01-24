@@ -40,21 +40,21 @@ import javax.swing.UIManager
 import kotlin.system.exitProcess
 
 object MMCUtil : KLogging() {
-    private val directories = Directories.get(moduleName = "multimc")
+    private val directories = Directories.get(moduleName = "multimcOptions")
     private val cacheHome = directories.cacheHome
     private val configHome = Directories.get().configHome
 
     @Serializable
     data class MMCConfiguration(
-        @Optional val binary: String = "multimc",
-        @Optional @Serializable(with = FileSerializer::class) val path: File = File(System.getProperty("user.home") + "/.local/share/multimc")
+        @Optional val binary: String = "multimcOptions",
+        @Optional @Serializable(with = FileSerializer::class) val path: File = File(System.getProperty("user.home") + "/.local/share/multimcOptions")
     )
 
     val mmcConfig: MMCConfiguration
 
     init {
-        val mmcConfigurationFile = configHome.resolve("multimc.hjson")
-        logger.info("loading multimc config $mmcConfigurationFile")
+        val mmcConfigurationFile = configHome.resolve("multimcOptions.hjson")
+        logger.info("loading multimcOptions config $mmcConfigurationFile")
         mmcConfig = when {
             mmcConfigurationFile.exists() -> json.parse(MMCConfiguration.serializer(), mmcConfigurationFile.readText())
             else -> MMCConfiguration()
@@ -71,9 +71,9 @@ object MMCUtil : KLogging() {
             .redirectError(ProcessBuilder.Redirect.INHERIT)
             .start()
 
-        logger.info("started multimc instance $name $process")
+        logger.info("started multimcOptions instance $name $process")
         val status = process.waitFor()
-        logger.info("multimc instance exited with code $status")
+        logger.info("multimcOptions instance exited with code $status")
     }
 
     var dir: File? = null
@@ -91,13 +91,13 @@ object MMCUtil : KLogging() {
                 multimcFile.parentFile ?: run {
                     logger.error { multimcFile }
                     logger.error("Cannot find MultiMC on PATH")
-                    logger.error("make sure to add the multimc install location to the PATH")
+                    logger.error("make sure to add the multimcOptions install location to the PATH")
                     logger.error(
                         "go to `Control Panel\\All Control Panel Items\\System`" +
                                 " >> Advanced system settings" +
                                 " >> Environment Variables"
                     )
-                    logger.info("once added restart the shell and try to execute `multimc`")
+                    logger.info("once added restart the shell and try to execute `multimcOptions`")
                     exitProcess(1)
                 }
             }
@@ -152,7 +152,7 @@ object MMCUtil : KLogging() {
         forgeVersion: String? = null,
         instanceDir: File = with(findDir()) {
             this.resolve(
-                readCfg(this.resolve("multimc.cfg"))["InstanceDir"] ?: "instances"
+                readCfg(this.resolve("multimcOptions.cfg"))["InstanceDir"] ?: "instances"
             ).resolve(folder)
         },
         preLaunchCommand: String? = null
@@ -167,7 +167,7 @@ object MMCUtil : KLogging() {
         val iconKey = if (icon != null && icon.exists()) {
             val iconName = "icon_$folder"
             val iconsDir =
-                with(MMCUtil.findDir()) { this.resolve(readCfg(this.resolve("multimc.cfg"))["IconsDir"] ?: "icons") }
+                with(MMCUtil.findDir()) { this.resolve(readCfg(this.resolve("multimcOptions.cfg"))["IconsDir"] ?: "icons") }
             icon.copyTo(iconsDir.resolve("$iconName.png"), overwrite = true)
             icon.copyTo(instanceDir.resolve("$iconName.png"), overwrite = true)
             iconName

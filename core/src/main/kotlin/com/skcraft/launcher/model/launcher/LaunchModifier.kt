@@ -14,7 +14,4 @@ import kotlinx.serialization.Serializer
 data class LaunchModifier(
     @Optional
     val flags: List<String> = emptyList()
-) {
-    @Serializer(forClass = LaunchModifier::class)
-    companion object
-}
+)

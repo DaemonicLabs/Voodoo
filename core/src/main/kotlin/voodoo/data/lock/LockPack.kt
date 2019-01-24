@@ -3,11 +3,11 @@ package voodoo.data.lock
 import com.skcraft.launcher.model.ExtendedFeaturePattern
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import mu.KLogging
+import voodoo.data.PackOptions
 import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.forge.ForgeUtil
@@ -37,55 +37,10 @@ data class LockPack(
     @Optional var localDir: String = "local",
     @Optional var sourceDir: String = "src", // id, //"src-$id",
     @Optional
-    val features: List<ExtendedFeaturePattern> = emptyList()
+    val features: List<ExtendedFeaturePattern> = emptyList(),
+    @Optional var packOptions: PackOptions = PackOptions()
 ) {
-//    @Serializer(forClass = LockPack::class)
     companion object : KLogging() {
-//        override fun serialize(output: Encoder, obj: LockPack) {
-//            val elemOutput = output.beginStructure(descriptor)
-//            elemOutput.encodeStringElement(descriptor, 0, obj.id)
-//            elemOutput.encodeStringElement(descriptor, 1, obj.mcVersion)
-//            with(LockPack(obj.id, obj.mcVersion)) {
-//                elemOutput.serialize(this.title, obj.title, 2)
-//                elemOutput.serialize(this.version, obj.version, 3)
-//                elemOutput.serialize(this.icon, obj.icon, 4)
-//                elemOutput.serializeObj(this.authors, obj.authors, String.serializer().list, 5)
-//                obj.forge?.also { forge ->
-//                    elemOutput.serialize(this.forge, forge, 6)
-//                }
-//                elemOutput.serializeObj(this.launch, obj.launch, LaunchModifier, 7)
-//                elemOutput.serializeObj(this.userFiles, obj.userFiles, UserFiles, 8)
-//                elemOutput.serialize(this.localDir, obj.localDir, 9)
-//                elemOutput.serialize(this.sourceDir, obj.sourceDir, 10)
-//                elemOutput.serializeObj(
-//                    this.features,
-//                    obj.features,
-//                    ExtendedFeaturePattern.list,
-//                    11
-//                )
-//            }
-//            elemOutput.endStructure(descriptor)
-//        }
-//
-//        private inline fun <reified T : Any> CompositeEncoder.serialize(default: T?, actual: T, index: Int) {
-//            if (default != actual) {
-//                when (actual) {
-//                    is String -> this.encodeStringElement(descriptor, index, actual)
-//                    is Int -> this.encodeIntElement(descriptor, index, actual)
-//                }
-//            }
-//        }
-//
-//        private inline fun <reified T : Any> CompositeEncoder.serializeObj(
-//            default: T?,
-//            actual: T?,
-//            saver: SerializationStrategy<T>,
-//            index: Int
-//        ) {
-//            if (default != actual && actual != null) {
-//                this.encodeSerializableElement(descriptor, index, saver, actual)
-//            }
-//        }
 
         fun parseFiles(srcDir: File) = srcDir.walkTopDown()
             .filter {

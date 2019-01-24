@@ -38,7 +38,7 @@ import kotlin.system.exitProcess
  */
 
 object Hex : KLogging() {
-    private val directories = Directories.get(moduleName = "multimc")
+    private val directories = Directories.get(moduleName = "multimcOptions")
     val kit = Toolkit.getDefaultToolkit()
 
     @JvmStatic

@@ -14,9 +14,7 @@ object MMCStaticPack : AbstractPack() {
         target: String?,
         clean: Boolean
     ) {
-        val targetDir = modpack.rootDir.resolve(target ?: ".multimc")
-        // TODO: move configuration into modpack/lockpack ?
-        val definitionsDir = modpack.rootDir.resolve("multimc").apply { mkdirs() }
+        val targetDir = modpack.rootDir.resolve(target ?: ".multimcOptions")
         val cacheDir = directories.cacheHome.resolve("mmc")
         val instanceDir = cacheDir.resolve(modpack.id)
         instanceDir.deleteRecursively()
@@ -33,16 +31,17 @@ object MMCStaticPack : AbstractPack() {
 
         logger.info("tmp dir: $instanceDir")
 
-        val urlFile = definitionsDir.resolve("${modpack.id}.url.txt")
-        if (!urlFile.exists()) {
-            logger.error("no file '${urlFile.absolutePath}' found")
+        val skPackUrl = modpack.packOptions.multimcOptions.skPackUrl
+        if(skPackUrl == null) {
+            MMCPack.logger.error("skPackUrl in multimc options is not set")
             exitProcess(3)
         }
-        urlFile.copyTo(instanceDir.resolve("voodoo.url.txt"))
+        val urlFile = instanceDir.resolve("voodoo.url.txt")
+        urlFile.writeText(skPackUrl)
 
         val multimcInstaller = instanceDir.resolve("mmc-installer.jar")
         val installer =
-            downloadVoodoo(component = "multimc-installer", bootstrap = false, binariesDir = directories.cacheHome)
+            downloadVoodoo(component = "multimcOptions-installer", bootstrap = false, binariesDir = directories.cacheHome)
         installer.copyTo(multimcInstaller)
 
         val packignore = instanceDir.resolve(".packignore")

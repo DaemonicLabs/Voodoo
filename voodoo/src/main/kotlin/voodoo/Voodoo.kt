@@ -18,33 +18,13 @@ import voodoo.util.Directories
 import voodoo.util.asFile
 import voodoo.voodoo.VoodooConstants
 import java.io.File
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
-import java.security.MessageDigest
-import kotlin.script.experimental.api.CompiledScript
-import kotlin.script.experimental.api.EvaluationResult
-import kotlin.script.experimental.api.ResultValue
-import kotlin.script.experimental.api.ResultWithDiagnostics
-import kotlin.script.experimental.api.ScriptCompilationConfiguration
-import kotlin.script.experimental.api.ScriptDiagnostic
-import kotlin.script.experimental.api.ScriptEvaluationConfiguration
-import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.api.compilerOptions
-import kotlin.script.experimental.api.constructorArgs
-import kotlin.script.experimental.api.importScripts
-import kotlin.script.experimental.api.resultOrNull
-import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.host.toScriptSource
-import kotlin.script.experimental.jvm.defaultJvmScriptingHostConfiguration
 import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
 import kotlin.script.experimental.jvm.jdkHome
 import kotlin.script.experimental.jvm.jvm
-import kotlin.script.experimental.jvmhost.BasicJvmScriptEvaluator
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
-import kotlin.script.experimental.jvmhost.CompiledJvmScriptsCache
-import kotlin.script.experimental.jvmhost.JvmScriptCompiler
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
-import kotlin.script.experimental.jvmhost.impl.KJvmCompiledScript
 import kotlin.system.exitProcess
 
 object Voodoo : KLogging() {
@@ -82,52 +62,18 @@ object Voodoo : KLogging() {
             System.getProperty("voodoo.generatedSrc")?.asFile ?: rootDir.resolve(".voodoo").absoluteFile
         val generatedFiles = poet(rootDir = rootDir, generatedSrcDir = generatedFilesDir)
 
-        val cache = FileBasedScriptCache(cacheDir)
-        val compiler = JvmScriptCompiler(defaultJvmScriptingHostConfiguration, cache = cache)
-        val evaluator = BasicJvmScriptEvaluator()
-        val host = BasicJvmScriptingHost(compiler = compiler, evaluator = evaluator)
+        val host = createJvmScriptingHost(cacheDir)
 
-        val tomeDir = System.getProperty("voodoo.tomeDir")?.asFile ?: rootDir.resolve("tome")
+        val tomeDir = System.getProperty("voodoo.docDir")?.asFile ?: rootDir.resolve("tome")
         val docDir = System.getProperty("voodoo.docDir")?.asFile ?: rootDir.resolve("docs")
         val tomeEnv = initTome(host = host, tomeDir = tomeDir, docDir = docDir)
         logger.debug("tomeEnv: $tomeEnv")
 
-        val config = createJvmCompilationConfigurationFromTemplate<MainScriptEnv> {
-            jvm {
-                dependenciesFromCurrentContext(wholeClasspath = true)
-
-                importScripts.append(
-                    *generatedFiles.map { it.toScriptSource() }.toTypedArray()
-                )
-
-                val JDK_HOME = System.getenv("JAVA_HOME")
-                    ?: throw IllegalStateException("please set JAVA_HOME to the installed jdk")
-                jdkHome(File(JDK_HOME))
-            }
-//            compilerOptions.append("-jvm-target", "1.8")
-            compilerOptions.append("-jvm-target", "1.8")
-        }
-        println("config entries")
-        config.entries().forEach {
-            println("    $it")
-        }
-
-        val evaluationConfig = ScriptEvaluationConfiguration {
-            constructorArgs.append(rootDir, id)
-        }
-
-        println("evaluationConfig entries")
-        evaluationConfig.entries().forEach {
-            println("    $it")
-        }
-
-//        val scriptFile = File("packs").resolve(scriptFileName)
-        val scriptSource = scriptFile.toScriptSource()
-
-        println("compiling script, please be patient")
-        val result = host.eval(scriptSource, config, evaluationConfig)
-
-        val scriptEnv = result.get<MainScriptEnv>(scriptFile)
+        val scriptEnv = host.evalScript<MainScriptEnv>(
+            scriptFile,
+            args = *arrayOf(rootDir, id),
+            importScripts = generatedFiles.map { it.toScriptSource() }
+        )
 
         val nestedPack = scriptEnv.pack
 
@@ -206,7 +152,7 @@ object Voodoo : KLogging() {
             file.isFile && file.name.endsWith(".tome.kts")
         }
 
-        val compileConfig = createJvmCompilationConfigurationFromTemplate<TomeScript> {
+        val compilationConfig = createJvmCompilationConfigurationFromTemplate<TomeScript> {
             jvm {
                 dependenciesFromCurrentContext(wholeClasspath = true)
 
@@ -225,115 +171,16 @@ object Voodoo : KLogging() {
                 require(isNotBlank()) { "the script file must contain a id in the filename" }
             }
 
-            val evalConfig = ScriptEvaluationConfiguration {
-                constructorArgs.append(id)
-            }
-
-            val scriptSource = scriptFile.toScriptSource()
-
-            println("compiling script ($scriptFile), please be patient")
-            val result = host.eval(scriptSource, compileConfig, evalConfig)
-
-            val tomeScriptEnv = result.get<TomeScript>(scriptFile)
+            val tomeScriptEnv = host.evalScript<TomeScript>(
+                scriptFile = scriptFile,
+                args = *arrayOf(id),
+                compilationConfig = compilationConfig
+            )
 
             tomeEnv.add(tomeScriptEnv.fileName, tomeScriptEnv.generateHtml)
         }
 
         return tomeEnv
-    }
-
-    fun <T> ResultWithDiagnostics<EvaluationResult>.get(scriptFile: File): T {
-        fun SourceCode.Location.posToString() = "(${start.line}, ${start.col})"
-
-        for (report in reports) {
-            println(report)
-            val severityIndicator = when (report.severity) {
-                ScriptDiagnostic.Severity.FATAL -> "fatal"
-                ScriptDiagnostic.Severity.ERROR -> "e"
-                ScriptDiagnostic.Severity.WARNING -> "w"
-                ScriptDiagnostic.Severity.INFO -> "i"
-                ScriptDiagnostic.Severity.DEBUG -> "d"
-            }
-            println("$severityIndicator: ${scriptFile.absoluteFile}: ${report.location?.posToString()}: ${report.message}")
-            report.exception?.printStackTrace()
-        }
-        println(this)
-        val evalResult = resultOrNull() ?: run {
-            Voodoo.logger.error("evaluation failed")
-            exitProcess(1)
-        }
-
-        val resultValue = evalResult.returnValue
-        println("resultValue = '${resultValue}'")
-        println("resultValue::class = '${resultValue::class}'")
-
-        return when (resultValue) {
-            is ResultValue.Value -> {
-                println("resultValue.name = '${resultValue.name}'")
-                println("resultValue.value = '${resultValue.value}'")
-                println("resultValue.type = '${resultValue.type}'")
-
-                println("resultValue.value::class = '${resultValue.value!!::class}'")
-
-                val env = resultValue.value as T
-                println(env)
-                env
-            }
-            is ResultValue.Unit -> {
-                logger.error("evaluation failed")
-                exitProcess(-1)
-            }
-        }
-    }
-}
-
-private fun File.readCompiledScript(scriptCompilationConfiguration: ScriptCompilationConfiguration): CompiledScript<*> {
-    return inputStream().use { fs ->
-        ObjectInputStream(fs).use { os ->
-            (os.readObject() as KJvmCompiledScript<*>).apply {
-                setCompilationConfiguration(scriptCompilationConfiguration)
-            }
-        }
-    }
-}
-
-private fun ByteArray.toHexString(): String = joinToString("", transform = { "%02x".format(it) })
-
-private class FileBasedScriptCache(val baseDir: File) : CompiledJvmScriptsCache {
-    internal fun uniqueHash(script: SourceCode, scriptCompilationConfiguration: ScriptCompilationConfiguration): String {
-        val digestWrapper = MessageDigest.getInstance("MD5")
-        digestWrapper.update(script.text.toByteArray())
-        scriptCompilationConfiguration.entries().sortedBy { it.key.name }.forEach {
-            digestWrapper.update(it.key.name.toByteArray())
-            digestWrapper.update(it.value.toString().toByteArray())
-        }
-        return digestWrapper.digest().toHexString()
-    }
-
-    override fun get(script: SourceCode, scriptCompilationConfiguration: ScriptCompilationConfiguration): CompiledScript<*>? {
-        val prefix = if(script is FileScriptSource) {
-            "${script.file.name}-"
-        } else ""
-        val file = File(baseDir, prefix + uniqueHash(script, scriptCompilationConfiguration))
-//        val file = File(baseDir, uniqueHash(script, scriptCompilationConfiguration))
-        return if (!file.exists()) null else file.readCompiledScript(scriptCompilationConfiguration)
-    }
-
-    override fun store(
-        compiledScript: CompiledScript<*>,
-        script: SourceCode,
-        scriptCompilationConfiguration: ScriptCompilationConfiguration
-    ) {
-        val prefix = if(script is FileScriptSource) {
-            "${script.file.name}-"
-        } else ""
-        val file = File(baseDir, prefix + uniqueHash(script, scriptCompilationConfiguration))
-//        val file = File(baseDir, uniqueHash(script, scriptCompilationConfiguration))
-        file.outputStream().use { fs ->
-            ObjectOutputStream(fs).use { os ->
-                os.writeObject(compiledScript)
-            }
-        }
     }
 }
 

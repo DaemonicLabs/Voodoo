@@ -15,6 +15,12 @@ userFiles = UserFiles(
     exclude = listOf("")
 )
 
+pack {
+    multimc {
+        skPackUrl = "replace-me"
+    }
+}
+
 root(CurseProvider) {
     releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
     validMcVersions = setOf("1.12.1", "1.12")
