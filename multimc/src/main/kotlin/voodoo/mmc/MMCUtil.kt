@@ -10,7 +10,6 @@ import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
 import voodoo.util.Platform
-import voodoo.util.json
 import voodoo.util.serializer.FileSerializer
 import voodoo.util.toJson
 import java.awt.BorderLayout
@@ -53,7 +52,8 @@ object MMCUtil : KLogging() {
     val mmcConfig: MMCConfiguration
 
     init {
-        val mmcConfigurationFile = configHome.resolve("multimcOptions.hjson")
+        val json = Json(indented = true, unquoted = true, encodeDefaults = true)
+        val mmcConfigurationFile = configHome.resolve("multimc.hjson")
         logger.info("loading multimcOptions config $mmcConfigurationFile")
         mmcConfig = when {
             mmcConfigurationFile.exists() -> json.parse(MMCConfiguration.serializer(), mmcConfigurationFile.readText())
@@ -62,7 +62,7 @@ object MMCUtil : KLogging() {
         logger.info("loaded config: $mmcConfig")
 
         mmcConfigurationFile.parentFile.mkdirs()
-        mmcConfigurationFile.writeText(mmcConfig.toJson(MMCConfiguration.serializer()))
+        mmcConfigurationFile.writeText(mmcConfig.toJson(MMCConfiguration.serializer(), json))
     }
 
     fun startInstance(name: String) {
@@ -73,7 +73,7 @@ object MMCUtil : KLogging() {
 
         logger.info("started multimcOptions instance $name $process")
         val status = process.waitFor()
-        logger.info("multimcOptions instance exited with code $status")
+        logger.info("multimc instance exited with code $status")
     }
 
     var dir: File? = null
@@ -167,7 +167,7 @@ object MMCUtil : KLogging() {
         val iconKey = if (icon != null && icon.exists()) {
             val iconName = "icon_$folder"
             val iconsDir =
-                with(MMCUtil.findDir()) { this.resolve(readCfg(this.resolve("multimcOptions.cfg"))["IconsDir"] ?: "icons") }
+                with(MMCUtil.findDir()) { this.resolve(readCfg(this.resolve("multimc.cfg"))["IconsDir"] ?: "icons") }
             icon.copyTo(iconsDir.resolve("$iconName.png"), overwrite = true)
             icon.copyTo(instanceDir.resolve("$iconName.png"), overwrite = true)
             iconName

@@ -41,7 +41,7 @@ object MMCStaticPack : AbstractPack() {
 
         val multimcInstaller = instanceDir.resolve("mmc-installer.jar")
         val installer =
-            downloadVoodoo(component = "multimcOptions-installer", bootstrap = false, binariesDir = directories.cacheHome)
+            downloadVoodoo(component = "multimc-installer", bootstrap = false, binariesDir = directories.cacheHome)
         installer.copyTo(multimcInstaller)
 
         val packignore = instanceDir.resolve(".packignore")
