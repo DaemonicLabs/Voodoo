@@ -40,13 +40,13 @@ import javax.swing.UIManager
 import kotlin.system.exitProcess
 
 object MMCUtil : KLogging() {
-    private val directories = Directories.get(moduleName = "multimcOptions")
+    private val directories = Directories.get(moduleName = "multimc")
     private val cacheHome = directories.cacheHome
     private val configHome = Directories.get().configHome
 
     @Serializable
     data class MMCConfiguration(
-        @Optional val binary: String = "multimcOptions",
+        @Optional val binary: String = "multimc",
         @Optional @Serializable(with = FileSerializer::class) val path: File = File(System.getProperty("user.home") + "/.local/share/multimcOptions")
     )
 
