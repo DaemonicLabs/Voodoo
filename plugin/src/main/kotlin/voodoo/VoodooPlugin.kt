@@ -93,6 +93,7 @@ open class VoodooPlugin : Plugin<Project> {
                             description = id
                             group = id
 
+                            environment("JAVA_HOME", System.getProperty("java.home"))
                             systemProperty("voodoo.rootDir", voodooExtension.getRootDir)
                             systemProperty("voodoo.docDir", voodooExtension.getTomeDir)
                             systemProperty("voodoo.docDir", voodooExtension.getDocDir)
@@ -109,6 +110,7 @@ open class VoodooPlugin : Plugin<Project> {
                                 val nestedArgs = arguments.map { it.split(" ") }
                                 args = nestedArgs.reduceRight { acc, list -> acc + "-" + list }
 
+                                environment("JAVA_HOME", System.getProperty("java.home"))
                                 systemProperty("voodoo.rootDir", voodooExtension.getRootDir)
                                 systemProperty("voodoo.docDir", voodooExtension.getTomeDir)
                                 systemProperty("voodoo.docDir", voodooExtension.getDocDir)
