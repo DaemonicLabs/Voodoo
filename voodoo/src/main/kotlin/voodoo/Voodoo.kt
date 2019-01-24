@@ -31,7 +31,10 @@ object Voodoo : KLogging() {
     @JvmStatic
     fun main(vararg fullArgs: String) {
 
-        logger.debug("system.properties: ${System.getProperties()}")
+        logger.debug("system.properties:")
+        System.getProperties().forEach { k, v ->
+            logger.debug { "  $k = $v" }
+        }
 
         if (fullArgs.isEmpty()) {
             GradleSetup.main()
