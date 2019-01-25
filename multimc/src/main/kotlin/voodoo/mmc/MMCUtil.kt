@@ -92,7 +92,7 @@ object MMCUtil : KLogging() {
                 logger.debug("output: $location")
                 val multimcFile = File(location)
                 multimcFile.parentFile ?: run {
-                    logger.error { multimcFile }
+                    logger.error("multimcFile: '$multimcFile'")
                     logger.error("Cannot find MultiMC on PATH")
                     logger.error("make sure to add the multimc install location to the PATH")
                     logger.error(
