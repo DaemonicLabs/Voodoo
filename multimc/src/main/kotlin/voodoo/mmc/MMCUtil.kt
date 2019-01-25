@@ -47,7 +47,7 @@ object MMCUtil : KLogging() {
     @Serializable
     data class MMCConfiguration(
         @Optional val binary: String = "multimc",
-        @Optional @Serializable(with = FileSerializer::class) val path: File = File(System.getProperty("user.home") + "/.local/share/multimcOptions")
+        @Optional @Serializable(with = FileSerializer::class) val path: File = File(System.getProperty("user.home") + "/.local/share/multimc")
     )
 
     val mmcConfig: MMCConfiguration
@@ -87,7 +87,9 @@ object MMCUtil : KLogging() {
         logger.info("os.name: ${System.getProperty("os.name")}")
         dir = dir ?: when {
             Platform.isWindows -> {
+                logger.debug("executing'where ${mmcConfig.binary}'")
                 val location = "where ${mmcConfig.binary}".runCommand()
+                logger.debug("output: $location")
                 val multimcFile = File(location)
                 multimcFile.parentFile ?: run {
                     logger.error { multimcFile }
