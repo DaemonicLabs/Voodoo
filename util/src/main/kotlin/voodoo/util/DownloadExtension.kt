@@ -6,6 +6,7 @@ import com.github.kittinunf.fuel.core.extensions.cUrlString
 import com.github.kittinunf.fuel.core.interceptors.validatorResponseInterceptor
 import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
 import com.github.kittinunf.result.Result
+import kotlinx.coroutines.delay
 import mu.KLogger
 import mu.KLogging
 import voodoo.util.redirect.fixedRedirectResponseInterceptor
@@ -33,7 +34,8 @@ suspend fun File.download(
     url: String,
     cacheDir: File,
     validator: (file: File) -> Boolean = { false },
-    logger: KLogger = Downloader.logger
+    logger: KLogger = Downloader.logger,
+    retries: Int = 3
 ) {
     val cacheFile = cacheDir.resolve(this.name)
     logger.info("downloading $url -> ${this@download}")
@@ -70,6 +72,12 @@ suspend fun File.download(
                 logger.error("response: $response")
 //                    logger.error("content: {}", result.component1())
                 logger.error("error: {}", result.error.toString())
+                if(retries > 0) {
+                    logger.error("attempting to download again in 500 ms")
+                    delay(500)
+                    download(url = url, cacheDir = cacheDir, validator = validator, logger = logger, retries = retries - 1)
+                }
+
                 logger.error(result.error.exception) { "Download Failed" }
                 exitProcess(-1)
             }
