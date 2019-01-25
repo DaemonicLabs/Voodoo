@@ -14,7 +14,7 @@ object MMCPack : AbstractPack() {
         target: String?,
         clean: Boolean
     ) {
-        val targetDir = modpack.rootDir.resolve(target ?: ".multimcOptions")
+        val targetDir = modpack.rootDir.resolve(target ?: ".multimc")
         val cacheDir = directories.cacheHome
         val instanceDir = cacheDir.resolve("MMC").resolve(modpack.id)
         instanceDir.deleteRecursively()

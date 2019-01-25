@@ -18,7 +18,6 @@ import voodoo.util.Directories
 import voodoo.util.asFile
 import voodoo.voodoo.VoodooConstants
 import java.io.File
-import kotlin.script.experimental.api.compilerOptions
 import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
 import kotlin.script.experimental.jvm.jdkHome
@@ -163,7 +162,6 @@ object Voodoo : KLogging() {
                     ?: throw IllegalStateException("please set JAVA_HOME to the installed jdk")
                 jdkHome(File(JDK_HOME))
             }
-            compilerOptions.append("-jvm-target", "1.8")
         }
 
         tomeScripts.forEach { scriptFile ->

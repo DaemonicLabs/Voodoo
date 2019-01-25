@@ -8,7 +8,6 @@ import kotlin.script.experimental.api.ScriptCompilationConfiguration
 import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.ScriptEvaluationConfiguration
 import kotlin.script.experimental.api.SourceCode
-import kotlin.script.experimental.api.compilerOptions
 import kotlin.script.experimental.api.constructorArgs
 import kotlin.script.experimental.api.importScripts
 import kotlin.script.experimental.api.resultOrNull
@@ -46,7 +45,7 @@ inline fun <reified T: Any> BasicJvmScriptingHost.evalScript(
             jdkHome(File(JDK_HOME))
         }
 
-        compilerOptions.append("-jvm-target", "1.8")
+//        compilerOptions.append("-jvm-target", "1.8") // default in kotlin 1.3.20
     }
 ): T {
     println("compilationConfig entries")

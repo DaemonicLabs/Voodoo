@@ -55,7 +55,7 @@ object MMCUtil : KLogging() {
     init {
         val jsonWithDefaults = Json(indented = true, unquoted = true, encodeDefaults = true)
         val mmcConfigurationFile = configHome.resolve("multimc.hjson")
-        logger.info("loading multimcOptions config $mmcConfigurationFile")
+        logger.info("loading multimc config $mmcConfigurationFile")
         mmcConfig = when {
             mmcConfigurationFile.exists() -> jsonWithDefaults.parse(MMCConfiguration.serializer(), mmcConfigurationFile.readText())
             else -> MMCConfiguration()
@@ -72,7 +72,7 @@ object MMCUtil : KLogging() {
             .redirectError(ProcessBuilder.Redirect.INHERIT)
             .start()
 
-        logger.info("started multimcOptions instance $name $process")
+        logger.info("started multimc instance $name $process")
         val status = process.waitFor()
         logger.info("multimc instance exited with code $status")
     }
@@ -92,13 +92,13 @@ object MMCUtil : KLogging() {
                 multimcFile.parentFile ?: run {
                     logger.error { multimcFile }
                     logger.error("Cannot find MultiMC on PATH")
-                    logger.error("make sure to add the multimcOptions install location to the PATH")
+                    logger.error("make sure to add the multimc install location to the PATH")
                     logger.error(
                         "go to `Control Panel\\All Control Panel Items\\System`" +
                                 " >> Advanced system settings" +
                                 " >> Environment Variables"
                     )
-                    logger.info("once added restart the shell and try to execute `multimcOptions`")
+                    logger.info("once added restart the shell and try to execute `multimc`")
                     exitProcess(1)
                 }
             }
@@ -153,7 +153,7 @@ object MMCUtil : KLogging() {
         forgeVersion: String? = null,
         instanceDir: File = with(findDir()) {
             this.resolve(
-                readCfg(this.resolve("multimcOptions.cfg"))["InstanceDir"] ?: "instances"
+                readCfg(this.resolve("multimc.cfg"))["InstanceDir"] ?: "instances"
             ).resolve(folder)
         },
         preLaunchCommand: String? = null
