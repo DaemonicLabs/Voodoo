@@ -1,6 +1,5 @@
 package voodoo.data.curse
 
-import kotlinx.serialization.ContextualSerialization
 import kotlinx.serialization.Serializable
 import voodoo.util.serializer.DateSerializer
 import java.util.Date
@@ -49,5 +48,6 @@ data class Addon(
     @Serializable(with=DateSerializer::class)
     val dateReleased: Date,
     val available: Boolean,
-    val categoryList: String
+    val categoryList: String,
+    val primaryLanguage: String
 )
