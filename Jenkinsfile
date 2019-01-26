@@ -38,10 +38,9 @@ pipeline {
 	    }
 	    stage("bootstrap") {
 	        steps {
-	            sh './gradlew :bootstrap:clean'
-	            sh './gradlew :bootstrap:shadowJar -Ptarget=voodoo -S'
-	            sh './gradlew :bootstrap:shadowJar -Ptarget=multimc-installer -S'
-	            archiveArtifacts artifacts: 'bootstrap/build/libs/*voodoo*'
+	            sh './gradlew :bootstrap:clean :bootstrap:shadowJar -Ptarget=voodoo -S'
+				archiveArtifacts artifacts: 'bootstrap/build/libs/*voodoo*'
+	            sh './gradlew :bootstrap:clean :bootstrap:shadowJar -Ptarget=multimc-installer -S'
 	            archiveArtifacts artifacts: 'bootstrap/build/libs/*multimc-installer*'
 	        }
 	    }
