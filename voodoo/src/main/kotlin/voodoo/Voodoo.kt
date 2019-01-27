@@ -66,7 +66,7 @@ object Voodoo : KLogging() {
 
         val host = createJvmScriptingHost(cacheDir)
 
-        val tomeDir = System.getProperty("voodoo.docDir")?.asFile ?: rootDir.resolve("tome")
+        val tomeDir = System.getProperty("voodoo.tomeDir")?.asFile ?: rootDir.resolve("tome")
         val docDir = System.getProperty("voodoo.docDir")?.asFile ?: rootDir.resolve("docs")
         val tomeEnv = initTome(host = host, tomeDir = tomeDir, docDir = docDir)
         logger.debug("tomeEnv: $tomeEnv")
