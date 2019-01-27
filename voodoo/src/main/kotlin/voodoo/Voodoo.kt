@@ -158,8 +158,8 @@ object Voodoo : KLogging() {
             jvm {
                 dependenciesFromCurrentContext(wholeClasspath = true)
 
-                val JDK_HOME = System.getenv("JAVA_HOME")
-                    ?: throw IllegalStateException("please set JAVA_HOME to the installed jdk")
+                val JDK_HOME = System.getProperty("voodoo.jdkHome") ?: System.getenv("JAVA_HOME")
+                    ?: throw IllegalStateException("please pass -Dvoodoo.jdkHome=path/to/jdk or please set JAVA_HOME to the installed jdk")
                 jdkHome(File(JDK_HOME))
             }
         }
