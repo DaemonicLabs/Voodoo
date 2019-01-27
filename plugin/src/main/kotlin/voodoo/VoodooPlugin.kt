@@ -1,5 +1,6 @@
 package voodoo
 
+import org.apache.tools.ant.util.JavaEnvUtils
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
@@ -16,6 +17,7 @@ import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import voodoo.poet.PoetConstants
+import java.io.File
 import java.io.FilenameFilter
 
 open class VoodooPlugin : Plugin<Project> {
@@ -85,6 +87,9 @@ open class VoodooPlugin : Plugin<Project> {
                 packsDir = voodooExtension.getPackDir
             }
 
+            val javac = File(JavaEnvUtils.getJdkExecutable("javac"))
+            val jdkHome = javac.parentFile.parentFile
+
             extensions.configure<SourceSetContainer> {
                 val runtimeClasspath = maybeCreate("main").runtimeClasspath
                 voodooExtension.getPackDir
@@ -97,10 +102,8 @@ open class VoodooPlugin : Plugin<Project> {
                             description = id
                             group = id
 
-//                            logger.lifecycle("jdkHome: ${compileKotlin.kotlinOptions.jdkHome}")
-//                            compileKotlin.kotlinOptions.jdkHome?.let {
-//                                environment("JAVA_HOME", it)
-//                            }
+                            logger.lifecycle("jdkHome: $jdkHome")
+                            systemProperty("voodoo.jdkHome", jdkHome.path)
                             systemProperty("voodoo.rootDir", voodooExtension.getRootDir)
                             systemProperty("voodoo.tomeDir", voodooExtension.getTomeDir)
                             systemProperty("voodoo.docDir", voodooExtension.getDocDir)
@@ -117,9 +120,7 @@ open class VoodooPlugin : Plugin<Project> {
                                 val nestedArgs = arguments.map { it.split(" ") }
                                 args = nestedArgs.reduceRight { acc, list -> acc + "-" + list }
 
-//                                compileKotlin.kotlinOptions.jdkHome?.let {
-//                                    environment("JAVA_HOME", it)
-//                                }
+                                systemProperty("voodoo.jdkHome", jdkHome.path)
                                 systemProperty("voodoo.rootDir", voodooExtension.getRootDir)
                                 systemProperty("voodoo.tomeDir", voodooExtension.getTomeDir)
                                 systemProperty("voodoo.docDir", voodooExtension.getDocDir)
