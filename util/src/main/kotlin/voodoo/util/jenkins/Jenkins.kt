@@ -27,7 +27,7 @@ suspend fun downloadVoodoo(
     binariesDir: File
 ): File {
     val moduleName = "${if (bootstrap) "bootstrap-" else ""}$component"
-    val fileRegex = "$moduleName-[^-]*(?!-fat)\\.jar"
+    val fileRegex = "$moduleName.*\\.jar"
 
     val server = JenkinsServer(serverUrl)
     val jenkinsJob = server.getJob(job, useragent)!!
