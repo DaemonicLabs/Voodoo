@@ -12,9 +12,14 @@ import voodoo.util.Directories
 abstract class AbstractPack : KLogging() {
     abstract val label: String
 
+    /***
+     * @param modpack modpack to package
+     * @param output target folder
+     * @param clean whether to delete old files
+     */
     abstract suspend fun pack(
         modpack: LockPack,
-        target: String?,
+        output: String?,
         clean: Boolean = true
     )
 

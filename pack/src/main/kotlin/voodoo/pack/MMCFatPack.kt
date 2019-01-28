@@ -21,14 +21,14 @@ import voodoo.util.packToZip
 import voodoo.util.pool
 
 object MMCFatPack : AbstractPack() {
-    override val label = "MultiMC Packer (frozen pack)"
+    override val label = "MultiMC Pack (frozen pack)"
 
     override suspend fun pack(
         modpack: LockPack,
-        target: String?,
+        output: String?,
         clean: Boolean
     ) {
-        val targetDir = modpack.rootDir.resolve(target ?: ".multimc")
+        val targetDir = modpack.rootDir.resolve(output ?: ".multimc")
         val cacheDir = directories.cacheHome
         val instanceDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id)
         val title = modpack.title.blankOr ?: modpack.id

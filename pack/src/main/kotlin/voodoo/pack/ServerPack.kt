@@ -10,14 +10,14 @@ import voodoo.util.toJson
  */
 
 object ServerPack : AbstractPack() {
-    override val label = "Server SKPack"
+    override val label = "Server SK Pack"
 
     override suspend fun pack(
         modpack: LockPack,
-        target: String?,
+        output: String?,
         clean: Boolean
     ) {
-        val serverDir = modpack.rootDir.resolve(target ?: "server_${modpack.id}")
+        val serverDir = modpack.rootDir.resolve(output ?: "server_${modpack.id}")
 
         if (clean) {
             logger.info("cleaning server directory $serverDir")
