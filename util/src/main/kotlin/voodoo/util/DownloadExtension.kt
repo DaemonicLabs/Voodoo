@@ -1,14 +1,13 @@
 package voodoo.util
 
 import com.github.kittinunf.fuel.core.FuelManager
-import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.fuel.core.extensions.cUrlString
-import com.github.kittinunf.fuel.core.interceptors.validatorResponseInterceptor
 import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
 import com.github.kittinunf.result.Result
 import kotlinx.coroutines.delay
 import mu.KLogger
 import mu.KLogging
+import voodoo.util.Downloader.manager
 import voodoo.util.redirect.fixedRedirectResponseInterceptor
 import java.io.File
 import kotlin.system.exitProcess
@@ -21,19 +20,16 @@ object Downloader : KLogging() {
     const val useragent =
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" // ""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
-    val manager = FuelManager()
-
-    init {
-        manager.removeAllResponseInterceptors()
-        manager.addResponseInterceptor(fixedRedirectResponseInterceptor(manager))
-        manager.addResponseInterceptor(validatorResponseInterceptor(200..299))
+    val manager = FuelManager().apply {
+        removeAllResponseInterceptors()
+        addResponseInterceptor(fixedRedirectResponseInterceptor(this))
     }
 }
 
 suspend fun File.download(
     url: String,
     cacheDir: File,
-    validator: (file: File) -> Boolean = { false },
+    canSkipDownload: (file: File) -> Boolean = { true },
     logger: KLogger = Downloader.logger,
     retries: Int = 3
 ) {
@@ -43,11 +39,16 @@ suspend fun File.download(
     if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
 
     logger.debug("validating $cacheFile existence and hash")
-    if (cacheFile.exists() && cacheFile.isFile && validator(cacheFile)) {
-        logger.info("file: $cacheFile exists and validated")
+    if (cacheFile.exists() && cacheFile.isFile && canSkipDownload(cacheFile)) {
+        logger.info("file: $cacheFile exists and can skip download")
     } else {
         val (request, response, result) = try {
-            Downloader.manager.request(Method.GET, url)
+            manager.download(url)
+                .fileDestination { response, request ->
+                    cacheDir.mkdirs()
+                    cacheFile.parentFile.mkdirs()
+                    cacheFile
+                }
                 .header("User-Agent" to Downloader.useragent)
                 .awaitByteArrayResponseResult()
         } catch (e: ClassCastException) {
@@ -61,9 +62,7 @@ suspend fun File.download(
 
         when (result) {
             is Result.Success -> {
-                cacheDir.mkdirs()
-                cacheFile.parentFile.mkdirs()
-                cacheFile.writeBytes(result.value)
+//                cacheFile.writeBytes(result.value)
             }
             is Result.Failure -> {
                 logger.error("invalid statusCode {} from {}", response.statusCode, url.encoded)
@@ -72,10 +71,16 @@ suspend fun File.download(
                 logger.error("response: $response")
 //                    logger.error("content: {}", result.component1())
                 logger.error("error: {}", result.error.toString())
-                if(retries > 0) {
+                if (retries > 0) {
                     logger.error("attempting to download again in 500 ms")
                     delay(500)
-                    download(url = url, cacheDir = cacheDir, validator = validator, logger = logger, retries = retries - 1)
+                    download(
+                        url = url,
+                        cacheDir = cacheDir,
+                        canSkipDownload = canSkipDownload,
+                        logger = logger,
+                        retries = retries - 1
+                    )
                 }
 
                 logger.error(result.error.exception) { "Download Failed" }
@@ -95,10 +100,10 @@ suspend fun File.download(
             cacheFile.copyTo(this, overwrite = true)
     }
 
-    if (!validator(cacheFile)) {
+    if (!canSkipDownload(cacheFile)) {
         cacheFile.delete()
     }
-    if (!validator(this)) {
+    if (!canSkipDownload(this)) {
         logger.error("$this did not pass validation")
     }
 

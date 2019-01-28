@@ -60,10 +60,8 @@ object GradleSetup : KLogging() {
                 maven(url = "https://kotlin.bintray.com/kotlinx") {
                     name = "kotlinx"
                 }
-                maven(url = "https://jitpack.io") {
-                    name = "jitpack"
-                }
                 mavenCentral()
+                jcenter()
             }
 
             dependencies {
@@ -87,10 +85,8 @@ object GradleSetup : KLogging() {
                     maven(url = "https://kotlin.bintray.com/kotlinx") {
                         name = "kotlinx"
                     }
-                    maven(url = "https://jitpack.io") {
-                        name = "jitpack"
-                    }
                     mavenCentral()
+                    jcenter()
                     gradlePluginPortal()
                 }
             }

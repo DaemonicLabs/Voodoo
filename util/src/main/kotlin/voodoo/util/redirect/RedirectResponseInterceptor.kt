@@ -2,6 +2,7 @@ package voodoo.util.redirect
 
 import com.github.kittinunf.fuel.core.Encoding
 import com.github.kittinunf.fuel.core.FuelManager
+import com.github.kittinunf.fuel.core.Headers
 import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.fuel.core.Request
 import com.github.kittinunf.fuel.core.Response
@@ -23,35 +24,44 @@ fun fixedRedirectResponseInterceptor(manager: FuelManager) =
                 return@inner next(request, response)
             }
 
-            val redirectedUrl = response.headers["Location"]
+            val redirectedUrl = response[Headers.LOCATION]
+                .ifEmpty { response[Headers.CONTENT_LOCATION] }
+                .lastOrNull()
+                ?.encoded
+
+            if (redirectedUrl.isNullOrEmpty()) {
+                return@inner next(request, response)
+            }
+
+            val newUrl = if (URI(redirectedUrl.split('?').first()).isAbsolute) URL(redirectedUrl) else URL(
+                request.url,
+                redirectedUrl
+            )
 
             val newMethod = when {
                 response.statusCode in redirectStatusWithGets -> Method.GET
                 else -> request.method
             }
 
-            val redirectedUrlString = redirectedUrl.first().encoded
-            if (!redirectedUrlString.isEmpty()) {
-                val newUrl = if (URI(redirectedUrlString).isAbsolute) {
-                    URL(redirectedUrlString)
-                } else {
-                    URL(request.url, redirectedUrlString)
+            val encoding = Encoding(httpMethod = newMethod, urlString = newUrl.toString())
+            val newRequest = manager.request(encoding)
+                .header(Headers.from(request.headers))
+                .also {
+                    // Check whether it is the same host or not
+                    if (newUrl.host != request.url.host)
+                        it.headers.remove(Headers.AUTHORIZATION)
                 }
-                val newHeaders = request.headers.toMutableMap()
-
-                val encoding = Encoding(httpMethod = newMethod, urlString = newUrl.toString())
-
-                // check whether it is the same host or not
-                if (newUrl.host != request.url.host) {
-                    newHeaders.remove("Authorization")
+                .requestProgress(request.executionOptions.requestProgress)
+                .responseProgress(request.executionOptions.responseProgress)
+                .let {
+                    if (newMethod === request.method && !request.body.isEmpty() && !request.body.isConsumed())
+                        it.body(request.body)
+                    else
+                        it
                 }
 
-                // redirect
-                next(request, manager.request(encoding).header(newHeaders).response().second)
-            } else {
-                // there is no location detected, just passing along
-                next(request, response)
-            }
+            // Redirect
+            next(request, newRequest.response().second)
         }
     }
 
