@@ -49,7 +49,7 @@ allprojects {
         }
     }
 
-//    kotlinDslPluginOptions.progressive.set(ProgressiveModeState.ENABLED)
+    group = "moe.nikky.voodoo${Env.branch}"
 }
 
 subprojects {
@@ -225,7 +225,7 @@ subprojects {
                     from(components["java"])
                     artifact(sourcesJar.get())
                     artifact(javadocJar.get())
-                    groupId = "moe.nikky.voodoo${Env.branch}"
+//                    groupId = "moe.nikky.voodoo${Env.branch}"
                     artifactId = project.name.toLowerCase()
                 }
             }
@@ -242,9 +242,7 @@ subprojects {
             }
         }
     }
-
 }
-
 tasks.withType<Wrapper> {
     gradleVersion = Gradle.version
     distributionType = Gradle.distributionType // Wrapper.DistributionType.ALL
