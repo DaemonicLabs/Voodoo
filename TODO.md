@@ -4,8 +4,12 @@ use a tweakClass for forge (bundle bootstrapper in tweakClass ?)
 
 # MCUpdater support
 
-- [ ] ensure url pointers work for fastpack
-- [ ] download fastpack and execute it as `java -jar` process
+- [ ] manual xml building
+  - [ ] use same urls as skcraft
+  - [ ] add synthetic Modules for config and features
+- [ ] fastpack
+  - [ ] ensure url pointers work for fastpack
+  - [ ] download fastpack and execute it as `java -jar` process
 
 # Scripting
 
@@ -21,16 +25,14 @@ use a tweakClass for forge (bundle bootstrapper in tweakClass ?)
 
 # documentation generator | tome
 
-use html-dsl in .kts files
-maybe css-dsl
-search for markdown-dsl or make one
+- [x] use html-dsl in .kts files, maybe css-dsl
+- [ ] search for markdown-dsl or make one
+- [x] copy generated files into docs folder
 
-copy generated files into github pages docs folder
-or other targets
-
-## diff
+# diff / history
 
 copy state of the pack from git history, using tags
+clone tag into subdirectory
 
 diff on lockfilles
 
@@ -62,10 +64,12 @@ suggest named forge versions (copy-paste ready)
 
 move more deployment options into the modpack configuration
 examples:
- - skcraft
- - multimc
- - curse
+ - [ ] skcraft
+ - [x] multimc
+ - [ ] curse
    deployment: `id`, `name`, `description`
+
+**make sure to keep these options pack-specific and setup-agnostic**
 
 # multim mc integration
 

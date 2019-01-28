@@ -24,7 +24,7 @@ object Kotlin {
 }
 
 object Coroutines {
-    const val version = "1.1.0-alpha"
+    const val version = "1.1.1"
     val dependency = create(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = version)
 }
 
@@ -41,9 +41,8 @@ object Kotlinpoet {
 }
 
 object Fuel {
-    const val version = "bfbe44ca48"
-    private const val group = "com.github.NikkyAi.Fuel"
-//    private const val group = "com.github.kittinunf.Fuel"
+    const val version = "2.0.1"
+    private const val group = "com.github.kittinunf.fuel"
     val dependency = create(group = group, name = "fuel", version = version)
     val dependencyCoroutines = create(group = group, name = "fuel-coroutines", version = version)
     val dependencySerialization = create(group = group, name = "fuel-kotlinx-serialization", version = version)
