@@ -31,11 +31,11 @@ import java.time.format.DateTimeFormatter
 
 object SKPack : AbstractPack() {
 
-    override val label = "SK Packer"
+    override val label = "SK Pack"
 
     override suspend fun pack(
         modpack: LockPack,
-        target: String?,
+        output: String?,
         clean: Boolean
     ) {
         val cacheDir = directories.cacheHome
@@ -184,8 +184,8 @@ object SKPack : AbstractPack() {
 
             workspacePath.writeText(Json.indented.stringify(SKWorkspace.serializer(), workspace))
 
-            val targetDir = if (target != null) {
-                modpack.rootDir.resolve(target)
+            val targetDir = if (output != null) {
+                modpack.rootDir.resolve(output)
             } else {
                 workspaceDir.resolve("_upload")
             }

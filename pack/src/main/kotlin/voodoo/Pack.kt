@@ -5,12 +5,12 @@ import com.xenomachina.argparser.default
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.pack.CursePack
+import voodoo.pack.MCUFastPack
 import voodoo.pack.MMCFatPack
 import voodoo.pack.MMCPack
 import voodoo.pack.MMCStaticPack
 import voodoo.pack.SKPack
 import voodoo.pack.ServerPack
-import java.io.File
 import kotlin.system.exitProcess
 
 /**
@@ -24,6 +24,7 @@ object Pack : KLogging() {
         "mmc" to MMCPack,
         "mmc-static" to MMCStaticPack,
         "mmc-fat" to MMCFatPack,
+        "mcu-fastpack" to MCUFastPack,
         "server" to ServerPack,
         "curse" to CursePack
     )
@@ -53,7 +54,7 @@ object Pack : KLogging() {
 
     suspend fun pack(modpack: LockPack, vararg args: String) {
         logger.info("parsing arguments")
-        val arguments = ArgumentsForDSL(ArgParser(args))
+        val arguments = Arguments(ArgParser(args))
 
         arguments.run {
             logger.info("loading entries")
@@ -66,7 +67,7 @@ object Pack : KLogging() {
 
             packer.pack(
                 modpack = modpack,
-                target = target,
+                output = target,
                 clean = true
             )
             logger.info("finished packaging")
@@ -74,24 +75,6 @@ object Pack : KLogging() {
     }
 
     private class Arguments(parser: ArgParser) {
-        val methode by parser.positional(
-            "METHODE",
-            help = "format to package into"
-        ) { this.toLowerCase() }
-            .default("")
-
-        val modpackLockFile by parser.positional(
-            "FILE",
-            help = "input pack .lock.hjson"
-        ) { File(this) }
-
-        val targetFolder by parser.storing(
-            "--output", "-o",
-            help = "output rootFolder"
-        ).default<String?>(null)
-    }
-
-    private class ArgumentsForDSL(parser: ArgParser) {
         val methode by parser.positional(
             "METHODE",
             help = "format to package into"

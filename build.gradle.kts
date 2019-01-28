@@ -225,7 +225,6 @@ subprojects {
                     from(components["java"])
                     artifact(sourcesJar.get())
                     artifact(javadocJar.get())
-//                    groupId = "moe.nikky.voodoo${Env.branch}"
                     artifactId = project.name.toLowerCase()
                 }
             }

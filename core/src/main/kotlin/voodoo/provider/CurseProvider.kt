@@ -42,7 +42,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
             resolved += entry.id
         }
         // TODO: move into appropriate place or remove
-        // this is currently just used to validate that there is no entries getting resolved multiple times
+        //  this is currently just used to validate that there is no entries getting resolved multiple times
 
         synchronized(resolved) {
             val count = resolved.count { entry.id == it }
@@ -193,8 +193,9 @@ object CurseProvider : ProviderBase("Curse Provider") {
         targetFile.download(
             addonFile.downloadURL,
             cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),
-            validator = { file ->
-                addonFile.packageFingerprint.toUInt() != MurmurHash2.computeFileHash(file.path, true)
+            canSkipDownload = { file ->
+                file.exists()
+//                addonFile.packageFingerprint.toUInt() != MurmurHash2.computeFileHash(file.path, true)
             }
         )
         val fileFingerprint = MurmurHash2.computeFileHash(targetFile.path, true)

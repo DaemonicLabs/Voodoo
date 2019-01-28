@@ -35,11 +35,11 @@ import voodoo.util.packToZip
  */
 
 object CursePack : AbstractPack() {
-    override val label = "SK Packer"
+    override val label = "Curse Pack"
 
     override suspend fun pack(
         modpack: LockPack,
-        target: String?,
+        output: String?,
         clean: Boolean
     ) {
         val cacheDir = directories.cacheHome

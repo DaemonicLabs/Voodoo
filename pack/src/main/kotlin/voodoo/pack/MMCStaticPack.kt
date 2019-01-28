@@ -7,14 +7,14 @@ import voodoo.util.packToZip
 import kotlin.system.exitProcess
 
 object MMCStaticPack : AbstractPack() {
-    override val label = "MultiMC Static Packer"
+    override val label = "MultiMC Static Pack"
 
     override suspend fun pack(
         modpack: LockPack,
-        target: String?,
+        output: String?,
         clean: Boolean
     ) {
-        val targetDir = modpack.rootDir.resolve(target ?: ".multimc")
+        val targetDir = modpack.rootDir.resolve(output ?: ".multimc")
         val cacheDir = directories.cacheHome.resolve("mmc")
         val instanceDir = cacheDir.resolve(modpack.id)
         instanceDir.deleteRecursively()

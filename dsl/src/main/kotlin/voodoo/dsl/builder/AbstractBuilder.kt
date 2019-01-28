@@ -25,7 +25,7 @@ abstract class AbstractBuilder<P : ProviderBase>(
     var side by property(entry::side)
 
     // TODO: depenencies
-    // TODO: replaceDependencies
+    //  replaceDependencies
 
     var packageType by property(entry::packageType)
     //    var transient by property(entry::transient::get, entry::transient::set)
