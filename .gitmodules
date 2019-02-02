@@ -1,3 +1,6 @@
 [submodule "wiki"]
 	path = wiki
 	url = https://github.com/DaemonicLabs/Voodoo.wiki.git
+[submodule "samples"]
+	path = samples
+	url = https://github.com/DaemonicLabs/VoodooSamples.git
