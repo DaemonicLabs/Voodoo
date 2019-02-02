@@ -25,90 +25,6 @@ import kotlin.system.exitProcess
 
 private val logger = KotlinLogging.logger {}
 
-private fun ModPack.getDependenciesCall(entryId: String): List<Entry> {
-    val modpack = this
-    val entry = modpack.findEntryById(entryId) ?: return emptyList()
-    val result = mutableListOf(entry)
-    for ((depType, entryList) in entry.dependencies) {
-        if (depType == DependencyType.EMBEDDED) continue
-        for (depName in entryList) {
-            result += this.getDependencies(depName)
-        }
-    }
-    return result
-}
-
-private val ModPack.getDependencies: (entryName: String) -> List<Entry>
-    get() = ::getDependenciesCall.memoize()
-
-private fun ModPack.resolveFeatureDependencies(entry: Entry, defaultName: String) {
-    val entryFeature = entry.feature ?: return
-    val featureName = entry.name.takeIf { it.isNotBlank() } ?: defaultName
-    // find feature with matching id
-    var feature = features.find { f -> f.feature.name == featureName }
-
-    // TODO: merge existing features with matching id
-    if (feature == null) {
-        var description = entryFeature.description
-        if (description.isEmpty()) description = entry.description
-        feature = ExtendedFeaturePattern(
-            entries = setOf(entry.id),
-            files = entryFeature.files,
-            feature = Feature(
-                name = featureName,
-                selected = entryFeature.selected,
-                description = description,
-                recommendation = entryFeature.recommendation
-            )
-        )
-        processFeature(this, feature)
-        features += feature
-        entry.optional = true
-    }
-    logger.debug("processed ${entry.id}")
-}
-
-/**
- * iterates through all entries and set
- */
-private fun processFeature(modPack: ModPack, feature: ExtendedFeaturePattern) {
-    logger.info("processing feature: $feature")
-    var processedEntries = emptyList<String>()
-    var processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
-    while (processableEntries.isNotEmpty()) {
-        processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
-        for (entry_id in processableEntries) {
-            logger.info("searching $entry_id")
-            val entry = modPack.findEntryById(entry_id)
-            if (entry == null) {
-                logger.warn("$entry_id not in entries")
-                processedEntries += entry_id
-                continue
-            }
-            var depNames = entry.dependencies.values.flatten()
-            logger.info("depNames: $depNames")
-            depNames = depNames.filter { dependencyId ->
-                val dependants = modPack.entrySet.filter { otherEntry ->
-                    otherEntry.dependencies[DependencyType.REQUIRED]?.any {
-                        it == dependencyId
-                    } ?: false
-                }
-                val allOptionalDependants = dependants.all {
-                        filteredEntry -> filteredEntry.optional
-                }
-                allOptionalDependants && modPack.entrySet.any { entry -> entry.id == dependencyId && entry.optional }
-            }
-            logger.info("filtered dependency names: $depNames")
-            for (dep in depNames) {
-                if (!(feature.entries.contains(dep))) {
-                    feature.entries += dep
-                }
-            }
-            processedEntries += entry_id
-        }
-    }
-}
-
 suspend fun resolve(
     modPack: ModPack,
     noUpdate: Boolean = false,
@@ -145,7 +61,7 @@ suspend fun resolve(
 
     if (!noUpdate) {
         // remove all transient entries
-        modPack.lockEntrySet.removeIf { (id, _) ->
+        modPack.lockEntrySet.removeIf { (id) ->
             modPack.findEntryById(id)?.transient ?: true
         }
     }
@@ -239,50 +155,11 @@ suspend fun resolve(
     logger.info("unresolved ids: $unresolvedIDs")
     logger.info("resolved ids: ${modPack.lockEntrySet.map { it.id }}")
 
-    modPack.features.clear()
-
     modPack.entrySet.filter {
         modPack.findLockEntryById(it.id) == null
     }.takeUnless { it.isEmpty() }?.let {
         throw IllegalStateException("unresolved entries: $it")
     }
-
-    for (entry in modPack.entrySet) {
-        modPack.resolveFeatureDependencies(
-            entry, modPack.findLockEntryById(entry.id)?.name
-                ?: throw NullPointerException("cannot find lockentry for ${entry.id}")
-        )
-    }
-
-    // resolve features
-    for (feature in modPack.features) {
-        logger.info("processing feature ${feature.feature.name}")
-        for (id in feature.entries) {
-            logger.info("processing feature entry $id")
-            val featureEntry = modPack.findEntryById(id)!!
-            val dependencies = modPack.getDependencies(id)
-            logger.info("required dependencies of $id: ${featureEntry.dependencies[DependencyType.REQUIRED]}")
-            logger.info("optional dependencies of $id: ${featureEntry.dependencies[DependencyType.OPTIONAL]}")
-            feature.entries += dependencies.asSequence().filter { entry ->
-                logger.debug("  testing ${entry.id}")
-                // find all other entries that depend on this dependency
-                val dependants = modPack.entrySet.filter { otherEntry ->
-                    otherEntry.dependencies[DependencyType.REQUIRED]?.any {
-                        it == entry.id
-                    } ?: false
-                }
-                logger.debug("  dependants to optional of ${entry.id}: ${dependants.associate { it.id to it.optional }}")
-                val allOptionalDependants = dependants.all { filteredEntry -> filteredEntry.optional }
-                entry.optional && !feature.entries.contains(entry.id) && allOptionalDependants
-            }.map { it.id }
-        }
-        logger.info("build entry: ${feature.entries.first()}")
-        val mainEntry = modPack.findEntryById(feature.entries.first())!!
-        feature.feature.description = mainEntry.description
-
-        logger.info("processed feature ${feature.feature.name}")
-    }
-
 //    exitProcess(-1)
 
     // TODO: rethink history, since packs are now mainly file based

@@ -1,6 +1,5 @@
 package voodoo.mmc
 
-import com.skcraft.launcher.model.modpack.Feature
 import com.skcraft.launcher.model.modpack.Recommendation
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
@@ -12,7 +11,6 @@ import voodoo.util.Directories
 import voodoo.util.Platform
 import voodoo.util.json
 import voodoo.util.serializer.FileSerializer
-import voodoo.util.toJson
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Component
@@ -57,7 +55,10 @@ object MMCUtil : KLogging() {
         val mmcConfigurationFile = configHome.resolve("multimc.hjson")
         logger.info("loading multimc config $mmcConfigurationFile")
         mmcConfig = when {
-            mmcConfigurationFile.exists() -> jsonWithDefaults.parse(MMCConfiguration.serializer(), mmcConfigurationFile.readText())
+            mmcConfigurationFile.exists() -> jsonWithDefaults.parse(
+                MMCConfiguration.serializer(),
+                mmcConfigurationFile.readText()
+            )
             else -> MMCConfiguration()
         }
         logger.info("loaded config: $mmcConfig")
@@ -228,14 +229,14 @@ object MMCUtil : KLogging() {
     }
 
     fun selectFeatures(
-        features: List<Feature>,
+        selectables: List<MMCSelectable>,
         previousSelection: Map<String, Boolean>,
         name: String,
         version: String,
         forceDisplay: Boolean,
         updating: Boolean
     ): Pair<Map<String, Boolean>, Boolean> {
-        if (features.isEmpty() && !forceDisplay) {
+        if (selectables.isEmpty() && !forceDisplay) {
             logger.info("no selectable features")
             return Pair(mapOf(), false)
         }
@@ -244,13 +245,13 @@ object MMCUtil : KLogging() {
             UIManager.getSystemLookAndFeelClassName()
         )
 
-        logger.debug { features }
+        logger.debug { selectables }
         logger.debug { previousSelection }
 
-        val toggleButtons = features.associateBy({
-            it.name
+        val toggleButtons = selectables.associateBy({
+            it.id
         }, {
-            JToggleButton(it.name, previousSelection[it.name] ?: it.selected)
+            JToggleButton(it.name, previousSelection[it.id] ?: it.selected)
                 .apply {
                     horizontalAlignment = SwingConstants.RIGHT
                 }
@@ -268,8 +269,8 @@ object MMCUtil : KLogging() {
                 val panel = JPanel()
                 panel.layout = GridBagLayout()
 
-                val setter = features.asSequence().sortedBy { it.name }.mapIndexed { row, feature ->
-                    val indicator = JCheckBox("", toggleButtons[feature.name]!!.isSelected)
+                val setter = selectables.asSequence().sortedBy { it.name }.mapIndexed { row, optionalEntry ->
+                    val indicator = JCheckBox("", toggleButtons.getValue(optionalEntry.id).isSelected)
                     panel.add(indicator,
                         GridBagConstraints().apply {
                             gridx = 0
@@ -282,9 +283,9 @@ object MMCUtil : KLogging() {
                         }
                     )
 
-                    val toggle = toggleButtons[feature.name]!!.apply {
+                    val toggle = toggleButtons.getValue(optionalEntry.id).apply {
                         alignmentX = Component.RIGHT_ALIGNMENT
-                        toolTipText = feature.name
+                        toolTipText = optionalEntry.name
                     }
 
                     fun select(selected: Boolean) {
@@ -310,7 +311,7 @@ object MMCUtil : KLogging() {
                         }
                     )
 
-                    val recommendation = when (feature.recommendation) {
+                    val recommendation = when (optionalEntry.skRecommendation) {
                         Recommendation.starred -> {
                             val orange = Color(0xFFd09b0d.toInt())
                             JLabel("★").apply {
@@ -339,8 +340,8 @@ object MMCUtil : KLogging() {
                         }
                     )
 
-                    if (!feature.description.isBlank()) {
-                        val descriptionText = JLabel("<html>${feature.description}</html>")
+                    if (!optionalEntry.description.isBlank()) {
+                        val descriptionText = JLabel("<html>${optionalEntry.description}</html>")
                         panel.add(descriptionText,
                             GridBagConstraints().apply {
                                 gridx = 3
@@ -353,7 +354,7 @@ object MMCUtil : KLogging() {
                             }
                         )
                     }
-                    feature.name to ::select
+                    optionalEntry.id to ::select
                 }.toList().toMap()
 
                 val scrollPane = JScrollPane(panel)
@@ -362,8 +363,10 @@ object MMCUtil : KLogging() {
 
                 val buttonResetDefault = JButton("Reset to Default").apply {
                     addActionListener {
-                        setter.forEach { (name, function) ->
-                            val selected = features.find { feature -> feature.name == name }!!.selected
+                        setter.forEach { (id, function) ->
+                            val selected = selectables.find { optionalEntry ->
+                                optionalEntry.id == id
+                            }!!.selected
                             function(selected)
                         }
                     }
@@ -378,9 +381,9 @@ object MMCUtil : KLogging() {
                 })
                 val buttonResetLast = JButton("Reset to Last").apply {
                     isEnabled = previousSelection.isNotEmpty()
-                    addActionListener { _ ->
-                        setter.forEach { (name, function) ->
-                            val selected = features.find { it.name == name }!!.selected
+                    addActionListener {
+                        setter.forEach { (id, function) ->
+                            val selected = selectables.find { it.id == id }!!.selected
                             function(previousSelection[name] ?: selected)
                         }
                     }
@@ -488,6 +491,6 @@ object MMCUtil : KLogging() {
         // save statw
         mmcStateFile.writeText(json.stringify(MMCState.serializer(), MMCState(bounds = Bounds(dialog.bounds))))
 
-        return features.associateBy({ it.name }, { toggleButtons[it.name]!!.isSelected }) to reinstall
+        return selectables.associateBy({ it.id }, { toggleButtons.getValue(it.id).isSelected }) to reinstall
     }
 }

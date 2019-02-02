@@ -8,7 +8,7 @@ import org.gradle.api.tasks.options.Option
 import java.io.File
 
 open class VoodooTask : JavaExec() {
-    //TODO: pass custom root, pack and tome directories
+//    val downloadVoodooTask: DownloadVoodooTask = project.tasks.getByName("downloadVoodoo", DownloadVoodooTask::class)
 
     @Input
     @Option(option = "script", description = "voodoo script file")
@@ -17,6 +17,7 @@ open class VoodooTask : JavaExec() {
     init {
         group = "voodoo"
         main = "voodoo.Voodoo"
+//        dependsOn(downloadVoodooTask)
     }
 
     @TaskAction

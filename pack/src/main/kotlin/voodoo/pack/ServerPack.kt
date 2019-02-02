@@ -3,6 +3,7 @@ package voodoo.pack
 import voodoo.data.lock.LockPack
 import voodoo.util.jenkins.downloadVoodoo
 import voodoo.util.toJson
+import java.io.File
 
 /**
  * Created by nikky on 06/05/18.
@@ -12,24 +13,25 @@ import voodoo.util.toJson
 object ServerPack : AbstractPack() {
     override val label = "Server SK Pack"
 
+    // TODO: use different output directory for server, add to plugin
+    override fun File.getOutputFolder(): File = resolve("server")
+
     override suspend fun pack(
         modpack: LockPack,
-        output: String?,
+        output: File,
         clean: Boolean
     ) {
-        val serverDir = modpack.rootDir.resolve(output ?: "server_${modpack.id}")
-
         if (clean) {
-            logger.info("cleaning server directory $serverDir")
-            serverDir.deleteRecursively()
+            logger.info("cleaning server directory $output")
+            output.deleteRecursively()
         }
 
-        serverDir.mkdirs()
+        output.mkdirs()
 
         val localDir = modpack.localFolder
         logger.info("local: $localDir")
         if (localDir.exists()) {
-            val targetLocalDir = serverDir.resolve("local")
+            val targetLocalDir = output.resolve("local")
             modpack.localDir = targetLocalDir.name
 
             if (targetLocalDir.exists()) targetLocalDir.deleteRecursively()
@@ -41,7 +43,7 @@ object ServerPack : AbstractPack() {
         val sourceDir = modpack.sourceFolder // rootFolder.resolve(modpack.rootFolder).resolve(modpack.sourceDir)
         logger.info("mcDir: $sourceDir")
         if (sourceDir.exists()) {
-            val targetSourceDir = serverDir.resolve("src")
+            val targetSourceDir = output.resolve("src")
             modpack.sourceDir = targetSourceDir.name
 
             if (targetSourceDir.exists()) targetSourceDir.deleteRecursively()
@@ -64,16 +66,16 @@ object ServerPack : AbstractPack() {
             }
         }
 
-        val packFile = serverDir.resolve("pack.lock.hjson")
+        val packFile = output.resolve("pack.lock.hjson")
         packFile.writeText(modpack.toJson(LockPack.serializer()))
 
         logger.info("packaging installer jar")
         val installer =
             downloadVoodoo(component = "server-installer", bootstrap = false, binariesDir = directories.cacheHome)
 
-        val serverInstaller = serverDir.resolve("server-installer.jar")
+        val serverInstaller = output.resolve("server-installer.jar")
         installer.copyTo(serverInstaller)
 
-        logger.info("server package ready: ${serverDir.absolutePath}")
+        logger.info("server package ready: ${output.absolutePath}")
     }
 }

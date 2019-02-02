@@ -1,6 +1,7 @@
 package voodoo.dsl.builder
 
 import com.skcraft.launcher.model.modpack.Feature
+import voodoo.data.OptionalData
 import voodoo.data.nested.NestedEntry
 import voodoo.dsl.VoodooDSL
 import voodoo.property
@@ -9,8 +10,8 @@ import java.io.File
 
 @VoodooDSL
 abstract class AbstractBuilder<P : ProviderBase>(
-    open val provider: P,
-    open val entry: NestedEntry
+    val provider: P,
+    val entry: NestedEntry
 ) {
     init {
         entry.provider = provider.id
@@ -33,10 +34,10 @@ abstract class AbstractBuilder<P : ProviderBase>(
     var fileName by property(entry::fileName)
     var validMcVersions by property(entry::validMcVersions)
 
-    fun feature(block: FeatureBuilder.() -> Unit) {
-        val feature = entry.feature?.copy() ?: Feature()
-        val wrapper = FeatureBuilder(feature)
-        wrapper.block()
-        entry.feature = feature
+    fun optional(block: OptionalBuilder.() -> Unit) {
+        val optionalData = entry.optionalData?.copy() ?: OptionalData()
+        val builder = OptionalBuilder(optionalData)
+        builder.block()
+        entry.optionalData = optionalData
     }
 }

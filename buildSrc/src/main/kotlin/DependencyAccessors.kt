@@ -81,7 +81,7 @@ fun Project.setupDependencies(target: Project = this) {
         rootProject.project(":voodoo") -> {
             dependencies {
                 api(kotlin("stdlib-jdk8", Kotlin.version))
-                implementation(kotlin("scripting-jvm-host", Kotlin.version))
+                implementation(kotlin("scripting-jvm-host-embeddable", Kotlin.version))
                 implementation(kotlin("script-util", Kotlin.version))
 
                 testImplementation(kotlin("test", Kotlin.version))
@@ -202,6 +202,6 @@ fun Project.setupDependencies(target: Project = this) {
                 }
             }
         }
-        else -> throw IllegalStateException("unhandled project ${this@setupDependencies.displayName}")
+        else -> throw IllegalStateException("unhandled project ${this@setupDependencies.name}")
     }
 }

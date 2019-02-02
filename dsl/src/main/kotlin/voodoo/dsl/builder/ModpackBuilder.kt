@@ -1,5 +1,6 @@
 package voodoo.dsl.builder
 
+import mu.KLogging
 import voodoo.data.PackOptions
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
@@ -11,7 +12,7 @@ import voodoo.readOnly
 @VoodooDSL
 open class ModpackBuilder(
     val pack: NestedPack
-) {
+): KLogging() {
     var mcVersion by property(pack::mcVersion)
     var title by property(pack::title)
     var version by property(pack::version)

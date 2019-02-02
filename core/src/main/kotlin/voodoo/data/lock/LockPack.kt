@@ -1,6 +1,5 @@
 package voodoo.data.lock
 
-import com.skcraft.launcher.model.ExtendedFeaturePattern
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Optional
@@ -10,6 +9,7 @@ import mu.KLogging
 import voodoo.data.PackOptions
 import voodoo.data.Side
 import voodoo.data.UserFiles
+import voodoo.data.curse.DependencyType
 import voodoo.forge.ForgeUtil
 import voodoo.markdownTable
 import voodoo.util.blankOr
@@ -36,8 +36,6 @@ data class LockPack(
     @Optional var userFiles: UserFiles = UserFiles(),
     @Optional var localDir: String = "local",
     @Optional var sourceDir: String = "src", // id, //"src-$id",
-    @Optional
-    val features: List<ExtendedFeaturePattern> = emptyList(),
     @Optional var packOptions: PackOptions = PackOptions()
 ) {
     companion object : KLogging() {
@@ -46,7 +44,7 @@ data class LockPack(
             .filter {
                 it.isFile && it.name.endsWith(".lock.hjson")
             }
-            .map { LockEntry.loadEntry(it) to it }
+            .map { LockEntry.loadEntry(it, srcDir) to it }
 
         fun parse(packFile: File, rootDir: File): LockPack {
             if (!rootDir.isAbsolute) {
@@ -79,7 +77,7 @@ data class LockPack(
         LockPack.parseFiles(srcDir)
             .forEach { (lockEntry, file) ->
                 val relFile = file.relativeTo(srcDir)
-                lockEntry.serialFile = relFile
+                lockEntry.folder = relFile.parentFile
                 lockEntry.parent = this
                 addOrMerge(lockEntry) { _, newEntry -> newEntry }
             }
@@ -146,5 +144,44 @@ data class LockPack(
         } ?: entry
         entrySet += result
         return result
+    }
+
+    @Transient
+    val optionalEntries
+            get() = entrySet.filter { it.optional }
+
+    fun getDependants(entryId: String, dependencyType: DependencyType): List<LockEntry> {
+        return entrySet.filter { it.dependencies[dependencyType]?.contains(entryId) ?: false }
+    }
+
+    @Transient
+    private val optionalCache = mutableMapOf<String, Boolean>()
+
+    fun isEntryOptional(entryId: String): Boolean {
+        return optionalCache.computeIfAbsent(entryId) {
+            val entry = findEntryById(entryId)!!
+
+            // find all entries that require this one
+            val dependants = getDependants(entry.id, DependencyType.REQUIRED)
+            val allOptionalDependants = dependants.all { dep ->
+                isEntryOptional(dep.id)
+            }
+
+            allOptionalDependants && entry.optional
+        }
+    }
+
+    @Transient
+    private val dependencyCache = mutableMapOf<Pair<String, DependencyType>, List<LockEntry>>()
+    fun dependencies(entryId: String, dependencyType: DependencyType): List<LockEntry> {
+        val entry = findEntryById(entryId)!!
+        return dependencyCache.computeIfAbsent(entryId to dependencyType) {
+            entry.dependencies[dependencyType]?.map { findEntryById(it)!! } ?: listOf()
+        }
+    }
+
+    fun isDependencyOf(entryId: String, parentId: String, dependencyType: DependencyType): Boolean {
+        val dependencies = dependencies(parentId, dependencyType)
+        return dependencies.any { it.id == entryId || isDependencyOf(entryId, it.id, dependencyType) }
     }
 }

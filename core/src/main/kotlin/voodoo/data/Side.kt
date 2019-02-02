@@ -13,7 +13,7 @@ enum class Side(@Transient val flag: Int) {
 // //        override val descriptor = PrimitiveDesc("Side")
 //        override fun deserialize(input: Decoder) = Side.valueOf(input.readStringValue())
 //        override fun serialize(output: Encoder, obj: Side) {
-//            output.writeStringValue(obj.name)
+//            output.writeStringValue(obj.displayName)
 //        }
 //    }
 }

@@ -77,7 +77,7 @@ object Server {
                     val (_, _) = provider.download(entry, targetFolder, cacheDir)
                 }
 //                delay(10)
-                logger.info("started job ${entry.name}")
+                logger.info("started job ${entry.displayName}")
             }
         }
 

@@ -6,12 +6,12 @@ import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.provider.Providers
 import voodoo.tome.TomeEnv
-import java.io.StringWriter
+import java.io.File
 
 object Tome : KLogging() {
 
-    suspend fun generate(modpack: ModPack, lockPack: LockPack, tomeEnv: TomeEnv) {
-        val docDir = tomeEnv.docRoot.resolve(modpack.docDir)
+    suspend fun generate(modpack: ModPack, lockPack: LockPack, tomeEnv: TomeEnv, uploadDir: File) {
+        val docDir = tomeEnv.docRoot // .resolve(modpack.docDir)
 
         for ((file, generator) in tomeEnv.generators) {
             logger.info("generating $file")
@@ -26,18 +26,18 @@ object Tome : KLogging() {
         // generate modlist
 
         logger.info("writing modlist")
-        val sw = StringWriter()
-        sw.append(lockPack.report)
-        sw.append("\n")
+        return buildString {
+            append(lockPack.report)
+            append("\n")
 
-        modpack.lockEntrySet.sortedBy { it.name.toLowerCase() }.forEach { entry ->
-            val provider = Providers[entry.provider]
-            sw.append("\n\n")
+            modpack.lockEntrySet.sortedBy { it.displayName.toLowerCase() }.forEach { entry ->
+                val provider = Providers[entry.provider]
+                append("\n\n")
 
-            fun report(entry: LockEntry): String =
-                markdownTable(header = "Mod" to entry.name, content = provider.reportData(entry))
-            sw.append(report(entry))
+                fun report(entry: LockEntry): String =
+                    markdownTable(header = "Mod" to entry.displayName, content = provider.reportData(entry))
+                append(report(entry))
+            }
         }
-        return sw.toString()
     }
 }

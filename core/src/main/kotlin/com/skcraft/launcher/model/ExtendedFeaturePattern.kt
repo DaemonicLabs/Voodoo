@@ -18,33 +18,9 @@ import kotlinx.serialization.set
 @Serializable
 data class ExtendedFeaturePattern(
     var entries: Set<String>,
-    @Serializable(with = Feature.Companion::class)
+//    @Serializable(with = Feature.Companion::class)
     var feature: Feature,
     @Optional
     @Serializable(with = FnPatternList.Companion::class)
     var files: FnPatternList = FnPatternList()
-) {
-    @Serializer(forClass = ExtendedFeaturePattern::class)
-    companion object {
-        override fun serialize(encoder: Encoder, obj: ExtendedFeaturePattern) {
-            val elemOutput = encoder.beginStructure(descriptor)
-            elemOutput.encodeSerializableElement(descriptor, 0, String.serializer().set, obj.entries)
-            elemOutput.encodeSerializableElement(descriptor, 1, Feature.Companion, obj.feature)
-            with(ExtendedFeaturePattern(obj.entries, obj.feature)) {
-                elemOutput.serializeObj(this.files, obj.files, FnPatternList.Companion, 2)
-            }
-            elemOutput.endStructure(descriptor)
-        }
-
-        private fun <T : Any> CompositeEncoder.serializeObj(
-            default: T?,
-            actual: T?,
-            saver: SerializationStrategy<T>,
-            index: Int
-        ) {
-            if (default != actual && actual != null) {
-                this.encodeSerializableElement(descriptor, index, saver, actual)
-            }
-        }
-    }
-}
+)

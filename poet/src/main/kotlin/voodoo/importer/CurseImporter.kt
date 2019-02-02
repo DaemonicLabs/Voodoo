@@ -26,6 +26,7 @@ import voodoo.util.download
 import voodoo.util.pool
 import withProvider
 import java.io.File
+import java.net.URL
 import java.util.UUID
 
 /**
@@ -48,12 +49,16 @@ object CurseImporter : AbstractImporter() {
         val cacheHome = directories.cacheHome.resolve("IMPORT")
         val zipFile = cacheHome.resolve("$tmpName.zip")
         zipFile.deleteRecursively()
-        zipFile.download(sourceUrl, directories.cacheHome.resolve("DIRECT"))
+        val url = URL(sourceUrl)
+        zipFile.download(sourceUrl, directories.cacheHome.resolve("DIRECT").resolve(url.host + url.path.substringBeforeLast('/')))
 
         val extractFolder = cacheHome.resolve(tmpName)
-        unzip(zipFile.absolutePath, extractFolder.absolutePath)
+        unzip(zipFile, extractFolder)
 
-        val manifest = Json.parse(CurseManifest.serializer(), extractFolder.resolve("manifest.json").readText())
+        val manifestFile = extractFolder.resolve("manifest.json")
+        require(manifestFile.exists()) { "$manifestFile does not exist" }
+
+        val manifest = Json.parse(CurseManifest.serializer(), manifestFile.readText())
 
         val validMcVersions = mutableSetOf<String>()
 
@@ -134,9 +139,9 @@ object CurseImporter : AbstractImporter() {
                     if (modsFolder.exists()) {
                         withProvider(LocalProvider).list {
                             val localFolder = rootDir.resolve(local)
-                            logger.info("listing $modsFolder")
+                            this@CurseImporter.logger.info("listing $modsFolder")
                             modsFolder.listFiles { file ->
-                                logger.debug("testing $file")
+                                this@CurseImporter.logger.debug("testing $file")
                                 when {
                                     file == null -> false
                                     !file.isFile -> false
@@ -150,7 +155,7 @@ object CurseImporter : AbstractImporter() {
                                 val targetFile = localFolder.resolve(relative)
                                 targetFile.parentFile.mkdirs()
                                 file.copyTo(targetFile, overwrite = true)
-                                logger.info("adding local entry for ${relative.path}")
+                                this@CurseImporter.logger.info("adding local entry for ${relative.path}")
 
                                 +file.nameWithoutExtension configure {
                                     fileSrc = relative.path

@@ -8,14 +8,15 @@ import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import voodoo.data.Side
+import voodoo.data.curse.DependencyType
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
+import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil
 import voodoo.provider.Providers
 import voodoo.util.Downloader
 import voodoo.util.blankOr
 import voodoo.util.pool
-import java.io.File
 import java.io.IOException
 
 /**
@@ -115,15 +116,17 @@ object MultiMCTester : AbstractTester() {
         } else {
             mapOf<String, Boolean>()
         }
-        val (features, reinstall) = MMCUtil.selectFeatures(
-            modpack.features.map { it.feature }, previousSelection,
-            modpack.title.blankOr
-                ?: modpack.id, modpack.version, forceDisplay = false, updating = featureJson.exists()
+        val (optionals, reinstall) = MMCUtil.selectFeatures(
+            modpack.optionalEntries.map {
+                MMCSelectable(it)
+            },
+            previousSelection,
+            modpack.title.blankOr ?: modpack.id, modpack.version, forceDisplay = false, updating = featureJson.exists()
         )
-        logger.debug("result: features: $features")
-        if (!features.isEmpty()) {
+        logger.debug("result: optionals: $optionals")
+        if (!optionals.isEmpty()) {
             featureJson.createNewFile()
-            featureJson.writeText(json.stringify(featureSerializer, features))
+            featureJson.writeText(json.stringify(featureSerializer, optionals))
         }
         if (reinstall) {
             minecraftDir.deleteRecursively()
@@ -135,11 +138,14 @@ object MultiMCTester : AbstractTester() {
                 launch(pool + CoroutineName(entry.id)) {
                     val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
 
-                    val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
-                    if (!matchedFeatureList.isEmpty()) {
-                        val download = matchedFeatureList.any { features[it.feature.name] ?: false }
-                        if (!download) {
-                            MMCUtil.logger.info("${matchedFeatureList.map { it.feature.name }} is disabled, skipping download")
+                    val matchedOptioalsList = modpack.optionalEntries.filter {
+                        // check if entry is a dependency of any feature
+                        modpack.isDependencyOf(entry.id, it.id, DependencyType.REQUIRED)
+                    }
+                    if (!matchedOptioalsList.isEmpty()) {
+                        val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
+                        if (!selected) {
+                            MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName }} is disabled, skipping download")
                             return@launch
                         }
                     }

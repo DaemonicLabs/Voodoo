@@ -28,6 +28,7 @@ import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
 import voodoo.provider.Providers
 import voodoo.util.packToZip
+import java.io.File
 
 /**
  * Created by nikky on 30/03/18.
@@ -37,13 +38,15 @@ import voodoo.util.packToZip
 object CursePack : AbstractPack() {
     override val label = "Curse Pack"
 
+    override fun File.getOutputFolder(): File = resolve(".curse")
+
     override suspend fun pack(
         modpack: LockPack,
-        output: String?,
+        output: File,
         clean: Boolean
     ) {
         val cacheDir = directories.cacheHome
-        val workspaceDir = modpack.rootDir.resolve(".curse")
+        val workspaceDir = directories.cacheHome.resolve("curse-workspace")
         val modpackDir = workspaceDir.resolve(with(modpack) { "$id-$version" })
         val srcFolder = modpackDir.resolve("overrides")
 
@@ -89,9 +92,7 @@ object CursePack : AbstractPack() {
                 if (entry.side == Side.SERVER) continue
                 jobs += launch(context = coroutineContext + pool) {
                     val folder = entry.serialFile.absoluteFile.parentFile
-                    val required = modpack.features.none { feature ->
-                        feature.entries.any { it == entry.id }
-                    }
+                    val required = !modpack.isEntryOptional(entry.id)
 
                     val provider = Providers[entry.provider]
                     if (provider == CurseProvider) {
@@ -131,7 +132,7 @@ object CursePack : AbstractPack() {
             val html = createHTML().html {
                 body {
                     ul {
-                        for (entry in modpack.entrySet.sortedBy { it.name.toLowerCase() }) {
+                        for (entry in modpack.entrySet.sortedBy { it.displayName.toLowerCase() }) {
                             val provider = Providers[entry.provider]
                             if (entry.side == Side.SERVER) {
                                 continue
@@ -143,15 +144,15 @@ object CursePack : AbstractPack() {
 
                             li {
                                 when {
-                                    projectPage.isNotEmpty() -> a(href = projectPage) { +"${entry.name} $authorString" }
+                                    projectPage.isNotEmpty() -> a(href = projectPage) { +"${entry.displayName} $authorString" }
                                     entry.url.isNotBlank() -> {
                                         +"direct: "
-                                        a(href = entry.url, target = ATarget.blank) { +"${entry.name} $authorString" }
+                                        a(href = entry.url, target = ATarget.blank) { +"${entry.displayName} $authorString" }
                                     }
                                     else -> {
                                         val source =
                                             if (entry.fileSrc.isNotBlank()) "file://" + entry.fileSrc else "unknown"
-                                        +"${entry.name} $authorString (source: $source)"
+                                        +"${entry.displayName} $authorString (source: $source)"
                                     }
                                 }
                             }
@@ -188,7 +189,7 @@ object CursePack : AbstractPack() {
             val manifestFile = modpackDir.resolve("manifest.json")
             manifestFile.writeText(json.stringify(CurseManifest.serializer(), curseManifest))
 
-            val cursePackFile = workspaceDir.resolve(with(modpack) { "$id-$version.zip" })
+            val cursePackFile = output.resolve(with(modpack) { "$id-$version.zip" })
 
             packToZip(modpackDir.toPath(), cursePackFile.toPath())
 

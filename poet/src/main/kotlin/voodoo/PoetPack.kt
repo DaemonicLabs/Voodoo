@@ -49,17 +49,14 @@ object PoetPack : KLogging() {
             entry.description.takeIf { it != default.description }?.let {
                 addStatement("description = %S", it)
             }
-            entry.feature.takeIf { it != default.feature }?.let { feature ->
-                val default = Feature()
+            entry.optionalData.takeIf { it != default.optionalData }?.let { feature ->
+                val defaultFeature = Feature()
                 controlFlow("feature") { featureBuilder ->
-                    feature.name.takeIf { it != default.name }?.let {
-                        featureBuilder.addStatement("name = %S", it)
-                    }
-                    feature.selected.takeIf { it != default.selected }?.let {
+                    feature.selected.takeIf { it != defaultFeature.selected }?.let {
                         featureBuilder.addStatement("selected = %L", it)
                     }
-                    feature.recommendation.takeIf { it != default.recommendation }?.let {
-                        featureBuilder.addStatement("recommendation = %L", it)
+                    feature.skRecommendation.takeIf { it != defaultFeature.recommendation }?.let {
+                        featureBuilder.addStatement("skRecommendation = %L", it)
                     }
                 }
             }
@@ -306,7 +303,7 @@ object PoetPack : KLogging() {
         folder.mkdirs()
         val scriptFile = folder.resolve("${nestedPack.id}.voodoo.kts")
 
-        if(scriptFile.exists()) {
+        if (scriptFile.exists()) {
             logger.error { "file: $scriptFile already exists" }
             throw IllegalStateException("file: $scriptFile already exists")
         }

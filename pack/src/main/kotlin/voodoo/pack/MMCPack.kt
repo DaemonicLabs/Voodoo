@@ -4,17 +4,19 @@ import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
 import voodoo.util.jenkins.downloadVoodoo
 import voodoo.util.packToZip
+import java.io.File
 import kotlin.system.exitProcess
 
 object MMCPack : AbstractPack() {
     override val label = "MultiMC Pack"
 
+    override fun File.getOutputFolder(): File = resolve("multimc-sk")
+
     override suspend fun pack(
         modpack: LockPack,
-        output: String?,
+        output: File,
         clean: Boolean
     ) {
-        val targetDir = modpack.rootDir.resolve(output ?: ".multimc")
         val cacheDir = directories.cacheHome
         val instanceDir = cacheDir.resolve("MMC").resolve(modpack.id)
         instanceDir.deleteRecursively()
@@ -52,8 +54,8 @@ object MMCPack : AbstractPack() {
                 """.trimMargin()
         )
 
-        targetDir.mkdirs()
-        val instanceZip = targetDir.resolve(modpack.id + ".zip")
+        output.mkdirs()
+        val instanceZip = output.resolve(modpack.id + ".zip")
 
         instanceZip.delete()
         packToZip(instanceDir.toPath(), instanceZip.toPath())

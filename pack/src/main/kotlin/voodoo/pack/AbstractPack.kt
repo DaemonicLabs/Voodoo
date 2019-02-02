@@ -3,6 +3,7 @@ package voodoo.pack
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.util.Directories
+import java.io.File
 
 /**
  * Created by nikky on 30/03/18.
@@ -11,6 +12,7 @@ import voodoo.util.Directories
 
 abstract class AbstractPack : KLogging() {
     abstract val label: String
+    abstract fun File.getOutputFolder(): File
 
     /***
      * @param modpack modpack to package
@@ -19,7 +21,7 @@ abstract class AbstractPack : KLogging() {
      */
     abstract suspend fun pack(
         modpack: LockPack,
-        output: String?,
+        output: File,
         clean: Boolean = true
     )
 

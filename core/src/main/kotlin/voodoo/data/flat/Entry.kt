@@ -1,23 +1,12 @@
 package voodoo.data.flat
 
-import com.skcraft.launcher.model.modpack.Feature
-import kotlinx.serialization.CompositeEncoder
-import kotlinx.serialization.Encoder
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationStrategy
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
 import kotlinx.serialization.UpdateMode
-import kotlinx.serialization.internal.EnumSerializer
-import kotlinx.serialization.internal.HashMapSerializer
-import kotlinx.serialization.internal.StringSerializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.list
-import kotlinx.serialization.map
-import kotlinx.serialization.serializer
-import kotlinx.serialization.set
 import mu.KLogging
+import voodoo.data.OptionalData
 import voodoo.data.Side
 import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.DependencyType
@@ -27,7 +16,6 @@ import voodoo.data.curse.PackageType
 import voodoo.data.curse.ProjectID
 import voodoo.data.lock.LockEntry
 import voodoo.data.provider.UpdateChannel
-import voodoo.util.equalsIgnoreCase
 import java.io.File
 
 /**
@@ -39,11 +27,11 @@ import java.io.File
 data class Entry(
     val provider: String,
     var id: String,
-    @Optional var name: String = "", // TODO add `by provider.getDisplayname(this)`
+    @Optional var name: String? = null, // TODO add `by provider.getDisplayname(this)`
     @Optional var folder: String = "mods",
     @Optional var comment: String = "",
     @Optional var description: String = "",
-    @Optional @Serializable(with = Feature.Companion::class) var feature: Feature? = null,
+    @Optional var optionalData: OptionalData? = null,
     @Optional var side: Side = Side.BOTH,
     @Optional var websiteUrl: String = "",
     // TODO dependency declarations
@@ -97,7 +85,7 @@ data class Entry(
     }
 
     @Transient
-    var optional: Boolean = feature != null
+    var optional: Boolean = optionalData != null
 
     @Transient
     val cleanId: String
@@ -117,14 +105,19 @@ data class Entry(
     fun lock(block: LockEntry.() -> Unit): LockEntry {
         val lockEntry = LockEntry(
             provider = provider,
-            id = id,
             useUrlTxt = useUrlTxt,
             fileName = fileName,
-            side = side
+            side = side,
+            description = description,
+            optionalData = optionalData,
+            dependencies = dependencies.toMap(),
+            nameField = name
         )
-        lockEntry.name = name
+        lockEntry.id = id
         lockEntry.block()
-        lockEntry.serialFile = File(lockEntry.suggestedFolder ?: folder).resolve("$cleanId.lock.hjson")
+        lockEntry.folder = File(lockEntry.suggestedFolder ?: folder)
+        // TODO: calculate serialiFile based on id and reverse
+//        lockEntry.serialFile = File(lockEntry.suggestedFolder ?: folder).resolve("$cleanId.lock.hjson")
         return lockEntry
     }
 }

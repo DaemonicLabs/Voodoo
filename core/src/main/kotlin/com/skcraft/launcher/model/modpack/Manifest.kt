@@ -75,8 +75,8 @@ data class Manifest(
 //            obj.title?.let { title ->
 //                elemOutput.encodeStringElement(descriptor, 1, title)
 //            }
-//            obj.name?.let { name ->
-//                elemOutput.encodeStringElement(descriptor, 2, name)
+//            obj.displayName?.let { displayName ->
+//                elemOutput.encodeStringElement(descriptor, 2, displayName)
 //            }
 //            obj.version?.let { version ->
 //                elemOutput.encodeStringElement(descriptor, 3, version)

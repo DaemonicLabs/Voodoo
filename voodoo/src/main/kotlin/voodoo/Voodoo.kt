@@ -18,6 +18,7 @@ import voodoo.util.Directories
 import voodoo.util.asFile
 import voodoo.voodoo.VoodooConstants
 import java.io.File
+import java.io.FileNotFoundException
 import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
 import kotlin.script.experimental.jvm.jdkHome
@@ -29,7 +30,8 @@ import kotlin.system.exitProcess
 object Voodoo : KLogging() {
     @JvmStatic
     fun main(vararg fullArgs: String) {
-
+        logger.debug("using Voodoo: ${VoodooConstants.FULL_VERSION}")
+        logger.debug("full arguments: ${fullArgs.joinToString(",", "[", "]") { it }}")
         logger.debug("system.properties:")
         System.getProperties().forEach { k, v ->
             logger.debug { "  $k = $v" }
@@ -45,8 +47,8 @@ object Voodoo : KLogging() {
 
         val arguments = fullArgs.drop(1)
         val script = fullArgs.getOrNull(0)?.apply {
-            require(isNotBlank()) { "configuration script name cannot be blank" }
-            require(endsWith(".voodoo.kts")) { "configuration script filename must end with .voodoo.kts" }
+            require(isNotBlank()) { "'$this' configuration script name cannot be blank" }
+            require(endsWith(".voodoo.kts")) { "'$this' configuration script filename must end with .voodoo.kts" }
         } ?: run {
             logger.error("configuration script must be the first parameter")
             exitProcess(1)
@@ -57,7 +59,9 @@ object Voodoo : KLogging() {
 
         val id = scriptFileName.substringBeforeLast(".voodoo.kts").apply {
             require(isNotBlank()) { "the script file must contain a id in the filename" }
-        }
+        }.toLowerCase()
+
+        logger.debug("id: $id")
 
         val rootDir = (System.getProperty("voodoo.rootDir") ?: System.getProperty("user.dir")).asFile.absoluteFile
         val generatedFilesDir =
@@ -66,8 +70,12 @@ object Voodoo : KLogging() {
 
         val host = createJvmScriptingHost(cacheDir)
 
+        // TODO: add to gradle plugin
+        val uploadDir =  (System.getProperty("voodoo.uploadDir")?.asFile ?: rootDir.resolve("_upload").absoluteFile)
+            .resolve(id)
+
         val tomeDir = System.getProperty("voodoo.tomeDir")?.asFile ?: rootDir.resolve("tome")
-        val docDir = System.getProperty("voodoo.docDir")?.asFile ?: rootDir.resolve("docs")
+        val docDir = System.getProperty("voodoo.docDir")?.asFile ?: uploadDir.resolve("docs")
         val tomeEnv = initTome(host = host, tomeDir = tomeDir, docDir = docDir)
         logger.debug("tomeEnv: $tomeEnv")
 
@@ -85,6 +93,7 @@ object Voodoo : KLogging() {
         val lockFileName = "$id.lock.pack.hjson"
         val lockFile = scriptEnv.pack.sourceFolder.resolve(lockFileName)
 
+
         val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
             "import_debug" to { _ -> Importer.flatten(nestedPack, targetFileName = packFileName) },
 //        "build_debug" to { args -> BuilderForDSL.build(packFile, rootDir, id, targetFileName = lockFileName, args = *args) },
@@ -92,16 +101,35 @@ object Voodoo : KLogging() {
                 val modpack = Importer.flatten(nestedPack)
                 val lockPack = Builder.build(modpack, id = id, /*targetFileName = lockFileName,*/ args = *args)
 
-                Tome.generate(modpack, lockPack, tomeEnv)
+                Tome.generate(modpack, lockPack, tomeEnv, uploadDir)
+
+                try {
+                    val diff = Diff.createDiff(rootDir = rootDir.absoluteFile, newPack = lockPack)
+                    diff?.writeChangelog()
+                } catch(e: FileNotFoundException) {
+                    e.printStackTrace()
+                }
+                // TODO: generate changelog from last diff
+
                 logger.info("finished")
+            },
+            "diff" to { _ ->
+                val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
+                val diff = Diff.createDiff(rootDir = rootDir.absoluteFile, newPack = modpack)
+                diff?.writeChangelog()
             },
             "pack" to { args ->
                 val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
-                Pack.pack(modpack, *args)
+                Pack.pack(modpack, uploadDir, *args)
             },
             "test" to { args ->
                 val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
                 TesterForDSL.main(modpack, args = *args)
+            },
+            "release" to { args ->
+                // TODO: create a release
+                // TODO: create a commit and tag ?
+                // TODO: grab latest changelog and append it to full_changelog
             },
             "version" to { _ ->
                 logger.info(VoodooConstants.FULL_VERSION)

@@ -3,6 +3,7 @@ package voodoo.util.jenkins
 import com.github.kittinunf.fuel.core.extensions.cUrlString
 import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
 import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
+import com.github.kittinunf.fuel.httpDownload
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
@@ -21,10 +22,12 @@ private val useragent = "voodoo/${UtilConstants.VERSION}"
 
 suspend fun downloadVoodoo(
     component: String,
+    binariesDir: File,
+    outputFile: File? = null,
     bootstrap: Boolean = true,
     serverUrl: String = UtilConstants.JENKINS_URL,
     job: String = UtilConstants.JENKINS_JOB,
-    binariesDir: File
+    buildNumber: Int? = null
 ): File {
     val moduleName = "${if (bootstrap) "bootstrap-" else ""}$component"
     val fileRegex = "$moduleName.*\\.jar"
@@ -32,8 +35,9 @@ suspend fun downloadVoodoo(
     val server = JenkinsServer(serverUrl)
     val jenkinsJob = server.getJob(job, useragent)!!
     val build = jenkinsJob.lastSuccessfulBuild?.details(useragent)!!
-    val buildNumber = build.number
-    Jenkins.logger.info("lastSuccessfulBuild: $buildNumber")
+    val actualBuildNumber = buildNumber ?: build.number
+    Jenkins.logger.info("lastSuccessfulBuild: ${buildNumber}")
+    Jenkins.logger.info("chosen build: $actualBuildNumber")
     Jenkins.logger.debug("looking for $fileRegex")
     val re = Regex(fileRegex)
     val artifact = build.artifacts.find {
@@ -45,13 +49,17 @@ suspend fun downloadVoodoo(
         throw Exception()
     }
     val artifactUrl = build.url + "artifact/" + artifact.relativePath
-    val tmpFile = File(binariesDir, "$moduleName-$buildNumber.tmp")
-    val targetFile = File(binariesDir, "$moduleName-$buildNumber.jar")
-    val (request, response, result) = artifactUrl.httpGet()
+    val tmpFile = File(binariesDir, "$moduleName-$actualBuildNumber.tmp")
+    val targetFile = outputFile ?: File(binariesDir, "$moduleName-$actualBuildNumber.jar")
+    val (request, response, result) = artifactUrl.httpDownload()
+        .fileDestination { response, request ->
+            tmpFile.delete()
+            tmpFile
+        }
         .header("User-Agent" to useragent)
         .awaitByteArrayResponseResult()
-    val content = when (result) {
-        is Result.Success -> result.value
+    when (result) {
+        is Result.Success -> {}
         is Result.Failure -> {
             Jenkins.logger.error("artifactUrl: $artifactUrl")
             Jenkins.logger.error("cUrl: ${request.cUrlString()}")
@@ -61,7 +69,6 @@ suspend fun downloadVoodoo(
         }
     }
 
-    tmpFile.writeBytes(content)
     tmpFile.renameTo(targetFile)
     return targetFile
 }

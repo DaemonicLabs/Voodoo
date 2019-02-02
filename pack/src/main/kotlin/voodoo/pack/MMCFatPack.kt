@@ -12,23 +12,27 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.map
 import kotlinx.serialization.serializer
 import voodoo.data.Side
+import voodoo.data.curse.DependencyType
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
+import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil
 import voodoo.provider.Providers
 import voodoo.util.blankOr
 import voodoo.util.packToZip
 import voodoo.util.pool
+import java.io.File
 
 object MMCFatPack : AbstractPack() {
     override val label = "MultiMC Pack (frozen pack)"
 
+    override fun File.getOutputFolder(): File = resolve("multimc-fat")
+
     override suspend fun pack(
         modpack: LockPack,
-        output: String?,
+        output: File,
         clean: Boolean
     ) {
-        val targetDir = modpack.rootDir.resolve(output ?: ".multimc")
         val cacheDir = directories.cacheHome
         val instanceDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id)
         val title = modpack.title.blankOr ?: modpack.id
@@ -76,15 +80,18 @@ object MMCFatPack : AbstractPack() {
         } else {
             mapOf<String, Boolean>()
         }
-        val (features, reinstall) = MMCUtil.selectFeatures(
-            modpack.features.map { it.feature }, previousSelection,
+        val (optionals, reinstall) = MMCUtil.selectFeatures(
+            modpack.optionalEntries.map {
+                MMCSelectable(it)
+            },
+            previousSelection,
             modpack.title.blankOr
                 ?: modpack.id, modpack.version, forceDisplay = false, updating = featureJson.exists()
         )
-        logger.debug("result: features: $features")
-        if (!features.isEmpty()) {
+        logger.debug("result: optionals: $optionals")
+        if (!optionals.isEmpty()) {
             featureJson.createNewFile()
-            featureJson.writeText(json.stringify((StringSerializer to BooleanSerializer).map, features))
+            featureJson.writeText(json.stringify((StringSerializer to BooleanSerializer).map, optionals))
         }
         if (reinstall) {
             minecraftDir.deleteRecursively()
@@ -99,16 +106,20 @@ object MMCFatPack : AbstractPack() {
                 jobs += launch(context = coroutineContext + pool) {
                     val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
 
-                    val matchedFeatureList = modpack.features.filter { it.entries.contains(entry.id) }
-                    val selected = !matchedFeatureList.isEmpty() && matchedFeatureList.any {
-                        features[it.feature.name] ?: false
+                    val matchedOptioalsList = modpack.optionalEntries.filter {
+                        // check if entry is a dependency of any feature
+                        modpack.isDependencyOf(entry.id, it.id, DependencyType.REQUIRED)
                     }
 
                     val provider = Providers[entry.provider]
                     val targetFolder = minecraftDir.resolve(folder)
                     val (_, file) = provider.download(entry, targetFolder, cacheDir)
-                    if (!selected) {
-                        file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
+
+                    if (!matchedOptioalsList.isEmpty()) {
+                        val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
+                        if (!selected) {
+                            file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
+                        }
                     }
                 }
             }
@@ -130,8 +141,8 @@ object MMCFatPack : AbstractPack() {
             }
         }
 
-        targetDir.mkdirs()
-        val instanceZip = targetDir.resolve(modpack.id + ".zip")
+        output.mkdirs()
+        val instanceZip = output.resolve(modpack.id + ".zip")
 
         instanceZip.delete()
         packToZip(instanceDir.toPath(), instanceZip.toPath())

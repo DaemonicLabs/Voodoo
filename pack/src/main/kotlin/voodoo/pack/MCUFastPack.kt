@@ -6,7 +6,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
 import voodoo.mcupdater.FastpackUtil
@@ -22,24 +21,20 @@ import java.io.File
 object MCUFastPack : AbstractPack() {
     override val label = "MCU Pack"
 
+    override fun File.getOutputFolder(): File = resolve("mcu-fastpack")
+
     override suspend fun pack(
         modpack: LockPack,
-        output: String?,
+        output: File,
         clean: Boolean
     ) {
         val cacheDir = SKPack.directories.cacheHome
 
-        val targetDir = if (output != null) {
-            modpack.rootDir.resolve(output)
-        } else {
-            modpack.rootDir.resolve(".fastpack").resolve("_upload")
-        }.absoluteFile
-
         if(clean) {
-            targetDir.deleteRecursively()
+            output.deleteRecursively()
         }
 //
-        val workingDir = targetDir.resolve(modpack.id).absoluteFile
+        val workingDir = output.resolve(modpack.id).absoluteFile
 
         modpack.sourceFolder.let { packSrc ->
             if (packSrc.exists()) {
@@ -88,41 +83,41 @@ object MCUFastPack : AbstractPack() {
             val targetFiles = deferredFiles.awaitAll().toMap()
             logger.debug("targetFiles: $targetFiles")
 
-            // write features
-            modpack.features.forEach { feature ->
-                launch(pool + CoroutineName("properties-${feature.feature.name}")) {
-                    logger.info("processing feature.name: ${feature.feature.name}")
-                    logger.info("properties: ${feature.feature}")
-                    for (id in feature.entries) {
-                        logger.info("id: $id")
-                        logger.info("targetfiles: $targetFiles")
-
-                        targetFiles[id]?.let { targetFile ->
-                            if(targetFile.parentFile.name != "optional") {
-                                val rel = targetFile.relativeTo(workingDir)
-                                val target = workingDir.resolve("optional").resolve(rel.parentFile)
-                                logger.info("mv $rel -> ${target.relativeTo(workingDir)}")
-                                target.parentFile.mkdirs()
-                                targetFile.renameTo(target)
-                            }
-                        }
-
-//                        feature.files.include += targetFile.relativeTo(workingDir).path
-//                            .replace('\\', '/')
-//                            .replace("[", "\\[")
-//                            .replace("]", "\\]")
-//                        logger.info("includes = ${feature.files.include}")
-                    }
-
-                    logger.info("entries: ${feature.entries}")
-                    logger.info("properties: ${feature.feature}")
-
-                    logger.info("processed properties $feature")
-                }
-            }
-
-            delay(10)
-            logger.info("waiting for properties jobs to finish")
+//            // write features
+//            modpack.features.forEach { feature ->
+//                launch(pool + CoroutineName("properties-${feature.feature.name}")) {
+//                    logger.info("processing feature.name: ${feature.feature.name}")
+//                    logger.info("properties: ${feature.feature}")
+//                    for (id in feature.entries) {
+//                        logger.info("id: $id")
+//                        logger.info("targetfiles: $targetFiles")
+//
+//                        targetFiles[id]?.let { targetFile ->
+//                            if(targetFile.parentFile.name != "optional") {
+//                                val rel = targetFile.relativeTo(workingDir)
+//                                val target = workingDir.resolve("optional").resolve(rel.parentFile)
+//                                logger.info("mv $rel -> ${target.relativeTo(workingDir)}")
+//                                target.parentFile.mkdirs()
+//                                targetFile.renameTo(target)
+//                            }
+//                        }
+//
+////                        feature.files.include += targetFile.relativeTo(workingDir).path
+////                            .replace('\\', '/')
+////                            .replace("[", "\\[")
+////                            .replace("]", "\\]")
+////                        logger.info("includes = ${feature.files.include}")
+//                    }
+//
+//                    logger.info("entries: ${feature.entries}")
+//                    logger.info("properties: ${feature.feature}")
+//
+//                    logger.info("processed properties $feature")
+//                }
+//            }
+//
+//            delay(10)
+//            logger.info("waiting for properties jobs to finish")
         }
 
         for (file in workingDir.walkBottomUp()) {
@@ -156,12 +151,12 @@ object MCUFastPack : AbstractPack() {
 
         val baseUrl = "https://nikky.moe/files"
 
-        val outFile = targetDir.resolve("${modpack.id}.xml")
+        val outFile = output.resolve("${modpack.id}.xml")
         FastpackUtil.execute(
             workingDir, baseUrl, modpack.mcVersion, outFile,
             forge = forgeVersion
         )
 
-        logger.info("upload $targetDir, so that '$outFile' is accessible as ${baseUrl + "/" + outFile.relativeTo(targetDir)}")
+        logger.info("upload $output, so that '$outFile' is accessible as ${baseUrl + "/" + outFile.relativeTo(output)}")
     }
 }

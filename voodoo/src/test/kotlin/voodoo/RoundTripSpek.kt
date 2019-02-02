@@ -37,7 +37,7 @@ object RoundTripSpek : Spek({
                 version = "1.0"
                 icon = rootFolder.resolve("icon.png").relativeTo(rootFolder)
                 authors = listOf("dude", "and", "friends")
-                // TODO: type = {recommended, latest} | buildnumber, make sealed class
+                // TODO: type = {recommended, latest} | buildnumber, make sealed class ?
                 forge = Forge.recommended
                 root(CurseProvider) {
                     releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
@@ -57,7 +57,7 @@ object RoundTripSpek : Spek({
 
                         group {
                             side = Side.BOTH
-                            feature {
+                            optional {
                                 selected = false
                             }
                         }.list {
