@@ -29,9 +29,10 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         mcVersion: String,
         addEntry: SendChannel<Pair<Entry, String>>
     ): LockEntry {
-        if (entry.job.isBlank()) {
-            entry.job = entry.id
-        }
+        require(entry.job.isNotBlank()) { "entry: '${entry.id}' does not have the jenkins job set" }
+//        if (entry.job.isBlank()) {
+//            entry.job = entry.id
+//        }
         val job = job(entry.job, entry.jenkinsUrl)
         val buildNumber = job.lastSuccessfulBuild?.number ?: throw IllegalStateException("buildnumber not set")
         return entry.lock {
@@ -43,9 +44,10 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
     }
 
     override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
-        if (entry.job.isBlank()) {
-            entry.job = entry.id
-        }
+        require(entry.job.isNotBlank()) { "entry: '${entry.id}' does not have the jenkins job set" }
+//        if (entry.job.isBlank()) {
+//            entry.job = entry.id
+//        }
 
         val build = build(entry.job, entry.jenkinsUrl, entry.buildNumber)
         val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)

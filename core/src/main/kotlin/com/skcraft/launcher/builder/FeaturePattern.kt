@@ -15,7 +15,6 @@ import kotlinx.serialization.Serializer
 @Serializable
 data class FeaturePattern(
     @SerialName("properties")
-    @Serializable(with = Feature.Companion::class)
     var feature: Feature,
     @SerialName("files")
     @Serializable(with = FnPatternList.Companion::class)
@@ -25,13 +24,13 @@ data class FeaturePattern(
         return filePatterns.matches(path)
     }
 
-    @Serializer(forClass = FeaturePattern::class)
-    companion object {
-        override fun serialize(encoder: Encoder, obj: FeaturePattern) {
-            val elemOutput = encoder.beginStructure(descriptor)
-            elemOutput.encodeSerializableElement(descriptor, 0, Feature.Companion, obj.feature)
-            elemOutput.encodeSerializableElement(descriptor, 1, FnPatternList.Companion, obj.filePatterns)
-            elemOutput.endStructure(descriptor)
-        }
-    }
+//    @Serializer(forClass = FeaturePattern::class)
+//    companion object {
+//        override fun serialize(encoder: Encoder, obj: FeaturePattern) {
+//            val elemOutput = encoder.beginStructure(descriptor)
+//            elemOutput.encodeSerializableElement(descriptor, 0, Feature.Companion, obj.feature)
+//            elemOutput.encodeSerializableElement(descriptor, 1, FnPatternList.Companion, obj.filePatterns)
+//            elemOutput.endStructure(descriptor)
+//        }
+//    }
 }

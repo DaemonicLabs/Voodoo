@@ -21,6 +21,7 @@ import kotlinx.serialization.serializer
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
 import voodoo.curse.CurseClient
+import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil.selectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
@@ -137,7 +138,11 @@ object Hex : KLogging() {
             mapOf()
         }
         val (features, reinstall) = selectFeatures(
-            modpack.features, defaults, modpack.title.blankOr
+            modpack.features.map {
+                MMCSelectable(it.name, it.name, it.description, it.selected, it.recommendation)
+            },
+            defaults,
+            modpack.title.blankOr
                 ?: modpack.name!!, modpack.version!!, forceDisplay = forceDisplay, updating = oldpack != null
         )
         featureJson.writeText(

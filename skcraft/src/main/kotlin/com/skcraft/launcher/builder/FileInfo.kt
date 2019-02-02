@@ -12,6 +12,5 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class FileInfo(
-    @Optional
-    @Serializable(with = Feature.Companion::class) var feature: Feature? = null
+    @Optional var feature: Feature? = null
 )

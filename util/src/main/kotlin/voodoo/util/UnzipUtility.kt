@@ -1,5 +1,6 @@
 package voodoo.util
 
+import mu.KLogging
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileInputStream
@@ -13,7 +14,7 @@ import java.util.zip.ZipInputStream
  * a destination directory.
  * @author www.codejava.net
  */
-object UnzipUtility {
+object UnzipUtility: KLogging() {
 
     /**
      * Size of the buffer to read/write data
@@ -23,21 +24,25 @@ object UnzipUtility {
     /**
      * Extracts a zip file specified by the zipFilePath to a directory specified by
      * destDirectory (will be created if does not exists)
-     * @param zipFilePath
+     * @param zipFile
      * @param destDirectory
      * @throws IOException
      */
     @Throws(IOException::class)
-    fun unzip(zipFilePath: String, destDirectory: String) {
-        val destDir = File(destDirectory)
+    fun unzip(zipFile: File, destDir: File) {
+        logger.info("unzipping: $zipFile into $destDir")
+        require(zipFile.exists()) { "$zipFile does not exist" }
+        require(zipFile.isFile) { "$zipFile not not a file" }
+        val destDir = destDir.absoluteFile
         if (!destDir.exists()) {
             destDir.mkdir()
         }
-        val zipIn = ZipInputStream(FileInputStream(zipFilePath))
+        // TODO: error when file is not a zipfile
+        val zipIn = ZipInputStream(FileInputStream(zipFile))
         var entry: ZipEntry? = zipIn.nextEntry
         // iterates over entries in the zip file
         while (entry != null) {
-            val filePath = destDirectory + File.separator + entry.name
+            val filePath = destDir.resolve(entry.name).path
             if (!entry.isDirectory) {
                 // if the entry is a file, extracts it
                 extractFile(zipIn, filePath)

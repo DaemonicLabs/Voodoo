@@ -18,7 +18,7 @@ object CurseImportSpek : Spek({
             runBlocking {
                 CurseImporter.import(
                     "stoneblock",
-                    "https://minecraft.curseforge.com/projects/stoneblock/files/2626239/download",
+                    "https://minecraft.curseforge.com/projects/stoneblock/files/2654545/download",
                     rootFolder,
                     rootFolder.resolve("packs")
                 )

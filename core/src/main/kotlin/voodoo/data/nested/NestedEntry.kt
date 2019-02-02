@@ -1,10 +1,9 @@
 package voodoo.data.nested
 
-import com.skcraft.launcher.model.modpack.Feature
 import mu.KLogging
+import voodoo.data.OptionalData
 import voodoo.data.Side
 import voodoo.data.curse.CurseConstants
-import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
@@ -23,11 +22,11 @@ import kotlin.reflect.full.memberProperties
 data class NestedEntry(
     var provider: String = "",
     var id: String = "",
-    var name: String = "",
+    var name: String? = null,
     var folder: String = "mods",
     var comment: String = "",
     var description: String = "",
-    var feature: Feature? = null,
+    var optionalData: OptionalData? = null,
     var side: Side = Side.BOTH,
     var websiteUrl: String = "",
 //    var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
@@ -86,7 +85,7 @@ data class NestedEntry(
                 folder = entry.folder,
                 comment = entry.comment,
                 description = entry.description,
-                feature = entry.feature,
+                optionalData = entry.optionalData,
                 side = entry.side,
                 websiteUrl = entry.websiteUrl,
 //                dependencies = it.dependencies,

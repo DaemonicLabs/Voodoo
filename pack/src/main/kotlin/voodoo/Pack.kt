@@ -11,6 +11,7 @@ import voodoo.pack.MMCPack
 import voodoo.pack.MMCStaticPack
 import voodoo.pack.SKPack
 import voodoo.pack.ServerPack
+import java.io.File
 import kotlin.system.exitProcess
 
 /**
@@ -52,7 +53,7 @@ object Pack : KLogging() {
 //        }
 //    }
 
-    suspend fun pack(modpack: LockPack, vararg args: String) {
+    suspend fun pack(modpack: LockPack, uploadDir: File, vararg args: String) {
         logger.info("parsing arguments")
         val arguments = Arguments(ArgParser(args))
 
@@ -65,9 +66,11 @@ object Pack : KLogging() {
                 exitProcess(-1)
             }
 
+            val output= with(packer) { uploadDir.getOutputFolder() }
+
             packer.pack(
                 modpack = modpack,
-                output = target,
+                output = output,
                 clean = true
             )
             logger.info("finished packaging")
@@ -80,9 +83,5 @@ object Pack : KLogging() {
             help = "format to package into"
         ) { this.toLowerCase() }
             .default("")
-        val target by parser.storing(
-            "--output", "-o",
-            help = "output rootFolder"
-        ).default<String?>(null)
     }
 }

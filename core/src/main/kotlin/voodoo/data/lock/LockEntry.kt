@@ -1,15 +1,16 @@
 package voodoo.data.lock
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.CompositeEncoder
-import kotlinx.serialization.Encoder
 import kotlinx.serialization.Optional
-import kotlinx.serialization.SerialId
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlinx.serialization.json.JsonParsingException
 import mu.KLogging
+import voodoo.data.OptionalData
 import voodoo.data.Side
 import voodoo.data.curse.CurseConstants.PROXY_URL
+import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.provider.CurseProvider
@@ -30,11 +31,13 @@ import java.time.Instant
 
 @Serializable
 data class LockEntry(
-    var provider: String = "",
-    var id: String = "",
-//    @Optional var name: String = "",
+    var provider: String,
+    // TODO: make id always match serialFile.name.subStringBefore(".lock.hjson") ?
     @Optional var fileName: String? = null,
     @Optional var side: Side = Side.BOTH,
+    @Optional var description: String = "",
+    @Optional var optionalData: OptionalData? = null,
+    @Optional var dependencies: Map<DependencyType, List<String>> = mapOf(),
     // CURSE
     @Optional var curseMetaUrl: String = PROXY_URL,
     @Optional var projectID: ProjectID = ProjectID.INVALID,
@@ -51,12 +54,30 @@ data class LockEntry(
     @Optional var updateJson: String = "",
     @Optional var jsonVersion: String = "",
     // LOCAL
-    @Optional var fileSrc: String = ""
+    @Optional var fileSrc: String = "",
+
+    // INTERNALS
+    @Optional @SerialName("name") private var nameField: String? = null
 ) {
-    @Optional
-    @SerialId(2)
-    var name: String = ""
-        get() = field.takeIf { it.isNotBlank() } ?: runBlocking { provider().generateName(this@LockEntry) }
+    @Transient
+    lateinit var idField: String // id might not always match the filename
+    @Transient
+    var id: String
+        set(value) {
+            require(!value.contains("[^\\w-]+".toRegex())) { "id: '$value' is not cleaned up properly" }
+            idField = value
+        }
+        get() = idField
+
+    @Transient
+    var displayName: String
+        get() = nameField?.takeIf { it.isNotBlank() } ?: runBlocking { provider().generateName(this@LockEntry) }
+        set(value) {
+            nameField = value
+        }
+
+    @Transient
+    var optional: Boolean = optionalData != null
 
     @Transient
     var suggestedFolder: String? = null
@@ -68,7 +89,20 @@ data class LockEntry(
      * relative to src folder
      */
     @Transient
-    lateinit var serialFile: File
+    val serialFile: File
+        get() {
+            return folder.resolve("$id.lock.hjson")
+        }
+    @Transient
+    private lateinit var folderField: File
+
+    @Transient
+    var folder: File
+        set(value) {
+            require(!value.isRooted) { "folder: $value must be relative" }
+            folderField = value
+        }
+        get() = folderField
 
     fun provider(): ProviderBase = Providers[provider]
 
@@ -94,13 +128,29 @@ data class LockEntry(
 
     fun isLocal(): Boolean = provider == LocalProvider.id
 
-//    @Serializer(forClass = LockEntry::class)
+    //    @Serializer(forClass = LockEntry::class)
     companion object : KLogging() {
-        fun loadEntry(file: File): LockEntry {
+        fun loadEntry(file: File, srcDir: File): LockEntry {
             logger.debug("parsing; $file")
-            return json.parse(LockEntry.serializer(), file.readText())
+            return try {
+                val lockEntry: LockEntry = json.parse(LockEntry.serializer(), file.readText())
+                lockEntry.folder = file.parentFile.relativeTo(srcDir)
+                lockEntry.id = file.name.substringBefore(".lock.hjson")
+                lockEntry
+            } catch (e: JsonParsingException) {
+                logger.error("cannot read: ${file.path}")
+                logger.error { file.readText() }
+                e.printStackTrace()
+                throw e
+            }
         }
     }
 
-    fun serialize(): String = json.stringify(LockEntry.serializer(), this)
+    fun serialize(): String {
+        val jsonString = json.stringify(LockEntry.serializer(), this)
+        logger.debug { "serializing '$this'" }
+        logger.debug { " -> " }
+        logger.debug { "$jsonString" }
+        return jsonString
+    }
 }

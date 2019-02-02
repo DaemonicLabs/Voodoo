@@ -54,9 +54,6 @@ data class ModPack(
     lateinit var rootDir: File
 
     @Transient
-    val features: MutableList<ExtendedFeaturePattern> = mutableListOf()
-
-    @Transient
     val entrySet: MutableSet<Entry> = Collections.synchronizedSet(mutableSetOf())
 
     @Transient
@@ -81,8 +78,8 @@ data class ModPack(
 
             // TODO: make some util code to merge Entries
             existingEntry.side += newEntry.side
-            if (existingEntry.feature == null) {
-                existingEntry.feature = newEntry.feature
+            if (existingEntry.optionalData == null) {
+                existingEntry.optionalData = newEntry.optionalData
             }
             if (existingEntry.description.isBlank()) {
                 existingEntry.description = newEntry.description
@@ -98,7 +95,7 @@ data class ModPack(
         LockPack.parseFiles(srcDir)
             .forEach { (lockEntry, file) ->
                 val relFile = file.relativeTo(srcDir)
-                lockEntry.serialFile = relFile
+                lockEntry.folder = relFile.parentFile
                 addOrMerge(lockEntry) { _, newEntry -> newEntry }
             }
     }
@@ -123,7 +120,6 @@ data class ModPack(
             userFiles = userFiles,
             localDir = localDir,
             sourceDir = sourceDir,
-            features = features.sortedBy { it.feature.name },
             packOptions = packOptions
         ).also {
             it.rootDir = rootDir

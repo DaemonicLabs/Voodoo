@@ -6,11 +6,11 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.GradleBuild
+import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.getByName
-import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.task
 import org.gradle.kotlin.dsl.withType
 import org.gradle.plugins.ide.idea.model.IdeaModel
@@ -66,6 +66,11 @@ open class VoodooPlugin : Plugin<Project> {
                 }
             }
 
+            val downloadVoodoo = task<DownloadVoodooTask>("downloadVoodoo") {
+                group = "voodoo"
+                description = "Downloads the voodoo jar from jenkins"
+            }
+
             task<GradleBuild>("voodooVersion") {
                 group = "voodoo"
                 description = "prints the used voodoo version"
@@ -89,20 +94,20 @@ open class VoodooPlugin : Plugin<Project> {
 
             val javac = File(JavaEnvUtils.getJdkExecutable("javac"))
             val jdkHome = javac.parentFile.parentFile
+            logger.lifecycle("jdkHome: $jdkHome")
 
             extensions.configure<SourceSetContainer> {
                 val runtimeClasspath = maybeCreate("main").runtimeClasspath
                 voodooExtension.getPackDir
-                    .listFiles(FilenameFilter { _, name -> name.endsWith(".voodoo.kts") })
+                    .listFiles { _, name -> name.endsWith(".voodoo.kts") }
                     .forEach { sourceFile ->
-                        val id = sourceFile.name.substringBeforeLast(".voodoo.kts")
+                        val id = sourceFile.name.substringBeforeLast(".voodoo.kts").toLowerCase()
                         task<VoodooTask>(id.toLowerCase()) {
                             scriptFile = sourceFile
                             classpath = runtimeClasspath
                             description = id
                             group = id
 
-                            logger.lifecycle("jdkHome: $jdkHome")
                             systemProperty("voodoo.jdkHome", jdkHome.path)
                             systemProperty("voodoo.rootDir", voodooExtension.getRootDir)
                             systemProperty("voodoo.tomeDir", voodooExtension.getTomeDir)

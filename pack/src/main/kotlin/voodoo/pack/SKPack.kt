@@ -2,7 +2,9 @@ package voodoo.pack
 
 import com.skcraft.launcher.builder.FeaturePattern
 import com.skcraft.launcher.builder.PackageBuilder
+import com.skcraft.launcher.model.ExtendedFeaturePattern
 import com.skcraft.launcher.model.SKModpack
+import com.skcraft.launcher.model.modpack.Feature
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -10,8 +12,11 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
+import voodoo.data.curse.DependencyType
+import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
+import voodoo.memoize
 import voodoo.pack.sk.SKLocation
 import voodoo.pack.sk.SKPackages
 import voodoo.pack.sk.SKWorkspace
@@ -33,9 +38,11 @@ object SKPack : AbstractPack() {
 
     override val label = "SK Pack"
 
+    override fun File.getOutputFolder(): File = resolve("sk")
+
     override suspend fun pack(
         modpack: LockPack,
-        output: String?,
+        output: File,
         clean: Boolean
     ) {
         val cacheDir = directories.cacheHome
@@ -109,11 +116,52 @@ object SKPack : AbstractPack() {
             delay(10)
             logger.info("waiting for file jobs to finish")
 
+            val features = mutableListOf<ExtendedFeaturePattern>()
+
+            for (entry in modpack.entrySet) {
+                resolveFeatureDependencies(
+                    modpack,
+                    entry,
+                    modpack.findEntryById(entry.id)?.displayName
+                        ?: throw NullPointerException("cannot find lockentry for ${entry.id}"),
+                    features
+                )
+            }
+
+            // resolve features
+            for (feature in features) {
+                logger.info("processing feature ${feature.feature.name}")
+                for (id in feature.entries) {
+                    logger.info("processing feature entry $id")
+                    val featureEntry = modpack.findEntryById(id)!!
+                    val dependencies = getDependencies(modpack, id)
+                    logger.info("required dependencies of $id: ${featureEntry.dependencies[DependencyType.REQUIRED]}")
+                    logger.info("optional dependencies of $id: ${featureEntry.dependencies[DependencyType.OPTIONAL]}")
+                    feature.entries += dependencies.asSequence().filter { entry ->
+                        logger.debug("  testing ${entry.id}")
+                        // find all other entries that depend on this dependency
+                        val dependants = modpack.entrySet.filter { otherEntry ->
+                            otherEntry.dependencies[DependencyType.REQUIRED]?.any {
+                                it == entry.id
+                            } ?: false
+                        }
+                        logger.debug("  dependants to optional of ${entry.id}: ${dependants.associate { it.id to it.optional }}")
+                        val allOptionalDependants = dependants.all { filteredEntry -> filteredEntry.optional }
+                        entry.optional && !feature.entries.contains(entry.id) && allOptionalDependants
+                    }.map { it.id }
+                }
+                logger.info("build entry: ${feature.entries.first()}")
+                val mainEntry = modpack.findEntryById(feature.entries.first())!!
+                feature.feature.description = mainEntry.description
+
+                logger.info("processed feature ${feature.feature.name}")
+            }
+
             val targetFiles = deferredFiles.awaitAll().toMap()
 //            logger.debug("targetFiles: $targetFiles")
 
             // write features
-            val deferredFeatures = modpack.features.map { feature ->
+            val deferredPatterns = features.map { feature ->
                 async(pool + CoroutineName("properties-${feature.feature.name}")) {
                     logger.info("processing properties: ${feature.feature.name}")
                     for (id in feature.entries) {
@@ -151,7 +199,7 @@ object SKPack : AbstractPack() {
             delay(10)
             logger.info("waiting for properties jobs to finish")
 
-            val features = deferredFeatures.awaitAll()
+            val patterns = deferredPatterns.awaitAll()
 
             val skmodpack = SKModpack(
                 name = modpack.id,
@@ -159,7 +207,7 @@ object SKPack : AbstractPack() {
                 gameVersion = modpack.mcVersion,
                 userFiles = modpack.userFiles,
                 launch = modpack.launch,
-                features = features
+                features = patterns
             )
 
             val modpackPath = modpackDir.resolve("modpack.json")
@@ -184,13 +232,7 @@ object SKPack : AbstractPack() {
 
             workspacePath.writeText(Json.indented.stringify(SKWorkspace.serializer(), workspace))
 
-            val targetDir = if (output != null) {
-                modpack.rootDir.resolve(output)
-            } else {
-                workspaceDir.resolve("_upload")
-            }
-
-            val manifestDest = targetDir.resolve("${modpack.id}.json")
+            val manifestDest = output.resolve("${modpack.id}.json")
 
             val uniqueVersion = "${modpack.version}." + DateTimeFormatter
                 .ofPattern("yyyyMMddHHmm")
@@ -200,13 +242,13 @@ object SKPack : AbstractPack() {
             PackageBuilder.main(
                 "--version", uniqueVersion,
                 "--input", modpackDir.path,
-                "--output", targetDir.path,
+                "--output", output.path,
                 "--manifest-dest", manifestDest.path,
                 "--pretty-print"
             )
 
             // regenerate packages.json
-            val packagesFile = targetDir.resolve("packages.json")
+            val packagesFile = output.resolve("packages.json")
             val packages: SKPackages = if (packagesFile.exists()) {
                 Json.indented.parse(SKPackages.serializer(), packagesFile.readText())
             } else {
@@ -226,4 +268,89 @@ object SKPack : AbstractPack() {
             logger.info("finished")
         }
     }
+
+    // TODO: move to sk specific code
+    private fun resolveFeatureDependencies(
+        modPack: LockPack,
+        entry: LockEntry,
+        defaultName: String,
+        features: MutableList<ExtendedFeaturePattern>
+    ) {
+        val entryOptionalData = entry.optionalData ?: return
+        val entryFeature = Feature(entry.displayName, entryOptionalData.selected, description = entry.description)
+        val featureName = entry.displayName.takeIf { it.isNotBlank() } ?: defaultName
+        // find feature with matching id
+        var feature = features.find { f -> f.feature.name == featureName }
+
+        // TODO: merge existing features with matching id
+        if (feature == null) {
+            var description = entryFeature.description
+            if (description.isEmpty()) description = entry.description
+            feature = ExtendedFeaturePattern(
+                entries = setOf(entry.id),
+                files = entryFeature.files,
+                feature = Feature(
+                    name = featureName,
+                    selected = entryFeature.selected,
+                    description = description,
+                    recommendation = entryFeature.recommendation
+                )
+            )
+            processFeature(modPack, feature)
+            features += feature
+            entry.optional = true
+        }
+        logger.debug("processed ${entry.id}")
+    }
+
+    /**
+     * iterates through all entries and set
+     */
+    private fun processFeature(modPack: LockPack, feature: ExtendedFeaturePattern) {
+        logger.info("processing feature: $feature")
+        val processedEntries = mutableListOf<String>()
+        var processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
+        while (processableEntries.isNotEmpty()) {
+            processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
+            for (entry_id in processableEntries) {
+                logger.info("searching $entry_id")
+                val entry = modPack.findEntryById(entry_id)
+                if (entry == null) {
+                    logger.warn("$entry_id not in entries")
+                    processedEntries += entry_id
+                    continue
+                }
+                var depNames = entry.dependencies.values.flatten()
+                logger.info("depNames: $depNames")
+                depNames = depNames.filter { dependencyId ->
+                    modPack.isEntryOptional(dependencyId)
+                }
+                logger.info("filtered dependency names: $depNames")
+                for (dep in depNames) {
+                    if (!(feature.entries.contains(dep))) {
+                        feature.entries += dep
+                    }
+                }
+                processedEntries += entry_id
+            }
+        }
+    }
+
+    private fun getDependenciesCall(lockPack: LockPack, entryId: String): List<LockEntry> {
+        val entry = lockPack.findEntryById(entryId) ?: return emptyList()
+        val result = mutableListOf(entry)
+        for ((depType, entryList) in entry.dependencies) {
+            if (depType == DependencyType.EMBEDDED) continue
+            for (depName in entryList) {
+                result += getDependencies(lockPack, entryId)
+            }
+        }
+        return result
+    }
+
+    private val getDependencies: (lockPack: LockPack, entryName: String) -> List<LockEntry>
+        get() {
+            return ::getDependenciesCall.memoize()
+        }
 }
+
