@@ -16,7 +16,7 @@ import voodoo.mmc.MMCUtil
 import voodoo.provider.Providers
 import voodoo.util.Downloader
 import voodoo.util.blankOr
-import voodoo.util.pool
+import voodoo.util.withPool
 import java.io.IOException
 
 /**
@@ -132,29 +132,32 @@ object MultiMCTester : AbstractTester() {
             minecraftDir.deleteRecursively()
         }
 
-        coroutineScope {
-            modpack.entrySet.forEach { entry ->
-                if (entry.side == Side.SERVER) return@forEach
-                launch(pool + CoroutineName(entry.id)) {
-                    val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
+        withPool { pool ->
+            coroutineScope {
+                modpack.entrySet.forEach { entry ->
+                    if (entry.side == Side.SERVER) return@forEach
+                    launch(pool + CoroutineName(entry.id)) {
+                        val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
 
-                    val matchedOptioalsList = modpack.optionalEntries.filter {
-                        // check if entry is a dependency of any feature
-                        modpack.isDependencyOf(entry.id, it.id, DependencyType.REQUIRED)
-                    }
-                    if (!matchedOptioalsList.isEmpty()) {
-                        val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
-                        if (!selected) {
-                            MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName }} is disabled, skipping download")
-                            return@launch
+                        val matchedOptioalsList = modpack.optionalEntries.filter {
+                            // check if entry is a dependency of any feature
+                            modpack.isDependencyOf(entry.id, it.id, DependencyType.REQUIRED)
                         }
+                        if (!matchedOptioalsList.isEmpty()) {
+                            val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
+                            if (!selected) {
+                                MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName }} is disabled, skipping download")
+                                return@launch
+                            }
+                        }
+                        val provider = Providers[entry.provider]
+                        val targetFolder = minecraftDir.resolve(folder)
+                        val (url, file) = provider.download(entry, targetFolder, cacheDir)
                     }
-                    val provider = Providers[entry.provider]
-                    val targetFolder = minecraftDir.resolve(folder)
-                    val (url, file) = provider.download(entry, targetFolder, cacheDir)
                 }
             }
         }
+
 
         logger.info("clearing serverside files")
         for (file in minecraftDir.walkTopDown()) {

@@ -5,9 +5,11 @@ package voodoo
  * @author Nikky
  */
 
+import ch.qos.logback.classic.Level
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
+import org.slf4j.LoggerFactory
 import voodoo.builder.Builder
 import voodoo.builder.Importer
 import voodoo.data.lock.LockPack
@@ -26,10 +28,14 @@ import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
 import kotlin.system.exitProcess
+import ch.qos.logback.classic.Logger
 
 object Voodoo : KLogging() {
     @JvmStatic
     fun main(vararg fullArgs: String) {
+        val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
+        rootLogger.level = Level.DEBUG // TODO: pass as -Dvoodoo.debug=true
+
         logger.debug("using Voodoo: ${VoodooConstants.FULL_VERSION}")
         logger.debug("full arguments: ${fullArgs.joinToString(",", "[", "]") { it }}")
         logger.debug("system.properties:")
@@ -75,7 +81,7 @@ object Voodoo : KLogging() {
             .resolve(id)
 
         val tomeDir = System.getProperty("voodoo.tomeDir")?.asFile ?: rootDir.resolve("tome")
-        val docDir = System.getProperty("voodoo.docDir")?.asFile ?: uploadDir.resolve("docs")
+        val docDir = /*System.getProperty("voodoo.docDir")?.asFile ?:*/ uploadDir.resolve("docs")
         val tomeEnv = initTome(host = host, tomeDir = tomeDir, docDir = docDir)
         logger.debug("tomeEnv: $tomeEnv")
 
@@ -105,7 +111,8 @@ object Voodoo : KLogging() {
 
                 try {
                     val diff = Diff.createDiff(rootDir = rootDir.absoluteFile, newPack = lockPack)
-                    diff?.writeChangelog()
+                    logger.debug { "diff: $diff" }
+                    diff?.write(docDir)
                 } catch(e: FileNotFoundException) {
                     e.printStackTrace()
                 }
@@ -116,7 +123,7 @@ object Voodoo : KLogging() {
             "diff" to { _ ->
                 val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
                 val diff = Diff.createDiff(rootDir = rootDir.absoluteFile, newPack = modpack)
-                diff?.writeChangelog()
+                diff?.write(docDir)
             },
             "pack" to { args ->
                 val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)

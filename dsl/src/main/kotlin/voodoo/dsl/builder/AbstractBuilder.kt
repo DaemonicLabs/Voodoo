@@ -40,4 +40,12 @@ abstract class AbstractBuilder<P : ProviderBase>(
         builder.block()
         entry.optionalData = optionalData
     }
+
+    @Deprecated("use optional instead", ReplaceWith("optional(block)"))
+    fun feature(block: OptionalBuilder.() -> Unit) {
+        val optionalData = entry.optionalData?.copy() ?: OptionalData()
+        val builder = OptionalBuilder(optionalData)
+        builder.block()
+        entry.optionalData = optionalData
+    }
 }

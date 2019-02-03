@@ -38,20 +38,7 @@ data class FnPatternList(
         return false
     }
 
-    @Serializer(forClass = FnPatternList::class)
     companion object {
-        override fun serialize(encoder: Encoder, obj: FnPatternList) {
-            val elemOutput = encoder.beginStructure(descriptor)
-            obj.include.takeUnless { it.isEmpty() }?.let {
-                elemOutput.encodeSerializableElement(descriptor, 0, String.serializer().list, it)
-            }
-            obj.exclude.takeUnless { it.isEmpty() }?.let {
-                elemOutput.encodeSerializableElement(descriptor, 1, String.serializer().list, it)
-            }
-
-            elemOutput.endStructure(descriptor)
-        }
-
         private val DEFAULT_FLAGS = EnumSet.of<FnMatch.Flag>(FnMatch.Flag.CASEFOLD, FnMatch.Flag.PERIOD)
     }
 }

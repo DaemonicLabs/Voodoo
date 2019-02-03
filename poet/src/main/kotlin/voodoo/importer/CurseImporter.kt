@@ -23,7 +23,7 @@ import voodoo.script.MainScriptEnv
 import voodoo.util.UnzipUtility.unzip
 import voodoo.util.blankOr
 import voodoo.util.download
-import voodoo.util.pool
+import voodoo.util.withPool
 import withProvider
 import java.io.File
 import java.net.URL
@@ -70,31 +70,32 @@ object CurseImporter : AbstractImporter() {
 
         extractFolder.resolve(manifest.overrides).copyRecursively(sourceFolder)
 
-//        val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
-
         val curseChannel = Channel<Triple<String, String, ProjectID>>(Channel.UNLIMITED)
 
         coroutineScope {
-            for (file in manifest.files) {
-                launch(context = pool + CoroutineName("${file.projectID}:${file.fileID}")) {
-                    logger.info { file }
-                    val addon = CurseClient.getAddon(file.projectID, PROXY_URL)!!
-                    val addonFile = CurseClient.getAddonFile(file.projectID, file.fileID, PROXY_URL)!!
+            withPool { pool ->
+                for (file in manifest.files) {
+                    launch(context = pool + CoroutineName("${file.projectID}:${file.fileID}")) {
+                        logger.info { file }
+                        val addon = CurseClient.getAddon(file.projectID, PROXY_URL)!!
+                        val addonFile = CurseClient.getAddonFile(file.projectID, file.fileID, PROXY_URL)!!
 
-                    if (addonFile.gameVersion.none { version -> validMcVersions.contains(version) }) {
-                        validMcVersions += addonFile.gameVersion
-                    }
+                        if (addonFile.gameVersion.none { version -> validMcVersions.contains(version) }) {
+                            validMcVersions += addonFile.gameVersion
+                        }
 
-                    curseChannel.send(
-                        Triple(
-                            Poet.defaultSlugSanitizer(addon.slug),
-                            Regex.escape(addonFile.fileName),
-                            addon.id
+                        curseChannel.send(
+                            Triple(
+                                Poet.defaultSlugSanitizer(addon.slug),
+                                Regex.escape(addonFile.fileName),
+                                addon.id
+                            )
                         )
-                    )
+                    }
+                    delay(10)
                 }
-                delay(10)
             }
+
 
             delay(10)
             logger.info("waiting for jobs to finish")

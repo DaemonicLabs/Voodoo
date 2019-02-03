@@ -8,7 +8,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.newFixedThreadPoolContext
 import kotlinx.coroutines.runBlocking
 import kotlinx.html.ATarget
 import kotlinx.html.a
@@ -28,6 +27,7 @@ import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
 import voodoo.provider.Providers
 import voodoo.util.packToZip
+import voodoo.util.withPool
 import java.io.File
 
 /**
@@ -84,47 +84,47 @@ object CursePack : AbstractPack() {
             logger.info("cleaning mods $modsFolder")
             modsFolder.deleteRecursively()
 
-            val curseModsChannel = Channel<CurseFile>(Channel.CONFLATED)
-            val pool = newFixedThreadPoolContext(Runtime.getRuntime().availableProcessors() + 1, "pool")
+            val curseMods = withPool { pool ->
+                val curseModsChannel = Channel<CurseFile>(Channel.CONFLATED)
 
-            // download entries
-            for (entry in modpack.entrySet) {
-                if (entry.side == Side.SERVER) continue
-                jobs += launch(context = coroutineContext + pool) {
-                    val folder = entry.serialFile.absoluteFile.parentFile
-                    val required = !modpack.isEntryOptional(entry.id)
+                // download entries
+                for (entry in modpack.entrySet) {
+                    if (entry.side == Side.SERVER) continue
+                    jobs += launch(context = coroutineContext + pool) {
+                        val folder = entry.serialFile.absoluteFile.parentFile
+                        val required = !modpack.isEntryOptional(entry.id)
 
-                    val provider = Providers[entry.provider]
-                    if (provider == CurseProvider) {
-                        curseModsChannel.send(
-                            CurseFile(
-                                entry.projectID,
-                                entry.fileID,
-                                required
-                            ).also {
-                                println("added curse file $it")
+                        val provider = Providers[entry.provider]
+                        if (provider == CurseProvider) {
+                            curseModsChannel.send(
+                                CurseFile(
+                                    entry.projectID,
+                                    entry.fileID,
+                                    required
+                                ).also {
+                                    println("added curse file $it")
+                                }
+                            )
+                        } else {
+                            val targetFolder = srcFolder.resolve(folder)
+                            val (_, file) = provider.download(entry, targetFolder, cacheDir)
+                            if (!required) {
+                                val optionalFile = file.parentFile.resolve(file.name + ".disabled")
+                                file.renameTo(optionalFile)
                             }
-                        )
-                    } else {
-                        val targetFolder = srcFolder.resolve(folder)
-                        val (_, file) = provider.download(entry, targetFolder, cacheDir)
-                        if (!required) {
-                            val optionalFile = file.parentFile.resolve(file.name + ".disabled")
-                            file.renameTo(optionalFile)
                         }
                     }
+                    logger.info("started job: download '${entry.id}'")
+                    delay(100)
                 }
-                logger.info("started job: download '${entry.id}'")
+
                 delay(100)
+                logger.info("waiting for jobs to finish")
+                curseModsChannel.consume {
+                    jobs.joinAll()
+                }
+                curseModsChannel.toList()
             }
-
-            delay(100)
-            logger.info("waiting for jobs to finish")
-            curseModsChannel.consume {
-                jobs.joinAll()
-            }
-
-            val curseMods = curseModsChannel.toList()
 
             // generate modlist
             val modListFile = modpackDir.resolve("modlist.html")
@@ -147,7 +147,10 @@ object CursePack : AbstractPack() {
                                     projectPage.isNotEmpty() -> a(href = projectPage) { +"${entry.displayName} $authorString" }
                                     entry.url.isNotBlank() -> {
                                         +"direct: "
-                                        a(href = entry.url, target = ATarget.blank) { +"${entry.displayName} $authorString" }
+                                        a(
+                                            href = entry.url,
+                                            target = ATarget.blank
+                                        ) { +"${entry.displayName} $authorString" }
                                     }
                                     else -> {
                                         val source =
