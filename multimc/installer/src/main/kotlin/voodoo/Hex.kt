@@ -1,6 +1,5 @@
 package voodoo
 
-import com.github.kittinunf.fuel.core.extensions.cUrlString
 import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
@@ -11,7 +10,6 @@ import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.internal.BooleanSerializer
@@ -28,7 +26,7 @@ import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
 import voodoo.util.blankOr
 import voodoo.util.download
-import voodoo.util.pool
+import voodoo.util.withPool
 import java.awt.Toolkit
 import java.io.File
 import kotlin.system.exitProcess
@@ -156,105 +154,107 @@ object Hex : KLogging() {
 
         val oldTaskList = (oldpack?.tasks?.toMutableList() ?: mutableListOf()) as List<FileInstall>
 
-        coroutineScope {
-            val oldTasksRemover = actor<FileInstall> {
-                oldTaskList as MutableList
-                for (msg in channel) {
-                    logger.info("removing ${msg.to}")
-                    oldTaskList.remove(msg)
+        withPool { pool ->
+            coroutineScope {
+                val oldTasksRemover = actor<FileInstall> {
+                    oldTaskList as MutableList
+                    for (msg in channel) {
+                        logger.info("removing ${msg.to}")
+                        oldTaskList.remove(msg)
+                    }
                 }
-            }
 
-            for (task in modpack.tasks) {
-                launch(context = pool) {
-                    val oldTask = oldTaskList.find { it.to == task.to }
+                for (task in modpack.tasks) {
+                    launch(context = pool) {
+                        val oldTask = oldTaskList.find { it.to == task.to }
 
-                    val whenTask = task.conditionWhen
-                    if (whenTask != null) {
-                        val download = when (whenTask.ifSwitch) {
-                            "requireAny" -> {
-                                whenTask.features.any { feature -> features[feature] ?: false }
-                            }
-                            "requireAll" -> {
-                                whenTask.features.all { feature -> features[feature] ?: false }
-                            }
-                            else -> false
-                        }
-                        if (!download) {
-                            logger.info("${whenTask.features} is disabled, skipping download")
-                            return@launch
-                        }
-                    }
-
-                    val url = if (task.location.startsWith("http")) {
-                        task.location
-                    } else {
-                        "$objectsUrl/${task.location}"
-                    }
-                    val target = minecraftDir.resolve(task.to)
-                    val chunkedHash = task.hash.chunked(6).joinToString("/")
-                    val cacheFolder = directories.cacheHome.resolve(chunkedHash)
-
-                    if (target.exists()) {
-                        if (oldTask != null) {
-                            // file exists already and existed in the last version
-
-                            if (task.isUserFile && oldTask.isUserFile) {
-                                logger.info("task ${task.to} is a userfile, will not be modified")
-                                oldTask.let {
-                                    oldTasksRemover.send(it)
+                        val whenTask = task.conditionWhen
+                        if (whenTask != null) {
+                            val download = when (whenTask.ifSwitch) {
+                                "requireAny" -> {
+                                    whenTask.features.any { feature -> features[feature] ?: false }
                                 }
+                                "requireAll" -> {
+                                    whenTask.features.all { feature -> features[feature] ?: false }
+                                }
+                                else -> false
+                            }
+                            if (!download) {
+                                logger.info("${whenTask.features} is disabled, skipping download")
                                 return@launch
                             }
-                            if (oldTask.hash == task.hash && target.isFile && target.sha1Hex() == task.hash) {
-                                logger.info("task ${task.to} file did not change and sha1 hash matches")
-                                oldTask.let {
-                                    oldTasksRemover.send(it)
+                        }
+
+                        val url = if (task.location.startsWith("http")) {
+                            task.location
+                        } else {
+                            "$objectsUrl/${task.location}"
+                        }
+                        val target = minecraftDir.resolve(task.to)
+                        val chunkedHash = task.hash.chunked(6).joinToString("/")
+                        val cacheFolder = directories.cacheHome.resolve(chunkedHash)
+
+                        if (target.exists()) {
+                            if (oldTask != null) {
+                                // file exists already and existed in the last version
+
+                                if (task.isUserFile && oldTask.isUserFile) {
+                                    logger.info("task ${task.to} is a userfile, will not be modified")
+                                    oldTask.let {
+                                        oldTasksRemover.send(it)
+                                    }
+                                    return@launch
                                 }
-                                return@launch
+                                if (oldTask.hash == task.hash && target.isFile && target.sha1Hex() == task.hash) {
+                                    logger.info("task ${task.to} file did not change and sha1 hash matches")
+                                    oldTask.let {
+                                        oldTasksRemover.send(it)
+                                    }
+                                    return@launch
+                                } else {
+                                    // mismatching hash.. override file
+                                    logger.info("task ${task.to} mismatching hash.. reset and override file")
+                                    oldTask.let {
+                                        oldTasksRemover.send(it)
+                                    }
+                                    target.delete()
+                                    target.parentFile.mkdirs()
+                                    target.download(url, cacheFolder)
+                                }
                             } else {
-                                // mismatching hash.. override file
-                                logger.info("task ${task.to} mismatching hash.. reset and override file")
-                                oldTask.let {
-                                    oldTasksRemover.send(it)
-                                }
+                                // file exists but was not in the last version.. reset to make sure
+                                logger.info("task ${task.to} exists but was not in the last version.. reset to make sure")
                                 target.delete()
                                 target.parentFile.mkdirs()
                                 target.download(url, cacheFolder)
                             }
                         } else {
-                            // file exists but was not in the last version.. reset to make sure
-                            logger.info("task ${task.to} exists but was not in the last version.. reset to make sure")
-                            target.delete()
+                            // new file
+                            logger.info("task ${task.to} creating new file")
                             target.parentFile.mkdirs()
                             target.download(url, cacheFolder)
-                        }
-                    } else {
-                        // new file
-                        logger.info("task ${task.to} creating new file")
-                        target.parentFile.mkdirs()
-                        target.download(url, cacheFolder)
 
-                        oldTask?.let {
-                            oldTasksRemover.send(it)
+                            oldTask?.let {
+                                oldTasksRemover.send(it)
+                            }
                         }
-                    }
 
-                    if (target.exists()) {
-                        val sha1 = target.sha1Hex()
-                        if (sha1 != task.hash) {
-                            logger.error("hashes do not match for task ${task.to}")
-                            logger.error(sha1)
-                            logger.error(task.hash)
+                        if (target.exists()) {
+                            val sha1 = target.sha1Hex()
+                            if (sha1 != task.hash) {
+                                logger.error("hashes do not match for task ${task.to}")
+                                logger.error(sha1)
+                                logger.error(task.hash)
+                            } else {
+                                logger.trace("task ${task.to} validated")
+                            }
                         } else {
-                            logger.trace("task ${task.to} validated")
+                            logger.error("file $target was not created")
                         }
-                    } else {
-                        logger.error("file $target was not created")
                     }
-                }.join()
+                }
+                oldTasksRemover.close()
             }
-            oldTasksRemover.close()
         }
 
         // iterate old

@@ -1,21 +1,15 @@
 package voodoo.builder
 
-import com.skcraft.launcher.model.ExtendedFeaturePattern
-import com.skcraft.launcher.model.modpack.Feature
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import mu.KotlinLogging
-import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
-import voodoo.memoize
 import voodoo.provider.Providers
-import voodoo.util.pool
+import voodoo.util.withPool
 import java.util.Collections
-import kotlin.collections.component1
-import kotlin.collections.component2
 import kotlin.system.exitProcess
 
 /**
@@ -76,46 +70,48 @@ suspend fun resolve(
 
         logger.info("unresolved: ${unresolved.map { it.id }}")
 
-        coroutineScope {
-            for (entry in unresolved) {
-                launch(context = pool + CoroutineName("job-${entry.id}")) {
-                    logger.info("resolving: ${entry.id}")
-                    val provider = Providers[entry.provider]
+        withPool { pool ->
+            coroutineScope {
+                for (entry in unresolved) {
+                    launch(context = pool + CoroutineName("job-${entry.id}")) {
+                        logger.info("resolving: ${entry.id}")
+                        val provider = Providers[entry.provider]
 
-                    val lockEntry = provider.resolve(entry, modPack.mcVersion, newEntriesChannel)
-                    logger.debug("received locked entry: $lockEntry")
+                        val lockEntry = provider.resolve(entry, modPack.mcVersion, newEntriesChannel)
+                        logger.debug("received locked entry: $lockEntry")
 
-                    logger.debug("validating: $lockEntry")
-                    if (!provider.validate(lockEntry)) {
-                        throw IllegalStateException("did not pass validation")
-                    }
+                        logger.debug("validating: $lockEntry")
+                        if (!provider.validate(lockEntry)) {
+                            throw IllegalStateException("did not pass validation")
+                        }
 
-                    logger.debug("trying to merge entry")
-                    val actualLockEntry = modPack.addOrMerge(lockEntry) { old, new ->
-                        old ?: new
-                    }
-                    logger.debug("merged entry: $actualLockEntry")
+                        logger.debug("trying to merge entry")
+                        val actualLockEntry = modPack.addOrMerge(lockEntry) { old, new ->
+                            old ?: new
+                        }
+                        logger.debug("merged entry: $actualLockEntry")
 
-                    logger.debug("validating: actual $actualLockEntry")
-                    if (!provider.validate(actualLockEntry)) {
-                        logger.error { actualLockEntry }
-                        throw IllegalStateException("actual entry did not validate")
-                    }
+                        logger.debug("validating: actual $actualLockEntry")
+                        if (!provider.validate(actualLockEntry)) {
+                            logger.error { actualLockEntry }
+                            throw IllegalStateException("actual entry did not validate")
+                        }
 
 //                    logger.debug("setting display name")
 //                    actualLockEntry.name = actualLockEntry.name()
 
-                    logger.debug("adding to resolved")
-                    resolved += entry.id
+                        logger.debug("adding to resolved")
+                        resolved += entry.id
 
-                    logger.debug("resolved: $resolved\n")
-                    logger.debug("unresolved: ${modPack.entrySet.asSequence().map { entry -> entry.id }.filter { id ->
-                        !resolved.contains(
-                            id
-                        )
-                    }.toList()}\n")
-                }.also {
-                    logger.info("started job resolve ${entry.id}")
+                        logger.debug("resolved: $resolved\n")
+                        logger.debug("unresolved: ${modPack.entrySet.asSequence().map { entry -> entry.id }.filter { id ->
+                            !resolved.contains(
+                                id
+                            )
+                        }.toList()}\n")
+                    }.also {
+                        logger.info("started job resolve ${entry.id}")
+                    }
                 }
             }
         }

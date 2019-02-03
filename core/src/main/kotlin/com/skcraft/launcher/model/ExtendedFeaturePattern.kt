@@ -20,7 +20,5 @@ data class ExtendedFeaturePattern(
     var entries: Set<String>,
 //    @Serializable(with = Feature.Companion::class)
     var feature: Feature,
-    @Optional
-    @Serializable(with = FnPatternList.Companion::class)
-    var files: FnPatternList = FnPatternList()
+    @Optional var files: FnPatternList = FnPatternList()
 )

@@ -9,7 +9,5 @@ import kotlinx.serialization.Serializable
 data class OptionalData(
     @Optional var selected: Boolean = false,
     @Optional var skRecommendation: Recommendation? = null,
-    @Optional
-    @Serializable(with = FnPatternList.Companion::class)
-    var skFiles: FnPatternList = FnPatternList()
+    @Optional var skFiles: FnPatternList = FnPatternList()
 )

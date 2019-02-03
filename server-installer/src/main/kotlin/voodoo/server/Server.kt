@@ -10,7 +10,7 @@ import voodoo.provider.Providers
 import voodoo.util.Directories
 import voodoo.util.Downloader.logger
 import voodoo.util.download
-import voodoo.util.pool
+import voodoo.util.withPool
 import java.io.File
 
 /**
@@ -67,17 +67,19 @@ object Server {
             }
         }
 
-        coroutineScope {
-            for (entry in modpack.entrySet) {
-                if (entry.side == Side.CLIENT) continue
-                launch(context = pool + CoroutineName("job-${entry.id}")) {
-                    val provider = Providers[entry.provider]
-                    val targetFolder = serverDir.resolve(entry.serialFile).absoluteFile.parentFile
-                    logger.info("downloading to - ${targetFolder.path}")
-                    val (_, _) = provider.download(entry, targetFolder, cacheDir)
-                }
+        withPool { pool ->
+            coroutineScope {
+                for (entry in modpack.entrySet) {
+                    if (entry.side == Side.CLIENT) continue
+                    launch(context = pool + CoroutineName("job-${entry.id}")) {
+                        val provider = Providers[entry.provider]
+                        val targetFolder = serverDir.resolve(entry.serialFile).absoluteFile.parentFile
+                        logger.info("downloading to - ${targetFolder.path}")
+                        val (_, _) = provider.download(entry, targetFolder, cacheDir)
+                    }
 //                delay(10)
-                logger.info("started job ${entry.displayName}")
+                    logger.info("started job ${entry.displayName}")
+                }
             }
         }
 

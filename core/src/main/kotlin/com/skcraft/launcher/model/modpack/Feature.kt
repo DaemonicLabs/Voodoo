@@ -7,20 +7,14 @@
 package com.skcraft.launcher.model.modpack
 
 import com.skcraft.launcher.builder.FnPatternList
-import kotlinx.serialization.Encoder
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
-import kotlinx.serialization.internal.EnumSerializer
 
 @Serializable
 data class Feature(
-    @Optional var name: String = "", // use displayName from entry by default
+    @Optional var name: String = "",
     @Optional var selected: Boolean = false,
-    @Optional var description: String = "", //TODO, use description from entry
+    @Optional var description: String = "",
     @Optional var recommendation: Recommendation? = null,
-    @Optional
-    @Serializable(with = FnPatternList.Companion::class)
-    var files: FnPatternList = FnPatternList()
+    @Optional var files: FnPatternList = FnPatternList()
 )

@@ -1,5 +1,7 @@
 package voodoo.util
 
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
+import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.newFixedThreadPoolContext
 
 // object ExceptionHelper : KLogging() {
@@ -15,4 +17,16 @@ import kotlinx.coroutines.newFixedThreadPoolContext
 
 val VOODOO_MULTITHREADING =
     System.getenv("VOODOO_MULTITHREADING")?.toIntOrNull() ?: Runtime.getRuntime().availableProcessors()
-val pool = newFixedThreadPoolContext(VOODOO_MULTITHREADING + 1, "pool")
+//val pool = newFixedThreadPoolContext(VOODOO_MULTITHREADING + 1, "pool")
+
+@UseExperimental(ObsoleteCoroutinesApi::class)
+inline fun <reified R> withPool(
+    name: String = "pool",
+    threads: Int = System.getenv("VOODOO_MULTITHREADING")?.toIntOrNull() ?: Runtime.getRuntime().availableProcessors() + 1,
+    execute: (pool: ExecutorCoroutineDispatcher) -> R
+): R {
+    val pool = newFixedThreadPoolContext(threads, name)
+    val r = execute(pool)
+    pool.close()
+    return r
+}

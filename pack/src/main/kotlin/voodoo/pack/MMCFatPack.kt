@@ -20,7 +20,7 @@ import voodoo.mmc.MMCUtil
 import voodoo.provider.Providers
 import voodoo.util.blankOr
 import voodoo.util.packToZip
-import voodoo.util.pool
+import voodoo.util.withPool
 import java.io.File
 
 object MMCFatPack : AbstractPack() {
@@ -97,37 +97,37 @@ object MMCFatPack : AbstractPack() {
             minecraftDir.deleteRecursively()
         }
 
-        coroutineScope {
-            val jobs = mutableListOf<Job>()
+        withPool { pool ->
+            coroutineScope {
+                for (entry in modpack.entrySet) {
+                    if (entry.side == Side.SERVER) continue
 
-            for (entry in modpack.entrySet) {
-                if (entry.side == Side.SERVER) continue
+                    launch(context = coroutineContext + pool) {
+                        val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
 
-                jobs += launch(context = coroutineContext + pool) {
-                    val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
+                        val matchedOptioalsList = modpack.optionalEntries.filter {
+                            // check if entry is a dependency of any feature
+                            modpack.isDependencyOf(entry.id, it.id, DependencyType.REQUIRED)
+                        }
 
-                    val matchedOptioalsList = modpack.optionalEntries.filter {
-                        // check if entry is a dependency of any feature
-                        modpack.isDependencyOf(entry.id, it.id, DependencyType.REQUIRED)
-                    }
+                        val provider = Providers[entry.provider]
+                        val targetFolder = minecraftDir.resolve(folder)
+                        val (_, file) = provider.download(entry, targetFolder, cacheDir)
 
-                    val provider = Providers[entry.provider]
-                    val targetFolder = minecraftDir.resolve(folder)
-                    val (_, file) = provider.download(entry, targetFolder, cacheDir)
-
-                    if (!matchedOptioalsList.isEmpty()) {
-                        val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
-                        if (!selected) {
-                            file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
+                        if (!matchedOptioalsList.isEmpty()) {
+                            val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
+                            if (!selected) {
+                                file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
+                            }
                         }
                     }
                 }
-            }
 
-            delay(10)
-            CursePack.logger.info("waiting for jobs to finish")
-            jobs.joinAll()
+                delay(10)
+                CursePack.logger.info("waiting for jobs to finish")
+            }
         }
+
 
         for (file in minecraftDir.walkTopDown()) {
             when {

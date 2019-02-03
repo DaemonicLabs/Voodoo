@@ -17,7 +17,6 @@ data class FeaturePattern(
     @SerialName("properties")
     var feature: Feature,
     @SerialName("files")
-    @Serializable(with = FnPatternList.Companion::class)
     var filePatterns: FnPatternList
 ) {
     fun matches(path: String): Boolean {
