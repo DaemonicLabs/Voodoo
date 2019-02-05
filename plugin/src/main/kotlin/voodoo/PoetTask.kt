@@ -5,12 +5,13 @@ import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 import voodoo.poet.Poet
+import voodoo.util.SharedFolders
 import java.io.File
 
 @CacheableTask
 open class PoetTask : DefaultTask() {
     @OutputDirectory
-    var targetFolder: File = project.file(".voodoo")
+    var targetFolder: File = SharedFolders.GeneratedSrc.get()
 
     init {
         group = "build"
@@ -20,6 +21,6 @@ open class PoetTask : DefaultTask() {
     @TaskAction
     fun runPoet() {
         targetFolder.mkdirs()
-        Poet.generateAll(rootDir = project.rootDir, generatedSrcDir = targetFolder)
+        Poet.generateAll(generatedSrcDir = targetFolder)
     }
 }

@@ -20,6 +20,7 @@ import voodoo.script.MainScriptEnv
 import voodoo.script.TomeScript
 import voodoo.tome.TomeEnv
 import voodoo.util.Directories
+import voodoo.util.SharedFolders
 import voodoo.util.asFile
 import voodoo.voodoo.VoodooConstants
 import java.io.File
@@ -66,15 +67,11 @@ object Voodoo : KLogging() {
 
         logger.debug("id: $id")
 
-        val rootDir = (System.getProperty("voodoo.rootDir") ?: System.getProperty("user.dir")).asFile.absoluteFile
-        val generatedFilesDir =
-            System.getProperty("voodoo.generatedSrc")?.asFile ?: rootDir.resolve("build").resolve(".voodoo").absoluteFile
-//        val generatedFiles = Poet.generateAll(rootDir = rootDir, generatedSrcDir = generatedFilesDir)
+        val rootDir = SharedFolders.RootDir.get().absoluteFile
 
         val host = createJvmScriptingHost(cacheDir)
 
-        val uploadDir = (System.getProperty("voodoo.uploadDir")?.asFile
-            ?: rootDir.resolve("_upload").absoluteFile).resolve(id)
+        val uploadDir = SharedFolders.UploadDir.get(id)
 
         val libs = rootDir.resolve("libs") // TODO: set from system property
         val tomeDir = System.getProperty("voodoo.tomeDir")?.asFile ?: rootDir.resolve("tome")
@@ -93,7 +90,6 @@ object Voodoo : KLogging() {
 
         val nestedPack = scriptEnv.pack
 
-        val packDir = scriptEnv.rootDir
         val packFileName = "$id.pack.hjson"
 //    val packFile = packDir.resolve(packFileName)
         val lockFileName = "$id.lock.pack.hjson"
@@ -119,7 +115,6 @@ object Voodoo : KLogging() {
                 } catch (e: FileNotFoundException) {
                     e.printStackTrace()
                 }
-                // TODO: generate changelog from last diff
 
                 logger.info("finished")
             },

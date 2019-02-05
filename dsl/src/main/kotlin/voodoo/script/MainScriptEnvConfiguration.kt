@@ -2,8 +2,7 @@ package voodoo.script
 
 import voodoo.Include
 import voodoo.poet.Poet
-import voodoo.util.asFile
-import kotlin.script.experimental.api.ScriptCollectedData
+import voodoo.util.SharedFolders
 import kotlin.script.experimental.api.ScriptCompilationConfiguration
 import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.asSuccess
@@ -26,13 +25,20 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
     compilerOptions.append("-jvm-target 1.8")
 
     refineConfiguration {
-        // TODO: add and evaluate file level annotations
         val reports: MutableList<ScriptDiagnostic> = mutableListOf()
         beforeParsing { context ->
-            val rootDir = (System.getProperty("voodoo.rootDir") ?: System.getProperty("user.dir")).asFile.absoluteFile
-            val generatedFilesDir =
-                System.getProperty("voodoo.generatedSrc")?.asFile ?: rootDir.resolve("build").resolve(".voodoo").absoluteFile
-            val generatedFiles = Poet.generateAll(rootDir = rootDir, generatedSrcDir = generatedFilesDir)
+//            println("context.collectedData: '${context.collectedData}' ")
+//            println("context.compilationConfiguration: '${context.compilationConfiguration}' ")
+//            context.collectedData?.entries()?.forEach { (key, value) ->
+//                println("collectedData $key: '$value' ")
+//            }
+//            context.compilationConfiguration.entries().forEach { (key, value) ->
+//                println("compilationConfiguration $key: '$value' ")
+//            }
+
+            // TODO: get access to id
+            val generatedFilesDir = SharedFolders.GeneratedSrc.get().absoluteFile
+            val generatedFiles = Poet.generateAll(generatedSrcDir = generatedFilesDir)
 
             ScriptCompilationConfiguration(context.compilationConfiguration) {
                 importScripts.append(generatedFiles.map { it.toScriptSource() })
