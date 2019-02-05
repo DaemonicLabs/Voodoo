@@ -4,6 +4,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
+import voodoo.poet.Poet
 import java.io.File
 
 @CacheableTask
@@ -19,6 +20,6 @@ open class PoetTask : DefaultTask() {
     @TaskAction
     fun runPoet() {
         targetFolder.mkdirs()
-        poet(rootDir = project.rootDir, generatedSrcDir = targetFolder)
+        Poet.generateAll(rootDir = project.rootDir, generatedSrcDir = targetFolder)
     }
 }

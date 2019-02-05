@@ -9,19 +9,28 @@ open class VoodooExtension(project: Project) {
         rootDirResolver = resolver
     }
 
-    fun generatedSource(resolver: (rootDir: File) -> File) {
-        generatedSourceResolver = resolver
-    }
-
     fun packDirectory(resolver: (rootDir: File) -> File) {
         packDirectoryResolver = resolver
     }
+
     fun tomeDirectory(resolver: (rootDir: File) -> File) {
         tomeDirectoryResolver = resolver
     }
-    fun docDirectory(resolver: (rootDir: File) -> File) {
+
+    fun generatedSource(resolver: (rootDir: File, id: String) -> File) {
+        generatedSourceResolver = resolver
+    }
+
+    fun uploadDirectory(resolver: (rootDir: File, id: String) -> File) {
+        uploadDirectoryResolver = resolver
+    }
+
+    fun docDirectory(resolver: (rootDir: File, id: String) -> File) {
         docDirectoryResolver = resolver
     }
+
+    var local: Boolean = false
+    val localVoodooProjectLocation: File = project.rootDir.parentFile
 
     internal var tasks: List<CustomTask> = listOf()
         private set
@@ -31,14 +40,16 @@ open class VoodooExtension(project: Project) {
     }
 
     private var rootDirResolver: () -> File = { project.rootDir }
-    private var generatedSourceResolver: (rootDir: File) -> File = { getRootDir.resolve(".voodoo") }
-    private var packDirectoryResolver: (rootDir: File) -> File = { getRootDir.resolve("packs") }
-    private var tomeDirectoryResolver: (rootDir: File) -> File = { getRootDir.resolve("tome") }
-    private var docDirectoryResolver: (rootDir: File) -> File = { getRootDir.resolve("docs") }
+    private var packDirectoryResolver: (rootDir: File) -> File = { rootDir -> rootDir.resolve("packs") }
+    private var tomeDirectoryResolver: (rootDir: File) -> File = { rootDir -> rootDir.resolve("tome") }
+    private var generatedSourceResolver: (rootDir: File, id: String) -> File = { rootDir, id -> rootDir.resolve("build").resolve(".voodoo") }
+    private var uploadDirectoryResolver: (rootDir: File, id: String) -> File = { rootDir, id -> rootDir.resolve("_upload") }
+    private var docDirectoryResolver: (rootDir: File, id: String) -> File = { rootDir, id -> getUploadDir(id).resolve(id).resolve("docs") }
 
-    internal val getRootDir: File get() = rootDirResolver()
-    internal val getGeneratedSrc: File get() = generatedSourceResolver(getRootDir)
-    internal val getPackDir: File get() = packDirectoryResolver(getRootDir)
-    internal val getTomeDir: File get() = tomeDirectoryResolver(getRootDir)
-    internal val getDocDir: File get() = docDirectoryResolver(getRootDir)
+    internal fun getRootDir(): File = rootDirResolver()
+    internal fun getPackDir(): File = packDirectoryResolver(getRootDir())
+    internal fun getTomeDir(): File = tomeDirectoryResolver(getRootDir())
+    internal fun getGeneratedSrc(id: String): File = generatedSourceResolver(getRootDir(), id)
+    internal fun getUploadDir(id: String): File = uploadDirectoryResolver(getRootDir(), id)
+    internal fun getDocDir(id: String): File  = docDirectoryResolver(getRootDir(), id)
 }

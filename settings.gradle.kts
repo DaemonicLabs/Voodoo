@@ -33,7 +33,6 @@ include("bootstrap")
 
 include("skcraft")
 
-include("poet")
 include("plugin")
 
 fun prefixProject(project: ProjectDescriptor, prefix: String) {

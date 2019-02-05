@@ -11,7 +11,6 @@ import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.curse.DependencyType
 import voodoo.forge.ForgeUtil
-import voodoo.markdownTable
 import voodoo.util.blankOr
 import voodoo.util.json
 import voodoo.util.serializer.FileSerializer
@@ -35,9 +34,10 @@ data class LockPack(
     @Optional val launch: LaunchModifier = LaunchModifier(),
     @Optional var userFiles: UserFiles = UserFiles(),
     @Optional var localDir: String = "local",
-    @Optional var sourceDir: String = "src", // id, //"src-$id",
     @Optional var packOptions: PackOptions = PackOptions()
 ) {
+    @Optional var sourceDir: String = id
+
     companion object : KLogging() {
 
         fun parseFiles(srcDir: File) = srcDir.walkTopDown()
@@ -110,24 +110,6 @@ data class LockPack(
 
     fun title() = title.blankOr ?: id
 
-    @Transient
-    val report: String
-        get() {
-            val forgeVersion = runBlocking {
-                ForgeUtil.forgeVersionOf(forge)?.forgeVersion ?: "missing"
-            }
-            return markdownTable(
-                header = "Title" to this.title(), content = listOf(
-                    "ID" to "`$id`",
-                    "Pack Version" to "`$version`",
-                    "MC Version" to "`$mcVersion`",
-                    "Forge Version" to "`$forgeVersion`",
-                    "Author" to "`${authors.joinToString(", ")}`",
-                    "Icon" to "<img src=\"${icon.relativeTo(rootDir).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
-                )
-            )
-        }
-
     fun findEntryById(id: String) = entrySet.find { it.id == id }
 
     operator fun MutableSet<LockEntry>.set(id: String, entry: LockEntry) {
@@ -148,7 +130,7 @@ data class LockPack(
 
     @Transient
     val optionalEntries
-            get() = entrySet.filter { it.optional }
+        get() = entrySet.filter { it.optional }
 
     fun getDependants(entryId: String, dependencyType: DependencyType): List<LockEntry> {
         return entrySet.filter { it.dependencies[dependencyType]?.contains(entryId) ?: false }
@@ -173,6 +155,7 @@ data class LockPack(
 
     @Transient
     private val dependencyCache = mutableMapOf<Pair<String, DependencyType>, List<LockEntry>>()
+
     fun dependencies(entryId: String, dependencyType: DependencyType): List<LockEntry> {
         val entry = findEntryById(entryId)!!
         return dependencyCache.computeIfAbsent(entryId to dependencyType) {
@@ -183,5 +166,31 @@ data class LockPack(
     fun isDependencyOf(entryId: String, parentId: String, dependencyType: DependencyType): Boolean {
         val dependencies = dependencies(parentId, dependencyType)
         return dependencies.any { it.id == entryId || isDependencyOf(entryId, it.id, dependencyType) }
+    }
+
+    /***
+     * creates a report of key-name-value triples
+     */
+    fun report(): List<Triple<String, String, String>> {
+        val reports = mutableListOf(Triple("id", "ID", "`$id`"))
+        title.blankOr?.let {
+            reports += Triple("title", "Title", "`$title`")
+        }
+        reports += Triple("packVersion", "Pack Version", "`$version`")
+        reports += Triple("mcVersion", "MC Version", "`$mcVersion`")
+        forge?.let {
+            val forgeVersion = runBlocking { ForgeUtil.forgeVersionOf(it).forgeVersion }
+            reports += Triple("forgeVersion", "Forge Version", "`$forgeVersion`")
+        }
+        reports += Triple("authors", "Author", "`${authors.joinToString(", ")}`")
+        icon.takeIf { it.exists() }?.let {
+            reports += Triple(
+                "icon",
+                "Icon",
+                "<img src=\"${it.relativeTo(rootDir).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
+            )
+        }
+
+        return reports
     }
 }

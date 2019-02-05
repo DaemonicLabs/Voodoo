@@ -6,7 +6,7 @@ import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
-import voodoo.importer.CurseImporter
+import voodoo.poet.importer.CurseImporter
 import java.io.File
 
 open class CurseImportTask : DefaultTask() {

@@ -1,4 +1,4 @@
-package voodoo.importer
+package voodoo.poet.importer
 
 import mu.KLogging
 import voodoo.util.Directories

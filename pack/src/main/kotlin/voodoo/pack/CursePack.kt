@@ -26,6 +26,7 @@ import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
 import voodoo.provider.Providers
+import voodoo.util.blankOr
 import voodoo.util.packToZip
 import voodoo.util.withPool
 import java.io.File
@@ -169,7 +170,7 @@ object CursePack : AbstractPack() {
             modListFile.writeText(html)
 
             val curseManifest = CurseManifest(
-                name = modpack.title ?: modpack.id,
+                name = modpack.title.blankOr ?: modpack.id,
                 version = modpack.version,
                 author = modpack.authors.joinToString(", "),
                 minecraft = CurseMinecraft(

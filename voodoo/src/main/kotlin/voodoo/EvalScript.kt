@@ -9,9 +9,11 @@ import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.ScriptEvaluationConfiguration
 import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.api.constructorArgs
+import kotlin.script.experimental.api.dependencies
 import kotlin.script.experimental.api.importScripts
 import kotlin.script.experimental.api.resultOrNull
 import kotlin.script.experimental.host.toScriptSource
+import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.defaultJvmScriptingHostConfiguration
 import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
 import kotlin.script.experimental.jvm.jdkHome
@@ -31,21 +33,26 @@ fun createJvmScriptingHost(cacheDir: File): BasicJvmScriptingHost {
 }
 
 inline fun <reified T: Any> BasicJvmScriptingHost.evalScript(
+    libs: File,
     scriptFile: File,
     vararg args: Any?,
-    importScripts: List<SourceCode> = listOf(),
     compilationConfig: ScriptCompilationConfiguration = createJvmCompilationConfigurationFromTemplate<T> {
         jvm {
-            dependenciesFromCurrentContext(wholeClasspath = true)
+            dependenciesFromCurrentContext(wholeClasspath = false)
 
-            importScripts(importScripts)
-
-            val JDK_HOME = System.getProperty("voodoo.jdkHome") ?: System.getenv("JAVA_HOME")
-                ?: throw IllegalStateException("please pass -Dvoodoo.jdkHome=path/to/jdk or please set JAVA_HOME to the installed jdk")
-            jdkHome(File(JDK_HOME))
+            if(libs.exists()) {
+                libs.walkTopDown()
+                    .filter { file ->
+                        file.name.endsWith(".jar")
+                    }
+                    .map {
+                        dependencies.append(JvmDependency(it))
+                    }
+            }
+//            val JDK_HOME = System.getProperty("voodoo.jdkHome") ?: System.getenv("JAVA_HOME")
+//                ?: throw IllegalStateException("please pass -Dvoodoo.jdkHome=path/to/jdk or please set JAVA_HOME to the installed jdk")
+//            jdkHome(File(JDK_HOME))
         }
-
-//        compilerOptions.append("-jvm-target", "1.8") // default in kotlin 1.3.20
     }
 ): T {
     println("compilationConfig entries")

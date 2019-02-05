@@ -11,9 +11,9 @@ idea {
 }
 
 val poet = task<JavaExec>("poet") {
-    main = "voodoo.PoetKt"
+    main = "voodoo.poet.Poet"
     args = listOf(genSrc.parentFile.path, genSrc.path)
-    classpath = project(":poet").sourceSets["main"].runtimeClasspath
+    classpath = project(":dsl").sourceSets["main"].runtimeClasspath
 
     group = "build"
     dependsOn(":poet:classes")

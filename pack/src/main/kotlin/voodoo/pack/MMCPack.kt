@@ -2,6 +2,7 @@ package voodoo.pack
 
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
+import voodoo.util.blankOr
 import voodoo.util.jenkins.downloadVoodoo
 import voodoo.util.packToZip
 import java.io.File
@@ -24,7 +25,7 @@ object MMCPack : AbstractPack() {
         val preLaunchCommand =
             "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
         val minecraftDir = MMCUtil.installEmptyPack(
-            modpack.title,
+            modpack.title.blankOr,
             modpack.id,
             icon = modpack.icon,
             instanceDir = instanceDir,

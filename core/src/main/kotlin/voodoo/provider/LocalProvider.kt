@@ -36,4 +36,10 @@ object LocalProvider : ProviderBase("Local Provider") {
     override suspend fun generateName(entry: LockEntry): String {
         return entry.fileSrc.substringBeforeLast('/')
     }
+
+    override fun reportData(entry: LockEntry): MutableList<Triple<String, String, String>> {
+        val data = super.reportData(entry)
+        data += Triple("local_fileSrc", "File Source", "`${entry.fileSrc}`")
+        return data
+    }
 }

@@ -1,4 +1,4 @@
-package voodoo.importer
+package voodoo.poet.importer
 
 import fileSrc
 import kotlinx.coroutines.CoroutineName
@@ -9,8 +9,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import list
 import releaseTypes
-import voodoo.Poet
-import voodoo.PoetPack
+import voodoo.poet.Poet
+import voodoo.poet.PoetPack
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.CurseManifest
@@ -58,7 +58,7 @@ object CurseImporter : AbstractImporter() {
         val manifestFile = extractFolder.resolve("manifest.json")
         require(manifestFile.exists()) { "$manifestFile does not exist" }
 
-        val manifest = Json.parse(CurseManifest.serializer(), manifestFile.readText())
+        val manifest: CurseManifest = Json.parse(CurseManifest.serializer(), manifestFile.readText())
 
         val validMcVersions = mutableSetOf<String>()
 

@@ -6,13 +6,16 @@ package voodoo
  */
 
 import ch.qos.logback.classic.Level
+import ch.qos.logback.classic.Logger
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import org.slf4j.LoggerFactory
 import voodoo.builder.Builder
 import voodoo.builder.Importer
+import voodoo.changelog.ChangelogBuilder
 import voodoo.data.lock.LockPack
+import voodoo.script.ChangeScript
 import voodoo.script.MainScriptEnv
 import voodoo.script.TomeScript
 import voodoo.tome.TomeEnv
@@ -21,14 +24,8 @@ import voodoo.util.asFile
 import voodoo.voodoo.VoodooConstants
 import java.io.File
 import java.io.FileNotFoundException
-import kotlin.script.experimental.host.toScriptSource
-import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
-import kotlin.script.experimental.jvm.jdkHome
-import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
-import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
 import kotlin.system.exitProcess
-import ch.qos.logback.classic.Logger
 
 object Voodoo : KLogging() {
     @JvmStatic
@@ -71,24 +68,27 @@ object Voodoo : KLogging() {
 
         val rootDir = (System.getProperty("voodoo.rootDir") ?: System.getProperty("user.dir")).asFile.absoluteFile
         val generatedFilesDir =
-            System.getProperty("voodoo.generatedSrc")?.asFile ?: rootDir.resolve(".voodoo").absoluteFile
-        val generatedFiles = poet(rootDir = rootDir, generatedSrcDir = generatedFilesDir)
+            System.getProperty("voodoo.generatedSrc")?.asFile ?: rootDir.resolve("build").resolve(".voodoo").absoluteFile
+//        val generatedFiles = Poet.generateAll(rootDir = rootDir, generatedSrcDir = generatedFilesDir)
 
         val host = createJvmScriptingHost(cacheDir)
 
-        // TODO: add to gradle plugin
-        val uploadDir =  (System.getProperty("voodoo.uploadDir")?.asFile ?: rootDir.resolve("_upload").absoluteFile)
-            .resolve(id)
+        val uploadDir = (System.getProperty("voodoo.uploadDir")?.asFile
+            ?: rootDir.resolve("_upload").absoluteFile).resolve(id)
 
+        val libs = rootDir.resolve("libs") // TODO: set from system property
         val tomeDir = System.getProperty("voodoo.tomeDir")?.asFile ?: rootDir.resolve("tome")
         val docDir = /*System.getProperty("voodoo.docDir")?.asFile ?:*/ uploadDir.resolve("docs")
-        val tomeEnv = initTome(host = host, tomeDir = tomeDir, docDir = docDir)
+        val tomeEnv = initTome(
+            libs = libs, host = host, tomeDir = tomeDir, docDir = docDir)
         logger.debug("tomeEnv: $tomeEnv")
+        val changelogBuilder = initChangelogBuilder(
+            libs = libs, id = id, tomeDir = tomeDir, host = host)
 
         val scriptEnv = host.evalScript<MainScriptEnv>(
-            scriptFile,
-            args = *arrayOf(rootDir, id),
-            importScripts = generatedFiles.map { it.toScriptSource() }
+            libs = libs,
+            scriptFile = scriptFile,
+            args = *arrayOf(rootDir, id)
         )
 
         val nestedPack = scriptEnv.pack
@@ -98,7 +98,6 @@ object Voodoo : KLogging() {
 //    val packFile = packDir.resolve(packFileName)
         val lockFileName = "$id.lock.pack.hjson"
         val lockFile = scriptEnv.pack.sourceFolder.resolve(lockFileName)
-
 
         val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
             "import_debug" to { _ -> Importer.flatten(nestedPack, targetFileName = packFileName) },
@@ -110,10 +109,14 @@ object Voodoo : KLogging() {
                 Tome.generate(modpack, lockPack, tomeEnv, uploadDir)
 
                 try {
-                    val diff = Diff.createDiff(rootDir = rootDir.absoluteFile, newPack = lockPack)
+                    val diff = Diff.createDiff(
+                        docDir = docDir,
+                        rootDir = rootDir.absoluteFile,
+                        newPack = lockPack,
+                        changelogBuilder = changelogBuilder
+                    )
                     logger.debug { "diff: $diff" }
-                    diff?.write(docDir)
-                } catch(e: FileNotFoundException) {
+                } catch (e: FileNotFoundException) {
                     e.printStackTrace()
                 }
                 // TODO: generate changelog from last diff
@@ -122,8 +125,12 @@ object Voodoo : KLogging() {
             },
             "diff" to { _ ->
                 val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
-                val diff = Diff.createDiff(rootDir = rootDir.absoluteFile, newPack = modpack)
-                diff?.write(docDir)
+                val diff = Diff.createDiff(
+                    docDir = docDir,
+                    rootDir = rootDir.absoluteFile,
+                    newPack = modpack,
+                    changelogBuilder = changelogBuilder
+                )
             },
             "pack" to { args ->
                 val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
@@ -177,7 +184,38 @@ object Voodoo : KLogging() {
         }
     }
 
+    private fun initChangelogBuilder(
+        libs: File,
+        id: String,
+        tomeDir: File,
+        host: BasicJvmScriptingHost
+    ): ChangelogBuilder {
+        tomeDir.resolve("$id.changelog.kts")
+            .also { file -> logger.debug { "trying to load: $file" } }
+            .takeIf { it.exists() }?.let { idScript ->
+            return host.evalScript<ChangeScript>(
+                libs = libs,
+                scriptFile = idScript
+            ).let { script ->
+                script.getBuilderOrNull() ?: throw NotImplementedError("builder was not assigned in $idScript")
+            }
+        }
+        tomeDir.resolve("default.changelog.kts")
+            .also { file -> logger.debug { "trying to load: $file" } }
+            .takeIf { it.exists() }?.let { defaultScript ->
+            return host.evalScript<ChangeScript>(
+                libs = libs,
+                scriptFile = defaultScript
+            ).let { script ->
+                script.getBuilderOrNull() ?: throw NotImplementedError("builder was not assigned in $defaultScript")
+            }
+        }
+        logger.debug { "falling back to default changelog builder implementation" }
+        return ChangelogBuilder()
+    }
+
     private fun initTome(
+        libs: File,
         tomeDir: File,
         docDir: File,
         host: BasicJvmScriptingHost
@@ -189,16 +227,6 @@ object Voodoo : KLogging() {
             file.isFile && file.name.endsWith(".tome.kts")
         }
 
-        val compilationConfig = createJvmCompilationConfigurationFromTemplate<TomeScript> {
-            jvm {
-                dependenciesFromCurrentContext(wholeClasspath = true)
-
-                val JDK_HOME = System.getProperty("voodoo.jdkHome") ?: System.getenv("JAVA_HOME")
-                    ?: throw IllegalStateException("please pass -Dvoodoo.jdkHome=path/to/jdk or please set JAVA_HOME to the installed jdk")
-                jdkHome(File(JDK_HOME))
-            }
-        }
-
         tomeScripts.forEach { scriptFile ->
             require(scriptFile.exists()) { "script file does not exists" }
             val scriptFileName = scriptFile.name
@@ -208,25 +236,28 @@ object Voodoo : KLogging() {
             }
 
             val tomeScriptEnv = host.evalScript<TomeScript>(
+                libs = libs,
                 scriptFile = scriptFile,
-                args = *arrayOf(id),
-                compilationConfig = compilationConfig
+                args = *arrayOf(id)
             )
 
-            tomeEnv.add(tomeScriptEnv.fileName, tomeScriptEnv.generateHtml)
+            val generator = tomeScriptEnv.getGeneratorOrNull()
+                ?: throw NotImplementedError("generator was not assigned in $scriptFile")
+
+            tomeEnv.add(tomeScriptEnv.filename, generator)
         }
 
         return tomeEnv
     }
-}
 
-private fun Iterable<String>.chunkBy(separator: String = "-"): List<Array<String>> {
-    val result: MutableList<MutableList<String>> = mutableListOf(mutableListOf())
-    this.forEach {
-        if (it == separator)
-            result += mutableListOf<String>()
-        else
-            result.last() += it
+    private fun Iterable<String>.chunkBy(separator: String = "-"): List<Array<String>> {
+        val result: MutableList<MutableList<String>> = mutableListOf(mutableListOf())
+        this.forEach {
+            if (it == separator)
+                result += mutableListOf<String>()
+            else
+                result.last() += it
+        }
+        return result.map { it.toTypedArray() }
     }
-    return result.map { it.toTypedArray() }
 }

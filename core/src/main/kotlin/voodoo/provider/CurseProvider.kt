@@ -218,14 +218,14 @@ object CurseProvider : ProviderBase("Curse Provider") {
         }
     }
 
-    override fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> {
+    override fun reportData(entry: LockEntry): MutableList<Triple<String, String, String>> {
         logger.debug("reporting for: $entry")
         val addon = runBlocking { getAddon(entry.projectID, entry.curseMetaUrl)!! }
         val addonFile = runBlocking { getAddonFile(entry.projectID, entry.fileID, entry.curseMetaUrl)!! }
 
         val data = super.reportData(entry)
-        data += "Release Type" to "`${addonFile.releaseType}`"
-        data += "Author" to "`${addon.authors.sortedBy { it.name.toUpperCase() }.joinToString { it.name }}`"
+        data += Triple("curse_release_type", "Release Type", "`${addonFile.releaseType}`")
+        data += Triple("curse_author","Author", "`${addon.authors.sortedBy { it.name.toUpperCase() }.joinToString { it.name }}`")
         return data
     }
 

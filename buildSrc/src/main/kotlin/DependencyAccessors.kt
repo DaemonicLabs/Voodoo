@@ -96,7 +96,6 @@ fun Project.setupDependencies(target: Project = this) {
                 testRuntimeOnly(kotlin("reflect", Kotlin.version))
 
                 api(project(":dsl"))
-                implementation(project(":poet"))
 
                 implementation(project(":core"))
                 implementation(project(":pack"))
@@ -124,9 +123,9 @@ fun Project.setupDependencies(target: Project = this) {
             dependencies {
                 api(project(":core"))
                 api(project(":tome"))
-                implementation(kotlin("scripting-jvm", Kotlin.version))
                 api(project(":pack:pack-tester"))
-                api(Kotlinpoet.dependency)
+                implementation(kotlin("scripting-jvm", Kotlin.version))
+                implementation(Kotlinpoet.dependency)
             }
         }
         rootProject.project(":multimc") -> {
@@ -156,14 +155,8 @@ fun Project.setupDependencies(target: Project = this) {
         }
         rootProject.project(":plugin") -> {
             dependencies {
-                api(project(":poet"))
+                api(project(":dsl"))
                 api(group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version = Kotlin.version)
-            }
-        }
-        rootProject.project(":poet") -> {
-            dependencies {
-                compile(project(":dsl"))
-                compile(Kotlinpoet.dependency)
             }
         }
         rootProject.project(":server-installer") -> {

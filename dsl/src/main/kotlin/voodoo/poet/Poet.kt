@@ -1,4 +1,4 @@
-package voodoo
+package voodoo.poet
 
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -6,7 +6,6 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
@@ -14,43 +13,47 @@ import voodoo.data.curse.ProjectID
 import voodoo.forge.ForgeUtil
 import java.io.File
 
-fun main(vararg args: String) {
-    poet(rootDir = File(args[0]), generatedSrcDir = File(args[1]))
-}
 
-fun poet(
-    rootDir: File = File(System.getProperty("user.dir")),
-    generatedSrcDir: File = rootDir.resolve(".voodoo"),
-    mods: String = "Mod",
-    texturePacks: String = "TexturePack",
-    slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
-): List<File> {
+
+object Poet : KLogging() {
+    @JvmStatic
+    fun main(vararg args: String) {
+        generateAll(rootDir = File(args[0]), generatedSrcDir = File(args[1]))
+    }
+
+    fun generateAll(
+        rootDir: File = File(System.getProperty("user.dir")),
+        generatedSrcDir: File = rootDir.resolve(".voodoo"),
+        mods: String = "Mod",
+        texturePacks: String = "TexturePack",
+        slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
+    ): List<File> {
+
 //    class XY
 //    println("classloader is of type:" + Thread.currentThread().contextClassLoader)
 //    println("classloader is of type:" + ClassLoader.getSystemClassLoader())
 //    println("classloader is of type:" + XY::class.java.classLoader)
-    Thread.currentThread().contextClassLoader = Poet::class.java.classLoader
+        Thread.currentThread().contextClassLoader = Poet::class.java.classLoader
 
-    return runBlocking {
-        listOf(
-            Poet.generate(
-                name = mods,
-                slugIdMap = Poet.requestMods(),
-                slugSanitizer = slugSanitizer,
-                folder = generatedSrcDir
-            ),
-            Poet.generate(
-                name = texturePacks,
-                slugIdMap = Poet.requestResourcePacks(),
-                slugSanitizer = slugSanitizer,
-                folder = generatedSrcDir
-            ),
-            Poet.generateForge("Forge", folder = generatedSrcDir)
-        )
+        return runBlocking {
+            listOf(
+                Poet.generate(
+                    name = mods,
+                    slugIdMap = Poet.requestMods(),
+                    slugSanitizer = slugSanitizer,
+                    folder = generatedSrcDir
+                ),
+                Poet.generate(
+                    name = texturePacks,
+                    slugIdMap = Poet.requestResourcePacks(),
+                    slugSanitizer = slugSanitizer,
+                    folder = generatedSrcDir
+                ),
+                Poet.generateForge("Forge", folder = generatedSrcDir)
+            )
+        }
     }
-}
 
-object Poet : KLogging() {
     fun defaultSlugSanitizer(slug: String) = slug
         .split('-')
         .joinToString("") {

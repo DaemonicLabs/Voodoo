@@ -20,7 +20,7 @@ abstract class AbstractBuilder<P : ProviderBase>(
     suspend fun flatten(parent: File) = entry.flatten(parent)
 
     var folder by property(entry::folder)
-    var comment by property(entry::comment)
+//    var comment by property(entry::comment)
     var description by property(entry::description)
 
     var side by property(entry::side)

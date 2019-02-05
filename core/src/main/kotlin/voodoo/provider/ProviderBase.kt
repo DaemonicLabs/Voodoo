@@ -2,6 +2,7 @@ package voodoo.provider
 
 import kotlinx.coroutines.channels.SendChannel
 import mu.KLogging
+import voodoo.data.curse.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import java.io.File
@@ -68,10 +69,35 @@ abstract class ProviderBase(
         return null
     }
 
-    open fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> = mutableListOf(
-        "Provider" to "`${entry.provider}`",
-        "Version" to "`${entry.version()}`"
-    )
+    open fun reportData(entry: LockEntry): MutableList<Triple<String, String, String>> {
+        return mutableListOf(
+            Triple("id", "ID", "`${entry.id}`")
+        ).also { list ->
+            list += Triple("version", "Version", "`${entry.version()}`")
+            list += Triple("provider", "Provider", "`${entry.provider}`")
+            entry.fileName?.let { fileName ->
+                list += Triple("filename", "Filename", "`$fileName`")
+            }
+            list += Triple("side", "Side", "`${entry.side}`")
+            entry.description?.let {
+                list += Triple("description", "Description", "`$it`")
+            }
+            list += Triple("optional", "Optional", "`${entry.optional}`")
+            entry.dependencies.takeIf { it.isNotEmpty() }?.let { dependencies ->
+
+                dependencies[DependencyType.REQUIRED]?.takeIf { it.isNotEmpty() }?.let { required ->
+                    list += Triple("dependencies_required", "Required Dependencies", required.joinToString("`, `", "`", "`"))
+                }
+
+                dependencies[DependencyType.OPTIONAL]?.takeIf { it.isNotEmpty() }?.let { required ->
+                    list += Triple("dependencies_optional", "Optional Dependencies", required.joinToString("`, `", "`", "`"))
+                }
+                dependencies[DependencyType.EMBEDDED]?.takeIf { it.isNotEmpty() }?.let { required ->
+                    list += Triple("dependencies_embedded", "Embedded Dependencies", required.joinToString("`, `", "`", "`"))
+                }
+            }
+        }
+    }
 
     open fun validate(lockEntry: LockEntry): Boolean {
         if (lockEntry.id.isEmpty()) {

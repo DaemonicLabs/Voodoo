@@ -13,6 +13,7 @@ import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
+import voodoo.data.provider.UpdateChannel
 import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
 import voodoo.provider.JenkinsProvider
@@ -35,7 +36,7 @@ data class LockEntry(
     // TODO: make id always match serialFile.name.subStringBefore(".lock.hjson") ?
     @Optional var fileName: String? = null,
     @Optional var side: Side = Side.BOTH,
-    @Optional var description: String = "",
+    @Optional var description: String? = null,
     @Optional var optionalData: OptionalData? = null,
     @Optional var dependencies: Map<DependencyType, List<String>> = mapOf(),
     // CURSE
@@ -52,6 +53,7 @@ data class LockEntry(
     @Optional var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
     // JSON
     @Optional var updateJson: String = "",
+    @Optional var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
     @Optional var jsonVersion: String = "",
     // LOCAL
     @Optional var fileSrc: String = "",

@@ -1,6 +1,5 @@
 package voodoo.data.flat
 
-import com.skcraft.launcher.model.ExtendedFeaturePattern
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
@@ -81,7 +80,7 @@ data class ModPack(
             if (existingEntry.optionalData == null) {
                 existingEntry.optionalData = newEntry.optionalData
             }
-            if (existingEntry.description.isBlank()) {
+            if (existingEntry.description?.isBlank() == true) {
                 existingEntry.description = newEntry.description
             }
 
@@ -119,10 +118,10 @@ data class ModPack(
             launch = launch,
             userFiles = userFiles,
             localDir = localDir,
-            sourceDir = sourceDir,
             packOptions = packOptions
         ).also {
             it.rootDir = rootDir
+            it.sourceDir = sourceDir
         }
     }
 

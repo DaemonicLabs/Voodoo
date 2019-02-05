@@ -1,9 +1,8 @@
 package voodoo.script
 
 import mu.KLogging
-import voodoo.data.flat.ModPack
-import voodoo.data.lock.LockPack
-import java.io.File
+import voodoo.changelog.ChangelogBuilder
+import voodoo.tome.TomeGenerator
 import kotlin.script.experimental.annotations.KotlinScript
 
 @KotlinScript(
@@ -11,10 +10,17 @@ import kotlin.script.experimental.annotations.KotlinScript
     fileExtension = "tome.kts",
     compilationConfiguration = TomeScriptConfiguration::class
 )
-abstract class TomeScript(
+open class TomeScript(
     val id: String
 ) : KLogging() {
-    var fileName = id
+    var filename: String = id
 
-    lateinit var generateHtml: suspend (ModPack, LockPack) -> String
+    protected lateinit var generator: TomeGenerator
+    fun getGeneratorOrNull(): TomeGenerator? {
+        return if(::generator.isInitialized) {
+            generator
+        } else {
+            null
+        }
+    }
 }
