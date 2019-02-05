@@ -103,12 +103,12 @@ suspend fun resolve(
                         logger.debug("adding to resolved")
                         resolved += entry.id
 
-                        logger.debug("resolved: $resolved\n")
+                        logger.debug("resolved: $resolved")
                         logger.debug("unresolved: ${modPack.entrySet.asSequence().map { entry -> entry.id }.filter { id ->
                             !resolved.contains(
                                 id
                             )
-                        }.toList()}\n")
+                        }.toList()}")
                     }.also {
                         logger.info("started job resolve ${entry.id}")
                     }

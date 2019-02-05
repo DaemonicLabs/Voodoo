@@ -11,6 +11,7 @@ import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
 import voodoo.forge.ForgeUtil
+import voodoo.util.SharedFolders
 import java.io.File
 
 
@@ -18,12 +19,11 @@ import java.io.File
 object Poet : KLogging() {
     @JvmStatic
     fun main(vararg args: String) {
-        generateAll(rootDir = File(args[0]), generatedSrcDir = File(args[1]))
+        generateAll(generatedSrcDir = File(args[0]))
     }
 
     fun generateAll(
-        rootDir: File = File(System.getProperty("user.dir")),
-        generatedSrcDir: File = rootDir.resolve(".voodoo"),
+        generatedSrcDir: File = SharedFolders.GeneratedSrc.get(),
         mods: String = "Mod",
         texturePacks: String = "TexturePack",
         slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
