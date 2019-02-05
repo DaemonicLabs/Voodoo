@@ -11,6 +11,8 @@ import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseConstants
 import voodoo.dsl.ID
 import voodoo.forge.ForgeUtil
+import voodoo.poet.Poet
+import voodoo.poet.PoetPack
 import voodoo.provider.CurseProvider
 import voodoo.script.MainScriptEnv
 import java.io.File

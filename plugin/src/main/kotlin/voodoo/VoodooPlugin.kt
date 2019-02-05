@@ -1,12 +1,13 @@
 package voodoo
 
 import org.apache.tools.ant.util.JavaEnvUtils
+import org.gradle.api.DefaultTask
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.internal.AbstractTask
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.GradleBuild
-import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
@@ -16,9 +17,8 @@ import org.gradle.kotlin.dsl.withType
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-import voodoo.poet.PoetConstants
+import voodoo.plugin.PluginConstants
 import java.io.File
-import java.io.FilenameFilter
 
 open class VoodooPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -28,14 +28,15 @@ open class VoodooPlugin : Plugin<Project> {
             extensions.create<VoodooExtension>("voodoo", project)
         }
 
-        project.afterEvaluate {
-            voodooExtension.getPackDir.mkdirs()
-            voodooExtension.getDocDir.mkdirs()
+        val voodooConfiguration = project.configurations.create("voodoo")
 
-            poet(rootDir = project.rootDir, generatedSrcDir = voodooExtension.getGeneratedSrc)
-//            val poet = task<PoetTask>("poet") {
-//                targetFolder = rootDir.resolve(voodooExtension.getGeneratedSrc)
-//            }
+        project.afterEvaluate {
+            voodooExtension.getPackDir().mkdirs()
+//            voodooExtension.getDocDir.mkdirs()
+
+            // runs poet when the plugin is applied
+//            Poet.generateAll(getRootDir = project.getRootDir, generatedSrcDir = voodooExtension.getGeneratedSrc)
+
 
             val compileKotlin = tasks.getByName<KotlinCompile>("compileKotlin")
 
@@ -54,42 +55,56 @@ open class VoodooPlugin : Plugin<Project> {
 
             extensions.configure<KotlinJvmProjectExtension> {
                 sourceSets.maybeCreate("main").kotlin.apply {
-                    srcDir(voodooExtension.getPackDir)
-                    srcDir(voodooExtension.getTomeDir)
-                    srcDir(voodooExtension.getGeneratedSrc)
+                    srcDir(voodooExtension.getPackDir())
+                    srcDir(voodooExtension.getTomeDir())
                 }
             }
 
-            extensions.configure<IdeaModel> {
-                module {
-                    generatedSourceDirs.add(voodooExtension.getGeneratedSrc)
+            val (downloadVoodoo, voodooJar) = if(voodooExtension.local) {
+                val downloadTask = task<LocalVoodooJarTask>("localVoodoo") {
+                    group = "voodoo"
+                    description = "Downloads the voodoo jar from jenkins"
                 }
-            }
-
-            val downloadVoodoo = task<DownloadVoodooTask>("downloadVoodoo") {
-                group = "voodoo"
-                description = "Downloads the voodoo jar from jenkins"
+                downloadTask as DefaultTask to downloadTask.jarFile
+            } else {
+                val downloadTask = task<DownloadVoodooTask>("downloadVoodoo") {
+                    group = "voodoo"
+                    description = "Downloads the voodoo jar from jenkins"
+                }
+                downloadTask as DefaultTask to downloadTask.jarFile
             }
 
             task<GradleBuild>("voodooVersion") {
                 group = "voodoo"
                 description = "prints the used voodoo version"
                 doLast {
-                    logger.lifecycle("version: ${PoetConstants.FULL_VERSION}")
+                    logger.lifecycle("version: ${PluginConstants.FULL_VERSION}")
                 }
             }
 
             task<CreatePackTask>("createpack") {
-                rootDir = voodooExtension.getRootDir
-                packsDir = voodooExtension.getPackDir
+                rootDir = voodooExtension.getRootDir()
+                packsDir = voodooExtension.getPackDir()
 
                 doLast {
                     logger.lifecycle("created pack $id")
                 }
             }
             task<CurseImportTask>("importCurse") {
-                rootDir = voodooExtension.getRootDir
-                packsDir = voodooExtension.getPackDir
+                rootDir = voodooExtension.getRootDir()
+                packsDir = voodooExtension.getPackDir()
+            }
+
+            val libs = project.rootDir.resolve("libs")
+
+            val copyLibs = task<AbstractTask>("copyVoodooLibs") {
+                doFirst {
+                    libs.deleteRecursively()
+                    libs.mkdirs()
+                    for (file in voodooConfiguration.resolve()) {
+                        file.copyTo(libs.resolve(file.name))
+                    }
+                }
             }
 
             val javac = File(JavaEnvUtils.getJdkExecutable("javac"))
@@ -98,38 +113,74 @@ open class VoodooPlugin : Plugin<Project> {
 
             extensions.configure<SourceSetContainer> {
                 val runtimeClasspath = maybeCreate("main").runtimeClasspath
-                voodooExtension.getPackDir
+                voodooExtension.getPackDir()
                     .listFiles { _, name -> name.endsWith(".voodoo.kts") }
                     .forEach { sourceFile ->
                         val id = sourceFile.name.substringBeforeLast(".voodoo.kts").toLowerCase()
+
+                        val includeFolder = rootDir.resolve("include") // TODO: allow customization
+                        includeFolder.mkdirs()
+
+                        // add pack specific generated sources
+                        extensions.configure<KotlinJvmProjectExtension> {
+                            sourceSets.maybeCreate("main").kotlin.apply {
+                                srcDir(voodooExtension.getGeneratedSrc(id))
+                                srcDir(includeFolder)
+                            }
+                        }
+
+                        extensions.configure<IdeaModel> {
+                            module {
+                                generatedSourceDirs.add(voodooExtension.getGeneratedSrc(id))
+                            }
+                        }
+
+                        val poet = task<PoetTask>("poet${id.capitalize()}") {
+                            targetFolder = rootDir.resolve(voodooExtension.getGeneratedSrc(id))
+                        }
+
                         task<VoodooTask>(id.toLowerCase()) {
+                            dependsOn(poet)
+                            dependsOn(copyLibs)
+                            dependsOn(downloadVoodoo)
+
+                            classpath(voodooJar)
+
                             scriptFile = sourceFile
-                            classpath = runtimeClasspath
                             description = id
                             group = id
 
-                            systemProperty("voodoo.jdkHome", jdkHome.path)
-                            systemProperty("voodoo.rootDir", voodooExtension.getRootDir)
-                            systemProperty("voodoo.tomeDir", voodooExtension.getTomeDir)
-                            systemProperty("voodoo.docDir", voodooExtension.getDocDir)
-                            systemProperty("voodoo.generatedSrc", voodooExtension.getGeneratedSrc)
+//                            systemProperty("voodoo.jdkHome", jdkHome.path)
+                            systemProperty("voodoo.rootDir", voodooExtension.getRootDir())
+                            systemProperty("voodoo.tomeDir", voodooExtension.getTomeDir())
+                            systemProperty("voodoo.includeDir", includeFolder)
+                            systemProperty("voodoo.uploadDir", voodooExtension.getUploadDir(id))
+                            systemProperty("voodoo.docDir", voodooExtension.getDocDir(id))
+                            systemProperty("voodoo.generatedSrc", voodooExtension.getGeneratedSrc(id))
                         }
 
                         voodooExtension.tasks.forEach { customTask ->
                             val (taskName, taskDescription, arguments) = customTask
                             task<VoodooTask>(id  + "_" + taskName) {
+                                dependsOn(poet)
+                                dependsOn(copyLibs)
+                                dependsOn(downloadVoodoo)
+
+                                classpath(voodooJar)
+
                                 scriptFile = sourceFile
-                                classpath = runtimeClasspath
                                 description = taskDescription
                                 group = id
                                 val nestedArgs = arguments.map { it.split(" ") }
                                 args = nestedArgs.reduceRight { acc, list -> acc + "-" + list }
 
-                                systemProperty("voodoo.jdkHome", jdkHome.path)
-                                systemProperty("voodoo.rootDir", voodooExtension.getRootDir)
-                                systemProperty("voodoo.tomeDir", voodooExtension.getTomeDir)
-                                systemProperty("voodoo.docDir", voodooExtension.getDocDir)
-                                systemProperty("voodoo.generatedSrc", voodooExtension.getGeneratedSrc)
+//                                systemProperty("voodoo.jdkHome", jdkHome.path)
+                                systemProperty("voodoo.rootDir", voodooExtension.getRootDir())
+                                systemProperty("voodoo.tomeDir", voodooExtension.getTomeDir())
+                                systemProperty("voodoo.includeDir", includeFolder)
+                                systemProperty("voodoo.uploadDir", voodooExtension.getUploadDir(id))
+                                systemProperty("voodoo.docDir", voodooExtension.getDocDir(id))
+                                systemProperty("voodoo.generatedSrc", voodooExtension.getGeneratedSrc(id))
                             }
                         }
                     }

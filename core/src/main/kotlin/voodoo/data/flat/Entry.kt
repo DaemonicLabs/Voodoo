@@ -29,8 +29,7 @@ data class Entry(
     var id: String,
     @Optional var name: String? = null, // TODO add `by provider.getDisplayname(this)`
     @Optional var folder: String = "mods",
-    @Optional var comment: String = "",
-    @Optional var description: String = "",
+    @Optional var description: String? = null,
     @Optional var optionalData: OptionalData? = null,
     @Optional var side: Side = Side.BOTH,
     @Optional var websiteUrl: String = "",
@@ -111,6 +110,8 @@ data class Entry(
             description = description,
             optionalData = optionalData,
             dependencies = dependencies.toMap(),
+            updateChannel = updateChannel,
+            updateJson = updateJson,
             nameField = name
         )
         lockEntry.id = id

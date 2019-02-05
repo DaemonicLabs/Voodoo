@@ -6,7 +6,7 @@ import voodoo.data.lock.LockEntry
 data class MMCSelectable(
     val id: String,
     val name: String = id,
-    val description: String = "",
+    val description: String? = null,
     val selected: Boolean = false,
     val skRecommendation: Recommendation? = null
 ) {

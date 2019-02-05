@@ -6,6 +6,7 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.serialization.DeserializationStrategy
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import voodoo.data.provider.UpdateChannel
@@ -19,9 +20,10 @@ import java.io.File
  */
 object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
     private suspend fun getUpdateJson(url: String): UpdateJson? {
+        val loader: DeserializationStrategy<UpdateJson> = UpdateJson.serializer()
         val (request, response, result) = url.httpGet()
             .header("User-Agent" to Downloader.useragent)
-            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = UpdateJson.serializer()))
+            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = loader))
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
@@ -78,9 +80,10 @@ object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
         return entry.jsonVersion
     }
 
-    override fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> {
+    override fun reportData(entry: LockEntry): MutableList<Triple<String, String, String>> {
         val data = super.reportData(entry)
-        data += "update channel" to "`${entry.jsonVersion}`"
+        data += Triple("json_updateChannel", "update channel", "`${entry.updateChannel}`")
+        data += Triple("json_version", "jsonVersion", "`${entry.jsonVersion}`")
         return data
     }
 }

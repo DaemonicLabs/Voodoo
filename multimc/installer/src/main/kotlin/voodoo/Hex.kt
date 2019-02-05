@@ -1,5 +1,6 @@
 package voodoo
 
+import com.github.kittinunf.fuel.core.extensions.cUrlString
 import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
@@ -12,6 +13,7 @@ import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.map
@@ -53,16 +55,16 @@ object Hex : KLogging() {
 
     private val json = Json(indented = true, strictMode = false, encodeDefaults = true)
 
-    @UseExperimental(ObsoleteCoroutinesApi::class)
     private suspend fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
         logger.info("installing into $instanceId")
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         val packUrl = urlFile.readText().trim()
         logger.info("pack url: $packUrl")
+        val loader: DeserializationStrategy<Manifest> = Manifest.serializer()
 
         val (request, response, result) = packUrl.httpGet()
             .header("User-Agent" to CurseClient.useragent)
-            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = Manifest.serializer(), json = json))
+            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = loader, json = json))
         val modpack: Manifest = when (result) {
             is Result.Success -> {
                 result.value
@@ -80,7 +82,7 @@ object Hex : KLogging() {
         val oldpack: Manifest? = oldpackFile.takeIf { it.exists() }
             ?.let { packFile ->
                 try {
-                    json.parse(Manifest.serializer(), packFile.readText())
+                    json.parse(loader, packFile.readText())
                         .also { pack ->
                             logger.info("loaded old pack ${pack.name} ${pack.version}")
                         }

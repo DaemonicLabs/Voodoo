@@ -2,6 +2,12 @@
 
 use a tweakClass for forge (bundle bootstrapper in tweakClass ?)
 
+# Includes
+
+- [ ] allow splitting up modpack definition into multiple methods
+- [ ] add `@Include(file)` (file relative to include directory)
+
+
 # MCUpdater support
 
 - [ ] manual xml building
@@ -9,7 +15,7 @@ use a tweakClass for forge (bundle bootstrapper in tweakClass ?)
   - [ ] add synthetic Modules for config and features
 - [ ] fastpack
   - [ ] ensure url pointers work for fastpack
-  - [ ] download fastpack and execute it as `java -jar` process
+  - [x] download fastpack and execute it as `java -jar` process
 
 # Scripting
 
@@ -31,10 +37,12 @@ use a tweakClass for forge (bundle bootstrapper in tweakClass ?)
 
 # diff / history
 
-copy state of the pack from git history, using tags
-clone tag into subdirectory
-
-diff on lockfilles
+- [x] archive state of the pack from git history, using tags
+- [x] unzip archive
+- [x] load old pack
+- [x] diff packs (output to a m.d file)
+  - [x] diff entries
+- [x] diff files (output as a .diff file)
 
 # condense module graph
 

@@ -38,4 +38,10 @@ object DirectProvider : ProviderBase("Direct Provider") {
     override suspend fun getVersion(entry: LockEntry): String {
         return entry.url.substringBeforeLast('.').substringAfterLast('/')
     }
+
+    override fun reportData(entry: LockEntry): MutableList<Triple<String, String, String>> {
+        val data = super.reportData(entry)
+        data += Triple("direct_url", "Url", "`${entry.url}`")
+        return data
+    }
 }

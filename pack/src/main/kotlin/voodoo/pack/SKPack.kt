@@ -22,6 +22,7 @@ import voodoo.pack.sk.SKPackages
 import voodoo.pack.sk.SKWorkspace
 import voodoo.pack.sk.SkPackageFragment
 import voodoo.provider.Providers
+import voodoo.util.blankOr
 import voodoo.util.download
 import voodoo.util.withPool
 import java.io.File
@@ -153,7 +154,7 @@ object SKPack : AbstractPack() {
                     }
                     logger.info("build entry: ${feature.entries.first()}")
                     val mainEntry = modpack.findEntryById(feature.entries.first())!!
-                    feature.feature.description = mainEntry.description
+                    feature.feature.description = mainEntry.description ?: ""
 
                     logger.info("processed feature ${feature.feature.name}")
                 }
@@ -204,7 +205,7 @@ object SKPack : AbstractPack() {
 
                 val skmodpack = SKModpack(
                     name = modpack.id,
-                    title = modpack.title ?: "",
+                    title = modpack.title.blankOr ?: "",
                     gameVersion = modpack.mcVersion,
                     userFiles = modpack.userFiles,
                     launch = modpack.launch,
@@ -258,7 +259,7 @@ object SKPack : AbstractPack() {
 
                 val packFragment = packages.packages.find { it.name == modpack.id }
                     ?: SkPackageFragment(
-                        title = modpack.title ?: "",
+                        title = modpack.title.blankOr ?: "",
                         name = modpack.id,
                         version = uniqueVersion,
                         location = "${modpack.id}.json"
@@ -280,7 +281,7 @@ object SKPack : AbstractPack() {
         features: MutableList<ExtendedFeaturePattern>
     ) {
         val entryOptionalData = entry.optionalData ?: return
-        val entryFeature = Feature(entry.displayName, entryOptionalData.selected, description = entry.description)
+        val entryFeature = Feature(entry.displayName, entryOptionalData.selected, description = entry.description ?: "")
         val featureName = entry.displayName.takeIf { it.isNotBlank() } ?: defaultName
         // find feature with matching id
         var feature = features.find { f -> f.feature.name == featureName }
@@ -288,7 +289,7 @@ object SKPack : AbstractPack() {
         // TODO: merge existing features with matching id
         if (feature == null) {
             var description = entryFeature.description
-            if (description.isEmpty()) description = entry.description
+            if (description.isEmpty()) description = entry.description ?: ""
             feature = ExtendedFeaturePattern(
                 entries = setOf(entry.id),
                 files = entryFeature.files,

@@ -340,7 +340,7 @@ object MMCUtil : KLogging() {
                         }
                     )
 
-                    if (!optionalEntry.description.isBlank()) {
+                    if (optionalEntry.description?.isBlank() != true) {
                         val descriptionText = JLabel("<html>${optionalEntry.description}</html>")
                         panel.add(descriptionText,
                             GridBagConstraints().apply {

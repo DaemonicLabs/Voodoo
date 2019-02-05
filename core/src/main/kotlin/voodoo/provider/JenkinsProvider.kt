@@ -132,10 +132,10 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         return JenkinsServer(url)
     }
 
-    override fun reportData(entry: LockEntry): MutableList<Pair<Any, Any>> {
+    override fun reportData(entry: LockEntry): MutableList<Triple<String, String, String>> {
         val data = super.reportData(entry)
-        data += "Job" to "`${entry.job}`"
-        data += "Build" to "`${entry.buildNumber}`"
+        data += Triple("jenkins_job", "Job", "`${entry.job}`")
+        data += Triple("jenkins_build", "Build", "`${entry.buildNumber}`")
         return data
     }
 }

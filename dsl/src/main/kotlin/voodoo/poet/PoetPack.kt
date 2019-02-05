@@ -1,4 +1,4 @@
-package voodoo
+package voodoo.poet
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import com.skcraft.launcher.model.modpack.Feature
@@ -43,15 +43,12 @@ object PoetPack : KLogging() {
             entry.folder.takeIf { it != default.folder }?.let {
                 addStatement("folder = %S", it)
             }
-            entry.comment.takeIf { it != default.comment }?.let {
-                addStatement("comment = %S", it)
-            }
             entry.description.takeIf { it != default.description }?.let {
                 addStatement("description = %S", it)
             }
             entry.optionalData.takeIf { it != default.optionalData }?.let { feature ->
                 val defaultFeature = Feature()
-                controlFlow("feature") { featureBuilder ->
+                controlFlow("optional") { featureBuilder ->
                     feature.selected.takeIf { it != defaultFeature.selected }?.let {
                         featureBuilder.addStatement("selected = %L", it)
                     }
