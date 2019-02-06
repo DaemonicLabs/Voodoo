@@ -7,16 +7,12 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.internal.AbstractTask
 import org.gradle.api.plugins.JavaPluginExtension
-import org.gradle.api.tasks.GradleBuild
 import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.getByName
 import org.gradle.kotlin.dsl.task
-import org.gradle.kotlin.dsl.withType
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import voodoo.plugin.PluginConstants
 import voodoo.util.SharedFolders
 import java.io.File
@@ -47,7 +43,7 @@ open class VoodooPlugin : Plugin<Project> {
 //                    languageVersion = "1.3"
 //                    jvmTarget = "1.8"
 //                }
-////                dependsOn(poet)
+// //                dependsOn(poet)
 //            }
 
             extensions.configure<JavaPluginExtension> {
@@ -71,7 +67,7 @@ open class VoodooPlugin : Plugin<Project> {
                 }
             }
 
-            val (downloadVoodoo, voodooJar) = if(voodooExtension.local) {
+            val (downloadVoodoo, voodooJar) = if (voodooExtension.local) {
                 val downloadTask = task<LocalVoodooJarTask>("localVoodoo") {
                     group = "voodoo"
                     description = "Downloads the voodoo jar from jenkins"
@@ -151,7 +147,7 @@ open class VoodooPlugin : Plugin<Project> {
 
                         voodooExtension.tasks.forEach { customTask ->
                             val (taskName, taskDescription, arguments) = customTask
-                            task<VoodooTask>(id  + "_" + taskName) {
+                            task<VoodooTask>(id + "_" + taskName) {
                                 dependsOn(poet)
                                 dependsOn(copyLibs)
                                 dependsOn(downloadVoodoo)

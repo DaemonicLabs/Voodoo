@@ -16,4 +16,3 @@ enum class SystemProperties(val key: String) {
         lateinit var setter: (key: String, value: String) -> Unit
     }
 }
-

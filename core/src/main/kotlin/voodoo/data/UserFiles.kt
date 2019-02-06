@@ -2,7 +2,6 @@ package voodoo.data
 
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
 
 /**
  * Created by nikky on 29/03/18.

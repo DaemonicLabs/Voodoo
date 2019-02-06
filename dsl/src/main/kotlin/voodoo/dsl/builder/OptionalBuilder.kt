@@ -10,5 +10,4 @@ class OptionalBuilder(optionalData: OptionalData) {
     //    var description by property(optionalData::description)
     @Deprecated("renamed to skRecommendation", ReplaceWith("skRecommendation"))
     var recommendation by property(optionalData::skRecommendation)
-
 }

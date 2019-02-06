@@ -14,5 +14,4 @@ data class PackOptions(
     @Serializable data class MultiMC(
         @Optional var skPackUrl: String? = null
     )
-
 }

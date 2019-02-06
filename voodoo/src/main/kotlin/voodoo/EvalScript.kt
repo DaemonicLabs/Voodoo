@@ -10,13 +10,11 @@ import kotlin.script.experimental.api.ScriptEvaluationConfiguration
 import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.api.constructorArgs
 import kotlin.script.experimental.api.dependencies
-import kotlin.script.experimental.api.importScripts
 import kotlin.script.experimental.api.resultOrNull
 import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.defaultJvmScriptingHostConfiguration
 import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
-import kotlin.script.experimental.jvm.jdkHome
 import kotlin.script.experimental.jvm.jvm
 import kotlin.script.experimental.jvmhost.BasicJvmScriptEvaluator
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
@@ -32,7 +30,7 @@ fun createJvmScriptingHost(cacheDir: File): BasicJvmScriptingHost {
     return host
 }
 
-inline fun <reified T: Any> BasicJvmScriptingHost.evalScript(
+inline fun <reified T : Any> BasicJvmScriptingHost.evalScript(
     libs: File,
     scriptFile: File,
     vararg args: Any?,
@@ -40,7 +38,7 @@ inline fun <reified T: Any> BasicJvmScriptingHost.evalScript(
         jvm {
             dependenciesFromCurrentContext(wholeClasspath = false)
 
-            if(libs.exists()) {
+            if (libs.exists()) {
                 libs.walkTopDown()
                     .filter { file ->
                         file.name.endsWith(".jar")

@@ -90,7 +90,7 @@ fun Project.setupDependencies(target: Project = this) {
                 testImplementation(Spek.dependencyRunner)
 
                 // https=//mvnrepository.com/artifact/org.junit.platform/junit-platform-engine
-                testImplementation(Spek.dependencyJUnit5)
+//                testImplementation(Spek.dependencyJUnit5)
 
                 // spek requires kotlin-reflect, can be omitted if already in the classpath
                 testRuntimeOnly(kotlin("reflect", Kotlin.version))

@@ -35,7 +35,7 @@ object MMCStaticPack : AbstractPack() {
         logger.info("tmp dir: $instanceDir")
 
         val skPackUrl = modpack.packOptions.multimcOptions.skPackUrl
-        if(skPackUrl == null) {
+        if (skPackUrl == null) {
             MMCPack.logger.error("skPackUrl in multimc options is not set")
             exitProcess(3)
         }

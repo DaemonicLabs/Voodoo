@@ -113,4 +113,3 @@ object GradleSetup : KLogging() {
         ShellUtil.runProcess("idea", projectDir.absolutePath, wd = projectDir)
     }
 }
-

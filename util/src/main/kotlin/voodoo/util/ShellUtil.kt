@@ -30,7 +30,8 @@ object ShellUtil : KLogging() {
     }
 
     fun requireInPath(
-        tool: String, msg: String =
+        tool: String,
+        msg: String =
             "$tool is not in PATH"
     ) = require(isInPath(tool)) { msg }
 
@@ -49,8 +50,8 @@ object ShellUtil : KLogging() {
         wd: File? = null,
         displayOut: Boolean = true,
         displayErr: Boolean = true,
-        stdoutConsumer: Consumer<String> = StringBuilderConsumer(if(displayOut) System.out else null),
-        stderrConsumer: Consumer<String> = StringBuilderConsumer(if(displayErr) System.err else null)
+        stdoutConsumer: Consumer<String> = StringBuilderConsumer(if (displayOut) System.out else null),
+        stderrConsumer: Consumer<String> = StringBuilderConsumer(if (displayErr) System.err else null)
     ): ProcessResult {
 
         try {

@@ -2,13 +2,8 @@ package com.skcraft.launcher.model
 
 import com.skcraft.launcher.builder.FnPatternList
 import com.skcraft.launcher.model.modpack.Feature
-import kotlinx.serialization.CompositeEncoder
-import kotlinx.serialization.Encoder
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.SerializationStrategy
-import kotlinx.serialization.Serializer
-import kotlinx.serialization.serializer
 import kotlinx.serialization.set
 
 /**

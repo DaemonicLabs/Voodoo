@@ -27,7 +27,7 @@ data class LockPack(
     val mcVersion: String,
     @Optional val title: String? = null,
     @Optional val version: String = "1.0",
-    @Optional @Serializable(with=FileSerializer::class)
+    @Optional @Serializable(with = FileSerializer::class)
     val icon: File = File("icon.png"),
     @Optional val authors: List<String> = emptyList(),
     @Optional val forge: Int? = null,

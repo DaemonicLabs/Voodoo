@@ -7,7 +7,6 @@ import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.tester.MultiMCTester
-import java.io.File
 import kotlin.system.exitProcess
 
 /**

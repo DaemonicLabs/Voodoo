@@ -10,7 +10,6 @@ import voodoo.data.meta.MetaInfo
 import voodoo.forge.ForgeUtil
 import voodoo.markdownTable
 import voodoo.provider.Providers
-import voodoo.util.blankOr
 import voodoo.util.json
 import java.io.File
 
@@ -74,7 +73,7 @@ data class PackDiff(
         currentCompleteChangelogFile.copyTo(docDir.resolve(Companion.Filename.completeChangelog), overwrite = true)
     }
 
-    companion object: KLogging() {
+    companion object : KLogging() {
         private object Filename {
             const val changelog = "changelog.md"
             const val completeChangelog = "complete_changelog.md"
@@ -155,7 +154,7 @@ data class PackDiff(
                     content += listOf(oldInfo.name, oldInfo.value, "")
                 }
 
-            if (content.isEmpty())  {
+            if (content.isEmpty()) {
                 logger.debug("empty table because there was no differences btween")
                 logger.debug { "old: $oldMetaInfo" }
                 logger.debug { "new: $newMetaInfo" }

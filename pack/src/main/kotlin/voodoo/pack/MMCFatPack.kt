@@ -1,9 +1,7 @@
 package voodoo.pack
 
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.internal.HashMapSerializer
@@ -127,7 +125,6 @@ object MMCFatPack : AbstractPack() {
                 CursePack.logger.info("waiting for jobs to finish")
             }
         }
-
 
         for (file in minecraftDir.walkTopDown()) {
             when {

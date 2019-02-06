@@ -41,11 +41,11 @@ data class Addon(
     val gameName: String,
     val portalName: String,
     val sectionName: String, // Section,
-    @Serializable(with= DateSerializer::class)
+    @Serializable(with = DateSerializer::class)
     val dateModified: Date,
-    @Serializable(with=DateSerializer::class)
+    @Serializable(with = DateSerializer::class)
     val dateCreated: Date,
-    @Serializable(with=DateSerializer::class)
+    @Serializable(with = DateSerializer::class)
     val dateReleased: Date,
     val available: Boolean,
     val categoryList: String,

@@ -1,13 +1,13 @@
-//package voodoo
+// package voodoo
 //
-//import kotlinx.coroutines.delay
-//import kotlinx.coroutines.launch
-//import kotlinx.coroutines.runBlocking
-//import org.spekframework.spek2.Spek
-//import org.spekframework.spek2.style.specification.describe
-//import kotlin.test.assertFailsWith
+// import kotlinx.coroutines.delay
+// import kotlinx.coroutines.launch
+// import kotlinx.coroutines.runBlocking
+// import org.spekframework.spek2.Spek
+// import org.spekframework.spek2.style.specification.describe
+// import kotlin.test.assertFailsWith
 //
-//object ExceptionSpek : Spek({
+// object ExceptionSpek : Spek({
 //    describe("throw exception") {
 //        it("in runBlocking") {
 //            assertFailsWith(IllegalStateException::class) {
@@ -31,4 +31,4 @@
 //            }
 //        }
 //    }
-//})
+// })

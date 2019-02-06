@@ -14,7 +14,7 @@ plugins {
     constantsGenerator apply false
     id("com.github.johnrengelman.shadow") version "4.0.0" apply false
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
-//    id("org.jmailen.kotlinter") version "1.17.0"
+    id("org.jmailen.kotlinter") version "1.21.0"
     id(Serialization.plugin) version Kotlin.version
 }
 
@@ -50,6 +50,31 @@ allprojects {
     }
 
     group = "moe.nikky.voodoo${Env.branch}"
+
+    task<DefaultTask>("depsize") {
+        group = "help"
+        description = "prints dependency sizes"
+        doLast {
+            val formatStr = "%,10.2f"
+            val size = configurations.default.get().resolve()
+                .map { it.length() / (1024.0 * 1024.0) }.sum()
+
+            val out = buildString {
+                append("Total dependencies size:".padEnd(45))
+                append("${String.format(formatStr, size)} Mb\n\n")
+                configurations
+                    .default
+                    .get()
+                    .resolve()
+                    .sortedWith(compareBy { -it.length() })
+                    .forEach {
+                        append(it.name.padEnd(45))
+                        append("${String.format(formatStr, (it.length() / 1024.0))} kb\n")
+                    }
+            }
+            println(out)
+        }
+    }
 }
 
 subprojects {
@@ -66,7 +91,7 @@ subprojects {
 
     apply {
         plugin("idea")
-//        plugin("org.jmailen.kotlinter")
+        plugin("org.jmailen.kotlinter")
     }
 
     tasks.withType<KotlinCompile> {
@@ -87,7 +112,7 @@ subprojects {
         plugin("kotlinx-serialization")
         plugin("moe.nikky.persistentCounter")
 
-        if(project == project(":dsl")) {
+        if (project == project(":dsl")) {
 //            plugin("plugin.scripting")
             plugin("org.jetbrains.kotlin.plugin.scripting")
         }
@@ -99,7 +124,7 @@ subprojects {
 //                contracts = "enable" //1.3
         }
     }
-    
+
     java {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8

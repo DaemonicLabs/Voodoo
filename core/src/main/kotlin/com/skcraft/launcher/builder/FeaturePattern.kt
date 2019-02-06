@@ -7,10 +7,8 @@
 package com.skcraft.launcher.builder
 
 import com.skcraft.launcher.model.modpack.Feature
-import kotlinx.serialization.Encoder
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
 
 @Serializable
 data class FeaturePattern(

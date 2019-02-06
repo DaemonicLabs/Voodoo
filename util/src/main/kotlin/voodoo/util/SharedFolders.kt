@@ -4,49 +4,48 @@ import java.io.File
 
 object SharedFolders {
 
-
     interface SystemProperty {
         val key: String
     }
 
-    object RootDir: SystemProperty {
+    object RootDir : SystemProperty {
         override val key = "voodoo.rootDir"
         lateinit var default: File
         var resolver: () -> File = { default }
         fun get() = System.getProperty(key)?.asFile ?: resolver()
     }
 
-    object PackDir: SystemProperty {
+    object PackDir : SystemProperty {
         override val key = "voodoo.packDir"
         var resolver: (rootDir: File) -> File = { rootDir -> rootDir.resolve("packs") }
         fun get(): File = System.getProperty(key)?.asFile ?: resolver(RootDir.get())
     }
 
-    object TomeDir: SystemProperty {
+    object TomeDir : SystemProperty {
         override val key = "voodoo.tomeDir"
         var resolver: (rootDir: File) -> File = { rootDir -> rootDir.resolve("tome") }
         fun get(): File = System.getProperty(key)?.asFile ?: resolver(RootDir.get())
     }
 
-    object IncludeDir: SystemProperty {
+    object IncludeDir : SystemProperty {
         override val key = "voodoo.includeDir"
         var resolver: (rootDir: File) -> File = { rootDir -> rootDir.resolve("include") }
         fun get(): File = System.getProperty(key)?.asFile ?: resolver(RootDir.get())
     }
 
-    object GeneratedSrc: SystemProperty {
+    object GeneratedSrc : SystemProperty {
         override val key = "voodoo.generatedSrcDir"
         var resolver: (rootDir: File) -> File = { rootDir -> rootDir.resolve("build").resolve(".voodoo") }
         fun get(): File = System.getProperty(key)?.asFile ?: resolver(RootDir.get())
     }
 
-    object UploadDir: SystemProperty {
+    object UploadDir : SystemProperty {
         override val key = "voodoo.uploadDir"
         var resolver: (rootDir: File, id: String) -> File = { rootDir, id -> rootDir.resolve("build").resolve("_upload") }
         fun get(id: String): File = System.getProperty(key)?.asFile ?: resolver(RootDir.get(), id)
     }
 
-    object DocDir: SystemProperty {
+    object DocDir : SystemProperty {
         override val key = "voodoo.docDir"
         var resolver: (rootDir: File, id: String) -> File = { rootDir, id -> UploadDir.get(id).resolve("docs") }
         fun get(id: String): File = System.getProperty(key)?.asFile ?: resolver(RootDir.get(), id)

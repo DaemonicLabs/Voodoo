@@ -270,7 +270,6 @@ object SKPack : AbstractPack() {
                 logger.info("finished")
             }
         }
-
     }
 
     // TODO: move to sk specific code
@@ -357,4 +356,3 @@ object SKPack : AbstractPack() {
             return ::getDependenciesCall.memoize()
         }
 }
-

@@ -1,6 +1,5 @@
 package voodoo.script
 
-
 import voodoo.changelog.ChangelogBuilder
 import kotlin.script.experimental.annotations.KotlinScript
 
@@ -10,10 +9,10 @@ import kotlin.script.experimental.annotations.KotlinScript
     compilationConfiguration = ChangeScriptConfiguration::class
 )
 open class ChangeScript {
-     lateinit var builder : ChangelogBuilder
+    lateinit var builder: ChangelogBuilder
 
     fun getBuilderOrNull(): ChangelogBuilder? {
-        return if(::builder.isInitialized) {
+        return if (::builder.isInitialized) {
             builder
         } else {
             null

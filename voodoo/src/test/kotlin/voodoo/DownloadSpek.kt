@@ -1,12 +1,12 @@
-//package voodoo
+// package voodoo
 //
-//import kotlinx.coroutines.runBlocking
-//import org.spekframework.spek2.Spek
-//import org.spekframework.spek2.style.specification.describe
-//import voodoo.util.download
-//import java.io.File
+// import kotlinx.coroutines.runBlocking
+// import org.spekframework.spek2.Spek
+// import org.spekframework.spek2.style.specification.describe
+// import voodoo.util.download
+// import java.io.File
 //
-//object DownloadSpek : Spek({
+// object DownloadSpek : Spek({
 //    describe("tests") {
 //        val rootFolder by memoized {
 //            File("run").resolve("test").resolve("downloadspek").absoluteFile.apply {
@@ -32,4 +32,4 @@
 //            }
 //        }
 //    }
-//})
+// })

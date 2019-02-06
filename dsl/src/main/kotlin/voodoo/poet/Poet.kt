@@ -14,8 +14,6 @@ import voodoo.forge.ForgeUtil
 import voodoo.util.SharedFolders
 import java.io.File
 
-
-
 object Poet : KLogging() {
     @JvmStatic
     fun main(vararg args: String) {
@@ -65,7 +63,7 @@ object Poet : KLogging() {
         slugIdMap: Map<String, ProjectID>,
         slugSanitizer: (String) -> String,
         folder: File
-    ) : File {
+    ): File {
         val idType = ClassName("voodoo.dsl", "ID")
         val objectBuilder = TypeSpec.objectBuilder(name)
         slugIdMap.entries.sortedBy { (slug, id) ->
@@ -133,7 +131,7 @@ object Poet : KLogging() {
         return save(forgeBuilder.build(), name, folder)
     }
 
-    private fun save(source: FileSpec, name: String, folder: File) : File  {
+    private fun save(source: FileSpec, name: String, folder: File): File {
         val path = folder.apply {
             absoluteFile.parentFile.mkdirs()
         }.absoluteFile
@@ -143,7 +141,7 @@ object Poet : KLogging() {
         return targetFile
     }
 
-    private fun save(type: TypeSpec, name: String, folder: File) : File {
+    private fun save(type: TypeSpec, name: String, folder: File): File {
         folder.mkdirs()
         val source = FileSpec.get("", type)
         val path = folder.apply {

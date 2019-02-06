@@ -8,7 +8,6 @@ import com.github.kittinunf.result.Result
 import com.skcraft.launcher.model.modpack.FileInstall
 import com.skcraft.launcher.model.modpack.Manifest
 import com.xenomachina.argparser.ArgParser
-import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch

@@ -66,7 +66,7 @@ object Pack : KLogging() {
                 exitProcess(-1)
             }
 
-            val output= with(packer) { uploadDir.getOutputFolder() }
+            val output = with(packer) { uploadDir.getOutputFolder() }
 
             packer.pack(
                 modpack = modpack,

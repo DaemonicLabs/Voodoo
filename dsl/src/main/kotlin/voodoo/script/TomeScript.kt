@@ -1,7 +1,6 @@
 package voodoo.script
 
 import mu.KLogging
-import voodoo.changelog.ChangelogBuilder
 import voodoo.tome.TomeGenerator
 import kotlin.script.experimental.annotations.KotlinScript
 
@@ -17,7 +16,7 @@ open class TomeScript(
 
     protected lateinit var generator: TomeGenerator
     fun getGeneratorOrNull(): TomeGenerator? {
-        return if(::generator.isInitialized) {
+        return if (::generator.isInitialized) {
             generator
         } else {
             null

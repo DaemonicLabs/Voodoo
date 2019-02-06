@@ -16,7 +16,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.context.SimpleModule
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.list
 import mu.KLogging
@@ -27,8 +26,6 @@ import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
-import voodoo.util.serializer.DateSerializer
-import java.util.Date
 import java.util.HashMap
 import kotlin.coroutines.CoroutineContext
 

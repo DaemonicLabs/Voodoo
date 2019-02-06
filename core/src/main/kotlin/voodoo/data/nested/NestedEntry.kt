@@ -76,7 +76,7 @@ data class NestedEntry(
             } else
                 ids += it.id
         }
-        return this.entries.asSequence().filter { it.enabled }.map {entry ->
+        return this.entries.asSequence().filter { it.enabled }.map { entry ->
             Entry(
                 entry.provider,
                 id = entry.id,
