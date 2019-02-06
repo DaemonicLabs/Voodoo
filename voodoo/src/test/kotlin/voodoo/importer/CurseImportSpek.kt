@@ -3,6 +3,7 @@ package voodoo.importer
 import kotlinx.coroutines.runBlocking
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
+import voodoo.poet.importer.CurseImporter
 import java.io.File
 
 object CurseImportSpek : Spek({
