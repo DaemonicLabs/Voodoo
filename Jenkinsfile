@@ -3,6 +3,9 @@ pipeline {
     // environment {
     //     GRADLE_OPTS = '-Dkotlin.compiler.execution.strategy="in-process"'
     // }
+	options {
+		buildDiscarder(logRotator(artifactNumToKeepStr: '1'))
+	}
 	stages {
 	    stage("init") {
 	        steps {
