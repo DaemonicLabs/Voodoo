@@ -16,7 +16,7 @@ val poet = task<JavaExec>("poet") {
     classpath = project(":dsl").sourceSets["main"].runtimeClasspath
 
     group = "build"
-    dependsOn(":poet:classes")
+    dependsOn(":dsl:classes")
 }
 
 val compileTestKotlin by tasks.getting(KotlinCompile::class) {

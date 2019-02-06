@@ -66,7 +66,7 @@ object Logging {
 }
 
 object Spek {
-    const val version = "2.0.0"
+    const val version = "2.0.0-rc.1"
     val dependencyDsl = create(group = "org.spekframework.spek2", name = "spek-dsl-jvm", version = version)
     val dependencyRunner = create(group = "org.spekframework.spek2", name = "spek-runner-junit5", version = version)
     val dependencyJUnit5 = create(group = "org.junit.platform", name = "junit-platform-engine", version = "1.3.0-RC1")
