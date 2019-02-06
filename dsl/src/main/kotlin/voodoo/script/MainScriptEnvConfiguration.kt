@@ -26,9 +26,11 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
 
     refineConfiguration {
         val reports: MutableList<ScriptDiagnostic> = mutableListOf()
-        beforeParsing { context ->
+
+        onAnnotations<Include>(Include.Companion::configureIncludes)
+
+        beforeCompiling { context ->
 //            println("context.collectedData: '${context.collectedData}' ")
-//            println("context.compilationConfiguration: '${context.compilationConfiguration}' ")
 //            context.collectedData?.entries()?.forEach { (key, value) ->
 //                println("collectedData $key: '$value' ")
 //            }
@@ -36,16 +38,19 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
 //                println("compilationConfiguration $key: '$value' ")
 //            }
 
-            // TODO: get access to id
             val generatedFilesDir = SharedFolders.GeneratedSrc.get().absoluteFile
             val generatedFiles = Poet.generateAll(generatedSrcDir = generatedFilesDir)
 
-            ScriptCompilationConfiguration(context.compilationConfiguration) {
+            val compilationConfiguration = ScriptCompilationConfiguration(context.compilationConfiguration) {
                 importScripts.append(generatedFiles.map { it.toScriptSource() })
-//                reports += ScriptDiagnostic("test", ScriptDiagnostic.Severity.ERROR)
-            }.asSuccess(reports)
-        }
+                reports += ScriptDiagnostic("adding to importedScripts: $generatedFiles", ScriptDiagnostic.Severity.INFO)
+            }
 
-        onAnnotations<Include>(Include.Companion::configureIncludes)
+//            compilationConfiguration.entries().forEach {
+//                println("beforeCompiling    $it")
+//            }
+
+            compilationConfiguration.asSuccess(reports)
+        }
     }
 })
