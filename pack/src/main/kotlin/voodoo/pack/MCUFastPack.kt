@@ -30,7 +30,7 @@ object MCUFastPack : AbstractPack() {
     ) {
         val cacheDir = SKPack.directories.cacheHome
 
-        if(clean) {
+        if (clean) {
             output.deleteRecursively()
         }
 //
@@ -51,7 +51,6 @@ object MCUFastPack : AbstractPack() {
                 SKPack.logger.warn("minecraft directory $packSrc does not exist")
             }
         }
-
 
         withPool { pool ->
             coroutineScope {
@@ -85,7 +84,6 @@ object MCUFastPack : AbstractPack() {
                 logger.debug("targetFiles: $targetFiles")
             }
         }
-
 
         for (file in workingDir.walkBottomUp()) {
             val rel = file.relativeTo(workingDir)

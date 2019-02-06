@@ -241,7 +241,6 @@ constructor(
                 jobs.forEach { it.join() }
             }
         }
-
     }
 
     private fun validateManifest() {

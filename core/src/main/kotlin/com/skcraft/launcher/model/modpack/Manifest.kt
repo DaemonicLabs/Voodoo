@@ -8,13 +8,9 @@ package com.skcraft.launcher.model.modpack
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import com.skcraft.launcher.model.minecraft.VersionManifest
-import kotlinx.serialization.Encoder
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
-import kotlinx.serialization.list
 import voodoo.util.serializer.URLSerializer
 import java.net.URL
 

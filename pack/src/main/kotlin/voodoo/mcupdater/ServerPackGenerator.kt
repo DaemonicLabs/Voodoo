@@ -51,7 +51,6 @@ object ServerPackGenerator {
                         child(doc, "Size", nodeValue = "$number")
 
                         // TODO: SubModule
-
                     }
                 }
 
@@ -119,9 +118,8 @@ private fun Element.setAttributes(vararg pairs: Pair<String, String>) {
 
 private fun Node.child(doc: Document, tagName: String, nodeValue: String? = null, configureElement: Element.() -> Unit = {}): Element {
     val childElement = doc.createElement(tagName)!!
-    if(nodeValue != null) childElement.nodeValue = nodeValue
+    if (nodeValue != null) childElement.nodeValue = nodeValue
     childElement.configureElement()
     appendChild(childElement)
     return childElement
 }
-

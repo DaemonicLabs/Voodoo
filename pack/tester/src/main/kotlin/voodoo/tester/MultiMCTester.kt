@@ -158,7 +158,6 @@ object MultiMCTester : AbstractTester() {
             }
         }
 
-
         logger.info("clearing serverside files")
         for (file in minecraftDir.walkTopDown()) {
             when {

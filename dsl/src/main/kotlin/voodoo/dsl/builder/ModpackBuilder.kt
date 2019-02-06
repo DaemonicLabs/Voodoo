@@ -12,7 +12,7 @@ import voodoo.readOnly
 @VoodooDSL
 open class ModpackBuilder(
     val pack: NestedPack
-): KLogging() {
+) : KLogging() {
     var mcVersion by property(pack::mcVersion)
     var title by property(pack::title)
     var version by property(pack::version)

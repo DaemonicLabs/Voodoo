@@ -24,7 +24,7 @@ class FileBasedScriptCache(val baseDir: File) : CompiledJvmScriptsCache {
     }
 
     override fun get(script: SourceCode, scriptCompilationConfiguration: ScriptCompilationConfiguration): CompiledScript<*>? {
-        val prefix = if(script is FileScriptSource) {
+        val prefix = if (script is FileScriptSource) {
             "${script.file.name}-"
         } else ""
         val file = File(baseDir, prefix + uniqueHash(script, scriptCompilationConfiguration))
@@ -37,7 +37,7 @@ class FileBasedScriptCache(val baseDir: File) : CompiledJvmScriptsCache {
         script: SourceCode,
         scriptCompilationConfiguration: ScriptCompilationConfiguration
     ) {
-        val prefix = if(script is FileScriptSource) {
+        val prefix = if (script is FileScriptSource) {
             "${script.file.name}-"
         } else ""
         val file = File(baseDir, prefix + uniqueHash(script, scriptCompilationConfiguration))
@@ -59,6 +59,5 @@ class FileBasedScriptCache(val baseDir: File) : CompiledJvmScriptsCache {
                 }
             }
         }
-
     }
 }

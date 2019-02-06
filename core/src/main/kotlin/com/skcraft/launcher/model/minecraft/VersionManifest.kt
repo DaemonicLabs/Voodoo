@@ -29,7 +29,7 @@ data class VersionManifest(
     @Optional var minecraftArguments: String? = null,
     @Optional var mainClass: String? = null,
     @Optional var minimumLauncherVersion: Int = 0,
-    @Optional @Serializable(with= HashSetSerializer::class) var libraries: HashSet<Library> = hashSetOf()
+    @Optional @Serializable(with = HashSetSerializer::class) var libraries: HashSet<Library> = hashSetOf()
 ) {
 
     @Transient

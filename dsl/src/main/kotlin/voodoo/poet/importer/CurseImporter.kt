@@ -96,7 +96,6 @@ object CurseImporter : AbstractImporter() {
                 }
             }
 
-
             delay(10)
             logger.info("waiting for jobs to finish")
         }

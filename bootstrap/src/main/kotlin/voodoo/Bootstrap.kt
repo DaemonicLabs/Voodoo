@@ -89,13 +89,12 @@ object Bootstrap : KLogging() {
                 assert(exists()) { "downloaded files does not seem to exist" }
                 copyTo(lastFile, overwrite = true)
             }
-        } catch(e: HttpException) {
+        } catch (e: HttpException) {
             logger.error("cannot download $jobKey from $jenkinsUrl, trying to reuse last binary", e)
             lastFile
         }
 
         require(file.exists()) { "binary $file does not exist" }
-
 
         logger.info("Loaded " + file.path)
         val java = arrayOf(System.getProperty("java.home"), "bin", "java").joinToString(File.separator)

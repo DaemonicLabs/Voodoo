@@ -6,13 +6,9 @@
  */
 package com.skcraft.launcher.builder
 
-import kotlinx.serialization.Encoder
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
-import kotlinx.serialization.list
-import kotlinx.serialization.serializer
 import java.util.EnumSet
 
 @Serializable

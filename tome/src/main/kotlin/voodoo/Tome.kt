@@ -3,10 +3,8 @@ package voodoo
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.data.flat.ModPack
-import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
-import voodoo.provider.Providers
 import voodoo.tome.TomeEnv
 import java.io.File
 

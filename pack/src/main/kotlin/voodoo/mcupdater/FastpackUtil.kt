@@ -51,29 +51,29 @@ object FastpackUtil : KLogging() {
 
     /***
      * @param autoConnect <Boolean>   Auto-connect to server on launch (default: true)
-     * @param baseURL                 Base URL for downloads
-     * @param configsOnly             Generate all mods as overrides with ConfigFile entries
-     * @param debug                   Output full config matching data
-     * @param fabric                  Fabric version
-     * @param file                    Parse a single mod file (or download url) and exit
-     * @param forge                   Forge version
-     * @param help                    Shows this help
-     * @param iconURL                 URL of icon to display in instance list (default: )
-     * @param id                      Server ID (default: fastpack)
-     * @param import                  Generate a pack from a supported 3rd party source (Curse)
-     * @param mainClass               Main class for launching Minecraft (default: net.minecraft.launchwrapper.Launch)
-     * @param mc                      Minecraft version
-     * @param mcserver                Server address (default: )
-     * @param name                    Server name (default: FastPack Instance)
-     * @param newsURL                 URL to display in the News tab (default: about:blank)
-     * @param noConfigs               Do not generate ConfigFile entries
-     * @param out                     XML file to write
-     * @param path                    Path to scan for mods and configs
-     * @param revision                Revision string to display (default: 1)
-     * @param sourcePackId            Server ID of source pack
-     * @param sourcePackURL           URL of pack to load - useful with configsOnly (default: )
-     * @param xslt                    Path of XSLT file (default: )
-     * @param yarn                    Yarn version (default: latest)* @param
+     * @param baseURL Base URL for downloads
+     * @param configsOnly Generate all mods as overrides with ConfigFile entries
+     * @param debug Output full config matching data
+     * @param fabric Fabric version
+     * @param file Parse a single mod file (or download url) and exit
+     * @param forge Forge version
+     * @param help Shows this help
+     * @param iconURL URL of icon to display in instance list (default: )
+     * @param id Server ID (default: fastpack)
+     * @param import Generate a pack from a supported 3rd party source (Curse)
+     * @param mainClass Main class for launching Minecraft (default: net.minecraft.launchwrapper.Launch)
+     * @param mc Minecraft version
+     * @param mcserver Server address (default: )
+     * @param name Server name (default: FastPack Instance)
+     * @param newsURL URL to display in the News tab (default: about:blank)
+     * @param noConfigs Do not generate ConfigFile entries
+     * @param out XML file to write
+     * @param path Path to scan for mods and configs
+     * @param revision Revision string to display (default: 1)
+     * @param sourcePackId Server ID of source pack
+     * @param sourcePackURL URL of pack to load - useful with configsOnly (default: )
+     * @param xslt Path of XSLT file (default: )
+     * @param yarn Yarn version (default: latest)* @param
      *
      */
     fun execute(
@@ -163,7 +163,7 @@ object FastpackUtil : KLogging() {
             command.add("--newsURL")
             command.add(it)
         }
-        if(noConfigs) command.add("--noConfigs")
+        if (noConfigs) command.add("--noConfigs")
         revision?.also {
             command.add("--revision")
             command.add(it)

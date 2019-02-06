@@ -36,7 +36,7 @@ suspend fun downloadVoodoo(
     val jenkinsJob = server.getJob(job, useragent)!!
     val build = jenkinsJob.lastSuccessfulBuild?.details(useragent)!!
     val actualBuildNumber = buildNumber ?: build.number
-    Jenkins.logger.info("lastSuccessfulBuild: ${buildNumber}")
+    Jenkins.logger.info("lastSuccessfulBuild: $buildNumber")
     Jenkins.logger.info("chosen build: $actualBuildNumber")
     Jenkins.logger.debug("looking for $fileRegex")
     val re = Regex(fileRegex)

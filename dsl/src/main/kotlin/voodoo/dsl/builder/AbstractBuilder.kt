@@ -1,6 +1,5 @@
 package voodoo.dsl.builder
 
-import com.skcraft.launcher.model.modpack.Feature
 import voodoo.data.OptionalData
 import voodoo.data.nested.NestedEntry
 import voodoo.dsl.VoodooDSL

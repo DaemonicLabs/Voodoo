@@ -14,7 +14,7 @@ import java.util.zip.ZipInputStream
  * a destination directory.
  * @author www.codejava.net
  */
-object UnzipUtility: KLogging() {
+object UnzipUtility : KLogging() {
 
     /**
      * Size of the buffer to read/write data

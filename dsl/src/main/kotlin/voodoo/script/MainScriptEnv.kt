@@ -1,7 +1,5 @@
 package voodoo.script
 
-import mu.KLogging
-import mu.KotlinLogging
 import voodoo.data.nested.NestedPack
 import voodoo.dsl.builder.ModpackBuilder
 import java.io.File
