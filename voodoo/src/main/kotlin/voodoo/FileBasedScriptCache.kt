@@ -11,14 +11,15 @@ import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.jvmhost.CompiledJvmScriptsCache
 import kotlin.script.experimental.jvmhost.impl.KJvmCompiledScript
+import kotlin.script.experimental.api.importScripts
 
 class FileBasedScriptCache(val baseDir: File) : CompiledJvmScriptsCache {
     internal fun uniqueHash(script: SourceCode, scriptCompilationConfiguration: ScriptCompilationConfiguration): String {
         val digestWrapper = MessageDigest.getInstance("MD5")
         digestWrapper.update(script.text.toByteArray())
-        scriptCompilationConfiguration.entries().sortedBy { it.key.name }.forEach {
-            digestWrapper.update(it.key.name.toByteArray())
-            digestWrapper.update(it.value.toString().toByteArray())
+        scriptCompilationConfiguration.entries().sortedBy { it.key.name }.forEach { (key, value) ->
+            digestWrapper.update(key.name.toByteArray())
+            digestWrapper.update(value.toString().toByteArray())
         }
         return digestWrapper.digest().toHexString()
     }

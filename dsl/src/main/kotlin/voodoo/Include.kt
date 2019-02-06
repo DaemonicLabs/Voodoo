@@ -9,6 +9,7 @@ import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.asSuccess
 import kotlin.script.experimental.api.foundAnnotations
 import kotlin.script.experimental.api.importScripts
+import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.host.toScriptSource
 
 @Repeatable
@@ -17,17 +18,28 @@ annotation class Include(val filename: String) {
     companion object {
         fun configureIncludes(context: ScriptConfigurationRefinementContext): ResultWithDiagnostics<ScriptCompilationConfiguration> {
             val reports: MutableList<ScriptDiagnostic> = mutableListOf()
-//            println("collectedData: '${context.collectedData}'")
+            println("collectedData: '${context.collectedData}'")
 //            context.collectedData?.entries()?.forEach { (key, value) ->
 //                println("collectedData    $key => $value")
 //            }
+//            context.compilationConfiguration.entries().forEach { (key, value) ->
+//                println("compilationConfiguration    $key => $value")
+//            }
             val annotations = context.collectedData?.get(ScriptCollectedData.foundAnnotations).also {
-                //                println("found annotations: '$it'")
-                reports += ScriptDiagnostic("found annotations: '$it'", severity = ScriptDiagnostic.Severity.INFO)
+                reports += ScriptDiagnostic("found annotations: '$it'", severity = ScriptDiagnostic.Severity.DEBUG)
             }?.takeIf { it.isNotEmpty() }
                 ?: return ScriptCompilationConfiguration(context.compilationConfiguration).asSuccess()
 
+            // TODO? make sure rootFolder points at the correct folder
+
+            require(context.script is FileScriptSource) { "${context.script::class} != FileScriptSource" }
+            (context.script as? FileScriptSource)?.let { script ->
+                SharedFolders.RootDir.default = script.file.parentFile.parentFile
+            }
+
             val includeFolder = SharedFolders.IncludeDir.get()
+
+            require(includeFolder.exists()) { "$includeFolder does not exist" }
 
             val compilationConfiguration = ScriptCompilationConfiguration(context.compilationConfiguration) {
                 annotations.forEach { annotation ->

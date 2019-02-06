@@ -23,7 +23,7 @@ object Importer : KLogging() {
         modpack.entrySet += nestedPack.root.flatten(File("parentFile"))
 
         modpack.writeEntries()
-        val packFile = nestedPack.rootDir.resolve(targetFileName)
+        val packFile = nestedPack.sourceFolder.resolve(targetFileName)
 
         packFile.writeText(modpack.toJson(ModPack.serializer()))
     }
