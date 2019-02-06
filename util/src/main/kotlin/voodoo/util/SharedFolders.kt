@@ -10,7 +10,7 @@ object SharedFolders {
 
     object RootDir : SystemProperty {
         override val key = "voodoo.rootDir"
-        lateinit var default: File
+        lateinit var default: File// = File(System.getProperty("user.dir"))
         var resolver: () -> File = { default }
         fun get() = System.getProperty(key)?.asFile ?: resolver()
     }

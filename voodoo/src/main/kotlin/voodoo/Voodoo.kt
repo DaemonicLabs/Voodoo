@@ -96,7 +96,8 @@ object Voodoo : KLogging() {
         val lockFile = scriptEnv.pack.sourceFolder.resolve(lockFileName)
 
         val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
-            "import_debug" to { _ -> Importer.flatten(nestedPack, targetFileName = packFileName) },
+            "import_debug" to { _ ->
+                Importer.flatten(nestedPack, targetFileName = packFileName) },
 //        "build_debug" to { args -> BuilderForDSL.build(packFile, rootDir, id, targetFileName = lockFileName, args = *args) },
             "build" to { args ->
                 val modpack = Importer.flatten(nestedPack)

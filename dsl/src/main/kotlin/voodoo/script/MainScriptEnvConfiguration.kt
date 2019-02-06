@@ -10,6 +10,7 @@ import kotlin.script.experimental.api.compilerOptions
 import kotlin.script.experimental.api.defaultImports
 import kotlin.script.experimental.api.importScripts
 import kotlin.script.experimental.api.refineConfiguration
+import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.host.toScriptSource
 
 object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
@@ -29,7 +30,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
 
         onAnnotations<Include>(Include.Companion::configureIncludes)
 
-        beforeCompiling { context ->
+        beforeParsing { context ->
 //            println("context.collectedData: '${context.collectedData}' ")
 //            context.collectedData?.entries()?.forEach { (key, value) ->
 //                println("collectedData $key: '$value' ")
@@ -38,16 +39,22 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
 //                println("compilationConfiguration $key: '$value' ")
 //            }
 
+            require(context.script is FileScriptSource) { "${context.script::class} != FileScriptSource" }
+            (context.script as? FileScriptSource)?.let { script ->
+                SharedFolders.RootDir.default = script.file.parentFile.parentFile
+            }
+
             val generatedFilesDir = SharedFolders.GeneratedSrc.get().absoluteFile
             val generatedFiles = Poet.generateAll(generatedSrcDir = generatedFilesDir)
+            reports += ScriptDiagnostic("generatedFilesDir: $generatedFilesDir", ScriptDiagnostic.Severity.INFO)
 
             val compilationConfiguration = ScriptCompilationConfiguration(context.compilationConfiguration) {
                 importScripts.append(generatedFiles.map { it.toScriptSource() })
-                reports += ScriptDiagnostic("adding to importedScripts: $generatedFiles", ScriptDiagnostic.Severity.INFO)
+                reports += ScriptDiagnostic("adding to importedScripts: $generatedFiles", ScriptDiagnostic.Severity.DEBUG)
             }
 
 //            compilationConfiguration.entries().forEach {
-//                println("beforeCompiling    $it")
+//                println("beforeParsing    $it")
 //            }
 
             compilationConfiguration.asSuccess(reports)

@@ -52,7 +52,7 @@ data class ModPack(
     @Transient
     lateinit var rootDir: File
 
-    @Transient
+    // we want this to be serialized for debugging purposes
     val entrySet: MutableSet<Entry> = Collections.synchronizedSet(mutableSetOf())
 
     @Transient
