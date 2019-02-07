@@ -36,7 +36,7 @@ import kotlin.coroutines.CoroutineContext
 object CurseClient : KLogging(), CoroutineScope {
     override val coroutineContext: CoroutineContext = Job()
     private val json = Json().apply {
-//        install(
+        //        install(
 //            SimpleModule(Date::class, DateSerializer)
 //        )
     }
@@ -74,6 +74,51 @@ object CurseClient : KLogging(), CoroutineScope {
         val requestBody = GraphQLRequest(
             query = """{
                     |  addons(gameID: 432 $additionalFilter) {
+                    |    id
+                    |    slug
+                    |  }
+                    |}""".trimMargin().replace("\n", ""),
+            operationName = "GetSlugIDPairs"
+        )
+        val (request, response, result) = Fuel.post(url)
+            .jsonBody(body = Json.stringify(GraphQLRequest.serializer(), requestBody))
+            .apply { headers.clear() }
+            .header("User-Agent" to useragent, "Content-Type" to "application/json")
+            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = GraphQlResult.serializer()))
+
+        when (result) {
+            is Result.Success -> {
+                return result.value.data.addons
+            }
+            is Result.Failure -> {
+                logger.error("GetSlugIDPairs")
+                logger.error("url: $url")
+                logger.error("cUrl: ${request.cUrlString()}")
+                logger.error("request: $request")
+                logger.error("response: $response")
+                logger.error(result.error.exception) { "could not request slug-id pairs" }
+                logger.error { request }
+                throw result.error.exception
+            }
+        }
+    }
+
+    suspend fun graphQlSearch(
+        gameVersions: List<String>? = null,
+        section: String? = null
+    ): List<SlugIdPair> {
+        val filters = mutableListOf<String>("gameID: 432")
+        gameVersions?.takeIf { it.isNotEmpty() }?.let {
+            filters += it.joinToString("\", \"", "[\"", "\"]")
+        }
+        section?.let {
+            filters += "section: $it"
+        }
+        val url = "https://curse.nikky.moe/graphql"
+        logger.debug("post $url $filters")
+        val requestBody = GraphQLRequest(
+            query = """{
+                    |  addonSearch(${filters.joinToString(", ")}) {
                     |    id
                     |    slug
                     |  }

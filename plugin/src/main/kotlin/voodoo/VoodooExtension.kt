@@ -36,7 +36,7 @@ open class VoodooExtension(project: Project) {
         SharedFolders.IncludeDir.resolver = resolver
     }
 
-    fun generatedSource(resolver: (rootDir: File) -> File) {
+    fun generatedSource(resolver: (rootDir: File, id: String) -> File) {
         SharedFolders.GeneratedSrc.resolver = resolver
     }
 

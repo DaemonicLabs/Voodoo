@@ -40,11 +40,12 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
 //            }
 
             require(context.script is FileScriptSource) { "${context.script::class} != FileScriptSource" }
-            (context.script as? FileScriptSource)?.let { script ->
-                SharedFolders.RootDir.default = script.file.parentFile.parentFile
-            }
+            val scriptFile = (context.script as FileScriptSource).file
+            SharedFolders.RootDir.default = scriptFile.parentFile.parentFile
 
-            val generatedFilesDir = SharedFolders.GeneratedSrc.get().absoluteFile
+            val id = scriptFile.name.substringBeforeLast(".voodoo.kts").toLowerCase()
+
+            val generatedFilesDir = SharedFolders.GeneratedSrc.get(id).absoluteFile
             val generatedFiles = Poet.generateAll(generatedSrcDir = generatedFilesDir)
             reports += ScriptDiagnostic("generatedFilesDir: $generatedFilesDir", ScriptDiagnostic.Severity.INFO)
 

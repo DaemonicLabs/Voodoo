@@ -4,9 +4,14 @@ use a tweakClass for forge (bundle bootstrapper in tweakClass ?)
 
 # Includes
 
-- [ ] allow splitting up modpack definition into multiple methods
-- [ ] add `@Include(file)` (file relative to include directory)
+- [x] allow splitting up modpack definition into multiple methods
+- [x] add `@Include(file)` (file relative to include directory)
+- [ ] add a wiki entry
 
+# Customizing generated files
+
+- [ ] read annotations
+- [ ] customize generated Mod.kt, Forge.kt
 
 # MCUpdater support
 
@@ -97,7 +102,7 @@ curse-server zip export
 
 # coroutines
 
-ensure proper use of CoroutineContext everywhere
+ensure proper use of CoroutineContext / Scope everywhere
 
 ## Actors
 
