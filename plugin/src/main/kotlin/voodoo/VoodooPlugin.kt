@@ -57,13 +57,13 @@ open class VoodooPlugin : Plugin<Project> {
                     srcDir(SharedFolders.IncludeDir.get())
                     srcDir(SharedFolders.PackDir.get())
                     srcDir(SharedFolders.TomeDir.get())
-                    srcDir(SharedFolders.GeneratedSrc.get())
+                    srcDir(SharedFolders.GeneratedSrc.get(id = ""))
                 }
             }
 
             extensions.configure<IdeaModel> {
                 module {
-                    generatedSourceDirs.add(SharedFolders.GeneratedSrc.get())
+                    generatedSourceDirs.add(SharedFolders.GeneratedSrc.get(id = ""))
                 }
             }
 
@@ -90,7 +90,7 @@ open class VoodooPlugin : Plugin<Project> {
             }
 
             val poet = task<PoetTask>("poet") {
-                targetFolder = SharedFolders.GeneratedSrc.get()
+                targetFolder = SharedFolders.GeneratedSrc.get(id = "")
             }
 
             task<CreatePackTask>("createpack") {

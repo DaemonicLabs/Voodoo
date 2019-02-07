@@ -35,8 +35,8 @@ object SharedFolders {
 
     object GeneratedSrc : SystemProperty {
         override val key = "voodoo.generatedSrcDir"
-        var resolver: (rootDir: File) -> File = { rootDir -> rootDir.resolve("build").resolve(".voodoo") }
-        fun get(): File = System.getProperty(key)?.asFile ?: resolver(RootDir.get())
+        var resolver: (rootDir: File, id: String) -> File = { rootDir, id -> rootDir.resolve("build").resolve(".voodoo") }
+        fun get(id: String): File = System.getProperty(key)?.asFile ?: resolver(RootDir.get(), id)
     }
 
     object UploadDir : SystemProperty {
@@ -56,7 +56,7 @@ object SharedFolders {
         PackDir.apply { setSystemProperty(key, get()) }
         TomeDir.apply { setSystemProperty(key, get()) }
         IncludeDir.apply { setSystemProperty(key, get()) }
-        GeneratedSrc.apply { setSystemProperty(key, get()) }
+        GeneratedSrc.apply { setSystemProperty(key, get(id)) }
         UploadDir.apply { setSystemProperty(key, get(id)) }
         DocDir.apply { setSystemProperty(key, get(id)) }
     }

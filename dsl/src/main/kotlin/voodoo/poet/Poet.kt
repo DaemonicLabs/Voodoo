@@ -21,7 +21,7 @@ object Poet : KLogging() {
     }
 
     fun generateAll(
-        generatedSrcDir: File = SharedFolders.GeneratedSrc.get(),
+        generatedSrcDir: File = SharedFolders.GeneratedSrc.get(id = ""),
         mods: String = "Mod",
         texturePacks: String = "TexturePack",
         slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
@@ -154,7 +154,7 @@ object Poet : KLogging() {
     }
 
     suspend fun requestMods(): Map<String, ProjectID> =
-        CurseClient.graphQLRequest("section: MC_ADDONS").map { (id, slug) ->
+        CurseClient.graphQLRequest("section: MODS").map { (id, slug) ->
             slug to ProjectID(id)
         }.toMap()
 
