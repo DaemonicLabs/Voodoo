@@ -10,21 +10,23 @@ import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
+import voodoo.data.curse.Section
 import voodoo.forge.ForgeUtil
-import voodoo.util.SharedFolders
+import voodoo.poet.generator.CurseGenerator
+import voodoo.poet.generator.ForgeGenerator
 import java.io.File
 
 object Poet : KLogging() {
-    @JvmStatic
-    fun main(vararg args: String) {
-        generateAll(generatedSrcDir = File(args[0]))
-    }
+//    @JvmStatic
+//    fun main(vararg args: String) {
+//        generateAll(generatedSrcDir = File(args[0]))
+//    }
 
     fun generateAll(
-        generatedSrcDir: File = SharedFolders.GeneratedSrc.get(id = ""),
-        mods: String = "Mod",
-        texturePacks: String = "TexturePack",
-        slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
+        generatedSrcDir: File, // = SharedFolders.GeneratedSrc.get(id = id),
+        slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer,
+        curseGenerators: List<CurseGenerator> = listOf(),
+        forgeGenerators: List<ForgeGenerator> = listOf()
     ): List<File> {
 
 //    class XY
@@ -33,23 +35,51 @@ object Poet : KLogging() {
 //    println("classloader is of type:" + XY::class.java.classLoader)
         Thread.currentThread().contextClassLoader = Poet::class.java.classLoader
 
-        return runBlocking {
-            listOf(
+        val files = runBlocking {
+            // TODO: parallelize
+            curseGenerators.map { generator ->
                 Poet.generate(
-                    name = mods,
-                    slugIdMap = Poet.requestMods(),
+                    name = generator.name,
+                    slugIdMap = request(
+                        gameVersions = generator.mcVersions.toList(),
+                        section = generator.section
+                    ),
                     slugSanitizer = slugSanitizer,
                     folder = generatedSrcDir
-                ),
-                Poet.generate(
-                    name = texturePacks,
-                    slugIdMap = Poet.requestResourcePacks(),
-                    slugSanitizer = slugSanitizer,
+                )
+            } + forgeGenerators.map { generator ->
+                Poet.generateForge(
+                    name = generator.name,
+                    mcVersionFilters = generator.mcVersions.toList(), //generator.mcVersions.toList(),
                     folder = generatedSrcDir
-                ),
-                Poet.generateForge("Forge", folder = generatedSrcDir)
-            )
+                )
+            }
         }
+        return files
+
+//        return runBlocking {
+//            listOf(
+//                Poet.generate(
+//                    name = "Mods_112",
+//                    slugIdMap = Poet.request112Mods(),
+//                    slugSanitizer = slugSanitizer,
+//                    folder = generatedSrcDir
+//                ),
+//                Poet.generate(
+//                    name = mods,
+//                    slugIdMap = Poet.requestMods(),
+//                    slugSanitizer = slugSanitizer,
+//                    folder = generatedSrcDir
+//                ),
+//                Poet.generate(
+//                    name = texturePacks,
+//                    slugIdMap = Poet.requestResourcePacks(),
+//                    slugSanitizer = slugSanitizer,
+//                    folder = generatedSrcDir
+//                ),
+//                Poet.generateForge("Forge", folder = generatedSrcDir)
+//            )
+//        }
     }
 
     fun defaultSlugSanitizer(slug: String) = slug
@@ -96,6 +126,7 @@ object Poet : KLogging() {
 
     internal suspend fun generateForge(
         name: String = "Forge",
+        mcVersionFilters: List<String>? = null,
         folder: File
     ): File {
         val forgeData = runBlocking {
@@ -114,7 +145,8 @@ object Poet : KLogging() {
             PropertySpec.builder("WEBPATH", String::class, KModifier.CONST).initializer("%S", forgeData.webpath).build()
         forgeBuilder.addProperty(webpath)
 
-        val mcVersions = ForgeUtil.mcVersionsMap()
+        val mcVersions = ForgeUtil.mcVersionsMap(filter = mcVersionFilters)
+        val allNumbers = mcVersions.flatMap { it.value.values }
         for ((versionIdentifier, numbers) in mcVersions) {
             val versionBuilder = TypeSpec.objectBuilder(versionIdentifier)
             for ((buildIdentifier, number) in numbers) {
@@ -125,7 +157,8 @@ object Poet : KLogging() {
 
         val promos = ForgeUtil.promoMap()
         for ((keyIdentifier, number) in promos) {
-            forgeBuilder.addProperty(buildProperty(keyIdentifier, number))
+            if(allNumbers.contains(number))
+                forgeBuilder.addProperty(buildProperty(keyIdentifier, number))
         }
 
         return save(forgeBuilder.build(), name, folder)
@@ -153,13 +186,11 @@ object Poet : KLogging() {
         return targetFile
     }
 
-    suspend fun requestMods(): Map<String, ProjectID> =
-        CurseClient.graphQLRequest("section: MODS").map { (id, slug) ->
-            slug to ProjectID(id)
-        }.toMap()
-
-    suspend fun requestResourcePacks(): Map<String, ProjectID> =
-        CurseClient.graphQLRequest("section: TEXTURE_PACKS").map { (id, slug) ->
+    suspend fun request(section: Section, gameVersions: List<String>? = null): Map<String, ProjectID> =
+        CurseClient.graphQLRequest(
+            section = section,
+            gameVersions = gameVersions
+        ).map { (id, slug) ->
             slug to ProjectID(id)
         }.toMap()
 }

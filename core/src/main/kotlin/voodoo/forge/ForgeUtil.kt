@@ -7,6 +7,7 @@ import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
+import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import mu.KLogging
 import voodoo.data.ForgeVersion
@@ -32,9 +33,15 @@ object ForgeUtil : KLogging() {
         }
     }
 
-    suspend fun mcVersionsMap(): Map<String, Map<String, Int>> {
+    suspend fun mcVersionsMap(filter: List<String>? = null): Map<String, Map<String, Int>> {
         val forgeData = deferredData.await()
-        return forgeData.mcversion.entries.associate { (version, numbers) ->
+        return forgeData.mcversion.let {
+            if(filter != null && filter.isNotEmpty()) {
+                it.filterKeys { version -> filter.contains(version) }
+            } else {
+                it
+            }
+        }.entries.associate { (version, numbers) ->
             val versionIdentifier = "mc" + version.replace('.', '_')
             val versions = numbers.associateBy { number ->
                 val buildIdentifier = "build$number"
@@ -86,10 +93,11 @@ object ForgeUtil : KLogging() {
 
     private suspend fun getForgeData(): ForgeData {
         val url = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/json"
+        val loader: KSerializer<ForgeData> = ForgeData.serializer()
         loop@ while (true) {
             val (request, response, result) = url.httpGet()
                 .header("User-Agent" to Downloader.useragent)
-                .awaitObjectResponseResult(kotlinxDeserializerOf(loader = ForgeData.serializer()))
+                .awaitObjectResponseResult(kotlinxDeserializerOf(loader = loader))
             when (result) {
                 is Result.Success -> return result.value
                 is Result.Failure -> {

@@ -16,8 +16,10 @@ import kotlin.script.experimental.host.toScriptSource
 @Target(AnnotationTarget.FILE)
 annotation class Include(val filename: String) {
     companion object {
-        fun configureIncludes(context: ScriptConfigurationRefinementContext): ResultWithDiagnostics<ScriptCompilationConfiguration> {
-            val reports: MutableList<ScriptDiagnostic> = mutableListOf()
+        fun configureIncludes(
+            reports: MutableList<ScriptDiagnostic>,
+            context: ScriptConfigurationRefinementContext
+        ): ScriptCompilationConfiguration {
             println("collectedData: '${context.collectedData}'")
 //            context.collectedData?.entries()?.forEach { (key, value) ->
 //                println("collectedData    $key => $value")
@@ -28,7 +30,7 @@ annotation class Include(val filename: String) {
             val annotations = context.collectedData?.get(ScriptCollectedData.foundAnnotations).also {
                 reports += ScriptDiagnostic("found annotations: '$it'", severity = ScriptDiagnostic.Severity.DEBUG)
             }?.takeIf { it.isNotEmpty() }
-                ?: return ScriptCompilationConfiguration(context.compilationConfiguration).asSuccess()
+                ?: return context.compilationConfiguration
 
             // TODO? make sure rootFolder points at the correct folder
 
@@ -42,7 +44,7 @@ annotation class Include(val filename: String) {
             require(includeFolder.exists()) { "$includeFolder does not exist" }
 
             val compilationConfiguration = ScriptCompilationConfiguration(context.compilationConfiguration) {
-                annotations.forEach { annotation ->
+                annotations.filter { it is Include }.forEach { annotation ->
                     val include = annotation as Include
                     val includedScript = includeFolder.resolve(include.filename)
                     require(includedScript.exists()) { "$includedScript does not exist" }
@@ -57,6 +59,12 @@ annotation class Include(val filename: String) {
 //            compilationConfiguration.entries().forEach {
 //                println("onAnnotations    $it")
 //            }
+            return compilationConfiguration
+        }
+
+        fun configureIncludes(context: ScriptConfigurationRefinementContext): ResultWithDiagnostics<ScriptCompilationConfiguration> {
+            val reports: MutableList<ScriptDiagnostic> = mutableListOf()
+            val compilationConfiguration = configureIncludes(reports, context)
             return compilationConfiguration.asSuccess(reports)
         }
     }
