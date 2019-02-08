@@ -13,7 +13,7 @@ import java.util.function.Consumer
 object ShellUtil : KLogging() {
     fun isInPath(tool: String) = when {
         Platform.isLinux || Platform.isMac -> evalBash("which $tool").stdout.trim().isNotBlank()
-        Platform.isWindows -> runProcess("where $tool").stdout.trim().isNotBlank()
+        Platform.isWindows -> runProcess("where", tool).stdout.trim().isNotBlank()
         else -> throw IllegalStateException("unrecognized or unsupported platform")
     }
 
