@@ -10,7 +10,7 @@ enum class Section {
     @SerialName("modpacks")
     MODPACKS,
     @SerialName("mc-mods")
-    MCMODS,
+    MODS,
     @SerialName("texture-packs")
     TEXTURE_PACKS,
     @SerialName("worlds")

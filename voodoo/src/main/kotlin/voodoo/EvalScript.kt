@@ -88,7 +88,7 @@ inline fun <reified T> ResultWithDiagnostics<EvaluationResult>.get(scriptFile: F
             ScriptDiagnostic.Severity.INFO -> "i"
             ScriptDiagnostic.Severity.DEBUG -> "d"
         }
-        println("$severityIndicator: ${scriptFile.absoluteFile}: ${report.location?.posToString()}: ${report.message}")
+        println("$severityIndicator: ${report.sourcePath}: ${report.location?.posToString()}: ${report.message}")
         report.exception?.printStackTrace()
     }
     println(this)

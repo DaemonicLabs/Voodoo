@@ -51,19 +51,11 @@ open class VoodooPlugin : Plugin<Project> {
                 targetCompatibility = JavaVersion.VERSION_1_8
             }
 
-            // add pack specific generated sources
             extensions.configure<KotlinJvmProjectExtension> {
                 sourceSets.maybeCreate("main").kotlin.apply {
                     srcDir(SharedFolders.IncludeDir.get())
                     srcDir(SharedFolders.PackDir.get())
                     srcDir(SharedFolders.TomeDir.get())
-                    srcDir(SharedFolders.GeneratedSrc.get(id = ""))
-                }
-            }
-
-            extensions.configure<IdeaModel> {
-                module {
-                    generatedSourceDirs.add(SharedFolders.GeneratedSrc.get(id = ""))
                 }
             }
 
@@ -81,16 +73,16 @@ open class VoodooPlugin : Plugin<Project> {
                 downloadTask as DefaultTask to downloadTask.jarFile
             }
 
+//            project.dependencies {
+//                add("api", files(voodooJar))
+//            }
+
             task<AbstractTask>("voodooVersion") {
                 group = "voodoo"
                 description = "prints the used voodoo version"
                 doFirst {
                     logger.lifecycle("version: ${PluginConstants.FULL_VERSION}")
                 }
-            }
-
-            val poet = task<PoetTask>("poet") {
-                targetFolder = SharedFolders.GeneratedSrc.get(id = "")
             }
 
             task<CreatePackTask>("createpack") {
@@ -129,8 +121,25 @@ open class VoodooPlugin : Plugin<Project> {
                     .forEach { sourceFile ->
                         val id = sourceFile.name.substringBeforeLast(".voodoo.kts").toLowerCase()
 
+                        // add pack specific generated sources
+                        extensions.configure<KotlinJvmProjectExtension> {
+                            sourceSets.maybeCreate("main").kotlin.apply {
+                                srcDir(SharedFolders.GeneratedSrc.get(id = id))
+                            }
+                        }
+
+                        extensions.configure<IdeaModel> {
+                            module {
+                                generatedSourceDirs.add(SharedFolders.GeneratedSrc.get(id = id))
+                            }
+                        }
+
+//                        val poet = task<PoetTask>("poet_$id") {
+//                            targetFolder = SharedFolders.GeneratedSrc.get(id = id)
+//                        }
+
                         task<VoodooTask>(id.toLowerCase()) {
-                            dependsOn(poet)
+//                            dependsOn(poet)
                             dependsOn(copyLibs)
                             dependsOn(downloadVoodoo)
 
@@ -148,7 +157,7 @@ open class VoodooPlugin : Plugin<Project> {
                         voodooExtension.tasks.forEach { customTask ->
                             val (taskName, taskDescription, arguments) = customTask
                             task<VoodooTask>(id + "_" + taskName) {
-                                dependsOn(poet)
+//                                dependsOn(poet)
                                 dependsOn(copyLibs)
                                 dependsOn(downloadVoodoo)
 

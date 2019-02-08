@@ -125,6 +125,9 @@ fun Project.setupDependencies(target: Project = this) {
                 api(project(":tome"))
                 api(project(":pack:pack-tester"))
                 implementation(kotlin("scripting-jvm", Kotlin.version))
+
+                // required for InvalidScriptResolverAnnotation
+//                implementation(kotlin("compiler-embeddable", Kotlin.version))
                 implementation(Kotlinpoet.dependency)
             }
         }

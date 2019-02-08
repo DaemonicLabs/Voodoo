@@ -11,7 +11,7 @@ import java.io.File
 @CacheableTask
 open class PoetTask : DefaultTask() {
     @OutputDirectory
-    var targetFolder: File = SharedFolders.GeneratedSrc.get(id = "")
+    var targetFolder: File = SharedFolders.GeneratedSrc.get(id = "unknown")
 
     init {
         group = "build"
@@ -21,6 +21,6 @@ open class PoetTask : DefaultTask() {
     @TaskAction
     fun runPoet() {
         targetFolder.mkdirs()
-        Poet.generateAll(generatedSrcDir = targetFolder)
+//        Poet.generateAll(generatedSrcDir = targetFolder, modGenerators = generators)
     }
 }
