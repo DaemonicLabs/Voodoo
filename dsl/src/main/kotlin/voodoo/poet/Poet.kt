@@ -17,10 +17,15 @@ import voodoo.poet.generator.ForgeGenerator
 import java.io.File
 
 object Poet : KLogging() {
-//    @JvmStatic
-//    fun main(vararg args: String) {
-//        generateAll(generatedSrcDir = File(args[0]))
-//    }
+    // for generating code for tests only
+    @JvmStatic
+    fun main(vararg args: String) {
+        generateAll(
+            generatedSrcDir = File(args[0]),
+            curseGenerators = listOf(CurseGenerator("Mod", Section.MODS)),
+            forgeGenerators = listOf(ForgeGenerator("Forge"))
+        )
+    }
 
     fun generateAll(
         generatedSrcDir: File, // = SharedFolders.GeneratedSrc.get(id = id),
