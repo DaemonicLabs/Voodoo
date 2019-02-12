@@ -340,12 +340,14 @@ object SKPack : AbstractPack() {
     }
 
     private fun getDependenciesCall(lockPack: LockPack, entryId: String): List<LockEntry> {
+        logger.debug("getDependencies of $entryId")
         val entry = lockPack.findEntryById(entryId) ?: return emptyList()
         val result = mutableListOf(entry)
         for ((depType, entryList) in entry.dependencies) {
             if (depType == DependencyType.EMBEDDED) continue
+            logger.debug("getting sub dependencies of type $depType, list: $entryList")
             for (depName in entryList) {
-                result += getDependencies(lockPack, entryId)
+                result += getDependencies(lockPack, depName)
             }
         }
         return result
