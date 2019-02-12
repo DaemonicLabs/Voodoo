@@ -77,6 +77,23 @@ allprojects {
     }
 }
 
+tasks.create<Copy>("processMDTemplates") {
+    val major: String by project
+    val minor: String by project
+    val patch: String by project
+    group = "documentation"
+    from(rootDir)
+    include("**/*.template.md")
+    filesMatching("**/*.template.md") {
+        name = this.sourceName.substringBeforeLast(".template.md") + ".md"
+        expand(
+            "VOODOO_VERSION" to "$major.$minor.$patch",
+            "GRADLE_VERSION" to Gradle.version
+        )
+    }
+    destinationDir = rootDir
+}
+
 subprojects {
     configurations.all {
         resolutionStrategy.eachDependency {
