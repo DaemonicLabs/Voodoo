@@ -83,9 +83,9 @@ tasks.create<Copy>("processMDTemplates") {
     val patch: String by project
     group = "documentation"
     from(rootDir)
-    include("**/*.template.md")
-    filesMatching("**/*.template.md") {
-        name = this.sourceName.substringBeforeLast(".template.md") + ".md"
+    include("**/*.template_md")
+    filesMatching("**/*.template_md") {
+        name = this.sourceName.substringBeforeLast(".template_md") + ".md"
         expand(
             "VOODOO_VERSION" to "$major.$minor.$patch",
             "GRADLE_VERSION" to Gradle.version
