@@ -97,7 +97,9 @@ object GradleSetup : KLogging() {
             logger.error("please install 'gradle'")
             return
         }
-        ShellUtil.runProcess("gradle", "wrapper", "--gradle-version", version, "--distribution-type", distributionType,
+        ShellUtil.runProcess("gradle", "wrapper",
+            "--gradle-version", version,
+            //"--distribution-type", distributionType,
             wd = projectDir,
             stdoutConsumer = Consumer { t -> println(t) },
             stderrConsumer = Consumer { t -> println("err: $t") }
