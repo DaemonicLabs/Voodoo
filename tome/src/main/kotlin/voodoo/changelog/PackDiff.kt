@@ -15,7 +15,7 @@ import java.io.File
 
 val LockPack.forgeVersion: String
     get() = runBlocking {
-        ForgeUtil.forgeVersionOf(forge)?.forgeVersion ?: "missing"
+        ForgeUtil.forgeVersionOf(forge, this@forgeVersion.mcVersion)?.forgeVersion ?: "missing"
     }
 val LockPack.authorsString: String
     get() = authors.joinToString(", ")

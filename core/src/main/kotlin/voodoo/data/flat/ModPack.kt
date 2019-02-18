@@ -27,7 +27,7 @@ data class ModPack(
     @Optional @Serializable(with = FileSerializer::class)
     var icon: File = File("icon.png"),
     @Optional val authors: List<String> = emptyList(),
-    @Optional var forge: Int? = null,
+    @Optional var forge: String? = null,
     // var forgeBuild: Int = -1,
     @Optional val launch: LaunchModifier = LaunchModifier(),
     @Optional var userFiles: UserFiles = UserFiles(),

@@ -1,6 +1,5 @@
 package voodoo
 
-
 @Repeatable
 @Target(AnnotationTarget.FILE)
 @Retention(AnnotationRetention.SOURCE)

@@ -12,6 +12,7 @@ import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
 import voodoo.data.curse.Section
 import voodoo.forge.ForgeUtil
+import voodoo.forge.FullVersion
 import voodoo.poet.generator.CurseGenerator
 import voodoo.poet.generator.ForgeGenerator
 import java.io.File
@@ -55,7 +56,7 @@ object Poet : KLogging() {
             } + forgeGenerators.map { generator ->
                 Poet.generateForge(
                     name = generator.name,
-                    mcVersionFilters = generator.mcVersions.toList(), //generator.mcVersions.toList(),
+                    mcVersionFilters = generator.mcVersions.toList(), // generator.mcVersions.toList(),
                     folder = generatedSrcDir
                 )
             }
@@ -134,49 +135,38 @@ object Poet : KLogging() {
         mcVersionFilters: List<String>? = null,
         folder: File
     ): File {
-        val forgeData = runBlocking {
-            ForgeUtil.deferredData.await()
-        }
-
-        fun buildProperty(identifier: String, build: Int): PropertySpec {
+        fun buildProperty(identifier: String, version: String): PropertySpec {
             return PropertySpec
-                .builder(identifier, Int::class, KModifier.CONST)
-                .initializer("%L", build)
+                .builder(
+                    identifier.replace('-', '_').replace('.', '_'),
+                    String::class,
+                    KModifier.CONST
+                )
+                .initializer("%S", version)
                 .build()
         }
 
         val forgeBuilder = TypeSpec.objectBuilder(name)
-        val webpath =
-            PropertySpec.builder("WEBPATH", String::class, KModifier.CONST).initializer("%S", forgeData.webpath).build()
-        forgeBuilder.addProperty(webpath)
 
         val mcVersions = ForgeUtil.mcVersionsMap(filter = mcVersionFilters)
-        val allNumbers = mcVersions.flatMap { it.value.values }
-        for ((versionIdentifier, numbers) in mcVersions) {
+        val allVersions = mcVersions.flatMap { it.value.values }
+        mcVersions.forEach { (versionIdentifier, numbers) ->
             val versionBuilder = TypeSpec.objectBuilder(versionIdentifier)
-            for ((buildIdentifier, number) in numbers) {
-                versionBuilder.addProperty(buildProperty(buildIdentifier, number))
+            for ((buildIdentifier, version) in numbers) {
+                versionBuilder.addProperty(buildProperty(buildIdentifier, version.version))
             }
             forgeBuilder.addType(versionBuilder.build())
         }
 
         val promos = ForgeUtil.promoMap()
-        for ((keyIdentifier, number) in promos) {
-            if(allNumbers.contains(number))
-                forgeBuilder.addProperty(buildProperty(keyIdentifier, number))
+        for ((keyIdentifier, version) in promos) {
+            val shortVersion = allVersions.find { it == FullVersion(version).shortVersion }
+            if (shortVersion != null) {
+                forgeBuilder.addProperty(buildProperty(keyIdentifier, version))
+            }
         }
 
         return save(forgeBuilder.build(), name, folder)
-    }
-
-    private fun save(source: FileSpec, name: String, folder: File): File {
-        val path = folder.apply {
-            absoluteFile.parentFile.mkdirs()
-        }.absoluteFile
-        val targetFile = path.resolve("$name.kt")
-        source.writeTo(path)
-        logger.info("written to $targetFile")
-        return targetFile
     }
 
     private fun save(type: TypeSpec, name: String, folder: File): File {

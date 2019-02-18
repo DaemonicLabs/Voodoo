@@ -85,7 +85,7 @@ object Server {
 
         // download forge
         modpack.forge?.also { forge ->
-            val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = ForgeUtil.forgeVersionOf(forge)
+            val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = ForgeUtil.forgeVersionOf(forge, modpack.mcVersion)!!
             val forgeFile = directories.runtimeDir.resolve(forgeFileName)
             logger.info("forge: $forgeLongVersion")
             forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))

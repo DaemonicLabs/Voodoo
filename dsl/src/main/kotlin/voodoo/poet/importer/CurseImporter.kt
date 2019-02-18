@@ -122,7 +122,7 @@ object CurseImporter : AbstractImporter() {
             manifest.minecraft.modLoaders.forEach { logger.info { it } }
             forge = manifest.minecraft.modLoaders.find {
                 it.primary && it.id.startsWith("forge-")
-            }?.id?.substringAfterLast('.')?.toIntOrNull()
+            }?.id?.substringAfterLast("forge-")
             sourceDir = source
             sourceDir = source
             localDir = local

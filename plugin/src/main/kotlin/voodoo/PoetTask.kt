@@ -4,7 +4,6 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.CacheableTask
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
-import voodoo.poet.Poet
 import voodoo.util.SharedFolders
 import java.io.File
 

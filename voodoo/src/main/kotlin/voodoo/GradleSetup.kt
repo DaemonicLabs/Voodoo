@@ -99,7 +99,7 @@ object GradleSetup : KLogging() {
         }
         ShellUtil.runProcess("gradle", "wrapper",
             "--gradle-version", version,
-            //"--distribution-type", distributionType,
+            // "--distribution-type", distributionType,
             wd = projectDir,
             stdoutConsumer = Consumer { t -> println(t) },
             stderrConsumer = Consumer { t -> println("err: $t") }

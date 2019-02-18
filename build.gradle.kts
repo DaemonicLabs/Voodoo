@@ -31,7 +31,8 @@ val runnableProjects = mapOf(
     project("voodoo") to "voodoo.Voodoo",
     project("multimc:multimc-installer") to "voodoo.Hex",
     project("server-installer") to "voodoo.server.Install",
-    project("bootstrap") to "voodoo.BootstrapKt"
+    project("bootstrap") to "voodoo.BootstrapKt",
+    project("core") to "voodoo.forge.ForgeUtil"
 )
 val noConstants = listOf(
     project("skcraft")
@@ -108,7 +109,7 @@ subprojects {
 
     apply {
         plugin("idea")
-        plugin("org.jmailen.kotlinter")
+//        plugin("org.jmailen.kotlinter")
     }
 
     tasks.withType<KotlinCompile> {
