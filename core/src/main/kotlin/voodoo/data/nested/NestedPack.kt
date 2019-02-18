@@ -30,7 +30,7 @@ internal constructor(
     var version: String = "1.0",
     var icon: File = rootDir.resolve("icon.png"),
     var authors: List<String> = emptyList(),
-    var forge: Int? = null,
+    var forge: String? = null,
     var userFiles: UserFiles = UserFiles(),
     var launch: LaunchModifier = LaunchModifier(),
     var root: NestedEntry = NestedEntry(),

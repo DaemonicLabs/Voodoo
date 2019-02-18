@@ -5,6 +5,7 @@ import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.serialization.KSerializer
@@ -12,6 +13,9 @@ import kotlinx.serialization.Serializable
 import mu.KLogging
 import voodoo.data.ForgeVersion
 import voodoo.util.Downloader
+import javax.xml.parsers.DocumentBuilderFactory
+import kotlinx.coroutines.runBlocking
+import org.w3c.dom.NodeList
 
 /**
  * Created by nikky on 30/12/17.
@@ -19,41 +23,49 @@ import voodoo.util.Downloader
  */
 object ForgeUtil : KLogging() {
 
-    val deferredData by lazy {
-        GlobalScope.async { getForgeData() }
+    private val deferredPromo: Deferred<ForgeData> by lazy {
+        GlobalScope.async { getForgePromoData() }
+    }
+    private val forgeVersions: List<FullVersion> = getForgeVersions()
+    private val forgeVersionsMap: Map<String, List<ShortVersion>> = forgeVersions.groupBy(
+        keySelector = { it.version.substringBefore('-') },
+        valueTransform = { ShortVersion(it.version.substringAfter('-')) }
+    )
+
+    fun forgeVersions() {
+
     }
 
-    suspend fun getForgeBuild(version: String, mcVersion: String): Int {
-        val data = deferredData.await()
+    suspend fun getForgeVersion(version: String, mcVersion: String): ShortVersion {
+        val promoData = deferredPromo.await()
         return if (version.equals("recommended", true) || version.equals("latest", true)) {
             val promoVersion = "$mcVersion-${version.toLowerCase()}"
-            data.promos[promoVersion]!!
+            ShortVersion(promoData.promos.getValue(promoVersion))
         } else {
-            version.toInt()
+            ShortVersion(version)
         }
     }
 
-    suspend fun mcVersionsMap(filter: List<String>? = null): Map<String, Map<String, Int>> {
-        val forgeData = deferredData.await()
-        return forgeData.mcversion.let {
-            if(filter != null && filter.isNotEmpty()) {
+    fun mcVersionsMap(filter: List<String>? = null): Map<String, Map<String, ShortVersion>> {
+        return forgeVersionsMap.let {
+            if (filter != null && filter.isNotEmpty()) {
                 it.filterKeys { version -> filter.contains(version) }
             } else {
                 it
             }
-        }.entries.associate { (version, numbers) ->
-            val versionIdentifier = "mc" + version.replace('.', '_')
-            val versions = numbers.associateBy { number ->
-                val buildIdentifier = "build$number"
+        }.entries.associate { (mcVersion, versions) ->
+            val versionIdentifier = "mc" + mcVersion.replace('.', '_')
+            val versions = versions.associateBy { version ->
+                val buildIdentifier = "forge_${version.version}"
                 buildIdentifier
             }
             versionIdentifier to versions
         }
     }
 
-    suspend fun promoMap(): Map<String, Int> {
-        val forgeData = deferredData.await()
-        return forgeData.promos.mapKeys { (key, version) ->
+    suspend fun promoMap(): Map<String, String> {
+        val promoData = deferredPromo.await()
+        return promoData.promos.mapKeys { (key, version) ->
             val keyIdentifier = key.replace('-', '_').replace('.', '_').run {
                 if (this.first().isDigit())
                     "mc$this"
@@ -61,27 +73,35 @@ object ForgeUtil : KLogging() {
                     this
             }
             keyIdentifier
-        }
+        }.mapValues { (key, version) ->
+            forgeVersions.find {
+                it.forgeVersion == version
+            }?.version ?: ""
+        }.filterValues { it.isNotBlank() }
     }
 
-    suspend fun forgeVersionOf(build: Int?): ForgeVersion? {
-        if (build == null || build <= 0) return null
-        return forgeVersionOf(build)
+    @JvmName("forgeVersionOfNullable")
+    suspend fun forgeVersionOf(version: String?, mcVersion: String): ForgeVersion? {
+        if (version == null) return null
+        return forgeVersionOf(getForgeVersion(version, mcVersion))
     }
+    suspend fun forgeVersionOf(version: String, mcVersion: String): ForgeVersion =
+        forgeVersionOf(getForgeVersion(version, mcVersion))
 
-    suspend fun forgeVersionOf(build: Int): ForgeVersion {
-        val data = deferredData.await()
-        val webpath = data.webpath
-        val artifact = data.number[build.toString()]!!
-        val mcversion = artifact.mcversion
-        val forgeVersion = artifact.version
-        val branch = artifact.branch
-        var longVersion = "$mcversion-$forgeVersion"
-        if (branch != null) {
-            longVersion += "-$branch"
-        }
+    fun forgeVersionOf(version: ShortVersion?): ForgeVersion? {
+        if (version == null) return null
+        return forgeVersionOf(version)
+    }
+    fun forgeVersionOf(version: ShortVersion): ForgeVersion {
+
+        val webpath = "https://files.minecraftforge.net/maven/net/minecraftforge/forge"
+
+        val fullVersion: FullVersion = forgeVersions.find { it.forgeVersion == version.version }!!
+        val mcversion = fullVersion.mcVersion
+        val forgeVersion = fullVersion.forgeVersion
+        val longVersion = "$mcversion-$forgeVersion"
         val fileName = "forge-$longVersion-installer.jar" // "forge-mcversion-$forgeVersion(-$branch)/installer.jar"
-        val url = "$webpath$longVersion/$fileName"
+        val url = "$webpath/$longVersion/$fileName"
 
         return ForgeVersion(
             url,
@@ -91,47 +111,91 @@ object ForgeUtil : KLogging() {
         )
     }
 
-    private suspend fun getForgeData(): ForgeData {
-        val url = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/json"
+    private fun getForgeVersions(): List<FullVersion> {
+        val url = "https://files.minecraftforge.net/maven/net/minecraftforge/forge/maven-metadata.xml"
+
+        val factory = DocumentBuilderFactory.newInstance()
+        val builder = factory.newDocumentBuilder()
+        val doc = builder.parse(url)
+
+        println("doc: $doc")
+        val versions: NodeList = doc.getElementsByTagName("version")
+        println("versions: $versions")
+
+        return (0 until versions.length).map { i ->
+            val versionNode = versions.item(i)
+            FullVersion(versionNode.textContent)
+        }
+    }
+
+    private suspend fun getForgePromoData(): ForgeData {
+        val url = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json"
+
         val loader: KSerializer<ForgeData> = ForgeData.serializer()
-        loop@ while (true) {
-            val (request, response, result) = url.httpGet()
-                .header("User-Agent" to Downloader.useragent)
-                .awaitObjectResponseResult(kotlinxDeserializerOf(loader = loader))
-            when (result) {
-                is Result.Success -> return result.value
-                is Result.Failure -> {
-                    logger.error("getForgeData")
-                    logger.error("url: $url")
-                    logger.error("cUrl: ${request.cUrlString()}")
-                    logger.error("response: $response")
-                    logger.error { result.error }
-                    continue@loop
-                }
+        val (request, response, result) = url.httpGet()
+            .header("User-Agent" to Downloader.useragent)
+            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = loader))
+        when (result) {
+            is Result.Success -> return result.value
+            is Result.Failure -> {
+                logger.error("getForgeData")
+                logger.error("url: $url")
+                logger.error("cUrl: ${request.cUrlString()}")
+                logger.error("response: $response")
+                logger.error { result.error }
+                throw result.error
+            }
+        }
+    }
+
+    @JvmStatic
+    fun main(vararg args: String) {
+        runBlocking {
+            val promos = promoMap()
+            promos.forEach { displayName, version ->
+                println("displayName: $displayName")
+                println("version: $version")
             }
         }
     }
 }
 
-@Serializable
-data class ForgeData(
-    val adfocus: String,
-    val artifact: String,
-    val homepage: String,
-    val webpath: String,
-    val name: String,
-    val branches: Map<String, List<Int>>,
-    val mcversion: Map<String, List<Int>>,
-    val number: Map<String, Artifact>,
-    val promos: Map<String, Int>
-)
+inline class FullVersion(val version: String) {
+    val components: List<String>
+        get() = version.split('-')
+    val mcVersion: String
+        get() = components[0]
+    val forgeVersion: String
+        get() = components[1]
+    val branch: String?
+        get() = components.getOrNull(2)
+    val shortVersion: ShortVersion
+        get() = ShortVersion(forgeVersion.run {
+            branch?.let { "$forgeVersion-$it" } ?: forgeVersion
+        })
+}
+
+inline class ShortVersion(val version: String) {
+    val components: List<String>
+        get() = version.split('-')
+    val forgeVersion: String
+        get() = components[0]
+    val branch: String?
+        get() = components.getOrNull(1)
+}
 
 @Serializable
-data class Artifact(
-    val branch: String?,
-    val build: Int,
-    val files: List<List<String>>, // extension, file, checksum
-    val mcversion: String,
-    val modified: Double,
-    val version: String
+data class ForgeData(
+    val homepage: String,
+    val promos: Map<String, String>
 )
+
+// @Serializable
+// data class Artifact(
+//    val branch: String?,
+//    val build: Int,
+//    val files: List<List<String>>, // extension, file, checksum
+//    val mcversion: String,
+//    val modified: Double,
+//    val version: String
+// )

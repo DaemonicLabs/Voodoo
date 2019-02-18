@@ -1,3 +1,9 @@
+routine to report errors:
+- switch to main thread
+- close all pools
+- delay a second
+- report error
+
 # Tweaker
 
 use a tweakClass for forge (bundle bootstrapper in tweakClass ?)

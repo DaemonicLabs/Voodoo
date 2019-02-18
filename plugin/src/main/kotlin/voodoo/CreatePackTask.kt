@@ -57,9 +57,9 @@ open class CreatePackTask : DefaultTask() {
                 files.any { file -> file.gameVersion.contains(mcVersion) }
             }
         }
-        val forgeData = runBlocking {
-            ForgeUtil.deferredData.await()
-        }
+//        val forgeData = runBlocking {
+//            ForgeUtil.deferredPromo.await()
+//        }
 
         val scriptEnv = MainScriptEnv(
             rootDir = rootDir,
@@ -68,7 +68,7 @@ open class CreatePackTask : DefaultTask() {
             mcVersion = this@CreatePackTask.mcVersion ?: throw GradleException("mcVersion was null")
             title = titleStr.takeIf { it.isNotBlank() } ?: id.capitalize()
             authors = listOf(System.getProperty("user.name"))
-            forge = forgeData.promos["$mcVersion-recommended"]
+            forge = "$mcVersion-recommended"
             root(CurseProvider) {
                 list {
                     randomMods.forEach { (identifier, projectId) ->

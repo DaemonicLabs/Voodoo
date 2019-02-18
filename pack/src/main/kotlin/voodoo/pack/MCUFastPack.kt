@@ -105,7 +105,7 @@ object MCUFastPack : AbstractPack() {
         }
 
         val forgeVersion = modpack.forge?.let { forge ->
-            val (forgeUrl, forgeFileName, longVersion, forgeVersion) = ForgeUtil.forgeVersionOf(forge)
+            val (forgeUrl, forgeFileName, longVersion, forgeVersion) = ForgeUtil.forgeVersionOf(forge, modpack.mcVersion)
             forgeVersion
         } ?: run {
             logger.warn { "no forge configured" }

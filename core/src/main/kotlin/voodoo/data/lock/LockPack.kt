@@ -11,6 +11,7 @@ import voodoo.data.Side
 import voodoo.data.UserFiles
 import voodoo.data.curse.DependencyType
 import voodoo.forge.ForgeUtil
+import voodoo.forge.ShortVersion
 import voodoo.util.blankOr
 import voodoo.util.json
 import voodoo.util.serializer.FileSerializer
@@ -30,7 +31,7 @@ data class LockPack(
     @Optional @Serializable(with = FileSerializer::class)
     val icon: File = File("icon.png"),
     @Optional val authors: List<String> = emptyList(),
-    @Optional val forge: Int? = null,
+    @Optional val forge: String? = null,
     @Optional val launch: LaunchModifier = LaunchModifier(),
     @Optional var userFiles: UserFiles = UserFiles(),
     @Optional var localDir: String = "local",
@@ -179,7 +180,7 @@ data class LockPack(
         reports += Triple("packVersion", "Pack Version", "`$version`")
         reports += Triple("mcVersion", "MC Version", "`$mcVersion`")
         forge?.let {
-            val forgeVersion = runBlocking { ForgeUtil.forgeVersionOf(it).forgeVersion }
+            val forgeVersion = runBlocking { ForgeUtil.forgeVersionOf(ShortVersion(it)).forgeVersion }
             reports += Triple("forgeVersion", "Forge Version", "`$forgeVersion`")
         }
         reports += Triple("authors", "Author", "`${authors.joinToString(", ")}`")

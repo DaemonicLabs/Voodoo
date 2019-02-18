@@ -44,7 +44,7 @@ object MMCFatPack : AbstractPack() {
             icon = modpack.icon,
             instanceDir = instanceDir,
             mcVersion = modpack.mcVersion,
-            forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge)?.forgeVersion
+            forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge, modpack.mcVersion)?.forgeVersion
         )
 
         minecraftDir.mkdirs()
