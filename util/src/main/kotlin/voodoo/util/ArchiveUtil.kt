@@ -20,7 +20,7 @@ object ArchiveUtil : KLogging() {
         tags.forEach {
             logger.info("tag: $it")
         }
-        val tag = tags.last()
+        val tag = tags.last().takeIf { it.isNotBlank() } ?: return null
         val zipFile = archive(directory = directory, tag = tag, identifier = identifier) ?: return null
         return tag to zipFile
 //        UnzipUtility.unzip(zipFile = zipFile, destDirectory = )

@@ -118,9 +118,9 @@ object ForgeUtil : KLogging() {
         val builder = factory.newDocumentBuilder()
         val doc = builder.parse(url)
 
-        println("doc: $doc")
+//        println("doc: $doc")
         val versions: NodeList = doc.getElementsByTagName("version")
-        println("versions: $versions")
+//        println("versions: $versions")
 
         return (0 until versions.length).map { i ->
             val versionNode = versions.item(i)
