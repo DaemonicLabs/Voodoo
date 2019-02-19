@@ -32,12 +32,12 @@ object ForgeUtil : KLogging() {
         valueTransform = { ShortVersion(it.version.substringAfter('-')) }
     )
 
-    private fun findFullVersion(version: String): FullVersion {
-        return forgeVersions.find { it.forgeVersion == version } ?: run {
-            logger.error("cannot find $version in ${forgeVersions.map { it.forgeVersion }})")
-            throw KotlinNullPointerException("cannot find full version $version")
-        }
-    }
+//    private fun findFullVersion(version: String): FullVersion {
+//        return forgeVersions.find { it.forgeVersion == version } ?: run {
+//            logger.error("cannot find $version in ${forgeVersions.map { it.forgeVersion }})")
+//            throw KotlinNullPointerException("cannot find full version $version in ${forgeVersions.map { it.forgeVersion }}")
+//        }
+//    }
 
     fun mcVersionsMap(filter: List<String>? = null): Map<String, Map<String, String>> {
         return forgeVersionsMap.let {
@@ -78,12 +78,12 @@ object ForgeUtil : KLogging() {
     }
 
     @JvmName("forgeVersionOfNullable")
-    suspend fun forgeVersionOf(version: String?): ForgeVersion? {
+    fun forgeVersionOf(version: String?): ForgeVersion? {
         if (version == null) return null
-        return forgeVersionOf(findFullVersion(version))
+        return forgeVersionOf(FullVersion(version))
     }
-    suspend fun forgeVersionOf(version: String): ForgeVersion =
-        forgeVersionOf(findFullVersion(version))
+    fun forgeVersionOf(version: String): ForgeVersion =
+        forgeVersionOf(FullVersion(version))
 
     fun forgeVersionOf(version: FullVersion?): ForgeVersion? {
         if (version == null) return null
