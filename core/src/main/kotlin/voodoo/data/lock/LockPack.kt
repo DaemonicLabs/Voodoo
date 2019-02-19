@@ -181,7 +181,7 @@ data class LockPack(
         reports += Triple("packVersion", "Pack Version", "`$version`")
         reports += Triple("mcVersion", "MC Version", "`$mcVersion`")
         forge?.let {
-            val forgeVersion = runBlocking { ForgeUtil.forgeVersionOf(FullVersion(it).shortVersion).forgeVersion }
+            val forgeVersion = runBlocking { ForgeUtil.forgeVersionOf(it).forgeVersion }
             reports += Triple("forgeVersion", "Forge Version", "`$forgeVersion`")
         }
         reports += Triple("authors", "Author", "`${authors.joinToString(", ")}`")

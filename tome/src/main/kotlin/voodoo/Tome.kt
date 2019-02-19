@@ -25,7 +25,7 @@ object Tome : KLogging() {
     val LockPack.report: String
         get() {
             val forgeVersion = runBlocking {
-                ForgeUtil.forgeVersionOf(forge, this@report.mcVersion)?.forgeVersion ?: "missing"
+                ForgeUtil.forgeVersionOf(forge)?.forgeVersion ?: "missing"
             }
             return markdownTable(
                 headers = listOf("Title", this.title()),

@@ -6,6 +6,6 @@ import kotlinx.serialization.Serializable
 data class ForgeVersion(
     val url: String,
     val fileName: String,
-    val longVersion: String,
+    val fullVersion: String,
     val forgeVersion: String
 )

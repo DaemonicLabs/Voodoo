@@ -32,17 +32,14 @@ object ForgeUtil : KLogging() {
         valueTransform = { ShortVersion(it.version.substringAfter('-')) }
     )
 
-    suspend fun getShortVersion(version: String, mcVersion: String): ShortVersion {
-        val promoData = deferredPromo.await()
-        return if (version.equals("recommended", true) || version.equals("latest", true)) {
-            val promoVersion = "$mcVersion-${version.toLowerCase()}"
-            ShortVersion(promoData.promos.getValue(promoVersion))
-        } else {
-            FullVersion(version).shortVersion
+    private fun findFullVersion(version: String): FullVersion {
+        return forgeVersions.find { it.version == version } ?: run {
+            logger.error("cannot find $version in ${forgeVersions.map { it.forgeVersion }})")
+            throw KotlinNullPointerException("cannot find full version $version")
         }
     }
 
-    fun mcVersionsMap(filter: List<String>? = null): Map<String, Map<String, ShortVersion>> {
+    fun mcVersionsMap(filter: List<String>? = null): Map<String, Map<String, String>> {
         return forgeVersionsMap.let {
             if (filter != null && filter.isNotEmpty()) {
                 it.filterKeys { version -> filter.contains(version) }
@@ -54,7 +51,11 @@ object ForgeUtil : KLogging() {
             val versions = versions.associateBy { version ->
                 val buildIdentifier = "forge_${version.version}"
                 buildIdentifier
-            }
+            }.mapValues { (key, version) ->
+                forgeVersions.find {
+                    it.forgeVersion == version.forgeVersion
+                }?.version ?: ""
+            }.filterValues { it.isNotBlank() }
             versionIdentifier to versions
         }
     }
@@ -77,36 +78,29 @@ object ForgeUtil : KLogging() {
     }
 
     @JvmName("forgeVersionOfNullable")
-    suspend fun forgeVersionOf(version: String?, mcVersion: String): ForgeVersion? {
+    suspend fun forgeVersionOf(version: String?): ForgeVersion? {
         if (version == null) return null
-        return forgeVersionOf(getShortVersion(version, mcVersion))
+        return forgeVersionOf(findFullVersion(version))
     }
-    suspend fun forgeVersionOf(version: String, mcVersion: String): ForgeVersion =
-        forgeVersionOf(getShortVersion(version, mcVersion))
+    suspend fun forgeVersionOf(version: String): ForgeVersion =
+        forgeVersionOf(findFullVersion(version))
 
-    fun forgeVersionOf(version: ShortVersion?): ForgeVersion? {
+    fun forgeVersionOf(version: FullVersion?): ForgeVersion? {
         if (version == null) return null
         return forgeVersionOf(version)
     }
-    fun forgeVersionOf(version: ShortVersion): ForgeVersion {
+    fun forgeVersionOf(fullVersion: FullVersion): ForgeVersion {
 
         val webpath = "https://files.minecraftforge.net/maven/net/minecraftforge/forge"
 
-        val fullVersion: FullVersion = forgeVersions.find { it.forgeVersion == version.forgeVersion } ?: run {
-            logger.error("cannot find ${version.forgeVersion} in ${forgeVersions.map { it.forgeVersion }})")
-            throw KotlinNullPointerException("cannot find forgeVersion $version")
-        }
-        val mcversion = fullVersion.mcVersion
-        val forgeVersion = fullVersion.forgeVersion
-        val longVersion = "$mcversion-$forgeVersion"
-        val fileName = "forge-$longVersion-installer.jar" // "forge-mcversion-$forgeVersion(-$branch)/installer.jar"
-        val url = "$webpath/$longVersion/$fileName"
+        val fileName = "forge-$fullVersion-installer.jar" // "forge-mcversion-$forgeVersion(-$branch)/installer.jar"
+        val url = "$webpath/$fullVersion/$fileName"
 
         return ForgeVersion(
             url,
             fileName,
-            longVersion,
-            forgeVersion
+            fullVersion.version,
+            fullVersion.forgeVersion
         )
     }
 
@@ -152,6 +146,12 @@ object ForgeUtil : KLogging() {
         runBlocking {
             val promos = promoMap()
             promos.forEach { displayName, version ->
+                println("displayName: $displayName")
+                println("version: $version")
+            }
+
+            val mcVersion = mcVersionsMap()
+            mcVersion.forEach { displayName, version ->
                 println("displayName: $displayName")
                 println("version: $version")
             }
