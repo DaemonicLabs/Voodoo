@@ -33,7 +33,7 @@ object ForgeUtil : KLogging() {
     )
 
     private fun findFullVersion(version: String): FullVersion {
-        return forgeVersions.find { it.version == version } ?: run {
+        return forgeVersions.find { it.forgeVersion == version } ?: run {
             logger.error("cannot find $version in ${forgeVersions.map { it.forgeVersion }})")
             throw KotlinNullPointerException("cannot find full version $version")
         }
