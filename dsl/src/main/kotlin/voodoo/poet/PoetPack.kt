@@ -237,8 +237,8 @@ object PoetPack : KLogging() {
                     }
                     val mcVersions = ForgeUtil.mcVersionsMap()
                     for ((_, mapping) in mcVersions) {
-                        for ((identifier, shortVersion) in mapping) {
-                            if (forge == shortVersion.version) return@runBlocking identifier
+                        for ((identifier, version) in mapping) {
+                            if (forge == version) return@runBlocking identifier
                         }
                     }
                     null

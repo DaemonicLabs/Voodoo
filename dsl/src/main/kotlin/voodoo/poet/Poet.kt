@@ -153,15 +153,14 @@ object Poet : KLogging() {
         mcVersions.forEach { (versionIdentifier, numbers) ->
             val versionBuilder = TypeSpec.objectBuilder(versionIdentifier)
             for ((buildIdentifier, version) in numbers) {
-                versionBuilder.addProperty(buildProperty(buildIdentifier, version.version))
+                versionBuilder.addProperty(buildProperty(buildIdentifier, version))
             }
             forgeBuilder.addType(versionBuilder.build())
         }
 
         val promos = ForgeUtil.promoMap()
         for ((keyIdentifier, version) in promos) {
-            val shortVersion = allVersions.find { it == FullVersion(version).shortVersion }
-            if (shortVersion != null) {
+            if (allVersions.contains(version)) {
                 forgeBuilder.addProperty(buildProperty(keyIdentifier, version))
             }
         }

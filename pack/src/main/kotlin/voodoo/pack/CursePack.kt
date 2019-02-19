@@ -79,7 +79,7 @@ object CursePack : AbstractPack() {
         coroutineScope {
             val jobs = mutableListOf<Job>()
 
-            val forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge, modpack.mcVersion)?.forgeVersion
+            val forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge)?.forgeVersion
 
             val modsFolder = srcFolder.resolve("mods")
             logger.info("cleaning mods $modsFolder")
