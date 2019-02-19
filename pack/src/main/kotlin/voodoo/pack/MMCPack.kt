@@ -11,7 +11,7 @@ import kotlin.system.exitProcess
 object MMCPack : AbstractPack() {
     override val label = "MultiMC Pack"
 
-    override fun File.getOutputFolder(): File = resolve("multimc-sk")
+    override fun File.getOutputFolder(id: String): File = resolve("multimc-sk")
 
     override suspend fun pack(
         modpack: LockPack,

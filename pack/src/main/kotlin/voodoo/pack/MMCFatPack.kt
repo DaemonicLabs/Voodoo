@@ -24,7 +24,7 @@ import java.io.File
 object MMCFatPack : AbstractPack() {
     override val label = "MultiMC Pack (frozen pack)"
 
-    override fun File.getOutputFolder(): File = resolve("multimc-fat")
+    override fun File.getOutputFolder(id: String): File = resolve("multimc-fat")
 
     override suspend fun pack(
         modpack: LockPack,
@@ -103,9 +103,18 @@ object MMCFatPack : AbstractPack() {
                     launch(context = coroutineContext + pool) {
                         val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
 
+                        val selectedSelf = optionals[entry.id] ?: true
+                        if (!selectedSelf) {
+                            MMCUtil.logger.info("${entry.displayName} is disabled, skipping download")
+                            return@launch
+                        }
                         val matchedOptioalsList = modpack.optionalEntries.filter {
                             // check if entry is a dependency of any feature
-                            modpack.isDependencyOf(entry.id, it.id, DependencyType.REQUIRED)
+                            modpack.isDependencyOf(
+                                entryId = entry.id,
+                                parentId = it.id,
+                                dependencyType = DependencyType.REQUIRED
+                            )
                         }
 
                         val provider = Providers[entry.provider]
@@ -115,6 +124,7 @@ object MMCFatPack : AbstractPack() {
                         if (!matchedOptioalsList.isEmpty()) {
                             val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
                             if (!selected) {
+                                MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName }} is disabled, disabling ${entry.id}")
                                 file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
                             }
                         }

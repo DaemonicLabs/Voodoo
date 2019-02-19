@@ -39,7 +39,7 @@ import java.io.File
 object CursePack : AbstractPack() {
     override val label = "Curse Pack"
 
-    override fun File.getOutputFolder(): File = resolve(".curse")
+    override fun File.getOutputFolder(id: String): File = resolve("curse")
 
     override suspend fun pack(
         modpack: LockPack,

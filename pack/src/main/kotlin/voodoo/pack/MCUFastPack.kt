@@ -21,7 +21,7 @@ import java.io.File
 object MCUFastPack : AbstractPack() {
     override val label = "MCU Pack"
 
-    override fun File.getOutputFolder(): File = resolve("mcu-fastpack")
+    override fun File.getOutputFolder(id: String): File = resolve("mcu-fastpack").resolve(id)
 
     override suspend fun pack(
         modpack: LockPack,
