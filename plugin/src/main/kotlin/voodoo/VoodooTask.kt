@@ -10,7 +10,7 @@ import java.io.File
 open class VoodooTask : JavaExec() {
     @Input
     @Option(option = "script", description = "voodoo script file")
-    var scriptFile: File? = null
+    var scriptFile: String? = null
 
     init {
         group = "voodoo"
@@ -21,15 +21,16 @@ open class VoodooTask : JavaExec() {
 
     @TaskAction
     override fun exec() {
-
         if (scriptFile == null) {
             throw GradleException("--script was not set")
         }
-        val fullArgs = mutableListOf(scriptFile!!.path)
-        args?.let {
-            fullArgs.addAll(it)
+        val fullArgs = mutableListOf(scriptFile!!)
+        logger.lifecycle("adding arguments to $fullArgs")
+        logger.lifecycle("adding $args")
+        args.takeIf { it.isNotEmpty() }?.let {
+            fullArgs.addAll(args)
+            args = fullArgs
         }
-        args = fullArgs
         println("executing: $args")
         println("workingDir: $workingDir")
 

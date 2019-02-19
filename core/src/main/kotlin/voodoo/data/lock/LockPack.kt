@@ -12,6 +12,7 @@ import voodoo.data.UserFiles
 import voodoo.data.curse.DependencyType
 import voodoo.forge.ForgeUtil
 import voodoo.forge.ShortVersion
+import voodoo.forge.FullVersion
 import voodoo.util.blankOr
 import voodoo.util.json
 import voodoo.util.serializer.FileSerializer
@@ -180,7 +181,7 @@ data class LockPack(
         reports += Triple("packVersion", "Pack Version", "`$version`")
         reports += Triple("mcVersion", "MC Version", "`$mcVersion`")
         forge?.let {
-            val forgeVersion = runBlocking { ForgeUtil.forgeVersionOf(ShortVersion(it)).forgeVersion }
+            val forgeVersion = runBlocking { ForgeUtil.forgeVersionOf(FullVersion(it).shortVersion).forgeVersion }
             reports += Triple("forgeVersion", "Forge Version", "`$forgeVersion`")
         }
         reports += Triple("authors", "Author", "`${authors.joinToString(", ")}`")

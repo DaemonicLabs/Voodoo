@@ -145,7 +145,7 @@ open class VoodooPlugin : Plugin<Project> {
 
                             classpath(voodooJar)
 
-                            scriptFile = sourceFile
+                            scriptFile = sourceFile.canonicalPath
                             description = id
                             group = id
 
@@ -163,7 +163,7 @@ open class VoodooPlugin : Plugin<Project> {
 
                                 classpath(voodooJar)
 
-                                scriptFile = sourceFile
+                                scriptFile = sourceFile.canonicalPath
                                 description = taskDescription
                                 group = id
                                 val nestedArgs = arguments.map { it.split(" ") }
