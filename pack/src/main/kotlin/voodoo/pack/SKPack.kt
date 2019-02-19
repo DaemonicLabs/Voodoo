@@ -39,7 +39,7 @@ object SKPack : AbstractPack() {
 
     override val label = "SK Pack"
 
-    override fun File.getOutputFolder(): File = resolve("sk")
+    override fun File.getOutputFolder(id: String): File = resolve("sk").resolve(id)
 
     override suspend fun pack(
         modpack: LockPack,

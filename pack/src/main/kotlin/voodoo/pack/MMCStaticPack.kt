@@ -11,7 +11,7 @@ import kotlin.system.exitProcess
 object MMCStaticPack : AbstractPack() {
     override val label = "MultiMC Static Pack"
 
-    override fun File.getOutputFolder(): File = resolve("mulltimc-sk-static")
+    override fun File.getOutputFolder(id: String): File = resolve("mulltimc-sk-static")
 
     override suspend fun pack(
         modpack: LockPack,

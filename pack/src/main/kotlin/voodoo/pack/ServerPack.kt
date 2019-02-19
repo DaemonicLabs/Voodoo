@@ -14,7 +14,7 @@ object ServerPack : AbstractPack() {
     override val label = "Server SK Pack"
 
     // TODO: use different output directory for server, add to plugin
-    override fun File.getOutputFolder(): File = resolve("server")
+    override fun File.getOutputFolder(id: String): File = resolve("server").resolve(id)
 
     override suspend fun pack(
         modpack: LockPack,

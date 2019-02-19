@@ -12,7 +12,7 @@ import java.io.File
 
 abstract class AbstractPack : KLogging() {
     abstract val label: String
-    abstract fun File.getOutputFolder(): File
+    abstract fun File.getOutputFolder(id: String): File
 
     /***
      * @param modpack modpack to package

@@ -32,10 +32,6 @@ object ForgeUtil : KLogging() {
         valueTransform = { ShortVersion(it.version.substringAfter('-')) }
     )
 
-    fun forgeVersions() {
-
-    }
-
     suspend fun getShortVersion(version: String, mcVersion: String): ShortVersion {
         val promoData = deferredPromo.await()
         return if (version.equals("recommended", true) || version.equals("latest", true)) {

@@ -94,8 +94,7 @@ object MultiMCTester : AbstractTester() {
         logger.info("sorting client / server mods")
         for (file in minecraftDir.walkTopDown()) {
             when {
-//                file.name.endsWith(".lock.hjson") -> file.delete()
-//                file.name.endsWith(".entry.hjson") -> file.delete()
+                // file.name.endsWith(".lock.hjson") -> file.delete()
                 file.name == "_CLIENT" -> {
                     file.copyRecursively(file.parentFile, overwrite = true)
                     file.deleteRecursively()
@@ -139,18 +138,28 @@ object MultiMCTester : AbstractTester() {
                     launch(pool + CoroutineName(entry.id)) {
                         val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
 
+                        val selectedSelf = optionals[entry.id] ?: true
+                        if (!selectedSelf) {
+                            MMCUtil.logger.info("${entry.displayName} is disabled, skipping download")
+                            return@launch
+                        }
                         val matchedOptioalsList = modpack.optionalEntries.filter {
                             // check if entry is a dependency of any feature
-                            modpack.isDependencyOf(entry.id, it.id, DependencyType.REQUIRED)
+                            modpack.isDependencyOf(
+                                entryId = entry.id,
+                                parentId = it.id,
+                                dependencyType = DependencyType.REQUIRED
+                            )
                         }
+                        logger.debug("${entry.id} is a dependency of ${matchedOptioalsList.map { it.id }}")
                         if (!matchedOptioalsList.isEmpty()) {
                             val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
                             if (!selected) {
-                                MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName }} is disabled, skipping download")
+                                MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName } } is disabled, skipping download of ${entry.id}")
                                 return@launch
                             }
                         }
-                        val provider = Providers[entry.provider]
+                        val provider = entry.provider()
                         val targetFolder = minecraftDir.resolve(folder)
                         val (url, file) = provider.download(entry, targetFolder, cacheDir)
                     }
@@ -158,9 +167,10 @@ object MultiMCTester : AbstractTester() {
             }
         }
 
-        logger.info("clearing serverside files")
+        logger.info("clearing serverside files and deleting lockfiles")
         for (file in minecraftDir.walkTopDown()) {
             when {
+                file.name.endsWith(".lock.hjson") -> file.delete()
                 file.name == "_CLIENT" -> {
                     file.copyRecursively(file.parentFile, overwrite = true)
                     file.deleteRecursively()
