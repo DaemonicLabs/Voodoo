@@ -36,13 +36,13 @@ object ForgeUtil : KLogging() {
 
     }
 
-    suspend fun getForgeVersion(version: String, mcVersion: String): ShortVersion {
+    suspend fun getShortVersion(version: String, mcVersion: String): ShortVersion {
         val promoData = deferredPromo.await()
         return if (version.equals("recommended", true) || version.equals("latest", true)) {
             val promoVersion = "$mcVersion-${version.toLowerCase()}"
             ShortVersion(promoData.promos.getValue(promoVersion))
         } else {
-            ShortVersion(version)
+            FullVersion(version).shortVersion
         }
     }
 
@@ -83,10 +83,10 @@ object ForgeUtil : KLogging() {
     @JvmName("forgeVersionOfNullable")
     suspend fun forgeVersionOf(version: String?, mcVersion: String): ForgeVersion? {
         if (version == null) return null
-        return forgeVersionOf(getForgeVersion(version, mcVersion))
+        return forgeVersionOf(getShortVersion(version, mcVersion))
     }
     suspend fun forgeVersionOf(version: String, mcVersion: String): ForgeVersion =
-        forgeVersionOf(getForgeVersion(version, mcVersion))
+        forgeVersionOf(getShortVersion(version, mcVersion))
 
     fun forgeVersionOf(version: ShortVersion?): ForgeVersion? {
         if (version == null) return null
@@ -96,7 +96,10 @@ object ForgeUtil : KLogging() {
 
         val webpath = "https://files.minecraftforge.net/maven/net/minecraftforge/forge"
 
-        val fullVersion: FullVersion = forgeVersions.find { it.forgeVersion == version.version }!!
+        val fullVersion: FullVersion = forgeVersions.find { it.forgeVersion == version.forgeVersion } ?: run {
+            logger.error("cannot find ${version.forgeVersion} in ${forgeVersions.map { it.forgeVersion }})")
+            throw KotlinNullPointerException("cannot find forgeVersion $version")
+        }
         val mcversion = fullVersion.mcVersion
         val forgeVersion = fullVersion.forgeVersion
         val longVersion = "$mcversion-$forgeVersion"
