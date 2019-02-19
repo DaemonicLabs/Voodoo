@@ -13,7 +13,6 @@ import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
 import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil
-import voodoo.provider.Providers
 import voodoo.util.Downloader
 import voodoo.util.blankOr
 import voodoo.util.withPool
@@ -138,27 +137,30 @@ object MultiMCTester : AbstractTester() {
                     launch(pool + CoroutineName(entry.id)) {
                         val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
 
-                        val selectedSelf = optionals[entry.id] ?: true
-                        if (!selectedSelf) {
-                            MMCUtil.logger.info("${entry.displayName} is disabled, skipping download")
-                            return@launch
-                        }
-                        val matchedOptioalsList = modpack.optionalEntries.filter {
-                            // check if entry is a dependency of any feature
-                            modpack.isDependencyOf(
-                                entryId = entry.id,
-                                parentId = it.id,
-                                dependencyType = DependencyType.REQUIRED
-                            )
-                        }
-                        logger.debug("${entry.id} is a dependency of ${matchedOptioalsList.map { it.id }}")
-                        if (!matchedOptioalsList.isEmpty()) {
-                            val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
-                            if (!selected) {
-                                MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName } } is disabled, skipping download of ${entry.id}")
+                        if(modpack.isEntryOptional(entry.id)) {
+                            val selectedSelf = optionals[entry.id] ?: true
+                            if (!selectedSelf) {
+                                MMCUtil.logger.info("${entry.displayName} is disabled, skipping download")
                                 return@launch
                             }
+                            val matchedOptioalsList = modpack.optionalEntries.filter {
+                                // check if entry is a dependency of any feature
+                                modpack.isDependencyOf(
+                                    entryId = entry.id,
+                                    parentId = it.id,
+                                    dependencyType = DependencyType.REQUIRED
+                                )
+                            }
+                            logger.debug("${entry.id} is a dependency of ${matchedOptioalsList.map { it.id }}")
+                            if (!matchedOptioalsList.isEmpty()) {
+                                val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
+                                if (!selected) {
+                                    MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName } } is disabled, skipping download of ${entry.id}")
+                                    return@launch
+                                }
+                            }
                         }
+
                         val provider = entry.provider()
                         val targetFolder = minecraftDir.resolve(folder)
                         val (url, file) = provider.download(entry, targetFolder, cacheDir)
