@@ -29,8 +29,7 @@ data class LockPack(
     val mcVersion: String,
     @Optional val title: String? = null,
     @Optional val version: String = "1.0",
-    @Optional @Serializable(with = FileSerializer::class)
-    val icon: File = File("icon.png"),
+    @Optional val icon: String = "icon.png",
     @Optional val authors: List<String> = emptyList(),
     @Optional val forge: String? = null,
     @Optional val launch: LaunchModifier = LaunchModifier(),
@@ -69,6 +68,9 @@ data class LockPack(
     @Transient
     val localFolder: File
         get() = rootDir.resolve(localDir)
+    @Transient
+    val iconFile: File
+        get() = rootDir.resolve(icon)
 
     @Transient
     val entrySet: MutableSet<LockEntry> = mutableSetOf()
@@ -185,7 +187,7 @@ data class LockPack(
             reports += Triple("forgeVersion", "Forge Version", "`$forgeVersion`")
         }
         reports += Triple("authors", "Author", "`${authors.joinToString(", ")}`")
-        icon.takeIf { it.exists() }?.let {
+        iconFile.takeIf { it.exists() }?.let {
             reports += Triple(
                 "icon",
                 "Icon",

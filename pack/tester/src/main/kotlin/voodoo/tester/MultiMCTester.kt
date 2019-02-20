@@ -44,7 +44,7 @@ object MultiMCTester : AbstractTester() {
         val minecraftDir = MMCUtil.installEmptyPack(
             title,
             folder,
-            icon = modpack.icon,
+            icon = modpack.iconFile,
             mcVersion = modpack.mcVersion,
             forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge)?.forgeVersion
         )

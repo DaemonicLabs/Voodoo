@@ -163,9 +163,9 @@ inline class FullVersion(val version: String) {
     val components: List<String>
         get() = version.split('-')
     val mcVersion: String
-        get() = components[0]
+        get() = components.getOrNull(0) ?: throw KotlinNullPointerException("no mcVersion in $version")
     val forgeVersion: String
-        get() = components[1]
+        get() = components.getOrNull(1) ?: throw KotlinNullPointerException("no forgeVersion in $version")
     val branch: String?
         get() = components.getOrNull(2)
     val shortVersion: ShortVersion

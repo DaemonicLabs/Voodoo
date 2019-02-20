@@ -12,6 +12,7 @@ import voodoo.data.lock.LockPack
 import voodoo.util.serializer.FileSerializer
 import java.io.File
 import java.util.Collections
+import voodoo.util.unixPath
 
 /**
  * Created by nikky on 28/03/18.
@@ -111,7 +112,7 @@ data class ModPack(
             id = id,
             title = title,
             version = version,
-            icon = icon,
+            icon = icon.relativeTo(rootDir).unixPath,
             authors = authors,
             mcVersion = mcVersion,
             forge = forge,

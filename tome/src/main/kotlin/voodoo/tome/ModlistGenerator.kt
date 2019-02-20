@@ -7,14 +7,15 @@ import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.markdownTable
 import voodoo.provider.Providers
+import java.io.File
 
 object ModlistGenerator : TomeGenerator() {
-    override suspend fun generateHtml(modPack: ModPack, lockPack: LockPack): String {
+    override suspend fun generateHtml(modPack: ModPack, lockPack: LockPack, targetFolder: File): String {
         // generate modlist
 
         Tome.logger.info("writing modlist")
         return buildString {
-            append(lockPack.report)
+            append(lockPack.report(targetFolder))
             append("\n")
 
             modPack.lockEntrySet.sortedBy { it.displayName.toLowerCase() }.forEach { entry ->

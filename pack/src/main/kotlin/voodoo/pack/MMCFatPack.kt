@@ -41,7 +41,7 @@ object MMCFatPack : AbstractPack() {
         val minecraftDir = MMCUtil.installEmptyPack(
             title,
             modpack.id,
-            icon = modpack.icon,
+            icon = modpack.iconFile,
             instanceDir = instanceDir,
             mcVersion = modpack.mcVersion,
             forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge)?.forgeVersion
@@ -103,13 +103,13 @@ object MMCFatPack : AbstractPack() {
                     launch(context = coroutineContext + pool) {
                         val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
 
-                        if(modpack.isEntryOptional(entry.id)) {
+                        val matchedOptioalsList = if(modpack.isEntryOptional(entry.id)) {
                             val selectedSelf = optionals[entry.id] ?: true
                             if (!selectedSelf) {
                                 MMCUtil.logger.info("${entry.displayName} is disabled, skipping download")
                                 return@launch
                             }
-                            val matchedOptioalsList = modpack.optionalEntries.filter {
+                            modpack.optionalEntries.filter {
                                 // check if entry is a dependency of any feature
                                 modpack.isDependencyOf(
                                     entryId = entry.id,
@@ -117,20 +117,18 @@ object MMCFatPack : AbstractPack() {
                                     dependencyType = DependencyType.REQUIRED
                                 )
                             }
+                        } else emptyList()
+                        val provider = Providers[entry.provider]
+                        val targetFolder = minecraftDir.resolve(folder)
+                        val (_, file) = provider.download(entry, targetFolder, cacheDir)
 
-                            val provider = Providers[entry.provider]
-                            val targetFolder = minecraftDir.resolve(folder)
-                            val (_, file) = provider.download(entry, targetFolder, cacheDir)
-
-                            if (!matchedOptioalsList.isEmpty()) {
-                                val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
-                                if (!selected) {
-                                    MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName }} is disabled, disabling ${entry.id}")
-                                    file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
-                                }
+                        if (!matchedOptioalsList.isEmpty()) {
+                            val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
+                            if (!selected) {
+                                MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName }} is disabled, disabling ${entry.id}")
+                                file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
                             }
                         }
-
                     }
                 }
 
@@ -139,8 +137,10 @@ object MMCFatPack : AbstractPack() {
             }
         }
 
+        logger.info("clearing serverside files and deleting lockfiles")
         for (file in minecraftDir.walkTopDown()) {
             when {
+                file.name.endsWith(".lock.hjson") -> file.delete()
                 file.name == "_CLIENT" -> {
                     file.copyRecursively(file.parentFile, overwrite = true)
                     file.deleteRecursively()
