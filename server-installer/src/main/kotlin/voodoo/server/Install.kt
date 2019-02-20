@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.server.installer.ServerInstallerConstants.VERSION
+import voodoo.util.asFile
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -29,12 +30,20 @@ object Install : KLogging() {
                 exitProcess(0)
             }
 
+            require(packPath != null) {
+                "--packFile was not set and no file `pack.txt` found"
+            }
+
+            val packFile = File(packPath).absoluteFile
+
             logger.info("target dir: $targetDir")
-            logger.info("pack file: $packFile")
             logger.info("cleanConfig: $cleanConfig")
 
             // TODO: load proper rootDir
-            val modpack = LockPack.parse(packFile.absoluteFile, File(".").absoluteFile)
+            val modpack = LockPack.parse(
+                packFile = packFile,
+                rootDir = packFile.parentFile.parentFile
+            )
 
             Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
         }
@@ -51,11 +60,11 @@ object Install : KLogging() {
                 }
             }
 
-        val packFile by parser.storing(
-            "--file", "-f",
-            help = "input pack lock.pack.json"
-        ) { File(this) }
-            .default(File("pack.lock.hjson"))
+        val packPath by parser.storing(
+            "--packFile",
+            help = "pack id"
+        )
+            .default(File("pack.txt").takeIf { it.exists() }?.readText())
 
         val skipForge by parser.flagging(
             "--skipForge",

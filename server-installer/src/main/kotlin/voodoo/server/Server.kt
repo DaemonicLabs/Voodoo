@@ -46,11 +46,12 @@ object Server {
         if (srcDir.exists()) {
             srcDir.copyRecursively(serverDir, overwrite = true)
 
-            serverDir.walkBottomUp().forEach {
-                if (it.name.endsWith(".entry.hjson") || it.name.endsWith(".lock.hjson"))
-                    it.delete()
-                if (it.isDirectory && it.listFiles().isEmpty()) {
-                    it.delete()
+            serverDir.walkBottomUp().forEach { file ->
+                when {
+                    file.name.endsWith(".entry.hjson") -> file.delete()
+                    file.name.endsWith(".lock.hjson") -> file.delete()
+                    file.name.endsWith(".lock.pack.hjson") -> file.delete()
+                    file.isDirectory && file.listFiles().isEmpty() -> file.delete()
                 }
             }
         } else {

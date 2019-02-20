@@ -93,8 +93,8 @@ object ForgeUtil : KLogging() {
 
         val webpath = "https://files.minecraftforge.net/maven/net/minecraftforge/forge"
 
-        val fileName = "forge-$fullVersion-installer.jar" // "forge-mcversion-$forgeVersion(-$branch)/installer.jar"
-        val url = "$webpath/$fullVersion/$fileName"
+        val fileName = "forge-${fullVersion.version}-installer.jar" // "forge-mcversion-$forgeVersion(-$branch)/installer.jar"
+        val url = "$webpath/${fullVersion.version}/$fileName"
 
         return ForgeVersion(
             url,
