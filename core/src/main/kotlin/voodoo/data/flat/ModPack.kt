@@ -112,7 +112,7 @@ data class ModPack(
             id = id,
             title = title,
             version = version,
-            icon = icon.relativeTo(rootDir).unixPath,
+            icon = icon.absoluteFile.relativeTo(rootDir).unixPath,
             authors = authors,
             mcVersion = mcVersion,
             forge = forge,
