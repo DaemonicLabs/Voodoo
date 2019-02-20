@@ -85,7 +85,7 @@ data class LockEntry(
     lateinit var parent: LockPack
 
     @Transient
-    var optional: Boolean = optionalData != null 
+    var optional: Boolean = optionalData != null
 
     /**
      * relative to src folder

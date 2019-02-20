@@ -27,7 +27,7 @@ object MMCStaticPack : AbstractPack() {
         val minecraftDir = MMCUtil.installEmptyPack(
             modpack.title.blankOr,
             modpack.id,
-            icon = modpack.icon,
+            icon = modpack.iconFile,
             instanceDir = instanceDir,
             preLaunchCommand = preLaunchCommand
         )

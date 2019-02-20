@@ -74,8 +74,8 @@ object Voodoo : KLogging() {
         val uploadDir = SharedFolders.UploadDir.get(id)
 
         val libs = rootDir.resolve("libs") // TODO: set from system property
-        val tomeDir = System.getProperty("voodoo.tomeDir")?.asFile ?: rootDir.resolve("tome")
-        val docDir = /*System.getProperty("voodoo.docDir")?.asFile ?:*/ uploadDir.resolve("docs")
+        val tomeDir = SharedFolders.TomeDir.get()
+        val docDir = SharedFolders.DocDir.get(id)
         val tomeEnv = initTome(
             libs = libs, host = host, tomeDir = tomeDir, docDir = docDir)
         logger.debug("tomeEnv: $tomeEnv")

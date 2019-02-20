@@ -11,6 +11,7 @@ import voodoo.forge.ForgeUtil
 import voodoo.markdownTable
 import voodoo.provider.Providers
 import voodoo.util.json
+import voodoo.util.unixPath
 import java.io.File
 
 val LockPack.forgeVersion: String
@@ -20,7 +21,7 @@ val LockPack.forgeVersion: String
 val LockPack.authorsString: String
     get() = authors.joinToString(", ")
 val LockPack.iconHtml: String
-    get() = "<img src=\"${icon.relativeTo(rootDir).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
+    get() = "<img src=\"${iconFile.relativeTo(rootDir).unixPath}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
 
 data class PackDiff(
     val newPack: LockPack,
