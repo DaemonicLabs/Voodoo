@@ -62,7 +62,7 @@ open class VoodooPlugin : Plugin<Project> {
             val (downloadVoodoo, voodooJar) = if (voodooExtension.local) {
                 val downloadTask = task<LocalVoodooJarTask>("localVoodoo") {
                     group = "voodoo"
-                    description = "Downloads the voodoo jar from jenkins"
+                    description = "Copies the voodoo jar from a local dev env"
                 }
                 downloadTask as DefaultTask to downloadTask.jarFile
             } else {
@@ -110,9 +110,9 @@ open class VoodooPlugin : Plugin<Project> {
                 }
             }
 
-            val javac = File(JavaEnvUtils.getJdkExecutable("javac"))
-            val jdkHome = javac.parentFile.parentFile
-            logger.lifecycle("jdkHome: $jdkHome")
+//            val javac = File(JavaEnvUtils.getJdkExecutable("javac"))
+//            val jdkHome = javac.parentFile.parentFile
+//            logger.lifecycle("jdkHome: $jdkHome")
 
             extensions.configure<SourceSetContainer> {
 //                val runtimeClasspath = maybeCreate("main").runtimeClasspath
