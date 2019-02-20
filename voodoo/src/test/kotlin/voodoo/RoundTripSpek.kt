@@ -34,7 +34,7 @@ object RoundTripSpek : Spek({
             MainScriptEnv(rootDir = rootFolder, id = "some-id").apply {
                 mcVersion = "1.12.2"
                 version = "1.0"
-                icon = rootFolder.resolve("icon.png").relativeTo(rootFolder)
+                icon = rootFolder.resolve("icon.png")
                 authors = listOf("dude", "and", "friends")
                 // TODO: type = {recommended, latest} | buildnumber, make sealed class ?
                 forge = Forge.recommended
