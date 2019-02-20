@@ -3,6 +3,7 @@ package voodoo.pack
 import voodoo.data.lock.LockPack
 import voodoo.util.jenkins.downloadVoodoo
 import voodoo.util.toJson
+import voodoo.util.unixPath
 import java.io.File
 
 /**
@@ -42,8 +43,8 @@ object ServerPack : AbstractPack() {
 
         val sourceDir = modpack.sourceFolder // rootFolder.resolve(modpack.rootFolder).resolve(modpack.sourceDir)
         logger.info("mcDir: $sourceDir")
+        val targetSourceDir = output.resolve(modpack.sourceDir)
         if (sourceDir.exists()) {
-            val targetSourceDir = output.resolve("src")
             modpack.sourceDir = targetSourceDir.name
 
             if (targetSourceDir.exists()) targetSourceDir.deleteRecursively()
@@ -66,8 +67,13 @@ object ServerPack : AbstractPack() {
             }
         }
 
-        val packFile = output.resolve("pack.lock.hjson")
+        val packFile = targetSourceDir.resolve("${modpack.id}.lock.pack.hjson")
         packFile.writeText(modpack.toJson(LockPack.serializer()))
+
+        val relPackFile = packFile.relativeTo(output).unixPath
+
+        val packPointer = output.resolve("pack.txt")
+        packPointer.writeText(relPackFile)
 
         logger.info("packaging installer jar")
         val installer =
