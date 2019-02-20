@@ -10,6 +10,7 @@ var AbstractBuilder<CurseProvider>.metaUrl: String by lazyProperty { entry::curs
 var AbstractBuilder<CurseProvider>.releaseTypes: Set<FileType> by lazyProperty { entry::curseReleaseTypes }
 var AbstractBuilder<CurseProvider>.projectID: ProjectID by lazyProperty { entry::curseProjectID }
 var AbstractBuilder<CurseProvider>.fileID: FileID by lazyProperty { entry::curseFileID }
+var AbstractBuilder<CurseProvider>.useUrlTxt: Boolean by lazyProperty { entry::useUrlTxt }
 
 // var AbstractBuilder<CurseProvider>.metaUrl
 //     get() = this.entry.curseMetaUrl

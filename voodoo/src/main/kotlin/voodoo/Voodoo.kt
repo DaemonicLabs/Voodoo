@@ -105,6 +105,7 @@ object Voodoo : KLogging() {
 
                 Tome.generate(modpack, lockPack, tomeEnv, uploadDir)
 
+                //TODO: write `.meta/$id/$version.`
                 try {
                     val diff = Diff.createDiff(
                         docDir = docDir,
