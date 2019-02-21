@@ -8,7 +8,9 @@ import com.github.kittinunf.result.Result
 import com.skcraft.launcher.model.modpack.FileInstall
 import com.skcraft.launcher.model.modpack.Manifest
 import com.xenomachina.argparser.ArgParser
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.actor
+import kotlinx.coroutines.channels.toList
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -153,18 +155,11 @@ object Hex : KLogging() {
 
         val objectsUrl = packUrl.substringBeforeLast('/') + "/" + modpack.objectsLocation
 
-        val oldTaskList = (oldpack?.tasks?.toMutableList() ?: mutableListOf()) as List<FileInstall>
+        val oldTaskList = (oldpack?.tasks ?: listOf())
+        val uptodateTasks = Channel<FileInstall>(Channel.UNLIMITED)
 
         withPool { pool ->
             coroutineScope {
-                val oldTasksRemover = actor<FileInstall> {
-                    oldTaskList as MutableList
-                    for (msg in channel) {
-                        logger.info("removing ${msg.to}")
-                        oldTaskList.remove(msg)
-                    }
-                }
-
                 for (task in modpack.tasks) {
                     launch(context = pool) {
                         val oldTask = oldTaskList.find { it.to == task.to }
@@ -202,21 +197,21 @@ object Hex : KLogging() {
                                 if (task.isUserFile && oldTask.isUserFile) {
                                     logger.info("task ${task.to} is a userfile, will not be modified")
                                     oldTask.let {
-                                        oldTasksRemover.send(it)
+                                        uptodateTasks.send(it)
                                     }
                                     return@launch
                                 }
                                 if (oldTask.hash == task.hash && target.isFile && target.sha1Hex() == task.hash) {
                                     logger.info("task ${task.to} file did not change and sha1 hash matches")
                                     oldTask.let {
-                                        oldTasksRemover.send(it)
+                                        uptodateTasks.send(it)
                                     }
                                     return@launch
                                 } else {
                                     // mismatching hash.. override file
                                     logger.info("task ${task.to} mismatching hash.. reset and override file")
                                     oldTask.let {
-                                        oldTasksRemover.send(it)
+                                        uptodateTasks.send(it)
                                     }
                                     target.delete()
                                     target.parentFile.mkdirs()
@@ -236,7 +231,7 @@ object Hex : KLogging() {
                             target.download(url, cacheFolder)
 
                             oldTask?.let {
-                                oldTasksRemover.send(it)
+                                uptodateTasks.send(it)
                             }
                         }
 
@@ -254,12 +249,15 @@ object Hex : KLogging() {
                         }
                     }
                 }
-                oldTasksRemover.close()
             }
         }
 
+        uptodateTasks.close()
+        val toRemove = (oldpack?.tasks ?: listOf()) - uptodateTasks.toList()
+        logger.info("files to delete: ${toRemove.map { it.to }}")
+
         // iterate old
-        oldTaskList.forEach { task ->
+        toRemove.forEach { task ->
             val target = minecraftDir.resolve(task.to)
             logger.info("deleting $target")
             target.delete()

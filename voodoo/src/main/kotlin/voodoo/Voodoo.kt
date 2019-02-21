@@ -105,7 +105,11 @@ object Voodoo : KLogging() {
 
                 Tome.generate(modpack, lockPack, tomeEnv, uploadDir)
 
-                //TODO: write `.meta/$id/$version.`
+                // TODO: write `.meta/$id/$version.meta.hjson`
+                // TODO: if the file did not exist:
+                //  TODO: get parent git hash, write to `$lastVersion.commithash.txt`
+                // TODO: generate diff between $version and $lastVersion
+                // TODO: generate full changelog between each version in order 0->1, 1->2, lastVersion->version
                 try {
                     val diff = Diff.createDiff(
                         docDir = docDir,
@@ -176,7 +180,7 @@ object Voodoo : KLogging() {
             }
 
             runBlocking(CoroutineName("main")) {
-                function(remainingArgs)
+                function(argChunk)
             }
         }
     }

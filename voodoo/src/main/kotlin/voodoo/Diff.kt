@@ -8,6 +8,7 @@ import voodoo.util.ArchiveUtil
 import voodoo.util.Directories
 import voodoo.util.ShellUtil
 import voodoo.util.UnzipUtility
+import voodoo.util.unixPath
 import java.io.File
 
 object Diff : KLogging() {
@@ -67,7 +68,7 @@ object Diff : KLogging() {
         val oldMetaDataLocation = readMetaDataLocation(oldRootDir, oldPack?.id ?: newPack.id)
         val newMetaDataLocation = getMetaDataDefault(rootDir, newPack.id)
         val metaDataPointerFile = getMetaDataPointer(rootDir, newPack.id)
-        metaDataPointerFile.writeText(newMetaDataLocation.relativeTo(rootDir).path.replace('\\', '/'))
+        metaDataPointerFile.writeText(newMetaDataLocation.relativeTo(rootDir).unixPath)
 
         writeGitDiff(
             newMeta = newMetaDataLocation,

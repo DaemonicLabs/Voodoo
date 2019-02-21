@@ -4,6 +4,9 @@ routine to report errors:
 - delay a second
 - report error
 
+change ServerPack to zip up pack
+and ServerInstaller to unzip
+
 # Tweaker
 
 use a tweakClass for forge (bundle bootstrapper in tweakClass ?)
