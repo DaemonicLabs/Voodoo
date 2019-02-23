@@ -1,6 +1,7 @@
 package voodoo
 
 import mu.KLogging
+import voodoo.util.Platform
 import voodoo.util.ShellUtil
 import voodoo.voodoo.VoodooConstants
 import java.io.File
@@ -97,7 +98,11 @@ object GradleSetup : KLogging() {
             logger.error("please install 'gradle'")
             return
         }
-        ShellUtil.runProcess("gradle", "wrapper",
+        val gradleExe = when {
+            Platform.isWindows -> "gradle.exe"
+            else -> "gradle"
+        }
+        ShellUtil.runProcess(gradleExe, "wrapper",
             "--gradle-version", version,
             // "--distribution-type", distributionType,
             wd = projectDir,
