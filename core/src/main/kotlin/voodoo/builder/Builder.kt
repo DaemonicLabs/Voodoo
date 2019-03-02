@@ -25,6 +25,7 @@ object Builder : KLogging() {
         targetFile: File = modpack.sourceFolder.resolve(targetFileName),
         vararg args: String
     ): LockPack = runBlocking {
+        logger.debug("parsing args: ${args.joinToString(", ")}")
         val parser = ArgParser(args)
         val arguments = Arguments(parser)
         parser.force()
