@@ -251,17 +251,18 @@ object PoetPack : KLogging() {
                     mainEnv.addStatement("forge = %L", forge)
                 }
             }
-            nestedPack.userFiles.takeIf { it != default.userFiles }?.let { userFiles ->
-                mainEnv.addStatement(
-                    """userFiles = %T(
-                            |    include = listOf(%L),
-                            |    exclude = listOf(%L)
-                            |)""".trimMargin(),
-                    UserFiles::class.asClassName(),
-                    userFiles.include.joinToString { """"$it"""" },
-                    userFiles.exclude.joinToString { """"$it"""" }
-                )
-            }
+            // TODO: readd along with other PackOptions
+//            nestedPack.userFiles.takeIf { it != default.userFiles }?.let { userFiles ->
+//                mainEnv.addStatement(
+//                    """userFiles = %T(
+//                            |    include = listOf(%L),
+//                            |    exclude = listOf(%L)
+//                            |)""".trimMargin(),
+//                    UserFiles::class.asClassName(),
+//                    userFiles.include.joinToString { """"$it"""" },
+//                    userFiles.exclude.joinToString { """"$it"""" }
+//                )
+//            }
             nestedPack.launch.takeIf { it != default.launch }?.let { launch ->
                 mainEnv.addStatement(
                     """launch = %T(

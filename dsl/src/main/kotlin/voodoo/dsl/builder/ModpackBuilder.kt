@@ -19,7 +19,6 @@ open class ModpackBuilder(
     var icon by property(pack::icon)
     var authors by property(pack::authors)
     var forge by property(pack::forge)
-    var userFiles by property(pack::userFiles)
     var launch by property(pack::launch)
     val root by readOnly(pack::root)
     var localDir by property(pack::localDir)

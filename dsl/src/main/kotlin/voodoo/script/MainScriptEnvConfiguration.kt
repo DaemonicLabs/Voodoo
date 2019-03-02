@@ -9,13 +9,16 @@ import voodoo.poet.Poet
 import voodoo.poet.generator.CurseGenerator
 import voodoo.poet.generator.ForgeGenerator
 import voodoo.util.SharedFolders
+import kotlin.script.experimental.api.ScriptAcceptedLocation
 import kotlin.script.experimental.api.ScriptCollectedData
 import kotlin.script.experimental.api.ScriptCompilationConfiguration
 import kotlin.script.experimental.api.ScriptDiagnostic
+import kotlin.script.experimental.api.acceptedLocations
 import kotlin.script.experimental.api.asSuccess
 import kotlin.script.experimental.api.compilerOptions
 import kotlin.script.experimental.api.defaultImports
 import kotlin.script.experimental.api.foundAnnotations
+import kotlin.script.experimental.api.ide
 import kotlin.script.experimental.api.importScripts
 import kotlin.script.experimental.api.refineConfiguration
 import kotlin.script.experimental.host.FileScriptSource
@@ -123,6 +126,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
             val includeCompilationConfiguration = Include.configureIncludes(reports, context)
 
             val compilationConfiguration = ScriptCompilationConfiguration(includeCompilationConfiguration) {
+                ide.acceptedLocations.append(ScriptAcceptedLocation.Project)
                 importScripts.append(generatedFiles.map { it.toScriptSource() })
                 reports += ScriptDiagnostic(
                     "generated: ${generatedFiles.map { it.relativeTo(rootDir) }}",

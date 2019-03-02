@@ -53,7 +53,7 @@ object Pack : KLogging() {
 //        }
 //    }
 
-    suspend fun pack(modpack: LockPack, uploadDir: File, vararg args: String) {
+    suspend fun pack(modpack: LockPack, uploadBaseDir: File, vararg args: String) {
         logger.info("parsing arguments")
         val arguments = Arguments(ArgParser(args))
 
@@ -66,12 +66,13 @@ object Pack : KLogging() {
                 exitProcess(-1)
             }
 
-            val output = with(packer) { uploadDir.getOutputFolder(modpack.id) }
+            val output = with(packer) { uploadBaseDir.getOutputFolder(modpack.id) }
             output.mkdirs()
 
             packer.pack(
                 modpack = modpack,
                 output = output,
+                uploadBaseDir = uploadBaseDir,
                 clean = true
             )
             logger.info("finished packaging")

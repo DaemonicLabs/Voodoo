@@ -8,14 +8,10 @@ import kotlinx.serialization.Transient
 import mu.KLogging
 import voodoo.data.PackOptions
 import voodoo.data.Side
-import voodoo.data.UserFiles
 import voodoo.data.curse.DependencyType
 import voodoo.forge.ForgeUtil
-import voodoo.forge.ShortVersion
-import voodoo.forge.FullVersion
 import voodoo.util.blankOr
 import voodoo.util.json
-import voodoo.util.serializer.FileSerializer
 import java.io.File
 
 /**
@@ -33,11 +29,11 @@ data class LockPack(
     @Optional val authors: List<String> = emptyList(),
     @Optional val forge: String? = null,
     @Optional val launch: LaunchModifier = LaunchModifier(),
-    @Optional var userFiles: UserFiles = UserFiles(),
     @Optional var localDir: String = "local",
     @Optional var packOptions: PackOptions = PackOptions()
 ) {
-    @Optional var sourceDir: String = id
+    @Optional
+    var sourceDir: String = id
 
     companion object : KLogging() {
 
