@@ -18,6 +18,10 @@ data class SKModpack(
     @Optional
     var features: List<FeaturePattern> = listOf(),
     @Optional
+    var thumb: String? = null,
+    @Optional
+    var server: SKServer? = null,
+    @Optional
 //    @Serializable(with = UserFiles.Companion::class)
     var userFiles: UserFiles = UserFiles(),
     @Optional

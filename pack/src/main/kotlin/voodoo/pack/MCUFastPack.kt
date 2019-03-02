@@ -26,6 +26,7 @@ object MCUFastPack : AbstractPack() {
     override suspend fun pack(
         modpack: LockPack,
         output: File,
+        uploadBaseDir: File,
         clean: Boolean
     ) {
         val cacheDir = SKPack.directories.cacheHome

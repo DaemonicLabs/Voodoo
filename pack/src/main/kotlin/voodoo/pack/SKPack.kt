@@ -24,8 +24,10 @@ import voodoo.pack.sk.SkPackageFragment
 import voodoo.provider.Providers
 import voodoo.util.blankOr
 import voodoo.util.download
+import voodoo.util.unixPath
 import voodoo.util.withPool
 import java.io.File
+import java.net.URI
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -44,6 +46,7 @@ object SKPack : AbstractPack() {
     override suspend fun pack(
         modpack: LockPack,
         output: File,
+        uploadBaseDir: File,
         clean: Boolean
     ) {
         val cacheDir = directories.cacheHome
@@ -203,11 +206,24 @@ object SKPack : AbstractPack() {
 
                 val patterns = deferredPatterns.awaitAll()
 
+                val thumb = modpack.packOptions.skCraftOptions.thumb
+                    ?: modpack.packOptions.baseUrl?.let { baseUrl ->
+                        modpack.iconFile.takeIf { it.exists() }?.let { iconFile ->
+                            val targetFile = output.resolve("icon").resolve(iconFile.name)
+                            iconFile.copyTo(targetFile, overwrite = true)
+                            val relativePath = targetFile.relativeTo(uploadBaseDir).unixPath
+                            URI(baseUrl).resolve(relativePath).toASCIIString()
+                        }
+                    }
+
+                //TODO> figure out stopring icon url, and server url
                 val skmodpack = SKModpack(
                     name = modpack.id,
                     title = modpack.title.blankOr ?: "",
+                    thumb = thumb,
+                    server = modpack.packOptions.skCraftOptions.server,
                     gameVersion = modpack.mcVersion,
-                    userFiles = modpack.userFiles,
+                    userFiles = modpack.packOptions.skCraftOptions.userFiles,
                     launch = modpack.launch,
                     features = patterns
                 )

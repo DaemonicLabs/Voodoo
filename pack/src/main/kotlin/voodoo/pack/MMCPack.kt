@@ -5,7 +5,9 @@ import voodoo.mmc.MMCUtil
 import voodoo.util.blankOr
 import voodoo.util.jenkins.downloadVoodoo
 import voodoo.util.packToZip
+import voodoo.util.unixPath
 import java.io.File
+import java.net.URI
 import kotlin.system.exitProcess
 
 object MMCPack : AbstractPack() {
@@ -16,6 +18,7 @@ object MMCPack : AbstractPack() {
     override suspend fun pack(
         modpack: LockPack,
         output: File,
+        uploadBaseDir: File,
         clean: Boolean
     ) {
         val cacheDir = directories.cacheHome
@@ -36,6 +39,14 @@ object MMCPack : AbstractPack() {
         logger.info("tmp dir: $instanceDir")
 
         val skPackUrl = modpack.packOptions.multimcOptions.skPackUrl
+            ?: run {
+                modpack.packOptions.baseUrl?.let { baseUrl ->
+                    val skOutput = with(SKPack) { uploadBaseDir.getOutputFolder(modpack.id) }
+                    val skPackFile = skOutput.resolve("${modpack.id}.json")
+                    val relativePath = skPackFile.relativeTo(uploadBaseDir).unixPath
+                    URI(baseUrl).resolve(relativePath).toASCIIString()
+                }
+            }
         if (skPackUrl == null) {
             logger.error("skPackUrl in multimc options is not set")
             exitProcess(3)

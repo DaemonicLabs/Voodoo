@@ -22,6 +22,7 @@ abstract class AbstractPack : KLogging() {
     abstract suspend fun pack(
         modpack: LockPack,
         output: File,
+        uploadBaseDir: File,
         clean: Boolean = true
     )
 

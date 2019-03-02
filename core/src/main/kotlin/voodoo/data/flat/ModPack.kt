@@ -6,7 +6,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import mu.KLogging
 import voodoo.data.PackOptions
-import voodoo.data.UserFiles
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.util.serializer.FileSerializer
@@ -31,7 +30,6 @@ data class ModPack(
     @Optional var forge: String? = null,
     // var forgeBuild: Int = -1,
     @Optional val launch: LaunchModifier = LaunchModifier(),
-    @Optional var userFiles: UserFiles = UserFiles(),
     @Optional var packOptions: PackOptions = PackOptions()
 ) {
     companion object : KLogging()
@@ -117,7 +115,6 @@ data class ModPack(
             mcVersion = mcVersion,
             forge = forge,
             launch = launch,
-            userFiles = userFiles,
             localDir = localDir,
             packOptions = packOptions
         ).also {

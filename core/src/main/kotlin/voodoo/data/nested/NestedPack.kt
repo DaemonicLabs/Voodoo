@@ -4,7 +4,6 @@ import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.Transient
 import mu.KLogging
 import voodoo.data.PackOptions
-import voodoo.data.UserFiles
 import voodoo.data.flat.ModPack
 import java.io.File
 
@@ -31,7 +30,6 @@ internal constructor(
     var icon: File = rootDir.resolve("icon.png"),
     var authors: List<String> = emptyList(),
     var forge: String? = null,
-    var userFiles: UserFiles = UserFiles(),
     var launch: LaunchModifier = LaunchModifier(),
     var root: NestedEntry = NestedEntry(),
     var localDir: String = "local",
@@ -72,7 +70,6 @@ internal constructor(
             authors = authors,
             forge = forge,
             mcVersion = mcVersion ?: throw IllegalStateException("mcVersion must be set for pack '$id'"),
-            userFiles = userFiles,
             launch = launch,
             packOptions = packOptions
         ).also {
