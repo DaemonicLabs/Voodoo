@@ -35,7 +35,7 @@ object Voodoo : KLogging() {
         rootLogger.level = Level.DEBUG // TODO: pass as -Dvoodoo.debug=true
 
         logger.debug("using Voodoo: ${VoodooConstants.FULL_VERSION}")
-        logger.debug("full arguments: ${fullArgs.joinToString(",", "[", "]") { it }}")
+        logger.debug("full arguments: ${fullArgs.joinToString(", ", "[", "]") { it }}")
         logger.debug("system.properties:")
         System.getProperties().forEach { k, v ->
             logger.debug { "  $k = $v" }
@@ -171,8 +171,8 @@ object Voodoo : KLogging() {
                 printCommands(null)
                 return
             }
-            logger.info("executing command [${argChunk.joinToString()}]")
             val remainingArgs = argChunk.drop(1).toTypedArray()
+            logger.info("executing command '$command' with args [${remainingArgs.joinToString()}]")
 
             val function = funcs[command.toLowerCase()]
             if (function == null) {
@@ -181,7 +181,7 @@ object Voodoo : KLogging() {
             }
 
             runBlocking(CoroutineName("main")) {
-                function(argChunk)
+                function(remainingArgs)
             }
         }
     }
