@@ -32,7 +32,14 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         "voodoo.data.*",
         "voodoo.data.curse.*",
         "voodoo.provider.*",
+        "com.skcraft.launcher.model.SKServer",
         "com.skcraft.launcher.model.modpack.Recommendation"
+    )
+    defaultImports(
+        GenerateForge::class,
+        GenerateMods::class,
+        GenerateTexturePacks::class,
+        Include::class
     )
     compilerOptions.append("-jvm-target 1.8")
 
