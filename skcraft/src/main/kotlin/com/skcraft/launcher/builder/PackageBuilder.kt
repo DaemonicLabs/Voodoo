@@ -265,6 +265,7 @@ constructor(
     private suspend fun readVersionManifest(path: File?) {
         logSection("Reading version manifest...")
         if (path!!.exists()) {
+            logger.info("Reading from $path")
             val versionManifest = read(path, VersionManifest.serializer())
             manifest.versionManifest = versionManifest
             logger.info("Loaded version manifest from " + path.absolutePath)
@@ -277,7 +278,7 @@ constructor(
                 .awaitStringResponseResult()
             manifest.versionManifest = when (result) {
                 is Result.Success -> {
-                    val jsonString = result.value.replace("\n", "").replace(" ", "")
+                    val jsonString = result.value
                     val tmp = File.createTempFile("lib", ".json")
                     tmp.writeText(jsonString)
                     logger.info("parsing json: $tmp")
