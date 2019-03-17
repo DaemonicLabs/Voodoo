@@ -1,6 +1,7 @@
 package voodoo.dsl.builder
 
 import voodoo.data.OptionalData
+import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
 import voodoo.dsl.VoodooDSL
 import voodoo.property
@@ -48,7 +49,7 @@ abstract class AbstractBuilder<P : ProviderBase>(
         entry.optionalData = optionalData
     }
 
-    fun replaceDependencies(vararg replacements: Pair<String, String>) {
+    fun replaceDependencies(vararg replacements: Pair<ProjectID, ProjectID>) {
         val mutableMap =  entry.replaceDependencies.toMutableMap()
         replacements.forEach { (original, replacement) ->
             mutableMap[original] = replacement

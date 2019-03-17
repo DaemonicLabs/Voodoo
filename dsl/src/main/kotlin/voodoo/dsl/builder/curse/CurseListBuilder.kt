@@ -7,7 +7,6 @@ import kotlinx.coroutines.runBlocking
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
-import voodoo.dsl.ID
 import voodoo.dsl.VoodooDSL
 import voodoo.dsl.builder.EntryBuilder
 import voodoo.dsl.builder.GroupBuilder
@@ -29,14 +28,14 @@ class CurseListBuilder<T>(
      * allows for curse specific adding of entries
      */
     @VoodooDSL
-    operator fun ID.unaryPlus(): EntryBuilder<T> {
+    operator fun ProjectID.unaryPlus(): EntryBuilder<T> {
         val idToSlugMap = runBlocking {
             deferredIdToSlugMap.await()
         }
-        val stringId = idToSlugMap[id] ?: run {
-            throw NullPointerException("no id: '$id' found in idToSlugMap")
+        val stringId = idToSlugMap[this.value] ?: run {
+            throw NullPointerException("no id: '${this.value}' found in idToSlugMap")
         }
-        val entry = NestedEntry(id = stringId, curseProjectID = ProjectID(id))
+        val entry = NestedEntry(id = stringId, curseProjectID = this)
         val entryBuilder = EntryBuilder(provider = provider, entry = entry)
         entries += entryBuilder
         return entryBuilder

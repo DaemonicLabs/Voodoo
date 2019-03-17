@@ -32,7 +32,7 @@ data class NestedEntry(
 //    @Deprecated("waiting to be redone")
 //    var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
 //    @Deprecated("waiting to be redone")
-    var replaceDependencies: Map<String, String> = mapOf(),
+    var replaceDependencies: Map<ProjectID, ProjectID> = mapOf(),
     var packageType: PackageType = PackageType.MOD,
     var transient: Boolean = false, // this entry got added as dependency for something else
     var version: String = "", // TODO: use regex only ?
