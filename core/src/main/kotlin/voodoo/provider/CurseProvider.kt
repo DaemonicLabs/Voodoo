@@ -149,6 +149,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
                         } else {
                             logger.info("ignoring dependency ${depAddon.id} ${depAddon.slug}")
                         }
+                        entry.dependencies[depType] = dependsSet.toList()
                         continue
                     }
 
@@ -225,7 +226,11 @@ object CurseProvider : ProviderBase("Curse Provider") {
 
         val data = super.reportData(entry)
         data += Triple("curse_release_type", "Release Type", "`${addonFile.releaseType}`")
-        data += Triple("curse_author", "Author", "`${addon.authors.sortedBy { it.name.toUpperCase() }.joinToString { it.name }}`")
+        data += Triple(
+            "curse_author",
+            "Author",
+            "`${addon.authors.sortedBy { it.name.toUpperCase() }.joinToString { it.name }}`"
+        )
         return data
     }
 

@@ -32,7 +32,7 @@ data class NestedEntry(
 //    @Deprecated("waiting to be redone")
 //    var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
 //    @Deprecated("waiting to be redone")
-//    var replaceDependencies: Map<String, String> = mapOf(),
+    var replaceDependencies: Map<String, String> = mapOf(),
     var packageType: PackageType = PackageType.MOD,
     var transient: Boolean = false, // this entry got added as dependency for something else
     var version: String = "", // TODO: use regex only ?
@@ -86,8 +86,8 @@ data class NestedEntry(
                 optionalData = entry.optionalData,
                 side = entry.side,
                 websiteUrl = entry.websiteUrl,
-//                dependencies = it.dependencies,
-//                replaceDependencies = it.replaceDependencies,
+//                dependencies = entry.dependencies,
+                replaceDependencies = entry.replaceDependencies,
                 //                optional = it.optional,
                 packageType = entry.packageType,
                 transient = entry.transient,
