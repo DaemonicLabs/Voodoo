@@ -18,32 +18,6 @@ open class ListBuilder<T>(
         return entryBuilder
     }
 
-    // TODO enable after testing
-//    open operator fun String.invoke(
-//        initEntry: EntryBuilder<T>.() -> Unit = {}
-//    ): EntryBuilder<T> = add(this, initEntry)
-
-//    @VoodooDSL
-//    @Deprecated(
-//        "prefer unaryPlus",
-//        ReplaceWith("+ id"),
-//        level = DeprecationLevel.WARNING
-//    )
-//    open fun add(
-//        id: String
-//    ) = id.unaryPlus()
-//
-//    @VoodooDSL
-//    @Deprecated(
-//        "use inline configure",
-//        ReplaceWith("add(id) configure initEntry"),
-//        level = DeprecationLevel.ERROR
-//    )
-//    open fun add(
-//        id: String,
-//        initEntry: EntryBuilder<T>.() -> Unit = {}
-//    ) = id.unaryPlus().configure(initEntry)
-
     @VoodooDSL
     fun group(
         initGroup: GroupBuilder<T>.() -> Unit = {}

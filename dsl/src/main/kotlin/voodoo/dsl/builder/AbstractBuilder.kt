@@ -47,4 +47,12 @@ abstract class AbstractBuilder<P : ProviderBase>(
         builder.block()
         entry.optionalData = optionalData
     }
+
+    fun replaceDependencies(vararg replacements: Pair<String, String>) {
+        val mutableMap =  entry.replaceDependencies.toMutableMap()
+        replacements.forEach { (original, replacement) ->
+            mutableMap[original] = replacement
+        }
+        entry.replaceDependencies = mutableMap.toMap()
+    }
 }
