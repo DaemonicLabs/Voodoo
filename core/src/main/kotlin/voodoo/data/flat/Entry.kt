@@ -35,7 +35,7 @@ data class Entry(
     @Optional var websiteUrl: String = "",
     // TODO dependency declarations
     @Optional var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
-    @Optional var replaceDependencies: Map<String, String> = mapOf(),
+    @Optional var replaceDependencies: Map<ProjectID, ProjectID> = mapOf(),
     // @JsonInclude(JsonInclude.Include.ALWAYS)
 //        @Optional var optional: Boolean = feature != null,
     @Optional var packageType: PackageType = PackageType.MOD,

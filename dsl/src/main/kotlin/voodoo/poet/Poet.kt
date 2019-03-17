@@ -6,6 +6,8 @@ import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
+import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.asTypeName
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
@@ -100,7 +102,7 @@ object Poet : KLogging() {
         slugSanitizer: (String) -> String,
         folder: File
     ): File {
-        val idType = ClassName("voodoo.dsl", "ID")
+        val idType = ProjectID::class.asTypeName()
         val objectBuilder = TypeSpec.objectBuilder(name)
         slugIdMap.entries.sortedBy { (slug, id) ->
             slug

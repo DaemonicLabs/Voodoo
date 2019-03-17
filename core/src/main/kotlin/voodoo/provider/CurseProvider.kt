@@ -141,11 +141,15 @@ object CurseProvider : ProviderBase("Curse Provider") {
                 var dependsSet = entry.dependencies[depType]?.toSet() ?: setOf<String>()
                 logger.info("get dependency $depType = $dependsSet + ${depAddon.slug}")
                 if (!dependsSet.contains(depAddon.slug)) {
-                    val replacementSlug = entry.replaceDependencies[depAddon.slug]
-                    if (replacementSlug != null) {
-                        if (replacementSlug.isNotBlank()) {
-                            logger.info("${entry.id} adding replaced dependency ${depAddon.id} ${depAddon.slug} -> $replacementSlug")
-                            dependsSet += replacementSlug
+                    val replacementId = entry.replaceDependencies[depAddon.id]
+                    if (replacementId != null) {
+                        if (replacementId != ProjectID.INVALID) {
+                            logger.info("${entry.id} adding replaced dependency ${depAddon.id} ${depAddon.slug} -> $replacementId")
+                            val replacementAddon = CurseClient.getAddon(replacementId, entry.curseMetaUrl) ?: run {
+                                logger.error("cannot resolve replacement dependency $replacementId")
+                                throw IllegalStateException("cannot resolve replacement dependency $replacementId")
+                            }
+                            dependsSet += replacementAddon.slug
                         } else {
                             logger.info("ignoring dependency ${depAddon.id} ${depAddon.slug}")
                         }
