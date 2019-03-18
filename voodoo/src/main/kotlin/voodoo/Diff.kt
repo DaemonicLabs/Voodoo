@@ -4,10 +4,8 @@ import mu.KLogging
 import voodoo.changelog.ChangelogBuilder
 import voodoo.changelog.PackDiff
 import voodoo.data.lock.LockPack
-import voodoo.util.ArchiveUtil
 import voodoo.util.Directories
 import voodoo.util.ShellUtil
-import voodoo.util.UnzipUtility
 import voodoo.util.unixPath
 import java.io.File
 
@@ -20,32 +18,39 @@ object Diff : KLogging() {
         newPack: LockPack,
         changelogBuilder: ChangelogBuilder
     ): PackDiff? {
-        val (tag, archiveZip) = ArchiveUtil.archiveLast(rootDir) ?: run {
-            logger.error("archive failed")
-            return null
+        val versions = readVersions(rootDir, newPack.id)
+        val lastVersion = versions.lastOrNull().takeIf { it != newPack.version }
+        if (newPack.version != versions.lastOrNull() && newPack.version in versions) {
+            throw IllegalArgumentException("version ${newPack.version} already exists and is not the last version, please do not try to break things")
         }
-        require(archiveZip.exists()) { "git archive did not create a file" }
 
-        val oldRootDir = directories.cacheHome.resolve(rootDir.name) // TODO: use hash of path + id instead ?
-        oldRootDir.deleteRecursively()
-        oldRootDir.mkdirs()
+        val newMetaDataLocation = getMetaDataDefault(rootDir, newPack.id)
+        val metaDataPointerFile = getMetaDataPointer(rootDir, newPack.id)
 
-        UnzipUtility.unzip(archiveZip, oldRootDir)
+        // copy new pack to .meta/packid/version/root
+        val packVersionFolder = newMetaDataLocation.resolve(newPack.version).resolve("pack")
+        packVersionFolder.deleteRecursively()
+        newPack.sourceFolder.copyRecursively(packVersionFolder)
 
-        // assume id and paths stayed the same
+        // TODO: load old version
+        val oldVersionFolder = lastVersion?.let { version -> newMetaDataLocation.resolve(version).resolve("pack") }
+        logger.debug("old root dir: $oldVersionFolder")
 
-        val oldLockPackFile = oldRootDir.resolve(newPack.sourceFolder.relativeTo(newPack.rootDir))
-            .resolve("${newPack.id}.lock.pack.hjson")
-        if (!oldLockPackFile.exists()) {
-            logger.error("$oldLockPackFile does not exist")
-            return null
-        }
+        val oldLockPackFile = oldVersionFolder
+//            ?.resolve(newPack.sourceFolder.relativeTo(newPack.rootDir))
+            ?.resolve("${newPack.id}.lock.pack.hjson")
+//        if (!oldLockPackFile?.exists()) {
+//            logger.error("$oldLockPackFile does not exist")
+////            return null
+//        }
 
         val oldPack = try {
             logger.info("reading: $oldLockPackFile")
-            LockPack.parse(oldLockPackFile, oldRootDir).also {
-                logger.info("oldPack: ${it.version}")
-            }
+            if (oldLockPackFile != null && oldVersionFolder != null) {
+                LockPack.parse(oldLockPackFile, oldVersionFolder).also {
+                    logger.info("oldPack: ${it.version}")
+                }
+            } else null
         } catch (e: Exception) {
             logger.error("could not parse old pack")
             e.printStackTrace()
@@ -58,46 +63,71 @@ object Diff : KLogging() {
         //   diff files
         val diff = PackDiff(
             newPack = newPack,
-            oldPack = oldPack,
-            oldEntries = oldPack?.entrySet?.associateBy { it.id },
-            newEntries = newPack.entrySet.associateBy { it.id },
-            newRootDir = rootDir,
-            oldRootDir = oldRootDir
+            oldPack = oldPack
         )
 
-        val oldMetaDataLocation = readMetaDataLocation(oldRootDir, oldPack?.id ?: newPack.id)
-        val newMetaDataLocation = getMetaDataDefault(rootDir, newPack.id)
-        val metaDataPointerFile = getMetaDataPointer(rootDir, newPack.id)
+        addVersion(rootDir, newPack.id, newPack.version)
+
         metaDataPointerFile.writeText(newMetaDataLocation.relativeTo(rootDir).unixPath)
+        if (oldVersionFolder != null) {
+//            val packs = versions.associate { version ->
+//                val oldRootDir = newMetaDataLocation.resolve(version).resolve("pack")
+//                val oldLockPackFile = oldRootDir
+////                    .resolve(newPack.sourceFolder.relativeTo(newPack.rootDir))
+//                    .resolve("${newPack.id}.lock.pack.hjson")
+//                version to LockPack.parse(oldLockPackFile, oldRootDir).also {
+//                    logger.info("oldPack: ${it.version}")
+//                }
+//            }
+//            versions.zipWithNext { lastVersion, currentVersion ->
+//                val lastPack = packs[lastVersion]!!
+//                val newPack = packs[currentVersion]!!
+//                // TODO: write changelogs
+//                val diff = PackDiff(
+//                    newPack = newPack,
+//                    oldPack = lastPack
+//                )
+//                diff.writeChangelog(
+//                    newMeta = newMetaDataLocation.resolve(currentVersion),
+//                    oldMeta = oldMetaDataLocation.resolve(lastVersion),
+//                    docDir = docDir,
+//                    generator = changelogBuilder
+//                )
+//            }
+//            writeDiff(
+//                meta = newMetaDataLocation,
+//                newFolder = packVersionFolder,
+//                oldFolder = oldVersionFolder,
+//                docDir = docDir
+//            )
+        }
 
-        writeGitDiff(
-            newMeta = newMetaDataLocation,
-            docDir = docDir,
-            tag = tag,
-            subDir = oldPack?.sourceFolder?.relativeTo(oldRootDir) ?: newPack.sourceFolder.relativeTo(rootDir)
-        )
-
+        val oldMetaDataLocation = readMetaDataLocation(rootDir, oldPack?.id ?: newPack.id)
+        logger.debug("docDir: $docDir")
         diff.writeChangelog(
-            newMeta = newMetaDataLocation,
-            oldMeta = oldMetaDataLocation,
+            newMeta = newMetaDataLocation.resolve(newPack.version),
+            oldMeta = lastVersion?.let {oldMetaDataLocation.resolve(it)},
             docDir = docDir,
             generator = changelogBuilder
         )
+        diff.writeFullChangelog(newMetaDataLocation,  readVersions(rootDir, newPack.id), docDir = docDir)
+
         return diff
     }
 
-    fun writeGitDiff(newMeta: File, docDir: File, tag: String, subDir: File): File? {
+    fun writeDiff(meta: File, oldFolder: File, newFolder: File, docDir: File): File? {
         if (ShellUtil.isInPath("git")) {
-            newMeta.mkdirs()
-            val diffFile = newMeta.resolve("changes.diff")
+            newFolder.mkdirs()
+            val diffFile = meta.resolve("changes.diff")
             val diffResult = ShellUtil.runProcess(
                 "git",
                 "diff",
-                tag,
                 "--",
-                subDir.path,
+                oldFolder.toRelativeString(meta),
+                newFolder.toRelativeString(meta),
                 ":(exclude)*.lock.hjson",
-                ":(exclude)*.lock.pack.hjson"
+                ":(exclude)*.lock.pack.hjson",
+                wd = meta
             )
             logger.info("writing '$diffFile'")
             diffResult.stdout.trim().takeIf { it.isNotBlank() }?.let {
@@ -117,6 +147,18 @@ object Diff : KLogging() {
 
     fun getMetaDataDefault(rootDir: File, id: String) = rootDir.resolve(".meta").resolve(id.toLowerCase())
     fun getMetaDataPointer(rootDir: File, id: String) = rootDir.resolve(".meta").resolve(id.toLowerCase() + ".txt")
+
+    fun readVersions(rootDir: File, id: String): List<String> {
+        val versionsFile = getMetaDataDefault(rootDir, id).resolve("versions.txt")
+        return versionsFile.takeIf { it.exists() }?.readLines()?.filter { it.isNotBlank() } ?: listOf()
+    }
+
+    fun addVersion(rootDir: File, id: String, version: String) {
+        val versionsFile = getMetaDataDefault(rootDir, id).resolve("versions.txt")
+        val versions =
+            (versionsFile.takeIf { it.exists() }?.readLines()?.filter { it.isNotBlank() } ?: listOf()).toSet() + version
+        versionsFile.writeText(versions.joinToString("\n"))
+    }
 
     fun readMetaDataLocation(
         rootDir: File,

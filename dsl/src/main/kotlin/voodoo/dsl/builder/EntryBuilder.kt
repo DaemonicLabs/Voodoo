@@ -1,5 +1,6 @@
 package voodoo.dsl.builder
 
+import voodoo.data.curse.DependencyType
 import voodoo.data.nested.NestedEntry
 import voodoo.dsl.VoodooDSL
 import voodoo.property
@@ -30,5 +31,9 @@ class EntryBuilder<T>(
 
     infix fun fileNameRegex(r: String?) = apply {
         fileNameRegex = r
+    }
+
+    fun dependencies(vararg dependencies: String, type: DependencyType = DependencyType.REQUIRED)  {
+        entry.dependencies[type] = ((entry.dependencies[type]?.toSet() ?: setOf()) + dependencies).toList()
     }
 }

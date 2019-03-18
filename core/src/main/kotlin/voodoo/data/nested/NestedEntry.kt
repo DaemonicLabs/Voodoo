@@ -4,6 +4,7 @@ import mu.KLogging
 import voodoo.data.OptionalData
 import voodoo.data.Side
 import voodoo.data.curse.CurseConstants
+import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
@@ -30,7 +31,7 @@ data class NestedEntry(
     var websiteUrl: String = "",
 //    var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
 //    @Deprecated("waiting to be redone")
-//    var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+    var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
 //    @Deprecated("waiting to be redone")
     var replaceDependencies: Map<ProjectID, ProjectID> = mapOf(),
     var packageType: PackageType = PackageType.MOD,
@@ -86,7 +87,7 @@ data class NestedEntry(
                 optionalData = entry.optionalData,
                 side = entry.side,
                 websiteUrl = entry.websiteUrl,
-//                dependencies = entry.dependencies,
+                dependencies = entry.dependencies,
                 replaceDependencies = entry.replaceDependencies,
                 //                optional = it.optional,
                 packageType = entry.packageType,

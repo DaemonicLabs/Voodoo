@@ -7,6 +7,7 @@ import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
 import voodoo.curse.CurseClient.getAddon
 import voodoo.curse.CurseClient.getAddonFile
+import voodoo.data.curse.AddOnFileDependency
 import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
@@ -114,14 +115,20 @@ object CurseProvider : ProviderBase("Curse Provider") {
         entry: Entry,
         addEntry: SendChannel<Pair<Entry, String>>
     ) {
+        val predefinedDependencies = entry.dependencies.flatMap { (depType, slugs) ->
+            slugs.map { slug ->
+                val id = CurseClient.deferredSlugIdMap.await()[slug] ?: throw IllegalStateException("cannot find id for slug: $slug")
+                AddOnFileDependency(id, depType)
+            }
+        }
         val addon = getAddon(addonId, entry.curseMetaUrl)
             ?: throw IllegalStateException("addon $addonId could not be resolved, entry: $entry")
         val addonFile = getAddonFile(addonId, fileId, entry.curseMetaUrl)
             ?: throw IllegalStateException("addon file $addonId:$fileId could not be resolved, entry: $entry")
-        val dependencies = addonFile.dependencies ?: return
+        val dependencies = predefinedDependencies + (addonFile.dependencies ?: listOf())
 
         logger.info("dependencies of ${entry.id} ${addonFile.dependencies}")
-        logger.info(entry.toString())
+        logger.trace(entry.toString())
 
         for ((depAddonId, depType) in dependencies) {
             if (depType == DependencyType.REQUIRED) {

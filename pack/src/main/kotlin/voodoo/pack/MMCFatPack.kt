@@ -40,7 +40,7 @@ object MMCFatPack : AbstractPack() {
         instanceDir.mkdirs()
 
         val minecraftDir = MMCUtil.installEmptyPack(
-            title,
+            title.blankOr,
             modpack.id,
             icon = modpack.iconFile,
             instanceDir = instanceDir,
