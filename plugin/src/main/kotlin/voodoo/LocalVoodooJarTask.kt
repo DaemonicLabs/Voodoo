@@ -18,7 +18,7 @@ open class LocalVoodooJarTask : GradleBuild() {
 
         group = "voodoo"
         buildFile = voodooExtension.localVoodooProjectLocation.resolve("build.gradle.kts")
-        tasks = mutableListOf("voodoo:shadowJar")
+        tasks = mutableListOf("voodoo:clean", "voodoo:shadowJar")
         dir = voodooExtension.localVoodooProjectLocation
 
         doLast {
@@ -27,5 +27,6 @@ open class LocalVoodooJarTask : GradleBuild() {
                 .resolve("voodoo-${PluginConstants.FULL_VERSION}.jar")
             shadowJarFile.copyTo(jarFile, overwrite = true)
         }
+        outputs.upToDateWhen { false }
     }
 }

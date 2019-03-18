@@ -142,11 +142,6 @@ object Voodoo : KLogging() {
                 val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
                 TesterForDSL.main(modpack, args = *args)
             },
-            "release" to { args ->
-                // TODO: create a release
-                // TODO: create a commit and tag ?
-                // TODO: grab latest changelog and append it to full_changelog
-            },
             "version" to { _ ->
                 logger.info(VoodooConstants.FULL_VERSION)
             }

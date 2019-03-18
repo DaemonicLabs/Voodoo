@@ -215,7 +215,7 @@ object MMCUtil : KLogging() {
             sortedMapOf<String, String>()
 
         cfg["InstanceType"] = "OneSix"
-        cfg["name"] = name ?: folder
+        if(name != null) cfg["name"] = name
         cfg["iconKey"] = iconKey
 
         if (preLaunchCommand != null) {

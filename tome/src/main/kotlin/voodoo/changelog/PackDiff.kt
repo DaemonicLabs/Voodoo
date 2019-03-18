@@ -25,13 +25,10 @@ val LockPack.iconHtml: String
 
 data class PackDiff(
     val newPack: LockPack,
-    val oldPack: LockPack?,
-    val newEntries: Map<String, LockEntry>,
-    val oldEntries: Map<String, LockEntry>?,
-    val newRootDir: File,
-    val oldRootDir: File
+    val oldPack: LockPack?
 ) : KLogging() {
-    fun writeChangelog(newMeta: File, oldMeta: File, docDir: File, generator: ChangelogBuilder) {
+    fun writeChangelog(newMeta: File, oldMeta: File?, docDir: File, generator: ChangelogBuilder) {
+        val oldMeta = oldMeta ?: File.createTempFile("empty", "")
         val newPackMetaInfo = writePackMetaInformation(newMeta, newPack)
         val oldPackMetaInfo = readPackMetaInformation(oldMeta)
 
@@ -39,7 +36,7 @@ data class PackDiff(
         val oldEntryMetaInfo = readEntryMetaInformation(oldMeta)
 
         docDir.mkdirs()
-        val changelogFile = newMeta.resolve(Companion.Filename.changelog)
+        val changelogFile = newMeta.resolve(Filename.changelog)
 
         val currentChangelogText = buildString {
             // TODO:  write changelog
@@ -62,16 +59,18 @@ data class PackDiff(
         changelogFile.writeText(currentChangelogText)
 
         oldMeta.mkdirs()
-        val currentCompleteChangelogFile = newMeta.resolve(Companion.Filename.completeChangelog)
-        val oldCompleteChangelogFile = oldMeta.resolve(Companion.Filename.completeChangelog)
-
-        val oldCompleteChanglogText = oldCompleteChangelogFile.takeIf { it.exists() }?.readText() ?: ""
-
-        currentCompleteChangelogFile.writeText(oldCompleteChanglogText + currentChangelogText)
 
         // copy files to documentation
-        changelogFile.copyTo(docDir.resolve(Companion.Filename.changelog), overwrite = true)
-        currentCompleteChangelogFile.copyTo(docDir.resolve(Companion.Filename.completeChangelog), overwrite = true)
+        changelogFile.copyTo(docDir.resolve(Filename.changelog), overwrite = true)
+    }
+
+    fun writeFullChangelog(meta: File, versions: List<String>, docDir: File) {
+        val changelogs = versions.mapNotNull { version ->
+            meta.resolve(version).resolve(Filename.changelog).takeIf { it.exists() }?.readText()
+        }
+        val fullChangelogFile = meta.resolve(Filename.completeChangelog)
+        fullChangelogFile.writeText(changelogs.joinToString("\n"))
+        fullChangelogFile.copyTo(docDir.resolve(Filename.completeChangelog), overwrite = true)
     }
 
     companion object : KLogging() {
@@ -90,7 +89,7 @@ data class PackDiff(
         fun writePackMetaInformation(newMeta: File, pack: LockPack): Map<String, MetaInfo> {
             val reportMap = pack.report().associateTo(linkedMapOf()) { it.first to MetaInfo(it.second, it.third) }
 
-            val reportFile = newMeta.resolve(Companion.Filename.packMeta)
+            val reportFile = newMeta.resolve(Filename.packMeta)
             val json = json.stringify(packMetaSerializer, reportMap)
 
             newMeta.mkdirs()
@@ -100,7 +99,7 @@ data class PackDiff(
         }
 
         fun readPackMetaInformation(oldMeta: File): Map<String, MetaInfo> {
-            val reportFile = oldMeta.resolve(Companion.Filename.packMeta)
+            val reportFile = oldMeta.resolve(Filename.packMeta)
             if (!reportFile.exists()) return mapOf()
             return json.parse(packMetaSerializer, reportFile.readText())
         }
@@ -113,7 +112,7 @@ data class PackDiff(
             }.mapValuesTo(linkedMapOf()) { (id, triples) ->
                 triples.associate { it.first to MetaInfo(it.second, it.third) }
             }
-            val reportFile = newMeta.resolve(Companion.Filename.entryMeta)
+            val reportFile = newMeta.resolve(Filename.entryMeta)
             val json = json.stringify(entryMetaSerializer, reportMap)
 
             newMeta.mkdirs()
@@ -123,7 +122,7 @@ data class PackDiff(
         }
 
         fun readEntryMetaInformation(oldMeta: File): Map<String, Map<String, MetaInfo>> {
-            val reportFile = oldMeta.resolve(Companion.Filename.entryMeta)
+            val reportFile = oldMeta.resolve(Filename.entryMeta)
             if (!reportFile.exists()) return mapOf()
             return json.parse(entryMetaSerializer, reportFile.readText())
         }
