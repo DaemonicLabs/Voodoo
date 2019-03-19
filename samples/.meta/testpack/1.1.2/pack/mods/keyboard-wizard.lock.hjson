@@ -1,0 +1,8 @@
+{
+    provider: CURSE,
+    description: "Visual keybind manager.",
+    optionalData: {
+    },
+    projectID: 262366,
+    fileID: 2672472
+}

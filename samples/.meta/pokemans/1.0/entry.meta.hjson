@@ -1,0 +1,1438 @@
+{
+    abyssalcraft: {
+        id: {
+            name: ID,
+            value: `abyssalcraft`
+        },
+        version: {
+            name: Version,
+            value: `AbyssalCraft-1.10.2-1.9.4.11-FINAL.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `Shinoow`
+        }
+    },
+    advanced-rocketry: {
+        id: {
+            name: ID,
+            value: `advanced-rocketry`
+        },
+        version: {
+            name: Version,
+            value: "`AdvancedRocketry 1.10.2-1.4.0-14-UNSTABLE build -14 for 1.10.2`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `libvulpes`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `ALPHA`
+        },
+        curse_author: {
+            name: Author,
+            value: `zmaster587`
+        }
+    },
+    apricorn-tree-farm: {
+        id: {
+            name: ID,
+            value: `apricorn-tree-farm`
+        },
+        version: {
+            name: Version,
+            value: "`Apricorn Tree Farm-1.0.0-1.10.2`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `BeetoGuy`
+        }
+    },
+    armorplus: {
+        id: {
+            name: ID,
+            value: `armorplus`
+        },
+        version: {
+            name: Version,
+            value: `armorplus-1.10.2-8.7.1.2.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `thedragonlib`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `sokratis12GR`
+        }
+    },
+    autoreglib: {
+        id: {
+            name: ID,
+            value: `autoreglib`
+        },
+        version: {
+            name: Version,
+            value: `AutoRegLib-1.0-2.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `Vazkii`
+        }
+    },
+    betterfps: {
+        id: {
+            name: ID,
+            value: `betterfps`
+        },
+        version: {
+            name: Version,
+            value: `v1.4.5-1.10`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `Guichaguri`
+        }
+    },
+    chisels-bits: {
+        id: {
+            name: ID,
+            value: `chisels-bits`
+        },
+        version: {
+            name: Version,
+            value: `chiselsandbits-12.18.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `AlgorithmX2`
+        }
+    },
+    crafttweaker: {
+        id: {
+            name: ID,
+            value: `crafttweaker`
+        },
+        version: {
+            name: Version,
+            value: `CraftTweaker-1.10.2-3.0.26`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `jaredlll08`
+        }
+    },
+    custom-npcs: {
+        id: {
+            name: ID,
+            value: `custom-npcs`
+        },
+        version: {
+            name: Version,
+            value: `CustomNPCs_1.10.2(21jul17).jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `Noppes`
+        }
+    },
+    cyclops-core: {
+        id: {
+            name: ID,
+            value: `cyclops-core`
+        },
+        version: {
+            name: Version,
+            value: `CyclopsCore-1.9.4-0.10.10.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `kroeser`
+        }
+    },
+    fruit-phone: {
+        id: {
+            name: ID,
+            value: `fruit-phone`
+        },
+        version: {
+            name: Version,
+            value: `FruitPhone-1.10.2-0.1.7.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `JENKINS`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        jenkins_job: {
+            name: Job,
+            value: `elytra/FruitPhone/1.10.2`
+        },
+        jenkins_build: {
+            name: Build,
+            value: `11`
+        }
+    },
+    probe-data-provider: {
+        id: {
+            name: ID,
+            value: `probe-data-provider`
+        },
+        version: {
+            name: Version,
+            value: `ProbeDataProviderAPI-MC1.10.2_ver1.1.1.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `JENKINS`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        jenkins_job: {
+            name: Job,
+            value: `elytra/ProbeDataProvider/1.10.2`
+        },
+        jenkins_build: {
+            name: Build,
+            value: `2`
+        }
+    },
+    ender-io: {
+        id: {
+            name: ID,
+            value: `ender-io`
+        },
+        version: {
+            name: Version,
+            value: "`EnderIO - 1.10.2-3.1.193`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `endercore`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: "`CrazyPants_MC, epicsquid319, Henry_Loenwind, MatthiasMann, tterrag1098`"
+        }
+    },
+    endercore: {
+        id: {
+            name: ID,
+            value: `endercore`
+        },
+        version: {
+            name: Version,
+            value: "`EnderCore - 1.10.2-0.4.1.66-beta`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `BETA`
+        },
+        curse_author: {
+            name: Author,
+            value: "`CrazyPants_MC, Henry_Loenwind, tterrag1098`"
+        }
+    },
+    extra-bit-manipulation: {
+        id: {
+            name: ID,
+            value: `extra-bit-manipulation`
+        },
+        version: {
+            name: Version,
+            value: `ExtraBitManipulation-1.10.2-2.6.2.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `chisels-bits`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `MolecularPhylo`
+        }
+    },
+    farseek: {
+        id: {
+            name: ID,
+            value: `farseek`
+        },
+        version: {
+            name: Version,
+            value: `Farseek-1.9.4-2.2.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `delvr`
+        }
+    },
+    foamfix-for-minecraft: {
+        id: {
+            name: ID,
+            value: `foamfix-for-minecraft`
+        },
+        version: {
+            name: Version,
+            value: "`FoamFix 0.7.5 (1.10/1.11)`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `asiekierka`
+        }
+    },
+    gameshark: {
+        id: {
+            name: ID,
+            value: `gameShark`
+        },
+        version: {
+            name: Version,
+            value: `meowface`
+        },
+        provider: {
+            name: Provider,
+            value: `DIRECT`
+        },
+        filename: {
+            name: Filename,
+            value: `Gameshark-1.10.2-5.0.0.jar`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        direct_url: {
+            name: Url,
+            value: "`https://meowface.org/craft/repo/objects/b9/21/b9216143fd5214c31e109b24fb1513eb8b23bc77`"
+        }
+    },
+    immersive-engineering: {
+        id: {
+            name: ID,
+            value: `immersive-engineering`
+        },
+        version: {
+            name: Version,
+            value: "`Immersive Engineering 0.10 - 61`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: "`BluSunrize, malte0811`"
+        }
+    },
+    industrial-craft: {
+        id: {
+            name: ID,
+            value: `industrial-craft`
+        },
+        version: {
+            name: Version,
+            value: `industrialcraft-2-2.6.252-ex110.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: "`Aroma1997, Chocohead, estebes, Player`"
+        }
+    },
+    ivtoolkit: {
+        id: {
+            name: ID,
+            value: `ivtoolkit`
+        },
+        version: {
+            name: Version,
+            value: `IvToolkit-1.3.3-1.10.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `Ivorforce`
+        }
+    },
+    jei: {
+        id: {
+            name: ID,
+            value: `jei`
+        },
+        version: {
+            name: Version,
+            value: `jei_1.10.2-3.14.8.422.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `BETA`
+        },
+        curse_author: {
+            name: Author,
+            value: `mezz`
+        }
+    },
+    libvulpes: {
+        id: {
+            name: ID,
+            value: `libvulpes`
+        },
+        version: {
+            name: Version,
+            value: "`LibVulpes 1.10.2-0.2.8-37-UNSTABLE build -37 for 1.10.2`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `ALPHA`
+        },
+        curse_author: {
+            name: Author,
+            value: `zmaster587`
+        }
+    },
+    lingering-loot: {
+        id: {
+            name: ID,
+            value: `lingering-loot`
+        },
+        version: {
+            name: Version,
+            value: `LingeringLoot-1.9.4-2.5.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `capitalthree`
+        }
+    },
+    mantle: {
+        id: {
+            name: ID,
+            value: `mantle`
+        },
+        version: {
+            name: Version,
+            value: `Mantle-1.10.2-1.1.5.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: "`bonusboni, mDiyo, progwml6`"
+        }
+    },
+    minecolonies: {
+        id: {
+            name: ID,
+            value: `minecolonies`
+        },
+        version: {
+            name: Version,
+            value: `minecolonies-universal-1.10.2-0.9.7587.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: "`flaminyogurt, H3lay, Kostronor, MinecoloniesPete`"
+        }
+    },
+    modtweaker: {
+        id: {
+            name: ID,
+            value: `modtweaker`
+        },
+        version: {
+            name: Version,
+            value: `ModTweaker2-2.0.13`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: "`crafttweaker`, `mtlib`"
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `jaredlll08`
+        }
+    },
+    mtlib: {
+        id: {
+            name: ID,
+            value: `mtlib`
+        },
+        version: {
+            name: Version,
+            value: `MTLib-1.0.3`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `crafttweaker`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `jaredlll08`
+        }
+    },
+    multi-mine: {
+        id: {
+            name: ID,
+            value: `multi-mine`
+        },
+        version: {
+            name: Version,
+            value: "`Multi Mine`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `AtomicStryker`
+        }
+    },
+    omlib: {
+        id: {
+            name: ID,
+            value: `omlib`
+        },
+        version: {
+            name: Version,
+            value: `omlib-1.10.2-3.0.0-137.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `BETA`
+        },
+        curse_author: {
+            name: Author,
+            value: `Keridos`
+        }
+    },
+    openmodularturrets: {
+        id: {
+            name: ID,
+            value: `openmodularturrets`
+        },
+        version: {
+            name: Version,
+            value: `openmodularturrets-1.10.2-3.0.0-245.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `omlib`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `Keridos`
+        }
+    },
+    pams-harvestcraft: {
+        id: {
+            name: ID,
+            value: `pams-harvestcraft`
+        },
+        version: {
+            name: Version,
+            value: "`Pam's HarvestCraft 1.10.2j.jar`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `MatrexsVigil`
+        }
+    },
+    pixelmondark: {
+        id: {
+            name: ID,
+            value: `pixelmonDark`
+        },
+        version: {
+            name: Version,
+            value: `meowface`
+        },
+        provider: {
+            name: Provider,
+            value: `DIRECT`
+        },
+        filename: {
+            name: Filename,
+            value: `PixelmonDark2.4.jar`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        direct_url: {
+            name: Url,
+            value: "`https://meowface.org/craft/repo/objects/db/5d/db5db11bcda204362d62705b1d5f4e5783f95c2c`"
+        }
+    },
+    quark: {
+        id: {
+            name: ID,
+            value: `quark`
+        },
+        version: {
+            name: Version,
+            value: `Quark-r1.1-70.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `autoreglib`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `Vazkii`
+        }
+    },
+    railcraft: {
+        id: {
+            name: ID,
+            value: `railcraft`
+        },
+        version: {
+            name: Version,
+            value: "`Railcraft 10.4.1 - MC 1.10.2`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `CovertJaguar`
+        }
+    },
+    recurrent-complex: {
+        id: {
+            name: ID,
+            value: `recurrent-complex`
+        },
+        version: {
+            name: Version,
+            value: `RecurrentComplex-1.4.5-1.10.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `ivtoolkit`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `Ivorforce`
+        }
+    },
+    repose: {
+        id: {
+            name: ID,
+            value: `repose`
+        },
+        version: {
+            name: Version,
+            value: `Repose-1.9.4-1.5.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `farseek`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `delvr`
+        }
+    },
+    roguelike-dungeons: {
+        id: {
+            name: ID,
+            value: `roguelike-dungeons`
+        },
+        version: {
+            name: Version,
+            value: `RoguelikeDungeons-1.10.2-1.5.9.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `Greymerk`
+        }
+    },
+    streams: {
+        id: {
+            name: ID,
+            value: `streams`
+        },
+        version: {
+            name: Version,
+            value: `Streams-1.9.4-0.4.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `farseek`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `BETA`
+        },
+        curse_author: {
+            name: Author,
+            value: `delvr`
+        }
+    },
+    structured-crafting: {
+        id: {
+            name: ID,
+            value: `structured-crafting`
+        },
+        version: {
+            name: Version,
+            value: `StructuredCrafting-1.9.4-0.1.7.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `cyclops-core`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `kroeser`
+        }
+    },
+    tails: {
+        id: {
+            name: ID,
+            value: `tails`
+        },
+        version: {
+            name: Version,
+            value: `Tails-1.10.2-1.8.4.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: "`KitsuneKihira, TTFTCUTS`"
+        }
+    },
+    thedragonlib: {
+        id: {
+            name: ID,
+            value: `thedragonlib`
+        },
+        version: {
+            name: Version,
+            value: `thedragonlib-1.10.2-1.0.3.1.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `sokratis12GR`
+        }
+    },
+    timberjack: {
+        id: {
+            name: ID,
+            value: `timberjack`
+        },
+        version: {
+            name: Version,
+            value: "`Timberjack 1.10.2-1.6`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `CovertJaguar`
+        }
+    },
+    tinkers-construct: {
+        id: {
+            name: ID,
+            value: `tinkers-construct`
+        },
+        version: {
+            name: Version,
+            value: `TConstruct-1.10.2-2.6.5.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `mantle`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: "`bonusboni, KnightMiner, mDiyo`"
+        }
+    },
+    wearable-backpacks: {
+        id: {
+            name: ID,
+            value: `wearable-backpacks`
+        },
+        version: {
+            name: Version,
+            value: "`Wearable Backpacks - 1.10.2 - 1.7.0`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: "`asiekierka, InsomniaKitten, koppeh, PuppetzMedia`"
+        }
+    },
+    xaeros-minimap: {
+        id: {
+            name: ID,
+            value: `xaeros-minimap`
+        },
+        version: {
+            name: Version,
+            value: "`v1.16.2 for Minecraft 1.10.2`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `CLIENT`
+        },
+        description: {
+            name: Description,
+            value: "`lightweight minimap`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `xaero96`
+        }
+    }
+}

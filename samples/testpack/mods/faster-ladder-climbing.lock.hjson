@@ -1,0 +1,8 @@
+{
+    provider: CURSE,
+    description: "Helps you control ladder climb speed and allows you to go a bit faster.",
+    optionalData: {
+    },
+    projectID: 258881,
+    fileID: 2512758
+}

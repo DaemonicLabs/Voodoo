@@ -1,0 +1,6 @@
+{
+    provider: JENKINS,
+    jenkinsUrl: "https://ci.rs485.network",
+    job: LogisticsPipes-0.10-mc112,
+    buildNumber: 111
+}

@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            cyclops-core
+        ]
+    },
+    projectID: 233151,
+    fileID: 2364233
+}

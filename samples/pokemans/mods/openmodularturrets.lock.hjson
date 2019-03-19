@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            omlib
+        ]
+    },
+    projectID: 224663,
+    fileID: 2575475
+}

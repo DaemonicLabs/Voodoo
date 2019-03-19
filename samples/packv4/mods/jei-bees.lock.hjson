@@ -1,0 +1,11 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            forestry,
+            jei
+        ]
+    },
+    projectID: 248370,
+    fileID: 2490058
+}

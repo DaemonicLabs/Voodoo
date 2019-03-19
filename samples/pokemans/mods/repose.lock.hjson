@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            farseek
+        ]
+    },
+    projectID: 220524,
+    fileID: 2368984
+}

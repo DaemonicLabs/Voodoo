@@ -1,0 +1,9 @@
+{
+    provider: CURSE,
+    fileName: Unity.zip,
+    description: "Multi-mod compatible resource pack. Very nice, but does have some broken textures here and there.",
+    optionalData: {
+    },
+    projectID: 222097,
+    fileID: 2576530
+}

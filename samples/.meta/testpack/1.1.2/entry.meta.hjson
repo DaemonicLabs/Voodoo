@@ -1,0 +1,858 @@
+{
+    baubles: {
+        id: {
+            name: ID,
+            value: `baubles`
+        },
+        version: {
+            name: Version,
+            value: `Baubles-1.12-1.5.2.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `azanor`
+        }
+    },
+    better-foliage: {
+        id: {
+            name: ID,
+            value: `better-foliage`
+        },
+        version: {
+            name: Version,
+            value: `BetterFoliage-MC1.12-2.2.0.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Improves the fauna in the world. Very heavy, but very pretty. (Sane defaults set.)`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `shadowfacts-forgelin`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `octarine_noise`
+        }
+    },
+    botania: {
+        id: {
+            name: ID,
+            value: `botania`
+        },
+        version: {
+            name: Version,
+            value: "`Botania r1.10-360.jar`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `baubles`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `Vazkii`
+        }
+    },
+    chunk-animator: {
+        id: {
+            name: ID,
+            value: `chunk-animator`
+        },
+        version: {
+            name: Version,
+            value: `ChunkAnimator-MC1.12-1.2.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Configurable chunk pop-in animator.`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `lumien231`
+        }
+    },
+    durability-show: {
+        id: {
+            name: ID,
+            value: `durability-show`
+        },
+        version: {
+            name: Version,
+            value: "`[1.12] Durability Show 5.0.0`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Toggle-able item/tool/armor durability HUD. Duplicates with RPG-HUD.`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `61352151511`
+        }
+    },
+    dynamic-surroundings: {
+        id: {
+            name: ID,
+            value: `dynamic-surroundings`
+        },
+        version: {
+            name: Version,
+            value: `DynamicSurroundings-1.12.2-3.5.4.3.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Caution: Resource heavy. Quite nice, has a lot of configurable features that add immersive sound/visual effects. Includes light-level overlay. (Defaults set to remove some sounds and generally be better.)`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `orelib`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `OreCruncher`
+        }
+    },
+    fancy-block-particles: {
+        id: {
+            name: ID,
+            value: `fancy-block-particles`
+        },
+        version: {
+            name: Version,
+            value: `FBP-2.4.1`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps. (Defaults set to be less intrusive.)`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `TominoCZ`
+        }
+    },
+    faster-ladder-climbing: {
+        id: {
+            name: ID,
+            value: `faster-ladder-climbing`
+        },
+        version: {
+            name: Version,
+            value: `FasterLadderClimbing-1.12-0.1-146.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Helps you control ladder climb speed and allows you to go a bit faster.`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `MadDachshund`
+        }
+    },
+    foamfix-for-minecraft: {
+        id: {
+            name: ID,
+            value: `foamfix-for-minecraft`
+        },
+        version: {
+            name: Version,
+            value: "`FoamFix 0.10.3 (1.12.2)`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `asiekierka`
+        }
+    },
+    item-scroller: {
+        id: {
+            name: ID,
+            value: `item-scroller`
+        },
+        version: {
+            name: Version,
+            value: `itemscroller-1.12.2-0.12.0.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Alternative to MouseTweaks.`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `masa_`
+        }
+    },
+    itemzoom: {
+        id: {
+            name: ID,
+            value: `itemzoom`
+        },
+        version: {
+            name: Version,
+            value: `itemzoom_1.12.2-1.11.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Check this if you like to get a closer look at item textures.`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `mezz`
+        }
+    },
+    jei: {
+        id: {
+            name: ID,
+            value: `jei`
+        },
+        version: {
+            name: Version,
+            value: `jei_1.12.2-4.15.0.269.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `CLIENT`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `BETA`
+        },
+        curse_author: {
+            name: Author,
+            value: `mezz`
+        }
+    },
+    keyboard-wizard: {
+        id: {
+            name: ID,
+            value: `keyboard-wizard`
+        },
+        version: {
+            name: Version,
+            value: `keywizard-1.12.2-1.5.4.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Visual keybind manager.`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `mrnerdy42`
+        }
+    },
+    light-level-overlay-reloaded: {
+        id: {
+            name: ID,
+            value: `light-level-overlay-reloaded`
+        },
+        version: {
+            name: Version,
+            value: `LLOverlayReloaded-1.1.6-mc1.12.2.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Smol light-level overlay if you aren't using Dynamic Surroundings.`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `oldjunyi`
+        }
+    },
+    mcjtylib: {
+        id: {
+            name: ID,
+            value: `mcjtylib`
+        },
+        version: {
+            name: Version,
+            value: "`McJtyLib - 1.12-3.1.1`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `McJty`
+        }
+    },
+    mekanism: {
+        id: {
+            name: ID,
+            value: `mekanism`
+        },
+        version: {
+            name: Version,
+            value: `Mekanism-1.12.2-9.6.4.356.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `aidancbrady`
+        }
+    },
+    minemenu: {
+        id: {
+            name: ID,
+            value: `minemenu`
+        },
+        version: {
+            name: Version,
+            value: `MineMenu-1.12.2-1.6.9-universal.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu.`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `Girafi`
+        }
+    },
+    mouse-tweaks: {
+        id: {
+            name: ID,
+            value: `mouse-tweaks`
+        },
+        version: {
+            name: Version,
+            value: "`[1.12.2] Mouse Tweaks 2.10`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `YaLTeR97`
+        }
+    },
+    orelib: {
+        id: {
+            name: ID,
+            value: `orelib`
+        },
+        version: {
+            name: Version,
+            value: `OreLib-1.12.2-3.5.2.2.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `OreCruncher`
+        }
+    },
+    rftools: {
+        id: {
+            name: ID,
+            value: `rftools`
+        },
+        version: {
+            name: Version,
+            value: "`RFTools - 1.12-7.61`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        dependencies_required: {
+            name: "Required Dependencies",
+            value: `mcjtylib`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `McJty`
+        }
+    },
+    rpg-hud: {
+        id: {
+            name: ID,
+            value: `rpg-hud`
+        },
+        version: {
+            name: Version,
+            value: "`[1.12] RPG-HUD-3.6.6.2`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `KurodaAkira`
+        }
+    },
+    shadowfacts-forgelin: {
+        id: {
+            name: ID,
+            value: `shadowfacts-forgelin`
+        },
+        version: {
+            name: Version,
+            value: `Forgelin-1.8.2.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `shadowfactsmc`
+        }
+    },
+    tails: {
+        id: {
+            name: ID,
+            value: `tails`
+        },
+        version: {
+            name: Version,
+            value: `Tails-1.12-1.10.0.jar`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: "`KitsuneKihira, TTFTCUTS`"
+        }
+    },
+    unity: {
+        id: {
+            name: ID,
+            value: `unity`
+        },
+        version: {
+            name: Version,
+            value: `Unity-1.6.4`
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        filename: {
+            name: Filename,
+            value: `Unity.zip`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Multi-mod compatible resource pack. Very nice, but does have some broken textures here and there.`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `theCyanideX`
+        }
+    },
+    wearable-backpacks: {
+        id: {
+            name: ID,
+            value: `wearable-backpacks`
+        },
+        version: {
+            name: Version,
+            value: "` Wearable Backpacks - 1.12.2 - 3.1.3`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        optional: {
+            name: Optional,
+            value: `false`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: "`asiekierka, InsomniaKitten, koppeh, PuppetzMedia`"
+        }
+    },
+    xaeros-minimap: {
+        id: {
+            name: ID,
+            value: `xaeros-minimap`
+        },
+        version: {
+            name: Version,
+            value: "`v1.16.2 for Minecraft 1.12.2 | 1.12.1 | 1.12`"
+        },
+        provider: {
+            name: Provider,
+            value: `CURSE`
+        },
+        side: {
+            name: Side,
+            value: `BOTH`
+        },
+        description: {
+            name: Description,
+            value: "`Alternative to MouseTweaks.`"
+        },
+        optional: {
+            name: Optional,
+            value: `true`
+        },
+        curse_release_type: {
+            name: "Release Type",
+            value: `RELEASE`
+        },
+        curse_author: {
+            name: Author,
+            value: `xaero96`
+        }
+    }
+}

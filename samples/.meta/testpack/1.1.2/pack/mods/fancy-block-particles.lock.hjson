@@ -1,0 +1,8 @@
+{
+    provider: CURSE,
+    description: "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps. (Defaults set to be less intrusive.)",
+    optionalData: {
+    },
+    projectID: 254441,
+    fileID: 2632107
+}

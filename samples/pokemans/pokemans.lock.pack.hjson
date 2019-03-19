@@ -1,0 +1,10 @@
+{
+    id: pokemans,
+    mcVersion: 1.10.2,
+    title: "Pokemans Reloaded",
+    authors: [
+        capitalthree,
+        NikkyAi
+    ],
+    forge: 1.10.2-12.18.3.2185
+}

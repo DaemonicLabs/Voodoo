@@ -1,0 +1,22 @@
+{
+    id: packv4,
+    mcVersion: 1.12.2,
+    title: "1.12.2 Pack v4",
+    version: 1.0.0,
+    icon: /home/nikky/dev/Voodoo/samples/icon.png,
+    authors: [
+        therealfarfetchd
+    ],
+    forge: 2810,
+    userFiles: {
+        include: [
+            options.txt,
+            quark.cfg,
+            foamfix.cfg
+        ],
+        exclude: [
+            
+        ]
+    },
+    sourceDir: packv4
+}

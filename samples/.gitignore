@@ -1,0 +1,13 @@
+.gradle/
+.idea/
+*.iml
+build/
+out/
+run/
+kotlinc/
+.voodoo/
+
+# TODO: set up gitignore automatically from voodoo
+workspace/
+_upload/
+

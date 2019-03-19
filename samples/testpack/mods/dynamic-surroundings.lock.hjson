@@ -1,0 +1,13 @@
+{
+    provider: CURSE,
+    description: "Caution: Resource heavy. Quite nice, has a lot of configurable features that add immersive sound/visual effects. Includes light-level overlay. (Defaults set to remove some sounds and generally be better.)",
+    optionalData: {
+    },
+    dependencies: {
+        REQUIRED: [
+            orelib
+        ]
+    },
+    projectID: 238891,
+    fileID: 2664392
+}

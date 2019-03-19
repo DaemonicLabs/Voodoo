@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            mcjtylib
+        ]
+    },
+    projectID: 224641,
+    fileID: 2672513
+}

@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            project-red-base
+        ]
+    },
+    projectID: 229049,
+    fileID: 2572421
+}

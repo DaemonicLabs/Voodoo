@@ -1,0 +1,11 @@
+{
+    provider: CURSE,
+    side: CLIENT,
+    description: "lightweight minimap",
+    optionalData: {
+        selected: true,
+        skRecommendation: starred
+    },
+    projectID: 263420,
+    fileID: 2687044
+}

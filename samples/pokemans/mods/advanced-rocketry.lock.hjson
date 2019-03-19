@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            libvulpes
+        ]
+    },
+    projectID: 236542,
+    fileID: 2583326
+}
