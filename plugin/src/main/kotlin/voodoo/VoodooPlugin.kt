@@ -1,6 +1,5 @@
 package voodoo
 
-import org.apache.tools.ant.util.JavaEnvUtils
 import org.gradle.api.DefaultTask
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
@@ -15,7 +14,6 @@ import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import voodoo.plugin.PluginConstants
 import voodoo.util.SharedFolders
-import java.io.File
 
 open class VoodooPlugin : Plugin<Project> {
     override fun apply(project: Project) {
@@ -102,9 +100,10 @@ open class VoodooPlugin : Plugin<Project> {
 
             val copyLibs = task<AbstractTask>("copyVoodooLibs") {
                 doFirst {
+                    val libraries = voodooConfiguration.resolve()
                     libs.deleteRecursively()
-                    libs.mkdirs()
-                    for (file in voodooConfiguration.resolve()) {
+                    if (libraries.isNotEmpty()) libs.mkdirs()
+                    for (file in libraries) {
                         file.copyTo(libs.resolve(file.name))
                     }
                 }
@@ -150,7 +149,8 @@ open class VoodooPlugin : Plugin<Project> {
                             group = id
 
                             SharedFolders.setSystemProperties(id) { name: String, value: Any ->
-                                systemProperty(name, value) }
+                                systemProperty(name, value)
+                            }
 //                            systemProperty("voodoo.jdkHome", jdkHome.path)
                         }
 
@@ -170,7 +170,8 @@ open class VoodooPlugin : Plugin<Project> {
                                 args = nestedArgs.reduceRight { acc, list -> acc + "-" + list }
 
                                 SharedFolders.setSystemProperties(id) { name: String, value: Any ->
-                                    systemProperty(name, value) }
+                                    systemProperty(name, value)
+                                }
 //                                systemProperty("voodoo.jdkHome", jdkHome.path)
                             }
                         }
