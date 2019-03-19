@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            ivtoolkit
+        ]
+    },
+    projectID: 223150,
+    fileID: 2461396
+}

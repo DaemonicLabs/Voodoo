@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            crafttweaker
+        ]
+    },
+    projectID: 253211,
+    fileID: 2425740
+}

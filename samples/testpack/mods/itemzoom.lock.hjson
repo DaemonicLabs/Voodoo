@@ -1,0 +1,8 @@
+{
+    provider: CURSE,
+    description: "Check this if you like to get a closer look at item textures.",
+    optionalData: {
+    },
+    projectID: 261725,
+    fileID: 2643616
+}

@@ -1,0 +1,9 @@
+{
+    id: testpack,
+    mcVersion: 1.12.2,
+    version: 1.1.2,
+    authors: [
+        NikkyAi
+    ],
+    forge: 1.12.2-14.23.5.2768
+}

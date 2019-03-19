@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            buildcraft
+        ]
+    },
+    projectID: 302569,
+    fileID: 2615327
+}

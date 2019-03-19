@@ -1,0 +1,11 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            project-red-base,
+            mrtjpcore
+        ]
+    },
+    projectID: 229050,
+    fileID: 2572420
+}

@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            orelib
+        ]
+    },
+    projectID: 238891,
+    fileID: 2664392
+}

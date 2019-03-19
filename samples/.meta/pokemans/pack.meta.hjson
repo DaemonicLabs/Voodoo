@@ -1,0 +1,30 @@
+{
+    id: {
+        name: ID,
+        value: `pokemans`
+    },
+    title: {
+        name: Title,
+        value: "`Pokemans Reloaded`"
+    },
+    packVersion: {
+        name: "Pack Version",
+        value: `1.0`
+    },
+    mcVersion: {
+        name: "MC Version",
+        value: `1.10.2`
+    },
+    forgeVersion: {
+        name: "Forge Version",
+        value: `12.18.3.2185`
+    },
+    authors: {
+        name: Author,
+        value: "`capitalthree, NikkyAi`"
+    },
+    icon: {
+        name: Icon,
+        value: "<img src=\"icon.png\" alt=\"icon\" style=\"max-height: 128px;\"/>"
+    }
+}

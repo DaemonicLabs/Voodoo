@@ -1,0 +1,11 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            codechicken-lib-1-8,
+            forge-multipart-cbe
+        ]
+    },
+    projectID: 260824,
+    fileID: 2622045
+}

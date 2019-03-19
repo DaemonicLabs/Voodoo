@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            chisels-bits
+        ]
+    },
+    projectID: 240959,
+    fileID: 2630079
+}

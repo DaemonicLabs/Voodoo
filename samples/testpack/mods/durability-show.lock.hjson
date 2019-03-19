@@ -1,0 +1,8 @@
+{
+    provider: CURSE,
+    description: "Toggle-able item/tool/armor durability HUD. Duplicates with RPG-HUD.",
+    optionalData: {
+    },
+    projectID: 226099,
+    fileID: 2432683
+}

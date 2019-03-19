@@ -1,0 +1,13 @@
+{
+    provider: CURSE,
+    description: "Improves the fauna in the world. Very heavy, but very pretty. (Sane defaults set.)",
+    optionalData: {
+    },
+    dependencies: {
+        REQUIRED: [
+            shadowfacts-forgelin
+        ]
+    },
+    projectID: 228529,
+    fileID: 2631951
+}

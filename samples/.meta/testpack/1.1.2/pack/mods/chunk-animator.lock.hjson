@@ -1,0 +1,8 @@
+{
+    provider: CURSE,
+    description: "Configurable chunk pop-in animator.",
+    optionalData: {
+    },
+    projectID: 236484,
+    fileID: 2432424
+}

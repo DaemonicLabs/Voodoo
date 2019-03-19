@@ -1,0 +1,6 @@
+{
+    provider: JENKINS,
+    jenkinsUrl: "https://ci.elytradev.com",
+    job: elytra/FruitPhone/1.10.2,
+    buildNumber: 11
+}
