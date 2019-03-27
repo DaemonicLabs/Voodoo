@@ -100,24 +100,15 @@ object GradleSetup : KLogging() {
     ) = runBlocking {
         val tempDir = createTempDir("gradle")
         val gradleZip = tempDir.resolve("gradle.zip")
-        gradleZip.download("https://downloads.gradle.org/distributions/gradle-${VoodooConstants.GRADLE_VERSION}-bin.zip", directories.cacheHome)
+        gradleZip.download("https://downloads.gradle.org/distributions/gradle-$version-bin.zip", directories.cacheHome)
         UnzipUtility.unzip(gradleZip, tempDir)
-        val gradleFolder = tempDir.resolve("gradle-${VoodooConstants.GRADLE_VERSION}")
-        val gradleExe = gradleFolder.resolve("bin").resolve(if(Platform.isWindows) "gradle.bat" else "gradle").absolutePath
+        val gradleFolder = tempDir.resolve("gradle-$version")
+        val gradleExe =
+            gradleFolder.resolve("bin").resolve(if (Platform.isWindows) "gradle.bat" else "gradle").absolutePath
 
-        // TODO: install https://downloads.gradle.org/distributions/gradle-5.3-bin.zip
-//        if (!ShellUtil.isInPath("gradle")) {
-//            logger.error("skipping gradle wrapper installation")
-//            logger.error("please install 'gradle'")
-//            return
-//        }
-//        val gradleExe = when {
-//            Platform.isWindows -> "gradle.exe"
-//            else -> "gradle"
-//        }
         ShellUtil.runProcess(gradleExe, "wrapper",
             "--gradle-version", version,
-            // "--distribution-type", distributionType,
+            "--distribution-type", distributionType,
             wd = projectDir,
             stdoutConsumer = Consumer { t -> println(t) },
             stderrConsumer = Consumer { t -> println("err: $t") }
@@ -127,7 +118,7 @@ object GradleSetup : KLogging() {
     fun launchIdea(projectDir: File) {
         if (!ShellUtil.isInPath("idea")) {
             logger.error("skipping idea execution")
-            logger.error("please open 'projectDir' in intellij idea")
+            logger.error("please open '$projectDir' in intellij idea")
             return
         }
 //        ShellUtil.requireInPath(
