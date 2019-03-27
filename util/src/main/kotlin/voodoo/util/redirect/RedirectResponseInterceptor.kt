@@ -68,5 +68,6 @@ fun fixedRedirectResponseInterceptor(manager: FuelManager) =
 val String.encoded: String
     get() = this
         .replace(" ", "%20")
+        .replace("'", "%27")
         .replace("[", "%5b")
         .replace("]", "%5d")

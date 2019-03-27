@@ -1,13 +1,18 @@
 package voodoo
 
+import kotlinx.coroutines.runBlocking
 import mu.KLogging
+import voodoo.util.Directories
 import voodoo.util.Platform
 import voodoo.util.ShellUtil
+import voodoo.util.UnzipUtility
+import voodoo.util.download
 import voodoo.voodoo.VoodooConstants
 import java.io.File
 import java.util.function.Consumer
 
 object GradleSetup : KLogging() {
+    val directories = Directories.get(moduleName = "gradle")
     @JvmStatic
     fun main(vararg args: String) {
         val folder = ProjectSelector.select()
@@ -92,16 +97,24 @@ object GradleSetup : KLogging() {
         projectDir: File,
         version: String = VoodooConstants.GRADLE_VERSION,
         distributionType: String = "bin"
-    ) {
-        if (!ShellUtil.isInPath("gradle")) {
-            logger.error("skipping gradle wrapper installation")
-            logger.error("please install 'gradle'")
-            return
-        }
-        val gradleExe = when {
-            Platform.isWindows -> "gradle.exe"
-            else -> "gradle"
-        }
+    ) = runBlocking {
+        val tempDir = createTempDir("gradle")
+        val gradleZip = tempDir.resolve("gradle.zip")
+        gradleZip.download("https://downloads.gradle.org/distributions/gradle-${VoodooConstants.GRADLE_VERSION}-bin.zip", directories.cacheHome)
+        UnzipUtility.unzip(gradleZip, tempDir)
+        val gradleFolder = tempDir.resolve("gradle-${VoodooConstants.GRADLE_VERSION}")
+        val gradleExe = gradleFolder.resolve("bin").resolve(if(Platform.isWindows) "gradle.bat" else "gradle").absolutePath
+
+        // TODO: install https://downloads.gradle.org/distributions/gradle-5.3-bin.zip
+//        if (!ShellUtil.isInPath("gradle")) {
+//            logger.error("skipping gradle wrapper installation")
+//            logger.error("please install 'gradle'")
+//            return
+//        }
+//        val gradleExe = when {
+//            Platform.isWindows -> "gradle.exe"
+//            else -> "gradle"
+//        }
         ShellUtil.runProcess(gradleExe, "wrapper",
             "--gradle-version", version,
             // "--distribution-type", distributionType,
@@ -112,10 +125,15 @@ object GradleSetup : KLogging() {
     }
 
     fun launchIdea(projectDir: File) {
-        ShellUtil.requireInPath(
-            "idea",
-            "Could not find 'idea' in your PATH. It can be created in IntelliJ under `Tools -> Create Command-line Launcher`"
-        )
+        if (!ShellUtil.isInPath("idea")) {
+            logger.error("skipping idea execution")
+            logger.error("please open 'projectDir' in intellij idea")
+            return
+        }
+//        ShellUtil.requireInPath(
+//            "idea",
+//            "Could not find 'idea' in your PATH. It can be created in IntelliJ under `Tools -> Create Command-line Launcher`"
+//        )
 
         ShellUtil.runProcess("idea", projectDir.absolutePath, wd = projectDir)
     }
