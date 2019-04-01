@@ -9,6 +9,8 @@ import voodoo.util.UnzipUtility
 import voodoo.util.download
 import voodoo.voodoo.VoodooConstants
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.attribute.PosixFilePermission
 import java.util.function.Consumer
 
 object GradleSetup : KLogging() {
@@ -104,9 +106,12 @@ object GradleSetup : KLogging() {
         UnzipUtility.unzip(gradleZip, tempDir)
         val gradleFolder = tempDir.resolve("gradle-$version")
         val gradleExe =
-            gradleFolder.resolve("bin").resolve(if (Platform.isWindows) "gradle.bat" else "gradle").absolutePath
+            gradleFolder.resolve("bin").resolve(if (Platform.isWindows) "gradle.bat" else "gradle")
 
-        ShellUtil.runProcess(gradleExe, "wrapper",
+        if(Platform.isLinux || Platform.isLinux) {
+            Files.setPosixFilePermissions(gradleExe.toPath(), setOf(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE))
+        }
+       ShellUtil.runProcess(gradleExe.absolutePath, "wrapper",
             "--gradle-version", version,
             "--distribution-type", distributionType,
             wd = projectDir,
