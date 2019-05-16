@@ -21,7 +21,6 @@ import voodoo.script.TomeScript
 import voodoo.tome.TomeEnv
 import voodoo.util.Directories
 import voodoo.util.SharedFolders
-import voodoo.util.asFile
 import voodoo.voodoo.VoodooConstants
 import java.io.File
 import java.io.FileNotFoundException

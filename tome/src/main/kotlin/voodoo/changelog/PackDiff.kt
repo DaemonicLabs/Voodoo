@@ -32,6 +32,8 @@ data class PackDiff(
         val newPackMetaInfo = writePackMetaInformation(newMeta, newPack)
         val oldPackMetaInfo = readPackMetaInformation(oldMeta)
 
+        logger.debug("reading newMeta: $newMeta, $newPack")
+        logger.debug("reading oldMeta: $oldMeta")
         val newEntryMetaInfo = writeEntryMetaInformation(newMeta, newPack)
         val oldEntryMetaInfo = readEntryMetaInformation(oldMeta)
 

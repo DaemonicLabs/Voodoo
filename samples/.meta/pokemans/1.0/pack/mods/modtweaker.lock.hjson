@@ -2,10 +2,9 @@
     provider: CURSE,
     dependencies: {
         REQUIRED: [
-            crafttweaker,
             mtlib
         ]
     },
     projectID: 220954,
-    fileID: 2442427
+    fileID: 2693544
 }

@@ -13,11 +13,11 @@
     },
     mcVersion: {
         name: "MC Version",
-        value: `1.10.2`
+        value: `1.12.2`
     },
     forgeVersion: {
         name: "Forge Version",
-        value: `12.18.3.2185`
+        value: `14.23.5.2768`
     },
     authors: {
         name: Author,
