@@ -1,5 +1,10 @@
 {
     provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            shadowfacts-forgelin
+        ]
+    },
     projectID: 245041,
-    fileID: 2307565
+    fileID: 2698689
 }

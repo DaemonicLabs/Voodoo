@@ -5,8 +5,8 @@ Property | Value
 ID | `pokemans`
 Title | `Pokemans Reloaded`
 Pack Version | `1.0`
-MC Version | `1.10.2`
-Forge Version | `12.18.3.2185`
+MC Version | `1.12.2`
+Forge Version | `14.23.5.2768`
 Author | `capitalthree, NikkyAi`
 Icon | <img src="icon.png" alt="icon" style="max-height: 128px;"/>
 
@@ -19,7 +19,7 @@ added `abyssalcraft`
 Property | old value | new value
 ---|---|---
 ID |  | `abyssalcraft`
-Version |  | `AbyssalCraft-1.10.2-1.9.4.11-FINAL.jar`
+Version |  | `AbyssalCraft-1.12.2-1.9.7.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -33,7 +33,7 @@ added `advanced-rocketry`
 Property | old value | new value
 ---|---|---
 ID |  | `advanced-rocketry`
-Version |  | `AdvancedRocketry 1.10.2-1.4.0-14-UNSTABLE build -14 for 1.10.2`
+Version |  | `AdvancedRocketry 1.12.2-1.5.0-139-UNSTABLE build -139 for 1.12.2`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -48,7 +48,7 @@ added `apricorn-tree-farm`
 Property | old value | new value
 ---|---|---
 ID |  | `apricorn-tree-farm`
-Version |  | `Apricorn Tree Farm-1.0.0-1.10.2`
+Version |  | `apritree-1.12.2-2.0.5.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -62,7 +62,7 @@ added `armorplus`
 Property | old value | new value
 ---|---|---
 ID |  | `armorplus`
-Version |  | `armorplus-1.10.2-8.7.1.2.jar`
+Version |  | `armorplus-1.12.2-11.22.0.58.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -77,7 +77,7 @@ added `autoreglib`
 Property | old value | new value
 ---|---|---
 ID |  | `autoreglib`
-Version |  | `AutoRegLib-1.0-2.jar`
+Version |  | `AutoRegLib-1.3-28.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -91,11 +91,11 @@ added `betterfps`
 Property | old value | new value
 ---|---|---
 ID |  | `betterfps`
-Version |  | `v1.4.5-1.10`
+Version |  | `v1.4.8`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `BETA`
 Author |  | `Guichaguri`
 
 
@@ -105,7 +105,7 @@ added `chisels-bits`
 Property | old value | new value
 ---|---|---
 ID |  | `chisels-bits`
-Version |  | `chiselsandbits-12.18.jar`
+Version |  | `chiselsandbits-14.32.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -119,7 +119,7 @@ added `crafttweaker`
 Property | old value | new value
 ---|---|---
 ID |  | `crafttweaker`
-Version |  | `CraftTweaker-1.10.2-3.0.26`
+Version |  | `CraftTweaker2-1.12-4.1.17`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -133,7 +133,7 @@ added `custom-npcs`
 Property | old value | new value
 ---|---|---
 ID |  | `custom-npcs`
-Version |  | `CustomNPCs_1.10.2(21jul17).jar`
+Version |  | `CustomNPCs_1.12.2(30Jan19).jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -147,7 +147,7 @@ added `cyclops-core`
 Property | old value | new value
 ---|---|---
 ID |  | `cyclops-core`
-Version |  | `CyclopsCore-1.9.4-0.10.10.jar`
+Version |  | `CyclopsCore-1.12.2-1.2.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -189,7 +189,7 @@ added `ender-io`
 Property | old value | new value
 ---|---|---
 ID |  | `ender-io`
-Version |  | `EnderIO - 1.10.2-3.1.193`
+Version |  | `Ender IO - 5.0.44`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -204,11 +204,11 @@ added `endercore`
 Property | old value | new value
 ---|---|---
 ID |  | `endercore`
-Version |  | `EnderCore - 1.10.2-0.4.1.66-beta`
+Version |  | `EnderCore - 1.12.2-0.5.57`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `BETA`
+Release Type |  | `RELEASE`
 Author |  | `CrazyPants_MC, Henry_Loenwind, tterrag1098`
 
 
@@ -218,7 +218,7 @@ added `extra-bit-manipulation`
 Property | old value | new value
 ---|---|---
 ID |  | `extra-bit-manipulation`
-Version |  | `ExtraBitManipulation-1.10.2-2.6.2.jar`
+Version |  | `ExtraBitManipulation-1.12.2-3.4.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -233,7 +233,7 @@ added `farseek`
 Property | old value | new value
 ---|---|---
 ID |  | `farseek`
-Version |  | `Farseek-1.9.4-2.2.jar`
+Version |  | `Farseek-1.12-2.3.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -247,7 +247,7 @@ added `foamfix-for-minecraft`
 Property | old value | new value
 ---|---|---
 ID |  | `foamfix-for-minecraft`
-Version |  | `FoamFix 0.7.5 (1.10/1.11)`
+Version |  | `FoamFix 0.10.5 (1.12.2)`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -275,7 +275,7 @@ added `immersive-engineering`
 Property | old value | new value
 ---|---|---
 ID |  | `immersive-engineering`
-Version |  | `Immersive Engineering 0.10 - 61`
+Version |  | `Immersive Engineering 0.12 - 89`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -289,11 +289,11 @@ added `industrial-craft`
 Property | old value | new value
 ---|---|---
 ID |  | `industrial-craft`
-Version |  | `industrialcraft-2-2.6.252-ex110.jar`
+Version |  | `industrialcraft-2-2.8.153-ex112.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `BETA`
 Author |  | `Aroma1997, Chocohead, estebes, Player`
 
 
@@ -303,7 +303,7 @@ added `ivtoolkit`
 Property | old value | new value
 ---|---|---
 ID |  | `ivtoolkit`
-Version |  | `IvToolkit-1.3.3-1.10.jar`
+Version |  | `IvToolkit-1.3.3-1.12.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -317,7 +317,7 @@ added `jei`
 Property | old value | new value
 ---|---|---
 ID |  | `jei`
-Version |  | `jei_1.10.2-3.14.8.422.jar`
+Version |  | `jei_1.12.2-4.15.0.279.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -331,7 +331,7 @@ added `libvulpes`
 Property | old value | new value
 ---|---|---
 ID |  | `libvulpes`
-Version |  | `LibVulpes 1.10.2-0.2.8-37-UNSTABLE build -37 for 1.10.2`
+Version |  | `LibVulpes 1.12.2-0.4.0-57-UNSTABLE build -57 for 1.12.2`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -345,10 +345,11 @@ added `lingering-loot`
 Property | old value | new value
 ---|---|---
 ID |  | `lingering-loot`
-Version |  | `LingeringLoot-1.9.4-2.5.jar`
+Version |  | `LingeringLoot-1.12.2-4.4.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
+Required Dependencies |  | `shadowfacts-forgelin`
 Release Type |  | `RELEASE`
 Author |  | `capitalthree`
 
@@ -359,7 +360,7 @@ added `mantle`
 Property | old value | new value
 ---|---|---
 ID |  | `mantle`
-Version |  | `Mantle-1.10.2-1.1.5.jar`
+Version |  | `Mantle-1.12-1.3.3.49.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -373,7 +374,7 @@ added `minecolonies`
 Property | old value | new value
 ---|---|---
 ID |  | `minecolonies`
-Version |  | `minecolonies-universal-1.10.2-0.9.7587.jar`
+Version |  | `minecolonies-1.12.2-0.10.259-RELEASE-universal.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -387,11 +388,11 @@ added `modtweaker`
 Property | old value | new value
 ---|---|---
 ID |  | `modtweaker`
-Version |  | `ModTweaker2-2.0.13`
+Version |  | `modtweaker-4.0.17`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Required Dependencies |  | `crafttweaker`, `mtlib`
+Required Dependencies |  | `mtlib`
 Release Type |  | `RELEASE`
 Author |  | `jaredlll08`
 
@@ -402,7 +403,7 @@ added `mtlib`
 Property | old value | new value
 ---|---|---
 ID |  | `mtlib`
-Version |  | `MTLib-1.0.3`
+Version |  | `MTLib-3.0.6`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -431,7 +432,7 @@ added `omlib`
 Property | old value | new value
 ---|---|---
 ID |  | `omlib`
-Version |  | `omlib-1.10.2-3.0.0-137.jar`
+Version |  | `omlib-1.12.2-3.1.0-232.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -445,12 +446,12 @@ added `openmodularturrets`
 Property | old value | new value
 ---|---|---
 ID |  | `openmodularturrets`
-Version |  | `openmodularturrets-1.10.2-3.0.0-245.jar`
+Version |  | `openmodularturrets-1.12.2-3.1.0-335.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `omlib`
-Release Type |  | `RELEASE`
+Release Type |  | `BETA`
 Author |  | `Keridos`
 
 
@@ -460,7 +461,7 @@ added `pams-harvestcraft`
 Property | old value | new value
 ---|---|---
 ID |  | `pams-harvestcraft`
-Version |  | `Pam's HarvestCraft 1.10.2j.jar`
+Version |  | `Pam's HarvestCraft 1.12.2zc The 7mm Kidney Stone Update.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -488,7 +489,7 @@ added `quark`
 Property | old value | new value
 ---|---|---
 ID |  | `quark`
-Version |  | `Quark-r1.1-70.jar`
+Version |  | `Quark-r1.5-151.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -503,7 +504,7 @@ added `railcraft`
 Property | old value | new value
 ---|---|---
 ID |  | `railcraft`
-Version |  | `Railcraft 10.4.1 - MC 1.10.2`
+Version |  | `Railcraft 12.0.0 - MC 1.12.2`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -517,7 +518,7 @@ added `recurrent-complex`
 Property | old value | new value
 ---|---|---
 ID |  | `recurrent-complex`
-Version |  | `RecurrentComplex-1.4.5-1.10.jar`
+Version |  | `RecurrentComplex-1.4.8.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -532,7 +533,7 @@ added `repose`
 Property | old value | new value
 ---|---|---
 ID |  | `repose`
-Version |  | `Repose-1.9.4-1.5.jar`
+Version |  | `Repose-1.12-1.6.3.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -547,7 +548,7 @@ added `roguelike-dungeons`
 Property | old value | new value
 ---|---|---
 ID |  | `roguelike-dungeons`
-Version |  | `RoguelikeDungeons-1.10.2-1.5.9.jar`
+Version |  | `RoguelikeDungeons-1.12.2-1.8.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -556,12 +557,26 @@ Author |  | `Greymerk`
 
 
 
+added `shadowfacts-forgelin`
+
+Property | old value | new value
+---|---|---
+ID |  | `shadowfacts-forgelin`
+Version |  | `Forgelin-1.8.2.jar`
+Provider |  | `CURSE`
+Side |  | `BOTH`
+Optional |  | `false`
+Release Type |  | `RELEASE`
+Author |  | `shadowfactsmc`
+
+
+
 added `streams`
 
 Property | old value | new value
 ---|---|---
 ID |  | `streams`
-Version |  | `Streams-1.9.4-0.4.jar`
+Version |  | `Streams-1.12-0.4.7.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -576,7 +591,7 @@ added `structured-crafting`
 Property | old value | new value
 ---|---|---
 ID |  | `structured-crafting`
-Version |  | `StructuredCrafting-1.9.4-0.1.7.jar`
+Version |  | `StructuredCrafting-1.12.2-0.2.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -591,7 +606,7 @@ added `tails`
 Property | old value | new value
 ---|---|---
 ID |  | `tails`
-Version |  | `Tails-1.10.2-1.8.4.jar`
+Version |  | `Tails-1.12-1.10.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -605,7 +620,7 @@ added `thedragonlib`
 Property | old value | new value
 ---|---|---
 ID |  | `thedragonlib`
-Version |  | `thedragonlib-1.10.2-1.0.3.1.jar`
+Version |  | `thedragonlib-1.12.2-5.3.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -619,7 +634,7 @@ added `timberjack`
 Property | old value | new value
 ---|---|---
 ID |  | `timberjack`
-Version |  | `Timberjack 1.10.2-1.6`
+Version |  | `Timberjack 1.12.2-1.6`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -633,7 +648,7 @@ added `tinkers-construct`
 Property | old value | new value
 ---|---|---
 ID |  | `tinkers-construct`
-Version |  | `TConstruct-1.10.2-2.6.5.jar`
+Version |  | `TConstruct-1.12.2-2.12.0.135.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -648,7 +663,7 @@ added `wearable-backpacks`
 Property | old value | new value
 ---|---|---
 ID |  | `wearable-backpacks`
-Version |  | `Wearable Backpacks - 1.10.2 - 1.7.0`
+Version |  | ` Wearable Backpacks - 1.12.2 - 3.1.3`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
@@ -662,7 +677,7 @@ added `xaeros-minimap`
 Property | old value | new value
 ---|---|---
 ID |  | `xaeros-minimap`
-Version |  | `v1.16.2 for Minecraft 1.10.2`
+Version |  | `v1.16.8 for Minecraft 1.12.2 \| 1.12.1 \| 1.12`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `lightweight minimap`

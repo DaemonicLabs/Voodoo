@@ -19,7 +19,10 @@ object Diff : KLogging() {
         changelogBuilder: ChangelogBuilder
     ): PackDiff? {
         val versions = readVersions(rootDir, newPack.id)
-        val lastVersion = versions.lastOrNull().takeIf { it != newPack.version }
+        logger.debug("versions: $versions")
+        // get last version before the current one
+        val lastVersion = versions.lastOrNull().takeIf { it != newPack.version } ?: versions.getOrNull(versions.size-2)
+        logger.debug("lastVersion: $lastVersion")
         if (newPack.version != versions.lastOrNull() && newPack.version in versions) {
             throw IllegalArgumentException("version ${newPack.version} already exists and is not the last version, please do not try to break things")
         }
@@ -150,6 +153,7 @@ object Diff : KLogging() {
 
     fun readVersions(rootDir: File, id: String): List<String> {
         val versionsFile = getMetaDataDefault(rootDir, id).resolve("versions.txt")
+        logger.debug("reading versions: .($versionsFile)")
         return versionsFile.takeIf { it.exists() }?.readLines()?.filter { it.isNotBlank() } ?: listOf()
     }
 
