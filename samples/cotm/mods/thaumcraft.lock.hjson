@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            baubles
+        ]
+    },
+    projectID: 223628,
+    fileID: 2629023
+}

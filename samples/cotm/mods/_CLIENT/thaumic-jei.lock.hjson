@@ -1,0 +1,15 @@
+{
+    provider: CURSE,
+    side: CLIENT,
+    description: "JEI Integration for Thaumcraft.",
+    optionalData: {
+    },
+    dependencies: {
+        REQUIRED: [
+            thaumcraft,
+            jei
+        ]
+    },
+    projectID: 285492,
+    fileID: 2705304
+}

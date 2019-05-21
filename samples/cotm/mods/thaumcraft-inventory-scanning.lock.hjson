@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            thaumcraft
+        ]
+    },
+    projectID: 238003,
+    fileID: 2559089
+}

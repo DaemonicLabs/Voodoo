@@ -1,0 +1,8 @@
+{
+    provider: CURSE,
+    description: "***Admin/diagnostic tool. Leave off unless asked to help test performance issues.",
+    optionalData: {
+    },
+    projectID: 283525,
+    fileID: 2702823
+}

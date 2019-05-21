@@ -1,0 +1,8 @@
+{
+    provider: DIRECT,
+    side: CLIENT,
+    description: "Gorgeous shaderpack, incredibly demanding. Best for screenshots, not gameplay. (requires Optifine)",
+    optionalData: {
+    },
+    url: "https://centerofthemultiverse.net/launcher/mirror/SEUS-Renewed-1.0.0.zip"
+}

@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            zerocore
+        ]
+    },
+    projectID: 250277,
+    fileID: 2705875
+}

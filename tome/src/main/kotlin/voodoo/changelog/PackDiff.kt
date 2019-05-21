@@ -4,7 +4,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.internal.LinkedHashMapSerializer
 import kotlinx.serialization.serializer
 import mu.KLogging
-import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.data.meta.MetaInfo
 import voodoo.forge.ForgeUtil
@@ -66,21 +65,22 @@ data class PackDiff(
         changelogFile.copyTo(docDir.resolve(Filename.changelog), overwrite = true)
     }
 
-    fun writeFullChangelog(meta: File, versions: List<String>, docDir: File) {
-        val changelogs = versions.mapNotNull { version ->
-            meta.resolve(version).resolve(Filename.changelog).takeIf { it.exists() }?.readText()
-        }
-        val fullChangelogFile = meta.resolve(Filename.completeChangelog)
-        fullChangelogFile.writeText(changelogs.joinToString("\n"))
-        fullChangelogFile.copyTo(docDir.resolve(Filename.completeChangelog), overwrite = true)
-    }
-
     companion object : KLogging() {
         private object Filename {
             const val changelog = "changelog.md"
             const val completeChangelog = "complete_changelog.md"
             const val packMeta = "pack.meta.hjson"
             const val entryMeta = "entry.meta.hjson"
+        }
+
+        fun writeFullChangelog(meta: File, versions: List<String>, docDir: File) {
+            // TODO: generate changelogs from scratch every time
+            val changelogs = versions.mapNotNull { version ->
+                meta.resolve(version).resolve(Filename.changelog).takeIf { it.exists() }?.readText()
+            }
+            val fullChangelogFile = meta.resolve(Filename.completeChangelog)
+            fullChangelogFile.writeText(changelogs.joinToString("\n"))
+            fullChangelogFile.copyTo(docDir.resolve(Filename.completeChangelog), overwrite = true)
         }
 
         private val packMetaSerializer: LinkedHashMapSerializer<String, MetaInfo> =
