@@ -6,10 +6,15 @@ import voodoo.changelog.PackDiff
 import voodoo.data.lock.LockPack
 import voodoo.util.Directories
 import voodoo.util.ShellUtil
+import voodoo.util.UnzipUtility
+import voodoo.util.packToZip
 import voodoo.util.unixPath
 import java.io.File
 
 object Diff : KLogging() {
+
+    // TODO: differentiate creating a diff for current version (and zip)
+    //  and between 2 old versions (unzip)
 
     private val directories = Directories.get(moduleName = "diff")
     fun createDiff(
@@ -18,6 +23,7 @@ object Diff : KLogging() {
         newPack: LockPack,
         changelogBuilder: ChangelogBuilder
     ): PackDiff? {
+
         val versions = readVersions(rootDir, newPack.id)
         logger.debug("versions: $versions")
         // get last version before the current one
@@ -31,14 +37,25 @@ object Diff : KLogging() {
         val metaDataPointerFile = getMetaDataPointer(rootDir, newPack.id)
 
         // copy new pack to .meta/packid/version/root
-        val packVersionFolder = newMetaDataLocation.resolve(newPack.version).resolve("pack")
-        packVersionFolder.deleteRecursively()
-        newPack.sourceFolder.copyRecursively(packVersionFolder)
+        val newPackSourceZip = newMetaDataLocation.resolve(newPack.version).resolve("source.zip")
+        newPackSourceZip.parentFile.mkdirs()
+        newPackSourceZip.deleteRecursively()
+        // TODO: zip current pack
+        packToZip(newPack.sourceFolder.toPath(), newPackSourceZip.toPath())
+//        newPack.sourceFolder.copyRecursively(packVersionFolder)
 
-        // TODO: load old version
-        val oldVersionFolder = lastVersion?.let { version -> newMetaDataLocation.resolve(version).resolve("pack") }
+        // load old version
+        // TODO: refactor into fun
+        val oldVersionFolder = lastVersion?.let { version ->
+            val oldVersionFolderZip = newMetaDataLocation.resolve(version).resolve("source.zip")
+            logger.debug("old root zip: $oldVersionFolderZip")
+            File.createTempFile("version_$lastVersion", "").also {
+                UnzipUtility.unzip(oldVersionFolderZip, it)
+            }
+        }
         logger.debug("old root dir: $oldVersionFolder")
 
+        // TODO: unzip
         val oldLockPackFile = oldVersionFolder
 //            ?.resolve(newPack.sourceFolder.relativeTo(newPack.rootDir))
             ?.resolve("${newPack.id}.lock.pack.hjson")
@@ -113,24 +130,25 @@ object Diff : KLogging() {
             docDir = docDir,
             generator = changelogBuilder
         )
-        diff.writeFullChangelog(newMetaDataLocation,  readVersions(rootDir, newPack.id), docDir = docDir)
+        val diffFile = writeDiff(rootDir, oldMetaDataLocation, newMetaDataLocation, docDir)
+        PackDiff.writeFullChangelog(newMetaDataLocation, readVersions(rootDir, newPack.id), docDir = docDir)
 
         return diff
     }
 
-    fun writeDiff(meta: File, oldFolder: File, newFolder: File, docDir: File): File? {
+    fun writeDiff(rootFolder: File, oldFolder: File, newMetaDataLocation: File, docDir: File): File? {
         if (ShellUtil.isInPath("git")) {
-            newFolder.mkdirs()
-            val diffFile = meta.resolve("changes.diff")
+            newMetaDataLocation.mkdirs()
+            val diffFile = newMetaDataLocation.resolve("changes.diff")
             val diffResult = ShellUtil.runProcess(
                 "git",
                 "diff",
                 "--",
-                oldFolder.toRelativeString(meta),
-                newFolder.toRelativeString(meta),
+                oldFolder.toRelativeString(rootFolder),
+                newMetaDataLocation.toRelativeString(rootFolder),
                 ":(exclude)*.lock.hjson",
                 ":(exclude)*.lock.pack.hjson",
-                wd = meta
+                wd = rootFolder
             )
             logger.info("writing '$diffFile'")
             diffResult.stdout.trim().takeIf { it.isNotBlank() }?.let {

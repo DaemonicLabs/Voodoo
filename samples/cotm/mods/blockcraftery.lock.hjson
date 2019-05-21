@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            mysticallib
+        ]
+    },
+    projectID: 278882,
+    fileID: 2681355
+}

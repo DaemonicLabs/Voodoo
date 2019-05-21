@@ -1,0 +1,9 @@
+{
+    provider: CURSE,
+    side: CLIENT,
+    description: "Radial menu that can be used for command/keyboard shortcuts. Some keybinds cannot be added to radial menu.",
+    optionalData: {
+    },
+    projectID: 222378,
+    fileID: 2706118
+}

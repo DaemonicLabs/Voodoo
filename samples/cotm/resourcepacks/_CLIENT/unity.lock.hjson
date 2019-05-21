@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    fileName: Unity.zip,
+    side: CLIENT,
+    description: "Multi-mod compatible resource pack.",
+    optionalData: {
+    },
+    projectID: 222097,
+    fileID: 2576530
+}

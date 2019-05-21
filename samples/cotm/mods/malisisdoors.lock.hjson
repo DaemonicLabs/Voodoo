@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            malisiscore
+        ]
+    },
+    projectID: 223891,
+    fileID: 2526674
+}

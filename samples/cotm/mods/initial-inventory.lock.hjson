@@ -1,0 +1,11 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            crafttweaker,
+            mtlib
+        ]
+    },
+    projectID: 253230,
+    fileID: 2465617
+}

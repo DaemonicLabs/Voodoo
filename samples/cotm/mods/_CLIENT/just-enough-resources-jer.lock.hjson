@@ -1,0 +1,14 @@
+{
+    provider: CURSE,
+    side: CLIENT,
+    description: "JEI Integration that gives drop-rates for mobs, dungeon loot, etc.",
+    optionalData: {
+    },
+    dependencies: {
+        REQUIRED: [
+            jei
+        ]
+    },
+    projectID: 240630,
+    fileID: 2693889
+}

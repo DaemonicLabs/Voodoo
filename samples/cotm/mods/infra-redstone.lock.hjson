@@ -1,0 +1,6 @@
+{
+    provider: JENKINS,
+    jenkinsUrl: "https://ci.elytradev.com",
+    job: elytra/InfraRedstone/1.12.2,
+    buildNumber: 21
+}

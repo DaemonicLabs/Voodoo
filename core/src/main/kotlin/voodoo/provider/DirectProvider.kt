@@ -18,6 +18,7 @@ object DirectProvider : ProviderBase("Direct Provider") {
         mcVersion: String,
         addEntry: SendChannel<Pair<Entry, String>>
     ): LockEntry {
+        entry.id = entry.id.replace("[^\\w-]".toRegex(), "_")
         return entry.lock {
             url = entry.url
         }

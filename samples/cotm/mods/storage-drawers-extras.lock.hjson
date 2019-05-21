@@ -1,0 +1,11 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            storage-drawers,
+            chameleon
+        ]
+    },
+    projectID: 254879,
+    fileID: 2443623
+}

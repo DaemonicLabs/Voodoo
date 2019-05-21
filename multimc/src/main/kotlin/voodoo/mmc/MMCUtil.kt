@@ -107,7 +107,7 @@ object MMCUtil : KLogging() {
             }
             Platform.isLinux -> File(System.getProperty("user.home")).resolve(mmcConfig.path)
             else -> {
-                logger.warn("unsupported platform, on OSX please contact NikkyAi to implement this or OR make a PR")
+                logger.warn("unsupported platform, on OSX please contact NikkyAi to implement this OR make a PR")
                 File(System.getProperty("user.home")).resolve(mmcConfig.path)
             }
         }

@@ -1,0 +1,9 @@
+{
+    provider: CURSE,
+    side: CLIENT,
+    description: "Alternative to MouseTweaks.",
+    optionalData: {
+    },
+    projectID: 242064,
+    fileID: 2581199
+}

@@ -66,7 +66,7 @@ data class LockEntry(
     @Transient
     var id: String
         set(value) {
-            require(!value.contains("[^\\w-]+".toRegex())) { "id: '$value' is not cleaned up properly" }
+            require(!value.contains("[^\\w-]+".toRegex())) { "id: '$value' is not cleaned up properly, must not contain invalid characters" }
             idField = value
         }
         get() = idField

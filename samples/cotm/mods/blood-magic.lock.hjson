@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            guide-api
+        ]
+    },
+    projectID: 224791,
+    fileID: 2667460
+}

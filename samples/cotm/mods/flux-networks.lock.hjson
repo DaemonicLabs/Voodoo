@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            sonar-core
+        ]
+    },
+    projectID: 248020,
+    fileID: 2645165
+}

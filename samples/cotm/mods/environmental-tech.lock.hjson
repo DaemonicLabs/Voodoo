@@ -1,0 +1,10 @@
+{
+    provider: CURSE,
+    dependencies: {
+        REQUIRED: [
+            valkyrielib
+        ]
+    },
+    projectID: 245453,
+    fileID: 2691536
+}

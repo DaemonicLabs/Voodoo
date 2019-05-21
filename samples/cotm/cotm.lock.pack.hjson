@@ -1,0 +1,29 @@
+{
+    id: cotm,
+    mcVersion: 1.12.2,
+    title: "Center of the Multiverse",
+    version: 2.2.13-testing,
+    authors: [
+        AnsuzThuriaz,
+        Falkreon,
+        NikkyAi
+    ],
+    forge: 1.12.2-14.23.5.2811,
+    packOptions: {
+        multimcOptions: {
+            skPackUrl: "https://centerofthemultiverse.net/launcher/cotm.json"
+        },
+        skCraftOptions: {
+            userFiles: {
+                include: [
+                    options.txt,
+                    quark.cfg,
+                    foamfix.cfg
+                ],
+                exclude: [
+                    
+                ]
+            }
+        }
+    }
+}
