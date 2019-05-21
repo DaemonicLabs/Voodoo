@@ -151,6 +151,9 @@ open class VoodooPlugin : Plugin<Project> {
                             SharedFolders.setSystemProperties(id) { name: String, value: Any ->
                                 systemProperty(name, value)
                             }
+                            doFirst {
+                                logger.lifecycle("classpath: $voodooJar")
+                            }
 //                            systemProperty("voodoo.jdkHome", jdkHome.path)
                         }
 

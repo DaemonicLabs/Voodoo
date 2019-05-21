@@ -1,7 +1,7 @@
 import voodoo.LocalVoodooJarTask
 
 plugins {
-    id("voodoo") version "0.4.6-dev"
+    id("voodoo") version "0.4.7-dev"
 }
 
 voodoo {
@@ -31,6 +31,6 @@ repositories {
 }
 
 dependencies {
-    implementation(group = "moe.nikky.voodoo", name = "dsl", version = "0.4.6-dev")
-    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.6-dev")
+    implementation(group = "moe.nikky.voodoo", name = "dsl", version = "0.4.7-dev")
+    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.7-dev")
 }

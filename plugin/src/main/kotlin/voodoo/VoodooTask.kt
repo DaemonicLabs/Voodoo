@@ -15,8 +15,6 @@ open class VoodooTask : JavaExec() {
     init {
         group = "voodoo"
         main = "voodoo.Voodoo"
-
-//        this.setDependsOn(mutableListOf<Task>())
     }
 
     @TaskAction
@@ -27,12 +25,12 @@ open class VoodooTask : JavaExec() {
         val fullArgs = mutableListOf(scriptFile!!)
         logger.lifecycle("adding arguments to $fullArgs")
         logger.lifecycle("adding $args")
-        args.takeIf { it.isNotEmpty() }?.let {
-            fullArgs.addAll(args)
+        args?.takeIf { it.isNotEmpty() }?.let {
+            fullArgs.addAll(it)
             args = fullArgs
         }
-        println("executing: $args")
-        println("workingDir: $workingDir")
+        logger.lifecycle("executing: $args")
+        logger.lifecycle("workingDir: $workingDir")
 
         super.exec()
     }
