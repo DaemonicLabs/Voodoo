@@ -22,13 +22,14 @@ object Diff : KLogging() {
         rootDir: File,
         newPack: LockPack,
         changelogBuilder: ChangelogBuilder
-    ): PackDiff? {
+    ): List<PackDiff> {
 
+        addVersion(rootDir, newPack.id, newPack.version)
         val versions = readVersions(rootDir, newPack.id)
         logger.debug("versions: $versions")
         // get last version before the current one
-        val lastVersion = versions.lastOrNull().takeIf { it != newPack.version } ?: versions.getOrNull(versions.size-2)
-        logger.debug("lastVersion: $lastVersion")
+//        val lastVersion = versions.lastOrNull().takeIf { it != newPack.version } ?: versions.getOrNull(versions.size-2)
+//        logger.debug("lastVersion: $lastVersion")
         if (newPack.version != versions.lastOrNull() && newPack.version in versions) {
             throw IllegalArgumentException("version ${newPack.version} already exists and is not the last version, please do not try to break things")
         }
@@ -36,118 +37,121 @@ object Diff : KLogging() {
         val newMetaDataLocation = getMetaDataDefault(rootDir, newPack.id)
         val metaDataPointerFile = getMetaDataPointer(rootDir, newPack.id)
 
+        val validVersions = versions.filter { version ->
+            val valid = newMetaDataLocation.resolve(version).run {
+                logger.info("checking validity: $this")
+                resolve("entry.meta.hjson").exists() &&
+                        resolve("pack.meta.hjson").exists()
+            }
+
+            logger.info("version $version is valid? $valid")
+            valid
+        }
+        logger.debug("validVersions: $validVersions")
+
         // copy new pack to .meta/packid/version/root
+//        directories.cacheHome.resolve(newPack.id).resolve("source").let {tmpSource ->
+//            newPack.sourceFolder.copyRecursively(tmpSource)
+//            tmpSource.listFiles { file ->
+//                when {
+//                    file.endsWith(".entry.hjson") -> true
+//                    file.endsWith(".entry.lock.hjson") -> true
+//                    else -> false
+//                }
+//            }.forEach {
+//                it.delete()
+//            }
+//        }
         val newPackSourceZip = newMetaDataLocation.resolve(newPack.version).resolve("source.zip")
         newPackSourceZip.parentFile.mkdirs()
         newPackSourceZip.deleteRecursively()
         // TODO: zip current pack
         packToZip(newPack.sourceFolder.toPath(), newPackSourceZip.toPath())
-//        newPack.sourceFolder.copyRecursively(packVersionFolder)
 
-        // load old version
-        // TODO: refactor into fun
-        val oldVersionFolder = lastVersion?.let { version ->
-            val oldVersionFolderZip = newMetaDataLocation.resolve(version).resolve("source.zip")
-            logger.debug("old root zip: $oldVersionFolderZip")
-            File.createTempFile("version_$lastVersion", "").also {
-                UnzipUtility.unzip(oldVersionFolderZip, it)
+        val sourcesRoot = directories.cacheHome.resolve("sources").resolve(newPack.id)
+        val sources = validVersions.associateWith { version ->
+            val sourceZip = newMetaDataLocation.resolve(version).resolve("source.zip")
+            sourcesRoot.resolve(version).also {
+                it.deleteRecursively()
+                it.mkdirs()
+                UnzipUtility.unzip(sourceZip, it)
             }
         }
-        logger.debug("old root dir: $oldVersionFolder")
 
-        // TODO: unzip
-        val oldLockPackFile = oldVersionFolder
-//            ?.resolve(newPack.sourceFolder.relativeTo(newPack.rootDir))
-            ?.resolve("${newPack.id}.lock.pack.hjson")
-//        if (!oldLockPackFile?.exists()) {
-//            logger.error("$oldLockPackFile does not exist")
-////            return null
-//        }
+        val diffPairs = (listOf(null) + validVersions).zipWithNext()
+        val diffs = diffPairs.map { (oldVersion, newVersion) ->
+            logger.info("generating diff $oldVersion -> $newVersion")
+            // load old version
+            val oldSource = sources[oldVersion]
+            logger.debug("old root dir: $oldSource")
 
-        val oldPack = try {
-            logger.info("reading: $oldLockPackFile")
-            if (oldLockPackFile != null && oldVersionFolder != null) {
-                LockPack.parse(oldLockPackFile, oldVersionFolder).also {
-                    logger.info("oldPack: ${it.version}")
-                }
-            } else null
-        } catch (e: Exception) {
-            logger.error("could not parse old pack")
-            e.printStackTrace()
-            null
+            val oldLockPackFile = oldSource
+                ?.resolve("${newPack.id}.lock.pack.hjson")
+
+            val oldPack = try {
+                logger.info("reading: $oldLockPackFile")
+                if (oldLockPackFile != null && oldSource != null) {
+                    LockPack.parse(oldLockPackFile, oldSource).also {
+                        logger.info("oldPack: ${it.version}")
+                    }
+                } else null
+            } catch (e: Exception) {
+                logger.error("could not parse old pack")
+                e.printStackTrace()
+                null
+            }
+
+            val newSource = sources.getValue(newVersion!!)
+
+            // TODO: create a diff object
+            //   diff pack values
+            //   diff entries
+            //   diff files
+            val diff = PackDiff(
+                newPack = newPack,
+                oldPack = oldPack
+            )
+
+            val oldMetaDataLocation = readMetaDataLocation(rootDir, oldPack?.id ?: newPack.id)
+            logger.debug("docDir: $docDir")
+            diff.writeChangelog(
+                newMeta = newMetaDataLocation.resolve(newPack.version),
+                oldMeta = oldVersion?.let { oldMetaDataLocation.resolve(it) },
+                docDir = docDir,
+                generator = changelogBuilder
+            )
+            val diffFile = if (oldSource != null) {
+                writeDiff(sourcesRoot, oldSource, newSource, docDir)
+            } else {
+                val emptySource = sourcesRoot.resolve("_init")
+                emptySource.deleteRecursively()
+                emptySource.mkdirs()
+                writeDiff(sourcesRoot, emptySource, newSource, docDir)
+            }
+            diffFile?.copyTo(newMetaDataLocation.resolve(newPack.version).resolve(diffFile.name), overwrite = true)
+
+
+            diff
         }
-
-        // TODO: create a diff object
-        //   diff pack values
-        //   diff entries
-        //   diff files
-        val diff = PackDiff(
-            newPack = newPack,
-            oldPack = oldPack
-        )
-
-        addVersion(rootDir, newPack.id, newPack.version)
 
         metaDataPointerFile.writeText(newMetaDataLocation.relativeTo(rootDir).unixPath)
-        if (oldVersionFolder != null) {
-//            val packs = versions.associate { version ->
-//                val oldRootDir = newMetaDataLocation.resolve(version).resolve("pack")
-//                val oldLockPackFile = oldRootDir
-////                    .resolve(newPack.sourceFolder.relativeTo(newPack.rootDir))
-//                    .resolve("${newPack.id}.lock.pack.hjson")
-//                version to LockPack.parse(oldLockPackFile, oldRootDir).also {
-//                    logger.info("oldPack: ${it.version}")
-//                }
-//            }
-//            versions.zipWithNext { lastVersion, currentVersion ->
-//                val lastPack = packs[lastVersion]!!
-//                val newPack = packs[currentVersion]!!
-//                // TODO: write changelogs
-//                val diff = PackDiff(
-//                    newPack = newPack,
-//                    oldPack = lastPack
-//                )
-//                diff.writeChangelog(
-//                    newMeta = newMetaDataLocation.resolve(currentVersion),
-//                    oldMeta = oldMetaDataLocation.resolve(lastVersion),
-//                    docDir = docDir,
-//                    generator = changelogBuilder
-//                )
-//            }
-//            writeDiff(
-//                meta = newMetaDataLocation,
-//                newFolder = packVersionFolder,
-//                oldFolder = oldVersionFolder,
-//                docDir = docDir
-//            )
-        }
 
-        val oldMetaDataLocation = readMetaDataLocation(rootDir, oldPack?.id ?: newPack.id)
-        logger.debug("docDir: $docDir")
-        diff.writeChangelog(
-            newMeta = newMetaDataLocation.resolve(newPack.version),
-            oldMeta = lastVersion?.let {oldMetaDataLocation.resolve(it)},
-            docDir = docDir,
-            generator = changelogBuilder
-        )
-        val diffFile = writeDiff(rootDir, oldMetaDataLocation, newMetaDataLocation, docDir)
-        PackDiff.writeFullChangelog(newMetaDataLocation, readVersions(rootDir, newPack.id), docDir = docDir)
+        PackDiff.writeFullChangelog(newMetaDataLocation, validVersions, docDir = docDir)
 
-        return diff
+        return diffs
     }
 
     fun writeDiff(rootFolder: File, oldFolder: File, newMetaDataLocation: File, docDir: File): File? {
-        if (ShellUtil.isInPath("git")) {
+        if (ShellUtil.isInPath("diff")) {
             newMetaDataLocation.mkdirs()
             val diffFile = newMetaDataLocation.resolve("changes.diff")
             val diffResult = ShellUtil.runProcess(
-                "git",
                 "diff",
+                "-x", "*.lock.hjson",
+                "-x", "*.lock.pack.hjson",
                 "--",
                 oldFolder.toRelativeString(rootFolder),
                 newMetaDataLocation.toRelativeString(rootFolder),
-                ":(exclude)*.lock.hjson",
-                ":(exclude)*.lock.pack.hjson",
                 wd = rootFolder
             )
             logger.info("writing '$diffFile'")

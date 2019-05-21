@@ -20,19 +20,19 @@ open class DownloadVoodooTask : DefaultTask() {
     init {
         group = "voodoo"
 
-        outputs.upToDateWhen {
-            //            if(PluginConstants.JENKINS_BUILD_NUMBER < 0)
-//                return@upToDateWhen false
-
-            if (jarFile.exists() && lastFile.exists()) {
-                val lastBuild = lastFile.readText().toIntOrNull() ?: run {
-                    return@upToDateWhen false
-                }
-                lastBuild == PluginConstants.JENKINS_BUILD_NUMBER
-            } else {
-                false
-            }
-        }
+//        outputs.upToDateWhen {
+//            //            if(PluginConstants.JENKINS_BUILD_NUMBER < 0)
+////                return@upToDateWhen false
+//
+//            if (jarFile.exists() && lastFile.exists()) {
+//                val lastBuild = lastFile.readText().toIntOrNull() ?: run {
+//                    return@upToDateWhen false
+//                }
+//                lastBuild == PluginConstants.JENKINS_BUILD_NUMBER
+//            } else {
+//                false
+//            }
+//        }
     }
 
     @TaskAction

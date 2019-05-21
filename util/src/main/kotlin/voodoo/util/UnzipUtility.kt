@@ -45,6 +45,7 @@ object UnzipUtility : KLogging() {
             val filePath = destDir.resolve(entry.name).path
             if (!entry.isDirectory) {
                 // if the entry is a file, extracts it
+                File(filePath).parentFile.mkdirs()
                 extractFile(zipIn, filePath)
             } else {
                 // if the entry is a directory, make the directory
