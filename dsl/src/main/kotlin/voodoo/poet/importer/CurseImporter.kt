@@ -127,7 +127,7 @@ object CurseImporter : AbstractImporter() {
             localDir = local
             root(CurseProvider) {
                 this.validMcVersions = validMcVersions - manifest.minecraft.version
-                releaseTypes = sortedSetOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
+                releaseTypes = sortedSetOf(FileType.Release, FileType.Beta, FileType.Alpha)
                 list {
                     curseEntries.forEach { (identifier, versionStr, curseProjectID) ->
                         +ProjectID(curseProjectID.value) configure {

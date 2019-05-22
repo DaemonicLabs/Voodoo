@@ -115,7 +115,7 @@ object MMCFatPack : AbstractPack() {
                                 modpack.isDependencyOf(
                                     entryId = entry.id,
                                     parentId = it.id,
-                                    dependencyType = DependencyType.REQUIRED
+                                    dependencyType = DependencyType.RequiredDependency
                                 )
                             }
                         } else emptyList()

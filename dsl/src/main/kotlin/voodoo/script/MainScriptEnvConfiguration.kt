@@ -4,7 +4,6 @@ import voodoo.GenerateForge
 import voodoo.GenerateMods
 import voodoo.GenerateTexturePacks
 import voodoo.Include
-import voodoo.data.curse.Section
 import voodoo.poet.Poet
 import voodoo.poet.generator.CurseGenerator
 import voodoo.poet.generator.ForgeGenerator
@@ -100,13 +99,13 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
             val curseGenerators = modGenerators.map { (file, annotations) ->
                 CurseGenerator(
                     name = file,
-                    section = Section.MODS,
+                    section = "Mods",
                     mcVersions = annotations.map { it.mc }.filter { it.isNotBlank() }.distinct()
                 )
             } + texturePackGenerators.map { (file, annotations) ->
                 CurseGenerator(
                     name = file,
-                    section = Section.TEXTURE_PACKS,
+                    section = "Texture Packs",
                     mcVersions = annotations.map { it.mc }.filter { it.isNotBlank() }.distinct()
                 )
             }

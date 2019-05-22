@@ -1,10 +1,10 @@
 {
     provider: CURSE,
     dependencies: {
-        REQUIRED: [
+        RequiredDependency: [
             thedragonlib
         ]
     },
     projectID: 237366,
-    fileID: 2701614
+    fileID: 2714162
 }

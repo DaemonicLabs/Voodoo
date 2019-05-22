@@ -43,7 +43,7 @@ data class NestedEntry(
     var enabled: Boolean = true,
     //  CURSE
     var curseMetaUrl: String = CurseConstants.PROXY_URL,
-    var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
+    var curseReleaseTypes: Set<FileType> = setOf(FileType.Release, FileType.Beta),
     var curseProjectID: ProjectID = ProjectID.INVALID,
     var curseFileID: FileID = FileID.INVALID,
     //  DIRECT

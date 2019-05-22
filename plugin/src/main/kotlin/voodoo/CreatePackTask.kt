@@ -10,7 +10,6 @@ import org.gradle.api.tasks.options.Option
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseConstants
 import voodoo.data.curse.ProjectID
-import voodoo.data.curse.Section
 import voodoo.poet.Poet
 import voodoo.poet.PoetPack
 import voodoo.provider.CurseProvider
@@ -45,7 +44,7 @@ open class CreatePackTask : DefaultTask() {
             throw GradleException("mcVersion needs to be specified with --mcVersion")
 
         val modIdentifiers = runBlocking {
-            Poet.request(section = Section.MODS, gameVersions = listOf(mcVersion))
+            Poet.request(section = "Mods", gameVersions = listOf(mcVersion))
         }.mapKeys { (key, _) ->
             Poet.defaultSlugSanitizer(key)
         }.toList().shuffled().take(10)

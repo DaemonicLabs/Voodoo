@@ -51,7 +51,7 @@ data class Entry(
     @Optional var validMcVersions: Set<String> = setOf(),
     // CURSE
     @Optional var curseMetaUrl: String = PROXY_URL,
-    @Optional var curseReleaseTypes: Set<FileType> = setOf(FileType.RELEASE, FileType.BETA),
+    @Optional var curseReleaseTypes: Set<FileType> = setOf(FileType.Release, FileType.Beta),
     @Optional var curseProjectID: ProjectID = ProjectID.INVALID,
     @Optional var curseFileID: FileID = FileID.INVALID,
     // DIRECT

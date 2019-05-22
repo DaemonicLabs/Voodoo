@@ -85,15 +85,20 @@ abstract class ProviderBase(
             list += Triple("optional", "Optional", "`${entry.optional}`")
             entry.dependencies.takeIf { it.isNotEmpty() }?.let { dependencies ->
 
-                dependencies[DependencyType.REQUIRED]?.takeIf { it.isNotEmpty() }?.let { required ->
+                dependencies[DependencyType.RequiredDependency]?.takeIf { it.isNotEmpty() }?.let { required ->
                     list += Triple("dependencies_required", "Required Dependencies", required.joinToString("`, `", "`", "`"))
                 }
-
-                dependencies[DependencyType.OPTIONAL]?.takeIf { it.isNotEmpty() }?.let { required ->
+                dependencies[DependencyType.OptionalDependency]?.takeIf { it.isNotEmpty() }?.let { required ->
                     list += Triple("dependencies_optional", "Optional Dependencies", required.joinToString("`, `", "`", "`"))
                 }
-                dependencies[DependencyType.EMBEDDED]?.takeIf { it.isNotEmpty() }?.let { required ->
+                dependencies[DependencyType.EmbeddedLibrary]?.takeIf { it.isNotEmpty() }?.let { required ->
                     list += Triple("dependencies_embedded", "Embedded Dependencies", required.joinToString("`, `", "`", "`"))
+                }
+                dependencies[DependencyType.Include]?.takeIf { it.isNotEmpty() }?.let { required ->
+                    list += Triple("dependencies_include", "Include Dependencies", required.joinToString("`, `", "`", "`"))
+                }
+                dependencies[DependencyType.Tool]?.takeIf { it.isNotEmpty() }?.let { required ->
+                    list += Triple("dependencies_tool", "Tool Dependencies", required.joinToString("`, `", "`", "`"))
                 }
             }
         }

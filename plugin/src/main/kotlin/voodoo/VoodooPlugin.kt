@@ -153,6 +153,7 @@ open class VoodooPlugin : Plugin<Project> {
                             }
                             doFirst {
                                 logger.lifecycle("classpath: $voodooJar")
+                                logger.lifecycle("classpath.length(): ${voodooJar.length()}")
                             }
 //                            systemProperty("voodoo.jdkHome", jdkHome.path)
                         }

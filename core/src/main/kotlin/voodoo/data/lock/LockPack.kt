@@ -144,7 +144,7 @@ data class LockPack(
             val entry = findEntryById(entryId)!!
 
             // find all entries that require this one
-            val dependants = getDependants(entry.id, DependencyType.REQUIRED)
+            val dependants = getDependants(entry.id, DependencyType.RequiredDependency)
             val allOptionalDependants = dependants.all { dep ->
                 isEntryOptional(dep.id)
             }

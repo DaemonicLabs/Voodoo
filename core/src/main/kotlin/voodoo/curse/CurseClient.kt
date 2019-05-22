@@ -27,7 +27,6 @@ import voodoo.data.curse.AddonFile
 import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
-import voodoo.data.curse.Section
 import voodoo.data.flat.Entry
 import java.util.HashMap
 import kotlin.coroutines.CoroutineContext
@@ -74,7 +73,7 @@ object CurseClient : KLogging(), CoroutineScope {
 
     suspend fun graphQLRequest(
         gameVersions: List<String>? = null,
-        section: Section? = null
+        section: String? = null
     ): List<SlugIdPair> {
         val url = "https://curse.nikky.moe/graphql"
         val filters = mutableListOf("gameID: 432")
@@ -82,9 +81,9 @@ object CurseClient : KLogging(), CoroutineScope {
             filters += it.joinToString("\", \"", "gameVersions: [\"", "\"]")
         }
         section?.let {
-            filters += "section: ${it.name}"
+            filters += "section: \"$it\""
         }
-        println("post $url $filters")
+        logger.info("post $url $filters")
         val requestBody = GraphQLRequest(
             query = """{
                     |  addons(${filters.joinToString(", ")}) {
@@ -94,6 +93,7 @@ object CurseClient : KLogging(), CoroutineScope {
                     |}""".trimMargin().replace("\n", ""),
             operationName = "GetSlugIDPairs"
         )
+        logger.debug("requestBody: $requestBody")
         val requestSerializer: KSerializer<GraphQLRequest> = GraphQLRequest.serializer()
         val resultSerializer: KSerializer<GraphQlResult> = GraphQlResult.serializer()
         val (request, response, result) = Fuel.post(url)
@@ -121,7 +121,7 @@ object CurseClient : KLogging(), CoroutineScope {
 
     suspend fun graphQlSearch(
         gameVersions: List<String>? = null,
-        section: Section? = null,
+        section: String? = null,
         categoryIds: List<Int>? = null
     ): List<SlugIdPair> {
         val filters = mutableListOf("gameID: 432")
@@ -129,7 +129,7 @@ object CurseClient : KLogging(), CoroutineScope {
             filters += it.joinToString("\", \"", "gameVersions: [\"", "\"]")
         }
         section?.let {
-            filters += "section: ${it.name}"
+            filters += "section: \"$it\""
         }
         categoryIds?.takeIf { it.isNotEmpty() }?.let {
             filters += it.joinToString(", ", "categoryIds: [", "]")
@@ -233,11 +233,15 @@ object CurseClient : KLogging(), CoroutineScope {
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
-                logger.error("getAllFilesForAddonCall")
-                logger.error("url: $url")
-                logger.error("cUrl: ${request.cUrlString()}")
-                logger.error("response: $response")
-                logger.error(result.error.exception) { result.error }
+                logger.error(result.error.exception) {
+                    """getAllFilesForAddonCall
+                    |url: $url")
+                    |cUrl: ${request.cUrlString()}
+                    |response: $response
+                """.trimMargin()
+                }
+
+//                logger.error(result.error.exception) { result.error }
                 throw result.error.exception
                 emptyList()
             }

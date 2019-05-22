@@ -23,24 +23,19 @@ data class Addon(
     val primaryAuthorName: String?,
     val externalUrl: String?,
     val status: ProjectStatus,
-    val stage: ProjectStage,
     val donationUrl: String?,
     val primaryCategoryName: String?,
     val primaryCategoryAvatarUrl: String?,
     val likes: Int,
     val categorySection: CategorySection,
-    val packageType: PackageType,
     val avatarUrl: String? = "",
     val slug: String,
-    val clientUrl: String,
     val gameVersionLatestFiles: List<GameVersionLatestFile>,
-//        val featured: Int,
     val popularityScore: Float,
     val gamePopularityRank: Int,
-    val fullDescription: String,
     val gameName: String,
     val portalName: String,
-    val sectionName: String, // Section,
+//    val sectionName: String, // Section,
     @Serializable(with = DateSerializer::class)
     val dateModified: Date,
     @Serializable(with = DateSerializer::class)
@@ -49,5 +44,6 @@ data class Addon(
     val dateReleased: Date,
     val available: Boolean,
     val categoryList: String,
-    val primaryLanguage: String
+    val primaryLanguage: String,
+    val featured: Boolean = false
 )
