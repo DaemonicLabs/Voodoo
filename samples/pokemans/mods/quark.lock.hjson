@@ -1,10 +1,10 @@
 {
     provider: CURSE,
     dependencies: {
-        REQUIRED: [
+        RequiredDependency: [
             autoreglib
         ]
     },
     projectID: 243121,
-    fileID: 2711356
+    fileID: 2711580
 }

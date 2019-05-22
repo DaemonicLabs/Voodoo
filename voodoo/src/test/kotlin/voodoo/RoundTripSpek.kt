@@ -39,7 +39,7 @@ object RoundTripSpek : Spek({
                 // TODO: type = {recommended, latest} | buildnumber, make sealed class ?
                 forge = Forge.recommended
                 root(CurseProvider) {
-                    releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
+                    releaseTypes = setOf(FileType.Release, FileType.Beta)
 
                     // TODO: use type URL ?
                     metaUrl = "https://curse.nikky.moe"

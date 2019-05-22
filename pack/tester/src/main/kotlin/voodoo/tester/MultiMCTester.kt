@@ -148,7 +148,7 @@ object MultiMCTester : AbstractTester() {
                                 modpack.isDependencyOf(
                                     entryId = entry.id,
                                     parentId = it.id,
-                                    dependencyType = DependencyType.REQUIRED
+                                    dependencyType = DependencyType.RequiredDependency
                                 )
                             }
                             logger.debug("${entry.id} is a dependency of ${matchedOptioalsList.map { it.id }}")

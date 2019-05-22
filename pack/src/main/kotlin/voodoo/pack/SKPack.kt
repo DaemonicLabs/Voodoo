@@ -140,13 +140,13 @@ object SKPack : AbstractPack() {
                         logger.info("processing feature entry $id")
                         val featureEntry = modpack.findEntryById(id)!!
                         val dependencies = getDependencies(modpack, id)
-                        logger.info("required dependencies of $id: ${featureEntry.dependencies[DependencyType.REQUIRED]}")
-                        logger.info("optional dependencies of $id: ${featureEntry.dependencies[DependencyType.OPTIONAL]}")
+                        logger.info("required dependencies of $id: ${featureEntry.dependencies[DependencyType.RequiredDependency]}")
+                        logger.info("optional dependencies of $id: ${featureEntry.dependencies[DependencyType.OptionalDependency]}")
                         feature.entries += dependencies.asSequence().filter { entry ->
                             logger.debug("  testing ${entry.id}")
                             // find all other entries that depend on this dependency
                             val dependants = modpack.entrySet.filter { otherEntry ->
-                                otherEntry.dependencies[DependencyType.REQUIRED]?.any {
+                                otherEntry.dependencies[DependencyType.RequiredDependency]?.any {
                                     it == entry.id
                                 } ?: false
                             }
@@ -360,7 +360,9 @@ object SKPack : AbstractPack() {
         val entry = lockPack.findEntryById(entryId) ?: return emptyList()
         val result = mutableListOf(entry)
         for ((depType, entryList) in entry.dependencies) {
-            if (depType == DependencyType.EMBEDDED) continue
+            if (depType == DependencyType.EmbeddedLibrary) continue
+            if (depType == DependencyType.Include) continue
+            if (depType == DependencyType.Tool) continue
             logger.debug("getting sub dependencies of type $depType, list: $entryList")
             for (depName in entryList) {
                 result += getDependencies(lockPack, depName)

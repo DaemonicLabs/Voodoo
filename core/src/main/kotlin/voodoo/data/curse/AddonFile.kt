@@ -8,7 +8,7 @@ import java.util.Date
 data class AddonFile(
     val id: FileID,
     val fileName: String,
-    val fileNameOnDisk: String,
+//    val fileNameOnDisk: String,
     @Serializable(with = DateSerializer::class)
     val fileDate: Date,
     var releaseType: FileType,

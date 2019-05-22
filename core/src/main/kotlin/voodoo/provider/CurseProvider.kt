@@ -131,7 +131,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
         logger.trace(entry.toString())
 
         for ((depAddonId, depType) in dependencies) {
-            if (depType == DependencyType.REQUIRED) {
+            if (depType == DependencyType.RequiredDependency) {
                 logger.info("resolve Dep $depAddonId")
                 val depAddon = try {
                     getAddon(depAddonId, entry.curseMetaUrl, fail = true)
@@ -201,7 +201,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
             logger.error("cannot download ${entry.id} ${entry.projectID}:${entry.fileID}")
             exitProcess(3)
         }
-        val targetFile = targetFolder.resolve(entry.fileName ?: addonFile.fileNameOnDisk)
+        val targetFile = targetFolder.resolve(entry.fileName ?: addonFile.fileName)
         targetFile.download(
             addonFile.downloadURL,
             cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),

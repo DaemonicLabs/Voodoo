@@ -33,7 +33,7 @@ class EntryBuilder<T>(
         fileNameRegex = r
     }
 
-    fun dependencies(vararg dependencies: String, type: DependencyType = DependencyType.REQUIRED)  {
+    fun dependencies(vararg dependencies: String, type: DependencyType = DependencyType.RequiredDependency)  {
         entry.dependencies[type] = ((entry.dependencies[type]?.toSet() ?: setOf()) + dependencies).toList()
     }
 }

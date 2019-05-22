@@ -1,20 +1,16 @@
 package voodoo.poet
 
-import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.FunSpec
 import com.squareup.kotlinpoet.KModifier
 import com.squareup.kotlinpoet.PropertySpec
 import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asClassName
 import com.squareup.kotlinpoet.asTypeName
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
-import voodoo.data.curse.Section
 import voodoo.forge.ForgeUtil
-import voodoo.forge.FullVersion
 import voodoo.poet.generator.CurseGenerator
 import voodoo.poet.generator.ForgeGenerator
 import java.io.File
@@ -25,7 +21,7 @@ object Poet : KLogging() {
     fun main(vararg args: String) {
         generateAll(
             generatedSrcDir = File(args[0]),
-            curseGenerators = listOf(CurseGenerator("Mod", Section.MODS)),
+            curseGenerators = listOf(CurseGenerator("Mod", "Mods")),
             forgeGenerators = listOf(ForgeGenerator("Forge"))
         )
     }
@@ -182,7 +178,7 @@ object Poet : KLogging() {
         return targetFile
     }
 
-    suspend fun request(section: Section, gameVersions: List<String>? = null): Map<String, ProjectID> =
+    suspend fun request(section: String, gameVersions: List<String>? = null): Map<String, ProjectID> =
         CurseClient.graphQLRequest(
             section = section,
             gameVersions = gameVersions

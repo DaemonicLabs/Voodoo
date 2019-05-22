@@ -24,7 +24,7 @@ pack {
 }
 
 root(CurseProvider) {
-    releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
+    releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
     validMcVersions = setOf("1.12.2", "1.12.1", "1.12")
 //            metaUrl = "https://curse.nikky.moe/api"
     list {

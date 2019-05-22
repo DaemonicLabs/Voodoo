@@ -12,12 +12,12 @@ icon = rootDir.resolve("icon.png")
 authors = listOf("capitalthree", "NikkyAi")
 forge = Forge_12_2.mc1_12_2_recommended
 root(CurseProvider) {
-    releaseTypes = setOf(FileType.RELEASE, FileType.BETA)
+    releaseTypes = setOf(FileType.Release, FileType.Beta)
     list {
         //TODO: group mods by category (eg. tweakers)
         +Mod.abyssalcraft
         +Mod.advancedRocketry configure {
-            releaseTypes = setOf(FileType.RELEASE, FileType.BETA, FileType.ALPHA)
+            releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
         }
         +Mod.apricornTreeFarm
         +Mod.armorplus
