@@ -4,10 +4,10 @@ enum class FileType {
     Release,
     Beta,
     Alpha,
-    @Deprecated("use Release instead", ReplaceWith("Release"))
+    @Deprecated("use Release instead", ReplaceWith("Release"), DeprecationLevel.ERROR)
     RELEASE,
-    @Deprecated("use Beta instead", ReplaceWith("Beta"))
+    @Deprecated("use Beta instead", ReplaceWith("Beta"), DeprecationLevel.ERROR)
     BETA,
-    @Deprecated("use Alpha instead", ReplaceWith("Alpha"))
+    @Deprecated("use Alpha instead", ReplaceWith("Alpha"), DeprecationLevel.ERROR)
     ALPHA;
 }
