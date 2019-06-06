@@ -46,11 +46,17 @@ object CurseImporter : AbstractImporter() {
         val tmpName = modpackId.blankOr ?: UUID.randomUUID().toString()
 
         val cacheHome = directories.cacheHome.resolve("IMPORT")
-        val zipFile = cacheHome.resolve("$tmpName.zip")
-        zipFile.deleteRecursively()
-        val url = URL(sourceUrl)
-        zipFile.download(sourceUrl, directories.cacheHome.resolve("DIRECT").resolve(url.host + url.path.substringBeforeLast('/')))
 
+        val zipFile = File(sourceUrl).takeIf { it.exists() } ?: run {
+            val zipFile = cacheHome.resolve("$tmpName.zip")
+            zipFile.deleteRecursively()
+            val url = URL(sourceUrl)
+            zipFile.download(
+                sourceUrl,
+                directories.cacheHome.resolve("DIRECT").resolve(url.host + url.path.substringBeforeLast('/'))
+            )
+            zipFile
+        }
         val extractFolder = cacheHome.resolve(tmpName)
         unzip(zipFile, extractFolder)
 
