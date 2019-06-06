@@ -5,6 +5,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import voodoo.curse.CurseClient
+import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
 import voodoo.dsl.VoodooDSL
@@ -33,7 +34,9 @@ class CurseListBuilder<T>(
             deferredIdToSlugMap.await()
         }
         val stringId = idToSlugMap[this.value] ?: run {
-            throw NullPointerException("no id: '${this.value}' found in idToSlugMap")
+            runBlocking {
+                CurseClient.getAddon(this@run, PROXY_URL)?.slug
+            } ?: throw NullPointerException("no id: '${this.value}' found in idToSlugMap")
         }
         val entry = NestedEntry(id = stringId, curseProjectID = this)
         val entryBuilder = EntryBuilder(provider = provider, entry = entry)
