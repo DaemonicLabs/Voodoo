@@ -120,7 +120,7 @@ object MMCUtil : KLogging() {
             val proc = ProcessBuilder(*parts.toTypedArray())
                 .directory(workingDir)
                 .redirectOutput(ProcessBuilder.Redirect.PIPE)
-                .redirectError(ProcessBuilder.Redirect.PIPE)
+                .redirectError(ProcessBuilder.Redirect.INHERIT)
                 .start()
 
             proc.waitFor(60, TimeUnit.MINUTES)
