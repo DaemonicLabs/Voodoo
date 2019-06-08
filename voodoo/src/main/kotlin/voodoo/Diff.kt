@@ -181,6 +181,7 @@ object Diff : KLogging() {
 
     fun addVersion(rootDir: File, id: String, version: String) {
         val versionsFile = getMetaDataDefault(rootDir, id).resolve("versions.txt")
+        versionsFile.parentFile.mkdirs()
         val versions =
             (versionsFile.takeIf { it.exists() }?.readLines()?.filter { it.isNotBlank() } ?: listOf()).toSet() + version
         versionsFile.writeText(versions.joinToString("\n"))
