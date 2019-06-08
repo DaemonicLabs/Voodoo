@@ -118,6 +118,7 @@ data class PackDiff(
             val json = json.stringify(entryMetaSerializer, reportMap)
 
             newMeta.mkdirs()
+            logger.info("writing $reportFile")
             reportFile.writeText(json)
 
             return reportMap

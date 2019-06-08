@@ -37,10 +37,14 @@ object Diff : KLogging() {
         val newMetaDataLocation = getMetaDataDefault(rootDir, newPack.id)
         val metaDataPointerFile = getMetaDataPointer(rootDir, newPack.id)
 
+        // TODO: evaluate if filtering is necessary
         val validVersions = versions.filter { version ->
             val valid = newMetaDataLocation.resolve(version).run {
                 logger.info("checking validity: $this")
-                resolve("entry.meta.hjson").exists() &&
+                // these files can be generated later,
+                // but not sure how it is for historic versions
+                version == versions.last() ||
+                        resolve("entry.meta.hjson").exists() &&
                         resolve("pack.meta.hjson").exists()
             }
 
