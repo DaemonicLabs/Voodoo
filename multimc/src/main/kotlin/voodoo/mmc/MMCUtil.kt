@@ -4,6 +4,7 @@ import com.skcraft.launcher.model.modpack.Recommendation
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
@@ -51,7 +52,7 @@ object MMCUtil : KLogging() {
     val mmcConfig: MMCConfiguration
 
     init {
-        val jsonWithDefaults = Json(indented = true, unquoted = true, encodeDefaults = true)
+        val jsonWithDefaults = Json(JsonConfiguration(prettyPrint = true, unquoted = true, encodeDefaults = true))
         val mmcConfigurationFile = configHome.resolve("multimc.hjson")
         logger.info("loading multimc config $mmcConfigurationFile")
         mmcConfig = when {
@@ -179,7 +180,7 @@ object MMCUtil : KLogging() {
             "default"
         }
 
-        val json = Json(indented = true)
+        val json = Json(JsonConfiguration(prettyPrint = true))
 
         // set minecraft and forge versions
         val mmcPackPath = instanceDir.resolve("mmc-pack.json")

@@ -8,8 +8,11 @@ package com.skcraft.launcher.util
 
 import kotlinx.serialization.Decoder
 import kotlinx.serialization.Encoder
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializer
+import kotlinx.serialization.internal.SerialClassDescImpl
 import java.io.IOException
 
 /**
@@ -28,7 +31,8 @@ enum class Platform {
     UNKNOWN;
 
     @Serializer(forClass = Platform::class)
-    companion object {
+    companion object: KSerializer<Platform> {
+        override val descriptor: SerialDescriptor = SerialClassDescImpl("com.skcraft.launcher.util.Platform")
         fun serializer() = Platform
         override fun deserialize(decoder: Decoder): Platform {
             val text = decoder.decodeString()

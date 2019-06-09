@@ -9,7 +9,6 @@ import kotlinx.serialization.json.JsonParsingException
 import mu.KLogging
 import voodoo.data.OptionalData
 import voodoo.data.Side
-import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
@@ -33,14 +32,13 @@ import java.time.Instant
 @Serializable
 data class LockEntry(
     var provider: String,
-    // TODO: make id always match serialFile.name.subStringBefore(".lock.hjson") ?
+    // TODO: make categoryId always match serialFile.name.subStringBefore(".lock.hjson") ?
     @Optional var fileName: String? = null,
     @Optional var side: Side = Side.BOTH,
     @Optional var description: String? = null,
     @Optional var optionalData: OptionalData? = null,
     @Optional var dependencies: Map<DependencyType, List<String>> = mapOf(),
     // CURSE
-    @Optional var curseMetaUrl: String = PROXY_URL,
     @Optional var projectID: ProjectID = ProjectID.INVALID,
     @Optional var fileID: FileID = FileID.INVALID,
     // DIRECT
@@ -62,11 +60,11 @@ data class LockEntry(
     @Optional @SerialName("name") private var nameField: String? = null
 ) {
     @Transient
-    lateinit var idField: String // id might not always match the filename
+    lateinit var idField: String // categoryId might not always match the filename
     @Transient
     var id: String
         set(value) {
-            require(!value.contains("[^\\w-]+".toRegex())) { "id: '$value' is not cleaned up properly, must not contain invalid characters" }
+            require(!value.contains("[^\\w-]+".toRegex())) { "categoryId: '$value' is not cleaned up properly, must not contain invalid characters" }
             idField = value
         }
         get() = idField

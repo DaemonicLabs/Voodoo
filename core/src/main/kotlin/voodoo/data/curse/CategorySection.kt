@@ -5,8 +5,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class CategorySection(
     val id: Int,
-    val gameID: Int,
+    val gameId: Int,
     val name: String,
+    @Serializable(with = PackageType.Companion::class)
     val packageType: PackageType,
     val path: String,
     val initialInclusionPattern: String? = ".",

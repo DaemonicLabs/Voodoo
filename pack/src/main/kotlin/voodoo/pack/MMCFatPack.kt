@@ -7,6 +7,7 @@ import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.internal.StringSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.map
 import kotlinx.serialization.serializer
 import voodoo.data.Side
@@ -70,7 +71,7 @@ object MMCFatPack : AbstractPack() {
             }
         }
 
-        val json = Json(indented = true, encodeDefaults = false)
+        val json = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = false))
 
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")

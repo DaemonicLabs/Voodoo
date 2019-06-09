@@ -172,7 +172,7 @@ data class LockPack(
      * creates a report of key-name-value triples
      */
     fun report(): List<Triple<String, String, String>> {
-        val reports = mutableListOf(Triple("id", "ID", "`$id`"))
+        val reports = mutableListOf(Triple("categoryId", "ID", "`$id`"))
         title.blankOr?.let {
             reports += Triple("title", "Title", "`$title`")
         }

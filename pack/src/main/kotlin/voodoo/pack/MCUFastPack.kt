@@ -70,7 +70,7 @@ object MCUFastPack : AbstractPack() {
 //                        urlTxtFile.writeText(url)
 //                    }
 
-                        //                println("done: ${entry.id} $file")
+                        //                println("done: ${entry.categoryId} $file")
                         entry.id to file // serialFile.relativeTo(skSrcFolder
                     }.also {
                         SKPack.logger.info("started job: download '${entry.id}'")

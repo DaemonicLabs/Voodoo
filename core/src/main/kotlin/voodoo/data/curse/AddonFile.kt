@@ -1,23 +1,24 @@
 package voodoo.data.curse
 
 import kotlinx.serialization.Serializable
-import voodoo.util.serializer.DateSerializer
-import java.util.Date
+import voodoo.util.serializer.LocalDateTimeSerializer
+import java.time.LocalDateTime
 
 @Serializable
 data class AddonFile(
     val id: FileID,
     val fileName: String,
-//    val fileNameOnDisk: String,
-    @Serializable(with = DateSerializer::class)
-    val fileDate: Date,
-    var releaseType: FileType,
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val fileDate: LocalDateTime,
+    @Serializable(with = ReleaseType.Companion::class)
+    var releaseType: ReleaseType,
+    @Serializable(with = FileStatus.Companion::class)
     val fileStatus: FileStatus,
-    val downloadURL: String,
-    val alternate: Boolean,
+    val downloadUrl: String,
+    val isAlternate: Boolean,
     val alternateFileId: Int,
     val dependencies: List<AddOnFileDependency>?,
-    val available: Boolean,
+    val isAvailable: Boolean,
     var modules: List<AddOnModule>?,
     val packageFingerprint: Long,
     val gameVersion: List<String>,

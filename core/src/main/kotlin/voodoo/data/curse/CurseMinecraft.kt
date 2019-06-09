@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CurseMinecraft(
-    @Optional val version: String = "",
-    @Optional val modLoaders: List<CurseModLoader> = emptyList()
+    val version: String = "",
+    val modLoaders: List<CurseModLoader> = emptyList()
 )

@@ -7,10 +7,9 @@
 package com.skcraft.launcher.builder
 
 import com.skcraft.launcher.model.modpack.Feature
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class FileInfo(
-    @Optional var feature: Feature? = null
+    var feature: Feature? = null
 )

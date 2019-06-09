@@ -3,10 +3,9 @@ package voodoo.data.nested
 import mu.KLogging
 import voodoo.data.OptionalData
 import voodoo.data.Side
-import voodoo.data.curse.CurseConstants
 import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
-import voodoo.data.curse.FileType
+import voodoo.data.curse.ReleaseType
 import voodoo.data.curse.PackageType
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
@@ -42,8 +41,7 @@ data class NestedEntry(
     var validMcVersions: Set<String> = setOf(),
     var enabled: Boolean = true,
     //  CURSE
-    var curseMetaUrl: String = CurseConstants.PROXY_URL,
-    var curseReleaseTypes: Set<FileType> = setOf(FileType.Release, FileType.Beta),
+    var curseReleaseTypes: Set<ReleaseType> = setOf(ReleaseType.Release, ReleaseType.Beta),
     var curseProjectID: ProjectID = ProjectID.INVALID,
     var curseFileID: FileID = FileID.INVALID,
     //  DIRECT
@@ -97,7 +95,6 @@ data class NestedEntry(
                 //                fileNameRegex = it.fileNameRegex,
                 validMcVersions = entry.validMcVersions,
                 // CURSE
-                curseMetaUrl = entry.curseMetaUrl,
                 curseReleaseTypes = entry.curseReleaseTypes,
                 curseProjectID = entry.curseProjectID,
                 curseFileID = entry.curseFileID,
@@ -129,7 +126,7 @@ data class NestedEntry(
             // set feature of entry from `this` or DEFAULT
 
 //            if ((entry.provider == DEFAULT.provider || entry.provider.isBlank()) && provider != DEFAULT.provider) entry.provider = provider
-//            if (entry.id == DEFAULT.id && id != DEFAULT.id) entry.id = id
+//            if (entry.categoryId == DEFAULT.categoryId && categoryId != DEFAULT.categoryId) entry.categoryId = categoryId
 //            if (entry.rootFolder == DEFAULT.rootFolder && rootFolder != DEFAULT.rootFolder) entry.rootFolder = rootFolder
 //            if (entry.comment == DEFAULT.comment && comment != DEFAULT.comment) entry.comment = comment
 //            if (entry.description == DEFAULT.description && description != DEFAULT.description) entry.description = description
@@ -200,7 +197,7 @@ data class NestedEntry(
         entries.forEach { entry ->
             if (entry.id.isEmpty()) {
                 logger.error { entry }
-                throw IllegalStateException("entries with blank id must not persist")
+                throw IllegalStateException("entries with blank categoryId must not persist")
             }
         }
     }

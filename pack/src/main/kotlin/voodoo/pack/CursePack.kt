@@ -17,6 +17,7 @@ import kotlinx.html.li
 import kotlinx.html.stream.createHTML
 import kotlinx.html.ul
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import voodoo.data.Side
 import voodoo.data.curse.CurseFile
 import voodoo.data.curse.CurseManifest
@@ -190,7 +191,7 @@ object CursePack : AbstractPack() {
                 files = curseMods,
                 overrides = "overrides"
             )
-            val json = Json(indented = true, encodeDefaults = false)
+            val json = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = false))
             val manifestFile = modpackDir.resolve("manifest.json")
             manifestFile.writeText(json.stringify(CurseManifest.serializer(), curseManifest))
 

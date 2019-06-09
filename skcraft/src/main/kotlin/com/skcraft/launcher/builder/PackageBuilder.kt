@@ -25,6 +25,7 @@ import kotlinx.io.IOException
 import kotlinx.io.InputStream
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.list
 import kotlinx.serialization.serializer
 import mu.KLogging
@@ -56,9 +57,9 @@ constructor(
         "com.skcraft.launcher.propertiesFile"
     )
     private val json: Json = if (isPrettyPrint) {
-        Json(indented = true, strictMode = false, encodeDefaults = false)
+        Json(JsonConfiguration(prettyPrint = true, strictMode = false, encodeDefaults = false))
     } else {
-        Json(strictMode = false, encodeDefaults = false)
+        Json(JsonConfiguration(strictMode = false, encodeDefaults = false))
     }
     private val applicator: PropertiesApplicator =
         PropertiesApplicator(manifest)

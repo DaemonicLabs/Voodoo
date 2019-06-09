@@ -8,13 +8,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import list
-import releaseTypes
+import RELEASE_TYPES
 import voodoo.poet.Poet
 import voodoo.poet.PoetPack
 import voodoo.curse.CurseClient
-import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.CurseManifest
-import voodoo.data.curse.FileType
+import voodoo.data.curse.ReleaseType
 import voodoo.data.curse.ProjectID
 import voodoo.provider.CurseProvider
 import voodoo.provider.LocalProvider
@@ -82,8 +81,8 @@ object CurseImporter : AbstractImporter() {
                 for (file in manifest.files) {
                     launch(context = pool + CoroutineName("${file.projectID}:${file.fileID}")) {
                         logger.info { file }
-                        val addon = CurseClient.getAddon(file.projectID, PROXY_URL)!!
-                        val addonFile = CurseClient.getAddonFile(file.projectID, file.fileID, PROXY_URL)!!
+                        val addon = CurseClient.getAddon(file.projectID)!!
+                        val addonFile = CurseClient.getAddonFile(file.projectID, file.fileID)!!
 
                         if (addonFile.gameVersion.none { version -> validMcVersions.contains(version) }) {
                             validMcVersions += addonFile.gameVersion
@@ -113,7 +112,7 @@ object CurseImporter : AbstractImporter() {
         }
 
 //        val forge = manifest.minecraft.modLoaders
-//            .find { it.id.startsWith("forge-") }?.id?.substringAfterLast('.')
+//            .find { it.categoryId.startsWith("forge-") }?.categoryId?.substringAfterLast('.')
 
         val scriptEnv = MainScriptEnv(
             rootDir = rootDir,
@@ -133,7 +132,7 @@ object CurseImporter : AbstractImporter() {
             localDir = local
             root(CurseProvider) {
                 this.validMcVersions = validMcVersions - manifest.minecraft.version
-                releaseTypes = sortedSetOf(FileType.Release, FileType.Beta, FileType.Alpha)
+                RELEASE_TYPES = sortedSetOf(ReleaseType.Release, ReleaseType.Beta, ReleaseType.Alpha)
                 list {
                     curseEntries.forEach { (identifier, versionStr, curseProjectID) ->
                         +ProjectID(curseProjectID.value) configure {

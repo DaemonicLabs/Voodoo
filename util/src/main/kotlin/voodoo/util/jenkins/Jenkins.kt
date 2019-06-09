@@ -11,13 +11,14 @@ import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
 import voodoo.util.UtilConstants
 import java.io.File
 
 object Jenkins : KLogging()
 
-private val json = Json(strictMode = false, encodeDefaults = false)
+private val json = Json(JsonConfiguration(strictMode = false, encodeDefaults = false))
 private val useragent = "voodoo/${UtilConstants.VERSION}"
 
 suspend fun downloadVoodoo(

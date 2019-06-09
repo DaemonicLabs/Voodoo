@@ -62,7 +62,7 @@ object Install : KLogging() {
 
         val packPath by parser.storing(
             "--packFile",
-            help = "pack id"
+            help = "pack categoryId"
         )
             .default(File("pack.txt").takeIf { it.exists() }?.readText())
 

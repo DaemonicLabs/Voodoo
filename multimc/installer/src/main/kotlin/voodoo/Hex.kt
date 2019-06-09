@@ -17,6 +17,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.map
 import kotlinx.serialization.serializer
 import mu.KLogging
@@ -54,7 +55,7 @@ object Hex : KLogging() {
 
     private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
 
-    private val json = Json(indented = true, strictMode = false, encodeDefaults = true)
+    private val json = Json(JsonConfiguration(prettyPrint = true, strictMode = false, encodeDefaults = true))
 
     private suspend fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
         logger.info("installing into $instanceId")
@@ -288,7 +289,7 @@ object Hex : KLogging() {
 
     private class Arguments(parser: ArgParser) {
         val instanceId by parser.storing(
-            "--id",
+            "--categoryId",
             help = "\$INST_ID - ID of the instance"
         )
 

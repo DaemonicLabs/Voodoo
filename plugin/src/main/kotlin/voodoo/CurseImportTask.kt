@@ -18,7 +18,7 @@ open class CurseImportTask : DefaultTask() {
     var url: String? = null
 
     @Input
-    @Option(option = "id", description = "modpack id")
+    @Option(option = "categoryId", description = "modpack categoryId")
     var id: String? = null
 
     init {
@@ -28,13 +28,13 @@ open class CurseImportTask : DefaultTask() {
     @TaskAction
     fun execImport() {
         if (id == null)
-            throw GradleException("id needs to be specified with --id")
+            throw GradleException("categoryId needs to be specified with --categoryId")
         if (url == null)
             throw GradleException("url needs to be specified with --url")
 
         runBlocking {
             CurseImporter.import(
-                id ?: throw GradleException("id was null"),
+                id ?: throw GradleException("categoryId was null"),
                 url ?: throw GradleException("url was null"),
                 rootDir,
                 packsDir

@@ -1,16 +1,15 @@
 package voodoo
 
 import Forge
-import Mod
 import job
 import kotlinx.coroutines.runBlocking
 import list
 import metaUrl
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import releaseTypes
+import RELEASE_TYPES
 import voodoo.data.Side
-import voodoo.data.curse.FileType
+import voodoo.data.curse.ReleaseType
 import voodoo.provider.CurseProvider
 import voodoo.provider.JenkinsProvider
 import voodoo.script.MainScriptEnv
@@ -31,7 +30,7 @@ object DslSpek : Spek({
 //        }
 
         val scriptEnv by memoized {
-            MainScriptEnv(rootDir = rootFolder, id = "some-id").apply {
+            MainScriptEnv(rootDir = rootFolder, id = "some-categoryId").apply {
                 mcVersion = "1.12.2"
                 version = "1.0"
                 // TODO: type = File
@@ -40,7 +39,7 @@ object DslSpek : Spek({
                 // TODO: type = {recommended, latest} | buildnumber, make sealed class
                 forge = Forge.recommended
                 root(CurseProvider) {
-                    releaseTypes = setOf(FileType.Release, FileType.Beta)
+                    RELEASE_TYPES = setOf(ReleaseType.Release, ReleaseType.Beta)
 
                     // TODO: use type URL ?
                     metaUrl = "https://curse.nikky.moe/api"

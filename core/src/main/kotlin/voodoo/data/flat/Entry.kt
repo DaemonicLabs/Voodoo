@@ -1,17 +1,16 @@
 package voodoo.data.flat
 
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.UpdateMode
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
 import voodoo.data.OptionalData
 import voodoo.data.Side
-import voodoo.data.curse.CurseConstants.PROXY_URL
 import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
-import voodoo.data.curse.FileType
+import voodoo.data.curse.ReleaseType
 import voodoo.data.curse.PackageType
 import voodoo.data.curse.ProjectID
 import voodoo.data.lock.LockEntry
@@ -27,51 +26,51 @@ import java.io.File
 data class Entry(
     val provider: String,
     var id: String,
-    @Optional var name: String? = null, // TODO add `by provider.getDisplayname(this)`
-    @Optional var folder: String = "mods",
-    @Optional var description: String? = null,
-    @Optional var optionalData: OptionalData? = null,
-    @Optional var side: Side = Side.BOTH,
-    @Optional var websiteUrl: String = "",
+    var name: String? = null, // TODO add `by provider.getDisplayname(this)`
+    var folder: String = "mods",
+    var description: String? = null,
+    var optionalData: OptionalData? = null,
+    var side: Side = Side.BOTH,
+    var websiteUrl: String = "",
     // TODO dependency declarations
-    @Optional var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
-    @Optional var replaceDependencies: Map<ProjectID, ProjectID> = mapOf(),
+    var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
+    var replaceDependencies: Map<ProjectID, ProjectID> = mapOf(),
     // @JsonInclude(JsonInclude.Include.ALWAYS)
 //        @Optional var optional: Boolean = feature != null,
-    @Optional var packageType: PackageType = PackageType.MOD,
-    @Optional var transient: Boolean = false, // this entry got added as dependency for something else
-    @Optional var version: String = "", // TODO: use regex only ?
-    @Optional var fileName: String? = null,
-    @Optional var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
+    var packageType: PackageType = PackageType.MOD,
+    var transient: Boolean = false, // this entry got added as dependency for something else
+    var version: String = "", // TODO: use regex only ?
+    var fileName: String? = null,
+    var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
 //        when {
 //            provider.equals("CURSE", true) -> ".*(?<!-deobf\\.jar)\$"
 //            provider.equals("JENKINS", true) -> ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$"
 //            else -> ".*"
 //        },
-    @Optional var validMcVersions: Set<String> = setOf(),
+    var validMcVersions: Set<String> = setOf(),
     // CURSE
-    @Optional var curseMetaUrl: String = PROXY_URL,
-    @Optional var curseReleaseTypes: Set<FileType> = setOf(FileType.Release, FileType.Beta),
-    @Optional var curseProjectID: ProjectID = ProjectID.INVALID,
-    @Optional var curseFileID: FileID = FileID.INVALID,
+    var curseReleaseTypes: Set<ReleaseType> = setOf(ReleaseType.Release, ReleaseType.Beta),
+    var curseProjectID: ProjectID = ProjectID.INVALID,
+    var curseFileID: FileID = FileID.INVALID,
     // DIRECT
-    @Optional var url: String = "",
-    @Optional var useUrlTxt: Boolean = true,
+    var url: String = "",
+    var useUrlTxt: Boolean = true,
     // JENKINS
-    @Optional var jenkinsUrl: String = "",
-    @Optional var job: String = "",
-    @Optional var buildNumber: Int = -1,
+    var jenkinsUrl: String = "",
+    var job: String = "",
+    var buildNumber: Int = -1,
     // LOCAL
-    @Optional var fileSrc: String = "",
+    var fileSrc: String = "",
     // UPDATE-JSON
-    @Optional var updateJson: String = "",
-    @Optional var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
-    @Optional var template: String = ""
+    var updateJson: String = "",
+    var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
+    var template: String = ""
 ) {
 
     companion object : KLogging() {
         private val json = Json(
-            indented = true,
+            JsonConfiguration(
+            prettyPrint = true,
             updateMode = UpdateMode.BANNED,
             strictMode = false,
             unquoted = true,
@@ -80,6 +79,7 @@ data class Entry(
 //            context = SerialContext().apply {
 //                registerSerializer(Side::class, Side.Companion)
 //            }
+            )
         )
     }
 
@@ -117,7 +117,7 @@ data class Entry(
         lockEntry.id = id
         lockEntry.block()
         lockEntry.folder = File(lockEntry.suggestedFolder ?: folder)
-        // TODO: calculate serialiFile based on id and reverse
+        // TODO: calculate serialiFile based on categoryId and reverse
 //        lockEntry.serialFile = File(lockEntry.suggestedFolder ?: folder).resolve("$cleanId.lock.hjson")
         return lockEntry
     }

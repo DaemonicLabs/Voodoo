@@ -133,8 +133,8 @@ open class VoodooPlugin : Plugin<Project> {
                             }
                         }
 
-//                        val poet = task<PoetTask>("poet_$id") {
-//                            targetFolder = SharedFolders.GeneratedSrc.get(id = id)
+//                        val poet = task<PoetTask>("poet_$categoryId") {
+//                            targetFolder = SharedFolders.GeneratedSrc.get(categoryId = categoryId)
 //                        }
 
                         task<VoodooTask>(id.toLowerCase()) {

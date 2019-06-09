@@ -27,7 +27,7 @@ object Poet : KLogging() {
     }
 
     fun generateAll(
-        generatedSrcDir: File, // = SharedFolders.GeneratedSrc.get(id = id),
+        generatedSrcDir: File, // = SharedFolders.GeneratedSrc.get(categoryId = categoryId),
         slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer,
         curseGenerators: List<CurseGenerator> = listOf(),
         forgeGenerators: List<ForgeGenerator> = listOf()
@@ -39,51 +39,55 @@ object Poet : KLogging() {
 //    println("classloader is of type:" + XY::class.java.classLoader)
         Thread.currentThread().contextClassLoader = Poet::class.java.classLoader
 
-        val files = runBlocking {
+        return runBlocking {
             // TODO: parallelize
-            curseGenerators.map { generator ->
-                Poet.generate(
-                    name = generator.name,
-                    slugIdMap = request(
-                        gameVersions = generator.mcVersions.toList(),
-                        section = generator.section
-                    ),
-                    slugSanitizer = slugSanitizer,
-                    folder = generatedSrcDir
-                )
-            } + forgeGenerators.map { generator ->
-                Poet.generateForge(
-                    name = generator.name,
-                    mcVersionFilters = generator.mcVersions.toList(), // generator.mcVersions.toList(),
-                    folder = generatedSrcDir
-                )
-            }
-        }
-        return files
 
-//        return runBlocking {
-//            listOf(
-//                Poet.generate(
-//                    name = "Mods_112",
-//                    slugIdMap = Poet.request112Mods(),
-//                    slugSanitizer = slugSanitizer,
-//                    folder = generatedSrcDir
-//                ),
-//                Poet.generate(
-//                    name = mods,
-//                    slugIdMap = Poet.requestMods(),
-//                    slugSanitizer = slugSanitizer,
-//                    folder = generatedSrcDir
-//                ),
-//                Poet.generate(
-//                    name = texturePacks,
-//                    slugIdMap = Poet.requestResourcePacks(),
-//                    slugSanitizer = slugSanitizer,
-//                    folder = generatedSrcDir
-//                ),
-//                Poet.generateForge("Forge", folder = generatedSrcDir)
-//            )
-//        }
+            val curseFiles = curseGenerators.map { generatedSrcDir.resolve("${it.name}.kt") }
+            val runCurseGenerator = curseFiles.any { !it.exists() }
+            val generatedCurseFiles = if (runCurseGenerator) {
+                val results: Map<String, MutableMap<String, ProjectID>> = curseGenerators.associate {
+                    it.name to mutableMapOf<String, ProjectID>()
+                }
+                CurseClient.scanAllProjects<Unit> { addon ->
+                    curseGenerators.forEach { generator ->
+                        if (
+                            (addon.gameVersionLatestFiles.isEmpty() || addon.gameVersionLatestFiles.any { generator.mcVersions.contains(it.gameVersion) }) &&
+                            addon.categorySection.name == generator.section
+                        ) {
+                            results.getValue(generator.name)[addon.slug] = addon.id
+                            logger.info("added addon: ${addon.slug}")
+                        }
+                    }
+                }
+
+                curseGenerators.map { generator ->
+                    Poet.generate(
+                        name = generator.name,
+                        slugIdMap = results.getOrDefault(generator.name, mutableMapOf()),
+                        slugSanitizer = slugSanitizer,
+                        folder = generatedSrcDir
+                    )
+                }
+            } else {
+                curseFiles
+            }
+
+            val forgeFiles = forgeGenerators.map { generatedSrcDir.resolve("${it.name}.kt") }
+            val runForgeGenerator = forgeFiles.any { !it.exists() }
+            val generatedForgeFiles = if (runForgeGenerator) {
+                forgeGenerators.map { generator ->
+                    Poet.generateForge(
+                        name = generator.name,
+                        mcVersionFilters = generator.mcVersions.toList(), // generator.mcVersions.toList(),
+                        folder = generatedSrcDir
+                    )
+                }
+            } else {
+                forgeFiles
+            }
+
+            generatedCurseFiles + generatedForgeFiles
+        }
     }
 
     fun defaultSlugSanitizer(slug: String) = slug
@@ -98,6 +102,12 @@ object Poet : KLogging() {
         slugSanitizer: (String) -> String,
         folder: File
     ): File {
+        val targetFile = folder.resolve("$name.kt")
+        if (targetFile.exists()) {
+            logger.info("skipping generation of $targetFile")
+            return targetFile
+        }
+
         val idType = ProjectID::class.asTypeName()
         val objectBuilder = TypeSpec.objectBuilder(name)
         slugIdMap.entries.sortedBy { (slug, id) ->
@@ -113,8 +123,8 @@ object Poet : KLogging() {
 //                    .addAnnotation(JvmSynthetic::class)
                     .addKdoc("@see %L\n", projectPage)
                     .mutable(false)
-//                    .initializer("%T(%L)", idType, id.value)
-//                    .initializer("%L", id.value)
+//                    .initializer("%T(%L)", idType, categoryId.value)
+//                    .initializer("%L", categoryId.value)
                     .getter(
                         FunSpec.getterBuilder()
                             .addModifiers(KModifier.INLINE)
@@ -125,7 +135,7 @@ object Poet : KLogging() {
             )
         }
 
-        return save(objectBuilder.build(), name, folder)
+        return save(objectBuilder.build(), targetFile)
     }
 
     internal suspend fun generateForge(
@@ -133,6 +143,12 @@ object Poet : KLogging() {
         mcVersionFilters: List<String>? = null,
         folder: File
     ): File {
+        val targetFile = folder.resolve("$name.kt")
+        if (targetFile.exists()) {
+            logger.info("skipping generation of $targetFile")
+            return targetFile
+        }
+
         fun buildProperty(identifier: String, version: String): PropertySpec {
             return PropertySpec
                 .builder(
@@ -163,8 +179,16 @@ object Poet : KLogging() {
             }
         }
 
-        return save(forgeBuilder.build(), name, folder)
+        return save(forgeBuilder.build(), targetFile)
     }
+
+    private fun save(type: TypeSpec, targetFile: File): File {
+        val source = FileSpec.get("", type)
+        val targetFolder = targetFile.absoluteFile.parentFile.apply { mkdirs() }
+        source.writeTo(targetFolder)
+        logger.info("written to $targetFile")
+        return targetFile
+    } 
 
     private fun save(type: TypeSpec, name: String, folder: File): File {
         folder.mkdirs()
@@ -179,10 +203,13 @@ object Poet : KLogging() {
     }
 
     suspend fun request(section: String, gameVersions: List<String>? = null): Map<String, ProjectID> =
-        CurseClient.graphQLRequest(
-            section = section,
-            gameVersions = gameVersions
-        ).map { (id, slug) ->
-            slug to ProjectID(id)
-        }.toMap()
+        CurseClient.scanAllProjects { addon ->
+            if (
+                addon.gameVersionLatestFiles.any { gameVersions?.contains(it.gameVersion) == true } &&
+                addon.categorySection.name == section
+            ) {
+                addon.slug to addon.id
+            } else null
+        }.filterNotNull().toMap()
+
 }

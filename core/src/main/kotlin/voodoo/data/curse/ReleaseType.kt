@@ -6,25 +6,20 @@ import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.internal.IntDescriptor
 
-enum class PackageType {
-    FOLDER,
-    CTOP,
-    SINGLEFILE,
-    CMOD2,
-    MODPACK,
-    MOD,
-    ANY;
+enum class ReleaseType {
+    Release,
+    Beta,
+    Alpha;
 
-
-    @Serializer(forClass = PackageType::class)
+    @Serializer(forClass = ReleaseType::class)
     companion object {
         override val descriptor: SerialDescriptor = IntDescriptor
 
-        override fun deserialize(decoder: Decoder): PackageType {
+        override fun deserialize(decoder: Decoder): ReleaseType {
             return values()[decoder.decodeInt()-1]
         }
 
-        override fun serialize(encoder: Encoder, obj: PackageType) {
+        override fun serialize(encoder: Encoder, obj: ReleaseType) {
             encoder.encodeInt(obj.ordinal + 1)
         }
     }

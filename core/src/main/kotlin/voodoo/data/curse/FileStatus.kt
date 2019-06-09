@@ -1,5 +1,11 @@
 package voodoo.data.curse
 
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.SerialDescriptor
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.internal.IntDescriptor
+
 enum class FileStatus {
     // Token: 0x04000041 RID: 65
     Processing,
@@ -31,4 +37,18 @@ enum class FileStatus {
     AwaitingPublishing,
     // Token: 0x0400004F RID: 79
     FailedPublishing;
+
+
+    @Serializer(forClass = FileStatus::class)
+    companion object {
+        override val descriptor: SerialDescriptor = IntDescriptor
+
+        override fun deserialize(decoder: Decoder): FileStatus {
+            return values()[decoder.decodeInt()-1]
+        }
+
+        override fun serialize(encoder: Encoder, obj: FileStatus) {
+            encoder.encodeInt(obj.ordinal + 1)
+        }
+    }
 }

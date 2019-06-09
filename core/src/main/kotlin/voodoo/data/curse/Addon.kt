@@ -2,33 +2,27 @@ package voodoo.data.curse
 
 import kotlinx.serialization.Serializable
 import voodoo.util.serializer.DateSerializer
+import voodoo.util.serializer.LocalDateTimeSerializer
+import java.time.LocalDateTime
 import java.util.Date
 
 @Serializable
 data class Addon(
     val id: ProjectID,
+//    val projectId: ProjectID,
     val name: String,
     val authors: List<Author> = emptyList(),
     val attachments: List<Attachment>? = emptyList(),
-    val webSiteURL: String,
+    val websiteUrl: String,
     val gameId: Int,
     val summary: String,
     val defaultFileId: Int,
-    val commentCount: Int,
     val downloadCount: Float,
-    val rating: Int,
-    val installCount: Int,
     val latestFiles: List<AddonFile>,
     val categories: List<Category> = emptyList(),
-    val primaryAuthorName: String?,
-    val externalUrl: String?,
+    @Serializable(with = ProjectStatus.Companion::class)
     val status: ProjectStatus,
-    val donationUrl: String?,
-    val primaryCategoryName: String?,
-    val primaryCategoryAvatarUrl: String?,
-    val likes: Int,
     val categorySection: CategorySection,
-    val avatarUrl: String? = "",
     val slug: String,
     val gameVersionLatestFiles: List<GameVersionLatestFile>,
     val popularityScore: Float,
@@ -36,14 +30,13 @@ data class Addon(
     val gameName: String,
     val portalName: String,
 //    val sectionName: String, // Section,
-    @Serializable(with = DateSerializer::class)
-    val dateModified: Date,
-    @Serializable(with = DateSerializer::class)
-    val dateCreated: Date,
-    @Serializable(with = DateSerializer::class)
-    val dateReleased: Date,
-    val available: Boolean,
-    val categoryList: String,
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val dateModified: LocalDateTime,
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val dateCreated: LocalDateTime,
+    @Serializable(with = LocalDateTimeSerializer::class)
+    val dateReleased: LocalDateTime,
+    val isAvailable: Boolean,
     val primaryLanguage: String,
-    val featured: Boolean = false
+    val isFeatured: Boolean
 )

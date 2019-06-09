@@ -4,6 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AddOnFileDependency(
-    val addOnId: ProjectID,
+    val addonId: ProjectID,
+    @Serializable(with = DependencyType.Companion::class)
     val type: DependencyType
 )

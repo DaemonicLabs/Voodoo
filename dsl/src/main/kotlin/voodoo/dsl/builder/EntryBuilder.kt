@@ -10,7 +10,7 @@ class EntryBuilder<T>(
     provider: T,
     entry: NestedEntry
 ) : AbstractBuilder<T>(provider, entry) where T : ProviderBase {
-    //    var id by property(entry::id)
+    //    var categoryId by property(entry::categoryId)
     var name by property(entry::name)
     var websiteUrl by property(entry::websiteUrl)
     var fileNameRegex by property(entry::fileNameRegex)

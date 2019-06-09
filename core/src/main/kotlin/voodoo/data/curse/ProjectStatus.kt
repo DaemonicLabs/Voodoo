@@ -1,5 +1,11 @@
 package voodoo.data.curse
 
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.SerialDescriptor
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.internal.IntDescriptor
+
 enum class ProjectStatus {
     // Token: 0x04000074 RID: 116
     New,
@@ -21,4 +27,17 @@ enum class ProjectStatus {
     Deleted,
     // Token: 0x0400007D RID: 125
     UnderReview;
+
+    @Serializer(forClass = ProjectStatus::class)
+    companion object {
+        override val descriptor: SerialDescriptor = IntDescriptor
+
+        override fun deserialize(decoder: Decoder): ProjectStatus {
+            return values()[decoder.decodeInt()-1]
+        }
+
+        override fun serialize(encoder: Encoder, obj: ProjectStatus) {
+            encoder.encodeInt(obj.ordinal + 1)
+        }
+    }
 }

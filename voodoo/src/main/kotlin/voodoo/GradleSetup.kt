@@ -38,7 +38,7 @@ object GradleSetup : KLogging() {
             plugins {
                 // kotlin("jvm") version "${VoodooConstants.KOTLIN_VERSION}" // automatically applied
                 // idea // automatically applied
-                id("voodoo") version "${VoodooConstants.VERSION}-SNAPSHOT"
+                categoryId("voodoo") version "${VoodooConstants.VERSION}-SNAPSHOT"
             }
 
             voodoo {

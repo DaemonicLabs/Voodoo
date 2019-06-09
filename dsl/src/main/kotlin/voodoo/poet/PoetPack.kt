@@ -8,10 +8,8 @@ import com.squareup.kotlinpoet.asClassName
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
-import voodoo.data.UserFiles
-import voodoo.data.curse.CurseConstants
 import voodoo.data.curse.FileID
-import voodoo.data.curse.FileType
+import voodoo.data.curse.ReleaseType
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
 import voodoo.forge.ForgeUtil
@@ -83,12 +81,9 @@ object PoetPack : KLogging() {
             }
             when (provider) {
                 is CurseProvider -> {
-                    entry.curseMetaUrl.takeIf { it != default.curseMetaUrl }?.let {
-                        addStatement("curseMetaUrl = %S", it)
-                    }
                     entry.curseReleaseTypes.takeIf { it != default.curseReleaseTypes }?.let { curseReleaseTypes ->
-                        val fileType = FileType::class.asClassName()
-                        val builder = CodeBlock.builder().add("releaseTypes = setOf(")
+                        val fileType = ReleaseType::class.asClassName()
+                        val builder = CodeBlock.builder().add("RELEASE_TYPES = setOf(")
                         curseReleaseTypes.forEachIndexed { index, releaseType ->
                             if (index != 0) builder.add(", ")
                             builder.add("%T.%L", fileType, releaseType)
@@ -148,11 +143,11 @@ object PoetPack : KLogging() {
 
         val builder = if (!root) {
             when {
-                // id changed
+                // categoryId changed
                 entry.id != default.id -> when (provider) {
                     is CurseProvider -> {
                         val identifier = runBlocking {
-                            val addon = CurseClient.getAddon(entry.curseProjectID, CurseConstants.PROXY_URL)
+                            val addon = CurseClient.getAddon(entry.curseProjectID)
                             val slug = addon!!.slug
                             Poet.defaultSlugSanitizer(slug)
                         }

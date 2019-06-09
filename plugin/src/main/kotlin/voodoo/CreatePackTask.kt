@@ -8,7 +8,6 @@ import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import voodoo.curse.CurseClient
-import voodoo.data.curse.CurseConstants
 import voodoo.data.curse.ProjectID
 import voodoo.poet.Poet
 import voodoo.poet.PoetPack
@@ -21,7 +20,7 @@ open class CreatePackTask : DefaultTask() {
     lateinit var packsDir: File
 
     @Input
-    @Option(option = "id", description = "modpack id")
+    @Option(option = "categoryId", description = "modpack categoryId")
     var id: String = "rename_me"
 
     @Input
@@ -39,7 +38,7 @@ open class CreatePackTask : DefaultTask() {
     @TaskAction
     fun create() {
         if (id == null)
-            throw GradleException("id needs to be specified with --id")
+            throw GradleException("categoryId needs to be specified with --categoryId")
         if (mcVersion == null)
             throw GradleException("mcVersion needs to be specified with --mcVersion")
 
@@ -51,7 +50,7 @@ open class CreatePackTask : DefaultTask() {
 
         val randomMods = runBlocking {
             modIdentifiers.filter { (_, projectId) ->
-                val files = CurseClient.getAllFilesForAddon(projectId, CurseConstants.PROXY_URL)
+                val files = CurseClient.getAllFilesForAddon(projectId)
                 files.any { file -> file.gameVersion.contains(mcVersion) }
             }
         }
@@ -61,7 +60,7 @@ open class CreatePackTask : DefaultTask() {
 
         val scriptEnv = MainScriptEnv(
             rootDir = rootDir,
-            id = id ?: throw GradleException("id was null")
+            id = id ?: throw GradleException("categoryId was null")
         ).apply {
             mcVersion = this@CreatePackTask.mcVersion ?: throw GradleException("mcVersion was null")
             title = titleStr.takeIf { it.isNotBlank() } ?: id.capitalize()

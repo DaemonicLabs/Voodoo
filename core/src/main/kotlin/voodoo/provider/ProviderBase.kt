@@ -19,7 +19,7 @@ abstract class ProviderBase(
     val id: String
         get() = Providers.getId(this)!!
 
-    override fun toString() = "name: $name, id: $id"
+    override fun toString() = "name: $name, categoryId: $id"
 
     open fun reset() {}
 
@@ -71,7 +71,7 @@ abstract class ProviderBase(
 
     open fun reportData(entry: LockEntry): MutableList<Triple<String, String, String>> {
         return mutableListOf(
-            Triple("id", "ID", "`${entry.id}`")
+            Triple("categoryId", "ID", "`${entry.id}`")
         ).also { list ->
             list += Triple("version", "Version", "`${entry.version()}`")
             list += Triple("provider", "Provider", "`${entry.provider}`")
@@ -106,7 +106,7 @@ abstract class ProviderBase(
 
     open fun validate(lockEntry: LockEntry): Boolean {
         if (lockEntry.id.isEmpty()) {
-            logger.error("invalid id of $lockEntry")
+            logger.error("invalid categoryId of $lockEntry")
             return false
         }
         return true

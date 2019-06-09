@@ -26,7 +26,7 @@ object ServerPackGenerator {
             attr["xsi:schemaLocation"] = "http://www.mcupdater.com http://files.mcupdater.com/ServerPackv2.xsd"
 
             val server = child(doc, "Server") {
-                attr["id"] = "mcu-intro"
+                attr["categoryId"] = "mcu-intro"
                 attr["name"] = "MCUpdater - Introduction to Modded"
                 attr["newsUrl"] = "http://files.mcupdater.com/example/SamplePack.xml"
                 attr["version"] = "1.7.10"
@@ -37,7 +37,7 @@ object ServerPackGenerator {
                 (0..4).forEach { number ->
                     child(doc, "Module") {
                         attr["name"] = "Module $number"
-                        attr["id"] = "mod$number"
+                        attr["categoryId"] = "mod$number"
                         child(doc, tagName = "URL", nodeValue = "http://files.minecraftforge.net/maven/cpw/mods/ironchest/1.7.10-6.0.62.742/ironchest-1.7.10-6.0.62.742-universal.jar") {
                             attr["priority"] = "0"
                         }
@@ -57,7 +57,7 @@ object ServerPackGenerator {
                 // add one module with all configfile entries
                 child(doc, "Module") {
                     attr["name"] = "Configurations"
-                    attr["id"] = "packId-configurations"
+                    attr["categoryId"] = "packId-configurations"
                     (0..3).forEach { number ->
                         child(doc, "ConfigFile") {
                             child(doc, tagName = "URL", nodeValue = "http://files.minecraftforge.net/maven/cpw/mods/ironchest/1.7.10-6.0.62.742/ironchest-1.7.10-6.0.62.742-universal.jar") {

@@ -1,6 +1,5 @@
 package voodoo.poet
 
-import Mod
 import list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe

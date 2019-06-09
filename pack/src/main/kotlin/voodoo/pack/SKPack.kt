@@ -110,7 +110,7 @@ object SKPack : AbstractPack() {
                             val urlTxtFile = targetFolder.resolve(file.name + ".url.txt")
                             urlTxtFile.writeText(url)
                         }
-                        //                println("done: ${entry.id} $file")
+                        //                println("done: ${entry.categoryId} $file")
                         entry.id to file // serialFile.relativeTo(skSrcFolder
                     }.also {
                         logger.info("started job: download '${entry.id}'")
@@ -298,10 +298,10 @@ object SKPack : AbstractPack() {
         val entryOptionalData = entry.optionalData ?: return
         val entryFeature = Feature(entry.displayName, entryOptionalData.selected, description = entry.description ?: "")
         val featureName = entry.displayName.takeIf { it.isNotBlank() } ?: defaultName
-        // find feature with matching id
+        // find feature with matching categoryId
         var feature = features.find { f -> f.feature.name == featureName }
 
-        // TODO: merge existing features with matching id
+        // TODO: merge existing features with matching categoryId
         if (feature == null) {
             var description = entryFeature.description
             if (description.isEmpty()) description = entry.description ?: ""

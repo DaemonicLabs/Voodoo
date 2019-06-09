@@ -5,7 +5,8 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class GameVersionLatestFile(
     val gameVersion: String,
-    val projectFileID: Int,
+    val projectFileId: Int,
     val projectFileName: String,
-    val fileType: FileType
+    @Serializable(with = ReleaseType.Companion::class)
+    val fileType: ReleaseType
 )

@@ -6,6 +6,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.internal.BooleanSerializer
 import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.serializer
 import voodoo.data.Side
 import voodoo.data.curse.DependencyType
@@ -104,7 +105,7 @@ object MultiMCTester : AbstractTester() {
             }
         }
 
-        val json = Json(indented = true, encodeDefaults = false)
+        val json = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = false))
         val featureSerializer = HashMapSerializer(String.serializer(), BooleanSerializer)
 
         // read user input

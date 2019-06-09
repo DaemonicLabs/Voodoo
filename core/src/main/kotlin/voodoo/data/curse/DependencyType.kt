@@ -1,5 +1,11 @@
 package voodoo.data.curse
 
+import kotlinx.serialization.Decoder
+import kotlinx.serialization.Encoder
+import kotlinx.serialization.SerialDescriptor
+import kotlinx.serialization.Serializer
+import kotlinx.serialization.internal.IntDescriptor
+
 enum class DependencyType {
     // Token: 0x04000055 RID: 85
     EmbeddedLibrary,
@@ -13,4 +19,18 @@ enum class DependencyType {
     Incompatible,
     // Token: 0x0400005A RID: 90
     Include;
+
+
+    @Serializer(forClass = DependencyType::class)
+    companion object {
+        override val descriptor: SerialDescriptor = IntDescriptor
+
+        override fun deserialize(decoder: Decoder): DependencyType {
+            return DependencyType.values()[decoder.decodeInt()-1]
+        }
+
+        override fun serialize(encoder: Encoder, obj: DependencyType) {
+            encoder.encodeInt(obj.ordinal + 1)
+        }
+    }
 }
