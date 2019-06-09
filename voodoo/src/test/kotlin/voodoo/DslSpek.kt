@@ -30,7 +30,7 @@ object DslSpek : Spek({
 //        }
 
         val scriptEnv by memoized {
-            MainScriptEnv(rootDir = rootFolder, id = "some-categoryId").apply {
+            MainScriptEnv(rootDir = rootFolder, id = "some-id").apply {
                 mcVersion = "1.12.2"
                 version = "1.0"
                 // TODO: type = File

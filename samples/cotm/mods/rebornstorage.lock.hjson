@@ -2,10 +2,10 @@
     provider: CURSE,
     dependencies: {
         REQUIRED: [
-            reborncore,
-            refined-storage
+            refined-storage,
+            reborncore
         ]
     },
     projectID: 256662,
-    fileID: 2710805
+    fileID: 2715722
 }

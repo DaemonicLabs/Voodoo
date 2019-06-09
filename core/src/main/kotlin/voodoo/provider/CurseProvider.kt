@@ -8,7 +8,7 @@ import voodoo.curse.CurseClient.findFile
 import voodoo.curse.CurseClient.getAddon
 import voodoo.curse.CurseClient.getAddonFile
 import voodoo.data.curse.AddOnFileDependency
-import voodoo.data.curse.DependencyType
+import voodoo.data.curse.CurseDependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
@@ -59,12 +59,12 @@ object CurseProvider : ProviderBase("Curse Provider") {
         logger.debug("entry.optiona = ${entry.optional}")
 
         if (!projectID.valid) {
-            logger.error("invalid project categoryId for $entry")
-            throw IllegalStateException("invalid project categoryId for $entry")
+            logger.error("invalid project id for $entry")
+            throw IllegalStateException("invalid project id for $entry")
         }
         if (!fileID.valid) {
-            logger.error("invalid file categoryId for $entry")
-            throw IllegalStateException("invalid file categoryId for $entry")
+            logger.error("invalid file id for $entry")
+            throw IllegalStateException("invalid file id for $entry")
         }
 
         val lock = entry.lock {
@@ -105,7 +105,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
     }
 
     override suspend fun getThumbnail(entry: Entry): String {
-        val addon = CurseClient.getAddonBySlug(entry.id)
+        val addon = CurseClient.getAddon(entry.curseProjectID)
         return addon?.attachments?.firstOrNull { it.isDefault }?.thumbnailUrl ?: ""
     }
 
@@ -117,8 +117,8 @@ object CurseProvider : ProviderBase("Curse Provider") {
     ) {
         val predefinedDependencies = entry.dependencies.flatMap { (depType, slugs) ->
             slugs.map { slug ->
-                val id = CurseClient.deferredSlugIdMap.await()[slug] ?: throw IllegalStateException("cannot find categoryId for slug: $slug")
-                AddOnFileDependency(id, depType)
+                val id = CurseClient.getProjectIdBySlug(slug) ?: throw IllegalStateException("cannot find id for slug: $slug")
+                AddOnFileDependency(id, CurseDependencyType.values().first { depType == it.depType })
             }
         }
         val addon = getAddon(addonId)
@@ -130,8 +130,8 @@ object CurseProvider : ProviderBase("Curse Provider") {
         logger.info("dependencies of ${entry.id} ${addonFile.dependencies}")
         logger.trace(entry.toString())
 
-        for ((depAddonId, depType) in dependencies) {
-            if (depType == DependencyType.RequiredDependency) {
+        for ((depAddonId, curseDepType) in dependencies) {
+            if (curseDepType == CurseDependencyType.RequiredDependency) {
                 logger.info("resolve Dep $depAddonId")
                 val depAddon = try {
                     getAddon(depAddonId, fail = true)
@@ -140,35 +140,38 @@ object CurseProvider : ProviderBase("Curse Provider") {
                 }
 
                 if (depAddon == null) {
-                    logger.error("broken dependency type: '$depType' categoryId: '$depAddonId' of entry: '${entry.id}'")
+                    logger.error("broken dependency type: '$curseDepType' id: '$depAddonId' of entry: '${entry.id}'")
                     continue
                 }
 
 //            val depends = entry.dependencies
-                var dependsSet = entry.dependencies[depType]?.toSet() ?: setOf<String>()
-                logger.info("get dependency $depType = $dependsSet + ${depAddon.slug}")
-                if (!dependsSet.contains(depAddon.slug)) {
-                    val replacementId = entry.replaceDependencies[depAddon.id]
-                    if (replacementId != null) {
-                        if (replacementId != ProjectID.INVALID) {
-                            logger.info("${entry.id} adding replaced dependency ${depAddon.id} ${depAddon.slug} -> $replacementId")
-                            val replacementAddon = CurseClient.getAddon(replacementId) ?: run {
-                                logger.error("cannot resolve replacement dependency $replacementId")
-                                throw IllegalStateException("cannot resolve replacement dependency $replacementId")
+                val depType = curseDepType.depType
+                if(depType != null) {
+                    var dependsSet = entry.dependencies[depType]?.toSet() ?: setOf<String>()
+                    logger.info("get dependency $curseDepType = $dependsSet + ${depAddon.slug}")
+                    if (!dependsSet.contains(depAddon.slug)) {
+                        val replacementId = entry.replaceDependencies[depAddon.id]
+                        if (replacementId != null) {
+                            if (replacementId != ProjectID.INVALID) {
+                                logger.info("${entry.id} adding replaced dependency ${depAddon.id} ${depAddon.slug} -> $replacementId")
+                                val replacementAddon = CurseClient.getAddon(replacementId) ?: run {
+                                    logger.error("cannot resolve replacement dependency $replacementId")
+                                    throw IllegalStateException("cannot resolve replacement dependency $replacementId")
+                                }
+                                dependsSet += replacementAddon.slug
+                            } else {
+                                logger.info("ignoring dependency ${depAddon.id} ${depAddon.slug}")
                             }
-                            dependsSet += replacementAddon.slug
-                        } else {
-                            logger.info("ignoring dependency ${depAddon.id} ${depAddon.slug}")
+                            entry.dependencies[curseDepType.depType] = dependsSet.toList()
+                            continue
                         }
-                        entry.dependencies[depType] = dependsSet.toList()
-                        continue
-                    }
 
-                    logger.info("${entry.id} adding dependency ${depAddon.id}  ${depAddon.slug}")
-                    dependsSet += depAddon.slug
+                        logger.info("${entry.id} adding dependency ${depAddon.id}  ${depAddon.slug}")
+                        dependsSet += depAddon.slug
+                    }
+                    entry.dependencies[depType] = dependsSet.toList()
+                    logger.info("set dependency $curseDepType = $dependsSet")
                 }
-                entry.dependencies[depType] = dependsSet.toList()
-                logger.info("set dependency $depType = $dependsSet")
 
                 val depEntry = Entry(provider = CurseProvider.id, id = depAddon.slug).apply {
                     name = entry.name
@@ -180,7 +183,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
                 logger.debug("adding dependency: $depEntry")
                 addEntry.send(depEntry to depAddon.categorySection.path)
                 logger.debug("added dependency: $depEntry")
-                logger.info("added $depType dependency ${depAddon.name} of ${addon.name}")
+                logger.info("added $curseDepType dependency ${depAddon.name} of ${addon.name}")
             } else {
                 continue
             }
@@ -214,7 +217,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
 
         if (addonFile.packageFingerprint.toUInt() != fileFingerprint) {
             logger.error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
-//            throw IllegalStateException("[${entry.categoryId} ${entry.projectID}:${addonFile.categoryId}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
+            throw IllegalStateException("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
         }
 
         return Pair(addonFile.downloadUrl, targetFile)
@@ -250,11 +253,11 @@ object CurseProvider : ProviderBase("Curse Provider") {
             return false
         }
         if (!lockEntry.projectID.valid) {
-            logger.warn("invalid project categoryId")
+            logger.warn("invalid project id")
             return false
         }
         if (!lockEntry.fileID.valid) {
-            logger.warn("invalid file categoryId")
+            logger.warn("invalid file id")
             return false
         }
         return true

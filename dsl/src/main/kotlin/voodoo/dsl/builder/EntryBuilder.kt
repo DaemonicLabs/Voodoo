@@ -1,6 +1,6 @@
 package voodoo.dsl.builder
 
-import voodoo.data.curse.DependencyType
+import voodoo.data.DependencyType
 import voodoo.data.nested.NestedEntry
 import voodoo.dsl.VoodooDSL
 import voodoo.property
@@ -10,7 +10,7 @@ class EntryBuilder<T>(
     provider: T,
     entry: NestedEntry
 ) : AbstractBuilder<T>(provider, entry) where T : ProviderBase {
-    //    var categoryId by property(entry::categoryId)
+    //    var id by property(entry::id)
     var name by property(entry::name)
     var websiteUrl by property(entry::websiteUrl)
     var fileNameRegex by property(entry::fileNameRegex)
@@ -33,7 +33,7 @@ class EntryBuilder<T>(
         fileNameRegex = r
     }
 
-    fun dependencies(vararg dependencies: String, type: DependencyType = DependencyType.RequiredDependency)  {
+    fun dependencies(vararg dependencies: String, type: DependencyType = DependencyType.REQUIRED)  {
         entry.dependencies[type] = ((entry.dependencies[type]?.toSet() ?: setOf()) + dependencies).toList()
     }
 }

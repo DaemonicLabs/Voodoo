@@ -12,7 +12,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.serialization.json.Json
-import voodoo.data.curse.DependencyType
+import voodoo.data.DependencyType
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
@@ -110,7 +110,7 @@ object SKPack : AbstractPack() {
                             val urlTxtFile = targetFolder.resolve(file.name + ".url.txt")
                             urlTxtFile.writeText(url)
                         }
-                        //                println("done: ${entry.categoryId} $file")
+                        //                println("done: ${entry.id} $file")
                         entry.id to file // serialFile.relativeTo(skSrcFolder
                     }.also {
                         logger.info("started job: download '${entry.id}'")
@@ -140,13 +140,13 @@ object SKPack : AbstractPack() {
                         logger.info("processing feature entry $id")
                         val featureEntry = modpack.findEntryById(id)!!
                         val dependencies = getDependencies(modpack, id)
-                        logger.info("required dependencies of $id: ${featureEntry.dependencies[DependencyType.RequiredDependency]}")
-                        logger.info("optional dependencies of $id: ${featureEntry.dependencies[DependencyType.OptionalDependency]}")
+                        logger.info("required dependencies of $id: ${featureEntry.dependencies[DependencyType.REQUIRED]}")
+                        logger.info("optional dependencies of $id: ${featureEntry.dependencies[DependencyType.OPTIONAL]}")
                         feature.entries += dependencies.asSequence().filter { entry ->
                             logger.debug("  testing ${entry.id}")
                             // find all other entries that depend on this dependency
                             val dependants = modpack.entrySet.filter { otherEntry ->
-                                otherEntry.dependencies[DependencyType.RequiredDependency]?.any {
+                                otherEntry.dependencies[DependencyType.REQUIRED]?.any {
                                     it == entry.id
                                 } ?: false
                             }
@@ -298,10 +298,10 @@ object SKPack : AbstractPack() {
         val entryOptionalData = entry.optionalData ?: return
         val entryFeature = Feature(entry.displayName, entryOptionalData.selected, description = entry.description ?: "")
         val featureName = entry.displayName.takeIf { it.isNotBlank() } ?: defaultName
-        // find feature with matching categoryId
+        // find feature with matching id
         var feature = features.find { f -> f.feature.name == featureName }
 
-        // TODO: merge existing features with matching categoryId
+        // TODO: merge existing features with matching id
         if (feature == null) {
             var description = entryFeature.description
             if (description.isEmpty()) description = entry.description ?: ""
@@ -360,9 +360,9 @@ object SKPack : AbstractPack() {
         val entry = lockPack.findEntryById(entryId) ?: return emptyList()
         val result = mutableListOf(entry)
         for ((depType, entryList) in entry.dependencies) {
-            if (depType == DependencyType.EmbeddedLibrary) continue
-            if (depType == DependencyType.Include) continue
-            if (depType == DependencyType.Tool) continue
+//            if (depType == DependencyType.EmbeddedLibrary) continue
+//            if (depType == DependencyType.Include) continue
+//            if (depType == DependencyType.Tool) continue
             logger.debug("getting sub dependencies of type $depType, list: $entryList")
             for (depName in entryList) {
                 result += getDependencies(lockPack, depName)

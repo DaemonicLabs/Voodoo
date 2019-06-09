@@ -2,8 +2,8 @@
     provider: CURSE,
     dependencies: {
         REQUIRED: [
-            tinkers-construct,
-            mantle
+            mantle,
+            tinkers-construct
         ]
     },
     projectID: 250957,

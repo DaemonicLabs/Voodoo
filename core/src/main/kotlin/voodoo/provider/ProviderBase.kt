@@ -2,7 +2,7 @@ package voodoo.provider
 
 import kotlinx.coroutines.channels.SendChannel
 import mu.KLogging
-import voodoo.data.curse.DependencyType
+import voodoo.data.DependencyType
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import java.io.File
@@ -19,12 +19,12 @@ abstract class ProviderBase(
     val id: String
         get() = Providers.getId(this)!!
 
-    override fun toString() = "name: $name, categoryId: $id"
+    override fun toString() = "name: $name, id: $id"
 
     open fun reset() {}
 
     open suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
-        println("[$name] resolve ${entry.id}")
+        logger.info("[$name] resolve ${entry.id}")
         throw NotImplementedError("unable to resolve")
     }
 
@@ -71,7 +71,7 @@ abstract class ProviderBase(
 
     open fun reportData(entry: LockEntry): MutableList<Triple<String, String, String>> {
         return mutableListOf(
-            Triple("categoryId", "ID", "`${entry.id}`")
+            Triple("id", "ID", "`${entry.id}`")
         ).also { list ->
             list += Triple("version", "Version", "`${entry.version()}`")
             list += Triple("provider", "Provider", "`${entry.provider}`")
@@ -85,28 +85,28 @@ abstract class ProviderBase(
             list += Triple("optional", "Optional", "`${entry.optional}`")
             entry.dependencies.takeIf { it.isNotEmpty() }?.let { dependencies ->
 
-                dependencies[DependencyType.RequiredDependency]?.takeIf { it.isNotEmpty() }?.let { required ->
+                dependencies[DependencyType.REQUIRED]?.takeIf { it.isNotEmpty() }?.let { required ->
                     list += Triple("dependencies_required", "Required Dependencies", required.joinToString("`, `", "`", "`"))
                 }
-                dependencies[DependencyType.OptionalDependency]?.takeIf { it.isNotEmpty() }?.let { required ->
+                dependencies[DependencyType.OPTIONAL]?.takeIf { it.isNotEmpty() }?.let { required ->
                     list += Triple("dependencies_optional", "Optional Dependencies", required.joinToString("`, `", "`", "`"))
                 }
-                dependencies[DependencyType.EmbeddedLibrary]?.takeIf { it.isNotEmpty() }?.let { required ->
-                    list += Triple("dependencies_embedded", "Embedded Dependencies", required.joinToString("`, `", "`", "`"))
-                }
-                dependencies[DependencyType.Include]?.takeIf { it.isNotEmpty() }?.let { required ->
-                    list += Triple("dependencies_include", "Include Dependencies", required.joinToString("`, `", "`", "`"))
-                }
-                dependencies[DependencyType.Tool]?.takeIf { it.isNotEmpty() }?.let { required ->
-                    list += Triple("dependencies_tool", "Tool Dependencies", required.joinToString("`, `", "`", "`"))
-                }
+//                dependencies[DependencyType.EmbeddedLibrary]?.takeIf { it.isNotEmpty() }?.let { required ->
+//                    list += Triple("dependencies_embedded", "Embedded Dependencies", required.joinToString("`, `", "`", "`"))
+//                }
+//                dependencies[DependencyType.Include]?.takeIf { it.isNotEmpty() }?.let { required ->
+//                    list += Triple("dependencies_include", "Include Dependencies", required.joinToString("`, `", "`", "`"))
+//                }
+//                dependencies[DependencyType.Tool]?.takeIf { it.isNotEmpty() }?.let { required ->
+//                    list += Triple("dependencies_tool", "Tool Dependencies", required.joinToString("`, `", "`", "`"))
+//                }
             }
         }
     }
 
     open fun validate(lockEntry: LockEntry): Boolean {
         if (lockEntry.id.isEmpty()) {
-            logger.error("invalid categoryId of $lockEntry")
+            logger.error("invalid id of $lockEntry")
             return false
         }
         return true

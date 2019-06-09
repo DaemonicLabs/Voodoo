@@ -49,8 +49,8 @@ object CurseClient : KLogging(), CoroutineScope {
     @Deprecated("do not want to send the useragent to curse")
     const val useragent = "voodoo/$VERSION (https://github.com/DaemonicLabs/Voodoo)"
 
-    val deferredSlugIdMap: Deferred<Map<String, ProjectID>> =
-        async(Dispatchers.IO, CoroutineStart.LAZY) { initSlugIdMap() }
+//    val deferredSlugIdMap: Deferred<Map<String, ProjectID>> =
+//        async(Dispatchers.IO, CoroutineStart.LAZY) { initSlugIdMap() }
 
 //    @Serializable
 //    data class GraphQLRequest(
@@ -61,7 +61,7 @@ object CurseClient : KLogging(), CoroutineScope {
 //
 //    @Serializable
 //    data class SlugIdPair(
-//        val categoryId: Int,
+//        val id: Int,
 //        val slug: String
 //    )
 //
@@ -92,7 +92,7 @@ object CurseClient : KLogging(), CoroutineScope {
 //        val requestBody = GraphQLRequest(
 //            query = """{
 //                    |  addons(${filters.joinToString(", ")}) {
-//                    |    categoryId
+//                    |    id
 //                    |    slug
 //                    |  }
 //                    |}""".trimMargin().replace("\n", ""),
@@ -117,7 +117,7 @@ object CurseClient : KLogging(), CoroutineScope {
 //                logger.error("cUrl: ${request.cUrlString()}")
 //                logger.error("request: $request")
 //                logger.error("response: $response")
-//                logger.error(result.error.exception) { "could not request slug-categoryId pairs" }
+//                logger.error(result.error.exception) { "could not request slug-id pairs" }
 //                logger.error { request }
 //                throw result.error.exception
 //            }
@@ -127,7 +127,7 @@ object CurseClient : KLogging(), CoroutineScope {
 //    suspend fun graphQlSearch(
 //        gameVersions: List<String>? = null,
 //        section: String? = null,
-//        categoryIds: List<Int>? = null
+//        ids: List<Int>? = null
 //    ): List<SlugIdPair> {
 //        val filters = mutableListOf("gameId: 432")
 //        gameVersions?.takeIf { it.isNotEmpty() }?.let {
@@ -136,8 +136,8 @@ object CurseClient : KLogging(), CoroutineScope {
 //        section?.let {
 //            filters += "section: \"$it\""
 //        }
-//        categoryIds?.takeIf { it.isNotEmpty() }?.let {
-//            filters += it.joinToString(", ", "categoryIds: [", "]")
+//        ids?.takeIf { it.isNotEmpty() }?.let {
+//            filters += it.joinToString(", ", "ids: [", "]")
 //        }
 //        val url = "https://curse.nikky.moe/graphql"
 //        logger.info("post $url $filters")
@@ -145,7 +145,7 @@ object CurseClient : KLogging(), CoroutineScope {
 //        val requestBody = GraphQLRequest(
 //            query = """{
 //                    |  addonSearch(${filters.joinToString(", ")}) {
-//                    |    categoryId
+//                    |    id
 //                    |    slug
 //                    |  }
 //                    |}""".trimMargin().replace("\n", ""),
@@ -171,7 +171,7 @@ object CurseClient : KLogging(), CoroutineScope {
 //                logger.error("cUrl: ${request.cUrlString()}")
 //                logger.error("request: $request")
 //                logger.error("response: $response")
-//                logger.error(result.error.exception) { "could not request slug-categoryId pairs" }
+//                logger.error(result.error.exception) { "could not request slug-id pairs" }
 //                logger.error { request }
 //                throw result.error.exception
 //            }
@@ -247,7 +247,7 @@ object CurseClient : KLogging(), CoroutineScope {
 //        val grapqhQlResult = graphQLRequest()
 //        grapqhQlResult.groupBy(
 //            { it.slug },
-//            { it.categoryId }).mapValues {
+//            { it.id }).mapValues {
 //            // (slug, list) ->
 //            ProjectID(it.value.first())
 //        }
@@ -320,7 +320,7 @@ object CurseClient : KLogging(), CoroutineScope {
     private val getAddonCache: MutableMap<ProjectID, Addon?> = HashMap(1 shl 0)
 
     suspend fun getAddon(addonId: ProjectID, fail: Boolean = true): Addon? {
-        if (!addonId.valid) throw IllegalStateException("invalid project categoryId")
+        if (!addonId.valid) throw IllegalStateException("invalid project id")
         return getAddonCache.getOrPut(addonId) { getAddonCall(addonId, fail) }
     }
 
@@ -355,7 +355,6 @@ object CurseClient : KLogging(), CoroutineScope {
         val (request, response, result) = url.httpPost()
             .jsonBody(json.stringify(projectIDLoader, addonIds))
 //            .header("User-Agent" to useragent)
-            .header("User-Agent" to "Bearer oauth:rgry4dhndmnpps0emi8vs4cz7nj4pf")
             .awaitObjectResponseResult(kotlinxDeserializerOf(loader = loader, json = json))
         return when (result) {
             is Result.Success -> result.value
@@ -374,9 +373,7 @@ object CurseClient : KLogging(), CoroutineScope {
     suspend fun getFileChangelog(addonId: ProjectID, fileId: Int): String {
         val url = "$ADDON_API/addon/$addonId/file/$fileId/changelog"
 
-        logger.debug("get $url")
-
-        logger.debug("get $url")
+        logger.info("get $url")
         val (request, response, result) = url.httpGet()
 //            .header("User-Agent" to useragent)
             .awaitStringResponseResult()
@@ -462,16 +459,39 @@ object CurseClient : KLogging(), CoroutineScope {
     }
 
 
-    suspend fun getAddonBySlug(slug: String): Addon? {
-        val slugIdMap = deferredSlugIdMap.await()
-        slugIdMap[slug]
-            ?.let { getAddon(it) }
-            ?.let {
-                return it
+    suspend fun getProjectIdBySlug(slug: String, fail: Boolean = true): ProjectID? {
+        val url = "https://minecraft.curseforge.com/projects/$slug"
+        """
+            <li>
+                <div class="info-label">Project ID</div>
+                <div class="info-data">287323</div>
+            </li>
+        """.trimIndent()
+
+        logger.info("get $url")
+        val (request, response, result) = url.httpGet()
+//            .header("User-Agent" to useragent)
+            .awaitStringResponseResult()
+        val content = when (result) {
+            is Result.Success -> result.value
+            is Result.Failure -> {
+                logger.error("getAddonCall")
+                logger.error("url: $url")
+                logger.error("cUrl: ${request.cUrlString()}")
+                logger.error("response: $response")
+                logger.error(result.error.exception) { result.error }
+                if (fail) throw result.error.exception
+                return null
             }
-//        slugIdMap = initSlugIdMap()
-        return slugIdMap[slug]
-            ?.let { getAddon(it) }
+        }
+
+        val stringId = content
+            .substringAfter("<div class=\"info-label\">Project ID</div>")
+            .substringAfter("<div class=\"info-data\">")
+            .substringBefore("</div>")
+        val id = stringId.toInt()
+
+        return ProjectID(id)
     }
 
     suspend fun findFile(
@@ -486,8 +506,9 @@ object CurseClient : KLogging(), CoroutineScope {
         val fileNameRegex = entry.fileNameRegex
 
         val addon = if (!addonId.valid) {
-            slug.takeUnless { it.isBlank() }
-                ?.let { getAddonBySlug(it) }
+//            slug.takeUnless { it.isBlank() }
+//                ?.let { getAddonBySlug(it) }
+            throw java.lang.IllegalStateException("$addonId is invalid")
         } else {
             getAddon(addonId)
         }

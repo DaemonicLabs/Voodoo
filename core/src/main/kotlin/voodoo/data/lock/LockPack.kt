@@ -6,9 +6,9 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import mu.KLogging
+import voodoo.data.DependencyType
 import voodoo.data.PackOptions
 import voodoo.data.Side
-import voodoo.data.curse.DependencyType
 import voodoo.forge.ForgeUtil
 import voodoo.util.blankOr
 import voodoo.util.json
@@ -144,7 +144,7 @@ data class LockPack(
             val entry = findEntryById(entryId)!!
 
             // find all entries that require this one
-            val dependants = getDependants(entry.id, DependencyType.RequiredDependency)
+            val dependants = getDependants(entry.id, DependencyType.REQUIRED)
             val allOptionalDependants = dependants.all { dep ->
                 isEntryOptional(dep.id)
             }
@@ -172,7 +172,7 @@ data class LockPack(
      * creates a report of key-name-value triples
      */
     fun report(): List<Triple<String, String, String>> {
-        val reports = mutableListOf(Triple("categoryId", "ID", "`$id`"))
+        val reports = mutableListOf(Triple("id", "ID", "`$id`"))
         title.blankOr?.let {
             reports += Triple("title", "Title", "`$title`")
         }

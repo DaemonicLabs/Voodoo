@@ -10,8 +10,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.map
 import kotlinx.serialization.serializer
+import voodoo.data.DependencyType
 import voodoo.data.Side
-import voodoo.data.curse.DependencyType
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
 import voodoo.mmc.MMCSelectable
@@ -116,7 +116,7 @@ object MMCFatPack : AbstractPack() {
                                 modpack.isDependencyOf(
                                     entryId = entry.id,
                                     parentId = it.id,
-                                    dependencyType = DependencyType.RequiredDependency
+                                    dependencyType = DependencyType.REQUIRED
                                 )
                             }
                         } else emptyList()

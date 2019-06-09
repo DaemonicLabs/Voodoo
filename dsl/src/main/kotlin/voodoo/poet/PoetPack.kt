@@ -143,7 +143,7 @@ object PoetPack : KLogging() {
 
         val builder = if (!root) {
             when {
-                // categoryId changed
+                // id changed
                 entry.id != default.id -> when (provider) {
                     is CurseProvider -> {
                         val identifier = runBlocking {

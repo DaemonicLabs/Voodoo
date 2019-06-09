@@ -32,7 +32,7 @@ object Builder : KLogging() {
 
         arguments.run {
             modpack.entrySet.forEach { entry ->
-                logger.info("categoryId: ${entry.id} entry: $entry")
+                logger.info("id: ${entry.id} entry: $entry")
             }
 
             try {

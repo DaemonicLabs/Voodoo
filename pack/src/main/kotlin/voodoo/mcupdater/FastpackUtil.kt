@@ -140,7 +140,7 @@ object FastpackUtil : KLogging() {
             command.add(it)
         }
         id?.also {
-            command.add("--categoryId")
+            command.add("--id")
             command.add(it)
         }
         import?.also {

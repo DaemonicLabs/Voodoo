@@ -1,9 +1,9 @@
 package voodoo.data.nested
 
 import mu.KLogging
+import voodoo.data.DependencyType
 import voodoo.data.OptionalData
 import voodoo.data.Side
-import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
@@ -126,7 +126,7 @@ data class NestedEntry(
             // set feature of entry from `this` or DEFAULT
 
 //            if ((entry.provider == DEFAULT.provider || entry.provider.isBlank()) && provider != DEFAULT.provider) entry.provider = provider
-//            if (entry.categoryId == DEFAULT.categoryId && categoryId != DEFAULT.categoryId) entry.categoryId = categoryId
+//            if (entry.id == DEFAULT.id && id != DEFAULT.id) entry.id = id
 //            if (entry.rootFolder == DEFAULT.rootFolder && rootFolder != DEFAULT.rootFolder) entry.rootFolder = rootFolder
 //            if (entry.comment == DEFAULT.comment && comment != DEFAULT.comment) entry.comment = comment
 //            if (entry.description == DEFAULT.description && description != DEFAULT.description) entry.description = description
@@ -197,7 +197,7 @@ data class NestedEntry(
         entries.forEach { entry ->
             if (entry.id.isEmpty()) {
                 logger.error { entry }
-                throw IllegalStateException("entries with blank categoryId must not persist")
+                throw IllegalStateException("entries with blank id must not persist")
             }
         }
     }

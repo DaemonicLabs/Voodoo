@@ -8,6 +8,6 @@ annotation class GenerateTexturePacks(
     val mc: String = ""
 //    val mc: Array<String>
 //    val mcVersions: Array<String>,
-//    val categoryIds: IntArray = [],
+//    val ids: IntArray = [],
 //    val section: Section
 )

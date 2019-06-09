@@ -5,11 +5,13 @@ import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonParsingException
 import mu.KLogging
+import voodoo.data.DependencyType
 import voodoo.data.OptionalData
 import voodoo.data.Side
-import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.provider.UpdateChannel
@@ -32,7 +34,7 @@ import java.time.Instant
 @Serializable
 data class LockEntry(
     var provider: String,
-    // TODO: make categoryId always match serialFile.name.subStringBefore(".lock.hjson") ?
+    // TODO: make id always match serialFile.name.subStringBefore(".lock.hjson") ?
     @Optional var fileName: String? = null,
     @Optional var side: Side = Side.BOTH,
     @Optional var description: String? = null,
@@ -60,11 +62,11 @@ data class LockEntry(
     @Optional @SerialName("name") private var nameField: String? = null
 ) {
     @Transient
-    lateinit var idField: String // categoryId might not always match the filename
+    lateinit var idField: String // id might not always match the filename
     @Transient
     var id: String
         set(value) {
-            require(!value.contains("[^\\w-]+".toRegex())) { "categoryId: '$value' is not cleaned up properly, must not contain invalid characters" }
+            require(!value.contains("[^\\w-]+".toRegex())) { "id: '$value' is not cleaned up properly, must not contain invalid characters" }
             idField = value
         }
         get() = idField
@@ -133,7 +135,7 @@ data class LockEntry(
         fun loadEntry(file: File, srcDir: File): LockEntry {
             logger.debug("parsing; $file")
             return try {
-                val lockEntry: LockEntry = json.parse(LockEntry.serializer(), file.readText())
+                val lockEntry: LockEntry = Json(JsonConfiguration(unquoted = true)).parse(LockEntry.serializer(), file.readText())
                 lockEntry.folder = file.parentFile.relativeTo(srcDir)
                 lockEntry.id = file.name.substringBefore(".lock.hjson")
                 lockEntry

@@ -94,7 +94,7 @@ object CursePack : AbstractPack() {
                 for (entry in modpack.entrySet) {
                     if (entry.side == Side.SERVER) continue
                     jobs += launch(context = coroutineContext + pool) {
-                        val folder = entry.serialFile.absoluteFile.parentFile
+                        val targetFolder = srcFolder.resolve(entry.serialFile).absoluteFile.parentFile
                         val required = !modpack.isEntryOptional(entry.id)
 
                         val provider = Providers[entry.provider]
@@ -105,11 +105,10 @@ object CursePack : AbstractPack() {
                                     entry.fileID,
                                     required
                                 ).also {
-                                    println("added curse file $it")
+                                    logger.info("added curse file $it")
                                 }
                             )
                         } else {
-                            val targetFolder = srcFolder.resolve(folder)
                             val (_, file) = provider.download(entry, targetFolder, cacheDir)
                             if (!required) {
                                 val optionalFile = file.parentFile.resolve(file.name + ".disabled")

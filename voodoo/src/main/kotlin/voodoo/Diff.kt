@@ -54,7 +54,7 @@ object Diff : KLogging() {
         logger.debug("validVersions: $validVersions")
 
         // copy new pack to .meta/packid/version/root
-//        directories.cacheHome.resolve(newPack.categoryId).resolve("source").let {tmpSource ->
+//        directories.cacheHome.resolve(newPack.id).resolve("source").let {tmpSource ->
 //            newPack.sourceFolder.copyRecursively(tmpSource)
 //            tmpSource.listFiles { file ->
 //                when {
@@ -197,7 +197,7 @@ object Diff : KLogging() {
         defaultLocation: File = getMetaDataDefault(rootDir, id)
     ): File {
         // TODO: where will the file be stored?
-        // rootDir/.meta/$categoryId.txt
+        // rootDir/.meta/$id.txt
 
         val metaDataPointerFile = getMetaDataPointer(rootDir, id)
         return metaDataPointerFile

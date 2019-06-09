@@ -26,7 +26,7 @@ object MMCPack : AbstractPack() {
         instanceDir.deleteRecursively()
 
         val preLaunchCommand =
-            "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --categoryId \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
+            "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
         val minecraftDir = MMCUtil.installEmptyPack(
             modpack.title.blankOr,
             modpack.id,

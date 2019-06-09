@@ -6,9 +6,9 @@ import kotlinx.serialization.UpdateMode
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
+import voodoo.data.DependencyType
 import voodoo.data.OptionalData
 import voodoo.data.Side
-import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
@@ -117,7 +117,7 @@ data class Entry(
         lockEntry.id = id
         lockEntry.block()
         lockEntry.folder = File(lockEntry.suggestedFolder ?: folder)
-        // TODO: calculate serialiFile based on categoryId and reverse
+        // TODO: calculate serialiFile based on id and reverse
 //        lockEntry.serialFile = File(lockEntry.suggestedFolder ?: folder).resolve("$cleanId.lock.hjson")
         return lockEntry
     }

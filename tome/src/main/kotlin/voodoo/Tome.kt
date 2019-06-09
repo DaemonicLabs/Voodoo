@@ -16,8 +16,8 @@ object Tome : KLogging() {
 
         docDir.deleteRecursively()
         for ((file, generator) in tomeEnv.generators) {
-            logger.info("generating $file")
             val targetFile = docDir.resolve(file)
+            logger.info("generating $file targetFile: $targetFile")
             targetFile.parentFile.mkdirs()
             val fileContent = generator.generateHtml(
                 modPack = modpack,

@@ -24,8 +24,8 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `autoreglib`
-Release Type |  | `RELEASE`
-Author |  | `Vazkii`
+Release Type |  | `Release`
+Author |  | `Vazkii_`
 
 
 
@@ -38,7 +38,7 @@ Version |  | `antighost-1.12-forge14.21.1.2387-1.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Thorgeig`
 
 
@@ -52,7 +52,7 @@ Version |  | `AppleSkin-mc1.12-1.0.9.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `squeek502`
 
 
@@ -66,7 +66,7 @@ Version |  | `Architect-MC1.12-1.2.0.6.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `SangarWasTaken`
 
 
@@ -76,13 +76,13 @@ added `armory-expansion`
 Property | old value | new value
 ---|---|---
 ID |  | `armory-expansion`
-Version |  | `Armory Expansion 1.1.10c`
+Version |  | `armoryexpansion-1.3.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Required Dependencies |  | `tinkers-construct`, `mantle`, `constructs-armory`
-Release Type |  | `RELEASE`
-Author |  | `ashuranoyami`
+Required Dependencies |  | `constructs-armory`, `tinkers-construct`, `mantle`
+Release Type |  | `Release`
+Author |  | `AshuraNoYami`
 
 
 
@@ -91,12 +91,12 @@ added `astral-sorcery`
 Property | old value | new value
 ---|---|---
 ID |  | `astral-sorcery`
-Version |  | `AstralSorcery-1.12.2-1.10.18.jar`
+Version |  | `astralsorcery-1.12.2-1.10.19.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `baubles`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `HellFirePvP`
 
 
@@ -106,12 +106,12 @@ added `autoreglib`
 Property | old value | new value
 ---|---|---
 ID |  | `autoreglib`
-Version |  | `AutoRegLib-1.3-28.jar`
+Version |  | `AutoRegLib-1.3-30.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
-Author |  | `Vazkii`
+Release Type |  | `Release`
+Author |  | `Vazkii_`
 
 
 
@@ -124,7 +124,7 @@ Version |  | `badwithernocookiereloaded-1.12.2-3.3.16.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `kreezxil`
 
 
@@ -138,7 +138,7 @@ Version |  | `Baubles-1.12-1.5.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `azanor`
 
 
@@ -152,7 +152,7 @@ Version |  | `Bedrock Ores-MC1.12-1.2.7.42.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `SangarWasTaken`
 
 
@@ -162,11 +162,11 @@ added `better-advancements`
 Property | old value | new value
 ---|---|---
 ID |  | `better-advancements`
-Version |  | `BetterAdvancements-1.12.2-0.1.0.77`
+Version |  | `BetterAdvancements-1.12.2-0.1.0.77.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Way2muchnoise`
 
 
@@ -176,11 +176,11 @@ added `better-builders-wands`
 Property | old value | new value
 ---|---|---
 ID |  | `better-builders-wands`
-Version |  | `Better Builder's Wands 0.13.2 [MC1.12; rev 271]`
+Version |  | `BetterBuildersWands-1.12.2-0.13.2.271+5997513.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `Portablejim`
 
 
@@ -196,7 +196,7 @@ Side |  | `CLIENT`
 Description |  | `Improves the flora in the world. Very heavy, but very pretty. (Sane defaults set.)`
 Optional |  | `true`
 Required Dependencies |  | `shadowfacts-forgelin`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `octarine_noise`
 
 
@@ -206,11 +206,11 @@ added `better-placement`
 Property | old value | new value
 ---|---|---
 ID |  | `better-placement`
-Version |  | `Better Placement 1.0.0`
+Version |  | `BetterPlacement-1.0.0-1.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `tterrag1098`
 
 
@@ -220,11 +220,11 @@ added `betterfps`
 Property | old value | new value
 ---|---|---
 ID |  | `betterfps`
-Version |  | `v1.4.8`
+Version |  | `BetterFps-1.4.8.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `Guichaguri`
 
 
@@ -234,11 +234,11 @@ added `bibliocraft`
 Property | old value | new value
 ---|---|---
 ID |  | `bibliocraft`
-Version |  | `BiblioCraft v2.4.5`
+Version |  | `BiblioCraft[v2.4.5][MC1.12.2].jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `JDSinclair`
 
 
@@ -248,12 +248,12 @@ added `blockcraftery`
 Property | old value | new value
 ---|---|---
 ID |  | `blockcraftery`
-Version |  | `blockcraftery-1.12.2-1.2.0.jar`
+Version |  | `blockcraftery-1.12.2-1.3.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `mysticallib`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `epicsquid319`
 
 
@@ -263,12 +263,12 @@ added `blood-magic`
 Property | old value | new value
 ---|---|---
 ID |  | `blood-magic`
-Version |  | `BloodMagic-1.12.2-2.4.0-102.jar`
+Version |  | `BloodMagic-1.12.2-2.4.1-103.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `guide-api`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `TehNut, WayofTime`
 
 
@@ -278,11 +278,11 @@ added `bookshelf`
 Property | old value | new value
 ---|---|---
 ID |  | `bookshelf`
-Version |  | `Bookshelf-1.12.2-2.3.577.jar`
+Version |  | `Bookshelf-1.12.2-2.3.582.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Alpha`
 Author |  | `Darkhax`
 
 
@@ -297,8 +297,8 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `baubles`
-Release Type |  | `RELEASE`
-Author |  | `Vazkii`
+Release Type |  | `Release`
+Author |  | `Vazkii_`
 
 
 
@@ -307,11 +307,11 @@ added `btfu-continuous-rsync-incremental-backup`
 Property | old value | new value
 ---|---|---
 ID |  | `btfu-continuous-rsync-incremental-backup`
-Version |  | `BTFU-1.12.2-2.5`
+Version |  | `BTFU-1.12.2-2.5.jar`
 Provider |  | `CURSE`
 Side |  | `SERVER`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `capitalthree`
 
 
@@ -321,12 +321,12 @@ added `caliper`
 Property | old value | new value
 ---|---|---
 ID |  | `caliper`
-Version |  | `Caliper-1.12.2-1.1.44.jar`
+Version |  | `Caliper-1.12.2-1.1.45.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `bookshelf`
-Release Type |  | `RELEASE`
+Release Type |  | `Alpha`
 Author |  | `Darkhax`
 
 
@@ -341,7 +341,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `chisel`, `ctm`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `ferreusveritas`
 
 
@@ -355,7 +355,7 @@ Version |  | `Chameleon-1.12-4.1.3.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `jaquadro`
 
 
@@ -365,12 +365,12 @@ added `charset-audio`
 Property | old value | new value
 ---|---|---
 ID |  | `charset-audio`
-Version |  | `Charset Audio 0.5.5.7`
+Version |  | `Charset-Audio-0.5.5.7.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `charset-lib`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `asiekierka`
 
 
@@ -380,12 +380,12 @@ added `charset-block-carrying`
 Property | old value | new value
 ---|---|---
 ID |  | `charset-block-carrying`
-Version |  | `Charset Tweak Carry 0.5.4.6`
+Version |  | `Charset-TweakCarry-0.5.4.6.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `charset-lib`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `asiekierka`
 
 
@@ -395,12 +395,12 @@ added `charset-crafting`
 Property | old value | new value
 ---|---|---
 ID |  | `charset-crafting`
-Version |  | `Charset Crafting 0.5.5.7`
+Version |  | `Charset-Crafting-0.5.5.7.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `charset-lib`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `asiekierka`
 
 
@@ -410,12 +410,12 @@ added `charset-immersion`
 Property | old value | new value
 ---|---|---
 ID |  | `charset-immersion`
-Version |  | `Charset Immersion 0.5.5.7`
+Version |  | `Charset-Immersion-0.5.5.7.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `charset-lib`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `asiekierka`
 
 
@@ -425,11 +425,11 @@ added `charset-lib`
 Property | old value | new value
 ---|---|---
 ID |  | `charset-lib`
-Version |  | `Charset Lib 0.5.5.7`
+Version |  | `Charset-Lib-0.5.5.7.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `asiekierka`
 
 
@@ -439,12 +439,12 @@ added `charset-storage-locks`
 Property | old value | new value
 ---|---|---
 ID |  | `charset-storage-locks`
-Version |  | `Charset Storage Locks 0.5.2.0`
+Version |  | `Charset-StorageLocks-0.5.2.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `charset-lib`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `asiekierka`
 
 
@@ -454,12 +454,12 @@ added `charset-tablet`
 Property | old value | new value
 ---|---|---
 ID |  | `charset-tablet`
-Version |  | `Charset Tablet 0.5.5.7`
+Version |  | `Charset-Tablet-0.5.5.7.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `charset-lib`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `asiekierka`
 
 
@@ -469,12 +469,12 @@ added `charset-tools`
 Property | old value | new value
 ---|---|---
 ID |  | `charset-tools`
-Version |  | `Charset Tools Engineering 0.5.5.2`
+Version |  | `Charset-ToolsEngineering-0.5.5.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `charset-lib`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `asiekierka`
 
 
@@ -484,12 +484,12 @@ added `charset-tweaks`
 Property | old value | new value
 ---|---|---
 ID |  | `charset-tweaks`
-Version |  | `Charset Tweaks 0.5.5.7`
+Version |  | `Charset-Tweaks-0.5.5.7.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `charset-lib`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `asiekierka`
 
 
@@ -499,12 +499,12 @@ added `charsetpatches`
 Property | old value | new value
 ---|---|---
 ID |  | `charsetpatches`
-Version |  | `CharsetPatches 0.1.6`
+Version |  | `CharsetPatches-0.1.6.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `charset-lib`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `asiekierka`
 
 
@@ -514,12 +514,12 @@ added `chisel`
 Property | old value | new value
 ---|---|---
 ID |  | `chisel`
-Version |  | `Chisel - MC1.12.2-0.2.1.35`
+Version |  | `Chisel-MC1.12.2-0.2.1.35.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `ctm`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `Drullkus, Minecreatr, tterrag1098`
 
 
@@ -529,11 +529,11 @@ added `chisels-bits`
 Property | old value | new value
 ---|---|---
 ID |  | `chisels-bits`
-Version |  | `chiselsandbits-14.32.jar`
+Version |  | `chiselsandbits-14.33.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `AlgorithmX2`
 
 
@@ -543,11 +543,11 @@ added `chococraft-3`
 Property | old value | new value
 ---|---|---
 ID |  | `chococraft-3`
-Version |  | ` chococraft_1.12.2-0.9.8.0.jar`
+Version |  | `chococraft_1.12.2-0.9.8.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `Slayer5934`
 
 
@@ -562,7 +562,7 @@ Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Configurable chunk pop-in animator.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `lumien231`
 
 
@@ -572,11 +572,11 @@ added `chunkpregenerator`
 Property | old value | new value
 ---|---|---
 ID |  | `chunkpregenerator`
-Version |  | `Chunk Pregenerator V1.12-2.1`
+Version |  | `Chunk Pregenerator V1.12-2.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Speiger`
 
 
@@ -590,7 +590,7 @@ Version |  | `CleanView-1.12.2-v1b.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `ZLainSama`
 
 
@@ -605,7 +605,7 @@ Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Various client related fixes and tweaks, all in a handy menu.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `BlayTheNinth`
 
 
@@ -615,12 +615,12 @@ added `clumps`
 Property | old value | new value
 ---|---|---
 ID |  | `clumps`
-Version |  | `Clumps-3.1.2`
+Version |  | `Clumps-3.1.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
-Author |  | `jaredlll08`
+Release Type |  | `Release`
+Author |  | `Jaredlll08`
 
 
 
@@ -629,26 +629,26 @@ added `codechicken-lib-1-8`
 Property | old value | new value
 ---|---|---
 ID |  | `codechicken-lib-1-8`
-Version |  | `CodeChicken Lib 1.12.2-3.2.2.353-universal`
+Version |  | `CodeChickenLib-1.12.2-3.2.2.353-universal.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `chicken_bones, covers1624`
 
 
 
-added `cofhcore`
+added `cofh-core`
 
 Property | old value | new value
 ---|---|---
-ID |  | `cofhcore`
-Version |  | `CoFHCore-1.12.2-4.6.2.25-universal.jar`
+ID |  | `cofh-core`
+Version |  | `CoFHCore-1.12.2-4.6.3.27-universal.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `redstone-flux`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `KingLemming, TeamCoFH`
 
 
@@ -658,11 +658,11 @@ added `cofh-world`
 Property | old value | new value
 ---|---|---
 ID |  | `cofh-world`
-Version |  | `CoFHWorld-1.12.2-1.3.0.6-universal.jar`
+Version |  | `CoFHWorld-1.12.2-1.3.1.7-universal.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `KingLemming, skyboy026, TeamCoFH`
 
 
@@ -677,7 +677,7 @@ Provider |  | `CURSE`
 Side |  | `SERVER`
 Optional |  | `false`
 Required Dependencies |  | `k4lib`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `K4Unl`
 
 
@@ -691,7 +691,7 @@ Version |  | `colytra-1.12.2-1.2.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `theillusivec4`
 
 
@@ -705,7 +705,7 @@ Version |  | `comforts-1.12.2-1.4.1.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `theillusivec4`
 
 
@@ -715,11 +715,11 @@ added `compactdrawers`
 Property | old value | new value
 ---|---|---
 ID |  | `compactdrawers`
-Version |  | `CompactDrawers-1.12.2-1.0.5.121.jar`
+Version |  | `CompactDrawers-1.12.2-1.0.5.123.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Beta`
 Author |  | `Samtrion`
 
 
@@ -729,11 +729,11 @@ added `ctm`
 Property | old value | new value
 ---|---|---
 ID |  | `ctm`
-Version |  | `CTM - MC1.12.2-0.3.3.22`
+Version |  | `CTM-MC1.12.2-0.3.3.22.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `tterrag1098`
 
 
@@ -743,12 +743,12 @@ added `constructs-armory`
 Property | old value | new value
 ---|---|---
 ID |  | `constructs-armory`
-Version |  | `conarm-1.12.2-1.2.3.4.jar`
+Version |  | `conarm-1.12.2-1.2.4.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Required Dependencies |  | `tinkers-construct`, `mantle`
-Release Type |  | `RELEASE`
+Required Dependencies |  | `mantle`, `tinkers-construct`
+Release Type |  | `Release`
 Author |  | `theillusivec4`
 
 
@@ -758,12 +758,12 @@ added `controlling`
 Property | old value | new value
 ---|---|---
 ID |  | `controlling`
-Version |  | `Controlling-3.0.6`
+Version |  | `Controlling-3.0.6.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
-Release Type |  | `RELEASE`
-Author |  | `jaredlll08`
+Release Type |  | `Release`
+Author |  | `Jaredlll08`
 
 
 
@@ -776,7 +776,7 @@ Version |  | `CookingForBlockheads_1.12.2-6.4.70.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `BlayTheNinth`
 
 
@@ -790,7 +790,7 @@ Version |  | `corpsecomplex-1.12.2-1.0.5.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `theillusivec4`
 
 
@@ -804,7 +804,7 @@ Version |  | `CosmeticArmorReworked-1.12.2-v4a.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `ZLainSama`
 
 
@@ -818,7 +818,7 @@ Version |  | `CraftingTweaks_1.12.2-8.1.9.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `BlayTheNinth`
 
 
@@ -828,12 +828,12 @@ added `crafttweaker`
 Property | old value | new value
 ---|---|---
 ID |  | `crafttweaker`
-Version |  | `CraftTweaker2-1.12-4.1.17`
+Version |  | `CraftTweaker2-1.12-4.1.18.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
-Author |  | `jaredlll08`
+Release Type |  | `Release`
+Author |  | `Jaredlll08`
 
 
 
@@ -842,12 +842,12 @@ added `custom-fov`
 Property | old value | new value
 ---|---|---
 ID |  | `custom-fov`
-Version |  | `customfov-1.12.2-1.0.jar`
+Version |  | `customfov-1.12.2-1.0.1.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Removes dynamic FOV shifting due to ingame effects.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `theillusivec4`
 
 
@@ -857,11 +857,11 @@ added `cyclops-core`
 Property | old value | new value
 ---|---|---
 ID |  | `cyclops-core`
-Version |  | `CyclopsCore-1.12.2-1.2.1.jar`
+Version |  | `CyclopsCore-1.12.2-1.3.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `kroeser`
 
 
@@ -875,7 +875,7 @@ Version |  | `DefaultOptions_1.12.2-9.2.8.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `BlayTheNinth`
 
 
@@ -889,7 +889,7 @@ Version |  | `DimensionalDoors-3.0.9-287.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `DimensionalDevelopment, Robijnvogel, Runemoro, Waterpicker, ZombieHDGaming`
 
 
@@ -899,12 +899,12 @@ added `doggy-talents`
 Property | old value | new value
 ---|---|---
 ID |  | `doggy-talents`
-Version |  | `DoggyTalents-1.12.2-1.14.2.451-universal.jar`
+Version |  | `DoggyTalents-1.12.2-1.15.0.0-universal.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
-Author |  | `Percivalalb`
+Release Type |  | `Release`
+Author |  | `percivalalb`
 
 
 
@@ -913,12 +913,12 @@ added `durability-show`
 Property | old value | new value
 ---|---|---
 ID |  | `durability-show`
-Version |  | `[1.12] Durability Show 5.0.0`
+Version |  | `Durability Show-1.12-5.0.0.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Toggle-able item/tool/armor durability HUD. Duplicates with RPG-HUD.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `61352151511`
 
 
@@ -934,7 +934,7 @@ Side |  | `CLIENT`
 Description |  | `Caution: Resource heavy. Lots of configurable features that add immersive sound/visual effects. Includes light-level overlay.`
 Optional |  | `true`
 Required Dependencies |  | `orelib`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `OreCruncher`
 
 
@@ -948,7 +948,7 @@ Version |  | `Electroblob's Wizardry - 4.1.4 - MC 1.12.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `electroblob`
 
 
@@ -1074,7 +1074,7 @@ Version |  | `embers-0.230.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `epicsquid319`
 
 
@@ -1084,12 +1084,12 @@ added `ender-io`
 Property | old value | new value
 ---|---|---
 ID |  | `ender-io`
-Version |  | `Ender IO - 5.0.44`
+Version |  | `EnderIO-1.12.2-5.0.44.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `endercore`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `CrazyPants_MC, epicsquid319, Henry_Loenwind, MatthiasMann, tterrag1098`
 
 
@@ -1099,12 +1099,12 @@ added `ender-storage-1-8`
 Property | old value | new value
 ---|---|---
 ID |  | `ender-storage-1-8`
-Version |  | `Ender Storage 1.12.2-2.4.5.135-universal`
+Version |  | `EnderStorage-1.12.2-2.4.5.135-universal.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `codechicken-lib-1-8`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `chicken_bones, covers1624`
 
 
@@ -1114,11 +1114,11 @@ added `endercore`
 Property | old value | new value
 ---|---|---
 ID |  | `endercore`
-Version |  | `EnderCore - 1.12.2-0.5.57`
+Version |  | `EnderCore-1.12.2-0.5.57.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `CrazyPants_MC, Henry_Loenwind, tterrag1098`
 
 
@@ -1133,7 +1133,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `valkyrielib`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `ValkyrieofNight`
 
 
@@ -1147,7 +1147,7 @@ Version |  | `Exchangers-1.12.2-2.8.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Jacky1356400, turkey2349`
 
 
@@ -1161,7 +1161,7 @@ Version |  | `extraalchemy-0.3.8.6.1-release.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `zabi94`
 
 
@@ -1176,7 +1176,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `chisels-bits`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `MolecularPhylo`
 
 
@@ -1186,11 +1186,11 @@ added `extra-utilities`
 Property | old value | new value
 ---|---|---
 ID |  | `extra-utilities`
-Version |  | `Extra Utilities 2 - 1.12 - 1.9.9`
+Version |  | `extrautils2-1.12-1.9.9.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `RWTema`
 
 
@@ -1200,12 +1200,12 @@ added `extreme-reactors`
 Property | old value | new value
 ---|---|---
 ID |  | `extreme-reactors`
-Version |  | `ExtremeReactors-1.12.2-0.4.5.66.jar`
+Version |  | `ExtremeReactors-1.12.2-0.4.5.67.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `zerocore`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `ZeroNoRyouki`
 
 
@@ -1215,11 +1215,11 @@ added `fairy-lights`
 Property | old value | new value
 ---|---|---
 ID |  | `fairy-lights`
-Version |  | `fairylights-2.1.6-1.12.2`
+Version |  | `fairylights-2.1.7-1.12.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `pau101`
 
 
@@ -1229,12 +1229,12 @@ added `fancy-block-particles`
 Property | old value | new value
 ---|---|---
 ID |  | `fancy-block-particles`
-Version |  | `FBP-2.4.1`
+Version |  | `FancyBlockParticles-1.12.x-2.4.1.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `TominoCZ`
 
 
@@ -1248,7 +1248,7 @@ Version |  | `FarmingForBlockheads_1.12.2-3.1.26.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `BlayTheNinth`
 
 
@@ -1263,7 +1263,7 @@ Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Helps you control ladder climb speed and allows you to go a bit faster.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `MadDachshund`
 
 
@@ -1277,7 +1277,7 @@ Version |  | `FastFurnace-1.12.2-1.3.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Shadows_of_Fire`
 
 
@@ -1287,11 +1287,11 @@ added `fastworkbench`
 Property | old value | new value
 ---|---|---
 ID |  | `fastworkbench`
-Version |  | `FastWorkbench-1.12.2-1.7.1.jar`
+Version |  | `FastWorkbench-1.12.2-1.7.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Shadows_of_Fire`
 
 
@@ -1306,7 +1306,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `cyclops-core`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `kroeser`
 
 
@@ -1316,12 +1316,12 @@ added `flux-networks`
 Property | old value | new value
 ---|---|---
 ID |  | `flux-networks`
-Version |  | `Flux-Networks-1.12.2-3.0.19`
+Version |  | `fluxnetworks-1.12.2-3.0.19-21.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `sonar-core`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Ollie_Lansdell`
 
 
@@ -1331,11 +1331,11 @@ added `foamfix-for-minecraft`
 Property | old value | new value
 ---|---|---
 ID |  | `foamfix-for-minecraft`
-Version |  | `FoamFix 0.10.5 (1.12.2)`
+Version |  | `foamfix-0.10.5-1.12.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `asiekierka`
 
 
@@ -1345,11 +1345,11 @@ added `ftblib`
 Property | old value | new value
 ---|---|---
 ID |  | `ftblib`
-Version |  | `FTBLib-5.4.1.99.jar`
+Version |  | `FTBLib-5.4.3.103.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `FTB, LatvianModder`
 
 
@@ -1359,12 +1359,12 @@ added `ftb-utilities`
 Property | old value | new value
 ---|---|---
 ID |  | `ftb-utilities`
-Version |  | `FTBUtilities-5.4.0.96.jar`
+Version |  | `FTBUtilities-5.4.0.97.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Required Dependencies |  | `ftblib`, `ftb-utilities-backups`
-Release Type |  | `RELEASE`
+Required Dependencies |  | `ftb-utilities-backups`, `ftblib`
+Release Type |  | `Release`
 Author |  | `FTB, LatvianModder`
 
 
@@ -1374,11 +1374,11 @@ added `ftb-utilities-backups`
 Property | old value | new value
 ---|---|---
 ID |  | `ftb-utilities-backups`
-Version |  | `FTBUtilitiesBackups-1.0.0.3.jar`
+Version |  | `FTBUtilitiesBackups-1.0.0.4.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `LatvianModder`
 
 
@@ -1388,11 +1388,11 @@ added `fullscreen-windowed-borderless-for-minecraft`
 Property | old value | new value
 ---|---|---
 ID |  | `fullscreen-windowed-borderless-for-minecraft`
-Version |  | `Fullscreen Windowed 1.6.0, MC 1.12 and up`
+Version |  | `FullscreenWindowed-1.12-1.6.0.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `hancin`
 
 
@@ -1428,12 +1428,12 @@ added `grappling-hook-mod`
 Property | old value | new value
 ---|---|---
 ID |  | `grappling-hook-mod`
-Version |  | `Grappling Hook Mod v11.1 for 1.12.2`
+Version |  | `grapplemod-v11.1-1.12.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
-Author |  | `Yyon`
+Release Type |  | `Release`
+Author |  | `yyonne`
 
 
 
@@ -1446,7 +1446,7 @@ Version |  | `Guide-API-1.12-2.1.8-63.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `TehNut, Tombenpotter`
 
 
@@ -1461,7 +1461,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `bookshelf`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Darkhax`
 
 
@@ -1471,13 +1471,13 @@ added `initial-inventory`
 Property | old value | new value
 ---|---|---
 ID |  | `initial-inventory`
-Version |  | `InitialInventory-3.0.0`
+Version |  | `InitialInventory-3.0.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `crafttweaker`, `mtlib`
-Release Type |  | `RELEASE`
-Author |  | `jaredlll08`
+Release Type |  | `Release`
+Author |  | `Jaredlll08`
 
 
 
@@ -1486,11 +1486,11 @@ added `inventory-tweaks`
 Property | old value | new value
 ---|---|---
 ID |  | `inventory-tweaks`
-Version |  | `Inventory Tweaks 1.64+dev.146`
+Version |  | `InventoryTweaks-1.64+dev.146.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `ALPHA`
+Release Type |  | `Alpha`
 Author |  | `Kobata`
 
 
@@ -1500,11 +1500,11 @@ added `iron-chests`
 Property | old value | new value
 ---|---|---
 ID |  | `iron-chests`
-Version |  | `ironchest-1.12.2-7.0.59.842.jar`
+Version |  | `ironchest-1.12.2-7.0.67.844.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Alexbegt, progwml6`
 
 
@@ -1519,7 +1519,7 @@ Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Alternative to MouseTweaks.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `masa_`
 
 
@@ -1534,7 +1534,7 @@ Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Enable this if you like to get a closer look at item textures.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `mezz`
 
 
@@ -1548,7 +1548,7 @@ Version |  | `IvToolkit-1.3.3-1.12.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Ivorforce`
 
 
@@ -1558,12 +1558,12 @@ added `jei-integration`
 Property | old value | new value
 ---|---|---
 ID |  | `jei-integration`
-Version |  | `jeiintegration_1.12.2-1.5.1.36`
+Version |  | `jeiintegration_1.12.2-1.5.1.36.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
 Required Dependencies |  | `jei`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `SnowShock35`
 
 
@@ -1573,12 +1573,12 @@ added `journeymap`
 Property | old value | new value
 ---|---|---
 ID |  | `journeymap`
-Version |  | `journeymap-1.12.2-5.5.5b6`
+Version |  | `journeymap-1.12.2-5.5.5b7.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Mod-compatible mini-map.`
 Optional |  | `true`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `mysticdrew, techbrew`
 
 
@@ -1588,12 +1588,12 @@ added `just-enough-harvestcraft`
 Property | old value | new value
 ---|---|---
 ID |  | `just-enough-harvestcraft`
-Version |  | `[1.12.2] JEHC 1.6.3`
+Version |  | `jehc-1.12.2-1.6.3.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `JEI Integration for Pam's HarvestCraft.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `mrAppleXZ`
 
 
@@ -1603,11 +1603,11 @@ added `jei`
 Property | old value | new value
 ---|---|---
 ID |  | `jei`
-Version |  | `jei_1.12.2-4.15.0.279.jar`
+Version |  | `jei_1.12.2-4.15.0.280.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `mezz`
 
 
@@ -1617,13 +1617,13 @@ added `just-enough-resources-jer`
 Property | old value | new value
 ---|---|---
 ID |  | `just-enough-resources-jer`
-Version |  | `JustEnoughResources-1.12.2-0.9.0.53`
+Version |  | `JustEnoughResources-1.12.2-0.9.1.56.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `JEI Integration that gives drop-rates for mobs, dungeon loot, etc.`
 Optional |  | `true`
 Required Dependencies |  | `jei`
-Release Type |  | `ALPHA`
+Release Type |  | `Alpha`
 Author |  | `Way2muchnoise`
 
 
@@ -1637,7 +1637,7 @@ Version |  | `k4lib-1.12.1-2.1.81-universal.jar`
 Provider |  | `CURSE`
 Side |  | `SERVER`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `K4Unl`
 
 
@@ -1647,12 +1647,12 @@ added `keyboard-wizard`
 Property | old value | new value
 ---|---|---
 ID |  | `keyboard-wizard`
-Version |  | `keywizard-1.12.2-1.6b1.jar`
+Version |  | `keywizard-1.12.2-1.6.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Visual keybind manager.`
 Optional |  | `true`
-Release Type |  | `BETA`
+Release Type |  | `Release`
 Author |  | `mrnerdy42`
 
 
@@ -1666,7 +1666,7 @@ Version |  | `KleeSlabs_1.12.2-5.4.11.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `BlayTheNinth`
 
 
@@ -1681,7 +1681,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Description |  | `***Admin/diagnostic tool. Leave off unless asked to help test performance issues.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Terminator_NL`
 
 
@@ -1695,7 +1695,7 @@ Version |  | `LibEx-1.12.2-1.0.8.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `LogicTechCorp`
 
 
@@ -1710,7 +1710,7 @@ Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Smol light-level overlay if you aren't using Dynamic Surroundings.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `oldjunyi`
 
 
@@ -1724,7 +1724,7 @@ Version |  | `Login_Shield-1.12.2-3-g7c6e7ac.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Glasspelican`
 
 
@@ -1738,7 +1738,7 @@ Version |  | `LootBags-1.12.2-2.5.8.5.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Malorolam`
 
 
@@ -1748,12 +1748,12 @@ added `mage`
 Property | old value | new value
 ---|---|---
 ID |  | `mage`
-Version |  | `MAGE 0.2.4 (1.12.2)`
+Version |  | `MAGE-0.2.4.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Configurable graphics enhancements. Highly recomended.`
 Optional |  | `true`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `asiekierka`
 
 
@@ -1768,7 +1768,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `placebo`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Shadows_of_Fire`
 
 
@@ -1782,7 +1782,7 @@ Version |  | `malisiscore-1.12.2-6.5.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Ordinastie`
 
 
@@ -1797,7 +1797,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `malisiscore`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Ordinastie`
 
 
@@ -1807,11 +1807,11 @@ added `mantle`
 Property | old value | new value
 ---|---|---
 ID |  | `mantle`
-Version |  | `Mantle-1.12-1.3.3.49.jar`
+Version |  | `Mantle-1.12-1.3.3.55.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `bonusboni, mDiyo, progwml6`
 
 
@@ -1821,11 +1821,11 @@ added `mcjtylib`
 Property | old value | new value
 ---|---|---
 ID |  | `mcjtylib`
-Version |  | `McJtyLib - 1.12-3.5.2`
+Version |  | `mcjtylib-1.12-3.5.3.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `McJty`
 
 
@@ -1853,7 +1853,7 @@ Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Radial menu that can be used for command/keyboard shortcuts. Some keybinds cannot be added to radial menu.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Girafi`
 
 
@@ -1867,7 +1867,7 @@ Version |  | `MmmMmmMmmMmm-1.12-1.14.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `bonusboni`
 
 
@@ -1881,7 +1881,7 @@ Version |  | `MobGrindingUtils-0.3.13.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Vadis365`
 
 
@@ -1891,11 +1891,11 @@ added `mod-name-tooltip`
 Property | old value | new value
 ---|---|---
 ID |  | `mod-name-tooltip`
-Version |  | `1.10.0`
+Version |  | `modnametooltip_1.12.2-1.10.0.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `mezz`
 
 
@@ -1905,11 +1905,11 @@ added `modular-powersuits`
 Property | old value | new value
 ---|---|---
 ID |  | `modular-powersuits`
-Version |  | `ModularPowersuits-1.12.2-1.0.40`
+Version |  | `ModularPowersuits-1.12.2-1.0.41.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `MachineMuse`
 
 
@@ -1924,8 +1924,8 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `autoreglib`
-Release Type |  | `RELEASE`
-Author |  | `Vazkii`
+Release Type |  | `Release`
+Author |  | `Vazkii_`
 
 
 
@@ -1934,12 +1934,12 @@ added `mouse-tweaks`
 Property | old value | new value
 ---|---|---
 ID |  | `mouse-tweaks`
-Version |  | `[1.12.2] Mouse Tweaks 2.10`
+Version |  | `MouseTweaks-2.10-mc1.12.2.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Add extra mouse gestures for inventories and crafting grids.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `YaLTeR97`
 
 
@@ -1949,11 +1949,11 @@ added `mrcrayfish-furniture-mod`
 Property | old value | new value
 ---|---|---
 ID |  | `mrcrayfish-furniture-mod`
-Version |  | `Furniture Mod 6.2.1`
+Version |  | `furniture-6.3.0-1.12.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Mr_Crayfish`
 
 
@@ -1963,13 +1963,13 @@ added `mtlib`
 Property | old value | new value
 ---|---|---
 ID |  | `mtlib`
-Version |  | `MTLib-3.0.6`
+Version |  | `MTLib-3.0.6.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `crafttweaker`
-Release Type |  | `RELEASE`
-Author |  | `jaredlll08`
+Release Type |  | `Release`
+Author |  | `Jaredlll08`
 
 
 
@@ -1978,11 +1978,11 @@ added `mysticallib`
 Property | old value | new value
 ---|---|---
 ID |  | `mysticallib`
-Version |  | `mysticallib-1.12.2-1.1.1.jar`
+Version |  | `mysticallib-1.12.2-1.2.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `epicsquid319`
 
 
@@ -1997,7 +1997,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `mantle`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Alexbegt, mDiyo, progwml6`
 
 
@@ -2011,7 +2011,7 @@ Version |  | `NaturesCompass-1.12.2-1.5.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `ChaosTheDude`
 
 
@@ -2026,8 +2026,8 @@ Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Simple health and unit frames.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
-Author |  | `Vazkii`
+Release Type |  | `Release`
+Author |  | `Vazkii_`
 
 
 
@@ -2041,7 +2041,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `libraryex`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `LogicTechCorp`
 
 
@@ -2055,7 +2055,7 @@ Version |  | `NetherPortalFix_1.12.1-5.3.17.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `BlayTheNinth`
 
 
@@ -2069,7 +2069,7 @@ Version |  | `NoNausea-MC1.12-1.0.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `lumien231`
 
 
@@ -2079,11 +2079,11 @@ added `notenoughids`
 Property | old value | new value
 ---|---|---
 ID |  | `notenoughids`
-Version |  | `NotEnoughIDs-1.5.4.4`
+Version |  | `NotEnoughIDs-1.5.4.4.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `fewizz, Player`
 
 
@@ -2111,7 +2111,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `openmodslib`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `OpenMods, other_boq`
 
 
@@ -2125,7 +2125,7 @@ Version |  | `OpenComputers-MC1.12.2-1.7.4.153.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `SangarWasTaken`
 
 
@@ -2140,7 +2140,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Description |  | `Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `OpenMods, other_boq`
 
 
@@ -2154,7 +2154,7 @@ Version |  | `OpenModsLib-1.12.2-0.12.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `OpenMods, other_boq`
 
 
@@ -2182,7 +2182,7 @@ Version |  | `OreLib-1.12.2-3.5.2.2.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `OreCruncher`
 
 
@@ -2196,7 +2196,7 @@ Version |  | `outfox-0.1.3-mc1.12.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `KaiserYoshi`
 
 
@@ -2206,11 +2206,11 @@ added `paintings`
 Property | old value | new value
 ---|---|---
 ID |  | `paintings`
-Version |  | `Paintings++ 5.0.1.1`
+Version |  | `morepaintings-paintings-1.12.2-5.0.1.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `senpaisubaraki`
 
 
@@ -2220,11 +2220,11 @@ added `pams-harvestcraft`
 Property | old value | new value
 ---|---|---
 ID |  | `pams-harvestcraft`
-Version |  | `Pam's HarvestCraft 1.12.2zc The 7mm Kidney Stone Update.jar`
+Version |  | `Pam's HarvestCraft 1.12.2zd Surprise for Yogcast.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `MatrexsVigil`
 
 
@@ -2238,7 +2238,7 @@ Version |  | `PassthroughSigns-1.12.2-2.1.5.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Girafi`
 
 
@@ -2252,8 +2252,8 @@ Version |  | `Patchouli-1.0-19.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
-Author |  | `Vazkii`
+Release Type |  | `Release`
+Author |  | `Vazkii_`
 
 
 
@@ -2262,11 +2262,11 @@ added `peckish`
 Property | old value | new value
 ---|---|---
 ID |  | `peckish`
-Version |  | `Peckish 1.12-1.1.0`
+Version |  | `Peckish-1.12-1.1.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `InsomniaKitten`
 
 
@@ -2281,7 +2281,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `tinkers-construct`, `shadowfacts-forgelin`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `ejektaflex`
 
 
@@ -2293,9 +2293,9 @@ Property | old value | new value
 ID |  | `placebo`
 Version |  | `Placebo-1.12.2-1.6.0.jar`
 Provider |  | `CURSE`
-Side |  | `CLIENT`
+Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Shadows_of_Fire`
 
 
@@ -2305,12 +2305,12 @@ added `portality`
 Property | old value | new value
 ---|---|---
 ID |  | `portality`
-Version |  | `portality-1.12.2-1.2.2-14.jar`
+Version |  | `portality-1.12.2-1.2.3-15.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `ctm`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Buuz135`
 
 
@@ -2320,11 +2320,11 @@ added `preston`
 Property | old value | new value
 ---|---|---
 ID |  | `preston`
-Version |  | `Preston 0.3.5`
+Version |  | `Preston-0.3.5.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `asiekierka`
 
 
@@ -2339,8 +2339,8 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `autoreglib`
-Release Type |  | `RELEASE`
-Author |  | `Vazkii`
+Release Type |  | `Release`
+Author |  | `Vazkii_`
 
 
 
@@ -2349,13 +2349,13 @@ added `quark`
 Property | old value | new value
 ---|---|---
 ID |  | `quark`
-Version |  | `Quark-r1.5-151.jar`
+Version |  | `Quark-r1.5-158.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `autoreglib`
-Release Type |  | `RELEASE`
-Author |  | `Vazkii`
+Release Type |  | `Release`
+Author |  | `Vazkii_`
 
 
 
@@ -2368,7 +2368,7 @@ Version |  | `QuickLeafDecay-MC1.12.1-1.2.4.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `lumien231`
 
 
@@ -2382,7 +2382,7 @@ Version |  | `RandomThings-MC1.12.2-4.2.7.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `lumien231`
 
 
@@ -2392,11 +2392,11 @@ added `randompatches`
 Property | old value | new value
 ---|---|---
 ID |  | `randompatches`
-Version |  | `RandomPatches 1.12.2-1.15.1.0`
+Version |  | `randompatches-1.12.2-1.16.1.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `TheRandomLabs`
 
 
@@ -2406,11 +2406,11 @@ added `randomtweaks`
 Property | old value | new value
 ---|---|---
 ID |  | `randomtweaks`
-Version |  | `RandomTweaks 1.12.2-2.5.0.5`
+Version |  | `randomtweaks-1.12.2-2.5.0.6.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `TheRandomLabs`
 
 
@@ -2420,11 +2420,11 @@ added `ranged-pumps`
 Property | old value | new value
 ---|---|---
 ID |  | `ranged-pumps`
-Version |  | `Ranged Pumps 0.5`
+Version |  | `rangedpumps-0.5.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `raoulvdberge`
 
 
@@ -2434,11 +2434,11 @@ added `reauth`
 Property | old value | new value
 ---|---|---
 ID |  | `reauth`
-Version |  | `ReAuth-3.6.0 1.12`
+Version |  | `reauth-3.6.0.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `TechnicianLP`
 
 
@@ -2452,8 +2452,8 @@ Version |  | `RebornCore-1.12.2-3.13.12.447-universal.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
-Author |  | `Gigabit1011, modmuss50, ProspectorDev`
+Release Type |  | `Release`
+Author |  | `Gigabit1011, modmuss50, ProfessorProspector`
 
 
 
@@ -2462,12 +2462,12 @@ added `rebornstorage`
 Property | old value | new value
 ---|---|---
 ID |  | `rebornstorage`
-Version |  | `RebornStorage-1.12.2-3.3.3.83.jar`
+Version |  | `RebornStorage-1.12.2-3.3.4.85.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Required Dependencies |  | `reborncore`, `refined-storage`
-Release Type |  | `RELEASE`
+Required Dependencies |  | `refined-storage`, `reborncore`
+Release Type |  | `Release`
 Author |  | `Gigabit1011, modmuss50`
 
 
@@ -2482,7 +2482,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `ivtoolkit`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Ivorforce`
 
 
@@ -2496,7 +2496,7 @@ Version |  | `RedstoneFlux-1.12-2.1.0.6-universal.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `KingLemming, TeamCoFH`
 
 
@@ -2506,11 +2506,11 @@ added `redstone-paste`
 Property | old value | new value
 ---|---|---
 ID |  | `redstone-paste`
-Version |  | `Redstone Paste v1.7.5 (for Minecraft 1.12.x)`
+Version |  | `redstonepaste-mc1.12-1.7.5.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `FyberOptic`
 
 
@@ -2520,11 +2520,11 @@ added `refined-storage`
 Property | old value | new value
 ---|---|---
 ID |  | `refined-storage`
-Version |  | `Refined Storage 1.6.14`
+Version |  | `refinedstorage-1.6.14.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `raoulvdberge`
 
 
@@ -2534,12 +2534,12 @@ added `refined-storage-addons`
 Property | old value | new value
 ---|---|---
 ID |  | `refined-storage-addons`
-Version |  | `Refined Storage Addons 0.4.4`
+Version |  | `refinedstorageaddons-0.4.4.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `refined-storage`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `raoulvdberge`
 
 
@@ -2553,7 +2553,7 @@ Version |  | `Reliquary-1.12.2-1.3.4.786.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `P3pp3rF1y`
 
 
@@ -2563,12 +2563,12 @@ added `rftools`
 Property | old value | new value
 ---|---|---
 ID |  | `rftools`
-Version |  | `RFTools - 1.12-7.71`
+Version |  | `rftools-1.12-7.71.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `mcjtylib`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `McJty`
 
 
@@ -2578,12 +2578,12 @@ added `rftools-dimensions`
 Property | old value | new value
 ---|---|---
 ID |  | `rftools-dimensions`
-Version |  | `RFToolsDimensions - 1.12-5.71`
+Version |  | `rftoolsdim-1.12-5.71.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `rftools`, `mcjtylib`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `McJty`
 
 
@@ -2597,7 +2597,7 @@ Version |  | `cyberware-1.12.2-0.2.10.15.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `An_Sar, theFlaxbeard`
 
 
@@ -2611,7 +2611,7 @@ Version |  | `RoguelikeDungeons-1.12.2-1.8.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Greymerk`
 
 
@@ -2625,7 +2625,7 @@ Version |  | `roots-2-0.104.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `epicsquid319, Noobanidus`
 
 
@@ -2635,12 +2635,12 @@ added `rpg-hud`
 Property | old value | new value
 ---|---|---
 ID |  | `rpg-hud`
-Version |  | `[1.12] RPG-HUD-3.6.6.2`
+Version |  | `[1.12] RPG-HUD-3.6.6.2.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `KurodaAkira`
 
 
@@ -2655,7 +2655,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Description |  | `***Admin/diagnostic tool. Leave off unless asked to help test performance issues.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Player`
 
 
@@ -2669,7 +2669,7 @@ Version |  | `Scannable-MC1.12.2-1.6.3.24.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `SangarWasTaken`
 
 
@@ -2697,7 +2697,7 @@ Version |  | `Forgelin-1.8.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `shadowfactsmc`
 
 
@@ -2711,7 +2711,7 @@ Version |  | `SimpleSponge-1.12.2-3.6.2.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Jacky1356400, turkey2349`
 
 
@@ -2735,12 +2735,12 @@ added `smooth-font`
 Property | old value | new value
 ---|---|---
 ID |  | `smooth-font`
-Version |  | `SmoothFont-mc1.12.2-2.0-alpha-11.jar`
+Version |  | `SmoothFont-mc1.12.2-2.0.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `It smoothes fonts.`
 Optional |  | `true`
-Release Type |  | `ALPHA`
+Release Type |  | `Release`
 Author |  | `bre2el`
 
 
@@ -2754,7 +2754,7 @@ Version |  | `Snad-1.12.1-1.7.09.16a.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `TheRoBrit`
 
 
@@ -2764,11 +2764,11 @@ added `sonar-core`
 Property | old value | new value
 ---|---|---
 ID |  | `sonar-core`
-Version |  | `Sonar-Core-1.12.2-5.0.19`
+Version |  | `sonarcore-1.12.2-5.0.19-20.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Ollie_Lansdell`
 
 
@@ -2778,11 +2778,11 @@ added `spartan-shields`
 Property | old value | new value
 ---|---|---
 ID |  | `spartan-shields`
-Version |  | `SpartanShields-1.12.2-1.5.3.jar`
+Version |  | `SpartanShields-1.12.2-1.5.4.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `ObliviousSpartan`
 
 
@@ -2792,11 +2792,11 @@ added `stimmedcow-nomorerecipeconflict`
 Property | old value | new value
 ---|---|---
 ID |  | `stimmedcow-nomorerecipeconflict`
-Version |  | `NoMoreRecipeConflict-0.13`
+Version |  | `NoMoreRecipeConflict-0.13(1.12.2).jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Oliv1er`
 
 
@@ -2811,7 +2811,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `chameleon`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `jaquadro`
 
 
@@ -2825,8 +2825,8 @@ Version |  | `StorageDrawersExtras-1.12-3.1.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Required Dependencies |  | `storage-drawers`, `chameleon`
-Release Type |  | `RELEASE`
+Required Dependencies |  | `chameleon`, `storage-drawers`
+Release Type |  | `Release`
 Author |  | `jaquadro`
 
 
@@ -2840,7 +2840,7 @@ Version |  | `Surge-1.12.2-2.0.77.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Darkhax`
 
 
@@ -2854,7 +2854,7 @@ Version |  | `stg-1.12.2-1.2.3.jar`
 Provider |  | `CURSE`
 Side |  | `SERVER`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `exidex`
 
 
@@ -2868,8 +2868,8 @@ Version |  | `Tails-1.12-1.10.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
-Author |  | `KitsuneKihira, TTFTCUTS`
+Release Type |  | `Release`
+Author |  | `Kihira, TTFTCUTS`
 
 
 
@@ -2883,7 +2883,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `baubles`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `azanor`
 
 
@@ -2898,7 +2898,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `thaumcraft`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `BlayTheNinth`
 
 
@@ -2914,7 +2914,7 @@ Side |  | `CLIENT`
 Description |  | `JEI Integration for Thaumcraft.`
 Optional |  | `true`
 Required Dependencies |  | `thaumcraft`, `jei`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Buuz135`
 
 
@@ -2924,12 +2924,12 @@ added `the-aether`
 Property | old value | new value
 ---|---|---
 ID |  | `the-aether`
-Version |  | ` Aether Legacy 1.12.2-v1.4.4`
+Version |  | `aether_legacy-1.12.2-v1.4.4.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
-Author |  | `115kino, GildedGames`
+Release Type |  | `Release`
+Author |  | `GildedGames, user_10599132`
 
 
 
@@ -2938,11 +2938,11 @@ added `the-disenchanter-mod`
 Property | old value | new value
 ---|---|---
 ID |  | `the-disenchanter-mod`
-Version |  | `DisenchanterMod - 1.6 for 1.12`
+Version |  | `disenchanter-[1.12]1.6.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `eusunt`
 
 
@@ -2952,11 +2952,11 @@ added `the-one-probe`
 Property | old value | new value
 ---|---|---
 ID |  | `the-one-probe`
-Version |  | `TheOneProbe - 1.12-1.4.28`
+Version |  | `theoneprobe-1.12-1.4.28.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `McJty`
 
 
@@ -2966,12 +2966,12 @@ added `the-twilight-forest`
 Property | old value | new value
 ---|---|---
 ID |  | `the-twilight-forest`
-Version |  | `Twilight Forest - MC 1.12.2 - 3.9.888`
+Version |  | `twilightforest-1.12.2-3.9.888-universal.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Required Dependencies |  | `ctm`, `patchouli`
-Release Type |  | `ALPHA`
+Required Dependencies |  | `patchouli`, `ctm`
+Release Type |  | `Alpha`
 Author |  | `AtomicBlom, Benimatic, Drullkus, Tamaized, williewillus`
 
 
@@ -2981,27 +2981,27 @@ added `thermal-dynamics`
 Property | old value | new value
 ---|---|---
 ID |  | `thermal-dynamics`
-Version |  | `ThermalDynamics-1.12.2-2.5.4.18-universal.jar`
+Version |  | `ThermalDynamics-1.12.2-2.5.5.21-universal.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Required Dependencies |  | `thermal-foundation`, `codechicken-lib-1-8`
-Release Type |  | `RELEASE`
+Required Dependencies |  | `codechicken-lib-1-8`, `thermal-foundation`
+Release Type |  | `Release`
 Author |  | `KingLemming, RWTema, TeamCoFH`
 
 
 
-added `thermalexpansion`
+added `thermal-expansion`
 
 Property | old value | new value
 ---|---|---
-ID |  | `thermalexpansion`
-Version |  | `ThermalExpansion-1.12.2-5.5.3.41-universal.jar`
+ID |  | `thermal-expansion`
+Version |  | `ThermalExpansion-1.12.2-5.5.4.43-universal.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `thermal-foundation`, `codechicken-lib-1-8`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `KingLemming, TeamCoFH`
 
 
@@ -3011,12 +3011,12 @@ added `thermal-foundation`
 Property | old value | new value
 ---|---|---
 ID |  | `thermal-foundation`
-Version |  | `ThermalFoundation-1.12.2-2.6.2.26-universal.jar`
+Version |  | `ThermalFoundation-1.12.2-2.6.3.27-universal.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Required Dependencies |  | `cofhcore`, `cofh-world`
-Release Type |  | `RELEASE`
+Required Dependencies |  | `cofh-core`, `cofh-world`
+Release Type |  | `Release`
 Author |  | `KingLemming, TeamCoFH`
 
 
@@ -3026,12 +3026,12 @@ added `thermal-innovation`
 Property | old value | new value
 ---|---|---
 ID |  | `thermal-innovation`
-Version |  | `ThermalInnovation-1.12.2-0.3.2.11-universal.jar`
+Version |  | `ThermalInnovation-1.12.2-0.3.3.12-universal.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `thermal-foundation`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `KingLemming, TeamCoFH`
 
 
@@ -3046,7 +3046,7 @@ Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `mantle`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `bonusboni, KnightMiner, mDiyo`
 
 
@@ -3060,8 +3060,8 @@ Version |  | `TinkerToolLeveling-1.12.2-1.1.0.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Required Dependencies |  | `tinkers-construct`, `mantle`
-Release Type |  | `RELEASE`
+Required Dependencies |  | `mantle`, `tinkers-construct`
+Release Type |  | `Release`
 Author |  | `bonusboni`
 
 
@@ -3076,7 +3076,7 @@ Provider |  | `CURSE`
 Side |  | `CLIENT`
 Optional |  | `false`
 Required Dependencies |  | `placebo`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Shadows_of_Fire`
 
 
@@ -3090,8 +3090,8 @@ Version |  | `ToolBelt-1.12.0-1.7.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
-Author |  | `gigaherz`
+Release Type |  | `Release`
+Author |  | `TheRealGigaherz`
 
 
 
@@ -3104,7 +3104,7 @@ Version |  | `torchmaster_1.12.2-1.7.1.74.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `xalcon`
 
 
@@ -3114,13 +3114,13 @@ added `unity`
 Property | old value | new value
 ---|---|---
 ID |  | `unity`
-Version |  | `Unity-1.6.4`
+Version |  | `Unity-1.6.4-1.12.zip`
 Provider |  | `CURSE`
 Filename |  | `Unity.zip`
 Side |  | `CLIENT`
 Description |  | `Multi-mod compatible resource pack.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `theCyanideX`
 
 
@@ -3130,11 +3130,11 @@ added `unlimited-chisel-works`
 Property | old value | new value
 ---|---|---
 ID |  | `unlimited-chisel-works`
-Version |  | `Unlimited Chisel Works 0.2.1`
+Version |  | `UnlimitedChiselWorks-0.2.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `asiekierka`
 
 
@@ -3148,8 +3148,8 @@ Version |  | `upsizer-mc1.12-4.0.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
-Author |  | `The_Wabbit`
+Release Type |  | `Release`
+Author |  | `The_Wabbit0101`
 
 
 
@@ -3162,7 +3162,7 @@ Version |  | `valkyrielib-1.12.2-2.0.20.1.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `ValkyrieofNight`
 
 
@@ -3176,7 +3176,7 @@ Version |  | `ViesCraft-1.12.2-5.9.13.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Viesis_Gaming`
 
 
@@ -3186,12 +3186,12 @@ added `vise`
 Property | old value | new value
 ---|---|---
 ID |  | `vise`
-Version |  | `Vise v1.4`
+Version |  | `Vise-1.12.2-1.4.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `More granular control over UI/HUD elements.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `unascribed`
 
 
@@ -3205,7 +3205,7 @@ Version |  | `walljump-1.12.2-1.2.3.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `genandnic`
 
 
@@ -3219,7 +3219,7 @@ Version |  | `Waystones_1.12.2-4.0.67.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `BlayTheNinth`
 
 
@@ -3229,11 +3229,11 @@ added `wearable-backpacks`
 Property | old value | new value
 ---|---|---
 ID |  | `wearable-backpacks`
-Version |  | ` Wearable Backpacks - 1.12.2 - 3.1.3`
+Version |  | `WearableBackpacks-1.12.2-3.1.3.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `asiekierka, InsomniaKitten, koppeh, PuppetzMedia`
 
 
@@ -3243,12 +3243,12 @@ added `woot`
 Property | old value | new value
 ---|---|---
 ID |  | `woot`
-Version |  | `woot-1.12.2-1.4.10.jar`
+Version |  | `woot-1.12.2-1.4.11.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
 Required Dependencies |  | `guide-api`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Ipsis`
 
 
@@ -3258,12 +3258,12 @@ added `xaeros-minimap`
 Property | old value | new value
 ---|---|---
 ID |  | `xaeros-minimap`
-Version |  | `v1.16.8 for Minecraft 1.12.2 \| 1.12.1 \| 1.12`
+Version |  | `Xaeros_Minimap_1.17.1_Forge_1.12.jar`
 Provider |  | `CURSE`
 Side |  | `CLIENT`
 Description |  | `Alternative to Journeymap.`
 Optional |  | `true`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `xaero96`
 
 
@@ -3277,7 +3277,7 @@ Version |  | `yoyos_1.12.2-1.2.2.20.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `RELEASE`
+Release Type |  | `Release`
 Author |  | `Raven2396`
 
 
@@ -3291,7 +3291,7 @@ Version |  | `zerocore-1.12.2-0.1.2.8.jar`
 Provider |  | `CURSE`
 Side |  | `BOTH`
 Optional |  | `false`
-Release Type |  | `BETA`
+Release Type |  | `Beta`
 Author |  | `ZeroNoRyouki`
 
 

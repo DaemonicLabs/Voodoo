@@ -289,7 +289,7 @@ object Hex : KLogging() {
 
     private class Arguments(parser: ArgParser) {
         val instanceId by parser.storing(
-            "--categoryId",
+            "--id",
             help = "\$INST_ID - ID of the instance"
         )
 

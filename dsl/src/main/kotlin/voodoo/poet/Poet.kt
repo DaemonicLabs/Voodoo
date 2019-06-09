@@ -27,7 +27,7 @@ object Poet : KLogging() {
     }
 
     fun generateAll(
-        generatedSrcDir: File, // = SharedFolders.GeneratedSrc.get(categoryId = categoryId),
+        generatedSrcDir: File, // = SharedFolders.GeneratedSrc.get(id = id),
         slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer,
         curseGenerators: List<CurseGenerator> = listOf(),
         forgeGenerators: List<ForgeGenerator> = listOf()
@@ -123,8 +123,8 @@ object Poet : KLogging() {
 //                    .addAnnotation(JvmSynthetic::class)
                     .addKdoc("@see %L\n", projectPage)
                     .mutable(false)
-//                    .initializer("%T(%L)", idType, categoryId.value)
-//                    .initializer("%L", categoryId.value)
+//                    .initializer("%T(%L)", idType, id.value)
+//                    .initializer("%L", id.value)
                     .getter(
                         FunSpec.getterBuilder()
                             .addModifiers(KModifier.INLINE)

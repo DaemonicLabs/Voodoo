@@ -2,8 +2,8 @@
     provider: CURSE,
     dependencies: {
         REQUIRED: [
-            storage-drawers,
-            chameleon
+            chameleon,
+            storage-drawers
         ]
     },
     projectID: 254879,

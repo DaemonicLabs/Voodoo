@@ -8,7 +8,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import list
-import RELEASE_TYPES
+import releaseTypes
 import voodoo.poet.Poet
 import voodoo.poet.PoetPack
 import voodoo.curse.CurseClient
@@ -112,7 +112,7 @@ object CurseImporter : AbstractImporter() {
         }
 
 //        val forge = manifest.minecraft.modLoaders
-//            .find { it.categoryId.startsWith("forge-") }?.categoryId?.substringAfterLast('.')
+//            .find { it.id.startsWith("forge-") }?.id?.substringAfterLast('.')
 
         val scriptEnv = MainScriptEnv(
             rootDir = rootDir,
@@ -132,7 +132,7 @@ object CurseImporter : AbstractImporter() {
             localDir = local
             root(CurseProvider) {
                 this.validMcVersions = validMcVersions - manifest.minecraft.version
-                RELEASE_TYPES = sortedSetOf(FileType.Release, FileType.Beta, FileType.Alpha)
+                releaseTypes = sortedSetOf(FileType.Release, FileType.Beta, FileType.Alpha)
                 list {
                     curseEntries.forEach { (identifier, versionStr, curseProjectID) ->
                         +ProjectID(curseProjectID.value) configure {

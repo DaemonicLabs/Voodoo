@@ -2,10 +2,10 @@
     provider: CURSE,
     dependencies: {
         REQUIRED: [
-            cofhcore,
+            cofh-core,
             cofh-world
         ]
     },
     projectID: 222880,
-    fileID: 2669258
+    fileID: 2715788
 }

@@ -7,6 +7,6 @@ annotation class GenerateMods(
     val name: String,
     val mc: String
 //    val mcVersions: Array<String>,
-//    val categoryIds: IntArray = [],
+//    val ids: IntArray = [],
 //    val section: Section
 )

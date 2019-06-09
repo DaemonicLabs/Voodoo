@@ -2,10 +2,10 @@
     provider: CURSE,
     dependencies: {
         REQUIRED: [
-            thermal-foundation,
-            codechicken-lib-1-8
+            codechicken-lib-1-8,
+            thermal-foundation
         ]
     },
     projectID: 227443,
-    fileID: 2669256
+    fileID: 2716138
 }

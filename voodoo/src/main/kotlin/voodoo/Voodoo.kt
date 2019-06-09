@@ -61,10 +61,10 @@ object Voodoo : KLogging() {
         val scriptFileName = scriptFile.name
 
         val id = scriptFileName.substringBeforeLast(".voodoo.kts").apply {
-            require(isNotBlank()) { "the script file must contain a categoryId in the filename" }
+            require(isNotBlank()) { "the script file must contain a id in the filename" }
         }.toLowerCase()
 
-        logger.debug("categoryId: $id")
+        logger.debug("id: $id")
 
         val rootDir = SharedFolders.RootDir.get().absoluteFile
 
@@ -97,7 +97,7 @@ object Voodoo : KLogging() {
         val funcs = mapOf<String, suspend (Array<String>) -> Unit>(
             "import_debug" to { _ ->
                 Importer.flatten(nestedPack, targetFileName = packFileName) },
-//        "build_debug" to { args -> BuilderForDSL.build(packFile, rootDir, categoryId, targetFileName = lockFileName, args = *args) },
+//        "build_debug" to { args -> BuilderForDSL.build(packFile, rootDir, id, targetFileName = lockFileName, args = *args) },
             "build" to { args ->
                 val modpack = Importer.flatten(nestedPack)
                 val lockPack = Builder.build(modpack, id = id, /*targetFileName = lockFileName,*/ args = *args)
@@ -105,7 +105,7 @@ object Voodoo : KLogging() {
                 Tome.generate(modpack, lockPack, tomeEnv, uploadDir)
 
                 // TODO: add changelog field to pack
-                // TODO: write `.meta/$categoryId/$version.meta.hjson`
+                // TODO: write `.meta/$id/$version.meta.hjson`
                 // TODO: if the file did not exist (so it is the first commit that changes the version):
                 //   TODO: get parent git hash, write to `$lastVersion.commithash.txt`
                 // TODO: generate diff between $version and $lastVersion
@@ -228,7 +228,7 @@ object Voodoo : KLogging() {
             val scriptFileName = scriptFile.name
 
             val id = scriptFileName.substringBeforeLast(".tome.kts").apply {
-                require(isNotBlank()) { "the script file must contain a categoryId in the filename" }
+                require(isNotBlank()) { "the script file must contain a id in the filename" }
             }
 
             val tomeScriptEnv = host.evalScript<TomeScript>(

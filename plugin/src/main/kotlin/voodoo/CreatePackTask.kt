@@ -20,7 +20,7 @@ open class CreatePackTask : DefaultTask() {
     lateinit var packsDir: File
 
     @Input
-    @Option(option = "categoryId", description = "modpack categoryId")
+    @Option(option = "id", description = "modpack id")
     var id: String = "rename_me"
 
     @Input
@@ -38,7 +38,7 @@ open class CreatePackTask : DefaultTask() {
     @TaskAction
     fun create() {
         if (id == null)
-            throw GradleException("categoryId needs to be specified with --categoryId")
+            throw GradleException("id needs to be specified with --id")
         if (mcVersion == null)
             throw GradleException("mcVersion needs to be specified with --mcVersion")
 
@@ -60,7 +60,7 @@ open class CreatePackTask : DefaultTask() {
 
         val scriptEnv = MainScriptEnv(
             rootDir = rootDir,
-            id = id ?: throw GradleException("categoryId was null")
+            id = id ?: throw GradleException("id was null")
         ).apply {
             mcVersion = this@CreatePackTask.mcVersion ?: throw GradleException("mcVersion was null")
             title = titleStr.takeIf { it.isNotBlank() } ?: id.capitalize()

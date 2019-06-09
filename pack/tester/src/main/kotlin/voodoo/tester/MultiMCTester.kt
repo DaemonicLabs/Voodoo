@@ -8,8 +8,8 @@ import kotlinx.serialization.internal.HashMapSerializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.serializer
+import voodoo.data.DependencyType
 import voodoo.data.Side
-import voodoo.data.curse.DependencyType
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
 import voodoo.mmc.MMCSelectable
@@ -149,7 +149,7 @@ object MultiMCTester : AbstractTester() {
                                 modpack.isDependencyOf(
                                     entryId = entry.id,
                                     parentId = it.id,
-                                    dependencyType = DependencyType.RequiredDependency
+                                    dependencyType = DependencyType.REQUIRED
                                 )
                             }
                             logger.debug("${entry.id} is a dependency of ${matchedOptioalsList.map { it.id }}")
