@@ -11,3 +11,7 @@ kotlinc/
 workspace/
 _upload/
 
+.meta/
+*.lock.hjson
+*.lock.pack.hjson
+

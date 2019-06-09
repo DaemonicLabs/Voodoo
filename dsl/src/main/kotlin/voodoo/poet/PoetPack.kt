@@ -9,7 +9,7 @@ import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.data.curse.FileID
-import voodoo.data.curse.ReleaseType
+import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
 import voodoo.forge.ForgeUtil
@@ -82,7 +82,7 @@ object PoetPack : KLogging() {
             when (provider) {
                 is CurseProvider -> {
                     entry.curseReleaseTypes.takeIf { it != default.curseReleaseTypes }?.let { curseReleaseTypes ->
-                        val fileType = ReleaseType::class.asClassName()
+                        val fileType = FileType::class.asClassName()
                         val builder = CodeBlock.builder().add("RELEASE_TYPES = setOf(")
                         curseReleaseTypes.forEachIndexed { index, releaseType ->
                             if (index != 0) builder.add(", ")

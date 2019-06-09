@@ -7,6 +7,6 @@ data class GameVersionLatestFile(
     val gameVersion: String,
     val projectFileId: Int,
     val projectFileName: String,
-    @Serializable(with = ReleaseType.Companion::class)
-    val fileType: ReleaseType
+    @Serializable(with = FileType.Companion::class)
+    val fileType: FileType
 )

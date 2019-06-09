@@ -188,7 +188,7 @@ object Poet : KLogging() {
         source.writeTo(targetFolder)
         logger.info("written to $targetFile")
         return targetFile
-    } 
+    }
 
     private fun save(type: TypeSpec, name: String, folder: File): File {
         folder.mkdirs()

@@ -6,20 +6,20 @@ import kotlinx.serialization.SerialDescriptor
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.internal.IntDescriptor
 
-enum class ReleaseType {
+enum class FileType {
     Release,
     Beta,
     Alpha;
 
-    @Serializer(forClass = ReleaseType::class)
+    @Serializer(forClass = FileType::class)
     companion object {
         override val descriptor: SerialDescriptor = IntDescriptor
 
-        override fun deserialize(decoder: Decoder): ReleaseType {
+        override fun deserialize(decoder: Decoder): FileType {
             return values()[decoder.decodeInt()-1]
         }
 
-        override fun serialize(encoder: Encoder, obj: ReleaseType) {
+        override fun serialize(encoder: Encoder, obj: FileType) {
             encoder.encodeInt(obj.ordinal + 1)
         }
     }

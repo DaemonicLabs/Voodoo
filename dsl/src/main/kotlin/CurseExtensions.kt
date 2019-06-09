@@ -1,12 +1,12 @@
 import voodoo.data.curse.FileID
-import voodoo.data.curse.ReleaseType
+import voodoo.data.curse.FileType
 import voodoo.data.curse.ProjectID
 import voodoo.dsl.builder.AbstractBuilder
 import voodoo.dsl.builder.EntryBuilder
 import voodoo.lazyProperty
 import voodoo.provider.CurseProvider
 
-var AbstractBuilder<CurseProvider>.RELEASE_TYPES: Set<ReleaseType> by lazyProperty { entry::curseReleaseTypes }
+var AbstractBuilder<CurseProvider>.RELEASE_TYPES: Set<FileType> by lazyProperty { entry::curseReleaseTypes }
 var AbstractBuilder<CurseProvider>.projectID: ProjectID by lazyProperty { entry::curseProjectID }
 var AbstractBuilder<CurseProvider>.fileID: FileID by lazyProperty { entry::curseFileID }
 var AbstractBuilder<CurseProvider>.useUrlTxt: Boolean by lazyProperty { entry::useUrlTxt }
@@ -32,7 +32,7 @@ var AbstractBuilder<CurseProvider>.useUrlTxt: Boolean by lazyProperty { entry::u
 //         entry.curseFileID = it
 //     }
 
-infix fun <T> T.releaseTypes(set: Set<ReleaseType>) where T : EntryBuilder<CurseProvider> =
+infix fun <T> T.releaseTypes(set: Set<FileType>) where T : EntryBuilder<CurseProvider> =
     apply { entry.curseReleaseTypes = set }
 
 infix fun <T> T.projectID(id: ProjectID) where T : EntryBuilder<CurseProvider> =

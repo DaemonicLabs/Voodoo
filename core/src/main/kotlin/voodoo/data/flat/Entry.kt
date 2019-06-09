@@ -10,7 +10,7 @@ import voodoo.data.OptionalData
 import voodoo.data.Side
 import voodoo.data.curse.DependencyType
 import voodoo.data.curse.FileID
-import voodoo.data.curse.ReleaseType
+import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
 import voodoo.data.curse.ProjectID
 import voodoo.data.lock.LockEntry
@@ -49,7 +49,7 @@ data class Entry(
 //        },
     var validMcVersions: Set<String> = setOf(),
     // CURSE
-    var curseReleaseTypes: Set<ReleaseType> = setOf(ReleaseType.Release, ReleaseType.Beta),
+    var curseReleaseTypes: Set<FileType> = setOf(FileType.Release, FileType.Beta),
     var curseProjectID: ProjectID = ProjectID.INVALID,
     var curseFileID: FileID = FileID.INVALID,
     // DIRECT

@@ -10,7 +10,7 @@ import org.spekframework.spek2.style.specification.describe
 import RELEASE_TYPES
 import voodoo.builder.Builder
 import voodoo.data.Side
-import voodoo.data.curse.ReleaseType
+import voodoo.data.curse.FileType
 import voodoo.data.lock.LockPack
 import voodoo.provider.CurseProvider
 import voodoo.provider.JenkinsProvider
@@ -38,7 +38,7 @@ object RoundTripSpek : Spek({
                 // TODO: type = {recommended, latest} | buildnumber, make sealed class ?
                 forge = Forge.recommended
                 root(CurseProvider) {
-                    RELEASE_TYPES = setOf(ReleaseType.Release, ReleaseType.Beta)
+                    RELEASE_TYPES = setOf(FileType.Release, FileType.Beta)
 
                     // TODO: use type URL ?
                     metaUrl = "https://curse.nikky.moe"

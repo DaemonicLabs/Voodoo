@@ -10,8 +10,8 @@ data class AddonFile(
     val fileName: String,
     @Serializable(with = LocalDateTimeSerializer::class)
     val fileDate: LocalDateTime,
-    @Serializable(with = ReleaseType.Companion::class)
-    var releaseType: ReleaseType,
+    @Serializable(with = FileType.Companion::class)
+    var releaseType: FileType,
     @Serializable(with = FileStatus.Companion::class)
     val fileStatus: FileStatus,
     val downloadUrl: String,

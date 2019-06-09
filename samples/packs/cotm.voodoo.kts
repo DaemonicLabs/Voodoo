@@ -88,7 +88,7 @@ root(CurseProvider) {
 
         // Team CoFH
         +(Mod.thermalDynamics)
-        +(Mod.thermalexpansion)
+        +(Mod.thermalExpansion)
         +(Mod.thermalInnovation)
 
         // mcjty

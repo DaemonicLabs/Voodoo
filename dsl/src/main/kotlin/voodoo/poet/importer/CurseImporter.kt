@@ -13,7 +13,7 @@ import voodoo.poet.Poet
 import voodoo.poet.PoetPack
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseManifest
-import voodoo.data.curse.ReleaseType
+import voodoo.data.curse.FileType
 import voodoo.data.curse.ProjectID
 import voodoo.provider.CurseProvider
 import voodoo.provider.LocalProvider
@@ -132,7 +132,7 @@ object CurseImporter : AbstractImporter() {
             localDir = local
             root(CurseProvider) {
                 this.validMcVersions = validMcVersions - manifest.minecraft.version
-                RELEASE_TYPES = sortedSetOf(ReleaseType.Release, ReleaseType.Beta, ReleaseType.Alpha)
+                RELEASE_TYPES = sortedSetOf(FileType.Release, FileType.Beta, FileType.Alpha)
                 list {
                     curseEntries.forEach { (identifier, versionStr, curseProjectID) ->
                         +ProjectID(curseProjectID.value) configure {
