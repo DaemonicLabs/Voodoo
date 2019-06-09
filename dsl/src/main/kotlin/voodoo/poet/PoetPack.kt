@@ -2,11 +2,16 @@ package voodoo.poet
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import com.skcraft.launcher.model.modpack.Feature
+import com.squareup.kotlinpoet.AnnotationSpec
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.CodeBlock
+import com.squareup.kotlinpoet.FileSpec
 import com.squareup.kotlinpoet.asClassName
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
+import voodoo.GenerateForge
+import voodoo.GenerateMods
+import voodoo.GenerateTexturePacks
 import voodoo.curse.CurseClient
 import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
@@ -21,6 +26,9 @@ import voodoo.provider.Providers
 import voodoo.provider.UpdateJsonProvider
 import voodoo.script.MainScriptEnv
 import java.io.File
+import java.io.OutputStreamWriter
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
 
 object PoetPack : KLogging() {
     fun CodeBlock.Builder.controlFlow(
@@ -292,7 +300,25 @@ object PoetPack : KLogging() {
 
         println("script: \n$mainEnv")
 
-        val packScript = mainEnv.toString()
+        val fileSpec = FileSpec.builder("", "${nestedPack.id}.voodoo.kts").also { fileSpecBuilder ->
+            fileSpecBuilder.annotations += AnnotationSpec.builder(GenerateMods::class).also { annotationBuilder ->
+                annotationBuilder.useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
+                annotationBuilder.addMember("name = %S", "Mod")
+                annotationBuilder.addMember("mc = %S", nestedPack.mcVersion ?: "1.12.2")
+            }.build()
+            fileSpecBuilder.annotations += AnnotationSpec.builder(GenerateTexturePacks::class).also { annotationBuilder ->
+                annotationBuilder.useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
+                annotationBuilder.addMember("name = %S", "TexturePack")
+                annotationBuilder.addMember("mc = %S", nestedPack.mcVersion ?: "1.12.2")
+            }.build()
+            fileSpecBuilder.annotations += AnnotationSpec.builder(GenerateForge::class).also { annotationBuilder ->
+                annotationBuilder.useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
+                annotationBuilder.addMember("name = %S", "Forge")
+                annotationBuilder.addMember("mc = %S", nestedPack.mcVersion ?: "1.12.2")
+            }.build()
+        }.build()
+
+
         folder.mkdirs()
         val scriptFile = folder.resolve("${nestedPack.id}.voodoo.kts")
 
@@ -300,9 +326,12 @@ object PoetPack : KLogging() {
             logger.error { "file: $scriptFile already exists" }
             throw IllegalStateException("file: $scriptFile already exists")
         }
-        scriptFile.writeText(packScript)
 
-        logger.info { packScript }
+        val outputPath = scriptFile.toPath()
+        OutputStreamWriter(Files.newOutputStream(outputPath), StandardCharsets.UTF_8).use { writer -> fileSpec.writeTo(writer) }
+        val packScript = mainEnv.toString()
+        scriptFile.appendText("\n" + packScript)
+
         logger.info("written to $scriptFile")
     }
 }

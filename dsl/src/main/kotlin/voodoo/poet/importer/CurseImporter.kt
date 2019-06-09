@@ -7,6 +7,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import list
 import releaseTypes
 import voodoo.poet.Poet
@@ -61,8 +62,9 @@ object CurseImporter : AbstractImporter() {
 
         val manifestFile = extractFolder.resolve("manifest.json")
         require(manifestFile.exists()) { "$manifestFile does not exist" }
+        logger.info("parsing \n${manifestFile.readText()}")
 
-        val manifest: CurseManifest = Json.parse(CurseManifest.serializer(), manifestFile.readText())
+        val manifest: CurseManifest = Json(JsonConfiguration()).parse(CurseManifest.serializer(), manifestFile.readText())
 
         val validMcVersions = mutableSetOf<String>()
 

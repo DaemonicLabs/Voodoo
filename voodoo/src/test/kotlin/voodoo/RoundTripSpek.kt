@@ -4,10 +4,9 @@ import Forge
 import job
 import kotlinx.coroutines.runBlocking
 import list
-import metaUrl
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import RELEASE_TYPES
+import releaseTypes
 import voodoo.builder.Builder
 import voodoo.data.Side
 import voodoo.data.curse.FileType
@@ -38,10 +37,9 @@ object RoundTripSpek : Spek({
                 // TODO: type = {recommended, latest} | buildnumber, make sealed class ?
                 forge = Forge.recommended
                 root(CurseProvider) {
-                    RELEASE_TYPES = setOf(FileType.Release, FileType.Beta)
+                    releaseTypes = setOf(FileType.Release, FileType.Beta)
 
                     // TODO: use type URL ?
-                    metaUrl = "https://curse.nikky.moe"
                     list {
                         +(Mod.botania)
 

@@ -31,6 +31,6 @@ repositories {
 }
 
 dependencies {
-    implementation(group = "moe.nikky.voodoo", name = "dsl", version = "0.4.7-dev")
-    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.7-dev")
+    implementation(group = "moe.nikky.voodoo", name = "dsl", version = "0.4.8-dev")
+    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.8-dev")
 }
