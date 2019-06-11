@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SKWorkspace(
-    @Optional val packs: MutableSet<SKLocation> = mutableSetOf(),
-    @Optional var packageListingEntries: List<String> = listOf(),
-    @Optional var packageListingType: String = "STATIC"
+    val packs: MutableSet<SKLocation> = mutableSetOf(),
+    var packageListingEntries: List<String> = listOf(),
+    var packageListingType: String = "STATIC"
 )

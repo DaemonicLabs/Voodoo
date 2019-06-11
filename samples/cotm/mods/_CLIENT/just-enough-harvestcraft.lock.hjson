@@ -1,9 +1,0 @@
-{
-    provider: CURSE,
-    side: CLIENT,
-    description: "JEI Integration for Pam's HarvestCraft.",
-    optionalData: {
-    },
-    projectID: 267939,
-    fileID: 2692303
-}

@@ -9,9 +9,9 @@ import kotlinx.serialization.Serializer
 
 @Serializable(with = CachedRequire.Companion::class)
 data class CachedRequire(
-    @Optional var uid: String = "",
-    @Optional var suggests: String = "",
-    @Optional var equals: String = ""
+    var uid: String = "",
+    var suggests: String = "",
+    var equals: String = ""
 ) {
     @Serializer(forClass = CachedRequire::class)
     companion object : KSerializer<CachedRequire> {

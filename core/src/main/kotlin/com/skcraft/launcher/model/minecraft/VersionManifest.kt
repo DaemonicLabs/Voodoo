@@ -20,16 +20,16 @@ import java.time.LocalDateTime
 
 @Serializable
 data class VersionManifest(
-    @Optional var id: String? = null,
-    @Optional @Serializable(with = TimestampSerializer::class) var time: LocalDateTime? = null,
-    @Optional @Serializable(with = TimestampSerializer::class) var releaseTime: LocalDateTime? = null,
-    @Optional var assets: String? = null,
-    @Optional var type: String? = null,
-    @Optional var processArguments: String? = null,
-    @Optional var minecraftArguments: String? = null,
-    @Optional var mainClass: String? = null,
-    @Optional var minimumLauncherVersion: Int = 0,
-    @Optional @Serializable(with = HashSetSerializer::class) var libraries: HashSet<Library> = hashSetOf()
+    var id: String? = null,
+    @Serializable(with = TimestampSerializer::class) var time: LocalDateTime? = null,
+    @Serializable(with = TimestampSerializer::class) var releaseTime: LocalDateTime? = null,
+    var assets: String? = null,
+    var type: String? = null,
+    var processArguments: String? = null,
+    var minecraftArguments: String? = null,
+    var mainClass: String? = null,
+    var minimumLauncherVersion: Int = 0,
+    @Serializable(with = HashSetSerializer::class) var libraries: HashSet<Library> = hashSetOf()
 ) {
 
     @Transient

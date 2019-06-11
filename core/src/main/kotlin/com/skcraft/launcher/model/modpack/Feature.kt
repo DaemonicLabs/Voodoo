@@ -12,9 +12,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Feature(
-    @Optional var name: String = "",
-    @Optional var selected: Boolean = false,
-    @Optional var description: String = "",
-    @Optional var recommendation: Recommendation? = null,
-    @Optional var files: FnPatternList = FnPatternList()
+    var name: String = "",
+    var selected: Boolean = false,
+    var description: String = "",
+    var recommendation: Recommendation? = null,
+    var files: FnPatternList = FnPatternList()
 )

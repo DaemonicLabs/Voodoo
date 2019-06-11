@@ -10,14 +10,14 @@ import kotlinx.serialization.list
 
 @Serializable(with = PackComponent.Companion::class)
 data class PackComponent(
-    @Optional var uid: String = "",
-    @Optional var version: String = "",
-    @Optional var cachedName: String = "",
-    @Optional var cachedRequires: List<CachedRequire> = listOf(),
-    @Optional var cachedVersion: String = "",
-    @Optional var important: Boolean = false,
-    @Optional var cachedVolatile: Boolean = false,
-    @Optional var dependencyOnly: Boolean = false
+    var uid: String = "",
+    var version: String = "",
+    var cachedName: String = "",
+    var cachedRequires: List<CachedRequire> = listOf(),
+    var cachedVersion: String = "",
+    var important: Boolean = false,
+    var cachedVolatile: Boolean = false,
+    var dependencyOnly: Boolean = false
 ) {
     @Serializer(forClass = PackComponent::class)
     companion object : KSerializer<PackComponent> {

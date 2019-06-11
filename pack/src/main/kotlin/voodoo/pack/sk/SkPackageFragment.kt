@@ -9,5 +9,5 @@ data class SkPackageFragment(
     val name: String,
     var version: String,
     val location: String,
-    @Optional val priority: Int = 0
+    val priority: Int = 0
 )

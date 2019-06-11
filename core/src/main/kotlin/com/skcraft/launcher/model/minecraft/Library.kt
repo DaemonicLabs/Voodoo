@@ -147,10 +147,10 @@ data class Library(
 
     @Serializable
     data class OS(
-        @Optional var name: String? = null,
-        @Optional var platform: Platform? = null,
+        var name: String? = null,
+        var platform: Platform? = null,
         @Serializable(with = PatternSerializer::class)
-        @Optional var version: Pattern? = null
+        var version: Pattern? = null
     ) {
         fun matches(environment: Environment): Boolean {
             return (platform == null || platform == environment.platform) && version?.matcher(

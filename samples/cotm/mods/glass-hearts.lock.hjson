@@ -1,6 +1,0 @@
-{
-    provider: JENKINS,
-    jenkinsUrl: "https://ci.elytradev.com",
-    job: elytra/GlassHearts/1.12.1,
-    buildNumber: 14
-}

@@ -13,6 +13,7 @@ changed abyssalcraft
 
 Property | old value | new value
 ---|---|---
+Version | `AbyssalCraft-1.12.2-1.9.7.jar` | `AbyssalCraft-1.12.2-1.9.8.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -47,8 +48,9 @@ changed autoreglib
 
 Property | old value | new value
 ---|---|---
-Version | `AutoRegLib-1.3-28.jar` | `AutoRegLib-1.3-29.jar`
+Version | `AutoRegLib-1.3-28.jar` | `AutoRegLib-1.3-30.jar`
 Release Type | `RELEASE` | `Release`
+Author | `Vazkii` | `Vazkii_`
 
 
 
@@ -65,6 +67,7 @@ changed chisels-bits
 
 Property | old value | new value
 ---|---|---
+Version | `chiselsandbits-14.32.jar` | `chiselsandbits-14.33.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -75,6 +78,7 @@ Property | old value | new value
 ---|---|---
 Version | `CraftTweaker2-1.12-4.1.17` | `CraftTweaker2-1.12-4.1.18.jar`
 Release Type | `RELEASE` | `Release`
+Author | `jaredlll08` | `Jaredlll08`
 
 
 
@@ -83,6 +87,7 @@ changed custom-npcs
 Property | old value | new value
 ---|---|---
 Release Type | `RELEASE` | `Release`
+Author | `Noppes` | `Noppes_`
 
 
 
@@ -151,7 +156,7 @@ changed industrial-craft
 
 Property | old value | new value
 ---|---|---
-Version | `industrialcraft-2-2.8.153-ex112.jar` | `industrialcraft-2-2.8.157-ex112.jar`
+Version | `industrialcraft-2-2.8.153-ex112.jar` | `industrialcraft-2-2.8.159-ex112.jar`
 Release Type | `BETA` | `Beta`
 
 
@@ -168,6 +173,7 @@ changed jei
 
 Property | old value | new value
 ---|---|---
+Version | `jei_1.12.2-4.15.0.279.jar` | `jei_1.12.2-4.15.0.280.jar`
 Release Type | `BETA` | `Beta`
 
 
@@ -212,6 +218,7 @@ Property | old value | new value
 ---|---|---
 Version | `modtweaker-4.0.17` | `modtweaker-4.0.17.jar`
 Release Type | `RELEASE` | `Release`
+Author | `jaredlll08` | `Jaredlll08`
 
 
 
@@ -221,6 +228,7 @@ Property | old value | new value
 ---|---|---
 Version | `MTLib-3.0.6` | `MTLib-3.0.6.jar`
 Release Type | `RELEASE` | `Release`
+Author | `jaredlll08` | `Jaredlll08`
 
 
 
@@ -237,7 +245,8 @@ changed omlib
 
 Property | old value | new value
 ---|---|---
-Release Type | `BETA` | `Beta`
+Version | `omlib-1.12.2-3.1.0-232.jar` | `omlib-1.12.2-3.1.2-240.jar`
+Release Type | `BETA` | `Release`
 
 
 
@@ -245,7 +254,8 @@ changed openmodularturrets
 
 Property | old value | new value
 ---|---|---
-Release Type | `BETA` | `Beta`
+Version | `openmodularturrets-1.12.2-3.1.0-335.jar` | `openmodularturrets-1.12.2-3.1.2-351.jar`
+Release Type | `BETA` | `Release`
 
 
 
@@ -253,6 +263,7 @@ changed pams-harvestcraft
 
 Property | old value | new value
 ---|---|---
+Version | `Pam's HarvestCraft 1.12.2zc The 7mm Kidney Stone Update.jar` | `Pam's HarvestCraft 1.12.2zd Surprise for Yogcast.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -261,8 +272,9 @@ changed quark
 
 Property | old value | new value
 ---|---|---
-Version | `Quark-r1.5-151.jar` | `Quark-r1.5-152.jar`
+Version | `Quark-r1.5-151.jar` | `Quark-r1.5-158.jar`
 Release Type | `RELEASE` | `Release`
+Author | `Vazkii` | `Vazkii_`
 
 
 
@@ -328,6 +340,7 @@ changed tails
 Property | old value | new value
 ---|---|---
 Release Type | `RELEASE` | `Release`
+Author | `KitsuneKihira, TTFTCUTS` | `Kihira, TTFTCUTS`
 
 
 
@@ -369,7 +382,7 @@ changed xaeros-minimap
 
 Property | old value | new value
 ---|---|---
-Version | `v1.16.8 for Minecraft 1.12.2 \| 1.12.1 \| 1.12` | `Xaeros_Minimap_1.16.9_Forge_1.12.jar`
+Version | `v1.16.8 for Minecraft 1.12.2 \| 1.12.1 \| 1.12` | `Xaeros_Minimap_1.17.1_Forge_1.12.jar`
 Release Type | `RELEASE` | `Release`
 
 

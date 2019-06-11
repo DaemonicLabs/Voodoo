@@ -16,17 +16,17 @@ import kotlinx.serialization.Transient
 
 @Serializable
 data class FileInstall(
-    @Optional var version: String? = null,
+    var version: String? = null,
     var hash: String,
     var location: String,
     var to: String,
     @Optional
     var size: Long = 0,
-    @Optional @SerialName("userFile")
+    @SerialName("userFile")
     var isUserFile: Boolean = false,
     @Optional
     var manifest: Manifest? = null,
-    @Optional @SerialName("when")
+    @SerialName("when")
     var conditionWhen: Condition? = null
 ) {
     val type: String = "file"

@@ -136,9 +136,9 @@ data class Job(
     val fullName: String,
     val displayName: String,
     val fullDisplayName: String,
-    @Optional val builds: List<Build>? = null,
-    @Optional val lastSuccessfulBuild: Build? = null,
-    @Optional val lastStableBuild: Build? = null
+    val builds: List<Build>? = null,
+    val lastSuccessfulBuild: Build? = null,
+    val lastStableBuild: Build? = null
 ) {
     suspend fun getBuildByNumber(build: Int, userAgent: String): BuildWithDetails? {
         return builds?.find { it.number == build }?.details(userAgent)

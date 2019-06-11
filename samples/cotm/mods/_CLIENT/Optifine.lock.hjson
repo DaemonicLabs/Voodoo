@@ -1,8 +1,0 @@
-{
-    provider: DIRECT,
-    side: CLIENT,
-    description: "Adds a variety of client and video options. Notorious for being problematic. Use with caution.",
-    optionalData: {
-    },
-    url: "https://centerofthemultiverse.net/launcher/mirror/OptiFine_1.12.2_HD_U_E3.jar"
-}

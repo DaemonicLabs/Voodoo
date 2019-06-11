@@ -23,14 +23,14 @@ import java.io.File
 data class LockPack(
     val id: String,
     val mcVersion: String,
-    @Optional val title: String? = null,
-    @Optional val version: String = "1.0",
-    @Optional val icon: String = "icon.png",
-    @Optional val authors: List<String> = emptyList(),
-    @Optional val forge: String? = null,
-    @Optional val launch: LaunchModifier = LaunchModifier(),
-    @Optional var localDir: String = "local",
-    @Optional var packOptions: PackOptions = PackOptions()
+    val title: String? = null,
+    val version: String = "1.0",
+    val icon: String = "icon.png",
+    val authors: List<String> = emptyList(),
+    val forge: String? = null,
+    val launch: LaunchModifier = LaunchModifier(),
+    var localDir: String = "local",
+    var packOptions: PackOptions = PackOptions()
 ) {
     @Optional
     var sourceDir: String = id

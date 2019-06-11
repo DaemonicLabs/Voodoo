@@ -169,7 +169,7 @@ object Diff : KLogging() {
 
             return diffFile.copyTo(docDir.resolve(diffFile.name), overwrite = true)
         } else {
-            logger.error("please install `git`")
+            logger.error("please install `diff`")
             return null
         }
     }

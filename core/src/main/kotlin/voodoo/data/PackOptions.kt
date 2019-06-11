@@ -6,9 +6,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PackOptions(
-    @Optional var multimcOptions: MultiMC = MultiMC(),
-    @Optional var skCraftOptions: SKCraft = SKCraft(),
-    @Optional var baseUrl: String? = null
+    var multimcOptions: MultiMC = MultiMC(),
+    var skCraftOptions: SKCraft = SKCraft(),
+    var baseUrl: String? = null
 ) {
     fun multimc(configure: MultiMC.() -> Unit) {
         multimcOptions.configure()
@@ -18,11 +18,11 @@ data class PackOptions(
     }
 
     @Serializable data class MultiMC(
-        @Optional var skPackUrl: String? = null
+        var skPackUrl: String? = null
     )
     @Serializable data class SKCraft(
-        @Optional var userFiles: UserFiles = UserFiles(),
-        @Optional var server: SKServer? = null,
-        @Optional var thumb: String? = null
+        var userFiles: UserFiles = UserFiles(),
+        var server: SKServer? = null,
+        var thumb: String? = null
     )
 }

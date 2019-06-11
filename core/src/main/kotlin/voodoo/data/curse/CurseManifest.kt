@@ -13,5 +13,5 @@ data class CurseManifest(
     val manifestVersion: Int = 1,
     val files: List<CurseFile> = emptyList(),
     val overrides: String = "overrides",
-    @Optional val projectId: Int = -1
+    val projectId: Int = -1
 )

@@ -10,6 +10,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class MultiMCPack(
-    @Optional var components: List<PackComponent> = emptyList(),
-    @Optional var formatVersion: Int = 1
+    var components: List<PackComponent> = emptyList(),
+    var formatVersion: Int = 1
 )

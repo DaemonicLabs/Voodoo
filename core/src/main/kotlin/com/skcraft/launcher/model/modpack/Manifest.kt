@@ -24,7 +24,7 @@ data class Manifest(
     var name: String? = null,
     @Optional
     var version: String? = null,
-    @Optional @Serializable(with = URLSerializer::class)
+    @Serializable(with = URLSerializer::class)
     var baseUrl: URL? = null,
     @Optional
     var librariesLocation: String? = null,

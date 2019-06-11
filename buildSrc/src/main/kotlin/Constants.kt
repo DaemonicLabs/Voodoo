@@ -20,7 +20,7 @@ object Gradle {
 }
 
 object Kotlin {
-    const val version = "1.3.21"
+    const val version = "1.3.31"
 }
 
 object Coroutines {

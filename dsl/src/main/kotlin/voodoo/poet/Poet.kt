@@ -48,6 +48,7 @@ object Poet : KLogging() {
                 val results: Map<String, MutableMap<String, ProjectID>> = curseGenerators.associate {
                     it.name to mutableMapOf<String, ProjectID>()
                 }
+                var projectCount = 0
                 CurseClient.scanAllProjects<Unit> { addon ->
                     curseGenerators.forEach { generator ->
                         if (
@@ -58,7 +59,9 @@ object Poet : KLogging() {
                             logger.info("added addon: ${addon.slug}")
                         }
                     }
+                    projectCount++
                 }
+                logger.info("projects: $projectCount")
 
                 curseGenerators.map { generator ->
                     Poet.generate(

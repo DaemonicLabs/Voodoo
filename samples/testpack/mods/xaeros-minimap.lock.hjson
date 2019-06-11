@@ -1,8 +1,0 @@
-{
-    provider: CURSE,
-    description: "Alternative to MouseTweaks.",
-    optionalData: {
-    },
-    projectID: 263420,
-    fileID: 2687046
-}

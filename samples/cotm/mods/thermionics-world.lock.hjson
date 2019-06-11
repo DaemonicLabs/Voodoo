@@ -1,6 +1,0 @@
-{
-    provider: JENKINS,
-    jenkinsUrl: "https://ci.elytradev.com",
-    job: elytra/ThermionicsWorld/master,
-    buildNumber: 30
-}

@@ -9,7 +9,6 @@ import java.util.Date
 @Serializable
 data class Addon(
     val id: ProjectID,
-//    val projectId: ProjectID,
     val name: String,
     val authors: List<Author> = emptyList(),
     val attachments: List<Attachment>? = emptyList(),
@@ -29,7 +28,6 @@ data class Addon(
     val gamePopularityRank: Int,
     val gameName: String,
     val portalName: String,
-//    val sectionName: String, // Section,
     @Serializable(with = LocalDateTimeSerializer::class)
     val dateModified: LocalDateTime,
     @Serializable(with = LocalDateTimeSerializer::class)

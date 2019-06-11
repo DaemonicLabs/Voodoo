@@ -35,31 +35,31 @@ import java.time.Instant
 data class LockEntry(
     var provider: String,
     // TODO: make id always match serialFile.name.subStringBefore(".lock.hjson") ?
-    @Optional var fileName: String? = null,
-    @Optional var side: Side = Side.BOTH,
-    @Optional var description: String? = null,
-    @Optional var optionalData: OptionalData? = null,
-    @Optional var dependencies: Map<DependencyType, List<String>> = mapOf(),
+    var fileName: String? = null,
+    var side: Side = Side.BOTH,
+    var description: String? = null,
+    var optionalData: OptionalData? = null,
+    var dependencies: Map<DependencyType, List<String>> = mapOf(),
     // CURSE
-    @Optional var projectID: ProjectID = ProjectID.INVALID,
-    @Optional var fileID: FileID = FileID.INVALID,
+    var projectID: ProjectID = ProjectID.INVALID,
+    var fileID: FileID = FileID.INVALID,
     // DIRECT
-    @Optional var url: String = "",
-    @Optional var useUrlTxt: Boolean = true,
+    var url: String = "",
+    var useUrlTxt: Boolean = true,
     // JENKINS
-    @Optional var jenkinsUrl: String = "",
-    @Optional var job: String = "",
-    @Optional var buildNumber: Int = -1,
-    @Optional var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
+    var jenkinsUrl: String = "",
+    var job: String = "",
+    var buildNumber: Int = -1,
+    var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
     // JSON
-    @Optional var updateJson: String = "",
-    @Optional var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
-    @Optional var jsonVersion: String = "",
+    var updateJson: String = "",
+    var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
+    var jsonVersion: String = "",
     // LOCAL
-    @Optional var fileSrc: String = "",
+    var fileSrc: String = "",
 
     // INTERNALS
-    @Optional @SerialName("name") private var nameField: String? = null
+    @SerialName("name") private var nameField: String? = null
 ) {
     @Transient
     lateinit var idField: String // id might not always match the filename

@@ -45,8 +45,8 @@ object MMCUtil : KLogging() {
 
     @Serializable
     data class MMCConfiguration(
-        @Optional val binary: String = "multimc",
-        @Optional @Serializable(with = FileSerializer::class) val path: File = File(System.getProperty("user.home") + "/.local/share/multimc")
+        val binary: String = "multimc",
+        @Serializable(with = FileSerializer::class) val path: File = File(System.getProperty("user.home") + "/.local/share/multimc")
     )
 
     val mmcConfig: MMCConfiguration

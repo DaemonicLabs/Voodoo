@@ -13,7 +13,7 @@ import voodoo.data.UserFiles
 @Serializable
 data class SKModpack(
     var name: String,
-    @Optional var title: String = "",
+    var title: String = "",
     var gameVersion: String,
     @Optional
     var features: List<FeaturePattern> = listOf(),

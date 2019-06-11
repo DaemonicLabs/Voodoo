@@ -67,8 +67,8 @@ object CurseClient : KLogging(), CoroutineScope {
 //
 //    @Serializable
 //    data class WrapperAddonResult(
-//        @Optional val addons: List<SlugIdPair>? = null,
-//        @Optional val addonSearch: List<SlugIdPair>? = null
+//        val addons: List<SlugIdPair>? = null,
+//        val addonSearch: List<SlugIdPair>? = null
 //    )
 //
 //    @Serializable

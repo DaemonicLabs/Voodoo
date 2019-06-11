@@ -36,7 +36,7 @@ data class Entry(
     var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
     var replaceDependencies: Map<ProjectID, ProjectID> = mapOf(),
     // @JsonInclude(JsonInclude.Include.ALWAYS)
-//        @Optional var optional: Boolean = feature != null,
+//        var optional: Boolean = feature != null,
     var packageType: PackageType = PackageType.MOD,
     var transient: Boolean = false, // this entry got added as dependency for something else
     var version: String = "", // TODO: use regex only ?

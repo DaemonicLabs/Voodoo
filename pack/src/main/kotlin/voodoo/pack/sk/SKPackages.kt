@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class SKPackages(
-    @Optional val minimumVersion: Int = 1,
-    @Optional var packages: List<SkPackageFragment> = emptyList()
+    val minimumVersion: Int = 1,
+    var packages: List<SkPackageFragment> = emptyList()
 )

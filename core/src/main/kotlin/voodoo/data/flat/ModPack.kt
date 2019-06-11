@@ -22,15 +22,15 @@ import voodoo.util.unixPath
 data class ModPack(
     var id: String,
     var mcVersion: String,
-    @Optional var title: String? = null,
-    @Optional var version: String = "1.0",
-    @Optional @Serializable(with = FileSerializer::class)
+    var title: String? = null,
+    var version: String = "1.0",
+    @Serializable(with = FileSerializer::class)
     var icon: File = File("icon.png"),
-    @Optional val authors: List<String> = emptyList(),
-    @Optional var forge: String? = null,
+    val authors: List<String> = emptyList(),
+    var forge: String? = null,
     // var forgeBuild: Int = -1,
-    @Optional val launch: LaunchModifier = LaunchModifier(),
-    @Optional var packOptions: PackOptions = PackOptions()
+   val launch: LaunchModifier = LaunchModifier(),
+   var packOptions: PackOptions = PackOptions()
 ) {
     companion object : KLogging()
 
