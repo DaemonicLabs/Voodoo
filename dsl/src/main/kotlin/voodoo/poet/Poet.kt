@@ -39,58 +39,27 @@ object Poet : KLogging() {
 //    println("classloader is of type:" + XY::class.java.classLoader)
         Thread.currentThread().contextClassLoader = Poet::class.java.classLoader
 
-        return runBlocking {
+        val files = runBlocking {
             // TODO: parallelize
-
-            val curseFiles = curseGenerators.map { generatedSrcDir.resolve("${it.name}.kt") }
-            val runCurseGenerator = curseFiles.any { !it.exists() }
-            val generatedCurseFiles = if (runCurseGenerator) {
-                val results: Map<String, MutableMap<String, ProjectID>> = curseGenerators.associate {
-                    it.name to mutableMapOf<String, ProjectID>()
-                }
-                var projectCount = 0
-                CurseClient.scanAllProjects<Unit> { addon ->
-                    curseGenerators.forEach { generator ->
-                        if (
-                            (addon.gameVersionLatestFiles.isEmpty() || addon.gameVersionLatestFiles.any { generator.mcVersions.contains(it.gameVersion) }) &&
-                            addon.categorySection.name == generator.section
-                        ) {
-                            results.getValue(generator.name)[addon.slug] = addon.id
-                            logger.info("added addon: ${addon.slug}")
-                        }
-                    }
-                    projectCount++
-                }
-                logger.info("projects: $projectCount")
-
-                curseGenerators.map { generator ->
-                    Poet.generate(
-                        name = generator.name,
-                        slugIdMap = results.getOrDefault(generator.name, mutableMapOf()),
-                        slugSanitizer = slugSanitizer,
-                        folder = generatedSrcDir
-                    )
-                }
-            } else {
-                curseFiles
+            curseGenerators.map { generator ->
+                Poet.generate(
+                    name = generator.name,
+                    slugIdMap = request(
+                        gameVersions = generator.mcVersions.toList(),
+                        section = generator.section
+                    ),
+                    slugSanitizer = slugSanitizer,
+                    folder = generatedSrcDir
+                )
+            } + forgeGenerators.map { generator ->
+                Poet.generateForge(
+                    name = generator.name,
+                    mcVersionFilters = generator.mcVersions.toList(), // generator.mcVersions.toList(),
+                    folder = generatedSrcDir
+                )
             }
-
-            val forgeFiles = forgeGenerators.map { generatedSrcDir.resolve("${it.name}.kt") }
-            val runForgeGenerator = forgeFiles.any { !it.exists() }
-            val generatedForgeFiles = if (runForgeGenerator) {
-                forgeGenerators.map { generator ->
-                    Poet.generateForge(
-                        name = generator.name,
-                        mcVersionFilters = generator.mcVersions.toList(), // generator.mcVersions.toList(),
-                        folder = generatedSrcDir
-                    )
-                }
-            } else {
-                forgeFiles
-            }
-
-            generatedCurseFiles + generatedForgeFiles
         }
+        return files
     }
 
     fun defaultSlugSanitizer(slug: String) = slug
@@ -206,13 +175,11 @@ object Poet : KLogging() {
     }
 
     suspend fun request(section: String, gameVersions: List<String>? = null): Map<String, ProjectID> =
-        CurseClient.scanAllProjects { addon ->
-            if (
-                addon.gameVersionLatestFiles.any { gameVersions?.contains(it.gameVersion) == true } &&
-                addon.categorySection.name == section
-            ) {
-                addon.slug to addon.id
-            } else null
-        }.filterNotNull().toMap()
+        CurseClient.graphQLRequest(
+            section = section,
+            gameVersions = gameVersions
+        ).map { (id, slug) ->
+            slug to ProjectID(id)
+        }.toMap()
 
 }

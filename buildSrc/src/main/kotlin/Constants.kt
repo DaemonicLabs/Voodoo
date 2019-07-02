@@ -15,7 +15,7 @@ fun create(
 }
 
 object Gradle {
-    const val version = "5.2"
+    const val version = "5.5"
     val distributionType = Wrapper.DistributionType.ALL
 }
 
@@ -41,7 +41,7 @@ object Kotlinpoet {
 }
 
 object Fuel {
-    const val version = "2.0.1"
+    const val version = "2.1.0"
     private const val group = "com.github.kittinunf.fuel"
     val dependency = create(group = group, name = "fuel", version = version)
     val dependencyCoroutines = create(group = group, name = "fuel-coroutines", version = version)

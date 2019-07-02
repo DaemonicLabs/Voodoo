@@ -715,7 +715,7 @@ changed advanced-rocketry
 
 Property | old value | new value
 ---|---|---
-Version | `AdvancedRocketry 1.12.2-1.5.0-139-UNSTABLE build -139 for 1.12.2` | `AdvancedRocketry-1.12.2-1.5.0-139-universal.jar`
+Version | `AdvancedRocketry 1.12.2-1.5.0-139-UNSTABLE build -139 for 1.12.2` | `AdvancedRocketry-1.12.2-1.6.0-151-universal.jar`
 Release Type | `ALPHA` | `Alpha`
 
 
@@ -732,7 +732,7 @@ changed armorplus
 
 Property | old value | new value
 ---|---|---
-Version | `armorplus-1.12.2-11.22.0.58.jar` | `armorplus-1.12.2-11.23.0.59.jar`
+Version | `armorplus-1.12.2-11.22.0.58.jar` | `armorplus-1.12.2-11.24.0.60.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -741,7 +741,7 @@ changed autoreglib
 
 Property | old value | new value
 ---|---|---
-Version | `AutoRegLib-1.3-28.jar` | `AutoRegLib-1.3-30.jar`
+Version | `AutoRegLib-1.3-28.jar` | `AutoRegLib-1.3-31.jar`
 Release Type | `RELEASE` | `Release`
 Author | `Vazkii` | `Vazkii_`
 
@@ -769,7 +769,7 @@ changed crafttweaker
 
 Property | old value | new value
 ---|---|---
-Version | `CraftTweaker2-1.12-4.1.17` | `CraftTweaker2-1.12-4.1.18.jar`
+Version | `CraftTweaker2-1.12-4.1.17` | `CraftTweaker2-1.12-4.1.19.jar`
 Release Type | `RELEASE` | `Release`
 Author | `jaredlll08` | `Jaredlll08`
 
@@ -788,7 +788,7 @@ changed cyclops-core
 
 Property | old value | new value
 ---|---|---
-Version | `CyclopsCore-1.12.2-1.2.1.jar` | `CyclopsCore-1.12.2-1.3.0.jar`
+Version | `CyclopsCore-1.12.2-1.2.1.jar` | `CyclopsCore-1.12.2-1.4.0.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -797,8 +797,9 @@ changed ender-io
 
 Property | old value | new value
 ---|---|---
-Version | `Ender IO - 5.0.44` | `EnderIO-1.12.2-5.0.44.jar`
+Version | `Ender IO - 5.0.44` | `EnderIO-1.12.2-5.0.46.jar`
 Release Type | `RELEASE` | `Release`
+Author | `CrazyPants_MC, epicsquid319, Henry_Loenwind, MatthiasMann, tterrag1098` | `CrazyPants_MC, EpicSquid319, Henry_Loenwind, MatthiasMann, tterrag1098`
 
 
 
@@ -806,7 +807,7 @@ changed endercore
 
 Property | old value | new value
 ---|---|---
-Version | `EnderCore - 1.12.2-0.5.57` | `EnderCore-1.12.2-0.5.57.jar`
+Version | `EnderCore - 1.12.2-0.5.57` | `EnderCore-1.12.2-0.5.59.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -849,7 +850,7 @@ changed industrial-craft
 
 Property | old value | new value
 ---|---|---
-Version | `industrialcraft-2-2.8.153-ex112.jar` | `industrialcraft-2-2.8.159-ex112.jar`
+Version | `industrialcraft-2-2.8.153-ex112.jar` | `industrialcraft-2-2.8.164-ex112.jar`
 Release Type | `BETA` | `Beta`
 
 
@@ -866,7 +867,7 @@ changed jei
 
 Property | old value | new value
 ---|---|---
-Version | `jei_1.12.2-4.15.0.279.jar` | `jei_1.12.2-4.15.0.280.jar`
+Version | `jei_1.12.2-4.15.0.279.jar` | `jei_1.12.2-4.15.0.285.jar`
 Release Type | `BETA` | `Beta`
 
 
@@ -875,7 +876,7 @@ changed libvulpes
 
 Property | old value | new value
 ---|---|---
-Version | `LibVulpes 1.12.2-0.4.0-57-UNSTABLE build -57 for 1.12.2` | `LibVulpes-1.12.2-0.4.0-57-universal.jar`
+Version | `LibVulpes 1.12.2-0.4.0-57-UNSTABLE build -57 for 1.12.2` | `LibVulpes-1.12.2-0.4.1-59-universal.jar`
 Release Type | `ALPHA` | `Alpha`
 
 
@@ -938,8 +939,9 @@ changed omlib
 
 Property | old value | new value
 ---|---|---
-Version | `omlib-1.12.2-3.1.0-232.jar` | `omlib-1.12.2-3.1.2-240.jar`
+Version | `omlib-1.12.2-3.1.0-232.jar` | `omlib-1.12.2-3.1.3-246.jar`
 Release Type | `BETA` | `Release`
+Author | `Keridos` | `Keridos15`
 
 
 
@@ -947,8 +949,9 @@ changed openmodularturrets
 
 Property | old value | new value
 ---|---|---
-Version | `openmodularturrets-1.12.2-3.1.0-335.jar` | `openmodularturrets-1.12.2-3.1.2-351.jar`
+Version | `openmodularturrets-1.12.2-3.1.0-335.jar` | `openmodularturrets-1.12.2-3.1.3-355.jar`
 Release Type | `BETA` | `Release`
+Author | `Keridos` | `Keridos15`
 
 
 
@@ -965,7 +968,7 @@ changed quark
 
 Property | old value | new value
 ---|---|---
-Version | `Quark-r1.5-151.jar` | `Quark-r1.5-158.jar`
+Version | `Quark-r1.5-151.jar` | `Quark-r1.5-167.jar`
 Release Type | `RELEASE` | `Release`
 Author | `Vazkii` | `Vazkii_`
 
@@ -1008,6 +1011,7 @@ changed shadowfacts-forgelin
 
 Property | old value | new value
 ---|---|---
+Version | `Forgelin-1.8.2.jar` | `Forgelin-1.8.3.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -1058,6 +1062,7 @@ changed tinkers-construct
 
 Property | old value | new value
 ---|---|---
+Version | `TConstruct-1.12.2-2.12.0.135.jar` | `TConstruct-1.12.2-2.12.0.157.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -1075,7 +1080,7 @@ changed xaeros-minimap
 
 Property | old value | new value
 ---|---|---
-Version | `v1.16.8 for Minecraft 1.12.2 \| 1.12.1 \| 1.12` | `Xaeros_Minimap_1.17.1_Forge_1.12.jar`
+Version | `v1.16.8 for Minecraft 1.12.2 \| 1.12.1 \| 1.12` | `Xaeros_Minimap_1.17.3_Forge_1.12.jar`
 Release Type | `RELEASE` | `Release`
 
 

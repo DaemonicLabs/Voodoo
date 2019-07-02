@@ -36,7 +36,7 @@
         },
         version: {
             name: Version,
-            value: `AdvancedRocketry-1.12.2-1.5.0-139-universal.jar`
+            value: `AdvancedRocketry-1.12.2-1.6.0-151-universal.jar`
         },
         provider: {
             name: Provider,
@@ -100,7 +100,7 @@
         },
         version: {
             name: Version,
-            value: `armorplus-1.12.2-11.23.0.59.jar`
+            value: `armorplus-1.12.2-11.24.0.60.jar`
         },
         provider: {
             name: Provider,
@@ -134,7 +134,7 @@
         },
         version: {
             name: Version,
-            value: `AutoRegLib-1.3-30.jar`
+            value: `AutoRegLib-1.3-31.jar`
         },
         provider: {
             name: Provider,
@@ -224,7 +224,7 @@
         },
         version: {
             name: Version,
-            value: `CraftTweaker2-1.12-4.1.18.jar`
+            value: `CraftTweaker2-1.12-4.1.19.jar`
         },
         provider: {
             name: Provider,
@@ -284,7 +284,7 @@
         },
         version: {
             name: Version,
-            value: `CyclopsCore-1.12.2-1.3.0.jar`
+            value: `CyclopsCore-1.12.2-1.4.0.jar`
         },
         provider: {
             name: Provider,
@@ -374,7 +374,7 @@
         },
         version: {
             name: Version,
-            value: `EnderIO-1.12.2-5.0.44.jar`
+            value: `EnderIO-1.12.2-5.0.46.jar`
         },
         provider: {
             name: Provider,
@@ -398,7 +398,7 @@
         },
         curse_author: {
             name: Author,
-            value: "`CrazyPants_MC, epicsquid319, Henry_Loenwind, MatthiasMann, tterrag1098`"
+            value: "`CrazyPants_MC, EpicSquid319, Henry_Loenwind, MatthiasMann, tterrag1098`"
         }
     },
     endercore: {
@@ -408,7 +408,7 @@
         },
         version: {
             name: Version,
-            value: `EnderCore-1.12.2-0.5.57.jar`
+            value: `EnderCore-1.12.2-0.5.59.jar`
         },
         provider: {
             name: Provider,
@@ -592,7 +592,7 @@
         },
         version: {
             name: Version,
-            value: `industrialcraft-2-2.8.159-ex112.jar`
+            value: `industrialcraft-2-2.8.164-ex112.jar`
         },
         provider: {
             name: Provider,
@@ -652,7 +652,7 @@
         },
         version: {
             name: Version,
-            value: `jei_1.12.2-4.15.0.280.jar`
+            value: `jei_1.12.2-4.15.0.285.jar`
         },
         provider: {
             name: Provider,
@@ -682,7 +682,7 @@
         },
         version: {
             name: Version,
-            value: `LibVulpes-1.12.2-0.4.0-57-universal.jar`
+            value: `LibVulpes-1.12.2-0.4.1-59-universal.jar`
         },
         provider: {
             name: Provider,
@@ -904,7 +904,7 @@
         },
         version: {
             name: Version,
-            value: `omlib-1.12.2-3.1.2-240.jar`
+            value: `omlib-1.12.2-3.1.3-246.jar`
         },
         provider: {
             name: Provider,
@@ -924,7 +924,7 @@
         },
         curse_author: {
             name: Author,
-            value: `Keridos`
+            value: `Keridos15`
         }
     },
     openmodularturrets: {
@@ -934,7 +934,7 @@
         },
         version: {
             name: Version,
-            value: `openmodularturrets-1.12.2-3.1.2-351.jar`
+            value: `openmodularturrets-1.12.2-3.1.3-355.jar`
         },
         provider: {
             name: Provider,
@@ -958,7 +958,7 @@
         },
         curse_author: {
             name: Author,
-            value: `Keridos`
+            value: `Keridos15`
         }
     },
     pams-harvestcraft: {
@@ -1028,7 +1028,7 @@
         },
         version: {
             name: Version,
-            value: `Quark-r1.5-158.jar`
+            value: `Quark-r1.5-167.jar`
         },
         provider: {
             name: Provider,
@@ -1190,7 +1190,7 @@
         },
         version: {
             name: Version,
-            value: `Forgelin-1.8.2.jar`
+            value: `Forgelin-1.8.3.jar`
         },
         provider: {
             name: Provider,
@@ -1378,7 +1378,7 @@
         },
         version: {
             name: Version,
-            value: `TConstruct-1.12.2-2.12.0.135.jar`
+            value: `TConstruct-1.12.2-2.12.0.157.jar`
         },
         provider: {
             name: Provider,
@@ -1442,7 +1442,7 @@
         },
         version: {
             name: Version,
-            value: `Xaeros_Minimap_1.17.1_Forge_1.12.jar`
+            value: `Xaeros_Minimap_1.17.3_Forge_1.12.jar`
         },
         provider: {
             name: Provider,
