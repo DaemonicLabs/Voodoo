@@ -4,6 +4,7 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import com.skcraft.launcher.model.modpack.Manifest
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonConfiguration
 import mu.KotlinLogging
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
@@ -22,7 +23,7 @@ object MMCSpek : Spek({
                 .header("User-Agent" to CurseClient.useragent)
                 .responseString()
             when (result) {
-                is Result.Success -> Json(strictMode = false).parse(Manifest.serializer(), result.value)
+                is Result.Success -> Json(JsonConfiguration(strictMode = false)).parse(Manifest.serializer(), result.value)
                 is Result.Failure -> {
                     logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
                     fail("http request failed")
@@ -33,7 +34,7 @@ object MMCSpek : Spek({
             println(modpack)
         }
         it("pack") {
-            val jsonString = Json(indented = true, encodeDefaults = false).stringify(Manifest.serializer(), modpack)
+            val jsonString = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = false)).stringify(Manifest.serializer(), modpack)
             println(jsonString)
         }
     }
