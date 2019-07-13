@@ -79,9 +79,9 @@ object CurseClient : KLogging(), CoroutineScope {
         section: String? = null
     ): List<SlugIdPair> {
         val url = "https://curse.nikky.moe/graphql"
-        val filters = mutableListOf("gameID: 432")
+        val filters = mutableListOf("gameId: 432")
         gameVersions?.takeIf { it.isNotEmpty() }?.let {
-            filters += it.joinToString("\", \"", "gameVersions: [\"", "\"]")
+            filters += it.joinToString("\", \"", "gameVersionList: [\"", "\"]")
         }
         section?.let {
             filters += "section: \"$it\""
@@ -127,15 +127,15 @@ object CurseClient : KLogging(), CoroutineScope {
         section: String? = null,
         ids: List<Int>? = null
     ): List<SlugIdPair> {
-        val filters = mutableListOf("gameID: 432")
+        val filters = mutableListOf("gameId: 432")
         gameVersions?.takeIf { it.isNotEmpty() }?.let {
-            filters += it.joinToString("\", \"", "gameVersions: [\"", "\"]")
+            filters += it.joinToString("\", \"", "gameVersionList: [\"", "\"]")
         }
         section?.let {
             filters += "section: \"$it\""
         }
         ids?.takeIf { it.isNotEmpty() }?.let {
-            filters += it.joinToString(", ", "ids: [", "]")
+            filters += it.joinToString(", ", "idList: [", "]")
         }
         val url = "https://curse.nikky.moe/graphql"
         logger.info("post $url $filters")
@@ -412,7 +412,7 @@ object CurseClient : KLogging(), CoroutineScope {
 //    ): List<Addon>? {
 //        val url = "$ADDON_API/addon/search"
 //        val parameters = mutableListOf(
-//            "gameID" to gameId,
+//            "gameId" to gameId,
 ////            "gameVersion" to gameVersions,
 //            "sectionId" to sectionId,
 //            "index" to index,
