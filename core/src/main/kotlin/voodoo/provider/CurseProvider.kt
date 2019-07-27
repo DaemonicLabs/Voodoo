@@ -1,6 +1,7 @@
 package voodoo.provider
 
 import MurmurHash2
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
 import voodoo.curse.CurseClient
@@ -198,7 +199,12 @@ object CurseProvider : ProviderBase("Curse Provider") {
     val isOptional = CurseProvider::isOptionalCall.memoize()
 
     @ExperimentalUnsignedTypes
-    override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
+    override suspend fun download(
+        stopwatch: Stopwatch,
+        entry: LockEntry,
+        targetFolder: File,
+        cacheDir: File
+    ): Pair<String, File> = stopwatch {
         val addonFile = getAddonFile(entry.projectID, entry.fileID)
         if (addonFile == null) {
             logger.error("cannot download ${entry.id} ${entry.projectID}:${entry.fileID}")
@@ -220,7 +226,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
             throw IllegalStateException("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
         }
 
-        return Pair(addonFile.downloadUrl, targetFile)
+        return@stopwatch Pair(addonFile.downloadUrl, targetFile)
     }
 
     override suspend fun getReleaseDate(entry: LockEntry): Instant? {

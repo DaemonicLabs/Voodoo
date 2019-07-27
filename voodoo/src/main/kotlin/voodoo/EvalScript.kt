@@ -1,5 +1,6 @@
 package voodoo
 
+import com.eyeem.watchadoin.Stopwatch
 import java.io.File
 import kotlin.script.experimental.api.EvaluationResult
 import kotlin.script.experimental.api.ResultValue
@@ -31,6 +32,7 @@ fun createJvmScriptingHost(cacheDir: File): BasicJvmScriptingHost {
 }
 
 inline fun <reified T : Any> BasicJvmScriptingHost.evalScript(
+    stopwatch: Stopwatch,
     libs: File,
     scriptFile: File,
     vararg args: Any?,
@@ -52,7 +54,7 @@ inline fun <reified T : Any> BasicJvmScriptingHost.evalScript(
 //            jdkHome(File(JDK_HOME))
         }
     }
-): T {
+): T = stopwatch {
     println("compilationConfig entries")
     compilationConfig.entries().forEach {
         println("    $it")
@@ -72,6 +74,7 @@ inline fun <reified T : Any> BasicJvmScriptingHost.evalScript(
     println("compiling script, please be patient")
     val result = eval(scriptSource, compilationConfig, evaluationConfig)
 
+    end()
     return result.get<T>(scriptFile)
 }
 

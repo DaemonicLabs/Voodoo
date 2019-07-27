@@ -1,5 +1,6 @@
 package voodoo.tester
 
+import com.eyeem.watchadoin.Stopwatch
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.util.Directories
@@ -12,7 +13,7 @@ import voodoo.util.Directories
 abstract class AbstractTester : KLogging() {
     abstract val label: String
 
-    abstract suspend fun execute(modpack: LockPack, clean: Boolean = true)
+    abstract suspend fun execute(stopwatch: Stopwatch, modpack: LockPack, clean: Boolean = true)
 
     val directories = Directories.get()
 }

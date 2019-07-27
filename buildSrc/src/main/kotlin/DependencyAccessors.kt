@@ -185,6 +185,10 @@ fun Project.setupDependencies(target: Project = this) {
                 compile(kotlin("stdlib", Kotlin.version))
                 compile(kotlin("reflect", Kotlin.version))
 
+//                api(group = "com.github.eyeem", name = "watch-a-doin", version = "master-SNAPSHOT")
+//                api(group = "com.github.NikkyAI", name = "watch-a-doin", version = "master-SNAPSHOT")
+//                api(group = "com.github.NikkyAI", name = "watch-a-doin", version = "001bb5c4a6")
+
                 compile(Serialization.dependency)
                 compile(Coroutines.dependency)
 
@@ -197,6 +201,9 @@ fun Project.setupDependencies(target: Project = this) {
                     exclude(group = "com.com.mail", module = "javax.mail")
                 }
             }
+        }
+        rootProject.project(":watch-a-doin") -> {
+
         }
         else -> throw IllegalStateException("unhandled project ${this@setupDependencies.name}")
     }

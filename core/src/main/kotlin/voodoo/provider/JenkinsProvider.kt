@@ -1,5 +1,6 @@
 package voodoo.provider
 
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
 import voodoo.core.CoreConstants.VERSION
@@ -43,7 +44,12 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         }
     }
 
-    override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
+    override suspend fun download(
+        stopwatch: Stopwatch,
+        entry: LockEntry,
+        targetFolder: File,
+        cacheDir: File
+    ): Pair<String, File> = stopwatch {
         require(entry.job.isNotBlank()) { "entry: '${entry.id}' does not have the jenkins job set" }
 //        if (entry.job.isBlank()) {
 //            entry.job = entry.id
@@ -54,7 +60,7 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         val url = build.url + "artifact/" + artifact.relativePath
         val targetFile = targetFolder.resolve(entry.fileName ?: artifact.fileName)
         targetFile.download(url, cacheDir.resolve("JENKINS").resolve(entry.job).resolve(entry.buildNumber.toString()))
-        return Pair(url, targetFile)
+        return@stopwatch Pair(url, targetFile)
     }
 
     override suspend fun generateName(entry: LockEntry): String {

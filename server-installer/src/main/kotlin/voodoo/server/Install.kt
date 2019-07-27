@@ -1,5 +1,6 @@
 package voodoo.server
 
+import com.eyeem.watchadoin.Stopwatch
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.InvalidArgumentException
 import com.xenomachina.argparser.default
@@ -24,29 +25,34 @@ object Install : KLogging() {
         val parsedArgs = Arguments(parser)
         parser.force()
 
-        parsedArgs.run {
-            if (version) {
-                logger.info(VERSION)
-                exitProcess(0)
+        val stopwatch = Stopwatch("main")
+        stopwatch {
+            parsedArgs.run {
+                if (version) {
+                    logger.info(VERSION)
+                    exitProcess(0)
+                }
+
+                require(packPath != null) {
+                    "--packFile was not set and no file `pack.txt` found"
+                }
+
+                val packFile = File(packPath).absoluteFile
+
+                logger.info("target dir: $targetDir")
+                logger.info("cleanConfig: $cleanConfig")
+
+                // TODO: load proper rootDir
+                val modpack = LockPack.parse(
+                    packFile = packFile,
+                    rootDir = packFile.parentFile.parentFile
+                )
+
+                Server.install("install".watch, modpack, targetDir, skipForge, clean, cleanConfig)
             }
-
-            require(packPath != null) {
-                "--packFile was not set and no file `pack.txt` found"
-            }
-
-            val packFile = File(packPath).absoluteFile
-
-            logger.info("target dir: $targetDir")
-            logger.info("cleanConfig: $cleanConfig")
-
-            // TODO: load proper rootDir
-            val modpack = LockPack.parse(
-                packFile = packFile,
-                rootDir = packFile.parentFile.parentFile
-            )
-
-            Server.install(modpack, targetDir, skipForge, clean, cleanConfig)
+            logger.info(stopwatch.toStringPretty())
         }
+
     }
 
     private class Arguments(parser: ArgParser) {

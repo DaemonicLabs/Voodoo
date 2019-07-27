@@ -15,6 +15,7 @@ voodoo {
     addTask(name = "pack_server", parameters = listOf("pack server"))
     addTask(name = "pack_curse", parameters = listOf("pack curse"))
     addTask(name = "test_mmc", parameters = listOf("test mmc"))
+    addTask(name = "buildAndPackSome", parameters = listOf("build", "pack sk", "pack server", "pack curse"))
     addTask(name = "buildAndPackAll", parameters = listOf("build", "pack sk", "pack server", "pack mmc"))
 }
 
@@ -31,6 +32,6 @@ repositories {
 }
 
 dependencies {
-    implementation(group = "moe.nikky.voodoo", name = "dsl", version = "0.4.8-dev")
-    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.8-dev")
+    kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "0.4.8-dev")
+    kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.8-dev")
 }

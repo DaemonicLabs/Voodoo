@@ -1,5 +1,6 @@
 package voodoo.pack
 
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consume
@@ -43,11 +44,12 @@ object CursePack : AbstractPack() {
     override fun File.getOutputFolder(id: String): File = resolve("curse")
 
     override suspend fun pack(
+        stopwatch: Stopwatch,
         modpack: LockPack,
         output: File,
         uploadBaseDir: File,
         clean: Boolean
-    ) {
+    ) = stopwatch {
         val cacheDir = directories.cacheHome
         val workspaceDir = directories.cacheHome.resolve("curse-workspace")
         val modpackDir = workspaceDir.resolve(with(modpack) { "$id-$version" })
@@ -94,25 +96,27 @@ object CursePack : AbstractPack() {
                 for (entry in modpack.entrySet) {
                     if (entry.side == Side.SERVER) continue
                     jobs += launch(context = coroutineContext + pool) {
-                        val targetFolder = srcFolder.resolve(entry.serialFile).absoluteFile.parentFile
-                        val required = !modpack.isEntryOptional(entry.id)
+                        "${entry.id}_watch".watch {
+                            val targetFolder = srcFolder.resolve(entry.serialFile).absoluteFile.parentFile
+                            val required = !modpack.isEntryOptional(entry.id)
 
-                        val provider = Providers[entry.provider]
-                        if (provider == CurseProvider) {
-                            curseModsChannel.send(
-                                CurseFile(
-                                    entry.projectID,
-                                    entry.fileID,
-                                    required
-                                ).also {
-                                    logger.info("added curse file $it")
+                            val provider = Providers[entry.provider]
+                            if (provider == CurseProvider) {
+                                curseModsChannel.send(
+                                    CurseFile(
+                                        entry.projectID,
+                                        entry.fileID,
+                                        required
+                                    ).also {
+                                        logger.info("added curse file $it")
+                                    }
+                                )
+                            } else {
+                                val (_, file) = provider.download("download".watch, entry, targetFolder, cacheDir)
+                                if (!required) {
+                                    val optionalFile = file.parentFile.resolve(file.name + ".disabled")
+                                    file.renameTo(optionalFile)
                                 }
-                            )
-                        } else {
-                            val (_, file) = provider.download(entry, targetFolder, cacheDir)
-                            if (!required) {
-                                val optionalFile = file.parentFile.resolve(file.name + ".disabled")
-                                file.renameTo(optionalFile)
                             }
                         }
                     }
@@ -131,33 +135,36 @@ object CursePack : AbstractPack() {
             // generate modlist
             val modListFile = modpackDir.resolve("modlist.html")
 
-            val html = createHTML().html {
-                body {
-                    ul {
-                        for (entry in modpack.entrySet.sortedBy { it.displayName.toLowerCase() }) {
-                            val provider = Providers[entry.provider]
-                            if (entry.side == Side.SERVER) {
-                                continue
-                            }
-                            val projectPage =
-                                runBlocking { provider.getProjectPage(entry) }
-                            val authors = runBlocking { provider.getAuthors(entry) }
-                            val authorString = if (authors.isNotEmpty()) " (by ${authors.joinToString(", ")})" else ""
+            val html = "html".watch {
+                createHTML().html {
+                    body {
+                        ul {
+                            for (entry in modpack.entrySet.sortedBy { it.displayName.toLowerCase() }) {
+                                val provider = Providers[entry.provider]
+                                if (entry.side == Side.SERVER) {
+                                    continue
+                                }
+                                val projectPage =
+                                    runBlocking { provider.getProjectPage(entry) }
+                                val authors = runBlocking { provider.getAuthors(entry) }
+                                val authorString =
+                                    if (authors.isNotEmpty()) " (by ${authors.joinToString(", ")})" else ""
 
-                            li {
-                                when {
-                                    projectPage.isNotEmpty() -> a(href = projectPage) { +"${entry.displayName} $authorString" }
-                                    entry.url.isNotBlank() -> {
-                                        +"direct: "
-                                        a(
-                                            href = entry.url,
-                                            target = ATarget.blank
-                                        ) { +"${entry.displayName} $authorString" }
-                                    }
-                                    else -> {
-                                        val source =
-                                            if (entry.fileSrc.isNotBlank()) "file://" + entry.fileSrc else "unknown"
-                                        +"${entry.displayName} $authorString (source: $source)"
+                                li {
+                                    when {
+                                        projectPage.isNotEmpty() -> a(href = projectPage) { +"${entry.displayName} $authorString" }
+                                        entry.url.isNotBlank() -> {
+                                            +"direct: "
+                                            a(
+                                                href = entry.url,
+                                                target = ATarget.blank
+                                            ) { +"${entry.displayName} $authorString" }
+                                        }
+                                        else -> {
+                                            val source =
+                                                if (entry.fileSrc.isNotBlank()) "file://" + entry.fileSrc else "unknown"
+                                            +"${entry.displayName} $authorString (source: $source)"
+                                        }
                                     }
                                 }
                             }

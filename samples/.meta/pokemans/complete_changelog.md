@@ -706,7 +706,7 @@ changed abyssalcraft
 
 Property | old value | new value
 ---|---|---
-Version | `AbyssalCraft-1.12.2-1.9.7.jar` | `AbyssalCraft-1.12.2-1.9.8.jar`
+Version | `AbyssalCraft-1.12.2-1.9.7.jar` | `AbyssalCraft-1.12.2-1.9.10.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -715,7 +715,7 @@ changed advanced-rocketry
 
 Property | old value | new value
 ---|---|---
-Version | `AdvancedRocketry 1.12.2-1.5.0-139-UNSTABLE build -139 for 1.12.2` | `AdvancedRocketry-1.12.2-1.6.0-151-universal.jar`
+Version | `AdvancedRocketry 1.12.2-1.5.0-139-UNSTABLE build -139 for 1.12.2` | `AdvancedRocketry-1.12.2-1.6.0-160-universal.jar`
 Release Type | `ALPHA` | `Alpha`
 
 
@@ -724,6 +724,7 @@ changed apricorn-tree-farm
 
 Property | old value | new value
 ---|---|---
+Version | `apritree-1.12.2-2.0.5.jar` | `apritree-1.12.2-2.1.3.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -741,7 +742,7 @@ changed autoreglib
 
 Property | old value | new value
 ---|---|---
-Version | `AutoRegLib-1.3-28.jar` | `AutoRegLib-1.3-31.jar`
+Version | `AutoRegLib-1.3-28.jar` | `AutoRegLib-1.3-32.jar`
 Release Type | `RELEASE` | `Release`
 Author | `Vazkii` | `Vazkii_`
 
@@ -850,8 +851,9 @@ changed industrial-craft
 
 Property | old value | new value
 ---|---|---
-Version | `industrialcraft-2-2.8.153-ex112.jar` | `industrialcraft-2-2.8.164-ex112.jar`
-Release Type | `BETA` | `Beta`
+Version | `industrialcraft-2-2.8.153-ex112.jar` | `industrialcraft-2-2.8.170-ex112.jar`
+Release Type | `BETA` | `Release`
+Author | `Aroma1997, Chocohead, estebes, Player` | `Aroma1997, Chocohead, estebess, Player`
 
 
 
@@ -867,7 +869,7 @@ changed jei
 
 Property | old value | new value
 ---|---|---
-Version | `jei_1.12.2-4.15.0.279.jar` | `jei_1.12.2-4.15.0.285.jar`
+Version | `jei_1.12.2-4.15.0.279.jar` | `jei_1.12.2-4.15.0.287.jar`
 Release Type | `BETA` | `Beta`
 
 
@@ -876,7 +878,7 @@ changed libvulpes
 
 Property | old value | new value
 ---|---|---
-Version | `LibVulpes 1.12.2-0.4.0-57-UNSTABLE build -57 for 1.12.2` | `LibVulpes-1.12.2-0.4.1-59-universal.jar`
+Version | `LibVulpes 1.12.2-0.4.0-57-UNSTABLE build -57 for 1.12.2` | `LibVulpes-1.12.2-0.4.1-60-universal.jar`
 Release Type | `ALPHA` | `Alpha`
 
 
@@ -902,7 +904,8 @@ changed minecolonies
 
 Property | old value | new value
 ---|---|---
-Release Type | `RELEASE` | `Release`
+Version | `minecolonies-1.12.2-0.10.259-RELEASE-universal.jar` | `minecolonies-1.12.2-0.10.313-BETA-universal.jar`
+Release Type | `RELEASE` | `Beta`
 
 
 
@@ -941,7 +944,6 @@ Property | old value | new value
 ---|---|---
 Version | `omlib-1.12.2-3.1.0-232.jar` | `omlib-1.12.2-3.1.3-246.jar`
 Release Type | `BETA` | `Release`
-Author | `Keridos` | `Keridos15`
 
 
 
@@ -951,7 +953,6 @@ Property | old value | new value
 ---|---|---
 Version | `openmodularturrets-1.12.2-3.1.0-335.jar` | `openmodularturrets-1.12.2-3.1.3-355.jar`
 Release Type | `BETA` | `Release`
-Author | `Keridos` | `Keridos15`
 
 
 
@@ -968,7 +969,7 @@ changed quark
 
 Property | old value | new value
 ---|---|---
-Version | `Quark-r1.5-151.jar` | `Quark-r1.5-167.jar`
+Version | `Quark-r1.5-151.jar` | `Quark-r1.5-168.jar`
 Release Type | `RELEASE` | `Release`
 Author | `Vazkii` | `Vazkii_`
 
@@ -995,6 +996,7 @@ changed repose
 
 Property | old value | new value
 ---|---|---
+Version | `Repose-1.12-1.6.3.jar` | `Repose-1.12-1.6.4.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -1073,6 +1075,7 @@ Property | old value | new value
 ---|---|---
 Version | ` Wearable Backpacks - 1.12.2 - 3.1.3` | `WearableBackpacks-1.12.2-3.1.3.jar`
 Release Type | `RELEASE` | `Release`
+Author | `asiekierka, InsomniaKitten, koppeh, PuppetzMedia` | `asiekierka, InsomniaKitten, PuppetzMedia, user-6837585`
 
 
 
@@ -1080,7 +1083,7 @@ changed xaeros-minimap
 
 Property | old value | new value
 ---|---|---
-Version | `v1.16.8 for Minecraft 1.12.2 \| 1.12.1 \| 1.12` | `Xaeros_Minimap_1.17.3_Forge_1.12.jar`
+Version | `v1.16.8 for Minecraft 1.12.2 \| 1.12.1 \| 1.12` | `Xaeros_Minimap_1.17.4_Forge_1.12.jar`
 Release Type | `RELEASE` | `Release`
 
 

@@ -1,5 +1,6 @@
 package voodoo
 
+import com.eyeem.watchadoin.Stopwatch
 import mu.KLogging
 import voodoo.changelog.ChangelogBuilder
 import voodoo.changelog.PackDiff
@@ -18,11 +19,12 @@ object Diff : KLogging() {
 
     private val directories = Directories.get(moduleName = "diff")
     fun createDiff(
+        stopwatch: Stopwatch,
         docDir: File,
         rootDir: File,
         newPack: LockPack,
         changelogBuilder: ChangelogBuilder
-    ): List<PackDiff> {
+    ): List<PackDiff> = stopwatch {
 
         addVersion(rootDir, newPack.id, newPack.version)
         val versions = readVersions(rootDir, newPack.id)
@@ -142,7 +144,7 @@ object Diff : KLogging() {
 
         PackDiff.writeFullChangelog(newMetaDataLocation, validVersions, docDir = docDir)
 
-        return diffs
+        return@stopwatch diffs
     }
 
     fun writeDiff(rootFolder: File, oldFolder: File, newMetaDataLocation: File, docDir: File): File? {

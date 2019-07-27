@@ -1,5 +1,6 @@
 package voodoo.pack
 
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -24,17 +25,18 @@ object MCUFastPack : AbstractPack() {
     override fun File.getOutputFolder(id: String): File = resolve("mcu-fastpack").resolve(id)
 
     override suspend fun pack(
+        stopwatch: Stopwatch,
         modpack: LockPack,
         output: File,
         uploadBaseDir: File,
         clean: Boolean
-    ) {
+    ) = stopwatch {
         val cacheDir = SKPack.directories.cacheHome
 
         if (clean) {
             output.deleteRecursively()
         }
-//
+
         val workingDir = output.resolve(modpack.id).absoluteFile
 
         modpack.sourceFolder.let { packSrc ->
@@ -62,7 +64,12 @@ object MCUFastPack : AbstractPack() {
 
                         val targetFolder = workingDir.resolve(entry.serialFile).parentFile
 
-                        val (url, file) = provider.download(entry, targetFolder, cacheDir)
+                        val (url, file) = provider.download(
+                            "download-${entry.id}".watch,
+                            entry,
+                            targetFolder,
+                            cacheDir
+                        )
 
                         // TODO: wait for fastpack to support
 //                    if (url != null && entry.useUrlTxt) {

@@ -1,5 +1,6 @@
 package voodoo.server
 
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -22,12 +23,13 @@ object Server {
     private val directories = Directories.get("server")
 
     suspend fun install(
+        stopwatch: Stopwatch,
         modpack: LockPack,
         serverDir: File,
         skipForge: Boolean,
         clean: Boolean,
         cleanConfig: Boolean
-    ) {
+    ) = stopwatch {
         val cacheDir = directories.cacheHome
 
         if (clean) {
@@ -76,7 +78,7 @@ object Server {
                         val provider = Providers[entry.provider]
                         val targetFolder = serverDir.resolve(entry.serialFile).absoluteFile.parentFile
                         logger.info("downloading to - ${targetFolder.path}")
-                        val (_, _) = provider.download(entry, targetFolder, cacheDir)
+                        val (_, _) = provider.download("download-${entry.id}".watch, entry, targetFolder, cacheDir)
                     }
 //                delay(10)
                     logger.info("started job ${entry.displayName}")
@@ -89,25 +91,29 @@ object Server {
             val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = ForgeUtil.forgeVersionOf(forge)
             val forgeFile = directories.runtimeDir.resolve(forgeFileName)
             logger.info("forge: $forgeLongVersion")
-            forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
+            "downloadForge".watch {
+                forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
+            }
 
             // install forge
             if (!skipForge) {
-                val java = arrayOf(System.getProperty("java.home"), "bin", "java").joinToString(File.separator)
-                val args = arrayOf(java, "-jar", forgeFile.path, "--installServer")
-                logger.debug("running " + args.joinToString(" ") { "\"$it\"" })
-                ProcessBuilder(*args)
-                    .directory(serverDir)
-                    .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                    .redirectError(ProcessBuilder.Redirect.INHERIT)
-                    .start()
-                    .waitFor()
+                "installForge".watch {
+                    val java = arrayOf(System.getProperty("java.home"), "bin", "java").joinToString(File.separator)
+                    val args = arrayOf(java, "-jar", forgeFile.path, "--installServer")
+                    logger.debug("running " + args.joinToString(" ") { "\"$it\"" })
+                    ProcessBuilder(*args)
+                        .directory(serverDir)
+                        .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                        .redirectError(ProcessBuilder.Redirect.INHERIT)
+                        .start()
+                        .waitFor()
 
-                // rename forge jar
-                val forgeJar = serverDir.resolve("forge-$forgeLongVersion-universal.jar")
-                val targetForgeJar = serverDir.resolve("forge.jar")
-                targetForgeJar.delete()
-                forgeJar.copyTo(targetForgeJar, overwrite = true)
+                    // rename forge jar
+                    val forgeJar = serverDir.resolve("forge-$forgeLongVersion-universal.jar")
+                    val targetForgeJar = serverDir.resolve("forge.jar")
+                    targetForgeJar.delete()
+                    forgeJar.copyTo(targetForgeJar, overwrite = true)
+                }
             } else {
                 val forgeJar = serverDir.resolve("forge-installer.jar")
                 forgeFile.copyTo(forgeJar, overwrite = true)

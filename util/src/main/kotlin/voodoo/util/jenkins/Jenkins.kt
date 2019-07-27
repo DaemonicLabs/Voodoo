@@ -1,5 +1,6 @@
 package voodoo.util.jenkins
 
+import com.eyeem.watchadoin.Stopwatch
 import com.github.kittinunf.fuel.core.extensions.cUrlString
 import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
 import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
@@ -22,6 +23,7 @@ private val json = Json(JsonConfiguration(strictMode = false, encodeDefaults = f
 private val useragent = "voodoo/${UtilConstants.VERSION}"
 
 suspend fun downloadVoodoo(
+    stopwatch: Stopwatch,
     component: String,
     binariesDir: File,
     outputFile: File? = null,
@@ -29,7 +31,7 @@ suspend fun downloadVoodoo(
     serverUrl: String = UtilConstants.JENKINS_URL,
     job: String = UtilConstants.JENKINS_JOB,
     buildNumber: Int? = null
-): File {
+): File = stopwatch {
     val moduleName = "${if (bootstrap) "bootstrap-" else ""}$component"
     val fileRegex = "$moduleName.*\\.jar"
 
@@ -71,7 +73,7 @@ suspend fun downloadVoodoo(
     }
 
     tmpFile.renameTo(targetFile)
-    return targetFile
+    return@stopwatch targetFile
 }
 
 class JenkinsServer(

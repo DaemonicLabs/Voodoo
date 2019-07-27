@@ -1,5 +1,6 @@
 package voodoo.provider
 
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
@@ -21,7 +22,12 @@ object LocalProvider : ProviderBase("Local Provider") {
         }
     }
 
-    override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File> {
+    override suspend fun download(
+        stopwatch: Stopwatch,
+        entry: LockEntry,
+        targetFolder: File,
+        cacheDir: File
+    ): Pair<String?, File> = stopwatch {
         val fileSrc = entry.parent.localFolder.resolve(entry.fileSrc)
         val targetFile = targetFolder.resolve(fileSrc.name)
         logger.info(fileSrc.absolutePath)

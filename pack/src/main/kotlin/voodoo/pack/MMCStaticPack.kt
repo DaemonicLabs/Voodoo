@@ -1,5 +1,6 @@
 package voodoo.pack
 
+import com.eyeem.watchadoin.Stopwatch
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
 import voodoo.util.blankOr
@@ -16,11 +17,12 @@ object MMCStaticPack : AbstractPack() {
     override fun File.getOutputFolder(id: String): File = resolve("mulltimc-sk-static")
 
     override suspend fun pack(
+        stopwatch: Stopwatch,
         modpack: LockPack,
         output: File,
         uploadBaseDir: File,
         clean: Boolean
-    ) {
+    ) = stopwatch {
         val cacheDir = directories.cacheHome.resolve("mmc")
         val instanceDir = cacheDir.resolve(modpack.id)
         instanceDir.deleteRecursively()
@@ -54,8 +56,12 @@ object MMCStaticPack : AbstractPack() {
         urlFile.writeText(skPackUrl)
 
         val multimcInstaller = instanceDir.resolve("mmc-installer.jar")
-        val installer =
-            downloadVoodoo(component = "multimc-installer", bootstrap = false, binariesDir = directories.cacheHome)
+        val installer = downloadVoodoo(
+            "downloadVoodoo".watch,
+            component = "multimc-installer",
+            bootstrap = false,
+            binariesDir = directories.cacheHome
+        )
         installer.copyTo(multimcInstaller)
 
         val packignore = instanceDir.resolve(".packignore")

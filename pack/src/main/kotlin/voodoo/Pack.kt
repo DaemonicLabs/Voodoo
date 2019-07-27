@@ -1,5 +1,6 @@
 package voodoo
 
+import com.eyeem.watchadoin.Stopwatch
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import mu.KLogging
@@ -53,7 +54,7 @@ object Pack : KLogging() {
 //        }
 //    }
 
-    suspend fun pack(modpack: LockPack, uploadBaseDir: File, vararg args: String) {
+    suspend fun pack(stopwatch: Stopwatch, modpack: LockPack, uploadBaseDir: File, vararg args: String) = stopwatch {
         logger.info("parsing arguments")
         val arguments = Arguments(ArgParser(args))
 
@@ -70,6 +71,7 @@ object Pack : KLogging() {
             output.mkdirs()
 
             packer.pack(
+                stopwatch = "${packer.label}-timer".watch,
                 modpack = modpack,
                 output = output,
                 uploadBaseDir = uploadBaseDir,

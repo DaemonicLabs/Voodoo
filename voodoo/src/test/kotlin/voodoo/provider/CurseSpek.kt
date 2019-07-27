@@ -62,7 +62,7 @@ object CurseSpek : Spek({
                         val deferredFiles =
                             versionsMapping.map { entry ->
                                 async {
-                                    entry.provider().download(entry, targetFolder, cacheDir)
+                                    entry.provider().download(, entry, targetFolder, cacheDir)
                                 }
                             }
                         deferredFiles.map { it.await() }

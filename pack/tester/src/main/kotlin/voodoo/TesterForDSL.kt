@@ -1,5 +1,6 @@
 package voodoo
 
+import com.eyeem.watchadoin.Stopwatch
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 
@@ -15,25 +16,27 @@ import kotlin.system.exitProcess
  */
 
 object TesterForDSL : KLogging() {
-    fun main(modpack: LockPack, vararg args: String) = runBlocking {
-        val arguments = Arguments(ArgParser(args))
+    fun main(stopwatch: Stopwatch, modpack: LockPack, vararg args: String) = stopwatch {
+        runBlocking {
+            val arguments = Arguments(ArgParser(args))
 
-        arguments.run {
+            arguments.run {
 
-//            logger.info("loading $modpackLockFile")
-            // TODO: load proper rootDir
+                //            logger.info("loading $modpackLockFile")
+                // TODO: load proper rootDir
 //            val modpack = LockPack.parse(modpackLockFile.absoluteFile, File("."))
 
-            val tester = when (methode) {
-                "mmc" -> MultiMCTester
+                val tester = when (methode) {
+                    "mmc" -> MultiMCTester
 
-                else -> {
-                    logger.error("no such packing methode: $methode")
-                    exitProcess(-1)
+                    else -> {
+                        logger.error("no such packing methode: $methode")
+                        exitProcess(-1)
+                    }
                 }
-            }
 
-            tester.execute(modpack = modpack, clean = clean)
+                tester.execute(stopwatch = "$methode-test".watch, modpack = modpack, clean = clean)
+            }
         }
     }
 

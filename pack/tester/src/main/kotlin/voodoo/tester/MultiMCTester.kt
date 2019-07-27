@@ -1,5 +1,6 @@
 package voodoo.tester
 
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -27,7 +28,11 @@ import java.io.IOException
 object MultiMCTester : AbstractTester() {
     override val label = "MultiMC Tester"
 
-    override suspend fun execute(modpack: LockPack, clean: Boolean) {
+    override suspend fun execute(
+        stopwatch: Stopwatch,
+        modpack: LockPack,
+        clean: Boolean
+    ) = stopwatch {
         val folder = "voodoo_test_${modpack.id}"
         val title = "${modpack.title.blankOr ?: modpack.id} Test Instance"
 
@@ -164,7 +169,12 @@ object MultiMCTester : AbstractTester() {
 
                         val provider = entry.provider()
                         val targetFolder = minecraftDir.resolve(folder)
-                        val (url, file) = provider.download(entry, targetFolder, cacheDir)
+                        val (url, file) = provider.download(
+                            "download-${entry.id}".watch,
+                            entry,
+                            targetFolder,
+                            cacheDir
+                        )
                     }
                 }
             }

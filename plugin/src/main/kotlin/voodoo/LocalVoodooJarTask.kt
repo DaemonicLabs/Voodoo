@@ -20,6 +20,9 @@ open class LocalVoodooJarTask : GradleBuild() {
         buildFile = voodooExtension.localVoodooProjectLocation.resolve("build.gradle.kts")
         tasks = mutableListOf("voodoo:clean", "voodoo:shadowJar")
         dir = voodooExtension.localVoodooProjectLocation
+        startParameter = startParameter.newInstance().apply {
+            isRefreshDependencies = true
+        }
 
         doLast {
             val shadowJarFile: File = voodooExtension.localVoodooProjectLocation.resolve("voodoo")

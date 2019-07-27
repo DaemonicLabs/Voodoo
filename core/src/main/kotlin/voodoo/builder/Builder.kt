@@ -1,5 +1,6 @@
 package voodoo.builder
 
+import com.eyeem.watchadoin.Stopwatch
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import kotlinx.coroutines.cancel
@@ -19,54 +20,63 @@ import kotlin.system.exitProcess
 
 object Builder : KLogging() {
     fun build(
+        stopwatch: Stopwatch,
         modpack: ModPack,
         id: String,
         targetFileName: String = "$id.lock.pack.hjson",
         targetFile: File = modpack.sourceFolder.resolve(targetFileName),
         vararg args: String
-    ): LockPack = runBlocking {
-        logger.debug("parsing args: ${args.joinToString(", ")}")
-        val parser = ArgParser(args)
-        val arguments = Arguments(parser)
-        parser.force()
+    ): LockPack = stopwatch {
+        runBlocking {
+            logger.debug("parsing args: ${args.joinToString(", ")}")
+            val parser = ArgParser(args)
+            val arguments = Arguments(parser)
+            parser.force()
 
-        arguments.run {
-            modpack.entrySet.forEach { entry ->
-                logger.info("id: ${entry.id} entry: $entry")
-            }
-
-            try {
-                resolve(
-                    modpack,
-                    noUpdate = noUpdate && entries.isEmpty(),
-                    updateEntries = entries
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-                coroutineContext.cancel()
-                exitProcess(1)
-            }
-
-            modpack.lockEntrySet.forEach { lockEntry ->
-                val provider = Providers[lockEntry.provider]
-                if (!provider.validate(lockEntry)) {
-                    logger.error { lockEntry }
-                    throw IllegalStateException("entry did not validate")
+            arguments.run {
+                modpack.entrySet.forEach { entry ->
+                    logger.info("id: ${entry.id} entry: $entry")
                 }
+
+                try {
+                    resolve(
+                        "resolve".watch,
+                        modpack,
+                        noUpdate = noUpdate && entries.isEmpty(),
+                        updateEntries = entries
+                    )
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    coroutineContext.cancel()
+                    exitProcess(1)
+                }
+
+
+                modpack.lockEntrySet.forEach { lockEntry ->
+                    val provider = Providers[lockEntry.provider]
+                    if (!provider.validate(lockEntry)) {
+                        logger.error { lockEntry }
+                        throw IllegalStateException("entry did not validate")
+                    }
+                }
+
+                logger.info("Creating locked pack...")
+                val lockedPack = "lock".watch {
+                    modpack.lock()
+                }
+                lockedPack.entrySet.clear()
+                lockedPack.entrySet += modpack.lockEntrySet
+
+                "writeLockEntries".watch {
+                    lockedPack.writeLockEntries()
+                }
+
+                logger.info("Writing lock file... $targetFile")
+                targetFile.parentFile.mkdirs()
+                targetFile.writeText(lockedPack.toJson(LockPack.serializer()))
+
+                lockedPack
             }
-
-            logger.info("Creating locked pack...")
-            val lockedPack = modpack.lock()
-            lockedPack.entrySet.clear()
-            lockedPack.entrySet += modpack.lockEntrySet
-
-            lockedPack.writeLockEntries()
-
-            logger.info("Writing lock file... $targetFile")
-            targetFile.parentFile.mkdirs()
-            targetFile.writeText(lockedPack.toJson(LockPack.serializer()))
-
-            lockedPack
         }
     }
 

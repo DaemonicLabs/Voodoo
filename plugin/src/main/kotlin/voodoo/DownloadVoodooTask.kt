@@ -1,5 +1,6 @@
 package voodoo
 
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.OutputDirectory
@@ -40,15 +41,20 @@ open class DownloadVoodooTask : DefaultTask() {
 
         logger.lifecycle("download voodoo")
 
-        runBlocking {
-            downloadVoodoo(
-                component = "voodoo",
-                binariesDir = outputFolder,
-                outputFile = jarFile,
-                bootstrap = false,
-                buildNumber = PluginConstants.JENKINS_BUILD_NUMBER
-            )
+        val stopwatch = Stopwatch("downloadVoodooTask")
+        stopwatch {
+            runBlocking {
+                downloadVoodoo(
+                    stopwatch = "downloadVoodoo".watch,
+                    component = "voodoo",
+                    binariesDir = outputFolder,
+                    outputFile = jarFile,
+                    bootstrap = false,
+                    buildNumber = PluginConstants.JENKINS_BUILD_NUMBER
+                )
+            }
+            lastFile.writeText("${PluginConstants.JENKINS_BUILD_NUMBER}")
         }
-        lastFile.writeText("${PluginConstants.JENKINS_BUILD_NUMBER}")
+        logger.info(stopwatch.toStringPretty())
     }
 }

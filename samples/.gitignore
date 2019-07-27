@@ -14,4 +14,4 @@ _upload/
 .meta/
 *.lock.hjson
 *.lock.pack.hjson
-
+reports/

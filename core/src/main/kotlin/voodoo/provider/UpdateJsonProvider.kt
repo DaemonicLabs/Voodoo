@@ -1,5 +1,6 @@
 package voodoo.provider
 
+import com.eyeem.watchadoin.Stopwatch
 import com.github.kittinunf.fuel.core.extensions.cUrlString
 import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
 import com.github.kittinunf.fuel.httpGet
@@ -63,8 +64,13 @@ object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
         }
     }
 
-    override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File> {
-        return Providers["DIRECT"].download(entry, targetFolder, cacheDir)
+    override suspend fun download(
+        stopwatch: Stopwatch,
+        entry: LockEntry,
+        targetFolder: File,
+        cacheDir: File
+    ): Pair<String?, File> = stopwatch {
+        return@stopwatch Providers["DIRECT"].download("downloadDirect".watch, entry, targetFolder, cacheDir)
     }
 
     override suspend fun generateName(entry: LockEntry): String {

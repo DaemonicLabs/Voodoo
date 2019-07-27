@@ -1,5 +1,6 @@
 package voodoo
 
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.data.flat.ModPack
@@ -11,7 +12,13 @@ import java.io.File
 
 object Tome : KLogging() {
 
-    suspend fun generate(modpack: ModPack, lockPack: LockPack, tomeEnv: TomeEnv, uploadDir: File) {
+    suspend fun generate(
+        stopwatch: Stopwatch,
+        modpack: ModPack,
+        lockPack: LockPack,
+        tomeEnv: TomeEnv,
+        uploadDir: File
+    ) = stopwatch {
         val docDir = tomeEnv.docRoot // .resolve(modpack.docDir)
 
         docDir.deleteRecursively()
@@ -20,6 +27,7 @@ object Tome : KLogging() {
             logger.info("generating $file targetFile: $targetFile")
             targetFile.parentFile.mkdirs()
             val fileContent = generator.generateHtml(
+                stopwatch = "$file - stopwatch".watch,
                 modPack = modpack,
                 lockPack = lockPack,
                 targetFolder = targetFile.parentFile
@@ -29,27 +37,27 @@ object Tome : KLogging() {
     }
 
     fun LockPack.report(targetFolder: File): String {
-            val forgeVersion = runBlocking {
-                ForgeUtil.forgeVersionOf(forge)?.forgeVersion ?: "missing"
-            }
-            return markdownTable(
-                headers = listOf("Title", this.title()),
-                content = mutableListOf(
-                    listOf("ID", "`$id`"),
-                    listOf("Pack Version", "`$version`"),
-                    listOf("MC Version", "`$mcVersion`"),
-                    listOf("Forge Version", "`$forgeVersion`"),
-                    listOf("Author", "`${authors.joinToString(", ")}`")
-                ).also {
-                    if(iconFile.exists()) {
-                        val docIconFile = targetFolder.resolve(iconFile.name)
-                        iconFile.copyTo(docIconFile)
-                        it += listOf(
-                            "Icon",
-                            "<img src=\"${docIconFile.relativeTo(targetFolder).unixPath}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
-                        )
-                    }
-                }
-            )
+        val forgeVersion = runBlocking {
+            ForgeUtil.forgeVersionOf(forge)?.forgeVersion ?: "missing"
         }
+        return markdownTable(
+            headers = listOf("Title", this.title()),
+            content = mutableListOf(
+                listOf("ID", "`$id`"),
+                listOf("Pack Version", "`$version`"),
+                listOf("MC Version", "`$mcVersion`"),
+                listOf("Forge Version", "`$forgeVersion`"),
+                listOf("Author", "`${authors.joinToString(", ")}`")
+            ).also {
+                if (iconFile.exists()) {
+                    val docIconFile = targetFolder.resolve(iconFile.name)
+                    iconFile.copyTo(docIconFile)
+                    it += listOf(
+                        "Icon",
+                        "<img src=\"${docIconFile.relativeTo(targetFolder).unixPath}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
+                    )
+                }
+            }
+        )
+    }
 }

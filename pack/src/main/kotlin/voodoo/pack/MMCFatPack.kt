@@ -1,5 +1,6 @@
 package voodoo.pack
 
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -28,11 +29,12 @@ object MMCFatPack : AbstractPack() {
     override fun File.getOutputFolder(id: String): File = resolve("multimc-fat")
 
     override suspend fun pack(
+        stopwatch: Stopwatch,
         modpack: LockPack,
         output: File,
         uploadBaseDir: File,
         clean: Boolean
-    ) {
+    ) = stopwatch {
         val cacheDir = directories.cacheHome
         val instanceDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id)
         val title = modpack.title.blankOr ?: modpack.id
@@ -122,7 +124,12 @@ object MMCFatPack : AbstractPack() {
                         } else emptyList()
                         val provider = Providers[entry.provider]
                         val targetFolder = minecraftDir.resolve(folder)
-                        val (_, file) = provider.download(entry, targetFolder, cacheDir)
+                        val (_, file) = provider.download(
+                            "download-${entry.id}".watch,
+                            entry,
+                            targetFolder,
+                            cacheDir
+                        )
 
                         if (!matchedOptioalsList.isEmpty()) {
                             val selected = matchedOptioalsList.any { optionals[it.id] ?: false }

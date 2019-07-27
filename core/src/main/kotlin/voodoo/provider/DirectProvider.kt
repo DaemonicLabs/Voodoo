@@ -1,5 +1,6 @@
 package voodoo.provider
 
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
@@ -24,12 +25,17 @@ object DirectProvider : ProviderBase("Direct Provider") {
         }
     }
 
-    override suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String, File> {
+    override suspend fun download(
+        stopwatch: Stopwatch,
+        entry: LockEntry,
+        targetFolder: File,
+        cacheDir: File
+    ): Pair<String, File> = stopwatch {
         val fileName = entry.fileName ?: entry.url.substringAfterLast('/')
         val targetFile = targetFolder.resolve(fileName)
         val url = URL(entry.url)
         targetFile.download(entry.url, cacheDir.resolve("DIRECT").resolve(url.host + url.path.substringBeforeLast('/')))
-        return Pair(entry.url, targetFile)
+        return@stopwatch Pair(entry.url, targetFile)
     }
 
     override suspend fun generateName(entry: LockEntry): String {

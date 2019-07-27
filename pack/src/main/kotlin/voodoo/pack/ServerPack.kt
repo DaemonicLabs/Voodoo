@@ -1,5 +1,6 @@
 package voodoo.pack
 
+import com.eyeem.watchadoin.Stopwatch
 import voodoo.data.lock.LockPack
 import voodoo.util.jenkins.downloadVoodoo
 import voodoo.util.toJson
@@ -18,11 +19,12 @@ object ServerPack : AbstractPack() {
     override fun File.getOutputFolder(id: String): File = resolve("server").resolve(id)
 
     override suspend fun pack(
+        stopwatch: Stopwatch,
         modpack: LockPack,
         output: File,
         uploadBaseDir: File,
         clean: Boolean
-    ) {
+    ) = stopwatch {
         if (clean) {
             logger.info("cleaning server directory $output")
             output.deleteRecursively()
@@ -77,8 +79,12 @@ object ServerPack : AbstractPack() {
         packPointer.writeText(relPackFile)
 
         logger.info("packaging installer jar")
-        val installer =
-            downloadVoodoo(component = "server-installer", bootstrap = false, binariesDir = directories.cacheHome)
+        val installer = downloadVoodoo(
+            stopwatch = "downloadVoodoo".watch,
+            component = "server-installer",
+            bootstrap = false,
+            binariesDir = directories.cacheHome
+        )
 
         val serverInstaller = output.resolve("server-installer.jar")
         installer.copyTo(serverInstaller)

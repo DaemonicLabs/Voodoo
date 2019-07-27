@@ -1,5 +1,6 @@
 package voodoo.pack
 
+import com.eyeem.watchadoin.Stopwatch
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.util.Directories
@@ -20,6 +21,7 @@ abstract class AbstractPack : KLogging() {
      * @param clean whether to delete old files
      */
     abstract suspend fun pack(
+        stopwatch: Stopwatch,
         modpack: LockPack,
         output: File,
         uploadBaseDir: File,

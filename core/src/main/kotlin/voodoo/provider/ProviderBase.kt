@@ -1,5 +1,6 @@
 package voodoo.provider
 
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import mu.KLogging
 import voodoo.data.DependencyType
@@ -37,7 +38,12 @@ abstract class ProviderBase(
      * @param targetFolder provided target rootFolder/location
      * @param cacheDir prepared cache directory
      */
-    abstract suspend fun download(entry: LockEntry, targetFolder: File, cacheDir: File): Pair<String?, File>
+    abstract suspend fun download(
+        stopwatch: Stopwatch,
+        entry: LockEntry,
+        targetFolder: File,
+        cacheDir: File
+    ): Pair<String?, File>
 
     abstract suspend fun generateName(entry: LockEntry): String
 
