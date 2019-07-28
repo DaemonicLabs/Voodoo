@@ -15,6 +15,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.json.Json
@@ -259,7 +260,7 @@ object CurseClient : KLogging(), CoroutineScope {
         return getAddonFileCache.getOrPut(key) { getAddonFileCall(addonId, fileId) }
     }
 
-    private suspend fun getAddonFileCall(addonId: ProjectID, fileId: FileID): AddonFile? {
+    private suspend fun getAddonFileCall(addonId: ProjectID, fileId: FileID, retry: Int = 4): AddonFile? {
         val url = "$ADDON_API/addon/$addonId/file/$fileId"
 
         logger.debug("get $url")
@@ -271,7 +272,11 @@ object CurseClient : KLogging(), CoroutineScope {
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
-                logger.error("getAddonFileCall")
+                logger.error("getAddonFileCall failed")
+                if(retry > 0) {
+                    delay(1000)
+                    return getAddonFileCall(addonId, fileId, retry-1)
+                }
                 logger.error("url: $url")
                 logger.error("cUrl: ${request.cUrlString()}")
                 logger.error("response: $response")
@@ -288,7 +293,7 @@ object CurseClient : KLogging(), CoroutineScope {
     suspend fun getAllFilesForAddon(addonId: ProjectID): List<AddonFile> =
         getAllFilesForAddonCache.getOrPut(addonId) { getAllFilesForAddonCall(addonId) }
 
-    private suspend fun getAllFilesForAddonCall(addonId: ProjectID): List<AddonFile> {
+    private suspend fun getAllFilesForAddonCall(addonId: ProjectID, retry: Int = 5): List<AddonFile> {
         val url = "$ADDON_API/addon/$addonId/files"
         val loader: KSerializer<AddonFile> = AddonFile.serializer()
 
@@ -299,6 +304,10 @@ object CurseClient : KLogging(), CoroutineScope {
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
+                if(retry > 0) {
+                    delay(1000)
+                    return getAllFilesForAddonCall(addonId, retry - 1)
+                }
                 logger.error(result.error.exception) {
                     """getAllFilesForAddonCall
                     |url: $url")
@@ -322,7 +331,7 @@ object CurseClient : KLogging(), CoroutineScope {
         return getAddonCache.getOrPut(addonId) { getAddonCall(addonId, fail) }
     }
 
-    private suspend fun getAddonCall(addonId: ProjectID, fail: Boolean = true): Addon? {
+    private suspend fun getAddonCall(addonId: ProjectID, fail: Boolean = true, retry: Int = 5): Addon? {
         val url = "$ADDON_API/addon/$addonId"
         val loader: KSerializer<Addon> = Addon.serializer()
 
@@ -333,7 +342,11 @@ object CurseClient : KLogging(), CoroutineScope {
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
-                logger.error("getAddonCall")
+                logger.error("getAddonCall failed")
+                if(retry > 0) {
+                    delay(1000)
+                    return getAddonCall(addonId, fail, retry - 1)
+                }
                 logger.error("url: $url")
                 logger.error("cUrl: ${request.cUrlString()}")
                 logger.error("response: $response")
@@ -344,7 +357,7 @@ object CurseClient : KLogging(), CoroutineScope {
         }
     }
 
-    suspend fun getAddons(addonIds: List<Int>, fail: Boolean = true): List<Addon>? {
+    suspend fun getAddons(addonIds: List<Int>, fail: Boolean = true, retry: Int = 5): List<Addon>? {
         val url = "$ADDON_API/addon/"
         val projectIDLoader: KSerializer<List<Int>> = Int.serializer().list
         val loader: KSerializer<List<Addon>> = Addon.serializer().list
@@ -357,7 +370,11 @@ object CurseClient : KLogging(), CoroutineScope {
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
-                logger.error("getAddonCall")
+                logger.error("getAddosCall failed")
+                if(retry > 0) {
+                    delay(1000)
+                    return getAddons(addonIds, fail, retry - 1)
+                }
                 logger.error("url: $url")
                 logger.error("cUrl: ${request.cUrlString()}")
                 logger.error("response: $response")
@@ -388,17 +405,17 @@ object CurseClient : KLogging(), CoroutineScope {
         }
     }
 
-    enum class AddonSortMethod {
-        Featured,
-        Popularity,
-        LastUpdated,
-        Name,
-        Author,
-        TotalDownloads,
-        Category,
-        GameVersion
-    }
-
+//    enum class AddonSortMethod {
+//        Featured,
+//        Popularity,
+//        LastUpdated,
+//        Name,
+//        Author,
+//        TotalDownloads,
+//        Category,
+//        GameVersion
+//    }
+//
 //    suspend fun getAddonsByCriteria(
 //        gameId: Int,
 //        sectionId: Int? = null,

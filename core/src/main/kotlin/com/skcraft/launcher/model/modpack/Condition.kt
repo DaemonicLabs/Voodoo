@@ -20,7 +20,7 @@ import java.util.ArrayList
 class Condition(
     @SerialName("if")
     val ifSwitch: String,
-    @Optional
+
     var features: List<String> = listOf()
 ) {
 //    fun matches(): Boolean {

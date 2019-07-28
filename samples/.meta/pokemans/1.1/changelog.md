@@ -22,7 +22,7 @@ changed advanced-rocketry
 
 Property | old value | new value
 ---|---|---
-Version | `AdvancedRocketry 1.12.2-1.5.0-139-UNSTABLE build -139 for 1.12.2` | `AdvancedRocketry-1.12.2-1.6.0-160-universal.jar`
+Version | `AdvancedRocketry 1.12.2-1.5.0-139-UNSTABLE build -139 for 1.12.2` | `AdvancedRocketry-1.12.2-1.6.0-161-universal.jar`
 Release Type | `ALPHA` | `Alpha`
 
 
@@ -158,7 +158,7 @@ changed industrial-craft
 
 Property | old value | new value
 ---|---|---
-Version | `industrialcraft-2-2.8.153-ex112.jar` | `industrialcraft-2-2.8.170-ex112.jar`
+Version | `industrialcraft-2-2.8.153-ex112.jar` | `industrialcraft-2-2.8.171-ex112.jar`
 Release Type | `BETA` | `Release`
 Author | `Aroma1997, Chocohead, estebes, Player` | `Aroma1997, Chocohead, estebess, Player`
 
@@ -211,7 +211,7 @@ changed minecolonies
 
 Property | old value | new value
 ---|---|---
-Version | `minecolonies-1.12.2-0.10.259-RELEASE-universal.jar` | `minecolonies-1.12.2-0.10.313-BETA-universal.jar`
+Version | `minecolonies-1.12.2-0.10.259-RELEASE-universal.jar` | `minecolonies-1.12.2-0.10.322-BETA-universal.jar`
 Release Type | `RELEASE` | `Beta`
 
 

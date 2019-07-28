@@ -34,11 +34,11 @@ data class ModPack(
 ) {
     companion object : KLogging()
 
-    @Optional
+
     var localDir: String = "local"
-    @Optional
+
     var sourceDir: String = id
-    @Optional
+
     var docDir: String = id
 
     @Transient

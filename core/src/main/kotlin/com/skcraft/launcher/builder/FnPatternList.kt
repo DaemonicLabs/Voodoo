@@ -13,9 +13,9 @@ import java.util.EnumSet
 
 @Serializable
 data class FnPatternList(
-    @Optional
+
     var include: List<String> = arrayListOf(),
-    @Optional
+
     var exclude: List<String> = arrayListOf(),
     @Transient
     var flags: EnumSet<FnMatch.Flag> = DEFAULT_FLAGS

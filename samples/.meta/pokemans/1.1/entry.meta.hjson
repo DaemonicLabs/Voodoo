@@ -36,7 +36,7 @@
         },
         version: {
             name: Version,
-            value: `AdvancedRocketry-1.12.2-1.6.0-160-universal.jar`
+            value: `AdvancedRocketry-1.12.2-1.6.0-161-universal.jar`
         },
         provider: {
             name: Provider,
@@ -592,7 +592,7 @@
         },
         version: {
             name: Version,
-            value: `industrialcraft-2-2.8.170-ex112.jar`
+            value: `industrialcraft-2-2.8.171-ex112.jar`
         },
         provider: {
             name: Provider,
@@ -776,7 +776,7 @@
         },
         version: {
             name: Version,
-            value: `minecolonies-1.12.2-0.10.313-BETA-universal.jar`
+            value: `minecolonies-1.12.2-0.10.322-BETA-universal.jar`
         },
         provider: {
             name: Provider,

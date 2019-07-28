@@ -16,30 +16,30 @@ import java.net.URL
 
 @Serializable
 data class Manifest(
-    @Optional
+
     var minimumVersion: Int = 0,
-    @Optional
+
     var title: String? = null,
-    @Optional
+
     var name: String? = null,
-    @Optional
+
     var version: String? = null,
     @Serializable(with = URLSerializer::class)
     var baseUrl: URL? = null,
-    @Optional
+
     var librariesLocation: String? = null,
-    @Optional
+
     var objectsLocation: String? = null,
-    @Optional
+
     var gameVersion: String? = null,
-    @Optional
+
     @SerialName("launch")
     var launchModifier: LaunchModifier? = null,
-    @Optional
+
     var features: List<Feature> = emptyList(),
-    @Optional
+
     var tasks: List<FileInstall> = emptyList(),
-    @Optional
+
     var versionManifest: VersionManifest? = null
 ) {
 

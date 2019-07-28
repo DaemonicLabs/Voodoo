@@ -32,7 +32,7 @@ data class LockPack(
     var localDir: String = "local",
     var packOptions: PackOptions = PackOptions()
 ) {
-    @Optional
+
     var sourceDir: String = id
 
     companion object : KLogging() {

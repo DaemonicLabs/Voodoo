@@ -20,11 +20,11 @@ data class FileInstall(
     var hash: String,
     var location: String,
     var to: String,
-    @Optional
+
     var size: Long = 0,
     @SerialName("userFile")
     var isUserFile: Boolean = false,
-    @Optional
+
     var manifest: Manifest? = null,
     @SerialName("when")
     var conditionWhen: Condition? = null

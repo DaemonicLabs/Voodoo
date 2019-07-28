@@ -14,25 +14,25 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 class BuilderConfig {
-    @Optional
+
     var name: String? = null
-    @Optional
+
     var title: String? = null
-    @Optional
+
     var gameVersion: String? = null
     @SerialName("launch")
-    @Optional
+
     var launchModifier: LaunchModifier? =
         LaunchModifier()
         set(launchModifier) {
             field = launchModifier ?: LaunchModifier()
         }
-    @Optional
+
     var features: List<FeaturePattern>? = arrayListOf()
         set(features) {
             field = features ?: arrayListOf()
         }
-    @Optional
+
     var userFiles: FnPatternList? = FnPatternList()
         set(userFiles) {
             field = userFiles ?: FnPatternList()

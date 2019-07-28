@@ -65,20 +65,20 @@ data class Library(
     @Transient
     var version: String? = name.split()[2]
     @SerialName("url")
-    @Optional
+
     var baseUrl: String? = null
-    @Optional
+
     var natives: Map<String, String>? = null
-    @Optional
+
     var extract: Extract? = null
-    @Optional
+
     var rules: List<Rule>? = null
     // Forge-added
-    @Optional
+
     @Transient
     var comment: String? = null
     // Custom
-    @Optional
+
     @Transient
     var isLocallyAvailable: Boolean = false
 
@@ -131,9 +131,7 @@ data class Library(
 
     @Serializable
     data class Rule(
-        @Optional
         var action: Action? = null,
-        @Optional
         var os: OS? = null
     ) {
         fun matches(environment: Environment): Boolean {
