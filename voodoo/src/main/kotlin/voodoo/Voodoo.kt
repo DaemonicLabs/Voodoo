@@ -11,6 +11,7 @@ import com.eyeem.watchadoin.Stopwatch
 import com.eyeem.watchadoin.TraceEventsReport
 import com.eyeem.watchadoin.saveAsSvg
 import com.eyeem.watchadoin.asTraceEventsReport
+import com.eyeem.watchadoin.saveAsHtml
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
@@ -209,6 +210,7 @@ object Voodoo : KLogging() {
         println(stopwatch.toStringPretty())
         val reportDir= rootDir.resolve("reports").apply { mkdirs() }
         stopwatch.saveAsSvg(reportDir.resolve("${id}_$reportName.report.svg"))
+        stopwatch.saveAsHtml(reportDir.resolve("${id}_$reportName.report.html"))
         val traceEventsReport = stopwatch.asTraceEventsReport()
         val jsonString = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = true))
             .stringify(TraceEventsReport.serializer(), traceEventsReport)
