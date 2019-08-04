@@ -1,6 +1,8 @@
 package voodoo
 
 import Forge
+import Mod
+import com.eyeem.watchadoin.Stopwatch
 import job
 import kotlinx.coroutines.runBlocking
 import list
@@ -59,17 +61,17 @@ object RoundTripSpek : Spek({
                         }.list {
                             +(Mod.laggoggles) configure {
                                 description =
-                                        "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
+                                    "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                             }
 
                             +(Mod.sampler) configure {
                                 description =
-                                        "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
+                                    "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                             }
 
                             +(Mod.openeye) configure {
                                 description =
-                                        "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
+                                    "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
                             }
                         }
 
@@ -85,7 +87,7 @@ object RoundTripSpek : Spek({
         }
         val lockpack by memoized {
             runBlocking {
-                Builder.build(modpack, "roundtrip", targetFilename)
+                Builder.build(Stopwatch("RoundTrip-build"), modpack, "roundtrip", targetFilename)
             }
         }
         it("parse lockpack") {

@@ -1,5 +1,6 @@
 package voodoo.provider
 
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
 import list
@@ -46,7 +47,7 @@ object CurseSpek : Spek({
             val versionsMapping by memoized {
                 runBlocking {
                     CurseProvider.reset()
-                    resolve(modpack)
+                    resolve(Stopwatch("resolve"), modpack)
                 }
                 modpack.lockEntrySet
             }
@@ -62,7 +63,7 @@ object CurseSpek : Spek({
                         val deferredFiles =
                             versionsMapping.map { entry ->
                                 async {
-                                    entry.provider().download(, entry, targetFolder, cacheDir)
+                                    entry.provider().download(Stopwatch("download"), entry, targetFolder, cacheDir)
                                 }
                             }
                         deferredFiles.map { it.await() }
