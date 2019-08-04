@@ -9,14 +9,19 @@ import kotlin.math.roundToLong
  *
  * @param timelines output of [Stopwatch.report]
  */
-class SvgReport(val timelines: List<Timeline>, timeaxisPlaceholder: Boolean = false) {
+class SvgReport(val timelines: List<Timeline>, htmlEmbed: Boolean = false) {
 
     val padding = 10
     private val timelineHeight = 30
     private val fontSize = 12
     private val smallFontSize = 8
     val xAxisHeight = 8
+    val timelineAxisHeight = 12
     val scaleGridDistance = 50
+    val relations = timelines.relations()
+    val ancestors = timelines.map { timeline ->
+        timeline.ancestors().map { ancestorTimeline -> timelines.indexOf(ancestorTimeline) }
+    }
 
     private val maxPageWidth = 1200
     private val renderedSvg : String
@@ -29,6 +34,9 @@ class SvgReport(val timelines: List<Timeline>, timeaxisPlaceholder: Boolean = fa
 
     val svgWidthNormalized
         get() = svgWidth * xScale
+
+    val title: String
+        get() = timelines.firstOrNull()?.name ?: "Empty Report"
 
     init {
         xScale = 1.0f
@@ -79,7 +87,7 @@ class SvgReport(val timelines: List<Timeline>, timeaxisPlaceholder: Boolean = fa
             }
             rowTimelines += rect
 
-            timelinesSvg += rect.asSvgTimelineTag()
+            timelinesSvg += rect.asSvgTimelineTag(htmlEmbed, index)
         }
 
         val rowCount = rects.values.size
@@ -88,7 +96,7 @@ class SvgReport(val timelines: List<Timeline>, timeaxisPlaceholder: Boolean = fa
         var output = """<svg id="stopwatch" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 $svgWidthNormalized $svgHeight" width="$svgWidthNormalized" height="$svgHeight">"""
 
         // draw the timeline grid and axis
-        if (timeaxisPlaceholder) {
+        if (htmlEmbed) {
             output += """<g id="timeaxis"></g>"""
         } else {
             val omit = (1f / xScale).roundToLong()
@@ -165,17 +173,44 @@ private val Rect.width
 private val Rect.height
     get() = y2 - y1
 
-private fun Rect.asSvgTimelineTag() =
-    """<g>
-         <rect x="$x1" y="$y1" width="$width" height="$height" style="fill:rgba($fillColor,$alpha);"></rect>
-         <rect x="${x2 - 1}" y="$y1" width="2" height="$height" style="fill:rgba(0,0,0,1);"></rect>
-         <text x="${x1 + padding}" y="$y1Text" font-family="Verdana" font-size="$fontSize" fill="#000000" clip-path="url(#clip$clipIndex)">${timeline.name.escapeXml()}</text>
-         <text x="${x1 + padding}" y="${y1Text+fontSize * 0.8}" font-family="Verdana" font-size="$smallFontSize" fill="#000000" clip-path="url(#clip$clipIndex)">tid=${timeline.tid}</text>
+private fun Rect.asSvgTimelineTag(htmlEmbed: Boolean, timelineIndex: Int) : String {
+
+    fun listeners(): String {
+        if (!htmlEmbed) return ""
+
+        return """ onclick="onTimeBoxClick('$timelineIndex')" onmouseover="onTimeBoxHover('$timelineIndex')" onmouseout="onDefaultHint()""""
+    }
+
+    return """<g id="timebox_$timelineIndex">
+         <rect x="$x1" y="$y1" width="$width" height="$height" style="fill:rgba($fillColor,$alpha);"${listeners()}></rect>
+         <rect x="${x2 - 1}" y="$y1" width="2" height="$height" style="fill:rgba(0,0,0,1);"${listeners()}></rect>
+         <text x="${x1 + padding}" y="$y1Text" font-family="Verdana" font-size="$fontSize" fill="#000000" clip-path="url(#clip$clipIndex)"${listeners()}>${timeline.name.escapeXml()}</text>
+         <text x="${x1 + padding}" y="${y1Text + fontSize * 0.8}" font-family="Verdana" font-size="$smallFontSize" fill="#000000" clip-path="url(#clip$clipIndex)"${listeners()}>tid=${timeline.tid}</text>
          <clipPath id="clip$clipIndex">
            <rect x="$x1" y="$y1" width="$width" height="$height" class="clipRect"/>
          </clipPath>
        </g>""".trimIndent()
+}
 
+private fun List<Timeline>.relations(list : ArrayList<Timeline> = ArrayList()) : List<HashSet<Int>> {
+    val ancestorsArray = map { it.ancestors() }
+    val relations = ArrayList<HashSet<Timeline>>()
+    forEachIndexed { index, timeline ->
+        relations += HashSet<Timeline>()
+        ancestorsArray.forEach { ancestors ->
+            if (ancestors.contains(timeline)) {
+                relations[index].addAll(ancestors)
+            }
+        }
+    }
+    return relations.map { relationSet -> HashSet(relationSet.map { timeline -> indexOf(timeline) }) }
+}
+
+private fun Timeline.ancestors(list : ArrayList<Timeline> = ArrayList()) : List<Timeline> {
+    list.add(0, this)
+    parent?.ancestors(list)
+    return list
+}
 
 private fun Long.between(lower: Long, upper: Long): Boolean = this > lower && this < upper
 
@@ -253,7 +288,7 @@ private fun htmlTemplate(report: SvgReport) = """
 <!DOCTYPE html>
 <html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
-  <title>Watcha Doin?</title>
+  <title>${report.title.escapeXml()}</title>
 
   <style i type="text/css">
     svg * {
@@ -268,6 +303,14 @@ private fun htmlTemplate(report: SvgReport) = """
       font-family: "Verdana";
     }
 
+    div.sticky {
+      font-family: "Verdana";
+      position: -webkit-sticky;
+      position: sticky;
+      top: 0;
+      background-color: #fff;
+    }
+
   </style>
 
   <script src="https://code.easypz.io/easypz.latest.min.js"></script>
@@ -275,13 +318,28 @@ private fun htmlTemplate(report: SvgReport) = """
 </head>
 <body>
 
+  <div class="sticky">
+    <div id="navHint" style="font-size: 10px; color: #777; padding-left: 10px; height: 15px;">Zoom In [Hold Left Click] | Zoom Out [Double Left Click]</div>
+    <div>
+    <svg id="navSvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${report.svgWidthNormalized} ${report.timelineAxisHeight}" width="${report.svgWidthNormalized}" height="${report.timelineAxisHeight}">
+      <g id="timeaxis"></g>
+    </svg>
+    </div>
+  </div>
+
 $report
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/svg.js/2.7.1/svg.min.js"></script>
 <script type="text/javascript">
+    var defaultHint = "Zoom In [Hold Left Click] | Zoom Out [Double Left Click]"
     var svg = document.getElementById('stopwatch')
     var stopwatch = SVG.get('stopwatch')
     var timeaxis = SVG.adopt(svg.getElementById('timeaxis'))
+
+    var navSvgElement = document.getElementById('navSvg')
+    var navSvg = SVG.get('navSvg')
+    var navTimeaxis = SVG.adopt(navSvgElement.getElementById('timeaxis'))
+
     var groups = Array.from(svg.getElementsByTagName('g'))
     var width = ${report.svgWidthNormalized}
     var height = ${report.svgHeight}
@@ -289,6 +347,68 @@ $report
     var xScale = ${report.xScale}
     var totalDurationMs = ${report.totalDurationMs}
     var xAxisHeight = ${report.xAxisHeight}
+    var timelineAxisHeight = ${report.timelineAxisHeight}
+
+    function d(name, tid, time, relations, ancestors) {
+    	var d = {}
+    	d["name"] = name
+    	d["tid"] = tid
+    	d["time"] = time
+        d["relations"] = relations
+        d["ancestors"] = ancestors
+    	return d
+    }
+
+    var data = [
+      ${report.timelines.mapIndexed { index, timeline ->
+    """d("${timeline.name.escapeXml()}", ${timeline.tid}, ${timeline.duration}, ${report.relations[index].joinToString(separator = ",", prefix = "[", postfix = "]")}, ${report.ancestors[index].joinToString(separator = ",", prefix = "[", postfix = "]")})"""
+        }.joinToString(separator = ",\n")
+      }
+    ]
+
+    var selectedIndex = -1
+    function onTimeBoxClick(index) {
+    	if (new Date().getTime() - lastTransformationAt < 300) {
+        return // debounce
+      }
+
+      if (selectedIndex === index) {
+        selectedIndex = -1
+      } else {
+        selectedIndex = index
+      }
+      var relations = data[index].relations
+
+      var index
+      for (i = 0; i < data.length; i++) {
+        var timebox = document.getElementById('timebox_'+i)
+        if (selectedIndex === -1 || relations.indexOf(i) > -1) {
+          timebox.style.display = "block"
+        } else {
+          timebox.style.display = "none"
+        }
+      }
+      onDefaultHint()
+    }
+
+    function onTimeBoxHover(index) {
+    	var d = data[index]
+    	navHint.innerText = d.name + " | " + d.time + "ms | tid = " + d.tid
+    }
+
+    function onDefaultHint() {
+        if (selectedIndex === -1) {
+    	    navHint.innerText = defaultHint
+        } else {
+            var d = data[selectedIndex]
+            var subTree = d.ancestors.map(it => data[it].name).join(' ▷ ')
+            var ancestorCount = d.relations.length - d.ancestors.length
+            if (ancestorCount > 0) {
+              subTree += " (+" + ancestorCount + " ancestors)"
+            }
+            navHint.innerText = subTree + " | " + d.time + "ms | tid = " + d.tid
+        }
+    }
 
     var lastScale
     function drawTimeAxis(scale) {
@@ -297,6 +417,7 @@ $report
       }
       lastScale = scale
       timeaxis.clear()
+      navTimeaxis.clear()
       var scaleGridDistance = 50
       var omitNotRounded = 1.0 / xScale / scale
       var omit = Math.round(omitNotRounded)
@@ -326,19 +447,30 @@ $report
 
         var timeMs = scaleStep * scaleGridDistance
         timeaxis.text(timeMs + "ms").attr({"font-family": "Verdana", "font-size": xAxisHeight, "x": x, "y": y2 - padding})
+        navTimeaxis.text(timeMs + "ms").attr({"font-family": "Verdana", "font-size": xAxisHeight, "x": x, "y": 0})
       }
     }
 
     drawTimeAxis(1.0)
+    onDefaultHint()
 
     var maxScale = Math.max(1.0, Math.round((totalDurationMs/width)*12))
 
+    var lastTransformationAt = new Date().getTime()
+    var lastX
+
     new EasyPZ(svg, function(transform) {
+
+      if (lastScale !== transform.scale || lastX !== transform.translateX) {
+      	 lastTransformationAt = new Date().getTime()
+      }
+      lastX = transform.translateX
 
       drawTimeAxis(transform.scale)
 
       // Use transform.scale, transform.translateX, transform.translateY to update your visualization
       stopwatch.viewbox(-transform.translateX, 0, width, height)
+      navSvg.viewbox(-transform.translateX, 0, width, timelineAxisHeight)
       groups.forEach(function(group) {
       	if(group.getAttribute('id') === "timeaxis") {
       		return
@@ -373,7 +505,7 @@ $report
         });
       })
     },
-    { minScale: 0.5, maxScale: maxScale, bounds: { top: 0, right: 0, bottom: 0, left: 0 } }, ["FLICK_PAN", "WHEEL_ZOOM", "PINCH_ZOOM", "DBLCLICK_ZOOM_IN", "DBLRIGHTCLICK_ZOOM_OUT"]);
+    { minScale: 0.5, maxScale: maxScale, bounds: { top: 0, right: 0, bottom: 0, left: 0 } }, ["FLICK_PAN", "HOLD_ZOOM_IN", "DBLCLICK_ZOOM_OUT"]);
 
 </script>
 

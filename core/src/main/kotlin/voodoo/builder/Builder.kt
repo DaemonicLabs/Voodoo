@@ -26,8 +26,8 @@ object Builder : KLogging() {
         targetFileName: String = "$id.lock.pack.hjson",
         targetFile: File = modpack.sourceFolder.resolve(targetFileName),
         vararg args: String
-    ): LockPack = stopwatch {
-        runBlocking {
+    ): LockPack = runBlocking {
+        stopwatch {
             logger.debug("parsing args: ${args.joinToString(", ")}")
             val parser = ArgParser(args)
             val arguments = Arguments(parser)
