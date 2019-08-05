@@ -22,21 +22,21 @@ pipeline {
 			steps {
 				sh './gradlew :voodoo:clean'
 				sh './gradlew :voodoo:shadowJar -S'
-				archiveArtifacts artifacts: 'voodoo/build/libs/*jar'
+				// archiveArtifacts artifacts: 'voodoo/build/libs/*jar'
 			}
 		}
 	    stage("multimc-installer") {
 	        steps {
 	            sh './gradlew :multimc:multimc-installer:clean'
 	            sh './gradlew :multimc:multimc-installer:shadowJar -S'
-	            archiveArtifacts artifacts: 'multimc/installer/build/libs/*jar'
+	            // archiveArtifacts artifacts: 'multimc/installer/build/libs/*jar'
 	        }
 	    }
 	    stage("server-installer") {
 	        steps {
 	            sh './gradlew :server-installer:clean'
 	            sh './gradlew :server-installer:shadowJar -S'
-	            archiveArtifacts artifacts: 'server-installer/build/libs/*jar'
+	            // archiveArtifacts artifacts: 'server-installer/build/libs/*jar'
 	        }
 	    }
 	    stage("bootstrap") {

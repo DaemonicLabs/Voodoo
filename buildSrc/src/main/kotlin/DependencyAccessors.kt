@@ -34,6 +34,12 @@ private fun DependencyHandler.compile(
 ): ExternalModuleDependency = addDependencyTo(
     this, "compile", dependencyNotation, dependencyConfiguration
 )
+private fun DependencyHandler.api(
+    dependencyNotation: String,
+    dependencyConfiguration: Action<ExternalModuleDependency> = Action {}
+): ExternalModuleDependency = addDependencyTo(
+    this, "api", dependencyNotation, dependencyConfiguration
+)
 private fun DependencyHandler.implementation(dependencyNotation: Any): Dependency? =
     add("implementation", dependencyNotation)
 
@@ -139,7 +145,6 @@ fun Project.setupDependencies(target: Project = this) {
         rootProject.project(":multimc:multimc-installer") -> {
             dependencies {
                 api(project(":multimc"))
-                api(group = "commons-codec", name = "commons-codec", version = "+")
             }
         }
         rootProject.project(":pack") -> {
@@ -182,24 +187,26 @@ fun Project.setupDependencies(target: Project = this) {
         }
         rootProject.project(":util") -> {
             dependencies {
-                compile(kotlin("stdlib", Kotlin.version))
-                compile(kotlin("reflect", Kotlin.version))
+                api(kotlin("stdlib", Kotlin.version))
+                api(kotlin("reflect", Kotlin.version))
 
 //                api(group = "com.github.eyeem", name = "watch-a-doin", version = "master-SNAPSHOT")
 //                api(group = "com.github.NikkyAI", name = "watch-a-doin", version = "master-SNAPSHOT")
 //                api(group = "com.github.NikkyAI", name = "watch-a-doin", version = "001bb5c4a6")
 
-                compile(Serialization.dependency)
-                compile(Coroutines.dependency)
+                api(Serialization.dependency)
+                api(Coroutines.dependency)
 
-                compile(Fuel.dependency)
-                compile(Fuel.dependencyCoroutines)
-                compile(Fuel.dependencySerialization)
+                api(Fuel.dependency)
+                api(Fuel.dependencyCoroutines)
+                api(Fuel.dependencySerialization)
 
-                compile(Logging.dependency)
-                compile(Logging.dependencyLogbackClassic) {
+                api(Logging.dependency)
+                api(Logging.dependencyLogbackClassic) {
                     exclude(group = "com.com.mail", module = "javax.mail")
                 }
+
+                api(group = "commons-codec", name = "commons-codec", version = "+")
             }
         }
         rootProject.project(":watch-a-doin") -> {

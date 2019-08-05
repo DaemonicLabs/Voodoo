@@ -2,27 +2,27 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 version = project.version
 
-var moduleName = ""
-var fileRegex = ""
+var artifact = ""
+var variant = ""
 var fileName = "unconfigured"
 
 if (project.hasProperty("target")) {
     val target: String by project
-    val (_moduleName, _fileRegex, _baseName) = when (target) {
+    val (_artifact, _variant, _baseName) = when (target) {
         "voodoo" -> Triple(
                 "voodoo",
-                """^[Vv]oodoo(-.+)?\.jar$""",
+                "all",
                 "bootstrap-voodoo"
         )
         "multimc-installer" -> Triple(
                 "multimc-installer",
-                """^[Mm]ultimc-[Ii]nstaller(-.+)\.jar$""",
+                "all",
                 "bootstrap-multimc-installer"
         )
         else -> throw InvalidUserDataException("invalid target property")
     }
-    moduleName = _moduleName
-    fileRegex = _fileRegex
+    artifact = _artifact
+    variant = _variant
     fileName = _baseName
 }
 
@@ -30,8 +30,8 @@ base {
     archivesBaseName = fileName
 }
 val shadowJar by tasks.getting(ShadowJar::class) {
-    classifier = ""
-    archiveName = "$baseName.$extension"
+    archiveClassifier.set("")
+    archiveVersion.set("")
 }
 
 val build by tasks.getting(Task::class) {
@@ -43,9 +43,10 @@ configure<ConstantsExtension> {
         pkg = "voodoo.bootstrap",
         className = "Config"
     ) {
-        field("JENKINS_URL") value Jenkins.url
-        field("JENKINS_JOB") value Jenkins.job
-        field("MODULE_NAME") value moduleName
-        field("FILE_REGEX") value fileRegex
+        field("MAVEN_URL") value Maven.url
+        field("MAVEN_GROUP") value "moe.nikky.voodoo"
+        field("MAVEN_ARTIFACT") value artifact
+        field("MAVEN_VARIANT") value variant
+        field("MAVEN_VERSION") value version.toString()
     }
 }

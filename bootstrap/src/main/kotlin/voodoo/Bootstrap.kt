@@ -6,17 +6,17 @@
 
 package voodoo
 
+import com.eyeem.watchadoin.Stopwatch
 import com.github.kittinunf.fuel.core.HttpException
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
-import voodoo.bootstrap.BootstrapConstants.VERSION
-import voodoo.bootstrap.Config.FILE_REGEX
-import voodoo.bootstrap.Config.JENKINS_JOB
-import voodoo.bootstrap.Config.JENKINS_URL
-import voodoo.bootstrap.Config.MODULE_NAME
+import voodoo.bootstrap.Config.MAVEN_ARTIFACT
+import voodoo.bootstrap.Config.MAVEN_GROUP
+import voodoo.bootstrap.Config.MAVEN_URL
+import voodoo.bootstrap.Config.MAVEN_VARIANT
+import voodoo.bootstrap.Config.MAVEN_VERSION
 import voodoo.util.Directories
-import voodoo.util.download
-import voodoo.util.jenkins.JenkinsServer
+import voodoo.util.maven.MavenUtil
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -33,12 +33,14 @@ fun main(vararg args: String) = runBlocking {
 
 object Bootstrap : KLogging() {
 
-    private const val jenkinsUrl = JENKINS_URL
-    private const val jobKey = JENKINS_JOB
-    private const val fileNameRegex = FILE_REGEX
+    private const val mavenUrl = MAVEN_URL
+    private const val group = MAVEN_GROUP
+    private const val artifact = MAVEN_ARTIFACT
+    private const val variant = MAVEN_VARIANT
+    private const val version = MAVEN_VERSION
 
-    private val directories: Directories = Directories.get(moduleName = "$MODULE_NAME-bootstrap")
-    private val binariesDir: File = directories.cacheHome.resolve(jobKey.replace('/', '_'))
+    private val directories: Directories = Directories.get(moduleName = "$artifact-bootstrap")
+    private val binariesDir: File = directories.cacheHome
     private val lastFile: File = binariesDir.resolve("newest")
 
     fun cleanup() {
@@ -52,45 +54,33 @@ object Bootstrap : KLogging() {
     }
 
     private suspend fun download(): File {
-        val userAgent = "voodoo/$VERSION"
-        val server = JenkinsServer(jenkinsUrl)
-        val job = server.getJob(jobKey, userAgent)!!
-        val build = job.lastSuccessfulBuild?.details(userAgent)!!
-        val buildNumber = build.number
-        logger.info("lastSuccessfulBuild: $buildNumber")
-        logger.debug("looking for $FILE_REGEX")
-        val re = Regex(fileNameRegex)
-        val artifact = build.artifacts.find {
-            logger.debug(it.fileName)
-            re.matches(it.fileName)
+        val stopwatch = Stopwatch("download")
+        val artifactFile = stopwatch {
+           MavenUtil.downloadArtifact(
+               "downloadArtifact".watch,
+                mavenUrl = mavenUrl,
+                group = group,
+                artifactId = artifact,
+                version = version,
+                variant = variant,
+                extension = "jar",
+                outputDir = binariesDir
+            )
         }
-        if (artifact == null) {
-            logger.error("did not find {} in {}", fileNameRegex, build.artifacts)
-            throw Exception()
-        }
-        val url = build.url + "artifact/" + artifact.relativePath
-        val targetFile = binariesDir.resolve("$MODULE_NAME-$buildNumber.jar")
-        if (!targetFile.exists()) {
-            try {
-                targetFile.download(url, cacheDir = binariesDir.resolve("tmp"))
-            } catch (e: Exception) {
-                logger.error("cannot download voodoo binary from $url", e)
-                throw e
-            }
-        }
-        return targetFile
+
+        return artifactFile
     }
 
     @Throws(Throwable::class)
     suspend fun launch(vararg originalArgs: String) {
-        logger.info("Downloading the $MODULE_NAME binary...")
+        logger.info("Downloading the $MAVEN_ARTIFACT binary...")
         val file = try {
             download().apply {
                 assert(exists()) { "downloaded files does not seem to exist" }
                 copyTo(lastFile, overwrite = true)
             }
         } catch (e: HttpException) {
-            logger.error("cannot download $jobKey from $jenkinsUrl, trying to reuse last binary", e)
+            logger.error("cannot download $artifact from $mavenUrl, trying to reuse last binary", e)
             lastFile
         }
 

@@ -4,7 +4,7 @@ import com.eyeem.watchadoin.Stopwatch
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
 import voodoo.util.blankOr
-import voodoo.util.jenkins.downloadVoodoo
+import voodoo.util.maven.MavenUtil
 import voodoo.util.packToZip
 import voodoo.util.unixPath
 import java.io.File
@@ -56,11 +56,13 @@ object MMCStaticPack : AbstractPack() {
         urlFile.writeText(skPackUrl)
 
         val multimcInstaller = instanceDir.resolve("mmc-installer.jar")
-        val installer = downloadVoodoo(
-            "downloadVoodoo".watch,
-            component = "multimc-installer",
-            bootstrap = false,
-            binariesDir = directories.cacheHome
+        val installer = MavenUtil.downloadArtifact(
+            "downloadArtifact".watch,
+            group = "moe.nikky.voodoo",
+            artifactId = "multimc-installer",
+            version = PackConstants.FULL_VERSION,
+            variant = "all",
+            outputDir = directories.cacheHome
         )
         installer.copyTo(multimcInstaller)
 

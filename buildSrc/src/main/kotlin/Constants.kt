@@ -81,3 +81,7 @@ object Jenkins {
     const val url: String = "https://jenkins.modmuss50.me"
     const val job: String = "NikkyAi/DaemonicLabs/Voodoo/master"
 }
+
+object Maven {
+    const val url = "http://maven.modmuss50.me"
+}

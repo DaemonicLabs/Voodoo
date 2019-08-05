@@ -2,7 +2,7 @@ package voodoo.pack
 
 import com.eyeem.watchadoin.Stopwatch
 import voodoo.data.lock.LockPack
-import voodoo.util.jenkins.downloadVoodoo
+import voodoo.util.maven.MavenUtil
 import voodoo.util.toJson
 import voodoo.util.unixPath
 import java.io.File
@@ -79,11 +79,13 @@ object ServerPack : AbstractPack() {
         packPointer.writeText(relPackFile)
 
         logger.info("packaging installer jar")
-        val installer = downloadVoodoo(
-            stopwatch = "downloadVoodoo".watch,
-            component = "server-installer",
-            bootstrap = false,
-            binariesDir = directories.cacheHome
+        val installer = MavenUtil.downloadArtifact(
+            "downloadArtifact".watch,
+            group = "moe.nikky.voodoo",
+            artifactId = "server-installer",
+            version = PackConstants.FULL_VERSION,
+            variant = "all",
+            outputDir = MMCStaticPack.directories.cacheHome
         )
 
         val serverInstaller = output.resolve("server-installer.jar")

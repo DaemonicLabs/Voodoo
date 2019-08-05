@@ -1,3 +1,9 @@
+# migrate hosting from jenkins to maven
+
+- [ ] maven-publish shadowJars
+
+
+
 routine to report errors:
 - switch to main thread
 - close all pools

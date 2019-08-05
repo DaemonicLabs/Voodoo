@@ -54,6 +54,7 @@ object Hex : KLogging() {
     }
 
     private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
+    private fun File.md5Hex(): String? = DigestUtils.md5Hex(this.inputStream())
 
     private val json = Json(JsonConfiguration(prettyPrint = true, strictMode = false, encodeDefaults = true))
 

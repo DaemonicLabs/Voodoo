@@ -7,7 +7,7 @@ import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
 import voodoo.plugin.PluginConstants
-import voodoo.util.jenkins.downloadVoodoo
+import voodoo.util.maven.MavenUtil
 import java.io.File
 
 open class DownloadVoodooTask : DefaultTask() {
@@ -44,16 +44,18 @@ open class DownloadVoodooTask : DefaultTask() {
         val stopwatch = Stopwatch("downloadVoodooTask")
         stopwatch {
             runBlocking {
-                downloadVoodoo(
+                MavenUtil.downloadArtifact(
                     stopwatch = "downloadVoodoo".watch,
-                    component = "voodoo",
-                    binariesDir = outputFolder,
-                    outputFile = jarFile,
-                    bootstrap = false,
-                    buildNumber = PluginConstants.JENKINS_BUILD_NUMBER
+                    mavenUrl = "http://maven.modmuss50.me",
+                    group = "moe.nikky.voodoo",
+                    artifactId = "voodooo",
+                    version = PluginConstants.FULL_VERSION,
+                    variant = "all",
+                    outputDir = outputFolder,
+                    outputFile = jarFile
                 )
             }
-            lastFile.writeText("${PluginConstants.JENKINS_BUILD_NUMBER}")
+            lastFile.writeText(PluginConstants.FULL_VERSION)
         }
         logger.info(stopwatch.toStringPretty())
     }

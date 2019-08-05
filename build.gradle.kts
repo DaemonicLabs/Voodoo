@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import moe.nikky.counter.CounterExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
@@ -32,8 +33,8 @@ val runnableProjects = mapOf(
     project("voodoo") to "voodoo.Voodoo",
     project("multimc:multimc-installer") to "voodoo.Hex",
     project("server-installer") to "voodoo.server.Install",
-    project("bootstrap") to "voodoo.BootstrapKt",
-    project("core") to "voodoo.forge.ForgeUtil"
+    project("bootstrap") to "voodoo.BootstrapKt"
+//    project("core") to "voodoo.forge.ForgeUtil"
 )
 val noConstants = listOf(
     project("skcraft")
@@ -280,6 +281,11 @@ subprojects {
                     artifact(sourcesJar.get())
                     artifact(javadocJar.get())
                     artifactId = project.name.toLowerCase()
+                }
+                if(project in runnableProjects) {
+                    create("shadow", MavenPublication::class.java) {
+                        (project.extensions.getByName("shadow") as ShadowExtension).component(this)
+                    }
                 }
             }
             repositories {

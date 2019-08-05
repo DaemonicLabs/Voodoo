@@ -22,6 +22,7 @@ object Jenkins : KLogging()
 private val json = Json(JsonConfiguration(strictMode = false, encodeDefaults = false))
 private val useragent = "voodoo/${UtilConstants.VERSION}"
 
+@Deprecated("hosting on jenkins is being phased out")
 suspend fun downloadVoodoo(
     stopwatch: Stopwatch,
     component: String,

@@ -715,7 +715,7 @@ changed advanced-rocketry
 
 Property | old value | new value
 ---|---|---
-Version | `AdvancedRocketry 1.12.2-1.5.0-139-UNSTABLE build -139 for 1.12.2` | `AdvancedRocketry-1.12.2-1.6.0-161-universal.jar`
+Version | `AdvancedRocketry 1.12.2-1.5.0-139-UNSTABLE build -139 for 1.12.2` | `AdvancedRocketry-1.12.2-1.6.0-162-universal.jar`
 Release Type | `ALPHA` | `Alpha`
 
 
@@ -724,7 +724,7 @@ changed apricorn-tree-farm
 
 Property | old value | new value
 ---|---|---
-Version | `apritree-1.12.2-2.0.5.jar` | `apritree-1.12.2-2.1.3.jar`
+Version | `apritree-1.12.2-2.0.5.jar` | `apritree-1.12.2-2.2.0.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -789,7 +789,7 @@ changed cyclops-core
 
 Property | old value | new value
 ---|---|---
-Version | `CyclopsCore-1.12.2-1.2.1.jar` | `CyclopsCore-1.12.2-1.4.0.jar`
+Version | `CyclopsCore-1.12.2-1.2.1.jar` | `CyclopsCore-1.12.2-1.5.0.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -798,7 +798,7 @@ changed ender-io
 
 Property | old value | new value
 ---|---|---
-Version | `Ender IO - 5.0.44` | `EnderIO-1.12.2-5.0.46.jar`
+Version | `Ender IO - 5.0.44` | `EnderIO-1.12.2-5.0.50.jar`
 Release Type | `RELEASE` | `Release`
 Author | `CrazyPants_MC, epicsquid319, Henry_Loenwind, MatthiasMann, tterrag1098` | `CrazyPants_MC, EpicSquid319, Henry_Loenwind, MatthiasMann, tterrag1098`
 
@@ -808,7 +808,7 @@ changed endercore
 
 Property | old value | new value
 ---|---|---
-Version | `EnderCore - 1.12.2-0.5.57` | `EnderCore-1.12.2-0.5.59.jar`
+Version | `EnderCore - 1.12.2-0.5.57` | `EnderCore-1.12.2-0.5.65.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -851,8 +851,8 @@ changed industrial-craft
 
 Property | old value | new value
 ---|---|---
-Version | `industrialcraft-2-2.8.153-ex112.jar` | `industrialcraft-2-2.8.171-ex112.jar`
-Release Type | `BETA` | `Release`
+Version | `industrialcraft-2-2.8.153-ex112.jar` | `industrialcraft-2-2.8.175-ex112.jar`
+Release Type | `BETA` | `Beta`
 Author | `Aroma1997, Chocohead, estebes, Player` | `Aroma1997, Chocohead, estebess, Player`
 
 
@@ -878,7 +878,7 @@ changed libvulpes
 
 Property | old value | new value
 ---|---|---
-Version | `LibVulpes 1.12.2-0.4.0-57-UNSTABLE build -57 for 1.12.2` | `LibVulpes-1.12.2-0.4.1-60-universal.jar`
+Version | `LibVulpes 1.12.2-0.4.0-57-UNSTABLE build -57 for 1.12.2` | `LibVulpes-1.12.2-0.4.1-1-universal.jar`
 Release Type | `ALPHA` | `Alpha`
 
 
@@ -960,7 +960,7 @@ changed pams-harvestcraft
 
 Property | old value | new value
 ---|---|---
-Version | `Pam's HarvestCraft 1.12.2zc The 7mm Kidney Stone Update.jar` | `Pam's HarvestCraft 1.12.2zd Surprise for Yogcast.jar`
+Version | `Pam's HarvestCraft 1.12.2zc The 7mm Kidney Stone Update.jar` | `Pam's HarvestCraft 1.12.2ze.jar`
 Release Type | `RELEASE` | `Release`
 
 
@@ -969,7 +969,7 @@ changed quark
 
 Property | old value | new value
 ---|---|---
-Version | `Quark-r1.5-151.jar` | `Quark-r1.5-168.jar`
+Version | `Quark-r1.5-151.jar` | `Quark-r1.6-174.jar`
 Release Type | `RELEASE` | `Release`
 Author | `Vazkii` | `Vazkii_`
 
@@ -1083,7 +1083,7 @@ changed xaeros-minimap
 
 Property | old value | new value
 ---|---|---
-Version | `v1.16.8 for Minecraft 1.12.2 \| 1.12.1 \| 1.12` | `Xaeros_Minimap_1.17.4_Forge_1.12.jar`
+Version | `v1.16.8 for Minecraft 1.12.2 \| 1.12.1 \| 1.12` | `Xaeros_Minimap_1.17.5_Forge_1.12.jar`
 Release Type | `RELEASE` | `Release`
 
 
