@@ -54,7 +54,7 @@ pipeline {
         }
 		stage('counter') {
 			steps {
-				sh './gradlew buildnumberIncrease'
+				sh './gradlew buildnumberIncrement'
 			}
 		}
 	}

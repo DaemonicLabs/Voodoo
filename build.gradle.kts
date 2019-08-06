@@ -11,7 +11,7 @@ plugins {
     `project-report`
     kotlin("jvm") version Kotlin.version
     kotlin("plugin.scripting") version Kotlin.version
-    id("moe.nikky.persistentCounter") version "0.0.7-SNAPSHOT"
+    id("moe.nikky.persistentCounter") version "0.0.8-SNAPSHOT"
     constantsGenerator apply false
     id("com.github.johnrengelman.shadow") version "4.0.0" apply false
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
@@ -39,6 +39,13 @@ val runnableProjects = mapOf(
 val noConstants = listOf(
     project("skcraft")
 )
+
+
+val major: String by project
+val minor: String by project
+val patch: String by project
+
+val buildnumber = counter.variable(id = "buildnumber", key = "$major.$minor.$patch")
 
 allprojects {
     repositories {
@@ -139,7 +146,6 @@ subprojects {
     apply {
         plugin("kotlin")
         plugin("kotlinx-serialization")
-        plugin("moe.nikky.persistentCounter")
 
         if (project == project(":dsl")) {
 //            plugin("plugin.scripting")
@@ -168,12 +174,6 @@ subprojects {
     val major: String by project
     val minor: String by project
     val patch: String by project
-
-    counter {
-        variable(id = "buildnumber", key = "$major.$minor.$patch")
-    }
-    val counter: CounterExtension = extensions.getByType()
-    val buildnumber by counter.map
 
     val versionSuffix = if (Env.isCI) "$buildnumber" else "dev"
 
