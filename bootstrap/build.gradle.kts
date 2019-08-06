@@ -25,10 +25,6 @@ val shadowJar by tasks.getting(ShadowJar::class) {
     archiveVersion.set("")
 }
 
-//application {
-//    mainClassName = "voodoo.BootstrapKt"
-//}
-
 val generateConstants by tasks.getting
 
 val shadowJarVoodoo by tasks.creating(ShadowJar::class) {
@@ -48,7 +44,7 @@ val shadowJarVoodoo by tasks.creating(ShadowJar::class) {
     exclude("META-INF/INDEX.LIST", "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "module-info.class")
 
     manifest {
-        attributes("MainClass" to application.mainClassName)
+        attributes("Main-Class" to application.mainClassName)
     }
 
     archiveBaseName.set("bootstrap")
@@ -72,7 +68,7 @@ val shadowJarMultimcInstaller by tasks.creating(ShadowJar::class) {
     exclude("META-INF/INDEX.LIST", "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "module-info.class")
 
     manifest {
-        attributes("MainClass" to application.mainClassName)
+        attributes("Main-Class" to application.mainClassName)
     }
 
     archiveBaseName.set("bootstrap")
