@@ -311,18 +311,10 @@ subprojects {
             archiveClassifier.set("sources")
             from(sourceSets["main"].allSource)
         }
-
-        val javadoc by tasks.getting(Javadoc::class) {}
-        val javadocJar by tasks.registering(Jar::class) {
-            archiveClassifier.set("javadoc")
-            from(javadoc)
-        }
-
         publishing {
             publications {
                 create("default", MavenPublication::class.java) {
                     artifact(sourcesJar.get())
-                    artifact(javadocJar.get())
                     artifactId = project.name.toLowerCase()
                 }
             }

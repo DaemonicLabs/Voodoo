@@ -1,3 +1,4 @@
+import com.github.jengelman.gradle.plugins.shadow.ShadowBasePlugin
 import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.squareup.kotlinpoet.ClassName
@@ -28,6 +29,7 @@ val shadowJar by tasks.getting(ShadowJar::class) {
 val generateConstants by tasks.getting
 
 val shadowJarVoodoo by tasks.creating(ShadowJar::class) {
+    group = "shadow"
     dependsOn(generateConstants)
     doFirst {
         generateBootstrapConfig(
@@ -35,11 +37,18 @@ val shadowJarVoodoo by tasks.creating(ShadowJar::class) {
             outputFolder = buildDir.resolve("generated-src")
         )
     }
+    val jar = tasks.getByName<Jar>("jar")
+    manifest.inheritFrom(jar.manifest)
+    from(sourceSets.getAt("main").output)
+    val runtimeClasspath = project.configurations.findByName("runtimeClasspath")
+    configurations = listOf(if(runtimeClasspath != null) project.configurations.runtimeClasspath.get() else project.configurations.runtime.get())
+
     archiveBaseName.set("bootstrap")
     archiveClassifier.set("voodoo")
 //    archiveVersion.set("")
 }
 val shadowJarMultimcInstaller by tasks.creating(ShadowJar::class) {
+    group = "shadow"
     dependsOn(generateConstants)
     doFirst {
         generateBootstrapConfig(
@@ -47,13 +56,20 @@ val shadowJarMultimcInstaller by tasks.creating(ShadowJar::class) {
             outputFolder = buildDir.resolve("generated-src")
         )
     }
+    val jar = tasks.getByName<Jar>("jar")
+    manifest.inheritFrom(jar.manifest)
+    from(sourceSets.getAt("main").output)
+    val runtimeClasspath = project.configurations.findByName("runtimeClasspath")
+    configurations = listOf(if(runtimeClasspath != null) project.configurations.runtimeClasspath.get() else project.configurations.runtime.get())
+
     archiveBaseName.set("bootstrap")
     archiveClassifier.set("multimc-installer")
 //    archiveVersion.set("")
 }
 
 val build by tasks.getting(Task::class) {
-    dependsOn(shadowJar)
+    dependsOn(shadowJarVoodoo)
+    dependsOn(shadowJarMultimcInstaller)
 }
 
 publishing {

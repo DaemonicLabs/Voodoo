@@ -1,7 +1,7 @@
 import voodoo.LocalVoodooJarTask
 
 plugins {
-    id("voodoo") version "0.4.8-dev"
+    id("voodoo") version "0.4.9-dev"
 }
 
 voodoo {
