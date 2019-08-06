@@ -48,7 +48,7 @@ open class DownloadVoodooTask : DefaultTask() {
                     stopwatch = "downloadVoodoo".watch,
                     mavenUrl = "http://maven.modmuss50.me",
                     group = "moe.nikky.voodoo",
-                    artifactId = "voodooo",
+                    artifactId = "voodoo",
                     version = PluginConstants.FULL_VERSION,
                     variant = "all",
                     outputDir = outputFolder,
