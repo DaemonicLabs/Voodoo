@@ -31,7 +31,7 @@ object MavenUtil : KLogging() {
 //        val jarUrl = "http://maven.modmuss50.me/moe/nikky/voodoo/voodoo/0.4.8-3/voodoo-0.4.8-3.jar"
 
         val variantSuffix = variant?.let { "-$it"} ?: ""
-        val artifactUrl = "$mavenUrl$groupPath/$artifactId/$version/$artifactId-$version$variantSuffix.$extension"
+        val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$version$variantSuffix.$extension"
         val tmpFile = File(outputDir, "$group-$artifactId-$version-$variant.$extension$variantSuffix.tmp")
         val targetFile = outputFile ?: File(outputDir, "$group-$artifactId-$version$variantSuffix.$extension")
         run {
