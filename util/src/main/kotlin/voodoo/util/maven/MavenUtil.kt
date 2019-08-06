@@ -32,8 +32,8 @@ object MavenUtil : KLogging() {
 
         val variantSuffix = variant?.let { "-$it"} ?: ""
         val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$version$variantSuffix.$extension"
-        val tmpFile = File(outputDir, "$group-$artifactId-$version-$variant.$extension$variantSuffix.tmp")
-        val targetFile = outputFile ?: File(outputDir, "$group-$artifactId-$version$variantSuffix.$extension")
+        val tmpFile = File(outputDir, "$artifactId-$version$variantSuffix.$extension.tmp")
+        val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$variantSuffix.$extension")
         run {
             val (request, response, result) = artifactUrl.httpDownload()
                 .fileDestination { response, request ->
@@ -75,7 +75,8 @@ object MavenUtil : KLogging() {
             require(fileMd5 == md5) { "$artifactUrl did not match md5 hash: '$md5'" }
         }
 
-        tmpFile.renameTo(targetFile)
+        tmpFile.copyTo(targetFile, overwrite = true)
+        tmpFile.delete()
         return@stopwatch targetFile
     }
 

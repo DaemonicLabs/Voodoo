@@ -16,7 +16,7 @@ open class DownloadVoodooTask : DefaultTask() {
     @OutputFile
     val lastFile = outputFolder.resolve("last.txt")
     @OutputFile
-    val jarFile: File = outputFolder.resolve("voodoo-${PluginConstants.JENKINS_BUILD_NUMBER}.jar")
+    val jarFile: File = outputFolder.resolve("voodoo-${PluginConstants.FULL_VERSION}.jar")
 
     init {
         group = "voodoo"
