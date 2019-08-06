@@ -43,10 +43,6 @@ configure<ConstantsExtension> {
         pkg = "voodoo.bootstrap",
         className = "Config"
     ) {
-        field("MAVEN_URL") value Maven.url
-        field("MAVEN_GROUP") value "moe.nikky.voodoo"
         field("MAVEN_ARTIFACT") value artifact
-        field("MAVEN_VARIANT") value variant
-        field("MAVEN_VERSION") value version.toString()
     }
 }

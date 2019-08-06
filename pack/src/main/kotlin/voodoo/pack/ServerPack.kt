@@ -80,11 +80,12 @@ object ServerPack : AbstractPack() {
 
         logger.info("packaging installer jar")
         val installer = MavenUtil.downloadArtifact(
-            "downloadArtifact".watch,
-            group = "moe.nikky.voodoo",
+            "downloadArtifact server installer".watch,
+            mavenUrl = PackConstants.MAVEN_URL,
+            group = PackConstants.MAVEN_GROUP,
             artifactId = "server-installer",
             version = PackConstants.FULL_VERSION,
-            variant = "all",
+            classifier = PackConstants.MAVEN_SHADOW_CLASSIFIER,
             outputDir = MMCStaticPack.directories.cacheHome
         )
 

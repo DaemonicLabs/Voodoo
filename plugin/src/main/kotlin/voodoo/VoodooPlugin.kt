@@ -18,6 +18,8 @@ import voodoo.util.SharedFolders
 open class VoodooPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val voodooExtension = project.run {
+            logger.lifecycle("version: ${PluginConstants.FULL_VERSION}")
+
             pluginManager.apply("org.gradle.idea")
             pluginManager.apply("org.jetbrains.kotlin.jvm")
 

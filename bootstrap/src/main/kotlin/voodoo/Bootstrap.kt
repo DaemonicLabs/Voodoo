@@ -10,11 +10,8 @@ import com.eyeem.watchadoin.Stopwatch
 import com.github.kittinunf.fuel.core.HttpException
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
+import voodoo.bootstrap.BootstrapConstants
 import voodoo.bootstrap.Config.MAVEN_ARTIFACT
-import voodoo.bootstrap.Config.MAVEN_GROUP
-import voodoo.bootstrap.Config.MAVEN_URL
-import voodoo.bootstrap.Config.MAVEN_VARIANT
-import voodoo.bootstrap.Config.MAVEN_VERSION
 import voodoo.util.Directories
 import voodoo.util.maven.MavenUtil
 import java.io.File
@@ -33,11 +30,11 @@ fun main(vararg args: String) = runBlocking {
 
 object Bootstrap : KLogging() {
 
-    private const val mavenUrl = MAVEN_URL
-    private const val group = MAVEN_GROUP
+    private const val mavenUrl = BootstrapConstants.MAVEN_URL
+    private const val group = BootstrapConstants.MAVEN_GROUP
     private const val artifact = MAVEN_ARTIFACT
-    private const val variant = MAVEN_VARIANT
-    private const val version = MAVEN_VERSION
+    private const val classifier = BootstrapConstants.MAVEN_SHADOW_CLASSIFIER
+    private const val version = BootstrapConstants.FULL_VERSION
 
     private val directories: Directories = Directories.get(moduleName = "$artifact-bootstrap")
     private val binariesDir: File = directories.cacheHome
@@ -62,7 +59,7 @@ object Bootstrap : KLogging() {
                 group = group,
                 artifactId = artifact,
                 version = version,
-                variant = variant,
+                classifier = classifier,
                 extension = "jar",
                 outputDir = binariesDir
             )

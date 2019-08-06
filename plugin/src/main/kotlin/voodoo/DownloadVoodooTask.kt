@@ -45,12 +45,12 @@ open class DownloadVoodooTask : DefaultTask() {
         stopwatch {
             runBlocking {
                 MavenUtil.downloadArtifact(
-                    stopwatch = "downloadVoodoo".watch,
-                    mavenUrl = "http://maven.modmuss50.me",
-                    group = "moe.nikky.voodoo",
+                    stopwatch = "downloadArtifact voodoo".watch,
+                    mavenUrl = PluginConstants.MAVEN_URL,
+                    group = PluginConstants.MAVEN_GROUP,
                     artifactId = "voodoo",
                     version = PluginConstants.FULL_VERSION,
-                    variant = "all",
+                    classifier = PluginConstants.MAVEN_SHADOW_CLASSIFIER,
                     outputDir = outputFolder,
                     outputFile = jarFile
                 )

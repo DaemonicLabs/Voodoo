@@ -12,15 +12,13 @@ import mu.KLogging
 import java.io.File
 
 object MavenUtil : KLogging() {
-    private val BASEURL = "http://maven.modmuss50.me"
-
     suspend fun downloadArtifact(
         stopwatch: Stopwatch,
-        mavenUrl: String = BASEURL,
+        mavenUrl: String,
         group: String,
         artifactId: String,
         version: String,
-        variant: String? = null,
+        classifier: String? = null,
         extension: String = "jar",
         outputDir: File,
         outputFile: File? = null,
@@ -30,10 +28,10 @@ object MavenUtil : KLogging() {
 
 //        val jarUrl = "http://maven.modmuss50.me/moe/nikky/voodoo/voodoo/0.4.8-3/voodoo-0.4.8-3.jar"
 
-        val variantSuffix = variant?.let { "-$it"} ?: ""
-        val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$version$variantSuffix.$extension"
-        val tmpFile = File(outputDir, "$artifactId-$version$variantSuffix.$extension.tmp")
-        val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$variantSuffix.$extension")
+        val classifierSuffix = classifier?.let { "-$it"} ?: ""
+        val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$version$classifierSuffix.$extension"
+        val tmpFile = File(outputDir, "$artifactId-$version$classifierSuffix.$extension.tmp")
+        val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
         run {
             val (request, response, result) = artifactUrl.httpDownload()
                 .fileDestination { response, request ->

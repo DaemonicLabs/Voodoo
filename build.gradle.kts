@@ -216,6 +216,10 @@ subprojects {
                 field("PATCH_VERSION") value patch
                 field("VERSION") value "$major.$minor.$patch"
                 field("FULL_VERSION") value fullVersion
+                field("MAVEN_URL") value Maven.url
+                field("MAVEN_GROUP") value group.toString()
+                field("MAVEN_ARTIFACT") value project.name
+                field("MAVEN_SHADOW_CLASSIFIER") value Maven.shadowClassifier
             }
         }
 
@@ -248,7 +252,7 @@ subprojects {
             }
 
             val shadowJar by tasks.getting(ShadowJar::class) {
-                archiveClassifier.set("")
+                archiveClassifier.set(Maven.shadowClassifier)
 //                archiveVersion.set(fullVersion)
 //                archiveFileName.set("${project.name.toLowerCase()}-$versionSuffix.${archiveExtension.getOrNull()}")
             }

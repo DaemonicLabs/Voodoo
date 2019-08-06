@@ -58,10 +58,11 @@ object MMCStaticPack : AbstractPack() {
         val multimcInstaller = instanceDir.resolve("mmc-installer.jar")
         val installer = MavenUtil.downloadArtifact(
             "downloadArtifact".watch,
-            group = "moe.nikky.voodoo",
+            mavenUrl = PackConstants.MAVEN_URL,
+            group = PackConstants.MAVEN_GROUP,
             artifactId = "multimc-installer",
             version = PackConstants.FULL_VERSION,
-            variant = "all",
+            classifier = PackConstants.MAVEN_SHADOW_CLASSIFIER,
             outputDir = directories.cacheHome
         )
         installer.copyTo(multimcInstaller)
