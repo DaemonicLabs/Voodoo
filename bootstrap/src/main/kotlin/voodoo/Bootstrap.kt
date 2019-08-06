@@ -8,12 +8,21 @@ package voodoo
 
 import com.eyeem.watchadoin.Stopwatch
 import com.github.kittinunf.fuel.core.HttpException
+import com.github.kittinunf.fuel.core.extensions.cUrlString
+import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
 import kotlinx.coroutines.runBlocking
+import kotlinx.io.StringReader
 import mu.KLogging
+import org.xml.sax.InputSource
 import voodoo.bootstrap.BootstrapConstants
 import voodoo.util.Directories
 import voodoo.util.maven.MavenUtil
 import java.io.File
+import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.xpath.XPathConstants
+import javax.xml.xpath.XPathFactory
 import kotlin.system.exitProcess
 
 @Throws(Throwable::class)
@@ -33,7 +42,7 @@ object Bootstrap : KLogging() {
     private const val mavenUrl = BootstrapConstants.MAVEN_URL
     private const val group = BootstrapConstants.MAVEN_GROUP
     private const val classifier = BootstrapConstants.MAVEN_SHADOW_CLASSIFIER
-    private const val version = BootstrapConstants.FULL_VERSION
+    private const val currentVersion = BootstrapConstants.FULL_VERSION
 
     private val directories: Directories = Directories.get(moduleName = "$artifact-bootstrap")
     private val binariesDir: File = directories.cacheHome
@@ -50,6 +59,35 @@ object Bootstrap : KLogging() {
     }
 
     private suspend fun download(): File {
+
+        val groupPath = group.split("\\.".toRegex()).joinToString("/")
+        val mavenMetadataUrl = "$mavenUrl/$groupPath/$artifact/maven-metadata.xml"
+        val (request, response, result) = mavenMetadataUrl.httpGet()
+            .awaitStringResponseResult()
+        val xmlText = when(result) {
+            is Result.Success -> result.value
+            is Result.Failure -> {
+                logger.error("get maven metadata")
+                logger.error("url: ${request.url}")
+                logger.error("cUrl: ${request.cUrlString()}")
+                logger.error("request: $request")
+                logger.error("response: $response")
+                logger.error(result.error.exception) { "could not request slug-id pairs" }
+                logger.error { request }
+                throw result.error.exception
+            }
+        }
+
+        val dbFactory = DocumentBuilderFactory.newInstance()
+        val dBuilder = dbFactory.newDocumentBuilder()
+        val xmlInput = InputSource(StringReader(xmlText))
+        val doc = dBuilder.parse(xmlInput)
+        val xpFactory = XPathFactory.newInstance()
+        val xPath = xpFactory.newXPath()
+        val xpath = "/metadata/versioning/release/text()"
+        val releaseVersion = xPath.evaluate(xpath, doc, XPathConstants.STRING) as String
+
+
         val stopwatch = Stopwatch("download")
         val artifactFile = stopwatch {
            MavenUtil.downloadArtifact(
@@ -57,7 +95,7 @@ object Bootstrap : KLogging() {
                 mavenUrl = mavenUrl,
                 group = group,
                 artifactId = artifact,
-                version = version,
+                version = releaseVersion,
                 classifier = classifier,
                 extension = "jar",
                 outputDir = binariesDir
