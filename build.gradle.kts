@@ -304,6 +304,40 @@ subprojects {
                 }
             }
         }
+    } else {
+        apply(plugin = "maven-publish")
+
+        val sourcesJar by tasks.registering(Jar::class) {
+            archiveClassifier.set("sources")
+            from(sourceSets["main"].allSource)
+        }
+
+        val javadoc by tasks.getting(Javadoc::class) {}
+        val javadocJar by tasks.registering(Jar::class) {
+            archiveClassifier.set("javadoc")
+            from(javadoc)
+        }
+
+        publishing {
+            publications {
+                create("default", MavenPublication::class.java) {
+                    artifact(sourcesJar.get())
+                    artifact(javadocJar.get())
+                    artifactId = project.name.toLowerCase()
+                }
+            }
+            repositories {
+                maven(url = "http://mavenupload.modmuss50.me/") {
+                    val mavenPass: String? = project.properties["mavenPass"] as String?
+                    mavenPass?.let {
+                        credentials {
+                            username = "buildslave"
+                            password = mavenPass
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 tasks.withType<Wrapper> {

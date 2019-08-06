@@ -84,5 +84,5 @@ object Jenkins {
 
 object Maven {
     const val url = "http://maven.modmuss50.me"
-    const val shadowClassifier = "shadow"
+    const val shadowClassifier = "all"
 }
