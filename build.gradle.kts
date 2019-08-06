@@ -305,7 +305,42 @@ subprojects {
             }
         }
     } else {
+        // bootstrap
         apply(plugin = "maven-publish")
+
+        val shadowJar by tasks.getting(ShadowJar::class)
+
+        val generateConstants by tasks.getting
+
+        val shadowTasks = listOf("voodoo", "multimc-installer"). map { target ->
+            tasks.create<Jar>("shadowJar" + target.split('-').joinToString("") { it.capitalize() }) {
+                group = "shadow"
+                dependsOn(generateConstants)
+                dependsOn(shadowJar)
+                from(zipTree(shadowJar.archiveFile))
+                val artifactMarker = buildDir.resolve("artifact.txt")
+                doFirst {
+                    artifactMarker.createNewFile()
+                    artifactMarker.writeText(target)
+                }
+                from(artifactMarker)
+
+                // this is a hack
+                manifest {
+                    attributes(mutableMapOf("Main-Class" to runnableProjects[project]))
+                }
+
+//                archiveBaseName.set("bootstrap")
+                archiveClassifier.set(target)
+//                archiveVersion.set("")
+            }
+        }
+
+        val build by tasks.getting(Task::class) {
+            shadowTasks.forEach { task ->
+                dependsOn(task)
+            }
+        }
 
         val sourcesJar by tasks.registering(Jar::class) {
             archiveClassifier.set("sources")
@@ -315,6 +350,9 @@ subprojects {
             publications {
                 create("default", MavenPublication::class.java) {
                     artifact(sourcesJar.get())
+                    shadowTasks.forEach { task ->
+                        artifact(task)
+                    }
                     artifactId = project.name.toLowerCase()
                 }
             }

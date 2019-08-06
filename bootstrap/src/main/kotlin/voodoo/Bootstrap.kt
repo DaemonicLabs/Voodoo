@@ -11,7 +11,6 @@ import com.github.kittinunf.fuel.core.HttpException
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.bootstrap.BootstrapConstants
-import voodoo.bootstrap.Config.MAVEN_ARTIFACT
 import voodoo.util.Directories
 import voodoo.util.maven.MavenUtil
 import java.io.File
@@ -30,9 +29,9 @@ fun main(vararg args: String) = runBlocking {
 
 object Bootstrap : KLogging() {
 
+    val artifact = javaClass.getResourceAsStream("/artifact.txt").bufferedReader().readLine()
     private const val mavenUrl = BootstrapConstants.MAVEN_URL
     private const val group = BootstrapConstants.MAVEN_GROUP
-    private const val artifact = MAVEN_ARTIFACT
     private const val classifier = BootstrapConstants.MAVEN_SHADOW_CLASSIFIER
     private const val version = BootstrapConstants.FULL_VERSION
 
@@ -70,7 +69,7 @@ object Bootstrap : KLogging() {
 
     @Throws(Throwable::class)
     suspend fun launch(vararg originalArgs: String) {
-        logger.info("Downloading the $MAVEN_ARTIFACT binary...")
+        logger.info("Downloading the $artifact binary...")
         val file = try {
             download().apply {
                 assert(exists()) { "downloaded files does not seem to exist" }
