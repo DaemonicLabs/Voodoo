@@ -8,6 +8,16 @@ import com.squareup.kotlinpoet.TypeSpec
 
 plugins {
     `maven-publish`
+    constantsGenerator
+}
+
+configure<ConstantsExtension> {
+    constantsObject(
+        pkg = "voodoo.bootstrap",
+        className = "Config"
+    ) {
+        field("MAVEN_ARTIFACT") value "unset"
+    }
 }
 
 val shadowJar by tasks.getting(ShadowJar::class) {
