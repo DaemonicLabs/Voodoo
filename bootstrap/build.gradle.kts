@@ -15,7 +15,10 @@ val shadowJar by tasks.getting(ShadowJar::class) {
     archiveVersion.set("")
 }
 
+val generateConstants by tasks.getting
+
 val shadowJarVoodoo by tasks.creating(ShadowJar::class) {
+    dependsOn(generateConstants)
     doFirst {
         generateBootstrapConfig(
             fields = mapOf("MAVEN_ARTIFACT" to "voodooo"),
@@ -27,6 +30,7 @@ val shadowJarVoodoo by tasks.creating(ShadowJar::class) {
 //    archiveVersion.set("")
 }
 val shadowJarMultimcInstaller by tasks.creating(ShadowJar::class) {
+    dependsOn(generateConstants)
     doFirst {
         generateBootstrapConfig(
             fields = mapOf("MAVEN_ARTIFACT" to "multimc-installer"),
@@ -85,6 +89,6 @@ fun generateBootstrapConfig(
         }
     }
 
-    val source = FileSpec.get("", constantBuilder.build())
+    val source = FileSpec.get(pkg, constantBuilder.build())
     source.writeTo(outputFolder)
 }
