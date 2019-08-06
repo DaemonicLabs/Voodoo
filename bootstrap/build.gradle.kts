@@ -1,5 +1,3 @@
-import com.github.jengelman.gradle.plugins.shadow.ShadowBasePlugin
-import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.squareup.kotlinpoet.ClassName
 import com.squareup.kotlinpoet.FileSpec
@@ -10,6 +8,7 @@ import com.squareup.kotlinpoet.TypeSpec
 plugins {
     `maven-publish`
     constantsGenerator
+    application
 }
 
 configure<ConstantsExtension> {
@@ -25,6 +24,10 @@ val shadowJar by tasks.getting(ShadowJar::class) {
     archiveClassifier.set("")
     archiveVersion.set("")
 }
+
+//application {
+//    mainClassName = "voodoo.BootstrapKt"
+//}
 
 val generateConstants by tasks.getting
 
@@ -42,6 +45,11 @@ val shadowJarVoodoo by tasks.creating(ShadowJar::class) {
     from(sourceSets.getAt("main").output)
     val runtimeClasspath = project.configurations.findByName("runtimeClasspath")
     configurations = listOf(if(runtimeClasspath != null) project.configurations.runtimeClasspath.get() else project.configurations.runtime.get())
+    exclude("META-INF/INDEX.LIST", "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "module-info.class")
+
+    manifest {
+        attributes("MainClass" to application.mainClassName)
+    }
 
     archiveBaseName.set("bootstrap")
     archiveClassifier.set("voodoo")
@@ -61,6 +69,11 @@ val shadowJarMultimcInstaller by tasks.creating(ShadowJar::class) {
     from(sourceSets.getAt("main").output)
     val runtimeClasspath = project.configurations.findByName("runtimeClasspath")
     configurations = listOf(if(runtimeClasspath != null) project.configurations.runtimeClasspath.get() else project.configurations.runtime.get())
+    exclude("META-INF/INDEX.LIST", "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "module-info.class")
+
+    manifest {
+        attributes("MainClass" to application.mainClassName)
+    }
 
     archiveBaseName.set("bootstrap")
     archiveClassifier.set("multimc-installer")
