@@ -27,7 +27,7 @@ open class LocalVoodooJarTask : GradleBuild() {
         doLast {
             val shadowJarFile: File = voodooExtension.localVoodooProjectLocation.resolve("voodoo")
                 .resolve("build").resolve("libs")
-                .resolve("voodoo-${PluginConstants.FULL_VERSION}.jar")
+                .resolve("voodoo-${PluginConstants.FULL_VERSION}-${PluginConstants.MAVEN_SHADOW_CLASSIFIER}.jar")
             shadowJarFile.copyTo(jarFile, overwrite = true)
         }
         outputs.upToDateWhen { false }
