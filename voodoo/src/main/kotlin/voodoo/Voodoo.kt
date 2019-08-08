@@ -73,6 +73,9 @@ object Voodoo : KLogging() {
 
         logger.debug("id: $id")
 
+        if(!SharedFolders.RootDir.defaultInitialized) {
+            SharedFolders.RootDir.default = File(System.getProperty("user.dir")).absoluteFile
+        }
         val rootDir = SharedFolders.RootDir.get().absoluteFile
 
         val host = createJvmScriptingHost(cacheDir)

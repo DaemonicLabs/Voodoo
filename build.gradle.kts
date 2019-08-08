@@ -241,13 +241,19 @@ subprojects {
 
             apply(plugin = "com.github.johnrengelman.shadow")
 
-            val runDir = rootProject.file("run")
+            val runDir = rootProject.file("samples")
 
             val run by tasks.getting(JavaExec::class) {
+                doFirst {
+                    runDir.mkdirs()
+                }
                 workingDir = runDir
             }
 
             val runShadow by tasks.getting(JavaExec::class) {
+                doFirst {
+                    runDir.mkdirs()
+                }
                 workingDir = runDir
             }
 
