@@ -23,8 +23,10 @@ pipeline {
 		stage('counter') {
 			steps {
 				sh './gradlew buildnumberIncrement'
+                script {
+                   def urls = readFileFromWorkspace('mavenUrls.txt')
+                }
                 withCredentials([string(credentialsId: 'discord.webhook.url', variable: 'discordWebhookId')]) {
-                    def urls = readFileFromWorkspace('mavenUrls.txt')
                     discordSend description: 'Jenkins Pipeline Build', footer: 'Downloads: \n${urls}', link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: discordWebhookId
                 }
 			}
