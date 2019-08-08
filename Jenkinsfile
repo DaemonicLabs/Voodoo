@@ -26,7 +26,9 @@ pipeline {
 		stage('counter') {
 			steps {
 				sh './gradlew buildnumberIncrement'
-				discordSend description: 'Jenkins Pipeline Build', footer: 'Footer Text', link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: credentials('discord.webhook.url')
+                withCredentials([string(credentialsId: 'discord.webhook.url', variable: 'discordWebhookId')]) {
+                    discordSend description: 'Jenkins Pipeline Build', footer: 'Footer Text', link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: discordWebhookId
+                }
 			}
 		}
 	}
