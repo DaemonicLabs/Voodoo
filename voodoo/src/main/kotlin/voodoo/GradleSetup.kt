@@ -42,15 +42,41 @@ object GradleSetup : KLogging() {
             }
 
             voodoo {
-                addTask(name = "build", parameters = listOf("build"))
-                addTask(name = "pack_sk", parameters = listOf("pack sk"))
-                addTask(name = "pack_mmc", parameters = listOf("pack mmc"))
-                addTask(name = "pack_mmc-static", parameters = listOf("pack mmc-static"))
-                addTask(name = "pack_mmc-fat", parameters = listOf("pack mmc-fat"))
-                addTask(name = "pack_server", parameters = listOf("pack server"))
-                addTask(name = "pack_curse", parameters = listOf("pack curse"))
-                addTask(name = "test_mmc", parameters = listOf("test mmc"))
-                addTask(name = "buildAndPackAll", parameters = listOf("build", "pack sk", "pack server", "pack mmc"))
+                addTask("build") {
+                    build()
+                }
+                addTask(name = "import_debug") {
+                    importDebug()
+                }
+                addTask(name = "pack_sk") {
+                    pack().sklauncher()
+                }
+                addTask(name = "pack_mmc") {
+                    pack().multimc()
+                }
+                addTask(name = "pack_mmc-static") {
+                    pack().multimcStatic()
+                }
+                addTask(name = "pack_mmc-fat") {
+                    pack().multimcFat()
+                }
+                addTask(name = "pack_server") {
+                    pack().server()
+                }
+                addTask(name = "pack_curse") {
+                    pack().curse()
+                }
+                addTask(name = "test_mmc") {
+                    test().multimc()
+                }
+                addTask(name = "buildAndPackAll") {
+                    build()
+                    pack().sklauncher()
+                    pack().server()
+                    test().multimc()
+                    pack().multimcFat()
+                    pack().curse()
+                }
             }
 
             repositories {
@@ -65,8 +91,8 @@ object GradleSetup : KLogging() {
             }
 
             dependencies {
-                implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "${VoodooConstants.VERSION}+")
-                implementation(group = "moe.nikky.voodoo", name = "dsl", version = "${VoodooConstants.VERSION}+")
+                kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "${VoodooConstants.VERSION}+")
+                kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "${VoodooConstants.VERSION}+")
             }
         """.trimIndent()
 

@@ -2,6 +2,8 @@ package voodoo
 
 import org.gradle.api.Project
 import voodoo.data.CustomTask
+import voodoo.data.TaskBuilder
+import voodoo.data.TaskType
 import voodoo.util.SharedFolders
 import java.io.File
 
@@ -16,8 +18,20 @@ open class VoodooExtension(project: Project) {
     internal var tasks: List<CustomTask> = listOf()
         private set
 
+    @Deprecated("use add")
     fun addTask(name: String, description: String = "custom task $name", parameters: List<String>) {
         tasks += CustomTask(name, description, parameters)
+    }
+
+    fun add(name: String, description: String = "custom task $name", parameters: List<TaskType>) {
+        tasks += CustomTask(name, description, parameters.map { it.command })
+    }
+
+    fun addTask(name: String, description: String = "custom task $name", taskBuilder: TaskBuilder.() -> Unit) {
+        val builder = TaskBuilder()
+        builder.taskBuilder()
+
+        tasks += CustomTask(name, description, builder.tasks.map { it.command })
     }
 
     fun rootDir(resolver: () -> File) {
