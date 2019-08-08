@@ -1,6 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import moe.nikky.counter.CounterExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import plugin.GenerateConstantsTask
 
@@ -318,7 +317,11 @@ subprojects {
 
         val generateConstants by tasks.getting
 
+        val urls: MutableList<String> = mutableListOf()
+
         val shadowTasks = listOf("voodoo", "multimc-installer"). map { target ->
+            urls += "${Maven.url}/${group.toString().split('.').joinToString("/")}/$name/$version/${name}-${version}-${target}.jar"
+
             tasks.create<Jar>("shadowJar" + target.split('-').joinToString("") { it.capitalize() }) {
                 group = "shadow"
                 dependsOn(generateConstants)
@@ -340,6 +343,16 @@ subprojects {
                 archiveClassifier.set(target)
 //                archiveVersion.set("")
             }
+        }
+
+        val writeMavenUrls = tasks.create("writeMavenUrls") {
+            val urlFile = rootProject.file("mavenUrls.txt")
+//            outputs.file(urlFile)
+            outputs.upToDateWhen { false }
+            logger.lifecycle("writing maven urls to $urlFile")
+            urlFile.delete()
+            urlFile.createNewFile()
+            urlFile.writeText(urls.joinToString("\n"))
         }
 
         val build by tasks.getting(Task::class) {
