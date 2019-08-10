@@ -32,13 +32,14 @@ pipeline {
                env.URLS = readFile('mavenUrls.txt')
             }
             withCredentials([string(credentialsId: 'discord.webhook.url', variable: 'discordWebhookId')]) {
-                discordSend
+                discordSend(
                     description: 'Jenkins Pipeline Build',
                     footer: "Downloads: \n${env.URLS}",
                     link: env.BUILD_URL,
                     result: currentBuild.currentResult,
                     title: JOB_NAME,
                     webhookURL: discordWebhookId
+                )
             }
         }
     }
