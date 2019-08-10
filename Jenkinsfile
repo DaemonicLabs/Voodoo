@@ -35,7 +35,7 @@ pipeline {
             withCredentials([string(credentialsId: 'discord.webhook.url', variable: 'discordWebhookId')]) {
                 discordSend(
                     description: "Downloads: \n${env.URLS}",
-                    footer: "build in ${currentBuild.durationString}",
+                    footer: "build in ${currentBuild.durationString.replace(' and counting', '')}",
                     link: env.BUILD_URL,
                     result: currentBuild.currentResult,
                     title: JOB_NAME,
