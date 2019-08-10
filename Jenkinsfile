@@ -23,13 +23,23 @@ pipeline {
 		stage('counter') {
 			steps {
 				sh './gradlew buildnumberIncrement'
-                script {
-                   def urls = readFile('mavenUrls.txt')
-                }
-                withCredentials([string(credentialsId: 'discord.webhook.url', variable: 'discordWebhookId')]) {
-                    discordSend description: 'Jenkins Pipeline Build', footer: "Downloads: \n${urls}", link: env.BUILD_URL, result: currentBuild.currentResult, title: JOB_NAME, webhookURL: discordWebhookId
-                }
 			}
 		}
 	}
+	post {
+        always {
+            script {
+               env.URLS = readFile('mavenUrls.txt')
+            }
+            withCredentials([string(credentialsId: 'discord.webhook.url', variable: 'discordWebhookId')]) {
+                discordSend
+                    description: 'Jenkins Pipeline Build',
+                    footer: "Downloads: \n${env.URLS}",
+                    link: env.BUILD_URL,
+                    result: currentBuild.currentResult,
+                    title: JOB_NAME,
+                    webhookURL: discordWebhookId
+            }
+        }
+    }
 }
