@@ -34,10 +34,9 @@ pipeline {
             withCredentials([string(credentialsId: 'discord.webhook.url', variable: 'discordWebhookId')]) {
                 discordSend(
                     description: 'Jenkins Pipeline Build',
-                    footer: """# Test
+                    footer: """<h1>Test,</h1>
  Downloads:
- ---
- ${env.URLS}
+${env.URLS}
                     """,
                     link: env.BUILD_URL,
                     result: currentBuild.currentResult,
