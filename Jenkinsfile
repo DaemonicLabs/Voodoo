@@ -20,11 +20,6 @@ pipeline {
                 sh './gradlew publish -S'
             }
         }
-		stage('counter') {
-			steps {
-				sh './gradlew buildnumberIncrement'
-			}
-		}
 	}
 	post {
         always {
@@ -42,6 +37,9 @@ pipeline {
                     webhookURL: discordWebhookId
                 )
             }
+        }
+        success {
+            sh './gradlew buildnumberIncrement'
         }
     }
 }
