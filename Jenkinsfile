@@ -28,16 +28,14 @@ pipeline {
 	}
 	post {
         always {
+            sh './gradlew writeMavenUrls'
             script {
                env.URLS = readFile('mavenUrls.txt')
             }
             withCredentials([string(credentialsId: 'discord.webhook.url', variable: 'discordWebhookId')]) {
                 discordSend(
-                    description: """<h1>Test,\n
-Downloads:
-${env.URLS}
-""",
-                    footer: "Footer",
+                    description: "Downloads: \n${env.URLS}",
+                    footer: "build ${env.BUILD_NUMBER} built in ${currentBuild.duration}",
                     link: env.BUILD_URL,
                     result: currentBuild.currentResult,
                     title: JOB_NAME,

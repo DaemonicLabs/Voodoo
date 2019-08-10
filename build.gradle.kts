@@ -347,12 +347,14 @@ subprojects {
 
         val writeMavenUrls = tasks.create("writeMavenUrls") {
             val urlFile = rootProject.file("mavenUrls.txt")
+            doLast {
+                logger.lifecycle("writing maven urls to $urlFile")
+                urlFile.delete()
+                urlFile.createNewFile()
+                urlFile.writeText(urls.joinToString("\n"))
+            }
 //            outputs.file(urlFile)
             outputs.upToDateWhen { false }
-            logger.lifecycle("writing maven urls to $urlFile")
-            urlFile.delete()
-            urlFile.createNewFile()
-            urlFile.writeText(urls.joinToString("\n"))
         }
 
         val build by tasks.getting(Task::class) {
