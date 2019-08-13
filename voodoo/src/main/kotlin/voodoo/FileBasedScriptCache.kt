@@ -9,8 +9,8 @@ import kotlin.script.experimental.api.CompiledScript
 import kotlin.script.experimental.api.ScriptCompilationConfiguration
 import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.host.FileScriptSource
+import kotlin.script.experimental.jvm.impl.KJvmCompiledScript
 import kotlin.script.experimental.jvmhost.CompiledJvmScriptsCache
-import kotlin.script.experimental.jvmhost.impl.KJvmCompiledScript
 
 class FileBasedScriptCache(val baseDir: File) : CompiledJvmScriptsCache {
     internal fun uniqueHash(script: SourceCode, scriptCompilationConfiguration: ScriptCompilationConfiguration): String {
@@ -29,7 +29,11 @@ class FileBasedScriptCache(val baseDir: File) : CompiledJvmScriptsCache {
         } else ""
         val file = File(baseDir, prefix + uniqueHash(script, scriptCompilationConfiguration))
 //        val file = File(baseDir, uniqueHash(script, scriptCompilationConfiguration))
-        return if (!file.exists()) null else file.readCompiledScript(scriptCompilationConfiguration)
+        return if (file.exists()) {
+            file.readCompiledScript(scriptCompilationConfiguration)
+        } else {
+            null
+        }
     }
 
     override fun store(
@@ -54,7 +58,8 @@ class FileBasedScriptCache(val baseDir: File) : CompiledJvmScriptsCache {
             return inputStream().use { fs ->
                 ObjectInputStream(fs).use { os ->
                     (os.readObject() as KJvmCompiledScript<*>).apply {
-                        setCompilationConfiguration(scriptCompilationConfiguration)
+                        // TODO: figure out if i need this ?
+//                        setCompilationConfiguration(scriptCompilationConfiguration)
                     }
                 }
             }

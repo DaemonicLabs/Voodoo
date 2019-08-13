@@ -13,19 +13,19 @@ import kotlin.script.experimental.api.constructorArgs
 import kotlin.script.experimental.api.dependencies
 import kotlin.script.experimental.api.resultOrNull
 import kotlin.script.experimental.host.toScriptSource
+import kotlin.script.experimental.jvm.BasicJvmScriptEvaluator
 import kotlin.script.experimental.jvm.JvmDependency
 import kotlin.script.experimental.jvm.defaultJvmScriptingHostConfiguration
 import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
 import kotlin.script.experimental.jvm.jvm
-import kotlin.script.experimental.jvmhost.BasicJvmScriptEvaluator
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.script.experimental.jvmhost.JvmScriptCompiler
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
 import kotlin.system.exitProcess
 
 fun createJvmScriptingHost(cacheDir: File): BasicJvmScriptingHost {
-    val cache = FileBasedScriptCache(cacheDir)
-    val compiler = JvmScriptCompiler(defaultJvmScriptingHostConfiguration, cache = cache)
+//    val cache = FileBasedScriptCache(cacheDir)
+    val compiler = JvmScriptCompiler(defaultJvmScriptingHostConfiguration) //, cache = cache)
     val evaluator = BasicJvmScriptEvaluator()
     val host = BasicJvmScriptingHost(compiler = compiler, evaluator = evaluator)
     return host
@@ -112,12 +112,16 @@ inline fun <reified T> ResultWithDiagnostics<EvaluationResult>.get(scriptFile: F
 
             println("resultValue.value::class = '${resultValue.value!!::class}'")
 
-            val env = resultValue.value as T
-            println(env)
-            env
+            val result = resultValue.value as T
+            println(result)
+            result
+        }
+        is ResultValue.UnitValue -> {
+            Voodoo.logger.error("evaluation failed with UnitValue")
+            exitProcess(-1)
         }
         is ResultValue.Unit -> {
-            Voodoo.logger.error("evaluation failed")
+            Voodoo.logger.error("evaluation failed with Unit")
             exitProcess(-1)
         }
     }
