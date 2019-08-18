@@ -3,7 +3,10 @@ package voodoo
 import org.gradle.api.Project
 import voodoo.data.CustomTask
 import voodoo.data.TaskBuilder
-import voodoo.data.TaskType
+import voodoo.poet.Poet
+import voodoo.poet.generator.CurseGenerator
+import voodoo.poet.generator.CurseSection
+import voodoo.poet.generator.ForgeGenerator
 import voodoo.util.SharedFolders
 import java.io.File
 
@@ -23,9 +26,9 @@ open class VoodooExtension(project: Project) {
         tasks += CustomTask(name, description, parameters)
     }
 
-    fun add(name: String, description: String = "custom task $name", parameters: List<TaskType>) {
-        tasks += CustomTask(name, description, parameters.map { it.command })
-    }
+//    fun add(name: String, description: String = "custom task $name", parameters: List<TaskType>) {
+//        tasks += CustomTask(name, description, parameters.map { it.command })
+//    }
 
     fun addTask(name: String, description: String = "custom task $name", taskBuilder: TaskBuilder.() -> Unit) {
         val builder = TaskBuilder()
@@ -60,5 +63,26 @@ open class VoodooExtension(project: Project) {
 
     fun docDirectory(resolver: (rootDir: File, id: String) -> File) {
         SharedFolders.DocDir.resolver = resolver
+    }
+
+    internal val forgeGenerators: MutableList<ForgeGenerator> = mutableListOf()
+    fun generateForge(name: String, vararg versions: String) {
+        forgeGenerators += ForgeGenerator(name, listOf(*versions))
+    }
+
+    internal val curseGenerators: MutableList<CurseGenerator> = mutableListOf()
+    fun generateCurseforgeMods(
+        name: String,
+        vararg versions: String,
+        slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
+    ) {
+        curseGenerators += CurseGenerator(name, CurseSection.MODS, listOf(*versions), slugSanitizer)
+    }
+    fun generateCurseforgeTexturepacks(
+        name: String,
+        vararg versions: String,
+        slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
+    ) {
+        curseGenerators += CurseGenerator(name, CurseSection.TEXTURE_PACKS, listOf(*versions), slugSanitizer)
     }
 }

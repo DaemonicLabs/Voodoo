@@ -1,5 +1,6 @@
 package voodoo
 
+import kotlinx.coroutines.runBlocking
 import org.gradle.api.DefaultTask
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
@@ -13,6 +14,7 @@ import org.gradle.kotlin.dsl.task
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import voodoo.plugin.PluginConstants
+import voodoo.poet.Poet
 import voodoo.util.SharedFolders
 
 open class VoodooPlugin : Plugin<Project> {
@@ -45,6 +47,7 @@ open class VoodooPlugin : Plugin<Project> {
 //                }
 // //                dependsOn(poet)
 //            }
+            val generatedSrcDir = buildDir.resolve(".voodoo").resolve("gen")
 
             extensions.configure<JavaPluginExtension> {
                 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -117,6 +120,67 @@ open class VoodooPlugin : Plugin<Project> {
 
             extensions.configure<SourceSetContainer> {
 //                val runtimeClasspath = maybeCreate("main").runtimeClasspath
+                extensions.configure<KotlinJvmProjectExtension> {
+                    sourceSets.maybeCreate("main").kotlin.apply {
+                        srcDir(generatedSrcDir)
+                    }
+                }
+
+                extensions.configure<IdeaModel> {
+                    module {
+                        generatedSourceDirs.add(generatedSrcDir)
+                    }
+                }
+
+                val curseGeneratorTasks = voodooExtension.curseGenerators.map { generator ->
+                    logger.info("adding generate ${generator.name}")
+                    task<AbstractTask>("generate${generator.name}") {
+                        group = "generators"
+                        outputs.upToDateWhen { false }
+//                        outputs.cacheIf { true }
+                        doLast {
+                            generatedSrcDir.mkdirs()
+                            val generatedFile = runBlocking {
+                                Poet.generate(
+                                    name = generator.name,
+                                    slugIdMap = Poet.request(
+                                        gameVersions = generator.mcVersions.toList(),
+                                        section = generator.section.sectionName
+                                    ),
+                                    slugSanitizer = generator.slugSanitizer,
+                                    folder = generatedSrcDir
+                                )
+                            }
+                            logger.lifecycle("generated: $generatedFile")
+                        }
+                    }
+                }
+                val forgeGeneratorTasks = voodooExtension.forgeGenerators.map { generator ->
+                    logger.info("adding generate ${generator.name}")
+                    task<AbstractTask>("generate${generator.name}") {
+                        group = "generators"
+                        outputs.upToDateWhen { false }
+//                        outputs.cacheIf { true }
+                        doLast {
+                            generatedSrcDir.mkdirs()
+                            val generatedFile = runBlocking {
+                                Poet.generateForge(
+                                    name = generator.name,
+                                    mcVersionFilters = generator.mcVersions.toList(),
+                                    folder = generatedSrcDir
+                                )
+                            }
+                            logger.lifecycle("generated: $generatedFile")
+                        }
+                    }
+                }
+
+                val generateAllTask = task<AbstractTask>("generateAll") {
+                    group = "generators"
+                    dependsOn(curseGeneratorTasks)
+                    dependsOn(forgeGeneratorTasks)
+                }
+
                 SharedFolders.PackDir.get()
                     .listFiles { _, name -> name.endsWith(".voodoo.kts") }
                     .forEach { sourceFile ->
@@ -135,14 +199,11 @@ open class VoodooPlugin : Plugin<Project> {
                             }
                         }
 
-//                        val poet = task<PoetTask>("poet_$id") {
-//                            targetFolder = SharedFolders.GeneratedSrc.get(id = id)
-//                        }
-
                         task<VoodooTask>(id.toLowerCase()) {
 //                            dependsOn(poet)
                             dependsOn(copyLibs)
                             dependsOn(downloadVoodoo)
+                            dependsOn(generateAllTask)
 
                             classpath(voodooJar)
 
@@ -166,6 +227,7 @@ open class VoodooPlugin : Plugin<Project> {
 //                                dependsOn(poet)
                                 dependsOn(copyLibs)
                                 dependsOn(downloadVoodoo)
+                                dependsOn(generateAllTask)
 
                                 classpath(voodooJar)
 

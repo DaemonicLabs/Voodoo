@@ -1,20 +1,17 @@
-@file:GenerateMods(name = "Mod", mc = "1.12.2")
-@file:GenerateMods(name = "Mod", mc = "1.12.1")
-@file:GenerateMods(name = "Mod", mc = "1.12")
-@file:GenerateTexturePacks(name = "TexturePack", mc = "1.12.2")
-@file:GenerateTexturePacks(name = "TexturePack", mc = "1.12.1")
-@file:GenerateTexturePacks(name = "TexturePack", mc = "1.12")
-@file:GenerateForge(name = "Forge_12", mc = "1.12.2")
+//@file:GenerateMods(name = "Mod", mc = "1.12.2")
+//@file:GenerateMods(name = "Mod", mc = "1.12.1")
+//@file:GenerateMods(name = "Mod", mc = "1.12")
+//@file:GenerateTexturePacks(name = "TexturePack", mc = "1.12.2")
+//@file:GenerateTexturePacks(name = "TexturePack", mc = "1.12.1")
+//@file:GenerateTexturePacks(name = "TexturePack", mc = "1.12")
+//@file:GenerateForge(name = "Forge_12", mc = "1.12.2")
 @file:Include("OptionalMods.kt")
-
-import voodoo.data.Side
-import voodoo.data.curse.FileType
 
 mcVersion = "1.12.2"
 version = "1.1.2"
 icon = rootDir.resolve("icon.png")
 authors = listOf("NikkyAi")
-forge = Forge_12.mc1_12_2_recommended
+forge = Forge_12_2.mc1_12_2_recommended
 
 pack {
 
@@ -22,9 +19,6 @@ pack {
 
 root(CurseProvider) {
     releaseTypes = setOf(FileType.Release, FileType.Beta)
-
-    //TODO: use type URL ?
-    metaUrl = "https://curse.nikky.moe/api"
 
     list {
         +Mod.botania

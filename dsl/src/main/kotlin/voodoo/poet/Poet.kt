@@ -12,6 +12,7 @@ import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
 import voodoo.forge.ForgeUtil
 import voodoo.poet.generator.CurseGenerator
+import voodoo.poet.generator.CurseSection
 import voodoo.poet.generator.ForgeGenerator
 import java.io.File
 
@@ -21,14 +22,13 @@ object Poet : KLogging() {
     fun main(vararg args: String) {
         generateAll(
             generatedSrcDir = File(args[0]),
-            curseGenerators = listOf(CurseGenerator("Mod", "Mods")),
+            curseGenerators = listOf(CurseGenerator("Mod", CurseSection.MODS)),
             forgeGenerators = listOf(ForgeGenerator("Forge"))
         )
     }
 
     fun generateAll(
         generatedSrcDir: File, // = SharedFolders.GeneratedSrc.get(id = id),
-        slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer,
         curseGenerators: List<CurseGenerator> = listOf(),
         forgeGenerators: List<ForgeGenerator> = listOf()
     ): List<File> {
@@ -46,9 +46,9 @@ object Poet : KLogging() {
                     name = generator.name,
                     slugIdMap = request(
                         gameVersions = generator.mcVersions.toList(),
-                        section = generator.section
+                        section = generator.section.sectionName
                     ),
-                    slugSanitizer = slugSanitizer,
+                    slugSanitizer = generator.slugSanitizer,
                     folder = generatedSrcDir
                 )
             } + forgeGenerators.map { generator ->
@@ -68,7 +68,7 @@ object Poet : KLogging() {
             it.capitalize()
         }.decapitalize()
 
-    internal fun generate(
+    fun generate(
         name: String,
         slugIdMap: Map<String, ProjectID>,
         slugSanitizer: (String) -> String,
@@ -110,7 +110,7 @@ object Poet : KLogging() {
         return save(objectBuilder.build(), targetFile)
     }
 
-    internal suspend fun generateForge(
+    suspend fun generateForge(
         name: String = "Forge",
         mcVersionFilters: List<String>? = null,
         folder: File

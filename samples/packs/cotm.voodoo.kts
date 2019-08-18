@@ -1,16 +1,8 @@
-@file:GenerateMods(name = "Mod", mc = "1.12.2")
-@file:GenerateMods(name = "Mod", mc = "1.12.1")
-@file:GenerateMods(name = "Mod", mc = "1.12")
-@file:GenerateTexturePacks(name = "TexturePack", mc = "1.12.2")
-@file:GenerateTexturePacks(name = "TexturePack", mc = "1.12.1")
-@file:GenerateTexturePacks(name = "TexturePack", mc = "1.12")
-@file:GenerateForge(name = "Forge", mc = "1.12.2")
-
 mcVersion = "1.12.2"
 title = "Center of the Multiverse"
 authors = listOf("AnsuzThuriaz", "Falkreon", "NikkyAi")
 version = "2.2.13-testing"
-forge = Forge.mc1_12_2.forge_14_23_5_2811
+forge = Forge_12_2.mc1_12_2.forge_14_23_5_2811
 icon = rootDir.resolve("icon.png")
 pack {
     skcraft {
@@ -23,13 +15,11 @@ pack {
             exclude = listOf("")
         )
     }
-}
-
-pack {
     multimc {
         skPackUrl = "https://centerofthemultiverse.net/launcher/cotm.json"
     }
 }
+
 root(CurseProvider) {
     releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
     validMcVersions = setOf("1.12.2", "1.12.1", "1.12")

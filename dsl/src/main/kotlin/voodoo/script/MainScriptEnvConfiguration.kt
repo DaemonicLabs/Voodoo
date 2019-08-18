@@ -4,8 +4,10 @@ import voodoo.GenerateForge
 import voodoo.GenerateMods
 import voodoo.GenerateTexturePacks
 import voodoo.Include
+import voodoo.provider.*
 import voodoo.poet.Poet
 import voodoo.poet.generator.CurseGenerator
+import voodoo.poet.generator.CurseSection
 import voodoo.poet.generator.ForgeGenerator
 import voodoo.util.SharedFolders
 import kotlin.script.experimental.api.ScriptAcceptedLocation
@@ -24,22 +26,45 @@ import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.host.toScriptSource
 
 object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
+
+    defaultImports(
+        CurseProvider::class,
+        DirectProvider::class,
+        JenkinsProvider::class,
+        LocalProvider::class,
+        UpdateJsonProvider::class,
+
+        voodoo.data.UserFiles::class,
+        voodoo.data.DependencyType::class,
+        voodoo.data.PackOptions::class,
+        voodoo.data.curse.FileType::class,
+        voodoo.data.curse.ProjectID::class,
+        voodoo.data.curse.FileID::class,
+
+        com.skcraft.launcher.model.SKServer::class,
+        com.skcraft.launcher.model.modpack.Recommendation::class,
+
+        GenerateForge::class,
+        GenerateMods::class,
+        GenerateTexturePacks::class,
+        Include::class
+    )
     defaultImports.append(
         "voodoo.*",
+        "voodoo.Include",
         "voodoo.dsl.*",
-        "voodoo.provider.*",
+        "voodoo.provider.CurseProvider",
+        "voodoo.provider.DirectProvider",
+        "voodoo.provider.JenkinsProvider",
+        "voodoo.provider.LocalProvider",
+        "voodoo.provider.UpdateJsonProvider",
         "voodoo.data.*",
         "voodoo.data.curse.*",
         "voodoo.provider.*",
         "com.skcraft.launcher.model.SKServer",
         "com.skcraft.launcher.model.modpack.Recommendation"
     )
-    defaultImports(
-        GenerateForge::class,
-        GenerateMods::class,
-        GenerateTexturePacks::class,
-        Include::class
-    )
+
     compilerOptions.append("-jvm-target 1.8")
 
     refineConfiguration {
@@ -75,10 +100,11 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
                     // TODO use a fallback generator ?
                     return@onAnnotations ScriptCompilationConfiguration(context.compilationConfiguration).asSuccess()
                 }
-            // TODO? make sure rootFolder points at the correct folder
-
+//            org.jetbrains.kotlin.scripting.resolve.VirtualFileScriptSource
+//            kotlin.script.experimental.host.FileBasedScriptSource
             require(context.script is FileScriptSource) { "${context.script::class} != FileScriptSource" }
             val scriptFile = (context.script as FileScriptSource).file
+            // TODO? make sure rootFolder points at the correct folder
             SharedFolders.RootDir.default = scriptFile.parentFile.parentFile
             val rootDir = SharedFolders.RootDir.get()
 
@@ -99,13 +125,13 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
             val curseGenerators = modGenerators.map { (file, annotations) ->
                 CurseGenerator(
                     name = file,
-                    section = "Mods",
+                    section = CurseSection.MODS,
                     mcVersions = annotations.map { it.mc }.filter { it.isNotBlank() }.distinct()
                 )
             } + texturePackGenerators.map { (file, annotations) ->
                 CurseGenerator(
                     name = file,
-                    section = "Texture Packs",
+                    section = CurseSection.TEXTURE_PACKS,
                     mcVersions = annotations.map { it.mc }.filter { it.isNotBlank() }.distinct()
                 )
             }

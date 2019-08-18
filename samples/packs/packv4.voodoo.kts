@@ -8,7 +8,7 @@ mcVersion = "1.12.2"
 title = "1.12.2 Pack v4"
 authors = listOf("therealfarfetchd")
 version = "1.0.0"
-forge = Forge.mc1_12_2_latest
+forge = Forge_12_2.mc1_12_2_latest
 icon = rootDir.resolve("icon.png")
 pack {
     skcraft {
@@ -50,14 +50,14 @@ root(CurseProvider) {
         +Mod.ironChests
         +Mod.mystcraft
         +Mod.biomesOPlenty
-        +Mod.traverse
+        +Mod.traverseLegacy
         +Mod.valkyrienWarfare
         +Mod.wirelessRedstoneCbe
 
         // Misc.
         +Mod.chickenChunks18
         +Mod.project74246 // doomlike dungeons
-        +Mod.muon
+//        +Mod.muon
         +Mod.morpheus
         +Mod.quark
         +Mod.streams

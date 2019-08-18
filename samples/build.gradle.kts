@@ -46,6 +46,10 @@ voodoo {
         pack().multimcFat()
         pack().curse()
     }
+
+    generateCurseforgeMods("Mod", "1.12", "1.12.1", "1.12.2")
+    generateCurseforgeTexturepacks("TexturePack", "1.12", "1.12.1", "1.12.2")
+    generateForge("Forge_12_2", "1.12.2")
 }
 
 repositories {
@@ -61,6 +65,8 @@ repositories {
 }
 
 dependencies {
-    kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "0.4.8-dev")
-    kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.8-dev")
+    implementation(group = "moe.nikky.voodoo", name = "dsl", version = "0.4.9-dev")
+    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.9-dev")
+    kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "0.4.9-dev")
+//    kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.9-dev")
 }
