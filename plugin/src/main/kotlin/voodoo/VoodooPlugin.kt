@@ -148,7 +148,8 @@ open class VoodooPlugin : Plugin<Project> {
                                         section = generator.section.sectionName
                                     ),
                                     slugSanitizer = generator.slugSanitizer,
-                                    folder = generatedSrcDir
+                                    folder = generatedSrcDir,
+                                    section = generator.section
                                 )
                             }
                             logger.lifecycle("generated: $generatedFile")

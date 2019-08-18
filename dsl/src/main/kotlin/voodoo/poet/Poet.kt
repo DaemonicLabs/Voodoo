@@ -49,7 +49,8 @@ object Poet : KLogging() {
                         section = generator.section.sectionName
                     ),
                     slugSanitizer = generator.slugSanitizer,
-                    folder = generatedSrcDir
+                    folder = generatedSrcDir,
+                    section = generator.section
                 )
             } + forgeGenerators.map { generator ->
                 Poet.generateForge(
@@ -72,7 +73,8 @@ object Poet : KLogging() {
         name: String,
         slugIdMap: Map<String, ProjectID>,
         slugSanitizer: (String) -> String,
-        folder: File
+        folder: File,
+        section: CurseSection
     ): File {
         val targetFile = folder.resolve("$name.kt")
         if (targetFile.exists()) {
@@ -85,7 +87,11 @@ object Poet : KLogging() {
         slugIdMap.entries.sortedBy { (slug, id) ->
             slug
         }.forEach { (slug, id) ->
-            val projectPage = "https://minecraft.curseforge.com/projects/$slug"
+            val projectPage = when (section) {
+                CurseSection.MODS -> "https://www.curseforge.com/minecraft/mc-mods/$slug"
+                CurseSection.TEXTURE_PACKS -> "https://www.curseforge.com/minecraft/texture-packs/$slug"
+
+            }
             objectBuilder.addProperty(
                 PropertySpec.builder(
                     slugSanitizer(slug),
@@ -181,5 +187,4 @@ object Poet : KLogging() {
         ).map { (id, slug) ->
             slug to ProjectID(id)
         }.toMap()
-
 }
