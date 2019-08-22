@@ -90,23 +90,18 @@ object Poet : KLogging() {
             val projectPage = when (section) {
                 CurseSection.MODS -> "https://www.curseforge.com/minecraft/mc-mods/$slug"
                 CurseSection.TEXTURE_PACKS -> "https://www.curseforge.com/minecraft/texture-packs/$slug"
-
             }
             objectBuilder.addProperty(
                 PropertySpec.builder(
                     slugSanitizer(slug),
-//                    Int::class
                     idType
                 )
-//                    .addAnnotation(JvmSynthetic::class)
-                    .addKdoc("@see %L\n", projectPage)
+//                    .addKdoc(" %L\n", projectPage)
                     .mutable(false)
-//                    .initializer("%T(%L)", idType, id.value)
-//                    .initializer("%L", id.value)
                     .getter(
                         FunSpec.getterBuilder()
                             .addModifiers(KModifier.INLINE)
-                            .addCode("return %T(%L)", idType, id.value)
+                            .addCode("return %T(%L) \n%L", idType, id.value, "//·$projectPage")
                             .build()
                     )
                     .build()
