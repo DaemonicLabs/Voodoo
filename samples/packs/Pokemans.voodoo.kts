@@ -1,7 +1,6 @@
 //@file:GenerateMods("Test", "1.14.4")
 
 import com.skcraft.launcher.model.modpack.Recommendation
-import voodoo.GenerateMods
 
 mcVersion = "1.12.2"
 title = "Pokemans Reloaded"

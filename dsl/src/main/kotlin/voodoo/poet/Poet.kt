@@ -101,7 +101,7 @@ object Poet : KLogging() {
                     .getter(
                         FunSpec.getterBuilder()
                             .addModifiers(KModifier.INLINE)
-                            .addCode("return %T(%L) \n%L", idType, id.value, "//·$projectPage")
+                            .addCode("return %T(%L) \n%L\n", idType, id.value, "//·$projectPage")
                             .build()
                     )
                     .build()

@@ -13,6 +13,7 @@ import voodoo.forge.ForgeUtil
 import voodoo.util.blankOr
 import voodoo.util.json
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Created by nikky on 28/03/18.
@@ -137,7 +138,7 @@ data class LockPack(
     }
 
     @Transient
-    private val optionalCache = mutableMapOf<String, Boolean>()
+    private val optionalCache = ConcurrentHashMap<String, Boolean>()
 
     fun isEntryOptional(entryId: String): Boolean {
         return optionalCache.computeIfAbsent(entryId) {
