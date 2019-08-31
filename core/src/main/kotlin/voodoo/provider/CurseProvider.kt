@@ -223,7 +223,8 @@ object CurseProvider : ProviderBase("Curse Provider") {
 
         if (addonFile.packageFingerprint.toUInt() != fileFingerprint) {
             logger.error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
-            throw IllegalStateException("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
+            logger.error("curseforge murmur2 fingerprints are unreliable")
+//            throw IllegalStateException("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
         }
 
         return@stopwatch Pair(addonFile.downloadUrl, targetFile)

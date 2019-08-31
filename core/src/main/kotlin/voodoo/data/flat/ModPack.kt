@@ -1,7 +1,6 @@
 package voodoo.data.flat
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import mu.KLogging
