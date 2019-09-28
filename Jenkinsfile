@@ -12,6 +12,7 @@ pipeline {
 		stage("test") {
 			steps {
                 sh './gradlew clean'
+                sh './gradlew :voodoo:poet'
 				sh './gradlew test -S'
 			}
 		}
