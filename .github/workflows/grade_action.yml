@@ -7,7 +7,4 @@ jobs:
       - uses: actions/checkout@master
       - uses: MrRamych/gradle-actions/openjdk-8@3.0
         with:
-          args: test -S
-
-    - name: Test with Gradle
-      run: ./gradlew test -S
+          args: build test -S
