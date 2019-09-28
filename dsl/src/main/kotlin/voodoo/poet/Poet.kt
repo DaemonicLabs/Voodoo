@@ -79,6 +79,7 @@ object Poet : KLogging() {
         val targetFile = folder.resolve("$name.kt")
         if (targetFile.exists()) {
             logger.info("skipping generation of $targetFile")
+            logger.info("file size: ${targetFile.length() / 1024.0} MB")
             return targetFile
         }
 
@@ -119,6 +120,7 @@ object Poet : KLogging() {
         val targetFile = folder.resolve("$name.kt")
         if (targetFile.exists()) {
             logger.info("skipping generation of $targetFile")
+            logger.info("file size: ${targetFile.length() / 1024.0} MB")
             return targetFile
         }
 
