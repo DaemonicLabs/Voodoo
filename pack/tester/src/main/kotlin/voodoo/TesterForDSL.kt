@@ -42,7 +42,7 @@ object TesterForDSL : KLogging() {
 
     private class Arguments(parser: ArgParser) {
         val methode by parser.positional(
-            "METHODE",
+            "METHOD",
             help = "testing provider to use"
         ) { this.toLowerCase() }
             .default("")

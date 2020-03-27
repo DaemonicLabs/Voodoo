@@ -1,5 +1,5 @@
 plugins {
-    id("voodoo") version "0.4.9-dev"
+    id("voodoo") version "0.5.0-dev"
 }
 
 voodoo {

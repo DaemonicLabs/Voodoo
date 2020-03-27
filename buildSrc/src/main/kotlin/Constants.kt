@@ -20,32 +20,40 @@ object Gradle {
 }
 
 object Kotlin {
-    const val version = "1.3.41"
+    const val version = "1.3.70"
 }
 
 object Coroutines {
-    const val version = "1.1.1"
+    const val version = "1.2.1" // because gradle is weird...
+//    const val version = "1.3.4"
     val dependency = create(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version = version)
 }
 
 object Serialization {
-    const val version = "0.11.0"
+    const val version = "0.20.0"
     const val plugin = "kotlinx-serialization"
     const val module = "org.jetbrains.kotlinx:kotlinx-gradle-serialization-plugin"
     val dependency = create(group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-runtime", version = version)
 }
 
 object Kotlinpoet {
-    const val version = "1.0.1"
+    const val version = "1.5.0"
     val dependency = create(group = "com.squareup", name = "kotlinpoet", version = version)
 }
 
 object Fuel {
-    const val version = "2.1.0"
+    const val version = "2.2.1"
     private const val group = "com.github.kittinunf.fuel"
     val dependency = create(group = group, name = "fuel", version = version)
     val dependencyCoroutines = create(group = group, name = "fuel-coroutines", version = version)
     val dependencySerialization = create(group = group, name = "fuel-kotlinx-serialization", version = version)
+}
+
+object Ktor {
+    const val version = "1.3.2"
+    val dependency = create(group = "io.ktor", name = "ktor-client-cio", version = version)
+    val dependencyJson = create(group = "io.ktor", name = "ktor-client-json", version = version)
+    val dependencySerialization = create(group = "io.ktor", name = "ktor-client-serialization-jvm", version = version)
 }
 
 object Argparser {
@@ -59,7 +67,7 @@ object KotlinxHtml {
 }
 
 object Logging {
-    const val version = "1.6.10"
+    const val version = "1.7.9"
 
     val dependency = create(group = "io.github.microutils", name = "kotlin-logging", version = version)
     val dependencyLogbackClassic = create(group = "ch.qos.logback", name = "logback-classic", version = "1.3.0-alpha4")

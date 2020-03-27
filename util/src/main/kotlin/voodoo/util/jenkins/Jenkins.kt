@@ -9,7 +9,6 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
@@ -19,7 +18,7 @@ import java.io.File
 
 object Jenkins : KLogging()
 
-private val json = Json(JsonConfiguration(strictMode = false, encodeDefaults = false))
+private val json = Json(JsonConfiguration(encodeDefaults = false, ignoreUnknownKeys = true))
 private val useragent = "voodoo/${UtilConstants.VERSION}"
 
 @Deprecated("hosting on jenkins is being phased out")

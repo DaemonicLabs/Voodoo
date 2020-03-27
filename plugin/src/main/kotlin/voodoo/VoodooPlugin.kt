@@ -47,7 +47,7 @@ open class VoodooPlugin : Plugin<Project> {
 //                }
 // //                dependsOn(poet)
 //            }
-            val generatedSrcDir = buildDir.resolve(".voodoo").resolve("gen")
+            val generatedSrcDir = SharedFolders.GeneratedSrcShared.get()
 
             extensions.configure<JavaPluginExtension> {
                 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -149,7 +149,8 @@ open class VoodooPlugin : Plugin<Project> {
                                     ),
                                     slugSanitizer = generator.slugSanitizer,
                                     folder = generatedSrcDir,
-                                    section = generator.section
+                                    section = generator.section,
+                                    gameVersions = generator.mcVersions.toList()
                                 )
                             }
                             logger.lifecycle("generated: $generatedFile")

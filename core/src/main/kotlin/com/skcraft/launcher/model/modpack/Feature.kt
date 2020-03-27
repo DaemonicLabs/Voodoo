@@ -7,7 +7,6 @@
 package com.skcraft.launcher.model.modpack
 
 import com.skcraft.launcher.builder.FnPatternList
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 
 @Serializable

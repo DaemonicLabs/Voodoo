@@ -1,11 +1,6 @@
 package voodoo.poet
 
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.FunSpec
-import com.squareup.kotlinpoet.KModifier
-import com.squareup.kotlinpoet.PropertySpec
-import com.squareup.kotlinpoet.TypeSpec
-import com.squareup.kotlinpoet.asTypeName
+import com.squareup.kotlinpoet.*
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.curse.CurseClient
@@ -37,7 +32,8 @@ object Poet : KLogging() {
 //    println("classloader is of type:" + Thread.currentThread().contextClassLoader)
 //    println("classloader is of type:" + ClassLoader.getSystemClassLoader())
 //    println("classloader is of type:" + XY::class.java.classLoader)
-        Thread.currentThread().contextClassLoader = Poet::class.java.classLoader
+
+//        Thread.currentThread().contextClassLoader = Poet::class.java.classLoader
 
         val files = runBlocking {
             // TODO: parallelize
@@ -50,7 +46,8 @@ object Poet : KLogging() {
                     ),
                     slugSanitizer = generator.slugSanitizer,
                     folder = generatedSrcDir,
-                    section = generator.section
+                    section = generator.section,
+                    gameVersions = generator.mcVersions.toList()
                 )
             } + forgeGenerators.map { generator ->
                 Poet.generateForge(
@@ -74,7 +71,8 @@ object Poet : KLogging() {
         slugIdMap: Map<String, ProjectID>,
         slugSanitizer: (String) -> String,
         folder: File,
-        section: CurseSection
+        section: CurseSection,
+        gameVersions: List<String>
     ): File {
         val targetFile = folder.resolve("$name.kt")
         if (targetFile.exists()) {
@@ -85,6 +83,8 @@ object Poet : KLogging() {
 
         val idType = ProjectID::class.asTypeName()
         val objectBuilder = TypeSpec.objectBuilder(name)
+        objectBuilder.addKdoc(CodeBlock.of("%L \n", "${section.sectionName} generated from mc versions: $gameVersions"))
+        objectBuilder.addKdoc("${section.sectionName} generated from mc versions: $gameVersions")
         slugIdMap.entries.sortedBy { (slug, id) ->
             slug
         }.forEach { (slug, id) ->

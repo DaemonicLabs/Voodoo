@@ -4,13 +4,10 @@ import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.serialization.internal.BooleanSerializer
-import kotlinx.serialization.internal.HashMapSerializer
-import kotlinx.serialization.internal.StringSerializer
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.map
-import kotlinx.serialization.serializer
 import voodoo.data.DependencyType
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
@@ -78,7 +75,7 @@ object MMCFatPack : AbstractPack() {
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val previousSelection = if (featureJson.exists()) {
-            json.parse(HashMapSerializer(String.serializer(), BooleanSerializer), featureJson.readText())
+            json.parse(MapSerializer(String.serializer(), Boolean.serializer()), featureJson.readText())
         } else {
             mapOf<String, Boolean>()
         }
@@ -93,7 +90,7 @@ object MMCFatPack : AbstractPack() {
         logger.debug("result: optionals: $optionals")
         if (!optionals.isEmpty()) {
             featureJson.createNewFile()
-            featureJson.writeText(json.stringify((StringSerializer to BooleanSerializer).map, optionals))
+            featureJson.writeText(json.stringify(MapSerializer(String.serializer(), Boolean.serializer()), optionals))
         }
         if (reinstall) {
             minecraftDir.deleteRecursively()

@@ -83,7 +83,7 @@ object Pack : KLogging() {
 
     private class Arguments(parser: ArgParser) {
         val methode by parser.positional(
-            "METHODE",
+            "METHOD",
             help = "format to package into"
         ) { this.toLowerCase() }
             .default("")

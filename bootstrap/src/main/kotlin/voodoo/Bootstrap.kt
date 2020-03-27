@@ -13,13 +13,13 @@ import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import kotlinx.coroutines.runBlocking
-import kotlinx.io.StringReader
 import mu.KLogging
 import org.xml.sax.InputSource
 import voodoo.bootstrap.BootstrapConstants
 import voodoo.util.Directories
 import voodoo.util.maven.MavenUtil
 import java.io.File
+import java.io.StringReader
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory

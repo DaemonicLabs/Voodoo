@@ -2,16 +2,7 @@ package voodoo
 
 import com.eyeem.watchadoin.Stopwatch
 import java.io.File
-import kotlin.script.experimental.api.EvaluationResult
-import kotlin.script.experimental.api.ResultValue
-import kotlin.script.experimental.api.ResultWithDiagnostics
-import kotlin.script.experimental.api.ScriptCompilationConfiguration
-import kotlin.script.experimental.api.ScriptDiagnostic
-import kotlin.script.experimental.api.ScriptEvaluationConfiguration
-import kotlin.script.experimental.api.SourceCode
-import kotlin.script.experimental.api.constructorArgs
-import kotlin.script.experimental.api.dependencies
-import kotlin.script.experimental.api.resultOrNull
+import kotlin.script.experimental.api.*
 import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvm.BasicJvmScriptEvaluator
 import kotlin.script.experimental.jvm.JvmDependency
@@ -55,23 +46,23 @@ inline fun <reified T : Any> BasicJvmScriptingHost.evalScript(
         }
     }
 ): T = stopwatch {
-    println("compilationConfig entries")
-    compilationConfig.entries().forEach {
-        println("    $it")
+    println("compilationConfig entries $scriptFile ${T::class.simpleName}")
+    compilationConfig.entries().forEach { (key, value) ->
+        println("    ${key.name}: $value")
     }
 
     val evaluationConfig = ScriptEvaluationConfiguration {
         constructorArgs.append(*args)
     }
 
-    println("evaluationConfig entries")
+    println("evaluationConfig entries $scriptFile ${T::class.simpleName}")
     evaluationConfig.entries().forEach {
         println("    $it")
     }
 
     val scriptSource = scriptFile.toScriptSource()
 
-    println("compiling script, please be patient")
+    println("compiling script $scriptFile, please be patient")
     val result = eval(scriptSource, compilationConfig, evaluationConfig)
 
     end()
@@ -95,7 +86,7 @@ inline fun <reified T> ResultWithDiagnostics<EvaluationResult>.get(scriptFile: F
         report.exception?.printStackTrace()
     }
     println(this)
-    val evalResult = resultOrNull() ?: run {
+    val evalResult = valueOr {
         Voodoo.logger.error("evaluation failed")
         exitProcess(1)
     }
@@ -112,16 +103,20 @@ inline fun <reified T> ResultWithDiagnostics<EvaluationResult>.get(scriptFile: F
 
             println("resultValue.value::class = '${resultValue.value!!::class}'")
 
-            val result = resultValue.value as T
-            println(result)
-            result
-        }
-        is ResultValue.UnitValue -> {
-            Voodoo.logger.error("evaluation failed with UnitValue")
-            exitProcess(-1)
+//            val result = resultValue.value as T
+//            println(result)
+            resultValue.scriptInstance as T
         }
         is ResultValue.Unit -> {
-            Voodoo.logger.error("evaluation failed with Unit")
+            Voodoo.logger.error("evaluation returned Unit")
+            resultValue.scriptInstance as T
+        }
+        is ResultValue.Error -> {
+            Voodoo.logger.error("evaluation failed with $resultValue")
+            exitProcess(-1)
+        }
+        ResultValue.NotEvaluated -> {
+            Voodoo.logger.error("not evaluated")
             exitProcess(-1)
         }
     }

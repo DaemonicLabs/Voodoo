@@ -72,8 +72,9 @@ data class NestedEntry(
         entries.forEach {
             if (it.id in ids) {
                 entries -= it
-            } else
+            } else {
                 ids += it.id
+            }
         }
         return this.entries.asSequence().filter { it.enabled }.map { entry ->
             Entry(
@@ -100,7 +101,8 @@ data class NestedEntry(
                 curseFileID = entry.curseFileID,
                 // DIRECT
                 url = entry.url,
-                useUrlTxt = entry.useUrlTxt, // JENKINS
+                useUrlTxt = entry.useUrlTxt,
+                // JENKINS
                 jenkinsUrl = entry.jenkinsUrl,
                 job = entry.job,
                 buildNumber = entry.buildNumber,

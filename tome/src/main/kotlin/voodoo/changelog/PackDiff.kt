@@ -1,7 +1,7 @@
 package voodoo.changelog
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.internal.LinkedHashMapSerializer
+import kotlinx.serialization.internal.MapLikeSerializer
 import kotlinx.serialization.serializer
 import mu.KLogging
 import voodoo.data.lock.LockPack
@@ -12,6 +12,8 @@ import voodoo.provider.Providers
 import voodoo.util.json
 import voodoo.util.unixPath
 import java.io.File
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 
 val LockPack.forgeVersion: String
     get() = runBlocking {
@@ -83,10 +85,8 @@ data class PackDiff(
             fullChangelogFile.copyTo(docDir.resolve(Filename.completeChangelog), overwrite = true)
         }
 
-        private val packMetaSerializer: LinkedHashMapSerializer<String, MetaInfo> =
-            LinkedHashMapSerializer(String.serializer(), MetaInfo.serializer())
-        private val entryMetaSerializer: LinkedHashMapSerializer<String, Map<String, MetaInfo>> =
-            LinkedHashMapSerializer(String.serializer(), packMetaSerializer)
+        private val packMetaSerializer = MapSerializer(String.serializer(), MetaInfo.serializer())
+        private val entryMetaSerializer = MapSerializer(String.serializer(), packMetaSerializer)
 
         fun writePackMetaInformation(newMeta: File, pack: LockPack): Map<String, MetaInfo> {
             val reportMap = pack.report().associateTo(linkedMapOf()) { it.first to MetaInfo(it.second, it.third) }

@@ -21,19 +21,20 @@ import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import kotlinx.io.IOException
 import kotlinx.io.InputStream
 import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.InternalSerializationApi
+import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.list
-import kotlinx.serialization.serializer
 import mu.KLogging
 import voodoo.util.Downloader
 import voodoo.util.copyInputStreamToFile
 import voodoo.util.withPool
 import java.io.Closeable
 import java.io.File
+import java.io.IOException
 import java.util.Properties
 import java.util.jar.JarFile
 import java.util.regex.Pattern
@@ -57,9 +58,9 @@ constructor(
         "com.skcraft.launcher.propertiesFile"
     )
     private val json: Json = if (isPrettyPrint) {
-        Json(JsonConfiguration(prettyPrint = true, strictMode = false, encodeDefaults = false))
+        Json(JsonConfiguration(prettyPrint = true, ignoreUnknownKeys = true, encodeDefaults = false))
     } else {
-        Json(JsonConfiguration(strictMode = false, encodeDefaults = false))
+        Json(JsonConfiguration(ignoreUnknownKeys = true, encodeDefaults = false))
     }
     private val applicator: PropertiesApplicator =
         PropertiesApplicator(manifest)
@@ -162,6 +163,7 @@ constructor(
         }
     }
 
+    @OptIn(InternalSerializationApi::class)
     @Throws(IOException::class, InterruptedException::class)
     fun downloadLibraries(librariesDir: File?) {
         logSection("Downloading libraries...")

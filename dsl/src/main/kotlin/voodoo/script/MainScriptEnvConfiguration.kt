@@ -1,5 +1,6 @@
 package voodoo.script
 
+import mu.KotlinLogging
 import voodoo.GenerateForge
 import voodoo.GenerateMods
 import voodoo.GenerateTexturePacks
@@ -22,10 +23,11 @@ import kotlin.script.experimental.api.foundAnnotations
 import kotlin.script.experimental.api.ide
 import kotlin.script.experimental.api.importScripts
 import kotlin.script.experimental.api.refineConfiguration
-import kotlin.script.experimental.host.FileScriptSource
+import kotlin.script.experimental.host.FileBasedScriptSource
 import kotlin.script.experimental.host.toScriptSource
 
 object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
+    val logger = KotlinLogging.logger {}
 
     defaultImports(
         CurseProvider::class,
@@ -68,16 +70,43 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
     compilerOptions.append("-jvm-target 1.8")
 
     refineConfiguration {
+        ide {
+            acceptedLocations(ScriptAcceptedLocation.Everywhere)
+        }
+
 //        onAnnotations<Include>(Include.Companion::configureIncludes)
 
-//        beforeParsing { context ->
+//        importScripts.append()}
+
+        beforeParsing { context ->
+            val reports: MutableList<ScriptDiagnostic> = mutableListOf()
+
+            require(context.script is FileBasedScriptSource) { "${context.script::class} != FileBasedScriptSource" }
+            val scriptFile = (context.script as FileBasedScriptSource).file
+            // TODO? make sure rootFolder points at the correct folder
+            SharedFolders.RootDir.default = scriptFile.parentFile.parentFile
+            val rootDir = SharedFolders.RootDir.get()
+
+            val generatedSharedSrc = SharedFolders.GeneratedSrcShared.get()
+
+            val globalGeneratedFiles = generatedSharedSrc.listFiles { file -> file.extension == "kt" }!!.toList()
+
 //            val reports: MutableList<ScriptDiagnostic> = mutableListOf()
 //            val annotations = context.collectedData?.get(ScriptCollectedData.foundAnnotations).also {
 //                reports += ScriptDiagnostic("found annotations: '$it'", severity = ScriptDiagnostic.Severity.INFO)
 //            }
 //            println("bp annotations: $annotations")
-//            context.compilationConfiguration.asSuccess(reports)
-//        }
+
+            val compilationConfiguration = ScriptCompilationConfiguration(context.compilationConfiguration) {
+                importScripts.append(globalGeneratedFiles.map { it.toScriptSource() })
+                reports += ScriptDiagnostic(
+                    "adding global generated files: ${globalGeneratedFiles.map { it.relativeTo(rootDir) }}",
+                    ScriptDiagnostic.Severity.INFO
+                )
+            }
+
+            compilationConfiguration.asSuccess(reports)
+        }
 
         onAnnotations(listOf(GenerateMods::class, GenerateTexturePacks::class, GenerateForge::class, Include::class)) { context ->
             val reports: MutableList<ScriptDiagnostic> = mutableListOf()
@@ -102,8 +131,8 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
                 }
 //            org.jetbrains.kotlin.scripting.resolve.VirtualFileScriptSource
 //            kotlin.script.experimental.host.FileBasedScriptSource
-            require(context.script is FileScriptSource) { "${context.script::class} != FileScriptSource" }
-            val scriptFile = (context.script as FileScriptSource).file
+            require(context.script is FileBasedScriptSource) { "${context.script::class} != FileBasedScriptSource" }
+            val scriptFile = (context.script as FileBasedScriptSource).file
             // TODO? make sure rootFolder points at the correct folder
             SharedFolders.RootDir.default = scriptFile.parentFile.parentFile
             val rootDir = SharedFolders.RootDir.get()
@@ -114,13 +143,9 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
             reports += ScriptDiagnostic("generatedFilesDir: $generatedFilesDir", ScriptDiagnostic.Severity.DEBUG)
 
             // collect generator instructions
-            val modGenerators = annotations.filter { it is GenerateMods }.map { annotation ->
-                annotation as GenerateMods
-            }.groupBy { it.name }
+            val modGenerators = annotations.filterIsInstance<GenerateMods>().groupBy { it.name }
 
-            val texturePackGenerators = annotations.filter { it is GenerateTexturePacks }.map { annotation ->
-                annotation as GenerateTexturePacks
-            }.groupBy { it.name }
+            val texturePackGenerators = annotations.filterIsInstance<GenerateTexturePacks>().groupBy { it.name }
 
             val curseGenerators = modGenerators.map { (file, annotations) ->
                 CurseGenerator(
@@ -137,9 +162,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
             }
             reports += ScriptDiagnostic("curseGenerators: $curseGenerators", ScriptDiagnostic.Severity.DEBUG)
 
-            val forgeGenerators = annotations.filter { it is GenerateForge }.map { annotation ->
-                annotation as GenerateForge
-            }.groupBy { it.name }
+            val forgeGenerators = annotations.filterIsInstance<GenerateForge>().groupBy { it.name }
                 .map { (file, annotations) ->
                     ForgeGenerator(
                         name = file,
@@ -148,6 +171,8 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
                 }
 
             reports += ScriptDiagnostic("forgeGenerators: $forgeGenerators", ScriptDiagnostic.Severity.DEBUG)
+
+            // TODO: get generator from plugin
 
             val generatedFiles = Poet.generateAll(
                 curseGenerators = curseGenerators,
@@ -158,7 +183,6 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
             val includeCompilationConfiguration = Include.configureIncludes(reports, context)
 
             val compilationConfiguration = ScriptCompilationConfiguration(includeCompilationConfiguration) {
-                ide.acceptedLocations.append(ScriptAcceptedLocation.Project)
                 importScripts.append(generatedFiles.map { it.toScriptSource() })
                 reports += ScriptDiagnostic(
                     "generated: ${generatedFiles.map { it.relativeTo(rootDir) }}",
@@ -170,6 +194,11 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
 //                println("beforeParsing    $it")
 //            }
 
+//            exitProcess(-4)
+            reports.forEach {
+                System.err.println("${it.severity}: ${it.message}")
+                logger.info { "${it.severity}: ${it.message}" }
+            }
             compilationConfiguration.asSuccess(reports)
         }
 

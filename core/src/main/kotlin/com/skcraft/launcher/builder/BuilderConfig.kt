@@ -8,7 +8,6 @@ package com.skcraft.launcher.builder
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import com.skcraft.launcher.model.modpack.Manifest
-import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 

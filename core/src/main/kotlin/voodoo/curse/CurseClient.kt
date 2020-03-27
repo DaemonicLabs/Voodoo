@@ -8,20 +8,19 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
+import io.ktor.client.request.post
+import io.ktor.content.TextContent
+import io.ktor.http.ContentType
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.KSerializer
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.list
-import kotlinx.serialization.serializer
 import mu.KLogging
 import voodoo.core.CoreConstants.VERSION
 import voodoo.data.curse.Addon
@@ -29,7 +28,8 @@ import voodoo.data.curse.AddonFile
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
-import java.util.HashMap
+import voodoo.util.client
+import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -38,18 +38,17 @@ import kotlin.coroutines.CoroutineContext
  */
 object CurseClient : KLogging(), CoroutineScope {
     override val coroutineContext: CoroutineContext = Job()
-    private val json = Json(JsonConfiguration(strictMode = false)).apply {
+    private val json = Json(JsonConfiguration(ignoreUnknownKeys = true)).apply {
         //        install(
 //            SimpleModule(Date::class, DateSerializer)
 //        )
     }
-    private const val ADDON_API = "https://addons-ecs.forgesvc.net/api/v2"
-
-    @Deprecated("do not want to send the useragent to curse")
     const val useragent = "voodoo/$VERSION (https://github.com/DaemonicLabs/Voodoo)"
 
-    val deferredSlugIdMap: Deferred<Map<String, ProjectID>> =
-        async(Dispatchers.IO, CoroutineStart.LAZY) { initSlugIdMap() }
+    private const val ADDON_API = "https://addons-ecs.forgesvc.net/api/v2"
+
+//    val deferredSlugIdMap: Deferred<Map<String, ProjectID>> =
+//        async(Dispatchers.IO, CoroutineStart.LAZY) { initSlugIdMap() }
 
     @Serializable
     data class GraphQLRequest(
@@ -98,84 +97,90 @@ object CurseClient : KLogging(), CoroutineScope {
             operationName = "GetSlugIDPairs"
         )
         logger.debug("requestBody: $requestBody")
-        val requestSerializer: KSerializer<GraphQLRequest> = GraphQLRequest.serializer()
-        val resultSerializer: KSerializer<GraphQlResult> = GraphQlResult.serializer()
-        val (request, response, result) = url.httpPost()
-            .jsonBody(body = json.stringify(requestSerializer, requestBody))
-            .apply { headers.clear() }
-            .header("User-Agent" to useragent, "Content-Type" to "application/json")
-            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = resultSerializer))
-
-        when (result) {
-            is Result.Success -> {
-                return result.value.data.addons!!
-            }
-            is Result.Failure -> {
-                logger.error("GetSlugIDPairs")
-                logger.error("url: $url")
-                logger.error("cUrl: ${request.cUrlString()}")
-                logger.error("request: $request")
-                logger.error("response: $response")
-                logger.error(result.error.exception) { "could not request slug-id pairs" }
-                logger.error { request }
-                throw result.error.exception
-            }
+        val response = client.post<GraphQlResult>(urlString = url) {
+//            val j = io.ktor.client.features.json.defaultSerializer()
+//            body = j.write(requestBody)
+            body = TextContent(json.stringify(GraphQLRequest.serializer(), requestBody), ContentType.Application.Json)
         }
+        return response.data.addons!!
+//        val requestSerializer: KSerializer<GraphQLRequest> = GraphQLRequest.serializer()
+//        val resultSerializer: KSerializer<GraphQlResult> = GraphQlResult.serializer()
+//        val (request, response, result) = url.httpPost()
+//            .jsonBody(body = json.stringify(requestSerializer, requestBody))
+//            .apply { headers.clear() }
+//            .header("Content-Type" to "application/json")
+//            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = resultSerializer))
+//
+//        when (result) {
+//            is Result.Success -> {
+//                return result.value.data.addons!!
+//            }
+//            is Result.Failure -> {
+//                logger.error("GetSlugIDPairs")
+//                logger.error("url: $url")
+//                logger.error("cUrl: ${request.cUrlString()}")
+//                logger.error("request: $request")
+//                logger.error("response: $response")
+//                logger.error(result.error.exception) { "could not request slug-id pairs" }
+//                logger.error { request }
+//                throw result.error.exception
+//            }
+//        }
     }
 
-    suspend fun graphQlSearch(
-        gameVersions: List<String>? = null,
-        section: String? = null,
-        ids: List<Int>? = null
-    ): List<SlugIdPair> {
-        val filters = mutableListOf("gameId: 432")
-        gameVersions?.takeIf { it.isNotEmpty() }?.let {
-            filters += it.joinToString("\", \"", "gameVersionList: [\"", "\"]")
-        }
-        section?.let {
-            filters += "section: \"$it\""
-        }
-        ids?.takeIf { it.isNotEmpty() }?.let {
-            filters += it.joinToString(", ", "idList: [", "]")
-        }
-        val url = "https://curse.nikky.moe/graphql"
-        logger.info("post $url $filters")
-        println("post $url $filters")
-        val requestBody = GraphQLRequest(
-            query = """{
-                    |  addonSearch(${filters.joinToString(", ")}) {
-                    |    id
-                    |    slug
-                    |  }
-                    |}""".trimMargin().replace("\n", ""),
-            operationName = "GetSlugIDPairs"
-        )
-        val requestSerializer: KSerializer<GraphQLRequest> = GraphQLRequest.serializer()
-        val resultSerializer: KSerializer<GraphQlResult> = GraphQlResult.serializer()
-        val (request, response, result) = url.httpPost()
-            .jsonBody(body = Json.stringify(requestSerializer, requestBody))
-            .apply { headers.clear() }
-            .header("User-Agent" to useragent, "Content-Type" to "application/json")
-            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = resultSerializer))
-
-        println("curl: ${request.cUrlString()}")
-
-        when (result) {
-            is Result.Success -> {
-                return result.value.data.addonSearch!!
-            }
-            is Result.Failure -> {
-                logger.error("GetSlugIDPairs")
-                logger.error("url: $url")
-                logger.error("cUrl: ${request.cUrlString()}")
-                logger.error("request: $request")
-                logger.error("response: $response")
-                logger.error(result.error.exception) { "could not request slug-id pairs" }
-                logger.error { request }
-                throw result.error.exception
-            }
-        }
-    }
+//    suspend fun graphQlSearch(
+//        gameVersions: List<String>? = null,
+//        section: String? = null,
+//        ids: List<Int>? = null
+//    ): List<SlugIdPair> {
+//        val filters = mutableListOf("gameId: 432")
+//        gameVersions?.takeIf { it.isNotEmpty() }?.let {
+//            filters += it.joinToString("\", \"", "gameVersionList: [\"", "\"]")
+//        }
+//        section?.let {
+//            filters += "section: \"$it\""
+//        }
+//        ids?.takeIf { it.isNotEmpty() }?.let {
+//            filters += it.joinToString(", ", "idList: [", "]")
+//        }
+//        val url = "https://curse.nikky.moe/graphql"
+//        logger.info("post $url $filters")
+//        println("post $url $filters")
+//        val requestBody = GraphQLRequest(
+//            query = """{
+//                    |  addonSearch(${filters.joinToString(", ")}) {
+//                    |    id
+//                    |    slug
+//                    |  }
+//                    |}""".trimMargin().replace("\n", ""),
+//            operationName = "GetSlugIDPairs"
+//        )
+//        val requestSerializer: KSerializer<GraphQLRequest> = GraphQLRequest.serializer()
+//        val resultSerializer: KSerializer<GraphQlResult> = GraphQlResult.serializer()
+//        val (request, response, result) = url.httpPost()
+//            .jsonBody(body = Json.stringify(requestSerializer, requestBody))
+//            .apply { headers.clear() }
+//            .header("Content-Type" to "application/json")
+//            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = resultSerializer))
+//
+//        println("curl: ${request.cUrlString()}")
+//
+//        when (result) {
+//            is Result.Success -> {
+//                return result.value.data.addonSearch!!
+//            }
+//            is Result.Failure -> {
+//                logger.error("GetSlugIDPairs")
+//                logger.error("url: $url")
+//                logger.error("cUrl: ${request.cUrlString()}")
+//                logger.error("request: $request")
+//                logger.error("response: $response")
+//                logger.error(result.error.exception) { "could not request slug-id pairs" }
+//                logger.error { request }
+//                throw result.error.exception
+//            }
+//        }
+//    }
 
 //    suspend inline fun <reified R: Any?> scanAllProjects(block: (Addon) -> R): List<R> {
 //        val processedIDs = mutableSetOf<Int>()
@@ -273,9 +278,9 @@ object CurseClient : KLogging(), CoroutineScope {
             is Result.Success -> result.value
             is Result.Failure -> {
                 logger.error("getAddonFileCall failed")
-                if(retry > 0) {
+                if (retry > 0) {
                     delay(1000)
-                    return getAddonFileCall(addonId, fileId, retry-1)
+                    return getAddonFileCall(addonId, fileId, retry - 1)
                 }
                 logger.error("url: $url")
                 logger.error("cUrl: ${request.cUrlString()}")
@@ -304,7 +309,7 @@ object CurseClient : KLogging(), CoroutineScope {
         return when (result) {
             is Result.Success -> result.value
             is Result.Failure -> {
-                if(retry > 0) {
+                if (retry > 0) {
                     delay(1000)
                     return getAllFilesForAddonCall(addonId, retry - 1)
                 }
@@ -343,7 +348,7 @@ object CurseClient : KLogging(), CoroutineScope {
             is Result.Success -> result.value
             is Result.Failure -> {
                 logger.error("getAddonCall failed")
-                if(retry > 0) {
+                if (retry > 0) {
                     delay(1000)
                     return getAddonCall(addonId, fail, retry - 1)
                 }
@@ -371,7 +376,7 @@ object CurseClient : KLogging(), CoroutineScope {
             is Result.Success -> result.value
             is Result.Failure -> {
                 logger.error("getAddosCall failed")
-                if(retry > 0) {
+                if (retry > 0) {
                     delay(1000)
                     return getAddons(addonIds, fail, retry - 1)
                 }

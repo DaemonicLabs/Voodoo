@@ -4,8 +4,8 @@ import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlinx.serialization.internal.BooleanSerializer
-import kotlinx.serialization.internal.HashMapSerializer
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.serializer
@@ -111,7 +111,7 @@ object MultiMCTester : AbstractTester() {
         }
 
         val json = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = false))
-        val featureSerializer = HashMapSerializer(String.serializer(), BooleanSerializer)
+        val featureSerializer = MapSerializer(String.serializer(), Boolean.serializer())
 
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")

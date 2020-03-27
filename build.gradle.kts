@@ -15,7 +15,7 @@ plugins {
     id("com.github.johnrengelman.shadow") version "4.0.0" apply false
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
     id("org.jmailen.kotlinter") version "1.21.0"
-    id("io.gitlab.arturbosch.detekt") version "1.0.0-RC14"
+    id("io.gitlab.arturbosch.detekt") version "1.7.0"
     id(Serialization.plugin) version Kotlin.version
 }
 
@@ -125,8 +125,7 @@ subprojects {
 //        toolVersion = "1.0.0-RC14"
         input = files("src/main/kotlin")
         parallel = true
-        filters = ".*/resources/.*,.*/build/.*"
-//        baseline = file("my-detekt-baseline.xml") // Just if you want to create a baseline file.
+//        filters = ".*/resources/.*,.*/build/.*"
     }
 
     tasks.withType<KotlinCompile> {

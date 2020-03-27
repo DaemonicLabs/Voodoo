@@ -1,7 +1,6 @@
 package voodoo.data
 
 import com.skcraft.launcher.model.SKServer
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 
 @Serializable

@@ -10,7 +10,7 @@ import kotlin.script.experimental.api.ScriptCompilationConfiguration
 import kotlin.script.experimental.api.SourceCode
 import kotlin.script.experimental.host.FileScriptSource
 import kotlin.script.experimental.jvm.impl.KJvmCompiledScript
-import kotlin.script.experimental.jvmhost.CompiledJvmScriptsCache
+import kotlin.script.experimental.jvm.CompiledJvmScriptsCache
 
 class FileBasedScriptCache(val baseDir: File) : CompiledJvmScriptsCache {
     internal fun uniqueHash(script: SourceCode, scriptCompilationConfiguration: ScriptCompilationConfiguration): String {

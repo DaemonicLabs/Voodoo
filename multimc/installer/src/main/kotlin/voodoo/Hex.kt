@@ -9,17 +9,15 @@ import com.skcraft.launcher.model.modpack.FileInstall
 import com.skcraft.launcher.model.modpack.Manifest
 import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.actor
 import kotlinx.coroutines.channels.toList
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.DeserializationStrategy
-import kotlinx.serialization.internal.BooleanSerializer
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.map
-import kotlinx.serialization.serializer
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
 import voodoo.curse.CurseClient
@@ -56,7 +54,7 @@ object Hex : KLogging() {
     private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
     private fun File.md5Hex(): String? = DigestUtils.md5Hex(this.inputStream())
 
-    private val json = Json(JsonConfiguration(prettyPrint = true, strictMode = false, encodeDefaults = true))
+    private val json = Json(JsonConfiguration(prettyPrint = true, ignoreUnknownKeys = true, encodeDefaults = true))
 
     private suspend fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
         logger.info("installing into $instanceId")
@@ -132,7 +130,7 @@ object Hex : KLogging() {
         }
         logger.info("forge version is $forgeVersion")
 
-        val mapSerializer = (String.serializer() to BooleanSerializer).map
+        val mapSerializer = MapSerializer(String.serializer(), Boolean.serializer())
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val defaults = if (featureJson.exists()) {

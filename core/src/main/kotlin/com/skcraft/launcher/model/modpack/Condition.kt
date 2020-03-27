@@ -8,12 +8,11 @@ package com.skcraft.launcher.model.modpack
 
 import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
-import kotlinx.serialization.list
-import kotlinx.serialization.serializer
+import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.serializer
 import java.util.ArrayList
 
 @Serializable

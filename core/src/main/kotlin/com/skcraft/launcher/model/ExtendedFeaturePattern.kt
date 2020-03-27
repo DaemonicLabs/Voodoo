@@ -2,9 +2,7 @@ package com.skcraft.launcher.model
 
 import com.skcraft.launcher.builder.FnPatternList
 import com.skcraft.launcher.model.modpack.Feature
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.set
 
 /**
  * Created by nikky on 29/03/18.

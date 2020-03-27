@@ -20,6 +20,11 @@ pluginManagement {
         }
     }
 }
+
+plugins {
+    id("com.gradle.enterprise").version("3.1.1")
+}
+
 rootProject.name = "voodoo-parent"
 
 include("voodoo")
@@ -47,5 +52,13 @@ fun prefixProject(project: ProjectDescriptor, prefix: String) {
 rootProject.children.forEach { child ->
     child.children.forEach { grandchild ->
         prefixProject(grandchild, child.name)
+    }
+}
+
+gradleEnterprise {
+    buildScan {
+        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+        termsOfServiceAgree = "yes"
+        publishAlwaysIf(true)
     }
 }

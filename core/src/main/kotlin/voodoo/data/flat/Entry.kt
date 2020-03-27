@@ -70,12 +70,10 @@ data class Entry(
     companion object : KLogging() {
         private val json = Json(
             JsonConfiguration(
-            prettyPrint = true,
-            updateMode = UpdateMode.BANNED,
-            strictMode = false,
-            unquoted = true,
-            indent = "  ",
-            encodeDefaults = false
+                prettyPrint = true,
+                ignoreUnknownKeys = true,
+                indent = "  ",
+                encodeDefaults = false
 //            context = SerialContext().apply {
 //                registerSerializer(Side::class, Side.Companion)
 //            }
@@ -91,6 +89,7 @@ data class Entry(
         get() = id
             .replace('/', '-')
             .replace("[^\\w-]+".toRegex(), "")
+
     @Transient
     val serialFilename: String
         get() = "$cleanId.entry.hjson"

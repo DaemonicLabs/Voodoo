@@ -1,7 +1,6 @@
 package voodoo.mmc
 
 import com.skcraft.launcher.model.modpack.Recommendation
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
@@ -52,7 +51,7 @@ object MMCUtil : KLogging() {
     val mmcConfig: MMCConfiguration
 
     init {
-        val jsonWithDefaults = Json(JsonConfiguration(prettyPrint = true, unquoted = true, encodeDefaults = true))
+        val jsonWithDefaults = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = true))
         val mmcConfigurationFile = configHome.resolve("multimc.hjson")
         logger.info("loading multimc config $mmcConfigurationFile")
         mmcConfig = when {

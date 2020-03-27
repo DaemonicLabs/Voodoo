@@ -1,6 +1,5 @@
 package voodoo.pack.sk
 
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 
 @Serializable

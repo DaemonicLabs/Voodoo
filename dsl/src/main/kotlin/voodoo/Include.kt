@@ -9,7 +9,7 @@ import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.asSuccess
 import kotlin.script.experimental.api.foundAnnotations
 import kotlin.script.experimental.api.importScripts
-import kotlin.script.experimental.host.FileScriptSource
+import kotlin.script.experimental.host.FileBasedScriptSource
 import kotlin.script.experimental.host.toScriptSource
 
 @Repeatable
@@ -34,8 +34,8 @@ annotation class Include(val filename: String) {
 
             // TODO? make sure rootFolder points at the correct folder
 
-            require(context.script is FileScriptSource) { "${context.script::class} != FileScriptSource" }
-            (context.script as? FileScriptSource)?.let { script ->
+            require(context.script is FileBasedScriptSource) { "${context.script::class} != FileBasedScriptSource" }
+            (context.script as? FileBasedScriptSource)?.let { script ->
                 SharedFolders.RootDir.default = script.file.parentFile.parentFile
             }
 

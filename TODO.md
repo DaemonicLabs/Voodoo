@@ -1,3 +1,26 @@
+# voodoo 2
+
+## modules
+
+- core  
+  core definitions and DSL  
+  all you need to create a pack from code
+  - DSL
+- code generators  
+  for Forge / Mods / Minecraft versions generating .kt files
+- script host  
+  script definitions  
+  depends on `code generations`
+
+
+
+## workflow
+
+script -> pack instructions -> fixed pack (serializable) -> packaging
+
+
+
+
 # migrate hosting from jenkins to maven
 
 - [ ] maven-publish shadowJars

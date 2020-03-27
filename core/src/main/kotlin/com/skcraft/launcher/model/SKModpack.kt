@@ -2,7 +2,6 @@ package com.skcraft.launcher.model
 
 import com.skcraft.launcher.builder.FeaturePattern
 import com.skcraft.launcher.model.launcher.LaunchModifier
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import voodoo.data.UserFiles
 

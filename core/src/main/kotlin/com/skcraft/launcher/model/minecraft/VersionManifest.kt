@@ -8,12 +8,11 @@ package com.skcraft.launcher.model.minecraft
 
 import kotlinx.serialization.CompositeEncoder
 import kotlinx.serialization.Encoder
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.SerializationStrategy
 import kotlinx.serialization.Serializer
 import kotlinx.serialization.Transient
-import kotlinx.serialization.internal.HashSetSerializer
+import kotlinx.serialization.builtins.set
 import kotlinx.serialization.set
 import voodoo.util.serializer.TimestampSerializer
 import java.time.LocalDateTime
@@ -29,7 +28,7 @@ data class VersionManifest(
     var minecraftArguments: String? = null,
     var mainClass: String? = null,
     var minimumLauncherVersion: Int = 0,
-    @Serializable(with = HashSetSerializer::class) var libraries: HashSet<Library> = hashSetOf()
+    var libraries: HashSet<Library> = hashSetOf()
 ) {
 
     @Transient

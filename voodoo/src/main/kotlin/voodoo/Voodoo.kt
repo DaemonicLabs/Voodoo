@@ -24,6 +24,7 @@ import voodoo.changelog.ChangelogBuilder
 import voodoo.data.lock.LockPack
 import voodoo.script.ChangeScript
 import voodoo.script.MainScriptEnv
+import voodoo.script.MainScriptEnvConfiguration
 import voodoo.script.TomeScript
 import voodoo.tome.TomeEnv
 import voodoo.util.Directories

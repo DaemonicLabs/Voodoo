@@ -87,8 +87,10 @@ fun Project.setupDependencies(target: Project = this) {
         rootProject.project(":voodoo") -> {
             dependencies {
                 api(kotlin("stdlib-jdk8", Kotlin.version))
-                implementation(kotlin("scripting-jvm-host-embeddable", Kotlin.version))
                 implementation(kotlin("script-util", Kotlin.version))
+                implementation(kotlin("scripting-jvm-host-embeddable", Kotlin.version))
+                implementation(kotlin("scripting-compiler-embeddable", Kotlin.version))
+                implementation(kotlin("scripting-compiler-impl-embeddable", Kotlin.version))
 
                 testImplementation(kotlin("test", Kotlin.version))
 
@@ -114,15 +116,15 @@ fun Project.setupDependencies(target: Project = this) {
         }
         rootProject.project(":bootstrap") -> {
             dependencies {
-                compile(project(":util"))
+                api(project(":util"))
             }
         }
         rootProject.project(":core") -> {
             dependencies {
-                compile(project(":util"))
-                compile(Apache.commonsCompress)
+                api(project(":util"))
+                api(Apache.commonsCompress)
 
-                compile(Argparser.dependency)
+                api(Argparser.dependency)
             }
         }
         rootProject.project(":dsl") -> {
@@ -169,20 +171,20 @@ fun Project.setupDependencies(target: Project = this) {
         }
         rootProject.project(":server-installer") -> {
             dependencies {
-                compile(project(":core"))
+                api(project(":core"))
             }
         }
         rootProject.project(":skcraft") -> {
             dependencies {
-                compile(project(":core"))
-                compile(group = "commons-lang", name = "commons-lang", version = "2.6")
-                compile(group = "commons-io", name = "commons-io", version = "2.6")
-                compile(group = "org.tukaani", name = "xz", version = "1.0")
+                api(project(":core"))
+                api(group = "commons-lang", name = "commons-lang", version = "2.6")
+                api(group = "commons-io", name = "commons-io", version = "2.6")
+                api(group = "org.tukaani", name = "xz", version = "1.0")
             }
         }
         rootProject.project(":tome") -> {
             dependencies {
-                compile(project(":core"))
+                api(project(":core"))
             }
         }
         rootProject.project(":util") -> {
@@ -196,6 +198,10 @@ fun Project.setupDependencies(target: Project = this) {
 
                 api(Serialization.dependency)
                 api(Coroutines.dependency)
+
+                api(Ktor.dependency)
+                api(Ktor.dependencyJson)
+                api(Ktor.dependencySerialization)
 
                 api(Fuel.dependency)
                 api(Fuel.dependencyCoroutines)

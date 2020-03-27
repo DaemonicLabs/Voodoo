@@ -6,7 +6,6 @@
  */
 package com.skcraft.launcher.builder
 
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import java.util.EnumSet

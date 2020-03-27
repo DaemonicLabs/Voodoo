@@ -2,7 +2,6 @@ package voodoo.data.lock
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import mu.KLogging

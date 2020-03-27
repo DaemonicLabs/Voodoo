@@ -3,9 +3,9 @@ package voodoo.mmc.data
 import kotlinx.serialization.CompositeEncoder
 import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Optional
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
+import kotlinx.serialization.builtins.list
 import kotlinx.serialization.list
 
 @Serializable(with = PackComponent.Companion::class)

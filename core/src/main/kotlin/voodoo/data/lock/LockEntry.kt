@@ -1,13 +1,12 @@
 package voodoo.data.lock
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.Optional
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.json.JsonParsingException
+import kotlinx.serialization.json.JsonDecodingException
 import mu.KLogging
 import voodoo.data.DependencyType
 import voodoo.data.OptionalData
@@ -135,11 +134,11 @@ data class LockEntry(
         fun loadEntry(file: File, srcDir: File): LockEntry {
             logger.debug("parsing; $file")
             return try {
-                val lockEntry: LockEntry = Json(JsonConfiguration(unquoted = true)).parse(LockEntry.serializer(), file.readText())
+                val lockEntry: LockEntry = Json(JsonConfiguration.Default).parse(LockEntry.serializer(), file.readText())
                 lockEntry.folder = file.parentFile.relativeTo(srcDir)
                 lockEntry.id = file.name.substringBefore(".lock.hjson")
                 lockEntry
-            } catch (e: JsonParsingException) {
+            } catch (e: JsonDecodingException) {
                 logger.error("cannot read: ${file.path}")
                 logger.error { file.readText() }
                 e.printStackTrace()
