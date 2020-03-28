@@ -37,7 +37,7 @@ object RoundTripSpek : Spek({
                 icon = rootFolder.resolve("icon.png")
                 authors = listOf("dude", "and", "friends")
                 // TODO: type = {recommended, latest} | buildnumber, make sealed class ?
-                forge = Forge.recommended
+                forge = Forge.mc1_12_2_recommended
                 root(CurseProvider) {
                     releaseTypes = setOf(FileType.Release, FileType.Beta)
 
