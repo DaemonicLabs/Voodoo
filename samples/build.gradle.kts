@@ -14,8 +14,11 @@ voodoo {
     addTask(name = "pack_sk") {
         pack().sklauncher()
     }
-    addTask(name = "pack_mmc") {
-        pack().multimc()
+    addTask(name = "pack_mmc-sk") {
+        pack().multimcSk()
+    }
+    addTask(name = "pack_mmc-sk-fat") {
+        pack().multimcSkFat()
     }
     addTask(name = "pack_mmc-static") {
         pack().multimcStatic()

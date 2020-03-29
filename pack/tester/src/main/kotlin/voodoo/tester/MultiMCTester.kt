@@ -8,7 +8,6 @@ import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.serializer
 import voodoo.data.DependencyType
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
@@ -120,7 +119,7 @@ object MultiMCTester : AbstractTester() {
         } else {
             mapOf<String, Boolean>()
         }
-        val (optionals, reinstall) = MMCUtil.selectFeatures(
+        val (optionals, reinstall) = MMCUtil.updateAndSelectFeatures(
             modpack.optionalEntries.map {
                 MMCSelectable(it)
             },

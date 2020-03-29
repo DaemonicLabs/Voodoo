@@ -57,6 +57,7 @@ object Voodoo : KLogging() {
         val cacheDir = directories.cacheHome
 
         val arguments = fullArgs.drop(1)
+        logger.info { "arguments: ${arguments}"}
         val script = fullArgs.getOrNull(0)?.apply {
             require(isNotBlank()) { "'$this' configuration script name cannot be blank" }
             require(endsWith(".voodoo.kts")) { "'$this' configuration script filename must end with .voodoo.kts" }
@@ -112,6 +113,8 @@ object Voodoo : KLogging() {
             val lockFileName = "$id.lock.pack.json"
             val lockFile = scriptEnv.pack.sourceFolder.resolve(lockFileName)
 
+            logger.info { "fullArgs: ${fullArgs.joinToString()}"}
+            logger.info { "arguments: ${arguments}"}
             val funcs = mapOf<String, suspend Stopwatch.(Array<String>) -> Unit>(
 //                "import_debug" to { _ ->
 //                    Importer.flatten(nestedPack, targetFileName = packFileName)

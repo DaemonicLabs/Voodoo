@@ -108,7 +108,7 @@ inline fun <reified T> ResultWithDiagnostics<EvaluationResult>.get(scriptFile: F
             resultValue.scriptInstance as T
         }
         is ResultValue.Unit -> {
-            Voodoo.logger.error("evaluation returned Unit")
+            Voodoo.logger.info("evaluation returned Unit")
             resultValue.scriptInstance as T
         }
         is ResultValue.Error -> {

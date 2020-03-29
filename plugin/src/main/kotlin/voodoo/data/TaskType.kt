@@ -7,7 +7,7 @@ sealed class TaskType(open val command: String) {
 
     object Diff: TaskType("diff")
 
-    sealed class Pack(val subCommand: String): TaskType("pack $subCommand") {
+    sealed class Pack(subCommand: String): TaskType("pack $subCommand") {
         object SKLauncher: Pack("sk")
         object MultiMCSk: Pack("mmc-sk")
         object MultiMCSkFat: Pack("mmc-sk-fat")
@@ -17,7 +17,7 @@ sealed class TaskType(open val command: String) {
         object Curse: Pack("curse")
     }
 
-    sealed class Test(val subCommand: String): TaskType("test $subCommand")  {
-        object MultiMC : TaskType("mmc")
+    sealed class Test(subCommand: String): TaskType("test $subCommand")  {
+        object MultiMC : Test("mmc")
     }
 }

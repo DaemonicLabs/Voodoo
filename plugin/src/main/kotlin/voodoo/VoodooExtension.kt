@@ -16,12 +16,12 @@ open class VoodooExtension(project: Project) {
     }
 
     var local: Boolean = false
-    var localVoodooProjectLocation: File = project.rootDir.parentFile
+    var localVoodooProjectLocation: File? = null
 
     internal var tasks: List<CustomTask> = listOf()
         private set
 
-    @Deprecated("use tasks +=", ReplaceWith("tasks += CustomTask(name, description, parameters) {}"))
+    @Deprecated("use taskBuilder with lambda", ReplaceWith("tasks += CustomTask(name, description) {}"))
     fun addTask(name: String, description: String = "custom task $name", parameters: List<String>) {
         tasks += CustomTask(name, description, parameters)
     }
@@ -30,7 +30,7 @@ open class VoodooExtension(project: Project) {
 //        tasks += CustomTask(name, description, parameters.map { it.command })
 //    }
 
-    fun addTask(name: String, description: String = "custom task $name", taskBuilder: TaskBuilder.() -> Unit) {
+    fun addTask(name: String, description: String = "custom task $name", taskBuilder: TaskBuilder.() -> Unit = {}) {
         val builder = TaskBuilder()
         builder.taskBuilder()
 

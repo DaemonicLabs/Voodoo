@@ -86,7 +86,7 @@ object MMCSelfupdatingFatPack : AbstractPack() {
         } else {
             mapOf<String, Boolean>()
         }
-        val (optionals, reinstall) = MMCUtil.selectFeatures(
+        val (optionals, reinstall) = MMCUtil.updateAndSelectFeatures(
             modpack.optionalEntries.map {
                 MMCSelectable(it)
             },

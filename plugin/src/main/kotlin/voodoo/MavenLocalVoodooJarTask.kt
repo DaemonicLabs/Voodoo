@@ -19,12 +19,12 @@ open class MavenLocalVoodooJarTask : GradleBuild() {
         val voodooExtension = project.extensions.getByName<VoodooExtension>("voodoo")
 
         group = "voodoo"
-        val gradleBuildVile = voodooExtension.localVoodooProjectLocation.resolve("build.gradle.kts")
+        val gradleBuildVile = voodooExtension.localVoodooProjectLocation?.resolve("build.gradle.kts")
 
-        if(gradleBuildVile.exists()) {
+        if(gradleBuildVile?.exists() == true) {
             buildFile = gradleBuildVile
-            tasks = mutableListOf("voodoo:clean", "voodoo:shadowJar")
-            dir = voodooExtension.localVoodooProjectLocation
+            tasks = mutableListOf("voodoo:clean", "voodoo:publishToMavenLocal")
+            dir = gradleBuildVile.parentFile
             startParameter = startParameter.newInstance().apply {
                 isRefreshDependencies = true
             }

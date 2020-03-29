@@ -22,7 +22,7 @@ import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
 import voodoo.curse.CurseClient
 import voodoo.mmc.MMCSelectable
-import voodoo.mmc.MMCUtil.selectFeatures
+import voodoo.mmc.MMCUtil.updateAndSelectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
@@ -130,15 +130,16 @@ object Hex : KLogging() {
         }
         logger.info("forge version is $forgeVersion")
 
+        val json =  Json(JsonConfiguration.Default.copy(prettyPrint = true))
         val mapSerializer = MapSerializer(String.serializer(), Boolean.serializer())
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val defaults = if (featureJson.exists()) {
-            Json.indented.parse(mapSerializer, featureJson.readText())
+            json.parse(mapSerializer, featureJson.readText())
         } else {
             mapOf()
         }
-        val (features, reinstall) = selectFeatures(
+        val (features, reinstall) = updateAndSelectFeatures(
             modpack.features.map {
                 MMCSelectable(it.name, it.name, it.description, it.selected, it.recommendation)
             },
@@ -147,7 +148,7 @@ object Hex : KLogging() {
                 ?: modpack.name!!, modpack.version!!, forceDisplay = forceDisplay, updating = oldpack != null
         )
         featureJson.writeText(
-            Json.indented.stringify(mapSerializer, features)
+            json.stringify(mapSerializer, features)
         )
         if (reinstall) {
             minecraftDir.deleteRecursively()

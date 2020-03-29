@@ -10,6 +10,7 @@ import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
 import voodoo.util.Platform
 import voodoo.util.json
+import voodoo.util.jsonConfiguration
 import voodoo.util.serializer.FileSerializer
 import java.awt.BorderLayout
 import java.awt.Color
@@ -88,7 +89,7 @@ object MMCUtil : KLogging() {
         logger.info("os.name: ${System.getProperty("os.name")}")
         dir = dir ?: when {
             Platform.isWindows -> {
-                logger.debug("executing'where ${mmcConfig.binary}'")
+                logger.debug("executing 'where ${mmcConfig.binary}'")
                 val location = "where ${mmcConfig.binary}".runCommand()
                 logger.debug("output: $location")
                 val multimcFile = File(location)
@@ -228,7 +229,7 @@ object MMCUtil : KLogging() {
         return minecraftDir
     }
 
-    fun selectFeatures(
+    fun updateAndSelectFeatures(
         selectables: List<MMCSelectable>,
         previousSelection: Map<String, Boolean>,
         name: String,
@@ -236,10 +237,11 @@ object MMCUtil : KLogging() {
         forceDisplay: Boolean,
         updating: Boolean
     ): Pair<Map<String, Boolean>, Boolean> {
-        if (selectables.isEmpty() && !forceDisplay) {
-            logger.info("no selectable features")
-            return Pair(mapOf(), false)
-        }
+        // display the popup every time
+//        if (selectables.isEmpty() && !forceDisplay) {
+//            logger.info("no selectable features")
+//            return Pair(mapOf(), false)
+//        }
 
         UIManager.setLookAndFeel(
             UIManager.getSystemLookAndFeelClassName()
@@ -396,6 +398,25 @@ object MMCUtil : KLogging() {
                     ipady = 4
                     insets = Insets(4, 0, 0, 0)
                 })
+//                if(updating) {
+                val buttonSkipInstall = JButton("Skip Update").apply {
+                    isEnabled = updating
+//                        toolTipText = "enable with checkbox"
+                    addActionListener {
+                        success = true
+                        dispose()
+                        // exitProcess(1)
+                    }
+                }
+                buttonPane.add(buttonSkipInstall, GridBagConstraints().apply {
+                    gridx = 3
+                    weightx = 1.0
+                    anchor = GridBagConstraints.LINE_START
+                    fill = GridBagConstraints.HORIZONTAL
+                    ipady = 4
+                    insets = Insets(4, 0, 0, 0)
+                })
+//                }
                 val buttonForceReinstall = JButton("Force Reinstall").apply {
                     isEnabled = false
                     toolTipText = "enable with checkbox"
@@ -472,6 +493,7 @@ object MMCUtil : KLogging() {
         }
         logger.info("created dialog")
 
+        val json = Json(jsonConfiguration.copy(isLenient = true))
         val mmcStateFile = configHome.resolve("mmc.state.json")
         println(mmcStateFile)
         val mmcState = mmcStateFile.takeIf { it.exists() }
