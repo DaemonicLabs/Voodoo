@@ -9,7 +9,8 @@ sealed class TaskType(open val command: String) {
 
     sealed class Pack(val subCommand: String): TaskType("pack $subCommand") {
         object SKLauncher: Pack("sk")
-        object MultiMC: Pack("mmc")
+        object MultiMCSk: Pack("mmc-sk")
+        object MultiMCSkFat: Pack("mmc-sk-fat")
         object MultiMCFat: Pack("mmc-fat")
         object MultiMCStatic: Pack("mmc-static")
         object Server: Pack("server")

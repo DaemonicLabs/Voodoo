@@ -5,13 +5,7 @@ import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.default
 import mu.KLogging
 import voodoo.data.lock.LockPack
-import voodoo.pack.CursePack
-import voodoo.pack.MCUFastPack
-import voodoo.pack.MMCFatPack
-import voodoo.pack.MMCPack
-import voodoo.pack.MMCStaticPack
-import voodoo.pack.SKPack
-import voodoo.pack.ServerPack
+import voodoo.pack.*
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -23,9 +17,10 @@ import kotlin.system.exitProcess
 object Pack : KLogging() {
     private val packMap = mapOf(
         "sk" to SKPack,
-        "mmc" to MMCPack,
-        "mmc-static" to MMCStaticPack,
+        "mmc-sk" to MMCSelfupdatingPack,
+        "mmc-sk-fat" to MMCSelfupdatingFatPack,
         "mmc-fat" to MMCFatPack,
+        "mmc-static" to MMCStaticPack,
         "mcu-fastpack" to MCUFastPack,
         "server" to ServerPack,
         "curse" to CursePack

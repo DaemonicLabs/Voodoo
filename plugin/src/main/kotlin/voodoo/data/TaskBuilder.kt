@@ -26,8 +26,15 @@ class TaskBuilder() {
         fun sklauncher() {
             tasks += TaskType.Pack.SKLauncher
         }
+        @Deprecated("renamed", ReplaceWith("multimcSk()"))
         fun multimc() {
-            tasks += TaskType.Pack.MultiMC
+            tasks += TaskType.Pack.MultiMCSk
+        }
+        fun multimcSk() {
+            tasks += TaskType.Pack.MultiMCSk
+        }
+        fun multimcSkFat() {
+            tasks += TaskType.Pack.MultiMCSkFat
         }
         fun multimcFat() {
             tasks += TaskType.Pack.MultiMCFat

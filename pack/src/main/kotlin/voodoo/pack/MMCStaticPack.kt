@@ -49,7 +49,7 @@ object MMCStaticPack : AbstractPack() {
                 }
             }
         if (skPackUrl == null) {
-            MMCPack.logger.error("skPackUrl in multimc options is not set")
+            MMCSelfupdatingPack.logger.error("skPackUrl in multimc options is not set")
             exitProcess(3)
         }
         val urlFile = instanceDir.resolve("voodoo.url.txt")
