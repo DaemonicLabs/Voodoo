@@ -46,20 +46,25 @@ object MavenUtil : KLogging() {
         outputFile: File? = null,
         checkMd5: Boolean = true
     ) = stopwatch {
+        val classifierSuffix = classifier?.let { "-$it"} ?: ""
+
         if(version.endsWith("-dev") && group == "moe.nikky.voodoo") {
-            return@stopwatch localMavenFile(
+            val file = localMavenFile(
                 group = group,
                 artifactId = artifactId,
                 version = version,
                 classifier = classifier,
                 extension = extension
             )
+            val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
+            file.copyTo(targetFile, true)
+
+            return@stopwatch targetFile
         }
 
 
         val groupPath = group.replace('.','/')
 
-        val classifierSuffix = classifier?.let { "-$it"} ?: ""
         val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$version$classifierSuffix.$extension"
         val tmpFile = File(outputDir, "$artifactId-$version$classifierSuffix.$extension.tmp")
         val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")

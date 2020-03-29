@@ -117,11 +117,14 @@ object Hex : KLogging() {
             logger.info("no old pack found")
         }
 
+        val fabricPrefix = "net.fabricmc.fabric-loader"
+
         val forgePrefix = "net.minecraftforge:forge:"
         var (_, _, forgeVersion) = modpack.versionManifest?.libraries?.find {
             it.name.startsWith(forgePrefix)
         }?.name.let { it ?: "::" }.split(':')
         if (forgeVersion.isBlank()) {
+            // TODO: also look for fabric version
             logger.error("could not parse forge version in modpack")
             exitProcess(2)
         }
@@ -130,7 +133,7 @@ object Hex : KLogging() {
         }
         logger.info("forge version is $forgeVersion")
 
-        val json =  Json(JsonConfiguration.Default.copy(prettyPrint = true))
+        val json =  Json(JsonConfiguration.Stable.copy(prettyPrint = true))
         val mapSerializer = MapSerializer(String.serializer(), Boolean.serializer())
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
@@ -272,6 +275,36 @@ object Hex : KLogging() {
         val mmcPack = if (mmcPackPath.exists()) {
             json.parse(MultiMCPack.serializer(), mmcPackPath.readText())
         } else MultiMCPack()
+
+        /*
+        fabric:
+        {
+            // can be ignored: "cachedName": "Intermediary Mappings",
+            // can be ignored: "cachedRequires": [
+                {
+                    "equals": "1.15.2",
+                    "uid": "net.minecraft"
+                }
+            ],
+            // can be ignored: "cachedVersion": "1.15.2",
+            // can be ignored?: "cachedVolatile": true,
+            "dependencyOnly": true,
+            "uid": "net.fabricmc.intermediary",
+            "version": "1.15.2"
+        },
+        {
+            // can be ignored: "cachedName": "Fabric Loader",
+            // can be ignored: "cachedRequires": [
+                {
+                    "uid": "net.fabricmc.intermediary"
+                }
+            ],
+            // can be ignored: "cachedVersion": "0.7.8+build.189",
+            "uid": "net.fabricmc.fabric-loader",
+            "version": "0.7.8+build.189"
+        }
+         */
+
         mmcPack.components = listOf(
             PackComponent(
                 uid = "net.minecraft",

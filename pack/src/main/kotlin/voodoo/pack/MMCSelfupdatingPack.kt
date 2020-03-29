@@ -56,7 +56,7 @@ object MMCSelfupdatingPack : AbstractPack() {
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         urlFile.writeText(skPackUrl)
 
-        val multimcInstaller = instanceDir.resolve("bootstrap-multimc-installer.jar")
+        val multimcInstaller = instanceDir.resolve("mmc-installer.jar")
         val installer = MavenUtil.downloadArtifact(
             stopwatch = "downloadArtifact multimc installer bootstrap".watch,
             mavenUrl = PackConstants.MAVEN_URL,
