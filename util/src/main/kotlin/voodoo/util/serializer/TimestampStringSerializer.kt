@@ -10,16 +10,14 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Serializer(forClass = LocalDateTime::class)
-object TimestampSerializer : KSerializer<LocalDateTime> {
+object TimestampStringSerializer : KSerializer<LocalDateTime> {
     override fun serialize(encoder: Encoder, obj: LocalDateTime) {
-        val epoch = obj.atZone(ZoneId.of("UTC")).toInstant().toEpochMilli()
-        encoder.encodeLong(epoch)
+        val timestamp = DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(obj)
+        encoder.encodeString(timestamp)
     }
 
     override fun deserialize(decoder: Decoder): LocalDateTime {
-        val timestamp = decoder.decodeLong()
-        return timestamp.let { milliseconds ->
-            LocalDateTime.ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("UTC"))
-        }
+        val timestamp = decoder.decodeString()
+        return LocalDateTime.parse(timestamp, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
     }
 }

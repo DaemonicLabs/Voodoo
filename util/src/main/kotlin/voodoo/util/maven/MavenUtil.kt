@@ -9,7 +9,12 @@ import com.github.kittinunf.fuel.httpDownload
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
 import mu.KLogging
+import org.xml.sax.InputSource
+import java.io.ByteArrayInputStream
 import java.io.File
+import javax.xml.parsers.DocumentBuilderFactory
+import javax.xml.xpath.XPathConstants
+import javax.xml.xpath.XPathFactory
 
 object MavenUtil : KLogging() {
     suspend fun downloadArtifact(
@@ -76,6 +81,52 @@ object MavenUtil : KLogging() {
         tmpFile.copyTo(targetFile, overwrite = true)
         tmpFile.delete()
         return@stopwatch targetFile
+    }
+
+    suspend fun getMavenMetadata(
+        stopwatch: Stopwatch,
+        mavenUrl: String,
+        group: String,
+        artifactId: String
+    ): String = stopwatch {
+
+        val groupPath = group.split("\\.".toRegex()).joinToString("/")
+        val artifactUrl = "$mavenUrl/$groupPath/$artifactId/maven-metadata.xml"
+        val (request, response, result) = artifactUrl.httpGet()
+//            .header("User-Agent" to useragent)
+            .awaitStringResponseResult()
+        when (result) {
+            is Result.Success -> return result.value
+            is Result.Failure -> {
+                logger.error("artifactUrl: $artifactUrl")
+                logger.error("cUrl: ${request.cUrlString()}")
+                logger.error("response: $response")
+                logger.error(result.error.exception) { "unable to download jarfile from $artifactUrl" }
+                throw result.error.exception
+            }
+        }
+    }
+
+    suspend fun getLatestVersionFromMavenMetadata(
+        stopwatch: Stopwatch,
+        mavenUrl: String,
+        group: String,
+        artifactId: String
+    ): String = stopwatch {
+        val metadataXml = getMavenMetadata("get metadata".watch, mavenUrl, group, artifactId)
+
+        val dbFactory = DocumentBuilderFactory.newInstance()
+        val dBuilder = dbFactory.newDocumentBuilder()
+        val xmlInput = metadataXml
+        val doc = dBuilder.parse(InputSource(ByteArrayInputStream(xmlInput.toByteArray(Charsets.UTF_8))))
+
+        val xpFactory = XPathFactory.newInstance()
+        val xPath = xpFactory.newXPath()
+
+        val xPathExpression = "metadata/versioning/latest/text()"
+
+        val latest = xPath.evaluate(xPathExpression, doc, XPathConstants.STRING) as String
+        latest
     }
 
 }

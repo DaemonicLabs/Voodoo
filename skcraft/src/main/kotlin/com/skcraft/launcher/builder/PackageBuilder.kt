@@ -341,6 +341,7 @@ constructor(
          * @throws InterruptedException on interruption
          */
 //        @Throws(IOException::class, InterruptedException::class)
+        @JvmStatic
         suspend fun main(vararg args: String) {
             val parser = ArgParser(args)
             val options = BuilderOptions(parser)
