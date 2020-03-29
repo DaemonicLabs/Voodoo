@@ -20,10 +20,10 @@ pack {
 root<Curse> {
     releaseTypes = setOf(FileType.Release, FileType.Beta)
 
-    list {
+    it.list {
         +Mod.botania
 
-        +Mod.foamfixForMinecraft
+        +Mod.foamfixOptimizationMod
         +Mod.mekanism
 
         group {

@@ -117,7 +117,7 @@ root<Curse> {
         +(Mod.charsetTools)
         +(Mod.charsetpatches)
         +(Mod.charsetImmersion)
-        +(Mod.foamfixForMinecraft)
+        +(Mod.foamfixOptimizationMod)
         +(Mod.unlimitedChiselWorks)
         +(Mod.preston)
 
@@ -275,7 +275,7 @@ root<Curse> {
 
         group {
             side = Side.BOTH
-            it.feature {
+            it.optional {
                 selected = false
             }
 
