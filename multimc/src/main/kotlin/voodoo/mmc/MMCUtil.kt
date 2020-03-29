@@ -409,8 +409,8 @@ object MMCUtil : KLogging() {
                     }
                 }
                 buttonPane.add(buttonSkipInstall, GridBagConstraints().apply {
-                    gridx = 3
-                    weightx = 1.0
+                    gridx = 2
+                    weightx = 0.9
                     anchor = GridBagConstraints.LINE_START
                     fill = GridBagConstraints.HORIZONTAL
                     ipady = 4
@@ -427,7 +427,7 @@ object MMCUtil : KLogging() {
                     }
                 }
                 buttonPane.add(buttonForceReinstall, GridBagConstraints().apply {
-                    gridx = 2
+                    gridx = 3
                     weightx = 1.0
                     anchor = GridBagConstraints.LINE_START
                     fill = GridBagConstraints.HORIZONTAL
@@ -441,7 +441,7 @@ object MMCUtil : KLogging() {
                     }
                 }
                 buttonPane.add(checkForceReinstall, GridBagConstraints().apply {
-                    gridx = 3
+                    gridx = 4
                     weightx = 0.1
                     anchor = GridBagConstraints.LINE_END
                     fill = GridBagConstraints.HORIZONTAL
@@ -462,7 +462,7 @@ object MMCUtil : KLogging() {
                     gridx = 0
                     gridy = 1
 //                    weightx = 6.0
-                    gridwidth = 4
+                    gridwidth = 5
                     anchor = GridBagConstraints.LINE_START
                     fill = GridBagConstraints.HORIZONTAL
                     ipady = 4

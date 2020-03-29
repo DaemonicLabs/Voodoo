@@ -5,6 +5,7 @@ plugins {
 
 voodoo {
     local = true
+    localVoodooProjectLocation = rootDir.parentFile
     addTask("build") {
         build()
     }

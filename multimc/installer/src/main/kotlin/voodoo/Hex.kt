@@ -140,12 +140,15 @@ object Hex : KLogging() {
             mapOf()
         }
         val (features, reinstall) = updateAndSelectFeatures(
-            modpack.features.map {
+            selectables = modpack.features.map {
                 MMCSelectable(it.name, it.name, it.description, it.selected, it.recommendation)
             },
-            defaults,
-            modpack.title.blankOr
-                ?: modpack.name!!, modpack.version!!, forceDisplay = forceDisplay, updating = oldpack != null
+            previousSelection = defaults,
+            name = modpack.title.blankOr
+                ?: modpack.name!!,
+            version = modpack.version!!,
+            forceDisplay = forceDisplay,
+            updating = oldpack != null
         )
         featureJson.writeText(
             json.stringify(mapSerializer, features)
