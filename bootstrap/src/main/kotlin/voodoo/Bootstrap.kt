@@ -6,18 +6,16 @@
 
 package voodoo
 
-import com.eyeem.watchadoin.Stopwatch
 import com.github.kittinunf.fuel.core.HttpException
 import com.github.kittinunf.fuel.core.extensions.cUrlString
-import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
+import com.github.kittinunf.fuel.httpDownload
 import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.result.Result
-import kotlinx.coroutines.runBlocking
 import mu.KLogging
+import org.apache.commons.codec.digest.DigestUtils
 import org.xml.sax.InputSource
 import voodoo.bootstrap.BootstrapConstants
 import voodoo.util.Directories
-import voodoo.util.maven.MavenUtil
 import java.io.File
 import java.io.StringReader
 import javax.xml.parsers.DocumentBuilderFactory
@@ -26,7 +24,7 @@ import javax.xml.xpath.XPathFactory
 import kotlin.system.exitProcess
 
 @Throws(Throwable::class)
-fun main(vararg args: String) = runBlocking {
+fun main(vararg args: String) {
     try {
         Bootstrap.cleanup()
         Bootstrap.launch(*args)
@@ -58,12 +56,12 @@ object Bootstrap : KLogging() {
         }
     }
 
-    private suspend fun download(): File {
+    private fun download(): File {
 
         val groupPath = group.split("\\.".toRegex()).joinToString("/")
         val mavenMetadataUrl = "$mavenUrl/$groupPath/$artifact/maven-metadata.xml"
         val (request, response, result) = mavenMetadataUrl.httpGet()
-            .awaitStringResponseResult()
+            .responseString()
         val xmlText = when(result) {
             is Result.Success -> result.value
             is Result.Failure -> {
@@ -88,25 +86,21 @@ object Bootstrap : KLogging() {
         val releaseVersion = xPath.evaluate(xpath, doc, XPathConstants.STRING) as String
 
 
-        val stopwatch = Stopwatch("download")
-        val artifactFile = stopwatch {
-           MavenUtil.downloadArtifact(
-               "downloadArtifact".watch,
-                mavenUrl = mavenUrl,
-                group = group,
-                artifactId = artifact,
-                version = releaseVersion,
-                classifier = classifier,
-                extension = "jar",
-                outputDir = binariesDir
-            )
-        }
+        val artifactFile = downloadArtifact(
+            mavenUrl = mavenUrl,
+            group = group,
+            artifactId = artifact,
+            version = releaseVersion,
+            classifier = classifier,
+            extension = "jar",
+            outputDir = binariesDir
+        )
 
         return artifactFile
     }
 
     @Throws(Throwable::class)
-    suspend fun launch(vararg originalArgs: String) {
+    fun launch(vararg originalArgs: String) {
         logger.info("Downloading the $artifact binary...")
         val file = try {
             download().apply {
@@ -137,5 +131,70 @@ object Bootstrap : KLogging() {
             .start()
             .waitFor()
         exitProcess(exitStatus)
+    }
+
+    fun downloadArtifact(
+        mavenUrl: String,
+        group: String,
+        artifactId: String,
+        version: String,
+        classifier: String? = null,
+        extension: String = "jar",
+        outputDir: File,
+        outputFile: File? = null,
+        checkMd5: Boolean = true
+    ): File {
+        val groupPath = group.split("\\.".toRegex()).joinToString("/")
+
+//        val jarUrl = "http://maven.modmuss50.me/moe/nikky/voodoo/voodoo/0.4.8-3/voodoo-0.4.8-3.jar"
+
+        val classifierSuffix = classifier?.let { "-$it"} ?: ""
+        val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$version$classifierSuffix.$extension"
+        val tmpFile = File(outputDir, "$artifactId-$version$classifierSuffix.$extension.tmp")
+        val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
+        run {
+            val (request, response, result) = artifactUrl.httpDownload()
+                .fileDestination { response, request ->
+                    tmpFile.delete()
+                    tmpFile
+                }
+//            .header("User-Agent" to useragent)
+                .response()
+            when (result) {
+                is Result.Success -> {}
+                is Result.Failure -> {
+                    logger.error("artifactUrl: $artifactUrl")
+                    logger.error("cUrl: ${request.cUrlString()}")
+                    logger.error("response: $response")
+                    logger.error(result.error.exception) { "unable to download jarfile from $artifactUrl" }
+                    throw result.error.exception
+                }
+            }
+        }
+
+
+        if(checkMd5) {
+            val md5Url = "$artifactUrl.md5"
+            val (request, response, result) =  md5Url.httpGet()
+                .responseString()
+            val md5 = when (result) {
+                is Result.Success -> {
+                    result.value
+                }
+                is Result.Failure -> {
+                    logger.error("artifactUrl: $artifactUrl")
+                    logger.error("cUrl: ${request.cUrlString()}")
+                    logger.error("response: $response")
+                    logger.error(result.error.exception) { "unable to download md5 hash from ${request.url}" }
+                    throw result.error.exception
+                }
+            }
+            val fileMd5 = DigestUtils.md5Hex(tmpFile.inputStream())
+            require(fileMd5 == md5) { "$artifactUrl did not match md5 hash: '$md5'" }
+        }
+
+        tmpFile.copyTo(targetFile, overwrite = true)
+        tmpFile.delete()
+        return targetFile
     }
 }
