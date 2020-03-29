@@ -23,7 +23,19 @@ pipeline {
         }
 	}
 	post {
-        always {
+        failure {
+            withCredentials([string(credentialsId: 'discord.webhook.url', variable: 'discordWebhookId')]) {
+                discordSend(
+                    description: "Failed",
+                    footer: "build in ${currentBuild.durationString.replace(' and counting', '')}",
+                    link: env.BUILD_URL,
+                    result: currentBuild.currentResult,
+                    title: JOB_NAME,
+                    webhookURL: discordWebhookId
+                )
+            }
+        }
+        success {
             sh './gradlew writeMavenUrls'
             script {
                env.URLS = readFile('mavenUrls.txt')
@@ -38,8 +50,6 @@ pipeline {
                     webhookURL: discordWebhookId
                 )
             }
-        }
-        success {
             sh './gradlew buildnumberIncrement'
         }
     }
