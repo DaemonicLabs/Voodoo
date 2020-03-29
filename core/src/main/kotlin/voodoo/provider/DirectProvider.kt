@@ -19,9 +19,14 @@ object DirectProvider : ProviderBase("Direct Provider") {
         mcVersion: String,
         addEntry: SendChannel<Pair<Entry, String>>
     ): LockEntry {
+        entry as Entry.Direct
         entry.id = entry.id.replace("[^\\w-]".toRegex(), "_")
-        return entry.lock {
-            url = entry.url
+        return entry.lock {commonComponent ->
+            LockEntry.Direct(
+                common = commonComponent,
+                url = entry.url,
+                useUrlTxt = entry.useUrlTxt
+            )
         }
     }
 
@@ -31,6 +36,7 @@ object DirectProvider : ProviderBase("Direct Provider") {
         targetFolder: File,
         cacheDir: File
     ): Pair<String, File> = stopwatch {
+        entry as LockEntry.Direct
         val fileName = entry.fileName ?: entry.url.substringAfterLast('/')
         val targetFile = targetFolder.resolve(fileName)
         val url = URL(entry.url)
@@ -43,12 +49,14 @@ object DirectProvider : ProviderBase("Direct Provider") {
     }
 
     override suspend fun getVersion(entry: LockEntry): String {
+        entry as LockEntry.Direct
         return entry.url.substringBeforeLast('.').substringAfterLast('/')
     }
 
-    override fun reportData(entry: LockEntry): MutableList<Triple<String, String, String>> {
+    override fun reportData(entry: LockEntry): MutableList<Pair<String, String>> {
+        entry as LockEntry.Direct
         val data = super.reportData(entry)
-        data += Triple("direct_url", "Url", "`${entry.url}`")
+        data += "Url" to entry.url
         return data
     }
 }

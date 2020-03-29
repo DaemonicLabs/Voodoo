@@ -1,6 +1,5 @@
 package voodoo.poet.importer
 
-import fileSrc
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
@@ -9,21 +8,18 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import list
-import releaseTypes
 import voodoo.poet.Poet
 import voodoo.poet.PoetPack
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.FileType
 import voodoo.data.curse.ProjectID
-import voodoo.provider.CurseProvider
-import voodoo.provider.LocalProvider
+import voodoo.data.nested.NestedEntry
 import voodoo.script.MainScriptEnv
 import voodoo.util.UnzipUtility.unzip
 import voodoo.util.blankOr
 import voodoo.util.download
 import voodoo.util.withPool
-import withProvider
 import java.io.File
 import java.net.URL
 import java.util.UUID
@@ -64,7 +60,7 @@ object CurseImporter : AbstractImporter() {
         require(manifestFile.exists()) { "$manifestFile does not exist" }
         logger.info("parsing \n${manifestFile.readText()}")
 
-        val manifest: CurseManifest = Json(JsonConfiguration()).parse(CurseManifest.serializer(), manifestFile.readText())
+        val manifest: CurseManifest = Json(JsonConfiguration.Default).parse(CurseManifest.serializer(), manifestFile.readText())
 
         val validMcVersions = mutableSetOf<String>()
 
@@ -132,10 +128,11 @@ object CurseImporter : AbstractImporter() {
             sourceDir = source
             sourceDir = source
             localDir = local
-            root(CurseProvider) {
+            root<NestedEntry.Curse> {
+                builder ->
                 this.validMcVersions = validMcVersions - manifest.minecraft.version
                 releaseTypes = sortedSetOf(FileType.Release, FileType.Beta, FileType.Alpha)
-                list {
+                builder.list {
                     curseEntries.forEach { (identifier, versionStr, curseProjectID) ->
                         +ProjectID(curseProjectID.value) configure {
                             version = versionStr
@@ -143,7 +140,7 @@ object CurseImporter : AbstractImporter() {
                     }
                     val modsFolder = sourceFolder.resolve("mods")
                     if (modsFolder.exists()) {
-                        withProvider(LocalProvider).list {
+                        withType<NestedEntry.Local>().list {
                             val localFolder = rootDir.resolve(local)
                             this@CurseImporter.logger.info("listing $modsFolder")
                             modsFolder.listFiles { file ->
@@ -151,11 +148,11 @@ object CurseImporter : AbstractImporter() {
                                 when {
                                     file == null -> false
                                     !file.isFile -> false
-                                    file.name.endsWith(".entry.hjson") -> false
-                                    file.name.endsWith(".lock.hjson") -> false
+                                    file.name.endsWith(".entry.json") -> false
+                                    file.name.endsWith(".lock.json") -> false
                                     else -> true
                                 }
-                            }.forEach { file ->
+                            }!!.forEach { file ->
                                 if (!file.isFile) return@forEach
                                 val relative = file.relativeTo(modsFolder)
                                 val targetFile = localFolder.resolve(relative)

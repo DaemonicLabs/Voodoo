@@ -23,7 +23,7 @@ object Builder : KLogging() {
         stopwatch: Stopwatch,
         modpack: ModPack,
         id: String,
-        targetFileName: String = "$id.lock.pack.hjson",
+        targetFileName: String = "$id.lock.pack.json",
         targetFile: File = modpack.sourceFolder.resolve(targetFileName),
         vararg args: String
     ): LockPack = runBlocking {

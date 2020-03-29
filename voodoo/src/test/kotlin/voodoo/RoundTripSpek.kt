@@ -8,16 +8,15 @@ import kotlinx.coroutines.runBlocking
 import list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import releaseTypes
 import voodoo.builder.Builder
 import voodoo.data.Side
 import voodoo.data.curse.FileType
 import voodoo.data.lock.LockPack
+import voodoo.data.nested.NestedEntry
 import voodoo.provider.CurseProvider
 import voodoo.provider.JenkinsProvider
 import voodoo.script.MainScriptEnv
 import voodoo.util.json
-import withProvider
 import java.io.File
 import kotlin.test.assertEquals
 
@@ -38,19 +37,20 @@ object RoundTripSpek : Spek({
                 authors = listOf("dude", "and", "friends")
                 // TODO: type = {recommended, latest} | buildnumber, make sealed class ?
                 forge = Forge.mc1_12_2_recommended
-                root(CurseProvider) {
+                root<NestedEntry.Curse> {
                     releaseTypes = setOf(FileType.Release, FileType.Beta)
 
                     // TODO: use type URL ?
-                    list {
+                    it.list {
                         +(Mod.botania)
 
                         +(Mod.rftools)
 
-                        withProvider(JenkinsProvider) {
+                        withType<NestedEntry.Jenkins> {
+                            jenkinsUrl = "https://ci.elytradev.com/"
                             side = Side.SERVER
                         }.list {
-                            +"matterlink" job "elytra/matterlink/master"
+                            +"BTFU" job "elytra/BTFU/master"
                         }
 
                         group {
@@ -83,7 +83,7 @@ object RoundTripSpek : Spek({
 
         val targetFilename = "roundtrip.lock.json"
         val modpack by memoized {
-            scriptEnv.pack.flatten()
+            runBlocking { scriptEnv.pack.flatten() }
         }
         val lockpack by memoized {
             runBlocking {

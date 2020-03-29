@@ -1,4 +1,5 @@
 plugins {
+//    kotlin("plugin.scripting") version "1.3.70"
     id("voodoo") version "0.5.0-dev"
 }
 
@@ -65,8 +66,8 @@ repositories {
 }
 
 dependencies {
-    implementation(group = "moe.nikky.voodoo", name = "dsl", version = "0.4.9-dev")
-    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.9-dev")
-    kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "0.4.9-dev")
-//    kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4.9-dev")
+    implementation(group = "moe.nikky.voodoo", name = "dsl", version = "0.5.0-dev")
+    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.5.0-dev")
+    kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "0.5.0-dev")
+//    kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "0.5.0-dev")
 }

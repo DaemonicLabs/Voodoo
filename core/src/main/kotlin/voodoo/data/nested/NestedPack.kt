@@ -29,13 +29,13 @@ internal constructor(
     var version: String = "1.0",
     var icon: File = rootDir.resolve("icon.png"),
     var authors: List<String> = emptyList(),
-    var forge: String? = null,
+    var forge: String? = null, // TODO: replace with generic modloader info
     var launch: LaunchModifier = LaunchModifier(),
-    var root: NestedEntry = NestedEntry(),
     var localDir: String = "local",
     var sourceDir: String = id,
     var docDir: String = id,
-    var packOptions: PackOptions = PackOptions()
+    var packOptions: PackOptions = PackOptions(),
+    var root: NestedEntry = NestedEntry.Common()
 ) {
     companion object : KLogging() {
         fun create(rootDir: File, id: String, builder: (NestedPack) -> Unit = {}): NestedPack {
@@ -61,23 +61,24 @@ internal constructor(
     val localFolder: File
         get() = rootDir.resolve(localDir)
 
-    fun flatten(): ModPack {
+    // TODO: possibly this flattening step will not be necessary
+    suspend fun flatten(): ModPack {
         return ModPack(
+            rootDir = rootDir,
             id = id,
+            mcVersion = mcVersion ?: throw IllegalStateException("mcVersion must be set for pack '$id'"),
             title = title,
             version = version,
             icon = icon,
             authors = authors,
             forge = forge,
-            mcVersion = mcVersion ?: throw IllegalStateException("mcVersion must be set for pack '$id'"),
             launch = launch,
+            localDir = localDir,
+            sourceDir = sourceDir,
+            docDir = docDir,
             packOptions = packOptions
         ).also {
-            it.rootDir = rootDir
-
-            it.localDir = localDir
-            it.sourceDir = sourceDir
-            it.docDir = docDir
+            it.entrySet += root.flatten()
         }
     }
 }

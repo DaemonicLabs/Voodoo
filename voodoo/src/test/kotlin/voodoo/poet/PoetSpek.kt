@@ -4,7 +4,7 @@ import list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.data.Side
-import voodoo.provider.CurseProvider
+import voodoo.data.nested.NestedEntry
 import voodoo.script.MainScriptEnv
 import java.io.File
 
@@ -20,9 +20,9 @@ object PoetSpek : Spek({
             MainScriptEnv(rootDir = rootFolder, id = "new-pack").apply {
                 mcVersion = "1.12.2"
                 authors = listOf("blarb something", "nikky")
-                root(CurseProvider) {
+                root<NestedEntry.Curse> {
                     validMcVersions = setOf("1.12.1", "1.12")
-                    list {
+                    it.list {
                         +(Mod.wearableBackpacks)
                         +(Mod.neat)
 

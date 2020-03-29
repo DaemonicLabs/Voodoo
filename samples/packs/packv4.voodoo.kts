@@ -23,11 +23,11 @@ pack {
     }
 }
 
-root(CurseProvider) {
+root<Curse> {
     releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
     validMcVersions = setOf("1.12.2", "1.12.1", "1.12")
 //            metaUrl = "https://curse.nikky.moe/api"
-    list {
+    it.list {
         +Mod.buildcraft
         +Mod.buildcraftCompat
         +Mod.forestry
@@ -50,8 +50,8 @@ root(CurseProvider) {
         +Mod.ironChests
         +Mod.mystcraft
         +Mod.biomesOPlenty
-        +Mod.traverseLegacy
-        +Mod.valkyrienWarfare
+        +Mod.traverseLegacyContinued
+//        +Mod.valkyrienWarfare
         +Mod.wirelessRedstoneCbe
 
         // Misc.
@@ -67,7 +67,7 @@ root(CurseProvider) {
         +Mod.backTools
         +Mod.betterPlacement
         +Mod.dynamicSurroundings
-        +Mod.foamfixForMinecraft
+        +Mod.foamfixOptimizationMod
         +Mod.gottaGoFast
         +Mod.inventoryTweaks
         +Mod.jei
@@ -78,7 +78,7 @@ root(CurseProvider) {
         +Mod.openeye
         +Mod.vanillafix
 
-        withProvider(JenkinsProvider) {
+        withTypeClass(Jenkins::class) {
             jenkinsUrl = "https://ci.rs485.network"
         }.list {
             +"logisticspipes" job "LogisticsPipes-0.10-mc112"

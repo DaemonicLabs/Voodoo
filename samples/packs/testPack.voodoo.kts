@@ -17,7 +17,7 @@ pack {
 
 }
 
-root(CurseProvider) {
+root<Curse> {
     releaseTypes = setOf(FileType.Release, FileType.Beta)
 
     list {

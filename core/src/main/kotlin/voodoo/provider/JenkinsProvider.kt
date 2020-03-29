@@ -15,7 +15,7 @@ import voodoo.util.jenkins.JenkinsServer
 import voodoo.util.jenkins.Job
 import java.io.File
 import java.time.Instant
-import java.util.Collections
+import java.util.*
 
 /**
  * Created by nikky on 30/12/17.
@@ -30,17 +30,21 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         mcVersion: String,
         addEntry: SendChannel<Pair<Entry, String>>
     ): LockEntry {
+        entry as Entry.Jenkins
         require(entry.job.isNotBlank()) { "entry: '${entry.id}' does not have the jenkins job set" }
 //        if (entry.job.isBlank()) {
 //            entry.job = entry.id
 //        }
         val job = job(entry.job, entry.jenkinsUrl)
         val buildNumber = job.lastSuccessfulBuild?.number ?: throw IllegalStateException("buildnumber not set")
-        return entry.lock {
-            jenkinsUrl = entry.jenkinsUrl
-            this.job = entry.job
-            this.buildNumber = buildNumber
-            fileNameRegex = entry.fileNameRegex
+        return entry.lock { commonComponent ->
+            LockEntry.Jenkins(
+                common = commonComponent,
+                jenkinsUrl = entry.jenkinsUrl,
+                job = entry.job,
+                buildNumber = buildNumber,
+                fileNameRegex = entry.fileNameRegex
+            )
         }
     }
 
@@ -50,6 +54,7 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         targetFolder: File,
         cacheDir: File
     ): Pair<String, File> = stopwatch {
+        entry as LockEntry.Jenkins
         require(entry.job.isNotBlank()) { "entry: '${entry.id}' does not have the jenkins job set" }
 //        if (entry.job.isBlank()) {
 //            entry.job = entry.id
@@ -60,28 +65,33 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         val url = build.url + "artifact/" + artifact.relativePath
         val targetFile = targetFolder.resolve(entry.fileName ?: artifact.fileName)
         targetFile.download(url, cacheDir.resolve("JENKINS").resolve(entry.job).resolve(entry.buildNumber.toString()))
-        return@stopwatch Pair(url, targetFile)
+        return@stopwatch url to targetFile
     }
 
     override suspend fun generateName(entry: LockEntry): String {
+        entry as LockEntry.Jenkins
         return "${entry.job} ${entry.buildNumber}"
     }
 
     override suspend fun getAuthors(entry: LockEntry): List<String> {
+        entry as LockEntry.Jenkins
         return listOf(entry.job.substringBeforeLast('/').substringBeforeLast('/').substringAfterLast('/'))
     }
 
     override suspend fun getProjectPage(entry: LockEntry): String {
+        entry as LockEntry.Jenkins
         val server = server(entry.jenkinsUrl)
         return server.getUrl(entry.job)
     }
 
     override suspend fun getVersion(entry: LockEntry): String {
+        entry as LockEntry.Jenkins
         val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)
         return artifact.fileName
     }
 
     override suspend fun getReleaseDate(entry: LockEntry): Instant? {
+        entry as LockEntry.Jenkins
         val build = build(entry.job, entry.jenkinsUrl, entry.buildNumber)
         return Instant.ofEpochSecond(build.timestamp)
     }
@@ -122,7 +132,7 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
 
     private val jobCache: MutableMap<Pair<String, String>, Job> = Collections.synchronizedMap(hashMapOf())
     suspend fun job(jobName: String, url: String): Job {
-        val a = Pair(jobName, url)
+        val a = jobName to url
         return jobCache.getOrPut(a) { jobCall(jobName, url) }
     }
 
@@ -138,10 +148,11 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         return JenkinsServer(url)
     }
 
-    override fun reportData(entry: LockEntry): MutableList<Triple<String, String, String>> {
+    override fun reportData(entry: LockEntry): MutableList<Pair<String, String>> {
+        entry as LockEntry.Jenkins
         val data = super.reportData(entry)
-        data += Triple("jenkins_job", "Job", "`${entry.job}`")
-        data += Triple("jenkins_build", "Build", "`${entry.buildNumber}`")
+        data += "Job" to entry.job
+        data += "Build" to "${entry.buildNumber}"
         return data
     }
 }

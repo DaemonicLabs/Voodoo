@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "mtlib"
+            ]
+        }
+    },
+    "projectID": 220954,
+    "fileID": 2881277
+}

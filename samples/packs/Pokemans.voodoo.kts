@@ -11,9 +11,9 @@ version = "1.1"
 icon = rootDir.resolve("icon.png")
 authors = listOf("capitalthree", "NikkyAi")
 forge = Forge_12_2.mc1_12_2_recommended
-root(CurseProvider) {
+root<Curse> { builder ->
     releaseTypes = setOf(FileType.Release, FileType.Beta)
-    list {
+    builder.list {
         //TODO: group mods by category (eg. tweakers)
         +Mod.abyssalcraft
         +Mod.advancedRocketry configure {
@@ -51,23 +51,23 @@ root(CurseProvider) {
         +Mod.timberjack
         +Mod.wearableBackpacks
 
-        withProvider(DirectProvider)
-            .list {
-                //TODO: change to local
-                +"pixelmonDark" configure {
-                    url =
-                        "https://meowface.org/craft/repo/objects/db/5d/db5db11bcda204362d62705b1d5f4e5783f95c2c"
-                    fileName = "PixelmonDark2.4.jar"
-                }
-                //TODO: change to local
-                +"gameShark" configure {
-                    url =
-                        "https://meowface.org/craft/repo/objects/b9/21/b9216143fd5214c31e109b24fb1513eb8b23bc77"
-                    fileName = "Gameshark-1.10.2-5.0.0.jar"
-                }
-//                            add("gameShark") url "https://pixelmonmod.com/mirror/sidemods/gameshark/5.2.0/gameshark-1.12.2-5.2.0-universal.jar"
-//                    }
-            }
+//        withType(Direct::class)
+//            .list {
+//                //TODO: change to local
+//                +"pixelmonDark" configure {
+//                    url =
+//                        "https://meowface.org/craft/repo/objects/db/5d/db5db11bcda204362d62705b1d5f4e5783f95c2c"
+//                    fileName = "PixelmonDark2.4.jar"
+//                }
+//                //TODO: change to local
+//                +"gameShark" configure {
+//                    url =
+//                        "https://meowface.org/craft/repo/objects/b9/21/b9216143fd5214c31e109b24fb1513eb8b23bc77"
+//                    fileName = "Gameshark-1.10.2-5.0.0.jar"
+//                }
+////                            add("gameShark") url "https://pixelmonmod.com/mirror/sidemods/gameshark/5.2.0/gameshark-1.12.2-5.2.0-universal.jar"
+////                    }
+//            }
 
         group {
             side = Side.CLIENT
@@ -81,8 +81,6 @@ root(CurseProvider) {
                 +Mod.xaerosMinimap configure {
                     description = "lightweight minimap"
                 }
-                // infix notation
-//                        add(Mod.xaerosMinimap) description "lightweight minimap"
             }
             group {
                 optional {
@@ -93,7 +91,8 @@ root(CurseProvider) {
             }
         }
 
-        withProvider(JenkinsProvider) {
+//        withTypeClass(Jenkins::class) {
+        withType<Jenkins> {// this works even though idea is protesting
             jenkinsUrl = "https://ci.elytradev.com"
         }.list {
             +"probe-data-provider" job "elytra/ProbeDataProvider/1.10.2"

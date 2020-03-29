@@ -17,28 +17,31 @@ import voodoo.util.unixPath
  * @author Nikky
  */
 
-@Serializable
+//@Serializable
 data class ModPack(
+//    @Serializable(with = FileSerializer::class)
+    var rootDir: File,
+    /**
+     * unique identifier
+     */
     var id: String,
+    /**
+     * Minecraft Version
+     */
     var mcVersion: String,
     var title: String? = null,
     var version: String = "1.0",
-    @Serializable(with = FileSerializer::class)
+//    @Serializable(with = FileSerializer::class)
     var icon: File = File("icon.png"),
     val authors: List<String> = emptyList(),
-    var forge: String? = null,
-    // var forgeBuild: Int = -1,
-   val launch: LaunchModifier = LaunchModifier(),
-   var packOptions: PackOptions = PackOptions()
+    var forge: String? = null, // TODO: replace with generic modloader info
+    val launch: LaunchModifier = LaunchModifier(),
+    var localDir: String = "local",
+    var sourceDir: String = id,
+    var docDir: String = id,
+    var packOptions: PackOptions = PackOptions()
 ) {
     companion object : KLogging()
-
-
-    var localDir: String = "local"
-
-    var sourceDir: String = id
-
-    var docDir: String = id
 
     @Transient
     val sourceFolder: File
@@ -47,10 +50,7 @@ data class ModPack(
     val localFolder: File
         get() = rootDir.resolve(localDir)
 
-    @Transient
-    lateinit var rootDir: File
-
-    // we want this to be serialized for debugging purposes
+    // we want this to be serialized for debugging purposes ?
     val entrySet: MutableSet<Entry> = Collections.synchronizedSet(mutableSetOf())
 
     @Transient
@@ -97,12 +97,13 @@ data class ModPack(
             }
     }
 
-    fun writeEntries(rootFolder: File = rootDir) {
-        val srcDir = rootFolder.resolve(sourceDir)
-        entrySet.forEach { entry ->
-            entry.serialize(srcDir)
-        }
-    }
+//    @Deprecated("looks suspect")
+//    fun writeEntries(rootFolder: File = rootDir) {
+//        val srcDir = rootFolder.resolve(sourceDir)
+//        entrySet.forEach { entry ->
+//            entry.serialize(srcDir)
+//        }
+//    }
 
     fun lock(): LockPack {
         return LockPack(

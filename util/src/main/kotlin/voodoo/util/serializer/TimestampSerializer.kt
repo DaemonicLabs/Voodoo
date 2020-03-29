@@ -17,9 +17,9 @@ object TimestampSerializer : KSerializer<LocalDateTime> {
     }
 
     override fun deserialize(decoder: Decoder): LocalDateTime {
-        val timestamp = decoder.decodeString()
-        return timestamp.toLongOrNull()?.let { milliseconds ->
+        val timestamp = decoder.decodeLong()
+        return timestamp.let { milliseconds ->
             LocalDateTime.ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("UTC"))
-        } ?: LocalDateTime.parse(timestamp, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+        }
     }
 }

@@ -1,67 +1,77 @@
 package voodoo.data.nested
 
 import mu.KLogging
-import voodoo.data.DependencyType
-import voodoo.data.OptionalData
-import voodoo.data.Side
-import voodoo.data.curse.FileID
-import voodoo.data.curse.FileType
-import voodoo.data.curse.PackageType
-import voodoo.data.curse.ProjectID
+import voodoo.data.components.*
 import voodoo.data.flat.Entry
-import voodoo.data.provider.UpdateChannel
+import voodoo.provider.*
 import java.io.File
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.memberProperties
 
-/**
- * Created by nikky on 28/03/18.
- * @author Nikky
- */
+sealed class NestedEntry(
+    open var entries: List<NestedEntry> = emptyList()
+) : CommonMutable {
+    data class Common(
+        val common: CommonComponent = CommonComponent(),
+        override var entries: List<NestedEntry> = emptyList()
+    ) : NestedEntry(entries), CommonMutable by common {
+        init {
+            provider = ""
+        }
+    }
 
-data class NestedEntry(
-    var provider: String = "",
-    var id: String = "",
-    var name: String? = null,
-    var folder: String = "mods",
-    var description: String? = null,
-    var optionalData: OptionalData? = null,
-    var side: Side = Side.BOTH,
-    var websiteUrl: String = "",
-//    var provides: MutableMap<DependencyType, List<String>> = mutableMapOf(),
-//    @Deprecated("waiting to be redone")
-    var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
-//    @Deprecated("waiting to be redone")
-    var replaceDependencies: Map<ProjectID, ProjectID> = mapOf(),
-    var packageType: PackageType = PackageType.MOD,
-    var transient: Boolean = false, // this entry got added as dependency for something else
-    var version: String = "", // TODO: use regex only ?
-    var fileName: String? = null,
-    var fileNameRegex: String? = null,
-    var validMcVersions: Set<String> = setOf(),
-    var enabled: Boolean = true,
-    //  CURSE
-    var curseReleaseTypes: Set<FileType> = setOf(FileType.Release, FileType.Beta),
-    var curseProjectID: ProjectID = ProjectID.INVALID,
-    var curseFileID: FileID = FileID.INVALID,
-    //  DIRECT
-    var url: String = "",
-    var useUrlTxt: Boolean = true,
-    //  JENKINS
-    var jenkinsUrl: String = "",
-    var job: String = "",
-    var buildNumber: Int = -1,
-    //  LOCAL
-    var fileSrc: String = "",
-    //  UPDATE-JSON
-    var updateJson: String = "",
-    var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
-    var template: String = "",
-    //  NESTED
-    var entries: List<NestedEntry> = emptyList()
-) {
+    data class Curse(
+        val common: CommonComponent = CommonComponent(),
+        val curse: CurseComponent = CurseComponent(),
+        override var entries: List<NestedEntry> = emptyList()
+    ) : NestedEntry(entries), CommonMutable by common, CurseMutable by curse {
+        init {
+            provider = CurseProvider.id
+        }
+    }
+
+    data class Direct(
+        val common: CommonComponent = CommonComponent(),
+        val direct: DirectComponent = DirectComponent(),
+        override var entries: List<NestedEntry> = emptyList()
+    ) : NestedEntry(entries), CommonMutable by common, DirectMutable by direct {
+        init {
+            provider = DirectProvider.id
+        }
+    }
+
+    data class Jenkins(
+        val common: CommonComponent = CommonComponent(),
+        val jenkins: JenkinsComponent = JenkinsComponent(),
+        override var entries: List<NestedEntry> = emptyList()
+    ) : NestedEntry(entries), CommonMutable by common, JenkinsMutable by jenkins {
+        init {
+            provider = JenkinsProvider.id
+        }
+    }
+
+    data class Local(
+        val common: CommonComponent = CommonComponent(),
+        val local: LocalComponent = LocalComponent(),
+        override var entries: List<NestedEntry> = emptyList()
+    ) : NestedEntry(entries), CommonMutable by common, LocalMutable by local {
+        init {
+            provider = LocalProvider.id
+        }
+    }
+
+    data class UpdateJson(
+        val common: CommonComponent = CommonComponent(),
+        val _updateJson: UpdateJsonComponent = UpdateJsonComponent(),
+        override var entries: List<NestedEntry> = emptyList()
+    ) : NestedEntry(entries), CommonMutable by common, UpdateJsonMutable by _updateJson {
+        init {
+            provider = UpdateJsonProvider.id
+        }
+    }
+
     companion object : KLogging() {
-        val DEFAULT = NestedEntry()
+//        val DEFAULT = NestedEntry()
     }
 
     suspend fun flatten(parentFile: File? = null): List<Entry> {
@@ -69,6 +79,7 @@ data class NestedEntry(
 
         // remove duplicate entries
         val ids = mutableSetOf<String>()
+
         entries.forEach {
             if (it.id in ids) {
                 entries -= it
@@ -77,46 +88,83 @@ data class NestedEntry(
             }
         }
         return this.entries.asSequence().filter { it.enabled }.map { entry ->
-            Entry(
-                entry.provider,
-                id = entry.id,
-                name = entry.name,
-                folder = entry.folder,
-                description = entry.description,
-                optionalData = entry.optionalData,
-                side = entry.side,
-                websiteUrl = entry.websiteUrl,
-                dependencies = entry.dependencies,
-                replaceDependencies = entry.replaceDependencies,
-                //                optional = it.optional,
-                packageType = entry.packageType,
-                transient = entry.transient,
-                version = entry.version,
-                fileName = entry.fileName,
-                //                fileNameRegex = it.fileNameRegex,
-                validMcVersions = entry.validMcVersions,
-                // CURSE
-                curseReleaseTypes = entry.curseReleaseTypes,
-                curseProjectID = entry.curseProjectID,
-                curseFileID = entry.curseFileID,
-                // DIRECT
-                url = entry.url,
-                useUrlTxt = entry.useUrlTxt,
-                // JENKINS
-                jenkinsUrl = entry.jenkinsUrl,
-                job = entry.job,
-                buildNumber = entry.buildNumber,
-                // LOCAL
-                fileSrc = entry.fileSrc,
-                // UPDATE JSON
-                updateJson = entry.updateJson,
-                updateChannel = entry.updateChannel,
-                template = entry.template
-            ).apply {
-                entry.fileNameRegex?.let {
-                    fileNameRegex = it
-                }
+            when(entry) {
+                is Common -> Entry.Common(
+                    common = entry.common.copy()
+                )
+                is Curse -> Entry.Curse(
+                    common = entry.common.copy(),
+                    curse = entry.curse.copy()
+                )
+                is Direct ->  Entry.Direct(
+                    common = entry.common.copy(),
+                    direct = entry.direct.copy()
+                )
+                is Jenkins -> Entry.Jenkins(
+                    common = entry.common.copy(),
+                    jenkins = entry.jenkins.copy()
+                )
+                is Local -> Entry.Local(
+                    common = entry.common.copy(),
+                    local = entry.local.copy()
+                )
+                is UpdateJson ->  Entry.UpdateJson(
+                    common = entry.common.copy(),
+                    _updateJson = entry._updateJson.copy()
+                )
             }
+
+
+//            Entry(
+//                entry.provider,
+//                id = entry.id,
+//                name = entry.name,
+//                folder = entry.folder,
+//                description = entry.description,
+//                optionalData = entry.optionalData,
+//                side = entry.side,
+//                websiteUrl = entry.websiteUrl,
+//                dependencies = entry.dependencies,
+//                replaceDependencies = entry.replaceDependencies,
+//                //                optional = it.optional,
+//                packageType = entry.packageType,
+//                transient = entry.transient,
+//                version = entry.version,
+//                fileName = entry.fileName,
+//                //fileNameRegex = entry.fileNameRegex ?: commonfileNameRegex, // should use the default if this value is null
+//                validMcVersions = entry.validMcVersions
+//            ).apply {
+//                when(entry) {
+//                    // TODO: just copy the components over...
+//                    is CurseMutable -> {
+//                        curseReleaseTypes = entry.releaseTypes
+//                        curseProjectID = entry.projectID
+//                        curseFileID = entry.fileID
+//                    }
+//                    is DirectMutable -> {
+//                        url = entry.url
+//                        useUrlTxt = entry.useUrlTxt
+//                    }
+//                    is JenkinsMutable -> {
+//                        jenkinsUrl = entry.jenkinsUrl
+//                        job = entry.job
+//                        buildNumber = entry.buildNumber
+//                    }
+//                    is LocalMutable -> {
+//                        fileSrc = entry.fileSrc
+//                    }
+//                    is UpdateJsonMutable -> {
+//                        updateJson = entry.updateJson
+//                        updateChannel = entry.updateChannel
+//                        template = entry.template
+//                    }
+//                }
+//
+//                // should use the default if this value is null
+//                entry.fileNameRegex?.let {
+//                    fileNameRegex = it
+//                }
+//            }
         }.toList()
     }
 
@@ -159,33 +207,54 @@ data class NestedEntry(
 //            if (entry.updateChannel == DEFAULT.updateChannel && updateChannel != DEFAULT.updateChannel) entry.updateChannel = updateChannel
 //            if (entry.template == DEFAULT.template && template != DEFAULT.template) entry.template = template
 
-            for (prop in NestedEntry::class.memberProperties) {
-                if (prop is KMutableProperty<*>) {
-                    val otherValue = prop.get(entry)
-                    val thisValue = prop.get(this)
-                    val defaultValue = prop.get(DEFAULT)
-                    if (otherValue == defaultValue && thisValue != defaultValue) {
-                        if (prop.name != "entries" && prop.name != "template") {
-                            // clone maps
-                            when (thisValue) {
-                                is MutableMap<*, *> -> {
-                                    val map = thisValue.toMutableMap()
-                                    // copy lists
-                                    map.forEach { k, v ->
-                                        if (v is List<*>) {
-                                            map[k] = v.toList()
-                                        }
-                                    }
-                                    prop.setter.call(entry, map)
-                                }
-                                is Set<*> -> prop.setter.call(entry, thisValue.toSet())
-                                else ->
-                                    prop.setter.call(entry, thisValue)
-                            }
-                        }
-                    }
+            // TODO: avoid creating and throwing away objects for defaults
+            mergeProperties<CommonMutable>(this, entry, Common())
+
+            when {
+                entry is Curse && this is Curse -> {
+                    mergeProperties<CurseMutable>(this, entry, Curse())
+                }
+                entry is Direct && this is Direct -> {
+                    mergeProperties<DirectMutable>(this, entry, Direct())
+                }
+                entry is Jenkins && this is Jenkins ->{
+                    mergeProperties<JenkinsMutable>(this, entry, Jenkins())
+                }
+                entry is Local && this is Local ->{
+                    mergeProperties<LocalMutable>(this, entry, Local())
+                }
+                entry is UpdateJson && this is UpdateJson -> {
+                    mergeProperties<UpdateJsonMutable>(this, entry, UpdateJson())
                 }
             }
+
+//            for (prop in clazz.memberProperties) {
+//                if (prop is KMutableProperty<*>) {
+//                    val otherValue = prop.get(entry)
+//                    val thisValue = prop.get(this)
+//                    val defaultValue = prop.get(DEFAULT)
+//                    if (otherValue == defaultValue && thisValue != defaultValue) {
+//                        if (prop.name != "entries" && prop.name != "template") {
+//                            // clone maps
+//                            when (thisValue) {
+//                                is MutableMap<*, *> -> {
+//                                    val map = thisValue.toMutableMap()
+//                                    // copy lists
+//                                    map.forEach { k, v ->
+//                                        if (v is List<*>) {
+//                                            map[k] = v.toList()
+//                                        }
+//                                    }
+//                                    prop.setter.call(entry, map)
+//                                }
+//                                is Set<*> -> prop.setter.call(entry, thisValue.toSet())
+//                                else ->
+//                                    prop.setter.call(entry, thisValue)
+//                            }
+//                        }
+//                    }
+//                }
+//            }
 
             entry.flatten("$indent|  ", parentFile)
             if (entry.entries.isNotEmpty() || entry.id.isBlank()) {
@@ -200,6 +269,36 @@ data class NestedEntry(
             if (entry.id.isEmpty()) {
                 logger.error { entry }
                 throw IllegalStateException("entries with blank id must not persist")
+            }
+        }
+    }
+}
+
+private inline fun <reified T: Any> mergeProperties(a: T, b: T, default: T) {
+    for (prop in T::class.memberProperties) {
+        if (prop is KMutableProperty<*>) {
+            val otherValue = prop.get(b)
+            val thisValue = prop.get(a)
+            val defaultValue = prop.get(default)
+            if (otherValue == defaultValue && thisValue != defaultValue) {
+                if (prop.name != "entries" && prop.name != "template") {
+                    // clone maps
+                    when (thisValue) {
+                        is MutableMap<*, *> -> {
+                            val map = thisValue.toMutableMap()
+                            // copy lists
+                            map.forEach { k, v ->
+                                if (v is List<*>) {
+                                    map[k] = v.toList()
+                                }
+                            }
+                            prop.setter.call(b, map)
+                        }
+                        is Set<*> -> prop.setter.call(b, thisValue.toSet())
+                        else ->
+                            prop.setter.call(b, thisValue)
+                    }
+                }
             }
         }
     }

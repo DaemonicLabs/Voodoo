@@ -1,16 +1,12 @@
 package voodoo.forge
 
 import com.github.kittinunf.fuel.core.extensions.cUrlString
-import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
+import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
 import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
-import io.ktor.client.request.get
-import io.ktor.client.request.header
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import mu.KLogging
 import voodoo.data.ForgeVersion
@@ -18,7 +14,7 @@ import voodoo.util.Downloader
 import javax.xml.parsers.DocumentBuilderFactory
 import kotlinx.coroutines.runBlocking
 import org.w3c.dom.NodeList
-import voodoo.util.client
+import voodoo.util.json
 
 /**
  * Created by nikky on 30/12/17.
@@ -127,25 +123,26 @@ object ForgeUtil : KLogging() {
     private suspend fun getForgePromoData(): ForgeData {
         val url = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json"
 
-        return client.get<ForgeData>(url) {
-            header("User-Agent", Downloader.useragent)
-        }
+//        return client.get<ForgeData>(url) {
+//            header("User-Agent", Downloader.useragent)
+//        }
 
 //        val loader: KSerializer<ForgeData> = ForgeData.serializer()
-//        val (request, response, result) = url.httpGet()
-//            .header("User-Agent" to Downloader.useragent)
+        val (request, response, result) = url.httpGet()
+            .header("User-Agent" to Downloader.useragent)
 //            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = loader))
-//        when (result) {
-//            is Result.Success -> return result.value
-//            is Result.Failure -> {
-//                logger.error("getForgeData")
-//                logger.error("url: $url")
-//                logger.error("cUrl: ${request.cUrlString()}")
-//                logger.error("response: $response")
-//                logger.error { result.error }
-//                throw result.error
-//            }
-//        }
+            .awaitStringResponseResult()
+        when (result) {
+            is Result.Success -> return json.parse(ForgeData.serializer(), result.value)
+            is Result.Failure -> {
+                logger.error("getForgeData")
+                logger.error("url: $url")
+                logger.error("cUrl: ${request.cUrlString()}")
+                logger.error("response: $response")
+                logger.error { result.error }
+                throw result.error
+            }
+        }
     }
 
     @JvmStatic

@@ -24,6 +24,7 @@ import voodoo.data.curse.CurseFile
 import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.CurseMinecraft
 import voodoo.data.curse.CurseModLoader
+import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
@@ -101,7 +102,7 @@ object CursePack : AbstractPack() {
                             val required = !modpack.isEntryOptional(entry.id)
 
                             val provider = Providers[entry.provider]
-                            if (provider == CurseProvider) {
+                            if (provider == CurseProvider && entry is LockEntry.Curse) {
                                 curseModsChannel.send(
                                     CurseFile(
                                         entry.projectID,
@@ -153,7 +154,7 @@ object CursePack : AbstractPack() {
                                 li {
                                     when {
                                         projectPage.isNotEmpty() -> a(href = projectPage) { +"${entry.displayName} $authorString" }
-                                        entry.url.isNotBlank() -> {
+                                        entry is LockEntry.Direct && entry.url.isNotBlank() -> {
                                             +"direct: "
                                             a(
                                                 href = entry.url,
@@ -161,8 +162,11 @@ object CursePack : AbstractPack() {
                                             ) { +"${entry.displayName} $authorString" }
                                         }
                                         else -> {
-                                            val source =
-                                                if (entry.fileSrc.isNotBlank()) "file://" + entry.fileSrc else "unknown"
+                                            val source = if ( entry is LockEntry.Local && entry.fileSrc.isNotBlank()) {
+                                                    "file://" + entry.fileSrc
+                                                } else {
+                                                    "unknown"
+                                                }
                                             +"${entry.displayName} $authorString (source: $source)"
                                         }
                                     }

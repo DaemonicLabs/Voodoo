@@ -1,11 +1,8 @@
 package voodoo.changelog
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.internal.MapLikeSerializer
-import kotlinx.serialization.serializer
 import mu.KLogging
 import voodoo.data.lock.LockPack
-import voodoo.data.meta.MetaInfo
 import voodoo.forge.ForgeUtil
 import voodoo.markdownTable
 import voodoo.provider.Providers
@@ -14,6 +11,8 @@ import voodoo.util.unixPath
 import java.io.File
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 
 val LockPack.forgeVersion: String
     get() = runBlocking {
@@ -71,8 +70,8 @@ data class PackDiff(
         private object Filename {
             const val changelog = "changelog.md"
             const val completeChangelog = "complete_changelog.md"
-            const val packMeta = "pack.meta.hjson"
-            const val entryMeta = "entry.meta.hjson"
+            const val packMeta = "pack.meta.json"
+            const val entryMeta = "entry.meta.json"
         }
 
         fun writeFullChangelog(meta: File, versions: List<String>, docDir: File) {
@@ -85,11 +84,11 @@ data class PackDiff(
             fullChangelogFile.copyTo(docDir.resolve(Filename.completeChangelog), overwrite = true)
         }
 
-        private val packMetaSerializer = MapSerializer(String.serializer(), MetaInfo.serializer())
+        private val packMetaSerializer = MapSerializer(String.serializer(), String.serializer())
         private val entryMetaSerializer = MapSerializer(String.serializer(), packMetaSerializer)
 
-        fun writePackMetaInformation(newMeta: File, pack: LockPack): Map<String, MetaInfo> {
-            val reportMap = pack.report().associateTo(linkedMapOf()) { it.first to MetaInfo(it.second, it.third) }
+        fun writePackMetaInformation(newMeta: File, pack: LockPack): Map<String, String> {
+            val reportMap = pack.report().toMap()
 
             val reportFile = newMeta.resolve(Filename.packMeta)
             val json = json.stringify(packMetaSerializer, reportMap)
@@ -100,19 +99,21 @@ data class PackDiff(
             return reportMap
         }
 
-        fun readPackMetaInformation(oldMeta: File): Map<String, MetaInfo> {
+        fun readPackMetaInformation(oldMeta: File): Map<String, String> {
             val reportFile = oldMeta.resolve(Filename.packMeta)
             if (!reportFile.exists()) return mapOf()
             return json.parse(packMetaSerializer, reportFile.readText())
         }
 
-        fun writeEntryMetaInformation(newMeta: File, pack: LockPack): Map<String, Map<String, MetaInfo>> {
-            val reportMap = pack.entrySet.sortedBy { it.displayName.toLowerCase() }.associate { entry ->
+        fun writeEntryMetaInformation(newMeta: File, pack: LockPack): Map<String, Map<String, String>> {
+            val reportMap = pack.entrySet.sortedBy {
+                it.displayName.toLowerCase()
+            }.associate { entry ->
                 val provider = Providers[entry.provider]
 
                 entry.id.toLowerCase() to provider.reportData(entry)
-            }.mapValuesTo(linkedMapOf()) { (id, triples) ->
-                triples.associate { it.first to MetaInfo(it.second, it.third) }
+            }.mapValues { (id, pairs) ->
+                pairs.toMap()
             }
             val reportFile = newMeta.resolve(Filename.entryMeta)
             val json = json.stringify(entryMetaSerializer, reportMap)
@@ -124,37 +125,42 @@ data class PackDiff(
             return reportMap
         }
 
-        fun readEntryMetaInformation(oldMeta: File): Map<String, Map<String, MetaInfo>> {
+        fun readEntryMetaInformation(oldMeta: File): Map<String, Map<String, String>> {
             val reportFile = oldMeta.resolve(Filename.entryMeta)
             if (!reportFile.exists()) return mapOf()
             return json.parse(entryMetaSerializer, reportFile.readText())
+//            return (json.parseJson(reportFile.readText()) as JsonObject).content.mapValues { (key, value) ->
+//                (value as JsonObject).content.mapValues { (key, value) ->
+//                    (value as JsonPrimitive).content
+//                }
+//            }
         }
 
         private fun changeTable(
             propHeader: String = "Property",
             oldheader: String = "old value",
             newheader: String = "new value",
-            newMetaInfo: Map<String, MetaInfo>,
-            oldMetaInfo: Map<String, MetaInfo>
+            newMetaInfo: Map<String, String>,
+            oldMetaInfo: Map<String, String>
         ): String? {
             val content = mutableListOf<List<String>>()
             newMetaInfo.forEach { key, newInfo ->
                 val oldInfo = oldMetaInfo[key]
                 if (oldInfo != null) {
                     // value was changed
-                    if (oldInfo.value != newInfo.value) {
-                        content += listOf(newInfo.name, oldInfo.value, newInfo.value)
+                    if (oldInfo != newInfo) {
+                        content += listOf(key, oldInfo, newInfo)
                     }
                 } else {
                     // value was added
-                    content += listOf(newInfo.name, "", newInfo.value)
+                    content += listOf(key, "", newInfo)
                 }
             }
 
-            oldMetaInfo.filter { (key, meta) -> !newMetaInfo.containsKey(key) }
+            oldMetaInfo.filterKeys { key -> !newMetaInfo.containsKey(key) }
                 .forEach { key, oldInfo ->
                     // value was removed
-                    content += listOf(oldInfo.name, oldInfo.value, "")
+                    content += listOf(key, oldInfo, "")
                 }
 
             if (content.isEmpty()) {

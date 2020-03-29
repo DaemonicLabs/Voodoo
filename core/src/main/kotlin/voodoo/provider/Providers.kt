@@ -1,6 +1,7 @@
 package voodoo.provider
 
 import mu.KLogging
+import voodoo.data.flat.Entry
 
 object Providers : KLogging() {
     private val providers = hashMapOf<String, ProviderBase>()

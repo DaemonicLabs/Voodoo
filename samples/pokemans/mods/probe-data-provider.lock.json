@@ -1,0 +1,6 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Jenkins",
+    "jenkinsUrl": "https://ci.elytradev.com",
+    "job": "elytra/ProbeDataProvider/1.10.2",
+    "buildNumber": 2
+}

@@ -9,9 +9,9 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
+import voodoo.data.nested.NestedEntry
 import voodoo.poet.Poet
 import voodoo.poet.PoetPack
-import voodoo.provider.CurseProvider
 import voodoo.script.MainScriptEnv
 import java.io.File
 
@@ -66,8 +66,8 @@ open class CreatePackTask : DefaultTask() {
             title = titleStr.takeIf { it.isNotBlank() } ?: id.capitalize()
             authors = listOf(System.getProperty("user.name"))
             forge = "$mcVersion-recommended"
-            root(CurseProvider) {
-                list {
+            root<NestedEntry.Curse> { builder ->
+                builder.list {
                     randomMods.forEach { (identifier, projectId) ->
                         +ProjectID(projectId.value) configure {
                             //                            projectID = projectId

@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "endercore"
+            ]
+        }
+    },
+    "projectID": 64578,
+    "fileID": 2858816
+}

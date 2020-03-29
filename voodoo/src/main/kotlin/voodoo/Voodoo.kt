@@ -107,19 +107,19 @@ object Voodoo : KLogging() {
 
             val nestedPack = scriptEnv.pack
 
-            val packFileName = "$id.pack.hjson"
+            val packFileName = "$id.pack.json"
 //    val packFile = packDir.resolve(packFileName)
-            val lockFileName = "$id.lock.pack.hjson"
+            val lockFileName = "$id.lock.pack.json"
             val lockFile = scriptEnv.pack.sourceFolder.resolve(lockFileName)
 
             val funcs = mapOf<String, suspend Stopwatch.(Array<String>) -> Unit>(
-                "import_debug" to { _ ->
-                    Importer.flatten(nestedPack, targetFileName = packFileName)
-                },
+//                "import_debug" to { _ ->
+//                    Importer.flatten(nestedPack, targetFileName = packFileName)
+//                },
 //        "build_debug" to { args -> BuilderForDSL.build(packFile, rootDir, id, targetFileName = lockFileName, args = *args) },
                 "build" to { args ->
                     val modpack = "flatten".watch {
-                        Importer.flatten(nestedPack)
+                        Importer.flatten(this, nestedPack)
                     }
                     val lockPack = "build".watch {
                         Builder.build(this, modpack, id = id, /*targetFileName = lockFileName,*/ args = *args)
@@ -129,7 +129,7 @@ object Voodoo : KLogging() {
                     }
 
                     // TODO: add changelog field to pack
-                    // TODO: write `.meta/$id/$version.meta.hjson`
+                    // TODO: write `.meta/$id/$version.meta.json`
                     // TODO: if the file did not exist (so it is the first commit that changes the version):
                     //   TODO: get parent git hash, write to `$lastVersion.commithash.txt`
                     // TODO: generate diff between $version and $lastVersion

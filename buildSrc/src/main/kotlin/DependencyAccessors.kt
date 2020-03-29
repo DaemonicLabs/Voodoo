@@ -199,9 +199,9 @@ fun Project.setupDependencies(target: Project = this) {
                 api(Serialization.dependency)
                 api(Coroutines.dependency)
 
-                api(Ktor.dependency)
-                api(Ktor.dependencyJson)
-                api(Ktor.dependencySerialization)
+//                api(Ktor.dependency)
+//                api(Ktor.dependencyJson)
+//                api(Ktor.dependencySerialization)
 
                 api(Fuel.dependency)
                 api(Fuel.dependencyCoroutines)

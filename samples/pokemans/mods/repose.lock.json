@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "farseek"
+            ]
+        }
+    },
+    "projectID": 220524,
+    "fileID": 2737950
+}

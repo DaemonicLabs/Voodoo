@@ -20,10 +20,10 @@ pack {
     }
 }
 
-root(CurseProvider) {
+root<Curse> {
     releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
     validMcVersions = setOf("1.12.2", "1.12.1", "1.12")
-    list {
+    it.list {
 
         // Vazkii
         +(Mod.akashicTome)
@@ -222,7 +222,7 @@ root(CurseProvider) {
 
         // Pulled due to outstanding issues
 
-        withProvider(DirectProvider).list {
+        withTypeClass(Direct::class).list {
             +"nutrition" configure {
                 url = "https://github.com/WesCook/Nutrition/releases/download/v4.0.0/Nutrition-1.12.2-4.0.0.jar"
             }
@@ -240,7 +240,7 @@ root(CurseProvider) {
             }
         }
 
-        withProvider(JenkinsProvider) {
+        withTypeClass(Jenkins::class) {
             jenkinsUrl = "https://ci.elytradev.com"
         }.list {
             // b0undrybreaker
@@ -266,7 +266,7 @@ root(CurseProvider) {
             +(Mod.btfuContinuousRsyncIncrementalBackup)
             +(Mod.swingthroughgrass)
             +(Mod.colorchat)
-            withProvider(JenkinsProvider) {
+            withTypeClass(Jenkins::class) {
                 jenkinsUrl = "https://ci.elytradev.com"
             }.list {
                 +"matterlink" job "elytra/MatterLink/master"
@@ -275,7 +275,7 @@ root(CurseProvider) {
 
         group {
             side = Side.BOTH
-            feature {
+            it.feature {
                 selected = false
             }
 
@@ -440,7 +440,7 @@ root(CurseProvider) {
                     description = "Multi-mod compatible resource pack."
                 }
 
-                withProvider(DirectProvider).list {
+                withTypeClass(Direct::class).list {
                     +"Optifine" configure {
                         description =
                             "Adds a variety of client and video options. Notorious for being problematic. Use with caution."

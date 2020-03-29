@@ -52,7 +52,7 @@ object MMCUtil : KLogging() {
 
     init {
         val jsonWithDefaults = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = true))
-        val mmcConfigurationFile = configHome.resolve("multimc.hjson")
+        val mmcConfigurationFile = configHome.resolve("multimc.json")
         logger.info("loading multimc config $mmcConfigurationFile")
         mmcConfig = when {
             mmcConfigurationFile.exists() -> jsonWithDefaults.parse(

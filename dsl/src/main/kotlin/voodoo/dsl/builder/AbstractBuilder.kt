@@ -9,14 +9,9 @@ import voodoo.provider.ProviderBase
 import java.io.File
 
 @VoodooDSL
-abstract class AbstractBuilder<P : ProviderBase>(
-    val provider: P,
-    val entry: NestedEntry
+abstract class AbstractBuilder<E: NestedEntry>(
+    val entry: E
 ) {
-    init {
-        entry.provider = provider.id
-    }
-
     suspend fun flatten(parent: File) = entry.flatten(parent)
 
     var folder by property(entry::folder)
@@ -29,20 +24,11 @@ abstract class AbstractBuilder<P : ProviderBase>(
     //  replaceDependencies
 
     var packageType by property(entry::packageType)
-    //    var transient by property(entry::transient::get, entry::transient::set)
     var version by property(entry::version)
     var fileName by property(entry::fileName)
     var validMcVersions by property(entry::validMcVersions)
 
     fun optional(block: OptionalBuilder.() -> Unit) {
-        val optionalData = entry.optionalData?.copy() ?: OptionalData()
-        val builder = OptionalBuilder(optionalData)
-        builder.block()
-        entry.optionalData = optionalData
-    }
-
-    @Deprecated("use optional instead", ReplaceWith("optional(block)"))
-    fun feature(block: OptionalBuilder.() -> Unit) {
         val optionalData = entry.optionalData?.copy() ?: OptionalData()
         val builder = OptionalBuilder(optionalData)
         builder.block()

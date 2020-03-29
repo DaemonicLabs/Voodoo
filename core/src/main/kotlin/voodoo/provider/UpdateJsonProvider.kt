@@ -44,6 +44,7 @@ object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
         mcVersion: String,
         addEntry: SendChannel<Pair<Entry, String>>
     ): LockEntry {
+        entry as Entry.UpdateJson
         val json = getUpdateJson(entry.updateJson)!!
         if (entry.id.isBlank()) {
             entry.id = entry.updateJson.substringAfterLast('/').substringBeforeLast('.')
@@ -57,10 +58,15 @@ object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
         }
         val version = json.promos[key]!!
         val url = entry.template.replace("{version}", version)
-        return entry.lock {
-            this.url = url
-            updateJson = entry.updateJson
-            jsonVersion = version
+        return entry.lock { commonComponent ->
+            LockEntry.UpdateJson(
+                common = commonComponent,
+                url = url,
+                updateChannel = entry.updateChannel,
+                updateJson = entry.updateJson,
+                jsonVersion = version,
+                useUrlTxt = entry.useUrlTxt
+            )
         }
     }
 
@@ -70,7 +76,13 @@ object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
         targetFolder: File,
         cacheDir: File
     ): Pair<String?, File> = stopwatch {
-        return@stopwatch Providers["DIRECT"].download("downloadDirect".watch, entry, targetFolder, cacheDir)
+        entry as LockEntry.UpdateJson
+        val directEntry = LockEntry.Direct(
+            common = entry.common,
+            url = entry.url,
+            useUrlTxt = entry.useUrlTxt
+        )
+        return@stopwatch Providers["DIRECT"].download("downloadDirect".watch, directEntry, targetFolder, cacheDir)
     }
 
     override suspend fun generateName(entry: LockEntry): String {
@@ -78,18 +90,21 @@ object UpdateJsonProvider : ProviderBase("UpdateJson Provider") {
     }
 
     override suspend fun getProjectPage(entry: LockEntry): String {
+        entry as LockEntry.UpdateJson
         val json = getUpdateJson(entry.updateJson)!!
         return json.homepage
     }
 
     override suspend fun getVersion(entry: LockEntry): String {
+        entry as LockEntry.UpdateJson
         return entry.jsonVersion
     }
 
-    override fun reportData(entry: LockEntry): MutableList<Triple<String, String, String>> {
+    override fun reportData(entry: LockEntry): MutableList<Pair<String, String>> {
+        entry as LockEntry.UpdateJson
         val data = super.reportData(entry)
-        data += Triple("json_updateChannel", "update channel", "`${entry.updateChannel}`")
-        data += Triple("json_version", "jsonVersion", "`${entry.jsonVersion}`")
+        data += "Update Channel" to "${entry.updateChannel}"
+        data += "Json Version" to entry.jsonVersion
         return data
     }
 }

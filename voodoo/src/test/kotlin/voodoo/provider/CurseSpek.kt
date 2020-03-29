@@ -7,6 +7,7 @@ import list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.builder.resolve
+import voodoo.data.nested.NestedEntry
 import voodoo.script.MainScriptEnv
 import voodoo.util.Directories
 import java.io.File
@@ -27,8 +28,8 @@ object CurseSpek : Spek({
             MainScriptEnv(rootDir = rootFolder, id = "curse_spek").apply {
                 mcVersion = "1.12.2"
                 title = "Curse Spek"
-                root(CurseProvider) {
-                    list {
+                root<NestedEntry.Curse> { builder ->
+                    builder.list {
                         +(Mod.matterlink)
                     }
                 }
@@ -40,7 +41,9 @@ object CurseSpek : Spek({
         }
 
         val modpack by memoized {
-            nestedPack.flatten()
+            runBlocking {
+                nestedPack.flatten()
+            }
         }
 
         context("build pack") {

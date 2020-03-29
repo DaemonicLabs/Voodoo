@@ -11,18 +11,7 @@ import voodoo.poet.generator.CurseGenerator
 import voodoo.poet.generator.CurseSection
 import voodoo.poet.generator.ForgeGenerator
 import voodoo.util.SharedFolders
-import kotlin.script.experimental.api.ScriptAcceptedLocation
-import kotlin.script.experimental.api.ScriptCollectedData
-import kotlin.script.experimental.api.ScriptCompilationConfiguration
-import kotlin.script.experimental.api.ScriptDiagnostic
-import kotlin.script.experimental.api.acceptedLocations
-import kotlin.script.experimental.api.asSuccess
-import kotlin.script.experimental.api.compilerOptions
-import kotlin.script.experimental.api.defaultImports
-import kotlin.script.experimental.api.foundAnnotations
-import kotlin.script.experimental.api.ide
-import kotlin.script.experimental.api.importScripts
-import kotlin.script.experimental.api.refineConfiguration
+import kotlin.script.experimental.api.*
 import kotlin.script.experimental.host.FileBasedScriptSource
 import kotlin.script.experimental.host.toScriptSource
 
@@ -43,6 +32,14 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         voodoo.data.curse.ProjectID::class,
         voodoo.data.curse.FileID::class,
 
+//        voodoo.data.nested.NestedEntry::class,
+        voodoo.data.nested.NestedEntry.Common::class,
+        voodoo.data.nested.NestedEntry.Curse::class,
+        voodoo.data.nested.NestedEntry.Direct::class,
+        voodoo.data.nested.NestedEntry.Jenkins::class,
+        voodoo.data.nested.NestedEntry.Local::class,
+        voodoo.data.nested.NestedEntry.UpdateJson::class,
+
         com.skcraft.launcher.model.SKServer::class,
         com.skcraft.launcher.model.modpack.Recommendation::class,
 
@@ -62,12 +59,13 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         "voodoo.provider.UpdateJsonProvider",
         "voodoo.data.*",
         "voodoo.data.curse.*",
+        "voodoo.data.nested.NestedEntry.*",
         "voodoo.provider.*",
         "com.skcraft.launcher.model.SKServer",
         "com.skcraft.launcher.model.modpack.Recommendation"
     )
 
-    compilerOptions.append("-jvm-target 1.8")
+    compilerOptions.append("-jvm-target", "1.8")
 
     refineConfiguration {
         ide {
@@ -76,7 +74,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
 
 //        onAnnotations<Include>(Include.Companion::configureIncludes)
 
-//        importScripts.append()}
+//        importScripts.append()
 
         beforeParsing { context ->
             val reports: MutableList<ScriptDiagnostic> = mutableListOf()

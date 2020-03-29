@@ -38,7 +38,7 @@ suspend fun resolve(
         // delete all lockfiles
         srcDir.walkTopDown().asSequence()
             .filter {
-                it.isFile && it.name.endsWith(".lock.hjson")
+                it.isFile && it.name.endsWith(".lock.json")
             }
             .forEach {
                 it.delete()
@@ -59,8 +59,8 @@ suspend fun resolve(
 
     if (!noUpdate) {
         // remove all transient entries
-        modPack.lockEntrySet.removeIf { (id) ->
-            modPack.findEntryById(id)?.transient ?: true
+        modPack.lockEntrySet.removeIf { entry ->
+            modPack.findEntryById(entry.id)?.transient ?: true
         }
     }
 

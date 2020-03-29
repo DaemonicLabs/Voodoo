@@ -15,7 +15,7 @@ private val logger = KotlinLogging.logger {}
 
 object MMCSpek : Spek({
     describe("load pack") {
-        val modpack by memoized {
+        val manifest by memoized {
             val packUrl = "https://launcher.towerdevs.xyz/descentfrozenhell.json"
             println("pack url: $packUrl")
 
@@ -23,7 +23,7 @@ object MMCSpek : Spek({
                 .header("User-Agent" to CurseClient.useragent)
                 .responseString()
             when (result) {
-                is Result.Success -> Json(JsonConfiguration(strictMode = false)).parse(Manifest.serializer(), result.value)
+                is Result.Success -> Json(JsonConfiguration(ignoreUnknownKeys = true)).parse(Manifest.serializer(), result.value)
                 is Result.Failure -> {
                     logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
                     fail("http request failed")
@@ -31,10 +31,10 @@ object MMCSpek : Spek({
             }
         }
         it("load") {
-            println(modpack)
+            println(manifest)
         }
         it("pack") {
-            val jsonString = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = false)).stringify(Manifest.serializer(), modpack)
+            val jsonString = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = false)).stringify(Manifest.serializer(), manifest)
             println(jsonString)
         }
     }

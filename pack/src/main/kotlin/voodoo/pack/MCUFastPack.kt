@@ -44,7 +44,7 @@ object MCUFastPack : AbstractPack() {
                 SKPack.logger.debug("cp -r $packSrc $workingDir")
                 packSrc.copyRecursively(workingDir, overwrite = true)
                 workingDir.walkBottomUp().forEach {
-                    if (it.name.endsWith(".entry.hjson") || it.name.endsWith(".lock.hjson") || it.name.endsWith(".lock.pack.hjson"))
+                    if (it.name.endsWith(".entry.json") || it.name.endsWith(".lock.json") || it.name.endsWith(".lock.pack.json"))
                         it.delete()
                     if (it.isDirectory && it.listFiles().isEmpty()) {
                         it.delete()

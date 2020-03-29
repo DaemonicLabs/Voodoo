@@ -65,8 +65,8 @@ object MultiMCTester : AbstractTester() {
         }
 
         for (src in minecraftSrcDir.walkTopDown()) {
-            if (src.name.endsWith(".lock.hjson")) continue
-            if (src.name.endsWith(".entry.hjson")) continue
+            if (src.name.endsWith(".lock.json")) continue
+            if (src.name.endsWith(".entry.json")) continue
 
             val relPath = src.relativeTo(minecraftSrcDir)
             val dstFile = minecraftDir.resolve(relPath)
@@ -99,7 +99,7 @@ object MultiMCTester : AbstractTester() {
         logger.info("sorting client / server mods")
         for (file in minecraftDir.walkTopDown()) {
             when {
-                // file.name.endsWith(".lock.hjson") -> file.delete()
+                // file.name.endsWith(".lock.json") -> file.delete()
                 file.name == "_CLIENT" -> {
                     file.copyRecursively(file.parentFile, overwrite = true)
                     file.deleteRecursively()
@@ -183,7 +183,7 @@ object MultiMCTester : AbstractTester() {
         logger.info("clearing serverside files and deleting lockfiles")
         for (file in minecraftDir.walkTopDown()) {
             when {
-                file.name.endsWith(".lock.hjson") -> file.delete()
+                file.name.endsWith(".lock.json") -> file.delete()
                 file.name == "_CLIENT" -> {
                     file.copyRecursively(file.parentFile, overwrite = true)
                     file.deleteRecursively()

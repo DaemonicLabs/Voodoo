@@ -8,6 +8,7 @@ import voodoo.dsl.VoodooDSL
 import voodoo.property
 import voodoo.provider.ProviderBase
 import voodoo.readOnly
+import kotlin.reflect.full.createInstance
 
 @VoodooDSL
 open class ModpackBuilder(
@@ -28,28 +29,26 @@ open class ModpackBuilder(
         pack.packOptions.configurePack()
     }
 
-    private var rootInitialized = false
+    var rootInitialized = false
 
     @VoodooDSL
-    fun <T> root(
-        provider: T,
-        initRoot: GroupBuilder<T>.() -> Unit
-    ) where T : ProviderBase {
+    inline fun <reified E: NestedEntry> root(
+        initRoot: E.(GroupBuilder<E>) -> Unit
+    ) {
         require(!rootInitialized) { "root was already initialized for ${pack.id}" }
-        val entry = NestedEntry()
-        val rootBuilder = GroupBuilder(entry = entry, provider = provider)
-        rootBuilder.initRoot()
+        val entry = E::class.createInstance()
+        val rootBuilder = GroupBuilder(entry = entry)
+        entry.initRoot(rootBuilder)
         pack.root = rootBuilder.entry
     }
 
     @VoodooDSL
-    fun <T> rootEntry(
-        provider: T,
-        initRoot: GroupBuilder<T>.() -> Unit
-    ): NestedEntry where T : ProviderBase {
-        val entry = NestedEntry()
-        val rootBuilder = GroupBuilder(entry = entry, provider = provider)
-        rootBuilder.initRoot()
+    inline fun <reified E: NestedEntry> rootEntry(
+        initRoot: E.(GroupBuilder<E>) -> Unit
+    ): NestedEntry {
+        val entry = E::class.createInstance()
+        val rootBuilder = GroupBuilder(entry = entry)
+        entry.initRoot(rootBuilder)
         return rootBuilder.entry
     }
 }

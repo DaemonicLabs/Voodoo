@@ -67,7 +67,7 @@ object SKPack : AbstractPack() {
             logger.debug("cp -r $packSrc $skSrcFolder")
             packSrc.copyRecursively(skSrcFolder, overwrite = true)
             skSrcFolder.walkBottomUp().forEach {
-                if (it.name.endsWith(".entry.hjson") || it.name.endsWith(".lock.hjson") || it.name.endsWith(".lock.pack.hjson"))
+                if (it.name.endsWith(".entry.json") || it.name.endsWith(".lock.json") || it.name.endsWith(".lock.pack.json"))
                     it.delete()
                 if (it.isDirectory && it.listFiles().isEmpty()) {
                     it.delete()
@@ -114,7 +114,11 @@ object SKPack : AbstractPack() {
                                 targetFolder,
                                 cacheDir
                             )
-                            if (url != null && entry.useUrlTxt) {
+                            if (url != null
+                                && ((entry is LockEntry.Direct && entry.useUrlTxt) ||
+                                        (entry is LockEntry.Curse && entry.useUrlTxt) ||
+                                        (entry is LockEntry.UpdateJson && entry.useUrlTxt))
+                            ) {
                                 val urlTxtFile = targetFolder.resolve(file.name + ".url.txt")
                                 urlTxtFile.writeText(url)
                             }

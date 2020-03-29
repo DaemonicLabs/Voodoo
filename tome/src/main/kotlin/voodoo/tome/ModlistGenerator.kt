@@ -30,8 +30,12 @@ object ModlistGenerator : TomeGenerator() {
                     append("\n\n")
 
                     fun report(entry: LockEntry): String =
-                        markdownTable(headers = "Mod" to entry.displayName, content = provider.reportData(entry)
-                            .map { it.second to it.third })
+                        markdownTable(
+                            headers = listOf("Mod", entry.displayName),
+                            content = provider.reportData(entry).map {
+                                listOf(it.first, it.second)
+                            }
+                        )
                     append(report(entry))
                 }
             }

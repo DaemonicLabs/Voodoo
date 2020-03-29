@@ -46,8 +46,8 @@ object Diff : KLogging() {
                 // these files can be generated later,
                 // but not sure how it is for historic versions
                 version == versions.last() ||
-                        resolve("entry.meta.hjson").exists() &&
-                        resolve("pack.meta.hjson").exists()
+                        resolve("entry.meta.json").exists() &&
+                        resolve("pack.meta.json").exists()
             }
 
             logger.info("version $version is valid? $valid")
@@ -60,8 +60,8 @@ object Diff : KLogging() {
 //            newPack.sourceFolder.copyRecursively(tmpSource)
 //            tmpSource.listFiles { file ->
 //                when {
-//                    file.endsWith(".entry.hjson") -> true
-//                    file.endsWith(".entry.lock.hjson") -> true
+//                    file.endsWith(".entry.json") -> true
+//                    file.endsWith(".entry.lock.json") -> true
 //                    else -> false
 //                }
 //            }.forEach {
@@ -92,7 +92,7 @@ object Diff : KLogging() {
             logger.debug("old root dir: $oldSource")
 
             val oldLockPackFile = oldSource
-                ?.resolve("${newPack.id}.lock.pack.hjson")
+                ?.resolve("${newPack.id}.lock.pack.json")
 
             val oldPack = try {
                 logger.info("reading: $oldLockPackFile")
@@ -132,10 +132,11 @@ object Diff : KLogging() {
                 val emptySource = sourcesRoot.resolve("_init")
                 emptySource.deleteRecursively()
                 emptySource.mkdirs()
-                writeDiff(sourcesRoot, emptySource, newSource, docDir)
+                writeDiff(sourcesRoot, emptySource, newSource, docDir).also {
+                    emptySource.deleteRecursively() // delete the useless empty folder afterwards
+                }
             }
             diffFile?.copyTo(newMetaDataLocation.resolve(newPack.version).resolve(diffFile.name), overwrite = true)
-
 
             diff
         }
@@ -153,8 +154,8 @@ object Diff : KLogging() {
             val diffFile = newMetaDataLocation.resolve("changes.diff")
             val diffResult = ShellUtil.runProcess(
                 "diff",
-                "-x", "*.lock.hjson",
-                "-x", "*.lock.pack.hjson",
+                "-x", "*.lock.json",
+                "-x", "*.lock.pack.json",
                 "--",
                 oldFolder.toRelativeString(rootFolder),
                 newMetaDataLocation.toRelativeString(rootFolder),

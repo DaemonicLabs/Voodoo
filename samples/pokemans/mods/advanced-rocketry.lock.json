@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "libvulpes"
+            ]
+        }
+    },
+    "projectID": 236542,
+    "fileID": 2913484
+}

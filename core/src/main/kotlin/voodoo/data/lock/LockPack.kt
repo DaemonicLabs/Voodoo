@@ -39,7 +39,7 @@ data class LockPack(
 
         fun parseFiles(srcDir: File) = srcDir.walkTopDown()
             .filter {
-                it.isFile && it.name.endsWith(".lock.hjson")
+                it.isFile && it.name.endsWith(".lock.json")
             }
             .map { LockEntry.loadEntry(it, srcDir) to it }
 
@@ -171,24 +171,20 @@ data class LockPack(
     /***
      * creates a report of key-name-value triples
      */
-    fun report(): List<Triple<String, String, String>> {
-        val reports = mutableListOf(Triple("id", "ID", "`$id`"))
+    fun report(): List<Pair<String, String>> {
+        val reports = mutableListOf("id" to id)
         title.blankOr?.let {
-            reports += Triple("title", "Title", "`$title`")
+            reports += "Title" to "$title"
         }
-        reports += Triple("packVersion", "Pack Version", "`$version`")
-        reports += Triple("mcVersion", "MC Version", "`$mcVersion`")
+        reports += "Pack Version" to version
+        reports += "MC Version" to mcVersion
         forge?.let {
             val forgeVersion = runBlocking { ForgeUtil.forgeVersionOf(it).forgeVersion }
-            reports += Triple("forgeVersion", "Forge Version", "`$forgeVersion`")
+            reports += "Forge Version" to forgeVersion
         }
-        reports += Triple("authors", "Author", "`${authors.joinToString(", ")}`")
+        reports += "Authors" to authors.joinToString(", ")
         iconFile.takeIf { it.exists() }?.let {
-            reports += Triple(
-                "icon",
-                "Icon",
-                "<img src=\"${it.relativeTo(rootDir).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
-            )
+            reports += "Icon" to "<img src=\"${it.relativeTo(rootDir).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
         }
 
         return reports

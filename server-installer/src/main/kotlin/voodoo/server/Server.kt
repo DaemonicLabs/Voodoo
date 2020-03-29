@@ -50,9 +50,9 @@ object Server {
 
             serverDir.walkBottomUp().forEach { file ->
                 when {
-                    file.name.endsWith(".entry.hjson") -> file.delete()
-                    file.name.endsWith(".lock.hjson") -> file.delete()
-                    file.name.endsWith(".lock.pack.hjson") -> file.delete()
+                    file.name.endsWith(".entry.json") -> file.delete()
+                    file.name.endsWith(".lock.json") -> file.delete()
+                    file.name.endsWith(".lock.pack.json") -> file.delete()
                     file.isDirectory && file.listFiles().isEmpty() -> file.delete()
                 }
             }

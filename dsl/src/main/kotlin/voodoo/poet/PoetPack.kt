@@ -18,17 +18,13 @@ import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
 import voodoo.forge.ForgeUtil
-import voodoo.provider.CurseProvider
-import voodoo.provider.DirectProvider
-import voodoo.provider.JenkinsProvider
-import voodoo.provider.LocalProvider
 import voodoo.provider.Providers
-import voodoo.provider.UpdateJsonProvider
 import voodoo.script.MainScriptEnv
 import java.io.File
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
+import kotlin.reflect.full.createInstance
 
 object PoetPack : KLogging() {
     fun CodeBlock.Builder.controlFlow(
@@ -40,7 +36,8 @@ object PoetPack : KLogging() {
             .apply(buildFlow)
             .endControlFlow()
 
-    private fun CodeBlock.Builder.entry(entry: NestedEntry, default: NestedEntry, root: Boolean = false) {
+    private fun CodeBlock.Builder.entry(entry: NestedEntry, /*default: NestedEntry,*/ root: Boolean = false) {
+        val default = entry::class.createInstance()
         val provider = Providers[entry.provider]
         val entryBody = CodeBlock.builder().apply {
             entry.name.takeIf { it != default.name }?.let {
@@ -87,9 +84,10 @@ object PoetPack : KLogging() {
             entry.enabled.takeIf { it != default.enabled }?.let {
                 addStatement("enabled = %L", it)
             }
-            when (provider) {
-                is CurseProvider -> {
-                    entry.curseReleaseTypes.takeIf { it != default.curseReleaseTypes }?.let { curseReleaseTypes ->
+            when (entry) {
+                is NestedEntry.Curse -> {
+                    default as NestedEntry.Curse
+                    entry.releaseTypes.takeIf { it != default.releaseTypes }?.let { curseReleaseTypes ->
                         val fileType = FileType::class.asClassName()
                         val builder = CodeBlock.builder().add("RELEASE_TYPES = setOf(")
                         curseReleaseTypes.forEachIndexed { index, releaseType ->
@@ -104,11 +102,12 @@ object PoetPack : KLogging() {
 //                    entry.curseProjectID.takeIf { it != default.curseProjectID }?.let {
 //                        addStatement("curseProjectID = %T(%L)", ProjectID::class.asClassName(), it.value)
 //                    }
-                    entry.curseFileID.takeIf { it != default.curseFileID }?.let {
+                    entry.fileID.takeIf { it != default.fileID }?.let {
                         addStatement("curseFileID = %T(%L)", FileID::class.asClassName(), it.value)
                     }
                 }
-                is DirectProvider -> {
+                is NestedEntry.Direct -> {
+                    default as NestedEntry.Direct
                     entry.url.takeIf { it != default.url }?.let {
                         addStatement("url = %S", it)
                     }
@@ -116,7 +115,8 @@ object PoetPack : KLogging() {
                         addStatement("useUrlTxt = %L", it)
                     }
                 }
-                is JenkinsProvider -> {
+                is NestedEntry.Jenkins -> {
+                    default as NestedEntry.Jenkins
                     entry.jenkinsUrl.takeIf { it != default.jenkinsUrl }?.let {
                         addStatement("jenkinsUrl = %S", it)
                     }
@@ -127,12 +127,14 @@ object PoetPack : KLogging() {
                         addStatement("buildNumber = %L", it)
                     }
                 }
-                is LocalProvider -> {
+                is NestedEntry.Local -> {
+                    default as NestedEntry.Local
                     entry.fileSrc.takeIf { it != default.fileSrc }?.let {
                         addStatement("fileSrc = %S", it)
                     }
                 }
-                is UpdateJsonProvider -> {
+                is NestedEntry.UpdateJson -> {
+                    default as NestedEntry.UpdateJson
                     entry.updateJson.takeIf { it != default.updateJson }?.let {
                         addStatement("updateJson = %S", it)
                     }
@@ -152,10 +154,10 @@ object PoetPack : KLogging() {
         val builder = if (!root) {
             when {
                 // id changed
-                entry.id != default.id -> when (provider) {
-                    is CurseProvider -> {
+                entry.id != default.id -> when (entry) {
+                    is NestedEntry.Curse -> {
                         val identifier = runBlocking {
-                            val addon = CurseClient.getAddon(entry.curseProjectID)
+                            val addon = CurseClient.getAddon(entry.projectID)
                             val slug = addon!!.slug
                             Poet.defaultSlugSanitizer(slug)
                         }
@@ -197,7 +199,7 @@ object PoetPack : KLogging() {
         entry.entries.takeUnless { it.isEmpty() }?.let { entries ->
             controlFlow("%T", ClassName("", if (root) "list" else ".list")) { listBuilder ->
                 entries.sortedBy { it.id.toLowerCase() }.forEach { subEntry ->
-                    listBuilder.entry(subEntry, NestedEntry(entry.provider))
+                    listBuilder.entry(subEntry/*, NestedEntry(entry.provider)*/)
                 }
             }
         }
@@ -290,7 +292,7 @@ object PoetPack : KLogging() {
             ) { rootBuilder ->
                 rootBuilder.entry(
                     rootEntry,
-                    NestedEntry(rootEntry.provider),
+                    /* NestedEntry(rootEntry.provider),*/
                     true
                 )
             }

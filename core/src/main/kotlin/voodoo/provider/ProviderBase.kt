@@ -75,36 +75,36 @@ abstract class ProviderBase(
         return null
     }
 
-    open fun reportData(entry: LockEntry): MutableList<Triple<String, String, String>> {
+    open fun reportData(entry: LockEntry): MutableList<Pair<String, String>> {
         return mutableListOf(
-            Triple("id", "ID", "`${entry.id}`")
+            Pair("ID", "${entry.id}")
         ).also { list ->
-            list += Triple("version", "Version", "`${entry.version()}`")
-            list += Triple("provider", "Provider", "`${entry.provider}`")
+            list += Pair("Version", "${entry.version()}")
+            list += Pair("Provider", "${entry.provider}")
             entry.fileName?.let { fileName ->
-                list += Triple("filename", "Filename", "`$fileName`")
+                list += Pair("Filename", "$fileName")
             }
-            list += Triple("side", "Side", "`${entry.side}`")
+            list += Pair("Side", "${entry.side}")
             entry.description?.let {
-                list += Triple("description", "Description", "`$it`")
+                list += Pair("Description", "$it")
             }
-            list += Triple("optional", "Optional", "`${entry.optional}`")
+            list += Pair("Optional", "${entry.optional}")
             entry.dependencies.takeIf { it.isNotEmpty() }?.let { dependencies ->
 
                 dependencies[DependencyType.REQUIRED]?.takeIf { it.isNotEmpty() }?.let { required ->
-                    list += Triple("dependencies_required", "Required Dependencies", required.joinToString("`, `", "`", "`"))
+                    list += Pair("Required Dependencies", required.joinToString(", "))
                 }
                 dependencies[DependencyType.OPTIONAL]?.takeIf { it.isNotEmpty() }?.let { required ->
-                    list += Triple("dependencies_optional", "Optional Dependencies", required.joinToString("`, `", "`", "`"))
+                    list += Pair("Optional Dependencies", required.joinToString(", "))
                 }
 //                dependencies[DependencyType.EmbeddedLibrary]?.takeIf { it.isNotEmpty() }?.let { required ->
-//                    list += Triple("dependencies_embedded", "Embedded Dependencies", required.joinToString("`, `", "`", "`"))
+//                    list += Triple("dependencies_embedded", "Embedded Dependencies", required.joinToString(", ", "", ""))
 //                }
 //                dependencies[DependencyType.Include]?.takeIf { it.isNotEmpty() }?.let { required ->
-//                    list += Triple("dependencies_include", "Include Dependencies", required.joinToString("`, `", "`", "`"))
+//                    list += Triple("dependencies_include", "Include Dependencies", required.joinToString(", ", "", ""))
 //                }
 //                dependencies[DependencyType.Tool]?.takeIf { it.isNotEmpty() }?.let { required ->
-//                    list += Triple("dependencies_tool", "Tool Dependencies", required.joinToString("`, `", "`", "`"))
+//                    list += Triple("dependencies_tool", "Tool Dependencies", required.joinToString(", ", "", ""))
 //                }
             }
         }

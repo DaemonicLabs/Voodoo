@@ -1,20 +1,23 @@
+import voodoo.data.nested.NestedEntry
 import voodoo.dsl.builder.AbstractBuilder
 import voodoo.dsl.builder.EntryBuilder
 import voodoo.provider.UpdateJsonProvider
 
+/*
 // UPDATE-JSON
-var EntryBuilder<UpdateJsonProvider>.json
+var EntryBuilder<NestedEntry.UpdateJson>.json
     get() = entry.updateJson
     set(it) {
         entry.updateJson = it
     }
-var AbstractBuilder<UpdateJsonProvider>.channel
+var AbstractBuilder<NestedEntry.UpdateJson>.channel
     get() = entry.updateChannel
     set(it) {
         entry.updateChannel = it
     }
-var EntryBuilder<UpdateJsonProvider>.template
+var EntryBuilder<NestedEntry.UpdateJson>.template
     get() = entry.template
     set(it) {
         entry.template = it
     }
+*/

@@ -6,13 +6,10 @@ import kotlinx.coroutines.runBlocking
 import list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import releaseTypes
 import voodoo.data.Side
 import voodoo.data.curse.FileType
-import voodoo.provider.CurseProvider
-import voodoo.provider.JenkinsProvider
+import voodoo.data.nested.NestedEntry
 import voodoo.script.MainScriptEnv
-import withProvider
 import java.io.File
 
 object DslSpek : Spek({
@@ -37,15 +34,15 @@ object DslSpek : Spek({
                 authors = listOf("dude", "and", "friends")
                 // TODO: type = {recommended, latest} | buildnumber, make sealed class
                 forge = Forge.mc1_12_2_recommended
-                root(CurseProvider) {
+                root<NestedEntry.Curse> {
                     releaseTypes = setOf(FileType.Release, FileType.Beta)
 
                     // TODO: use type URL ?
-                    list {
+                    it.list {
                         +(Mod.botania)
                         +(Mod.rftools)
 
-                        withProvider(JenkinsProvider) {
+                        withType<NestedEntry.Jenkins> {
                             side = Side.SERVER
                         }.list {
                             +"matterlink" job "elytra/matterlink/master"
@@ -61,7 +58,9 @@ object DslSpek : Spek({
             scriptEnv.pack
         }
         val modpack by memoized {
-            nestedPack.flatten()
+            runBlocking {
+                nestedPack.flatten()
+            }
         }
         val entries by memoized {
             runBlocking {

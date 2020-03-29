@@ -2,7 +2,6 @@ package voodoo.changelog
 
 import mu.KLogging
 import voodoo.data.lock.LockPack
-import voodoo.data.meta.MetaInfo
 import voodoo.markdownTable
 import voodoo.util.blankOr
 
@@ -13,10 +12,10 @@ open class ChangelogBuilder : KLogging() {
     open fun StringBuilder.writeChangelog(
         newPack: LockPack,
         oldPack: LockPack?,
-        newPackMetaInfo: Map<String, MetaInfo>,
-        oldPackMetaInfo: Map<String, MetaInfo>,
-        newEntryMetaInfo: Map<String, Map<String, MetaInfo>>,
-        oldEntryMetaInfo: Map<String, Map<String, MetaInfo>>
+        newPackMetaInfo: Map<String, String>,
+        oldPackMetaInfo: Map<String, String>,
+        newEntryMetaInfo: Map<String, Map<String, String>>,
+        oldEntryMetaInfo: Map<String, Map<String, String>>
     ) {
         writePackInfo(newPack, oldPack, newPackMetaInfo, oldPackMetaInfo)
 
@@ -30,14 +29,14 @@ open class ChangelogBuilder : KLogging() {
     open fun StringBuilder.writePackInfo(
         newPack: LockPack,
         oldPack: LockPack?,
-        newMetaInfo: Map<String, MetaInfo>,
-        oldMetaInfo: Map<String, MetaInfo>
+        newMetaInfo: Map<String, String>,
+        oldMetaInfo: Map<String, String>
     ) {
         val title = "# ${newPack.title.blankOr ?: newPack.id} ${newPack.version}"
         appendln(title)
         val table = if (oldMetaInfo.isEmpty()) {
-            markdownTable(headers = listOf("Property", "Value"), content = newMetaInfo.map { (_, meta) ->
-                listOf(meta.name, meta.value)
+            markdownTable(headers = listOf("Property", "Value"), content = newMetaInfo.map { (key, meta) ->
+                listOf(key, meta)
             })
         } else {
             diffTable(newMetaInfo = newMetaInfo, oldMetaInfo = oldMetaInfo)
@@ -51,8 +50,8 @@ open class ChangelogBuilder : KLogging() {
     open fun StringBuilder.writeEntries(
         newPack: LockPack,
         oldPack: LockPack?,
-        newMetaInfo: Map<String, Map<String, MetaInfo>>,
-        oldMetaInfo: Map<String, Map<String, MetaInfo>>
+        newMetaInfo: Map<String, Map<String, String>>,
+        oldMetaInfo: Map<String, Map<String, String>>
     ) {
         val addedEntries = newMetaInfo
             .filter { (id, _) ->
@@ -119,7 +118,7 @@ open class ChangelogBuilder : KLogging() {
         }
     }
 
-    open fun addedEntry(id: String, metaInfo: Map<String, MetaInfo>): String? {
+    open fun addedEntry(id: String, metaInfo: Map<String, String>): String? {
         logger.debug { "added entry: $id, $metaInfo" }
         return diffTable(newMetaInfo = metaInfo, oldMetaInfo = mapOf())
             ?.let { t ->
@@ -131,7 +130,7 @@ open class ChangelogBuilder : KLogging() {
             }
     }
 
-    open fun removedEntry(id: String, metaInfo: Map<String, MetaInfo>): String? {
+    open fun removedEntry(id: String, metaInfo: Map<String, String>): String? {
         logger.debug { "removed entry: $id, $metaInfo" }
         return diffTable(newMetaInfo = mapOf(), oldMetaInfo = metaInfo)
             ?.let { t ->
@@ -143,7 +142,7 @@ open class ChangelogBuilder : KLogging() {
             }
     }
 
-    open fun updatedEntry(id: String, newMetaInfo: Map<String, MetaInfo>, oldMetaInfo: Map<String, MetaInfo>): String? {
+    open fun updatedEntry(id: String, newMetaInfo: Map<String, String>, oldMetaInfo: Map<String, String>): String? {
         logger.debug { "updated entry: $id, $oldMetaInfo -> $newMetaInfo" }
         return diffTable(newMetaInfo = newMetaInfo, oldMetaInfo = oldMetaInfo)
             ?.let { t ->
@@ -162,27 +161,27 @@ open class ChangelogBuilder : KLogging() {
         propHeader: String = "Property",
         oldheader: String = "old value",
         newheader: String = "new value",
-        newMetaInfo: Map<String, MetaInfo>,
-        oldMetaInfo: Map<String, MetaInfo>
+        newMetaInfo: Map<String, String>,
+        oldMetaInfo: Map<String, String>
     ): String? {
         val content = mutableListOf<List<String>>()
         newMetaInfo.forEach { key, newInfo ->
             val oldInfo = oldMetaInfo[key]
             if (oldInfo != null) {
                 // value was changed
-                if (oldInfo.value != newInfo.value) {
-                    content += listOf(newInfo.name, oldInfo.value, newInfo.value)
+                if (oldInfo != newInfo) {
+                    content += listOf(key, oldInfo, newInfo)
                 }
             } else {
                 // value was added
-                content += listOf(newInfo.name, "", newInfo.value)
+                content += listOf(key, "", newInfo)
             }
         }
 
         oldMetaInfo.filter { (key, meta) -> !newMetaInfo.containsKey(key) }
             .forEach { key, oldInfo ->
                 // value was removed
-                content += listOf(oldInfo.name, oldInfo.value, "")
+                content += listOf(key, oldInfo, "")
             }
 
         if (content.isEmpty()) {

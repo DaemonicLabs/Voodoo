@@ -1,5 +1,5 @@
 builder = object : ChangelogBuilder() {
-    override fun updatedEntry(id: String, newMetaInfo: Map<String, MetaInfo>, oldMetaInfo: Map<String, MetaInfo>): String? {
+    override fun updatedEntry(id: String, newMetaInfo: Map<String, String>, oldMetaInfo: Map<String, String>): String? {
         logger.debug { "TEST updated: $id" }
         return diffTable(newMetaInfo = newMetaInfo, oldMetaInfo = oldMetaInfo)
             ?.let { t ->

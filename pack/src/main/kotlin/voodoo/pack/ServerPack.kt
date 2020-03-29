@@ -55,7 +55,7 @@ object ServerPack : AbstractPack() {
 
             sourceDir.copyRecursively(targetSourceDir, true)
             targetSourceDir.walkBottomUp().forEach { file ->
-                if (file.name.endsWith(".entry.hjson"))
+                if (file.name.endsWith(".entry.json"))
                     file.delete()
                 if (file.isDirectory && file.listFiles().isEmpty()) {
                     file.delete()
@@ -70,7 +70,7 @@ object ServerPack : AbstractPack() {
             }
         }
 
-        val packFile = targetSourceDir.resolve("${modpack.id}.lock.pack.hjson")
+        val packFile = targetSourceDir.resolve("${modpack.id}.lock.pack.json")
         packFile.writeText(modpack.toJson(LockPack.serializer()))
 
         val relPackFile = packFile.relativeTo(output).unixPath
@@ -79,6 +79,8 @@ object ServerPack : AbstractPack() {
         packPointer.writeText(relPackFile)
 
         logger.info("packaging installer jar")
+        // TODO: special-case in local dev mode ?
+        // TODO:   package fatJar from localVoodoo then ?
         val installer = MavenUtil.downloadArtifact(
             "downloadArtifact server installer".watch,
             mavenUrl = PackConstants.MAVEN_URL,

@@ -1,88 +1,80 @@
 package voodoo.data.flat
 
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlinx.serialization.UpdateMode
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import mu.KLogging
-import voodoo.data.DependencyType
-import voodoo.data.OptionalData
-import voodoo.data.Side
-import voodoo.data.curse.FileID
-import voodoo.data.curse.FileType
-import voodoo.data.curse.PackageType
-import voodoo.data.curse.ProjectID
+import voodoo.data.components.*
+import voodoo.data.lock.CommonLockComponent
 import voodoo.data.lock.LockEntry
-import voodoo.data.provider.UpdateChannel
+import voodoo.provider.*
 import java.io.File
+import kotlin.reflect.jvm.jvmName
 
 /**
  * Created by nikky on 28/03/18.
  * @author Nikky
  */
 
-@Serializable
-data class Entry(
-    val provider: String,
-    var id: String,
-    var name: String? = null, // TODO add `by provider.getDisplayname(this)`
-    var folder: String = "mods",
-    var description: String? = null,
-    var optionalData: OptionalData? = null,
-    var side: Side = Side.BOTH,
-    var websiteUrl: String = "",
-    // TODO dependency declarations
-    var dependencies: MutableMap<DependencyType, List<String>> = mutableMapOf(),
-    var replaceDependencies: Map<ProjectID, ProjectID> = mapOf(),
-    // @JsonInclude(JsonInclude.Include.ALWAYS)
-//        var optional: Boolean = feature != null,
-    var packageType: PackageType = PackageType.MOD,
-    var transient: Boolean = false, // this entry got added as dependency for something else
-    var version: String = "", // TODO: use regex only ?
-    var fileName: String? = null,
-    var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
-//        when {
-//            provider.equals("CURSE", true) -> ".*(?<!-deobf\\.jar)\$"
-//            provider.equals("JENKINS", true) -> ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$"
-//            else -> ".*"
-//        },
-    var validMcVersions: Set<String> = setOf(),
-    // CURSE
-    var curseReleaseTypes: Set<FileType> = setOf(FileType.Release, FileType.Beta),
-    var curseProjectID: ProjectID = ProjectID.INVALID,
-    var curseFileID: FileID = FileID.INVALID,
-    // DIRECT
-    var url: String = "",
-    var useUrlTxt: Boolean = true,
-    // JENKINS
-    var jenkinsUrl: String = "",
-    var job: String = "",
-    var buildNumber: Int = -1,
-    // LOCAL
-    var fileSrc: String = "",
-    // UPDATE-JSON
-    var updateJson: String = "",
-    var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
-    var template: String = ""
-) {
+sealed class Entry: CommonMutable {
+    data class Common(
+        val common: CommonComponent = CommonComponent()
+    ) : Entry(), CommonMutable by common {
+        init {
+            provider = ""
+        }
+    }
 
-    companion object : KLogging() {
-        private val json = Json(
-            JsonConfiguration(
-                prettyPrint = true,
-                ignoreUnknownKeys = true,
-                indent = "  ",
-                encodeDefaults = false
-//            context = SerialContext().apply {
-//                registerSerializer(Side::class, Side.Companion)
-//            }
-            )
-        )
+    data class Curse(
+        private val common: CommonComponent = CommonComponent(),
+        private val curse: CurseComponent = CurseComponent()
+    ) : Entry(), CommonMutable by common, CurseMutable by curse {
+        init {
+            provider = CurseProvider.id
+            optional = optionalData != null
+        }
+    }
+
+    data class Direct(
+        private val common: CommonComponent = CommonComponent(),
+        private val direct: DirectComponent = DirectComponent()
+    ) : Entry(), CommonMutable by common, DirectMutable by direct {
+        init {
+            provider = DirectProvider.id
+            optional = optionalData != null
+        }
+    }
+
+    data class Jenkins(
+        private val common: CommonComponent = CommonComponent(),
+        private val jenkins: JenkinsComponent = JenkinsComponent()
+    ) : Entry(), CommonMutable by common, JenkinsMutable by jenkins {
+        init {
+            provider = JenkinsProvider.id
+            optional = optionalData != null
+        }
+    }
+
+    data class Local(
+        private val common: CommonComponent = CommonComponent(),
+        private val local: LocalComponent = LocalComponent()
+    ) : Entry(), CommonMutable by common, LocalMutable by local {
+        init {
+            provider = LocalProvider.id
+            optional = optionalData != null
+        }
+    }
+
+    data class UpdateJson(
+        private val common: CommonComponent = CommonComponent(),
+        private val _updateJson: UpdateJsonComponent = UpdateJsonComponent()
+    ) : Entry(), CommonMutable by common, UpdateJsonMutable by _updateJson {
+        init {
+            provider = UpdateJsonProvider.id
+            optional = optionalData != null
+        }
     }
 
     @Transient
-    var optional: Boolean = optionalData != null
+    var optional: Boolean = false// = optionalData != null
+
 
     @Transient
     val cleanId: String
@@ -92,32 +84,28 @@ data class Entry(
 
     @Transient
     val serialFilename: String
-        get() = "$cleanId.entry.hjson"
+        get() = "$cleanId.entry.json"
 
-    fun serialize(sourceFolder: File) {
-        val file = sourceFolder.resolve(folder).resolve("$cleanId.entry.hjson").absoluteFile
-        file.absoluteFile.parentFile.mkdirs()
-        file.writeText(json.stringify(Entry.serializer(), this))
-    }
+//    @Deprecated("looks suspect")
+//    fun serialize(sourceFolder: File) {
+//        val file = sourceFolder.resolve(folder).resolve("$cleanId.entry.json").absoluteFile
+//        file.absoluteFile.parentFile.mkdirs()
+//        file.writeText(json.stringify(Entry.serializer(), this))
+//    }
 
-    fun lock(block: LockEntry.() -> Unit): LockEntry {
-        val lockEntry = LockEntry(
-            provider = provider,
-            useUrlTxt = useUrlTxt,
+    inline fun <reified E: LockEntry> lock(block: (CommonLockComponent) -> E): E {
+        val commonComponent = CommonLockComponent(
+            name = name,
             fileName = fileName,
             side = side,
             description = description,
             optionalData = optionalData,
-            dependencies = dependencies.toMap(),
-            updateChannel = updateChannel,
-            updateJson = updateJson,
-            nameField = name
+            dependencies = dependencies.toMap()
         )
+        // TODO: fix ugly hacks to make types match
+        val lockEntry = block(commonComponent)
         lockEntry.id = id
-        lockEntry.block()
-        lockEntry.folder = File(lockEntry.suggestedFolder ?: folder)
-        // TODO: calculate serialiFile based on id and reverse
-//        lockEntry.serialFile = File(lockEntry.suggestedFolder ?: folder).resolve("$cleanId.lock.hjson")
+        lockEntry.folder = File(folder)
         return lockEntry
     }
 }

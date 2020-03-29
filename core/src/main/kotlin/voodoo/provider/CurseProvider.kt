@@ -38,6 +38,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
         mcVersion: String,
         addEntry: SendChannel<Pair<Entry, String>>
     ): LockEntry {
+        entry as Entry.Curse
         val (projectID, fileID, path) = findFile(entry, mcVersion)
 
         synchronized(resolved) {
@@ -68,10 +69,14 @@ object CurseProvider : ProviderBase("Curse Provider") {
             throw IllegalStateException("invalid file id for $entry")
         }
 
-        val lock = entry.lock {
-            this.projectID = projectID
-            this.fileID = fileID
-            suggestedFolder = path
+        entry.folder = path
+        val lock = entry.lock { commonComponent ->
+            LockEntry.Curse(
+                common = commonComponent,
+                projectID = projectID,
+                fileID = fileID,
+                useUrlTxt = entry.useUrlTxt
+            )
         }
 
         logger.debug("returning locked entry: $lock")
@@ -79,19 +84,23 @@ object CurseProvider : ProviderBase("Curse Provider") {
     }
 
     override suspend fun generateName(entry: LockEntry): String {
+        entry as LockEntry.Curse
         val addon = CurseClient.getAddon(entry.projectID)
         return addon?.name ?: entry.id
     }
 
     override suspend fun getAuthors(entry: LockEntry): List<String> {
+        entry as LockEntry.Curse
         return CurseClient.getAuthors(entry.projectID)
     }
 
     override suspend fun getProjectPage(entry: LockEntry): String {
+        entry as LockEntry.Curse
         return CurseClient.getProjectPage(entry.projectID)
     }
 
     override suspend fun getVersion(entry: LockEntry): String {
+        entry as LockEntry.Curse
         val addonFile = getAddonFile(entry.projectID, entry.fileID)
         return addonFile?.fileName ?: ""
     }
@@ -101,19 +110,21 @@ object CurseProvider : ProviderBase("Curse Provider") {
     }
 
     override suspend fun getThumbnail(entry: LockEntry): String {
+        entry as LockEntry.Curse
         val addon = CurseClient.getAddon(entry.projectID)
         return addon?.attachments?.firstOrNull { it.isDefault }?.thumbnailUrl ?: ""
     }
 
     override suspend fun getThumbnail(entry: Entry): String {
-        val addon = CurseClient.getAddon(entry.curseProjectID)
+        entry as Entry.Curse
+        val addon = CurseClient.getAddon(entry.projectID)
         return addon?.attachments?.firstOrNull { it.isDefault }?.thumbnailUrl ?: ""
     }
 
     private suspend fun resolveDependencies(
         addonId: ProjectID,
         fileId: FileID,
-        entry: Entry,
+        entry: Entry.Curse,
         addEntry: SendChannel<Pair<Entry, String>>
     ) {
         val predefinedDependencies = entry.dependencies.flatMap { (depType, slugs) ->
@@ -174,12 +185,13 @@ object CurseProvider : ProviderBase("Curse Provider") {
                     logger.info("set dependency $curseDepType = $dependsSet")
                 }
 
-                val depEntry = Entry(provider = CurseProvider.id, id = depAddon.slug).apply {
+                val depEntry = Entry.Curse().apply {
+                    id = depAddon.slug
                     name = entry.name
                     side = entry.side
                     transient = true
-                    curseReleaseTypes = entry.curseReleaseTypes
-                    curseProjectID = depAddon.id
+                    releaseTypes = entry.releaseTypes
+                    projectID = depAddon.id
                 }
                 logger.debug("adding dependency: $depEntry")
                 addEntry.send(depEntry to depAddon.categorySection.path)
@@ -205,6 +217,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
         targetFolder: File,
         cacheDir: File
     ): Pair<String, File> = stopwatch {
+        entry as LockEntry.Curse
         val addonFile = getAddonFile(entry.projectID, entry.fileID)
         if (addonFile == null) {
             logger.error("cannot download ${entry.id} ${entry.projectID}:${entry.fileID}")
@@ -227,10 +240,11 @@ object CurseProvider : ProviderBase("Curse Provider") {
 //            throw IllegalStateException("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
         }
 
-        return@stopwatch Pair(addonFile.downloadUrl, targetFile)
+        return@stopwatch addonFile.downloadUrl to targetFile
     }
 
     override suspend fun getReleaseDate(entry: LockEntry): Instant? {
+        entry as LockEntry.Curse
         val addonFile = getAddonFile(entry.projectID, entry.fileID)
         return when (addonFile) {
             null -> return null
@@ -240,22 +254,23 @@ object CurseProvider : ProviderBase("Curse Provider") {
         }
     }
 
-    override fun reportData(entry: LockEntry): MutableList<Triple<String, String, String>> {
+    override fun reportData(entry: LockEntry): MutableList<Pair<String, String>> {
+        entry as LockEntry.Curse
         logger.debug("reporting for: $entry")
         val addon = runBlocking { getAddon(entry.projectID)!! }
         val addonFile = runBlocking { getAddonFile(entry.projectID, entry.fileID)!! }
 
         val data = super.reportData(entry)
-        data += Triple("curse_release_type", "Release Type", "`${addonFile.releaseType}`")
-        data += Triple(
-            "curse_author",
-            "Author",
-            "`${addon.authors.sortedBy { it.name.toUpperCase() }.joinToString { it.name }}`"
-        )
+        data += "Release Type" to "${addonFile.releaseType}"
+        data += "CF Authors" to addon.authors.sortedBy { it.name.toUpperCase() }.joinToString { it.name }
         return data
     }
 
     override fun validate(lockEntry: LockEntry): Boolean {
+        if(lockEntry !is LockEntry.Curse) {
+            logger.warn("invalid type for Curse $lockEntry")
+            return false
+        }
         if (!super.validate(lockEntry)) {
             return false
         }

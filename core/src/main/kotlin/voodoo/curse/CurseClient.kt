@@ -8,9 +8,6 @@ import com.github.kittinunf.fuel.httpGet
 import com.github.kittinunf.fuel.httpPost
 import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
 import com.github.kittinunf.result.Result
-import io.ktor.client.request.post
-import io.ktor.content.TextContent
-import io.ktor.http.ContentType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.coroutineScope
@@ -28,7 +25,6 @@ import voodoo.data.curse.AddonFile
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
-import voodoo.util.client
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
@@ -97,35 +93,35 @@ object CurseClient : KLogging(), CoroutineScope {
             operationName = "GetSlugIDPairs"
         )
         logger.debug("requestBody: $requestBody")
-        val response = client.post<GraphQlResult>(urlString = url) {
-//            val j = io.ktor.client.features.json.defaultSerializer()
-//            body = j.write(requestBody)
-            body = TextContent(json.stringify(GraphQLRequest.serializer(), requestBody), ContentType.Application.Json)
-        }
-        return response.data.addons!!
-//        val requestSerializer: KSerializer<GraphQLRequest> = GraphQLRequest.serializer()
-//        val resultSerializer: KSerializer<GraphQlResult> = GraphQlResult.serializer()
-//        val (request, response, result) = url.httpPost()
-//            .jsonBody(body = json.stringify(requestSerializer, requestBody))
+//        val response = client.post<GraphQlResult>(urlString = url) {
+//            body = TextContent(json.stringify(GraphQLRequest.serializer(), requestBody), ContentType.Application.Json)
+//        }
+//        return response.data.addons!!
+        val requestSerializer: KSerializer<GraphQLRequest> = GraphQLRequest.serializer()
+        val resultSerializer: KSerializer<GraphQlResult> = GraphQlResult.serializer()
+        val (request, response, result) = url.httpPost()
+            .jsonBody(body = json.stringify(requestSerializer, requestBody))
 //            .apply { headers.clear() }
 //            .header("Content-Type" to "application/json")
 //            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = resultSerializer))
-//
-//        when (result) {
-//            is Result.Success -> {
+            .awaitStringResponseResult()
+
+        when (result) {
+            is Result.Success -> {
+                return json.parse(resultSerializer, result.value).data.addons!!
 //                return result.value.data.addons!!
-//            }
-//            is Result.Failure -> {
-//                logger.error("GetSlugIDPairs")
-//                logger.error("url: $url")
-//                logger.error("cUrl: ${request.cUrlString()}")
-//                logger.error("request: $request")
-//                logger.error("response: $response")
-//                logger.error(result.error.exception) { "could not request slug-id pairs" }
-//                logger.error { request }
-//                throw result.error.exception
-//            }
-//        }
+            }
+            is Result.Failure -> {
+                logger.error("GetSlugIDPairs")
+                logger.error("url: $url")
+                logger.error("cUrl: ${request.cUrlString()}")
+                logger.error("request: $request")
+                logger.error("response: $response")
+                logger.error(result.error.exception) { "could not request slug-id pairs" }
+                logger.error { request }
+                throw result.error.exception
+            }
+        }
     }
 
 //    suspend fun graphQlSearch(
@@ -515,14 +511,14 @@ object CurseClient : KLogging(), CoroutineScope {
     }
 
     suspend fun findFile(
-        entry: Entry,
+        entry: Entry.Curse,
         mcVersion: String
     ): Triple<ProjectID, FileID, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
         val slug = entry.id // TODO: maybe make into separate property
         val version = entry.version
-        val releaseTypes = entry.curseReleaseTypes
-        var addonId = entry.curseProjectID
+        val releaseTypes = entry.releaseTypes
+        var addonId = entry.projectID
         val fileNameRegex = entry.fileNameRegex
 
         val addon = if (!addonId.valid) {
@@ -541,8 +537,8 @@ object CurseClient : KLogging(), CoroutineScope {
 
         addonId = addon.id
 
-        if (entry.curseFileID.valid) {
-            val file = getAddonFile(addonId, entry.curseFileID)!!
+        if (entry.fileID.valid) {
+            val file = getAddonFile(addonId, entry.fileID)!!
             return Triple(addonId, file.id, addon.categorySection.path)
         }
 

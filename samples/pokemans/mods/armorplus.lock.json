@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "thedragonlib"
+            ]
+        }
+    },
+    "projectID": 237366,
+    "fileID": 2873463
+}
