@@ -17,6 +17,23 @@ import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory
 
 object MavenUtil : KLogging() {
+    val mavenLocalFolder = File(System.getProperty("user.home")).resolve(".m2").resolve("repository")
+    fun localMavenFile(
+        group: String,
+        artifactId: String,
+        version: String,
+        classifier: String? = null,
+        extension: String = "jar"
+    ): File {
+        val classifierSuffix = classifier?.let { "-$it"} ?: ""
+
+        return mavenLocalFolder
+            .resolve(group.replace('.','/'))
+            .resolve(artifactId)
+            .resolve(version)
+            .resolve("$artifactId-$version$classifierSuffix.$extension")
+    }
+
     suspend fun downloadArtifact(
         stopwatch: Stopwatch,
         mavenUrl: String,
@@ -29,9 +46,18 @@ object MavenUtil : KLogging() {
         outputFile: File? = null,
         checkMd5: Boolean = true
     ) = stopwatch {
-        val groupPath = group.split("\\.".toRegex()).joinToString("/")
+        if(version.endsWith("-dev") && group == "moe.nikky.voodoo") {
+            return@stopwatch localMavenFile(
+                group = group,
+                artifactId = artifactId,
+                version = version,
+                classifier = classifier,
+                extension = extension
+            )
+        }
 
-//        val jarUrl = "http://maven.modmuss50.me/moe/nikky/voodoo/voodoo/0.4.8-3/voodoo-0.4.8-3.jar"
+
+        val groupPath = group.replace('.','/')
 
         val classifierSuffix = classifier?.let { "-$it"} ?: ""
         val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$version$classifierSuffix.$extension"

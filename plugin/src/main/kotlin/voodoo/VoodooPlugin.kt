@@ -62,10 +62,11 @@ open class VoodooPlugin : Plugin<Project> {
                 }
             }
 
+
             val (downloadVoodoo, voodooJar) = if (voodooExtension.local) {
-                val downloadTask = task<LocalVoodooJarTask>("localVoodoo") {
+                val downloadTask = task<MavenLocalVoodooJarTask>("localVoodoo") {
                     group = "voodoo"
-                    description = "Copies the voodoo jar from a local dev env"
+                    description = "Copies the voodoo jar from mavenLocal()"
                 }
                 downloadTask as DefaultTask to downloadTask.jarFile
             } else {
@@ -73,7 +74,7 @@ open class VoodooPlugin : Plugin<Project> {
                     group = "voodoo"
                     description = "Downloads the voodoo jar from jenkins"
                 }
-                downloadTask as DefaultTask to downloadTask.jarFile
+                downloadTask to downloadTask.jarFile
             }
 
 //            project.dependencies {
@@ -104,6 +105,7 @@ open class VoodooPlugin : Plugin<Project> {
             val libs = project.rootDir.resolve("libs")
 
             val copyLibs = task<AbstractTask>("copyVoodooLibs") {
+                dependsOn(downloadVoodoo)
                 doFirst {
                     val libraries = voodooConfiguration.resolve()
                     libs.deleteRecursively()
@@ -138,6 +140,7 @@ open class VoodooPlugin : Plugin<Project> {
                         group = "generators"
                         outputs.upToDateWhen { false }
 //                        outputs.cacheIf { true }
+                        dependsOn(downloadVoodoo)
                         doLast {
                             generatedSrcDir.mkdirs()
                             val generatedFile = runBlocking {
@@ -163,6 +166,7 @@ open class VoodooPlugin : Plugin<Project> {
                         group = "generators"
                         outputs.upToDateWhen { false }
 //                        outputs.cacheIf { true }
+                        dependsOn(downloadVoodoo)
                         doLast {
                             generatedSrcDir.mkdirs()
                             val generatedFile = runBlocking {

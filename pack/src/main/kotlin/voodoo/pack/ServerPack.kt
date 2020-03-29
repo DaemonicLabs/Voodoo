@@ -82,25 +82,12 @@ object ServerPack : AbstractPack() {
         // TODO: special-case in local dev mode ?
         // TODO:   package fatJar from localVoodoo then ?
 
-        val version = if (PackConstants.FULL_VERSION.contains("dev")) {
-            // this assumes the current version has a build on maven at all, it might break when doing a version bump
-            val latest = MavenUtil.getLatestVersionFromMavenMetadata(
-                "downloadArtifact server installer".watch,
-                mavenUrl = PackConstants.MAVEN_URL,
-                group = PackConstants.MAVEN_GROUP,
-                artifactId = "server-installer"
-            )
-            logger.info {"latest version is: $latest"}
-            latest
-        } else {
-            PackConstants.FULL_VERSION
-        }
         val installer = MavenUtil.downloadArtifact(
             "downloadArtifact server installer".watch,
             mavenUrl = PackConstants.MAVEN_URL,
             group = PackConstants.MAVEN_GROUP,
             artifactId = "server-installer",
-            version = version,
+            version = PackConstants.FULL_VERSION,
             classifier = PackConstants.MAVEN_SHADOW_CLASSIFIER,
             outputDir = MMCStaticPack.directories.cacheHome
         )

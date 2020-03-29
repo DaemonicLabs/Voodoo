@@ -268,37 +268,37 @@ constructor(
     private suspend fun readVersionManifest(path: File?) {
 
         // this seems to do.. nothing?
-//        logSection("Reading version manifest...")
-//        if (path!!.exists()) {
-//            logger.info("Reading from $path")
-//            val versionManifest = read(path, VersionManifest.serializer())
-//            manifest.versionManifest = versionManifest
-//            logger.info("Loaded version manifest from " + path.absolutePath)
-//        } else {
-//            val url = String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion)
-//            logger.info("Fetching version manifest from $url...")
-//
-//            val (request, response, result) = url.httpGet()
-//                .header("User-Agent" to Downloader.useragent)
-//                .awaitStringResponseResult()
-//            manifest.versionManifest = when (result) {
-//                is Result.Success -> {
-//                    val jsonString = result.value
-//                    val tmp = File.createTempFile("lib", ".json")
-//                    tmp.writeText(jsonString)
-//                    logger.info("parsing json: $tmp")
-//                    json.parse(VersionManifest.serializer(), jsonString)
-//                }
-//                is Result.Failure -> {
-//                    logger.error("readVersionManifest")
-//                    logger.error("url: $url")
-//                    logger.error("cUrl: ${request.cUrlString()}")
-//                    logger.error("response: $response")
-//                    logger.error(result.error.exception) { "cannot parse manifest from $url" }
-//                    throw result.error.exception
-//                }
-//            }
-//        }
+        logSection("Reading version manifest...")
+        if (path!!.exists()) {
+            logger.info("Reading from $path")
+            val versionManifest = read(path, VersionManifest.serializer())
+            manifest.versionManifest = versionManifest
+            logger.info("Loaded version manifest from " + path.absolutePath)
+        } else {
+            val url = String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion)
+            logger.info("Fetching version manifest from $url...")
+
+            val (request, response, result) = url.httpGet()
+                .header("User-Agent" to Downloader.useragent)
+                .awaitStringResponseResult()
+            manifest.versionManifest = when (result) {
+                is Result.Success -> {
+                    val jsonString = result.value
+                    val tmp = File.createTempFile("lib", ".json")
+                    tmp.writeText(jsonString)
+                    logger.info("parsing json: $tmp")
+                    json.parse(VersionManifest.serializer(), jsonString)
+                }
+                is Result.Failure -> {
+                    logger.error("readVersionManifest")
+                    logger.error("url: $url")
+                    logger.error("cUrl: ${request.cUrlString()}")
+                    logger.error("response: $response")
+                    logger.error(result.error.exception) { "cannot parse manifest from $url" }
+                    throw result.error.exception
+                }
+            }
+        }
     }
 
     @Throws(IOException::class)

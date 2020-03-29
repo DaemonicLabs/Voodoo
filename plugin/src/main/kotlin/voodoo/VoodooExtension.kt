@@ -16,12 +16,12 @@ open class VoodooExtension(project: Project) {
     }
 
     var local: Boolean = false
-    val localVoodooProjectLocation: File = project.rootDir.parentFile
+    var localVoodooProjectLocation: File = project.rootDir.parentFile
 
     internal var tasks: List<CustomTask> = listOf()
         private set
 
-    @Deprecated("use add")
+    @Deprecated("use tasks +=", ReplaceWith("tasks += CustomTask(name, description, parameters) {}"))
     fun addTask(name: String, description: String = "custom task $name", parameters: List<String>) {
         tasks += CustomTask(name, description, parameters)
     }

@@ -25,9 +25,7 @@ object TimestampSerializer : KSerializer<LocalDateTime> {
         val value = jsonInput.decodeJson() as JsonPrimitive
         val timestamp = value.longOrNull
         if(timestamp != null) {
-            return timestamp.let { milliseconds ->
-                LocalDateTime.ofInstant(Instant.ofEpochMilli(milliseconds), ZoneId.of("UTC"))
-            }
+            return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("UTC"))
         }
         val timeString = value.contentOrNull
         if(timeString != null) {
