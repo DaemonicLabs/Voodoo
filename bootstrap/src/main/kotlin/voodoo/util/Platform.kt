@@ -22,7 +22,7 @@ object Platform {
     init {
         val osName = System.getProperty("os.name")
         osType = when {
-            osName.startsWith("Linux") -> {
+            osName.startsWith("Linux") -> {m
                 when (System.getProperty("java.vm.name").toLowerCase()) {
                     "dalvik" -> {
                         // Native libraries on android must be bundled with the APK
