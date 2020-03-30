@@ -235,7 +235,7 @@ object SKPack : AbstractPack() {
                         }
                     }
 
-                //TODO> figure out stopring icon url, and server url
+                //TODO: figure out icon url, and server url
                 val skmodpack = SKModpack(
                     name = modpack.id,
                     title = modpack.title.blankOr ?: "",

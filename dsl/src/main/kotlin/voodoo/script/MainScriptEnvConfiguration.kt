@@ -82,7 +82,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
             require(context.script is FileBasedScriptSource) { "${context.script::class} != FileBasedScriptSource" }
             val scriptFile = (context.script as FileBasedScriptSource).file
             // TODO? make sure rootFolder points at the correct folder
-            SharedFolders.RootDir.default = scriptFile.parentFile.parentFile
+            SharedFolders.RootDir.value = scriptFile.parentFile.parentFile
             val rootDir = SharedFolders.RootDir.get()
 
             val generatedSharedSrc = SharedFolders.GeneratedSrcShared.get()
@@ -132,7 +132,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
             require(context.script is FileBasedScriptSource) { "${context.script::class} != FileBasedScriptSource" }
             val scriptFile = (context.script as FileBasedScriptSource).file
             // TODO? make sure rootFolder points at the correct folder
-            SharedFolders.RootDir.default = scriptFile.parentFile.parentFile
+            SharedFolders.RootDir.value = scriptFile.parentFile.parentFile
             val rootDir = SharedFolders.RootDir.get()
 
             val id = scriptFile.name.substringBeforeLast(".voodoo.kts").toLowerCase()

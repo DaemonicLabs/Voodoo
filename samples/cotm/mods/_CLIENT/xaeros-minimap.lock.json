@@ -1,0 +1,11 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "side": "CLIENT",
+        "description": "Alternative to Journeymap.",
+        "optionalData": {
+        }
+    },
+    "projectID": 263420,
+    "fileID": 2904483
+}

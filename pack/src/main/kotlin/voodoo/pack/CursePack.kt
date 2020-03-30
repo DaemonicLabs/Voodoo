@@ -1,15 +1,10 @@
 package voodoo.pack
 
 import com.eyeem.watchadoin.Stopwatch
-import kotlinx.coroutines.Job
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.channels.toList
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.joinAll
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.html.ATarget
 import kotlinx.html.a
 import kotlinx.html.body
@@ -82,7 +77,7 @@ object CursePack : AbstractPack() {
         loadersFolder.deleteRecursively()
 
         coroutineScope {
-            val jobs = mutableListOf<Job>()
+            val jobs = mutableListOf<Pair<String, Deferred<CurseFile?>>>()
 
             val forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge)?.forgeVersion
 
@@ -91,46 +86,61 @@ object CursePack : AbstractPack() {
             modsFolder.deleteRecursively()
 
             val curseMods = withPool { pool ->
-                val curseModsChannel = Channel<CurseFile>(Channel.CONFLATED)
+//                val curseModsChannel = Channel<CurseFile>(Channel.CONFLATED)
 
                 // download entries
                 for (entry in modpack.entrySet) {
                     if (entry.side == Side.SERVER) continue
-                    jobs += launch(context = coroutineContext + pool) {
-                        "${entry.id}_watch".watch {
+                    jobs += "install_${entry.id}" to async<CurseFile?>(context = coroutineContext + CoroutineName("install_${entry.id}") + pool) {
+                        "install_${entry.id}".watch {
+                            logger.info("starting job: install '${entry.id}' entry: $entry")
                             val targetFolder = srcFolder.resolve(entry.serialFile).absoluteFile.parentFile
                             val required = !modpack.isEntryOptional(entry.id)
 
+                            logger.debug { "required: $required" }
+
                             val provider = Providers[entry.provider]
                             if (provider == CurseProvider && entry is LockEntry.Curse) {
-                                curseModsChannel.send(
-                                    CurseFile(
+                                return@watch CurseFile(
                                         entry.projectID,
                                         entry.fileID,
                                         required
                                     ).also {
                                         logger.info("added curse file $it")
                                     }
-                                )
                             } else {
-                                val (_, file) = provider.download("download".watch, entry, targetFolder, cacheDir)
+                                logger.debug { "is not a curse thing: $entry" }
+                                val (_, file) = provider.download("download_${entry.id}".watch, entry, targetFolder, cacheDir)
                                 if (!required) {
                                     val optionalFile = file.parentFile.resolve(file.name + ".disabled")
                                     file.renameTo(optionalFile)
                                 }
+                                return@watch null
                             }
                         }
                     }
-                    logger.info("started job: download '${entry.id}'")
-                    delay(100)
+                    delay(10)
                 }
 
-                delay(100)
+//                delay(100)
                 logger.info("waiting for jobs to finish")
-                curseModsChannel.consume {
-                    jobs.joinAll()
+//                curseModsChannel.consume {
+//                    logger.debug { "received: $this" }
+//                    jobs.forEach {
+//                        logger.debug { "waiting for ${it[CoroutineName.Key]?.name}" }
+//
+//                        it.join()
+//                    }
+////                    jobs.joinAll()
+//                }
+//                curseModsChannel.toList()
+                jobs.mapNotNull { (name, deferred) ->
+                    logger.debug { "waiting for $name" }
+                    val value = deferred.await()
+
+                    logger.debug { "finished: $name, value: $value" }
+                    value
                 }
-                curseModsChannel.toList()
             }
 
             // generate modlist

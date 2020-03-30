@@ -1,6 +1,7 @@
 package voodoo.data.flat
 
 import kotlinx.serialization.Transient
+import mu.KLogging
 import voodoo.data.components.*
 import voodoo.data.lock.CommonLockComponent
 import voodoo.data.lock.LockEntry
@@ -19,6 +20,7 @@ sealed class Entry: CommonMutable {
     ) : Entry(), CommonMutable by common {
         init {
             provider = ""
+            optional = optionalData != null
         }
     }
 
@@ -72,6 +74,8 @@ sealed class Entry: CommonMutable {
         }
     }
 
+    companion object : KLogging()
+
     @Transient
     var optional: Boolean = false// = optionalData != null
 
@@ -94,6 +98,9 @@ sealed class Entry: CommonMutable {
 //    }
 
     inline fun <reified E: LockEntry> lock(block: (CommonLockComponent) -> E): E {
+        if(optionalData != null) {
+            logger.warn { "[$id] optionalData: $optionalData" }
+        }
         val commonComponent = CommonLockComponent(
             name = name,
             fileName = fileName,
@@ -104,7 +111,7 @@ sealed class Entry: CommonMutable {
         )
         // TODO: fix ugly hacks to make types match
         val lockEntry = block(commonComponent)
-        lockEntry.id = id
+        lockEntry.changeId(id)
         lockEntry.folder = File(folder)
         return lockEntry
     }

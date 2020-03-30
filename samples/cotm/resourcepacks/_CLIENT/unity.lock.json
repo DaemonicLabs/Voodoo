@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "fileName": "Unity.zip",
+        "side": "CLIENT",
+        "description": "Multi-mod compatible resource pack.",
+        "optionalData": {
+        }
+    },
+    "projectID": 222097,
+    "fileID": 2805035
+}

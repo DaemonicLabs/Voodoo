@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "bookshelf"
+            ]
+        }
+    },
+    "projectID": 266824,
+    "fileID": 2810222
+}

@@ -11,6 +11,7 @@ run/
 
 /editor/
 /test/
+logs/
 
 _site/
 Gemfile\.lock

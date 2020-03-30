@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "mantle"
+            ]
+        }
+    },
+    "projectID": 74072,
+    "fileID": 2902483
+}

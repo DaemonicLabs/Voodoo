@@ -1,0 +1,13 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "patchouli",
+                "ctm"
+            ]
+        }
+    },
+    "projectID": 227639,
+    "fileID": 2818055
+}

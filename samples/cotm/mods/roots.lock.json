@@ -1,0 +1,14 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "mystical-world",
+                "patchouli",
+                "mysticallib"
+            ]
+        }
+    },
+    "projectID": 246183,
+    "fileID": 2912862
+}

@@ -1,0 +1,13 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "chameleon",
+                "storage-drawers"
+            ]
+        }
+    },
+    "projectID": 254879,
+    "fileID": 2443623
+}

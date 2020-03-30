@@ -12,7 +12,7 @@ idea {
 
 val poet = task<JavaExec>("poet") {
     main = "voodoo.poet.Poet"
-    args = listOf(genSrc.path)
+    args = listOf(projectDir.path, genSrc.path)
     classpath = project(":dsl").sourceSets["main"].runtimeClasspath
 
     group = "build"

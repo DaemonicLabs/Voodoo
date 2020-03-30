@@ -1,9 +1,6 @@
 package voodoo.data.curse
 
-import kotlinx.serialization.Decoder
-import kotlinx.serialization.Encoder
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
+import kotlinx.serialization.*
 
 // TODO: inline
 @Serializable(with = ProjectID.Companion::class)
@@ -17,6 +14,8 @@ data class ProjectID(val value: Int) {
 
     @Serializer(forClass = ProjectID::class)
     companion object {
+        override val descriptor = PrimitiveDescriptor("ProjectID", PrimitiveKind.INT)
+
         override fun deserialize(decoder: Decoder): ProjectID {
             return ProjectID(decoder.decodeInt())
         }

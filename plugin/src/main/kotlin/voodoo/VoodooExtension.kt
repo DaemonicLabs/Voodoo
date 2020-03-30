@@ -12,7 +12,7 @@ import java.io.File
 
 open class VoodooExtension(project: Project) {
     init {
-        SharedFolders.RootDir.default = project.rootDir
+        SharedFolders.RootDir.value = project.rootDir
     }
 
     var local: Boolean = false

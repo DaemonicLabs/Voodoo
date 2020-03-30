@@ -15,11 +15,8 @@ import voodoo.forge.ForgeUtil
 import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil
 import voodoo.provider.Providers
-import voodoo.util.blankOr
+import voodoo.util.*
 import voodoo.util.maven.MavenUtil
-import voodoo.util.packToZip
-import voodoo.util.unixPath
-import voodoo.util.withPool
 import java.io.File
 import java.net.URI
 import kotlin.system.exitProcess
@@ -36,7 +33,7 @@ object MMCSelfupdatingFatPack : AbstractPack() {
         uploadBaseDir: File,
         clean: Boolean
     ) = stopwatch {
-        val cacheDir = MMCFatPack.directories.cacheHome
+        val cacheDir = directories.cacheHome
         val instanceDir = cacheDir.resolve("MMC_SK_FAT").resolve(modpack.id)
         val title = modpack.title.blankOr ?: modpack.id
         instanceDir.deleteRecursively()
@@ -182,6 +179,13 @@ object MMCSelfupdatingFatPack : AbstractPack() {
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         urlFile.writeText(skPackUrl)
 
+        // preinstall the voodoo.modpack.json
+        val voodooModpackJson = instanceDir.resolve("voodoo.modpack.json")
+        voodooModpackJson.download(
+            skPackUrl,
+            cacheDir = cacheDir
+        )
+
         val multimcInstaller = instanceDir.resolve("mmc-installer.jar")
         val installer = MavenUtil.downloadArtifact(
             stopwatch = "downloadArtifact multimc installer bootstrap".watch,
@@ -191,7 +195,7 @@ object MMCSelfupdatingFatPack : AbstractPack() {
             version = PackConstants.FULL_VERSION,
             classifier = "multimc-installer",
             outputFile =  multimcInstaller,
-            outputDir = MMCSelfupdatingPack.directories.cacheHome
+            outputDir = directories.cacheHome
         )
 //        installer.copyTo(multimcInstaller)
 

@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "ftblib"
+            ]
+        }
+    },
+    "projectID": 255177,
+    "fileID": 2819161
+}

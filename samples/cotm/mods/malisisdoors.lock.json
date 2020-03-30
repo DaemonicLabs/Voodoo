@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "malisiscore"
+            ]
+        }
+    },
+    "projectID": 223891,
+    "fileID": 2526674
+}

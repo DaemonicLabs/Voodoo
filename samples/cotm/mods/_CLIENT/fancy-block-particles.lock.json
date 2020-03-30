@@ -1,0 +1,11 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "side": "CLIENT",
+        "description": "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps.",
+        "optionalData": {
+        }
+    },
+    "projectID": 254441,
+    "fileID": 2632107
+}

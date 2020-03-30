@@ -2,6 +2,8 @@ package voodoo.poet
 
 import com.squareup.kotlinpoet.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
 import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
@@ -9,14 +11,17 @@ import voodoo.forge.ForgeUtil
 import voodoo.poet.generator.CurseGenerator
 import voodoo.poet.generator.CurseSection
 import voodoo.poet.generator.ForgeGenerator
+import voodoo.util.SharedFolders
+import voodoo.util.json
 import java.io.File
 
 object Poet : KLogging() {
     // for generating code for tests only
     @JvmStatic
     fun main(vararg args: String) {
+        SharedFolders.RootDir.value = File(args[0])
         generateAll(
-            generatedSrcDir = File(args[0]),
+            generatedSrcDir = File(args[1]),
             curseGenerators = listOf(CurseGenerator("Mod", CurseSection.MODS)),
             forgeGenerators = listOf(ForgeGenerator("Forge"))
         )
@@ -40,7 +45,7 @@ object Poet : KLogging() {
             curseGenerators.map { generator ->
                 Poet.generate(
                     name = generator.name,
-                    slugIdMap = request(
+                    slugIdMap = requestSlugIdMap(
                         gameVersions = generator.mcVersions.toList(),
                         section = generator.section.sectionName
                     ),
@@ -74,6 +79,20 @@ object Poet : KLogging() {
         section: CurseSection,
         gameVersions: List<String>
     ): File {
+        //  write out json to lookup slugs by name later
+        val curseSlugsFile = SharedFolders.BuildCache.get().resolve("curseSlugs.json")
+        val allSlugIdMap: Map<ProjectID, String> = if(curseSlugsFile.exists()) {
+            json.parse(MapSerializer(ProjectID, String.serializer()), curseSlugsFile.readText())
+        } else {
+            mapOf()
+        } + slugIdMap.map { (slug, id) ->
+            id to slug
+        }
+        curseSlugsFile.parentFile.mkdirs()
+        curseSlugsFile.createNewFile()
+        curseSlugsFile.writeText(json.stringify(MapSerializer(ProjectID, String.serializer()), allSlugIdMap))
+
+
         val targetFile = folder.resolve("$name.kt")
         if (targetFile.exists()) {
             logger.info("skipping generation of $targetFile")
@@ -177,7 +196,7 @@ object Poet : KLogging() {
         return targetFile
     }
 
-    suspend fun request(section: String, gameVersions: List<String>? = null): Map<String, ProjectID> =
+    suspend fun requestSlugIdMap(section: String, gameVersions: List<String>? = null): Map<String, ProjectID> =
         CurseClient.graphQLRequest(
             section = section,
             gameVersions = gameVersions

@@ -1,14 +1,14 @@
-import voodoo.dsl.builder.curse.CurseListBuilder
-import voodoo.provider.CurseProvider
+import voodoo.data.nested.NestedEntry
+import voodoo.dsl.builder.ListBuilder
 
 fun included() {
     println("i was included")
 }
 
-fun CurseListBuilder<CurseProvider>.addOptionalMods() {
+fun ListBuilder<NestedEntry.Curse>.addOptionalMods() {
     group {
         validMcVersions = setOf("1.12.2", "1.12.1", "1.12")
-        optional {
+        it.optional {
             selected = false
         }
     }.list {

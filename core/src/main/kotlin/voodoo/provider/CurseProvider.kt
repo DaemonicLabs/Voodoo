@@ -1,6 +1,5 @@
 package voodoo.provider
 
-import MurmurHash2
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
@@ -8,6 +7,8 @@ import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
 import voodoo.curse.CurseClient.getAddon
 import voodoo.curse.CurseClient.getAddonFile
+import voodoo.curse.hash.Murmur2Lib
+import voodoo.curse.hash.computeNormalizedArray
 import voodoo.data.curse.AddOnFileDependency
 import voodoo.data.curse.CurseDependencyType
 import voodoo.data.curse.FileID
@@ -19,7 +20,7 @@ import voodoo.util.download
 import java.io.File
 import java.time.Instant
 import java.time.ZoneOffset
-import java.util.Collections
+import java.util.*
 import kotlin.system.exitProcess
 
 /**
@@ -75,7 +76,8 @@ object CurseProvider : ProviderBase("Curse Provider") {
                 common = commonComponent,
                 projectID = projectID,
                 fileID = fileID,
-                useUrlTxt = entry.useUrlTxt
+                useUrlTxt = entry.useUrlTxt,
+                skipFingerprintCheck = entry.skipFingerprintCheck
             )
         }
 
@@ -129,7 +131,8 @@ object CurseProvider : ProviderBase("Curse Provider") {
     ) {
         val predefinedDependencies = entry.dependencies.flatMap { (depType, slugs) ->
             slugs.map { slug ->
-                val id = CurseClient.getProjectIdBySlug(slug) ?: throw IllegalStateException("cannot find id for slug: $slug")
+                val id = CurseClient.getProjectIdBySlug(slug)
+                    ?: throw IllegalStateException("cannot find id for slug: $slug")
                 AddOnFileDependency(id, CurseDependencyType.values().first { depType == it.depType })
             }
         }
@@ -158,7 +161,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
 
 //            val depends = entry.dependencies
                 val depType = curseDepType.depType
-                if(depType != null) {
+                if (depType != null) {
                     var dependsSet = entry.dependencies[depType]?.toSet() ?: setOf<String>()
                     logger.info("get dependency $curseDepType = $dependsSet + ${depAddon.slug}")
                     if (!dependsSet.contains(depAddon.slug)) {
@@ -227,17 +230,27 @@ object CurseProvider : ProviderBase("Curse Provider") {
         targetFile.download(
             addonFile.downloadUrl,
             cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),
-            canSkipDownload = { file ->
-                file.exists()
-//                addonFile.packageFingerprint.toUInt() != MurmurHash2.computeFileHash(file.path, true)
+            validator = { file ->
+                file.exists() && if (entry.skipFingerprintCheck) {
+                        true
+                    } else {
+                        val normalized = computeNormalizedArray(file.readBytes())
+                        val fileFingerprint = Murmur2Lib.hash32(normalized, 1)
+                        addonFile.packageFingerprint.toInt() == fileFingerprint.toLong().toInt()
+                    }
             }
         )
-        val fileFingerprint = MurmurHash2.computeFileHash(targetFile.path, true)
 
-        if (addonFile.packageFingerprint.toUInt() != fileFingerprint) {
+        val normalized = computeNormalizedArray(targetFile.readBytes())
+        val fileFingerprint = Murmur2Lib.hash32(normalized, 1)
+//        val fileFingerprint = MurmurHash2.computeFileHash(targetFile.path, true)
+
+        if (addonFile.packageFingerprint.toInt() != fileFingerprint.toLong().toInt()) {
             logger.error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
             logger.error("curseforge murmur2 fingerprints are unreliable")
-//            throw IllegalStateException("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
+            error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
+        } else {
+            logger.trace { "[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint matches: ${addonFile.packageFingerprint}" }
         }
 
         return@stopwatch addonFile.downloadUrl to targetFile
@@ -267,7 +280,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
     }
 
     override fun validate(lockEntry: LockEntry): Boolean {
-        if(lockEntry !is LockEntry.Curse) {
+        if (lockEntry !is LockEntry.Curse) {
             logger.warn("invalid type for Curse $lockEntry")
             return false
         }

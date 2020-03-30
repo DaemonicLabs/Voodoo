@@ -1,0 +1,13 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "mantle",
+                "tinkers-construct"
+            ]
+        }
+    },
+    "projectID": 287683,
+    "fileID": 2882794
+}

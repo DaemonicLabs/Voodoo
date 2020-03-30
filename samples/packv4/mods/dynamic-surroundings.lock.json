@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "orelib"
+            ]
+        }
+    },
+    "projectID": 238891,
+    "fileID": 2825354
+}

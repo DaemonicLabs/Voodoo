@@ -1,0 +1,11 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "side": "CLIENT",
+        "description": "Visual keybind manager.",
+        "optionalData": {
+        }
+    },
+    "projectID": 262366,
+    "fileID": 2841927
+}

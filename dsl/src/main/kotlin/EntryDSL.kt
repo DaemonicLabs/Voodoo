@@ -3,14 +3,13 @@ import voodoo.dsl.VoodooDSL
 import voodoo.dsl.builder.AbstractBuilder
 import voodoo.dsl.builder.GroupBuilder
 import voodoo.dsl.builder.ListBuilder
-import voodoo.dsl.builder.curse.CurseListBuilder
 import voodoo.provider.CurseProvider
 import voodoo.provider.ProviderBase
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
-infix fun <W : AbstractBuilder<P>, P : ProviderBase> W.description(s: String) =
-    apply { description = s }
+//infix fun <W : AbstractBuilder<P>, P : ProviderBase> W.description(s: String) =
+//    apply { description = s }
 
 /**
  * Create new list as subentries

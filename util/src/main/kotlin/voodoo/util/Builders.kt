@@ -15,14 +15,10 @@ import kotlinx.coroutines.newFixedThreadPoolContext
 //     }
 // }
 
-val VOODOO_MULTITHREADING =
-    System.getenv("VOODOO_MULTITHREADING")?.toIntOrNull() ?: Runtime.getRuntime().availableProcessors()
-// val pool = newFixedThreadPoolContext(VOODOO_MULTITHREADING + 1, "pool")
-
-@UseExperimental(ObsoleteCoroutinesApi::class)
+@OptIn(ObsoleteCoroutinesApi::class)
 inline fun <reified R> withPool(
     name: String = "pool",
-    threads: Int = System.getenv("VOODOO_MULTITHREADING")?.toIntOrNull() ?: Runtime.getRuntime().availableProcessors() + 1,
+    threads: Int = System.getenv("VOODOO_MULTITHREADING")?.toIntOrNull() ?: Runtime.getRuntime().availableProcessors() - 1,
     execute: (pool: ExecutorCoroutineDispatcher) -> R
 ): R {
     val pool = newFixedThreadPoolContext(threads, name)

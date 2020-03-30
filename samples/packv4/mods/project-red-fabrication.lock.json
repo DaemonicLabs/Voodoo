@@ -1,0 +1,13 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "project-red-integration",
+                "project-red-base"
+            ]
+        }
+    },
+    "projectID": 230111,
+    "fileID": 2745547
+}

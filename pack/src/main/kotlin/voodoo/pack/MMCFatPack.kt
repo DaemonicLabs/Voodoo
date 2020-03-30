@@ -85,7 +85,9 @@ object MMCFatPack : AbstractPack() {
             },
             previousSelection,
             modpack.title.blankOr
-                ?: modpack.id, modpack.version, forceDisplay = false, updating = featureJson.exists()
+                ?: modpack.id, modpack.version,
+            forceDisplay = false,
+            updating = false // featureJson.exists()
         )
         logger.debug("result: optionals: $optionals")
         if (!optionals.isEmpty()) {

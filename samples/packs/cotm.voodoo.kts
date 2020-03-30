@@ -222,7 +222,8 @@ root<Curse> {
 
         // Pulled due to outstanding issues
 
-        withTypeClass(Direct::class).list {
+        withTypeClass(Direct::class) {
+        }.list {
             +"nutrition" configure {
                 url = "https://github.com/WesCook/Nutrition/releases/download/v4.0.0/Nutrition-1.12.2-4.0.0.jar"
             }
@@ -278,7 +279,6 @@ root<Curse> {
             it.optional {
                 selected = false
             }
-
         }.list {
 
             +(Mod.laggoggles) configure {
@@ -316,7 +316,7 @@ root<Curse> {
 
             // OPT-OUT
             group {
-                optional {
+                it.optional {
                     selected = true
                     skRecommendation = Recommendation.starred
                 }
@@ -360,7 +360,7 @@ root<Curse> {
             }
             // OPT-IN
             group {
-                optional {
+                it.optional {
                     selected = false
                 }
             }.list {

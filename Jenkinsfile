@@ -9,16 +9,22 @@ pipeline {
 	            sh 'git submodule update --init --recursive'
 	        }
 	    }
-		stage("test") {
+		stage("build") {
 			steps {
                 sh './gradlew clean'
+                sh './gradlew build'
+			}
+		}
+		stage("test") {
+			steps {
+                // sh './gradlew clean'
                 sh './gradlew :voodoo:poet'
 				sh './gradlew test -S'
 			}
 		}
 	    stage('publish') {
             steps {
-                sh './gradlew publish -S'
+                sh './gradlew publishAllPublicationsToModmussRepository -S'
             }
         }
 	}

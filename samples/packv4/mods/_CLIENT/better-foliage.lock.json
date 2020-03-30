@@ -1,0 +1,13 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "side": "CLIENT",
+        "dependencies": {
+            "REQUIRED": [
+                "shadowfacts-forgelin"
+            ]
+        }
+    },
+    "projectID": 228529,
+    "fileID": 2852872
+}

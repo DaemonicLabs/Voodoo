@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "guide-api"
+            ]
+        }
+    },
+    "projectID": 244049,
+    "fileID": 2712670
+}

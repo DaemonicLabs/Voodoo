@@ -12,21 +12,21 @@ import java.io.File
 abstract class AbstractBuilder<E: NestedEntry>(
     val entry: E
 ) {
-    suspend fun flatten(parent: File) = entry.flatten(parent)
+    // TODO: why was this available in here?
+//    suspend fun flatten(parent: File) = entry.flatten(parent)
 
-    var folder by property(entry::folder)
-//    var comment by property(entry::comment)
-    var description by property(entry::description)
+//    var folder by property(entry::folder)
+//    var description by property(entry::description)
 
-    var side by property(entry::side)
+//    var side by property(entry::side)
 
-    // TODO: depenencies
+    // TODO: dependencies
     //  replaceDependencies
 
-    var packageType by property(entry::packageType)
-    var version by property(entry::version)
-    var fileName by property(entry::fileName)
-    var validMcVersions by property(entry::validMcVersions)
+//    var packageType by property(entry::packageType)
+//    var version by property(entry::version)
+//    var fileName by property(entry::fileName)
+//    var validMcVersions by property(entry::validMcVersions)
 
     fun optional(block: OptionalBuilder.() -> Unit) {
         val optionalData = entry.optionalData?.copy() ?: OptionalData()

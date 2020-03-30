@@ -378,6 +378,7 @@ subprojects {
             }
             repositories {
                 maven(url = "http://mavenupload.modmuss50.me/") {
+                    name = "modmuss"
                     val mavenPass: String? = project.properties["mavenPass"] as String?
                     mavenPass?.let {
                         credentials {
@@ -386,6 +387,16 @@ subprojects {
                         }
                     }
                 }
+                // TODO: publish to github packages
+                // TODO: figure out version number counting on github
+//                maven(url = "https://maven.pkg.github.com/my-username/my-library") {
+//                    name = "GitHubPackages"
+//                    url = uri("https://maven.pkg.github.com/my-username/my-library")
+//                    credentials {
+//                        username = System.getenv("GITHUB_ACTOR")
+//                        password = System.getenv("GITHUB_TOKEN")
+//                    }
+//                }
             }
         }
     }

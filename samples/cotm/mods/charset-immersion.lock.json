@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "charset-lib"
+            ]
+        }
+    },
+    "projectID": 291374,
+    "fileID": 2745007
+}

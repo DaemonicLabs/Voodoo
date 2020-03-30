@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "minerva-library"
+            ]
+        }
+    },
+    "projectID": 247357,
+    "fileID": 2866027
+}

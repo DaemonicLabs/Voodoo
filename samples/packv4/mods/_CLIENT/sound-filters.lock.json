@@ -1,0 +1,8 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "side": "CLIENT"
+    },
+    "projectID": 222789,
+    "fileID": 2892340
+}

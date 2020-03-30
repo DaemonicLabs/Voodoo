@@ -1,0 +1,13 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "side": "CLIENT",
+        "description": "Removes dynamic FOV shifting due to ingame effects.",
+        "optionalData": {
+            "selected": true,
+            "skRecommendation": "starred"
+        }
+    },
+    "projectID": 303938,
+    "fileID": 2716272
+}

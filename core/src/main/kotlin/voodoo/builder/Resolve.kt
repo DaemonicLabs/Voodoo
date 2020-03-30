@@ -107,10 +107,10 @@ suspend fun resolve(
 //                    logger.debug("setting display name")
 //                    actualLockEntry.name = actualLockEntry.name()
 
-                                    logger.debug("adding to resolved")
+//                                    logger.debug("adding to resolved")
                                     resolved += entry.id
 
-                                    logger.debug("resolved: $resolved")
+//                                    logger.debug("resolved: $resolved")
                                     val unresolvedEntries =
                                         modPack.entrySet.asSequence().map { entry -> entry.id }.filter { id ->
                                             !resolved.contains(

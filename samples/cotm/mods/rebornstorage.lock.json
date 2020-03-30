@@ -1,0 +1,13 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "refined-storage",
+                "reborncore"
+            ]
+        }
+    },
+    "projectID": 256662,
+    "fileID": 2833871
+}

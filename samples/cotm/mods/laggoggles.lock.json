@@ -1,0 +1,10 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "description": "***Admin/diagnostic tool. Leave off unless asked to help test performance issues.",
+        "optionalData": {
+        }
+    },
+    "projectID": 283525,
+    "fileID": 2901775
+}

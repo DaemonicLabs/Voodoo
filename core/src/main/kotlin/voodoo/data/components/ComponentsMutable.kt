@@ -41,7 +41,8 @@ data class CurseComponent(
     ),
     override var projectID: ProjectID = ProjectID.INVALID,
     override var fileID: FileID = FileID.INVALID,
-    override var useUrlTxt: Boolean = true
+    override var useUrlTxt: Boolean = true,
+    override var skipFingerprintCheck: Boolean = true
 ) : CurseMutable
 
 data class DirectComponent(

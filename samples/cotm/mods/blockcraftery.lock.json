@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "mysticallib"
+            ]
+        }
+    },
+    "projectID": 278882,
+    "fileID": 2716712
+}

@@ -89,7 +89,7 @@ object ServerPack : AbstractPack() {
             artifactId = "server-installer",
             version = PackConstants.FULL_VERSION,
             classifier = PackConstants.MAVEN_SHADOW_CLASSIFIER,
-            outputDir = MMCStaticPack.directories.cacheHome
+            outputDir = directories.cacheHome
         )
 
         val serverInstaller = output.resolve("server-installer.jar")

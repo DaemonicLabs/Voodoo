@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "placebo"
+            ]
+        }
+    },
+    "projectID": 261281,
+    "fileID": 2636239
+}

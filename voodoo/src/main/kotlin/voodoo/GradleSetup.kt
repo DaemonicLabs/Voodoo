@@ -45,17 +45,14 @@ object GradleSetup : KLogging() {
                 addTask("build") {
                     build()
                 }
-                addTask(name = "import_debug") {
-                    importDebug()
-                }
                 addTask(name = "pack_sk") {
                     pack().sklauncher()
                 }
-                addTask(name = "pack_mmc") {
-                    pack().multimc()
+                addTask(name = "pack_mmc-sk") {
+                    pack().multimcSk()
                 }
-                addTask(name = "pack_mmc-static") {
-                    pack().multimcStatic()
+                addTask(name = "pack_mmc-sk-fat") {
+                    pack().multimcSkFat()
                 }
                 addTask(name = "pack_mmc-fat") {
                     pack().multimcFat()
@@ -73,10 +70,15 @@ object GradleSetup : KLogging() {
                     build()
                     pack().sklauncher()
                     pack().server()
-                    test().multimc()
+                    pack().multimcSk()
+                    pack().multimcSkFat()
                     pack().multimcFat()
                     pack().curse()
                 }
+
+                generateCurseforgeMods("Mod", "1.12", "1.12.1", "1.12.2")
+                generateCurseforgeTexturepacks("TexturePack", "1.12", "1.12.1", "1.12.2")
+                generateForge("Forge", "1.12.2")
             }
 
             repositories {
@@ -109,7 +111,6 @@ object GradleSetup : KLogging() {
                         name = "kotlinx"
                     }
                     mavenCentral()
-                    jcenter()
                     gradlePluginPortal()
                 }
             }

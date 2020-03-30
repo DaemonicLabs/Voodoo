@@ -36,7 +36,7 @@ annotation class Include(val filename: String) {
 
             require(context.script is FileBasedScriptSource) { "${context.script::class} != FileBasedScriptSource" }
             (context.script as? FileBasedScriptSource)?.let { script ->
-                SharedFolders.RootDir.default = script.file.parentFile.parentFile
+                SharedFolders.RootDir.value = script.file.parentFile.parentFile
             }
 
             val includeFolder = SharedFolders.IncludeDir.get()

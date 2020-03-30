@@ -6,7 +6,6 @@ import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
 import voodoo.dsl.VoodooDSL
 import voodoo.property
-import voodoo.provider.ProviderBase
 import voodoo.readOnly
 import kotlin.reflect.full.createInstance
 
@@ -37,6 +36,7 @@ open class ModpackBuilder(
     ) {
         require(!rootInitialized) { "root was already initialized for ${pack.id}" }
         val entry = E::class.createInstance()
+        entry.nodeName = "root"
         val rootBuilder = GroupBuilder(entry = entry)
         entry.initRoot(rootBuilder)
         pack.root = rootBuilder.entry
@@ -47,6 +47,7 @@ open class ModpackBuilder(
         initRoot: E.(GroupBuilder<E>) -> Unit
     ): NestedEntry {
         val entry = E::class.createInstance()
+        entry.nodeName = "root"
         val rootBuilder = GroupBuilder(entry = entry)
         entry.initRoot(rootBuilder)
         return rootBuilder.entry

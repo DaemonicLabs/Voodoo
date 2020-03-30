@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "libraryex"
+            ]
+        }
+    },
+    "projectID": 248039,
+    "fileID": 2902164
+}

@@ -1,10 +1,6 @@
 package voodoo.data.curse
 
-import kotlinx.serialization.Decoder
-import kotlinx.serialization.Encoder
-import kotlinx.serialization.KSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Serializer
+import kotlinx.serialization.*
 
 // TODO: inline
 @Serializable(with = FileID.Companion::class)
@@ -18,7 +14,7 @@ data class FileID(val value: Int) {
 
     @Serializer(forClass = FileID::class)
     companion object : KSerializer<FileID> {
-//        override val descriptor = PrimitiveDesc("FileID")
+        override val descriptor = PrimitiveDescriptor("FileID", PrimitiveKind.INT)
 
         override fun deserialize(decoder: Decoder): FileID {
             return FileID(decoder.decodeInt())

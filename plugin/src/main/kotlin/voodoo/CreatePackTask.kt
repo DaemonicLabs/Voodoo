@@ -5,6 +5,7 @@ import list
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.InputDirectory
 import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import voodoo.curse.CurseClient
@@ -16,8 +17,8 @@ import voodoo.script.MainScriptEnv
 import java.io.File
 
 open class CreatePackTask : DefaultTask() {
-    lateinit var rootDir: File
-    lateinit var packsDir: File
+    @InputDirectory lateinit var rootDir: File
+    @InputDirectory lateinit var packsDir: File
 
     @Input
     @Option(option = "id", description = "modpack id")
@@ -43,7 +44,7 @@ open class CreatePackTask : DefaultTask() {
             throw GradleException("mcVersion needs to be specified with --mcVersion")
 
         val modIdentifiers = runBlocking {
-            Poet.request(section = "Mods", gameVersions = listOf(mcVersion))
+            Poet.requestSlugIdMap(section = "Mods", gameVersions = listOf(mcVersion))
         }.mapKeys { (key, _) ->
             Poet.defaultSlugSanitizer(key)
         }.toList().shuffled().take(10)

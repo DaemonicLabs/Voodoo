@@ -10,10 +10,10 @@ object SharedFolders {
 
     object RootDir : SystemProperty {
         override val key = "voodoo.rootDir"
-        lateinit var default: File // = File(System.getProperty("user.dir"))
+        lateinit var value: File // = File(System.getProperty("user.dir"))
         val defaultInitialized: Boolean
-            get() = ::default.isInitialized
-        var resolver: () -> File = { default }
+            get() = ::value.isInitialized
+        var resolver: () -> File = { value }
         fun get() = System.getProperty(key)?.asFile ?: resolver()
     }
 
@@ -33,6 +33,12 @@ object SharedFolders {
         override val key = "voodoo.includeDir"
         var resolver: (rootDir: File) -> File = { rootDir -> rootDir.resolve("include") }
         fun get(): File = System.getProperty(key)?.asFile ?: resolver(RootDir.get())
+    }
+
+    object BuildCache : SystemProperty {
+        override val key = "voodoo.build.cache"
+        var resolver: (rootDir: File) -> File = { rootDir -> rootDir.resolve("build").resolve(".voodoo") }
+        fun get(): File = System.getProperty(GeneratedSrcShared.key)?.asFile ?: resolver(RootDir.get())
     }
 
     object GeneratedSrcShared : SystemProperty {

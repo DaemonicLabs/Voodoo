@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "buildcraft"
+            ]
+        }
+    },
+    "projectID": 302569,
+    "fileID": 2615327
+}

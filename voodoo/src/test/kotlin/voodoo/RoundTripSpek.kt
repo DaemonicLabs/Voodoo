@@ -55,7 +55,7 @@ object RoundTripSpek : Spek({
 
                         group {
                             side = Side.BOTH
-                            optional {
+                            it.optional {
                                 selected = false
                             }
                         }.list {

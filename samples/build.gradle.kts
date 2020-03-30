@@ -1,11 +1,10 @@
 plugins {
-//    kotlin("plugin.scripting") version "1.3.70"
+//    kotlin("scripting") version "1.3.70"
     id("voodoo") version "0.5.0-dev"
 }
 
 voodoo {
     local = true
-    localVoodooProjectLocation = rootDir.parentFile
     addTask("build") {
         build()
     }
@@ -21,9 +20,6 @@ voodoo {
     addTask(name = "pack_mmc-sk-fat") {
         pack().multimcSkFat()
     }
-    addTask(name = "pack_mmc-static") {
-        pack().multimcStatic()
-    }
     addTask(name = "pack_mmc-fat") {
         pack().multimcFat()
     }
@@ -36,20 +32,15 @@ voodoo {
     addTask(name = "test_mmc") {
         test().multimc()
     }
-    addTask(name = "buildAndPackSome") {
-        build()
-        pack().sklauncher()
-        pack().server()
-        pack().multimcFat()
-        pack().curse()
-    }
     addTask(name = "buildAndPackAll") {
         build()
         pack().sklauncher()
         pack().server()
-        test().multimc()
+        pack().multimcSk()
+        pack().multimcSkFat()
         pack().multimcFat()
         pack().curse()
+        test().multimc()
     }
 
     generateCurseforgeMods("Mod", "1.12", "1.12.1", "1.12.2")
@@ -58,10 +49,9 @@ voodoo {
 }
 
 repositories {
-    mavenLocal()
-//    maven(url = "http://maven.modmuss50.me/") {
-//        name = "modmuss50"
-//    }
+    maven(url = "http://maven.modmuss50.me/") {
+        name = "modmuss50"
+    }
     maven(url = "https://kotlin.bintray.com/kotlinx") {
         name = "kotlinx"
     }
@@ -70,8 +60,6 @@ repositories {
 }
 
 dependencies {
-    implementation(group = "moe.nikky.voodoo", name = "dsl", version = "0.5.0-dev")
-    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.5.0-dev")
-    kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "0.5.0-dev")
-//    kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "0.5.0-dev")
+    kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "0.5.0+")
+    kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "0.5.0+")
 }

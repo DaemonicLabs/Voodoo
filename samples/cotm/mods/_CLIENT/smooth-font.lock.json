@@ -1,0 +1,13 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "side": "CLIENT",
+        "description": "It smoothes fonts.",
+        "optionalData": {
+            "selected": true,
+            "skRecommendation": "starred"
+        }
+    },
+    "projectID": 285742,
+    "fileID": 2775709
+}

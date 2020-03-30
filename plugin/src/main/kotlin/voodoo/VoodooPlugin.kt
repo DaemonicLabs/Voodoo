@@ -146,7 +146,7 @@ open class VoodooPlugin : Plugin<Project> {
                             val generatedFile = runBlocking {
                                 Poet.generate(
                                     name = generator.name,
-                                    slugIdMap = Poet.request(
+                                    slugIdMap = Poet.requestSlugIdMap(
                                         gameVersions = generator.mcVersions.toList(),
                                         section = generator.section.sectionName
                                     ),
@@ -205,27 +205,27 @@ open class VoodooPlugin : Plugin<Project> {
                             }
                         }
 
-                        task<VoodooTask>(id.toLowerCase()) {
-//                            dependsOn(poet)
-                            dependsOn(copyLibs)
-                            dependsOn(downloadVoodoo)
-                            dependsOn(generateAllTask)
-
-                            classpath(voodooJar)
-
-                            scriptFile = sourceFile.canonicalPath
-                            description = id
-                            group = id
-
-                            SharedFolders.setSystemProperties(id) { name: String, value: Any ->
-                                systemProperty(name, value)
-                            }
-                            doFirst {
-                                logger.lifecycle("classpath: $voodooJar")
-                                logger.lifecycle("classpath.length(): ${voodooJar.length()}")
-                            }
-//                            systemProperty("voodoo.jdkHome", jdkHome.path)
-                        }
+//                        task<VoodooTask>(id.toLowerCase()) {
+////                            dependsOn(poet)
+//                            dependsOn(copyLibs)
+//                            dependsOn(downloadVoodoo)
+//                            dependsOn(generateAllTask)
+//
+//                            classpath(voodooJar)
+//
+//                            scriptFile = sourceFile.canonicalPath
+//                            description = id
+//                            group = id
+//
+//                            SharedFolders.setSystemProperties(id) { name: String, value: Any ->
+//                                systemProperty(name, value)
+//                            }
+//                            doFirst {
+//                                logger.lifecycle("classpath: $voodooJar")
+//                                logger.lifecycle("classpath.length(): ${voodooJar.length()}")
+//                            }
+////                            systemProperty("voodoo.jdkHome", jdkHome.path)
+//                        }
 
                         voodooExtension.tasks.forEach { customTask ->
                             val (taskName, taskDescription, arguments) = customTask

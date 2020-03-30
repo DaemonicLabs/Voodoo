@@ -29,7 +29,6 @@ import voodoo.util.Directories
 import voodoo.util.blankOr
 import voodoo.util.download
 import voodoo.util.withPool
-import java.awt.Toolkit
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -40,7 +39,7 @@ import kotlin.system.exitProcess
 
 object Hex : KLogging() {
     private val directories = Directories.get(moduleName = "multimc")
-    val kit = Toolkit.getDefaultToolkit()
+//    val kit = Toolkit.getDefaultToolkit()
 
     @JvmStatic
     fun main(vararg args: String) = runBlocking {
@@ -263,7 +262,7 @@ object Hex : KLogging() {
         val toRemove = (oldpack?.tasks ?: listOf()) - uptodateTasks.toList()
         logger.info("files to delete: ${toRemove.map { it.to }}")
 
-        // iterate old
+        // iterate old and delete
         toRemove.forEach { task ->
             val target = minecraftDir.resolve(task.to)
             logger.info("deleting $target")

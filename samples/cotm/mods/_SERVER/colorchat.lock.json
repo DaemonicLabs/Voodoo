@@ -1,0 +1,13 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "side": "SERVER",
+        "dependencies": {
+            "REQUIRED": [
+                "k4lib"
+            ]
+        }
+    },
+    "projectID": 221276,
+    "fileID": 2485852
+}

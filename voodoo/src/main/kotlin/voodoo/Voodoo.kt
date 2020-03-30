@@ -13,6 +13,7 @@ import com.eyeem.watchadoin.saveAsSvg
 import com.eyeem.watchadoin.asTraceEventsReport
 import com.eyeem.watchadoin.saveAsHtml
 import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.DEBUG_PROPERTY_NAME
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
@@ -24,7 +25,6 @@ import voodoo.changelog.ChangelogBuilder
 import voodoo.data.lock.LockPack
 import voodoo.script.ChangeScript
 import voodoo.script.MainScriptEnv
-import voodoo.script.MainScriptEnvConfiguration
 import voodoo.script.TomeScript
 import voodoo.tome.TomeEnv
 import voodoo.util.Directories
@@ -38,8 +38,17 @@ import kotlin.system.exitProcess
 object Voodoo : KLogging() {
     @JvmStatic
     fun main(vararg fullArgs: String) {
+//        System.setProperty("LOGBACK_ID", fullArgs[1].substringBeforeLast(".voodoo.kts"))
+//        System.setProperty("LOGBACK_KEY",
+//            fullArgs.drop(1).chunkBy("-").joinToString("-") {
+//                it.joinToString ("_")
+//            }
+//        )
         val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
-        rootLogger.level = Level.DEBUG // TODO: pass as -Dvoodoo.debug=true
+        rootLogger.level = Level.DEBUG // TODO: pass as -Dvoodoo.debug=true ?
+        System.setProperty(DEBUG_PROPERTY_NAME, "on")
+
+        Thread.sleep(1000) // wait for logger to catch up
 
         logger.debug("using Voodoo: ${VoodooConstants.FULL_VERSION}")
         logger.debug("full arguments: ${fullArgs.joinToString(", ", "[", "]") { it }}")
@@ -67,16 +76,15 @@ object Voodoo : KLogging() {
         }
         val scriptFile = File(script)
         require(scriptFile.exists()) { "script file does not exists" }
-        val scriptFileName = scriptFile.name
 
-        val id = scriptFileName.substringBeforeLast(".voodoo.kts").apply {
+        val id = scriptFile.name.substringBeforeLast(".voodoo.kts").apply {
             require(isNotBlank()) { "the script file must contain a id in the filename" }
         }.toLowerCase()
 
         logger.debug("id: $id")
 
         if(!SharedFolders.RootDir.defaultInitialized) {
-            SharedFolders.RootDir.default = File(System.getProperty("user.dir")).absoluteFile
+            SharedFolders.RootDir.value = File(System.getProperty("user.dir")).absoluteFile
         }
         val rootDir = SharedFolders.RootDir.get().absoluteFile
 

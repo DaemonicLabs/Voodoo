@@ -1,0 +1,13 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "side": "CLIENT",
+        "description": "Mod-compatible mini-map.",
+        "optionalData": {
+            "selected": true,
+            "skRecommendation": "starred"
+        }
+    },
+    "projectID": 32274,
+    "fileID": 2916002
+}

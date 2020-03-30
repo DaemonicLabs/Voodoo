@@ -7,5 +7,10 @@
         "capitalthree",
         "NikkyAi"
     ],
-    "forge": "1.12.2-14.23.5.2768"
+    "forge": "1.12.2-14.23.5.2768",
+    "packOptions": {
+        "multimcOptions": {
+            "skPackUrl": "insert/something/here"
+        }
+    }
 }

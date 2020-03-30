@@ -11,8 +11,16 @@ version = "1.1"
 icon = rootDir.resolve("icon.png")
 authors = listOf("capitalthree", "NikkyAi")
 forge = Forge_12_2.mc1_12_2_recommended
+
+//pack {
+//    multimc {
+//        skPackUrl = "insert/something/here"
+//    }
+//}
+
 root<Curse> { builder ->
     releaseTypes = setOf(FileType.Release, FileType.Beta)
+    skipFingerprintCheck = false
     builder.list {
         //TODO: group mods by category (eg. tweakers)
         +Mod.abyssalcraft
@@ -92,16 +100,16 @@ root<Curse> { builder ->
         }
 
 //        withTypeClass(Jenkins::class) {
-        withType<Jenkins> {// this works even though idea is protesting
-            jenkinsUrl = "https://ci.elytradev.com"
-        }.list {
-            +"probe-data-provider" job "elytra/ProbeDataProvider/1.10.2"
-            +"fruit-phone" job "elytra/FruitPhone/1.10.2"
-
-            group {
-                side = Side.SERVER
-            }.list {
-            }
-        }
+//        withType<Jenkins> {// this works even though idea is protesting
+//            jenkinsUrl = "https://ci.elytradev.com"
+//        }.list {
+//            +"probe-data-provider" job "elytra/ProbeDataProvider/1.10.2"
+//            +"fruit-phone" job "elytra/FruitPhone/1.10.2"
+//
+//            group {
+//                side = Side.SERVER
+//            }.list {
+//            }
+//        }
     }
 }

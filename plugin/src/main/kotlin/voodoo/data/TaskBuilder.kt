@@ -39,8 +39,9 @@ class TaskBuilder() {
         fun multimcFat() {
             tasks += TaskType.Pack.MultiMCFat
         }
+        @Deprecated("removed", ReplaceWith("multimcSk()"))
         fun multimcStatic() {
-            tasks += TaskType.Pack.MultiMCStatic
+            tasks += TaskType.Pack.MultiMCSk
         }
         fun server() {
             tasks += TaskType.Pack.Server

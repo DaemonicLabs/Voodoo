@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "chisels-bits"
+            ]
+        }
+    },
+    "projectID": 240959,
+    "fileID": 2630081
+}

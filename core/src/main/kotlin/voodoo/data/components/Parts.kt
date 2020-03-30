@@ -54,12 +54,14 @@ interface CurseImmutable {
     val projectID: ProjectID
     val fileID: FileID
     val useUrlTxt: Boolean
+    val skipFingerprintCheck: Boolean
 }
 interface CurseMutable: CurseImmutable {
     override var releaseTypes: Set<FileType>
     override var projectID: ProjectID
     override var fileID: FileID
     override var useUrlTxt: Boolean
+    override var skipFingerprintCheck: Boolean
 }
 
 interface DirectImmutable {

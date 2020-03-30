@@ -1,0 +1,13 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "forestry",
+                "jei"
+            ]
+        }
+    },
+    "projectID": 248370,
+    "fileID": 2490058
+}

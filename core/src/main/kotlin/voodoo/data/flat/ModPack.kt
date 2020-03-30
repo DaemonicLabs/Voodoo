@@ -76,6 +76,9 @@ data class ModPack(
             // TODO: make some util code to merge Entries
             existingEntry.side += newEntry.side
             if (existingEntry.optionalData == null) {
+                if(newEntry.optionalData != null) {
+                    logger.warn { "copying optionalData of ${newEntry.id} to ${existingEntry.id}  ${newEntry.optionalData}" }
+                }
                 existingEntry.optionalData = newEntry.optionalData
             }
             if (existingEntry.description?.isBlank() == true) {

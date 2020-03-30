@@ -10,9 +10,11 @@ import voodoo.data.Side
 import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedEntry
 import voodoo.script.MainScriptEnv
+import voodoo.util.SharedFolders
 import java.io.File
 
 object DslSpek : Spek({
+    SharedFolders.RootDir.value = File(".")
     describe("load pack") {
         val rootFolder by memoized {
             File("run").resolve("test").resolve("dslspek").absoluteFile.apply {

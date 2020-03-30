@@ -6,10 +6,8 @@ import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonDecodingException
 import kotlinx.serialization.modules.SerializersModule
-import kotlinx.serialization.modules.SerializersModuleBuilder
 import mu.KLogging
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
@@ -34,10 +32,12 @@ import java.time.Instant
 sealed class LockEntry() : CommonLockModule {
     @Serializable
     data class Curse(
+        @Transient override var _id: String = "",
         val common: CommonLockComponent = CommonLockComponent(),
         val projectID: ProjectID = ProjectID.INVALID,
         val fileID: FileID = FileID.INVALID,
-        val useUrlTxt: Boolean = true
+        val useUrlTxt: Boolean = true,
+        val skipFingerprintCheck: Boolean = true
     ) : LockEntry(), CommonLockModule by common {
         init {
             optional = optionalData != null
@@ -47,6 +47,7 @@ sealed class LockEntry() : CommonLockModule {
 
     @Serializable
     data class Direct(
+        @Transient override var _id: String = "",
         val common: CommonLockComponent = CommonLockComponent(),
         val url: String = "",
         val useUrlTxt: Boolean = true
@@ -59,6 +60,7 @@ sealed class LockEntry() : CommonLockModule {
 
     @Serializable
     data class Jenkins(
+        @Transient override var _id: String = "",
         val common: CommonLockComponent = CommonLockComponent(),
         val jenkinsUrl: String = "",
         val job: String = "",
@@ -73,6 +75,7 @@ sealed class LockEntry() : CommonLockModule {
 
     @Serializable
     data class Local(
+        @Transient override var _id: String = "",
         val common: CommonLockComponent = CommonLockComponent(),
         var fileSrc: String = ""
     ) : LockEntry(), CommonLockModule by common {
@@ -84,6 +87,7 @@ sealed class LockEntry() : CommonLockModule {
 
     @Serializable
     data class UpdateJson(
+        @Transient override var _id: String = "",
         val common: CommonLockComponent = CommonLockComponent(),
         var updateJson: String = "",
         var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
@@ -100,15 +104,19 @@ sealed class LockEntry() : CommonLockModule {
     @Transient
     lateinit var provider: String
 
+//    @Transient
+//    lateinit var idField: String // id might not always match the filename
+
+    open fun changeId(value: String) {
+        require(!value.contains("[^\\w-]+".toRegex())) { "id: '$value' is not cleaned up properly, must not contain invalid characters" }
+        _id = value
+    }
+
     @Transient
-    lateinit var idField: String // id might not always match the filename
-    @Transient
-    var id: String
-        set(value) {
-            require(!value.contains("[^\\w-]+".toRegex())) { "id: '$value' is not cleaned up properly, must not contain invalid characters" }
-            idField = value
-        }
-        get() = idField
+    protected open var _id: String = ""
+
+    val id: String
+        get() = _id
 
     @Transient
     val displayName: String
@@ -181,7 +189,7 @@ sealed class LockEntry() : CommonLockModule {
             return try {
                 val lockEntry: LockEntry = json.parse(LockEntry.serializer(), file.readText())
                 lockEntry.folder = file.parentFile.relativeTo(srcDir)
-                lockEntry.id = file.name.substringBefore(".lock.json")
+                lockEntry.changeId(file.name.substringBefore(".lock.json"))
                 lockEntry
             } catch (e: JsonDecodingException) {
                 logger.error("cannot read: ${file.path}")

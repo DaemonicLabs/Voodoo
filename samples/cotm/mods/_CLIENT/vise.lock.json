@@ -1,0 +1,13 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "side": "CLIENT",
+        "description": "More granular control over UI/HUD elements.",
+        "optionalData": {
+            "selected": true,
+            "skRecommendation": "starred"
+        }
+    },
+    "projectID": 292437,
+    "fileID": 2553433
+}

@@ -136,21 +136,25 @@ data class LockPack(
         return entrySet.filter { it.dependencies[dependencyType]?.contains(entryId) ?: false }
     }
 
-    @Transient
-    private val optionalCache = ConcurrentHashMap<String, Boolean>()
+//    @Transient
+//    private val optionalCache = ConcurrentHashMap<String, Boolean>()
 
     fun isEntryOptional(entryId: String): Boolean {
-        return optionalCache.computeIfAbsent(entryId) {
-            val entry = findEntryById(entryId)!!
+//        return optionalCache.computeIfAbsent(entryId) {
+        logger.debug { "isEntryOptional: looking up entry for $entryId"}
+        val entry = findEntryById(entryId)!!
 
-            // find all entries that require this one
-            val dependants = getDependants(entry.id, DependencyType.REQUIRED)
-            val allOptionalDependants = dependants.all { dep ->
-                isEntryOptional(dep.id)
-            }
+        // find all entries that require this one
+        val dependants = getDependants(entry.id, DependencyType.REQUIRED)
+        logger.debug { "isEntryOptional: dependants of $entryId : ${dependants.map { it.id }}"}
 
-            allOptionalDependants && entry.optional
+        val allOptionalDependants = dependants.all { dep ->
+            isEntryOptional(dep.id)
         }
+        logger.debug { "isEntryOptional: ${allOptionalDependants && entry.optional}"}
+
+        return allOptionalDependants && entry.optional
+//        }
     }
 
     @Transient

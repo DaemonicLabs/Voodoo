@@ -1,0 +1,24 @@
+{
+    "id": "packv4",
+    "mcVersion": "1.12.2",
+    "title": "1.12.2 Pack v4",
+    "version": "1.0.0",
+    "authors": [
+        "therealfarfetchd"
+    ],
+    "forge": "1.12.2-14.23.5.2847",
+    "packOptions": {
+        "skCraftOptions": {
+            "userFiles": {
+                "include": [
+                    "options.txt",
+                    "quark.cfg",
+                    "foamfix.cfg"
+                ],
+                "exclude": [
+                    ""
+                ]
+            }
+        }
+    }
+}

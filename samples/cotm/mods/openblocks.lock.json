@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "openmodslib"
+            ]
+        }
+    },
+    "projectID": 228816,
+    "fileID": 2699056
+}

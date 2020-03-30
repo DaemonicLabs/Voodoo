@@ -12,7 +12,6 @@ sealed class TaskType(open val command: String) {
         object MultiMCSk: Pack("mmc-sk")
         object MultiMCSkFat: Pack("mmc-sk-fat")
         object MultiMCFat: Pack("mmc-fat")
-        object MultiMCStatic: Pack("mmc-static")
         object Server: Pack("server")
         object Curse: Pack("curse")
     }

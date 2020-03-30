@@ -1,0 +1,13 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "side": "CLIENT",
+        "description": "Add extra mouse gestures for inventories and crafting grids.",
+        "optionalData": {
+            "selected": true,
+            "skRecommendation": "starred"
+        }
+    },
+    "projectID": 60089,
+    "fileID": 2671937
+}

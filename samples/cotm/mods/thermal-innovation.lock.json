@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "thermal-foundation"
+            ]
+        }
+    },
+    "projectID": 291737,
+    "fileID": 2715787
+}

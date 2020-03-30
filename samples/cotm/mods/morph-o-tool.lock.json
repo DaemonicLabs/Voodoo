@@ -1,0 +1,12 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "autoreglib"
+            ]
+        }
+    },
+    "projectID": 245287,
+    "fileID": 2658176
+}
