@@ -342,7 +342,8 @@ object SKPack : AbstractPack() {
     }
 
     /**
-     * iterates through all entries and set
+     * iterates through all entries in feature
+     * and add dependencies also as entries to the feature
      */
     private fun processFeature(
         stopwatch: Stopwatch,
@@ -353,7 +354,7 @@ object SKPack : AbstractPack() {
         val processedEntries = mutableListOf<String>()
         var processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
         while (processableEntries.isNotEmpty()) {
-            processableEntries = feature.entries.filter { f -> !processedEntries.contains(f) }
+            processableEntries = feature.entries.filter { featureName -> !processedEntries.contains(featureName) }
             for (entry_id in processableEntries) {
                 logger.info("searching $entry_id")
                 val entry = modPack.findEntryById(entry_id)

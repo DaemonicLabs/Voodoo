@@ -1,6 +1,5 @@
 package voodoo.util.dir
 
-import mu.KLogging
 import voodoo.util.Directories
 
 import java.io.File
@@ -13,9 +12,6 @@ import java.nio.file.attribute.PosixFilePermissions
  * in Java (obviously).
  */
 class XDGDirectories(private val appName: String) : Directories {
-
-    companion object : KLogging()
-
     /**
      * @return The single base directory relative to which user-specific
      * non-essential runtime files and other file objects (such as sockets,
@@ -23,7 +19,7 @@ class XDGDirectories(private val appName: String) : Directories {
      */
     override val runtimeDir: File by lazy {
         val dir = getBaseDir("XDG_RUNTIME_DIR") ?: run run@{
-            logger.warn("Synthesizing runtime directory, as \$XDG_RUNTIME_DIR is unset")
+            System.err.println("Synthesizing runtime directory, as \$XDG_RUNTIME_DIR is unset")
             var dir = File(System.getProperty("java.io.tmpdir"))
             dir = File(dir, appName + "-" + System.getProperty("user.name"))
             dir.mkdirs()
@@ -33,9 +29,11 @@ class XDGDirectories(private val appName: String) : Directories {
         try {
             Files.setPosixFilePermissions(dir.toPath(), PosixFilePermissions.fromString("rwx------"))
         } catch (e: IOException) {
-            logger.warn("Failed to set directory permissions on {} to owner-only", dir, e)
+            e.printStackTrace()
+            System.err.println("Failed to set directory permissions on $dir} to owner-only")
         } catch (e: UnsupportedOperationException) {
-            logger.warn("Failed to set directory permissions on {} to owner-only", dir, e)
+            e.printStackTrace()
+            System.err.println("Failed to set directory permissions on $dir} to owner-only")
         }
 
 //        Directories.deleteOnExit(dir)
