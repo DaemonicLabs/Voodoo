@@ -6,7 +6,6 @@
 
 package voodoo
 
-import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
 import voodoo.bootstrap.BootstrapConstants
 import voodoo.util.Directories
@@ -27,12 +26,13 @@ fun main(vararg args: String) {
         Bootstrap.cleanup()
         Bootstrap.launch(*args)
     } catch (t: Throwable) {
-        Bootstrap.logger.error("Error", t)
+        t.printStackTrace()
+        System.err.println("Error")
         exitProcess(-1)
     }
 }
 
-object Bootstrap : KLogging() {
+object Bootstrap {
 
     val artifact = javaClass.getResourceAsStream("/artifact.txt").bufferedReader().readLine()
     private const val mavenUrl = BootstrapConstants.MAVEN_URL
@@ -56,7 +56,7 @@ object Bootstrap : KLogging() {
 
     private fun download(): File {
 
-        val groupPath = group.split("\\.".toRegex()).joinToString("/")
+        val groupPath = group.replace('.','/')
         val mavenMetadataUrl = "$mavenUrl/$groupPath/$artifact/maven-metadata.xml"
 //        val (request, response, result) = mavenMetadataUrl.httpGet()
 //            .responseString()
@@ -80,9 +80,12 @@ object Bootstrap : KLogging() {
         val doc = dBuilder.parse(URL(mavenMetadataUrl).openStream())
         val xpFactory = XPathFactory.newInstance()
         val xPath = xpFactory.newXPath()
+
+
         val xpath = "/metadata/versioning/release/text()"
         val releaseVersion = xPath.evaluate(xpath, doc, XPathConstants.STRING) as String
 
+        // TODO: select latest buuild within major or minor version ?
 
         val artifactFile = downloadArtifact(
             mavenUrl = mavenUrl,
@@ -99,20 +102,21 @@ object Bootstrap : KLogging() {
 
     @Throws(Throwable::class)
     fun launch(vararg originalArgs: String) {
-        logger.info("Downloading the $artifact binary...")
+        println("Downloading the $artifact binary...")
         val file = try {
             download().apply {
                 assert(exists()) { "downloaded files does not seem to exist" }
                 copyTo(lastFile, overwrite = true)
             }
         } catch (e: IOException) {
-            logger.error(e) {"cannot download $artifact from $mavenUrl, trying to reuse last binary"}
+            e.printStackTrace()
+            System.err.println("cannot download $artifact from $mavenUrl, trying to reuse last binary")
             lastFile
         }
 
         require(file.exists()) { "binary $file does not exist" }
 
-        logger.info("Loaded " + file.path)
+        println("Loaded " + file.path)
         val java = arrayOf(System.getProperty("java.home"), "bin", "java").joinToString(File.separator)
         val workingDir = File(System.getProperty("user.dir"))
 
@@ -121,7 +125,7 @@ object Bootstrap : KLogging() {
         } ?: emptyArray()
 
         val args = arrayOf(java, *debugArgs, "-jar", file.path, *originalArgs)
-        logger.debug("executing [${args.joinToString { "'$it'" }}]")
+        println("executing [${args.joinToString { "'$it'" }}]")
         val exitStatus = ProcessBuilder(*args)
             .directory(workingDir)
             .redirectOutput(ProcessBuilder.Redirect.INHERIT)
@@ -161,24 +165,6 @@ object Bootstrap : KLogging() {
                     }
                 }
             }
-//
-//            val (request, response, result) = artifactUrl.httpDownload()
-//                .fileDestination { response, request ->
-//                    tmpFile.delete()
-//                    tmpFile
-//                }
-////            .header("User-Agent" to useragent)
-//                .response()
-//            when (result) {
-//                is Result.Success -> {}
-//                is Result.Failure -> {
-//                    logger.error("artifactUrl: $artifactUrl")
-//                    logger.error("cUrl: ${request.cUrlString()}")
-//                    logger.error("response: $response")
-//                    logger.error(result.error.exception) { "unable to download jarfile from $artifactUrl" }
-//                    throw result.error.exception
-//                }
-//            }
         }
 
 
@@ -188,20 +174,6 @@ object Bootstrap : KLogging() {
             val md5 = url.openStream().bufferedReader().use { bis ->
                 bis.lines().collect(Collectors.joining(System.lineSeparator()))
             }
-//            val (request, response, result) =  md5Url.httpGet()
-//                .responseString()
-//            val md5 = when (result) {
-//                is Result.Success -> {
-//                    result.value
-//                }
-//                is Result.Failure -> {
-//                    logger.error("artifactUrl: $artifactUrl")
-//                    logger.error("cUrl: ${request.cUrlString()}")
-//                    logger.error("response: $response")
-//                    logger.error(result.error.exception) { "unable to download md5 hash from ${request.url}" }
-//                    throw result.error.exception
-//                }
-//            }
             val fileMd5 = DigestUtils.md5Hex(tmpFile.inputStream())
             require(fileMd5 == md5) { "$artifactUrl did not match md5 hash: '$md5'" }
         }

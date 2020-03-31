@@ -118,14 +118,6 @@ fun Project.setupDependencies(target: Project = this) {
             dependencies {
 //                api(project(":util"))
                 api(kotlin("stdlib", Kotlin.version))
-
-//                api(Fuel.dependency)
-
-                api(Logging.dependency)
-                api(Logging.dependencyLogbackClassic) {
-                    exclude(module = "javax.mail")
-                }
-
                 api(group = "commons-codec", name = "commons-codec", version = "+")
             }
         }
