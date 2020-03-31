@@ -1,18 +1,20 @@
 package voodoo
 
-import com.github.kittinunf.fuel.core.extensions.cUrlString
-import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
-import com.github.kittinunf.result.Result
+
 import com.skcraft.launcher.model.modpack.FileInstall
 import com.skcraft.launcher.model.modpack.Manifest
 import com.xenomachina.argparser.ArgParser
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.url
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
+import io.ktor.http.HttpHeaders
+import io.ktor.http.isSuccess
+import io.ktor.utils.io.readRemaining
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.toList
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
@@ -25,11 +27,9 @@ import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil.updateAndSelectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
-import voodoo.util.Directories
-import voodoo.util.blankOr
-import voodoo.util.download
-import voodoo.util.withPool
+import voodoo.util.*
 import java.io.File
+import java.io.IOException
 import kotlin.system.exitProcess
 
 /**
@@ -62,21 +62,40 @@ object Hex : KLogging() {
         logger.info("pack url: $packUrl")
         val loader: DeserializationStrategy<Manifest> = Manifest.serializer()
 
-        val (request, response, result) = packUrl.httpGet()
-            .header("User-Agent" to CurseClient.useragent)
-            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = loader, json = json))
-        val modpack: Manifest = when (result) {
-            is Result.Success -> {
-                result.value
-            }
-            is Result.Failure -> {
+        val response = withContext(Dispatchers.IO) {
+             try {
+                client.get<HttpResponse> {
+                    url(packUrl)
+                    header(HttpHeaders.UserAgent, CurseClient.useragent)
+                }
+            } catch (e: IOException) {
                 logger.error("packUrl: $packUrl")
-                logger.error("cUrl: ${request.cUrlString()}")
-                logger.error("response: $response")
-                logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
-                return
+                logger.error(e) { "unable to get job from $packUrl" }
+                error("failed to get $packUrl")
             }
         }
+        if (!response.status.isSuccess()) {
+            logger.error { "$packUrl returned ${response.status}" }
+            error("failed with ${response.status}")
+        }
+        val modpack = json.parse(Manifest.serializer(), response.readText())
+
+
+//        val (request, response, result) = packUrl.httpGet()
+//            .header("User-Agent" to CurseClient.useragent)
+//            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = loader, json = json))
+//        val modpack: Manifest = when (result) {
+//            is Result.Success -> {
+//                result.value
+//            }
+//            is Result.Failure -> {
+//                logger.error("packUrl: $packUrl")
+//                logger.error("cUrl: ${request.cUrlString()}")
+//                logger.error("response: $response")
+//                logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
+//                return
+//            }
+//        }
 
         val oldpackFile = instanceDir.resolve("voodoo.modpack.json")
         val oldpack: Manifest? = oldpackFile.takeIf { it.exists() }

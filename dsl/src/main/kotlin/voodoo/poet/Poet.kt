@@ -201,6 +201,6 @@ object Poet : KLogging() {
             section = section,
             gameVersions = gameVersions
         ).map { (id, slug) ->
-            slug to ProjectID(id)
+            slug to id
         }.toMap()
 }

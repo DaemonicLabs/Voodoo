@@ -1,6 +1,5 @@
 package voodoo.util
 
-import com.github.kittinunf.fuel.core.FuelManager
 import io.ktor.client.HttpClient
 import io.ktor.client.request.request
 import io.ktor.client.request.url
@@ -8,7 +7,6 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpMethod
 import io.ktor.http.Url
 import io.ktor.http.isSuccess
-import io.ktor.network.sockets.ConnectTimeoutException
 import io.ktor.util.cio.writeChannel
 import io.ktor.utils.io.copyAndClose
 import kotlinx.coroutines.Dispatchers
@@ -16,8 +14,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import mu.KLogger
 import mu.KLogging
-import voodoo.util.redirect.fixedRedirectResponseInterceptor
 import java.io.File
+import java.io.IOException
 
 /**
  * Created by nikky on 30/03/18.
@@ -26,11 +24,6 @@ import java.io.File
 object Downloader : KLogging() {
     const val useragent =
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" // ""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
-
-    val manager = FuelManager().apply {
-        removeAllResponseInterceptors()
-        addResponseInterceptor(fixedRedirectResponseInterceptor(this))
-    }
 }
 
 suspend fun File.download(
@@ -68,7 +61,7 @@ suspend fun File.download(
         withContext(Dispatchers.IO) {
             try {
                 val response = httpClient.request<HttpResponse> {
-                    url(Url(url))
+                    url(url)
                     method = HttpMethod.Get
 //                header(HttpHeaders.UserAgent, useragent)
                 }
@@ -85,8 +78,8 @@ suspend fun File.download(
                 cacheFile.parentFile.mkdirs()
                 cacheFile.createNewFile()
                 response.content.copyAndClose(cacheFile.writeChannel())
-            } catch (e: ConnectTimeoutException) {
-                logger.error { "download timed out for url: $url" }
+            } catch (e: IOException) {
+                logger.error(e) { "download timed out for url: $url" }
                 retry()
             }
         }

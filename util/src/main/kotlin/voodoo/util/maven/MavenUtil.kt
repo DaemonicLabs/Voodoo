@@ -1,17 +1,22 @@
 package voodoo.util.maven
 
 import com.eyeem.watchadoin.Stopwatch
-import com.github.kittinunf.fuel.core.extensions.cUrlString
-import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
 import org.apache.commons.codec.digest.DigestUtils
-import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
-import com.github.kittinunf.fuel.httpDownload
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
+import io.ktor.client.request.get
+import io.ktor.client.request.url
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
+import io.ktor.http.isSuccess
+import io.ktor.util.cio.writeChannel
+import io.ktor.utils.io.copyAndClose
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import mu.KLogging
 import org.xml.sax.InputSource
+import voodoo.util.client
 import java.io.ByteArrayInputStream
 import java.io.File
+import java.io.IOException
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory
@@ -69,42 +74,47 @@ object MavenUtil : KLogging() {
         val tmpFile = File(outputDir, "$artifactId-$version$classifierSuffix.$extension.tmp")
         val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
         run {
-            val (request, response, result) = artifactUrl.httpDownload()
-                .fileDestination { response, request ->
-                    tmpFile.delete()
-                    tmpFile
-                }
-//            .header("User-Agent" to useragent)
-                .awaitByteArrayResponseResult()
-            when (result) {
-                is Result.Success -> {}
-                is Result.Failure -> {
+            tmpFile.delete()
+            val response = withContext(Dispatchers.IO) {
+                try {
+                    client.get<HttpResponse> {
+                        url(artifactUrl)
+    //                header(HttpHeaders.UserAgent, useragent)
+                    }
+                } catch (e: IOException) {
                     logger.error("artifactUrl: $artifactUrl")
-                    logger.error("cUrl: ${request.cUrlString()}")
-                    logger.error("response: $response")
-                    logger.error(result.error.exception) { "unable to download jarfile from $artifactUrl" }
-                    throw result.error.exception
+                    logger.error(e) { "unable to download jarfile from $artifactUrl" }
+                    throw e
                 }
             }
+            if(!response.status.isSuccess()) {
+                logger.error { "$artifactUrl returned ${response.status}" }
+                error("unable to download jarfile from $artifactUrl")
+            }
+            response.content.copyAndClose(tmpFile.writeChannel())
         }
 
 
         if(checkMd5) {
             val md5Url = "$artifactUrl.md5"
-            val (request, response, result) =  md5Url.httpGet()
-                .awaitStringResponseResult()
-            val md5 = when (result) {
-                is Result.Success -> {
-                    result.value
-                }
-                is Result.Failure -> {
-                    logger.error("artifactUrl: $artifactUrl")
-                    logger.error("cUrl: ${request.cUrlString()}")
-                    logger.error("response: $response")
-                    logger.error(result.error.exception) { "unable to download md5 hash from ${request.url}" }
-                    throw result.error.exception
+
+            val response = withContext(Dispatchers.IO) {
+                try {
+                    client.get<HttpResponse> {
+                        url(md5Url)
+//                header(HttpHeaders.UserAgent, useragent)
+                    }
+                } catch (e: IOException) {
+                    logger.error("md5Url: $md5Url")
+                    logger.error(e) { "unable to download md5 hash from $md5Url" }
+                    throw e
                 }
             }
+            if(!response.status.isSuccess()) {
+                logger.error { "$md5Url returned ${response.status}" }
+                error("unable to download md5 hash from $md5Url")
+            }
+            val md5 = response.readText()
             val fileMd5 = DigestUtils.md5Hex(tmpFile.inputStream())
             require(fileMd5 == md5) { "$artifactUrl did not match md5 hash: '$md5'" }
         }
@@ -122,20 +132,23 @@ object MavenUtil : KLogging() {
     ): String = stopwatch {
 
         val groupPath = group.split("\\.".toRegex()).joinToString("/")
-        val artifactUrl = "$mavenUrl/$groupPath/$artifactId/maven-metadata.xml"
-        val (request, response, result) = artifactUrl.httpGet()
-//            .header("User-Agent" to useragent)
-            .awaitStringResponseResult()
-        when (result) {
-            is Result.Success -> return result.value
-            is Result.Failure -> {
-                logger.error("artifactUrl: $artifactUrl")
-                logger.error("cUrl: ${request.cUrlString()}")
-                logger.error("response: $response")
-                logger.error(result.error.exception) { "unable to download jarfile from $artifactUrl" }
-                throw result.error.exception
+        val metadataUrl = "$mavenUrl/$groupPath/$artifactId/maven-metadata.xml"
+
+        val response = try {
+            client.get<HttpResponse> {
+                url(metadataUrl)
+//                header(HttpHeaders.UserAgent, useragent)
             }
+        } catch(e: IOException) {
+            logger.error("metadataUrl: $metadataUrl")
+            logger.error(e) { "unable to download metadata from $metadataUrl"}
+            throw e
         }
+        if(!response.status.isSuccess()) {
+            logger.error { "$metadataUrl returned ${response.status}" }
+            error("unable to download metadata from $metadataUrl")
+        }
+        return response.readText()
     }
 
     suspend fun getLatestVersionFromMavenMetadata(

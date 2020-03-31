@@ -1,20 +1,25 @@
 package voodoo.util.jenkins
 
 import com.eyeem.watchadoin.Stopwatch
-import com.github.kittinunf.fuel.core.extensions.cUrlString
-import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
-import com.github.kittinunf.fuel.coroutines.awaitObjectResponseResult
-import com.github.kittinunf.fuel.httpDownload
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.fuel.serialization.kotlinxDeserializerOf
-import com.github.kittinunf.result.Result
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.url
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
+import io.ktor.http.HttpHeaders
+import io.ktor.http.isSuccess
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
 import voodoo.util.UtilConstants
+import voodoo.util.client
+import voodoo.util.download
 import java.io.File
+import java.io.IOException
 
 object Jenkins : KLogging()
 
@@ -52,27 +57,32 @@ suspend fun downloadVoodoo(
         throw Exception()
     }
     val artifactUrl = build.url + "artifact/" + artifact.relativePath
-    val tmpFile = File(binariesDir, "$moduleName-$actualBuildNumber.tmp")
+//    val tmpFile = File(binariesDir, "$moduleName-$actualBuildNumber.tmp")
     val targetFile = outputFile ?: File(binariesDir, "$moduleName-$actualBuildNumber.jar")
-    val (request, response, result) = artifactUrl.httpDownload()
-        .fileDestination { response, request ->
-            tmpFile.delete()
-            tmpFile
-        }
-        .header("User-Agent" to useragent)
-        .awaitByteArrayResponseResult()
-    when (result) {
-        is Result.Success -> {}
-        is Result.Failure -> {
-            Jenkins.logger.error("artifactUrl: $artifactUrl")
-            Jenkins.logger.error("cUrl: ${request.cUrlString()}")
-            Jenkins.logger.error("response: $response")
-            Jenkins.logger.error(result.error.exception) { "unable to download jarfile from $artifactUrl" }
-            throw result.error.exception
-        }
-    }
 
-    tmpFile.renameTo(targetFile)
+    targetFile.download(
+        artifactUrl,
+        binariesDir
+    )
+//    val (request, response, result) = artifactUrl.httpDownload()
+//        .fileDestination { response, request ->
+//            tmpFile.delete()
+//            tmpFile
+//        }
+//        .header("User-Agent" to useragent)
+//        .awaitByteArrayResponseResult()
+//    when (result) {
+//        is Result.Success -> {}
+//        is Result.Failure -> {
+//            Jenkins.logger.error("artifactUrl: $artifactUrl")
+//            Jenkins.logger.error("cUrl: ${request.cUrlString()}")
+//            Jenkins.logger.error("response: $response")
+//            Jenkins.logger.error(result.error.exception) { "unable to download jarfile from $artifactUrl" }
+//            throw result.error.exception
+//        }
+//    }
+//
+//    tmpFile.renameTo(targetFile)
     return@stopwatch targetFile
 }
 
@@ -81,21 +91,24 @@ class JenkinsServer(
 ) {
     fun getUrl(job: String) = serverUrl + "/job/" + job.replace("/", "/job/")
 
-    suspend fun getJob(job: String, useragent: String): Job? {
+    suspend fun getJob(job: String, useragent: String): Job? = withContext(Dispatchers.IO) {
         val requestURL = getUrl(job) + "/api/json"
-        val (request, response, result) = requestURL.httpGet()
-            .header("User-Agent" to useragent)
-            .awaitObjectResponseResult<Job>(kotlinxDeserializerOf(loader = Job.serializer(), json = json))
-        return when (result) {
-            is Result.Success -> result.value
-            is Result.Failure -> {
-                Jenkins.logger.error("requestURL: $requestURL")
-                Jenkins.logger.error("cUrl: ${request.cUrlString()}")
-                Jenkins.logger.error("response: $response")
-                Jenkins.logger.error(result.error.exception) { "unable to get job from $requestURL" }
-                null
+        val response = try {
+            client.get<HttpResponse> {
+                url(requestURL)
+                header(HttpHeaders.UserAgent, useragent)
             }
+        } catch (e: IOException) {
+            Jenkins.logger.error("requestURL: $requestURL")
+//            Jenkins.logger.error("response: $response")
+            Jenkins.logger.error(e) { "unable to get job from $requestURL" }
+            return@withContext null
         }
+        if (!response.status.isSuccess()) {
+            Jenkins.logger.error { "$requestURL returned ${response.status}" }
+            return@withContext null
+        }
+        return@withContext json.parse(Job.serializer(), response.readText())
     }
 }
 
@@ -104,22 +117,25 @@ data class Build(
     val number: Int,
     val url: String
 ) {
-    suspend fun details(useragent: String): BuildWithDetails? {
+    suspend fun details(useragent: String): BuildWithDetails? = withContext(Dispatchers.IO) {
         val buildUrl = "$url/api/json"
-        val deserializationStrategy: DeserializationStrategy<BuildWithDetails> = BuildWithDetails.serializer()
-        val (request, response, result) = buildUrl.httpGet()
-            .header("User-Agent" to useragent)
-            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = deserializationStrategy, json = json))
-        return when (result) {
-            is Result.Success -> result.value
-            is Result.Failure -> {
-                Jenkins.logger.error("buildUrl: $buildUrl")
-                Jenkins.logger.error("cUrl: ${request.cUrlString()}")
-                Jenkins.logger.error("response: $response")
-                Jenkins.logger.error(result.error.exception) { "unable to get build from $buildUrl" }
-                null
+        val response = try {
+            client.get<HttpResponse> {
+                url(buildUrl)
+                header(HttpHeaders.UserAgent, useragent)
             }
+        } catch(e: IOException) {
+            Jenkins.logger.error("buildUrl: $buildUrl")
+//            Jenkins.logger.error("response: $response")
+            Jenkins.logger.error(e) { "unable to get build from $buildUrl" }
+            return@withContext null
         }
+        if(!response.status.isSuccess()) {
+            Jenkins.logger.error { "$buildUrl returned ${response.status}" }
+            return@withContext null
+        }
+
+        return@withContext json.parse(BuildWithDetails.serializer(), response.readText())
     }
 }
 

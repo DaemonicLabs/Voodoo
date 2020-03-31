@@ -41,8 +41,8 @@ open class ListBuilder<E : NestedEntry>(
         require(parent.entry is NestedEntry.Curse) {
             "sorry about that, you should only add Curse mods inside Curse groups"
         }
-        // TODO: maybe write this out in a json file by the code generator
-        // TODO:  and look up in the json instead
+        // TODO: keep numerical id around and fix it up later ?
+        // TODO: should simplify code and tests
         val curseSlugsFile = SharedFolders.BuildCache.get().resolve("curseSlugs.json")
         val curseSlugs =  json.parse(MapSerializer(ProjectID, String.serializer()), curseSlugsFile.readText())
         val stringId = curseSlugs[this] ?: runBlocking {
