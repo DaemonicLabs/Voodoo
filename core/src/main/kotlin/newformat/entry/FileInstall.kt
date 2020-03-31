@@ -4,11 +4,13 @@
  * Copyright (C) 2010-2014 Albert Pham <http://www.sk89q.com> and contributors
  * Please see LICENSE.txt for license information.
  */
-package newformat
+package newformat.entry
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import newformat.Condition
+import voodoo.data.Side
 
 @Serializable
 data class FileInstall(
@@ -16,10 +18,15 @@ data class FileInstall(
     var hash: String,
     var location: String,
     var to: String,
+    var side: Side,
 
     var size: Long = 0,
-    @SerialName("userFile")
-    var isUserFile: Boolean = false,
+
+    // TODO: flip it.. define folder / files to be strictly defined by the pack
+    // everything else is modifiable
+
+    // userFiels are files that ca be modified by users and will not be downloaded when the hash changes
+    var userFile: Boolean = false,
 
 //    var manifest: Manifest? = null,
     @SerialName("when")

@@ -7,6 +7,7 @@
 package newformat
 
 import kotlinx.serialization.Serializable
+import newformat.entry.FileInstall
 import voodoo.Modloader
 import voodoo.util.serializer.URLSerializer
 import java.net.URL
@@ -62,7 +63,6 @@ data class Manifest(
 //    @Serializer(forClass = Manifest::class)
 //    companion object : KSerializer<Manifest> {
     companion object {
-        val MIN_PROTOCOL_VERSION = 2
 //
 //        override fun serialize(output: Encoder, obj: Manifest) {
 //            val elemOutput = output.beginStructure(descriptor)

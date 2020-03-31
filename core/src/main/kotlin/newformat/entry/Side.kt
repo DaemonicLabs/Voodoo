@@ -1,4 +1,4 @@
-package voodoo.data
+package newformat.entry;
 
 /**
  * Created by nikky on 28/03/18.
