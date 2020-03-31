@@ -1,6 +1,5 @@
 package voodoo.util
 
-import mu.KLogging
 import voodoo.util.dir.BareDirectories
 import voodoo.util.dir.MacDirectories
 import voodoo.util.dir.WindowsDirectories
@@ -46,7 +45,7 @@ interface Directories {
      */
     val runtimeDir: File
 
-    companion object : KLogging() {
+    companion object {
 
         fun File.deleteDirectoryOnExit() {
             Runtime.getRuntime().addShutdownHook(Thread({
@@ -65,7 +64,8 @@ interface Directories {
                         }
                     })
                 } catch (e: IOException) {
-                    logger.warn("Failed to delete {}", this, e)
+                    e.printStackTrace()
+                    System.err.println("Failed to delete $this")
                 }
             }, "Runtime directory cleanup thread"))
         }
@@ -84,23 +84,23 @@ interface Directories {
 
             directories = when {
                 useBareDirectories -> {
-                    logger.info("Using bare directories, as requested")
+                    println("Using bare directories, as requested")
                     BareDirectories(cleanAppName)
                 }
                 Platform.isLinux || Platform.isX11 || Platform.isSolaris || Platform.isAIX -> {
-                    logger.info("Using XDG directories")
+                    println("Using XDG directories")
                     XDGDirectories(cleanAppName)
                 }
                 Platform.isMac -> {
-                    logger.info("Using Mac Library directories")
+                    println("Using Mac Library directories")
                     MacDirectories(appName.replace('/', '_'))
                 }
                 Platform.isWindows -> {
-                    logger.info("Using Windows directories")
+                    println("Using Windows directories")
                     WindowsDirectories(appName.replace('/', '_').replace(" ", ""))
                 }
                 else -> {
-                    logger.info("Using bare directories")
+                    println("Using bare directories")
                     BareDirectories(cleanAppName)
                 }
             }

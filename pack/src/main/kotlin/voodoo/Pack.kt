@@ -20,7 +20,6 @@ object Pack : KLogging() {
         "mmc-sk" to MMCSelfupdatingPack,
         "mmc-sk-fat" to MMCSelfupdatingFatPack,
         "mmc-fat" to MMCFatPack,
-        "mcu-fastpack" to MCUFastPack,
         "server" to ServerPack,
         "curse" to CursePack
     )

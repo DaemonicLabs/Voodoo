@@ -23,10 +23,7 @@ import voodoo.pack.sk.SKPackages
 import voodoo.pack.sk.SKWorkspace
 import voodoo.pack.sk.SkPackageFragment
 import voodoo.provider.Providers
-import voodoo.util.blankOr
-import voodoo.util.download
-import voodoo.util.unixPath
-import voodoo.util.withPool
+import voodoo.util.*
 import java.io.File
 import java.net.URI
 import java.time.Instant
@@ -248,7 +245,7 @@ object SKPack : AbstractPack() {
                 )
 
                 val modpackPath = modpackDir.resolve("modpack.json")
-                modpackPath.writeText(Json.indented.stringify(SKModpack.serializer(), skmodpack))
+                modpackPath.writeText(json.stringify(SKModpack.serializer(), skmodpack))
 
                 // add to workspace.json
                 logger.info("adding ${modpack.id} to workpace.json", modpack.id)
@@ -257,7 +254,7 @@ object SKPack : AbstractPack() {
                 val workspacePath = workspaceMetaFolder.resolve("workspace.json")
                 val workspace = if (workspacePath.exists()) {
                     try {
-                        Json.indented.parse<SKWorkspace>(SKWorkspace.serializer(), workspacePath.readText())
+                        json.parse<SKWorkspace>(SKWorkspace.serializer(), workspacePath.readText())
                     } catch (e: Exception) {
                         logger.error("failed parsing: $workspacePath", e)
                         SKWorkspace()
@@ -267,7 +264,7 @@ object SKPack : AbstractPack() {
                 }
                 workspace.packs += SKLocation(modpack.id)
 
-                workspacePath.writeText(Json.indented.stringify(SKWorkspace.serializer(), workspace))
+                workspacePath.writeText(json.stringify(SKWorkspace.serializer(), workspace))
 
                 val manifestDest = output.resolve("${modpack.id}.json")
 
@@ -289,7 +286,7 @@ object SKPack : AbstractPack() {
                 // regenerate packages.json
                 val packagesFile = output.resolve("packages.json")
                 val packages: SKPackages = if (packagesFile.exists()) {
-                    Json.indented.parse(SKPackages.serializer(), packagesFile.readText())
+                    json.parse(SKPackages.serializer(), packagesFile.readText())
                 } else {
                     SKPackages()
                 }
@@ -302,7 +299,7 @@ object SKPack : AbstractPack() {
                         location = "${modpack.id}.json"
                     ).apply { packages.packages += this }
                 packFragment.version = uniqueVersion
-                packagesFile.writeText(Json.indented.stringify(SKPackages.serializer(), packages))
+                packagesFile.writeText(json.stringify(SKPackages.serializer(), packages))
 
                 logger.info("finished")
             }
