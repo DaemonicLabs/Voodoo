@@ -119,7 +119,7 @@ fun Project.setupDependencies(target: Project = this) {
 //                api(project(":util"))
                 api(kotlin("stdlib", Kotlin.version))
 
-                api(Fuel.dependency)
+//                api(Fuel.dependency)
 
                 api(Logging.dependency)
                 api(Logging.dependencyLogbackClassic) {

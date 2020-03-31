@@ -12,6 +12,7 @@ sealed class Modloader {
     data class Forge(
         val version: String
     )
+    // look up versions from https://meta.fabricmc.net/
     @Serializable
     data class Fabric(
         val version: String

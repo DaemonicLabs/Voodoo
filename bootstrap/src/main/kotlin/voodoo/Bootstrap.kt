@@ -6,22 +6,20 @@
 
 package voodoo
 
-import com.github.kittinunf.fuel.core.HttpException
-import com.github.kittinunf.fuel.core.extensions.cUrlString
-import com.github.kittinunf.fuel.httpDownload
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
 import mu.KLogging
 import org.apache.commons.codec.digest.DigestUtils
-import org.xml.sax.InputSource
 import voodoo.bootstrap.BootstrapConstants
 import voodoo.util.Directories
 import java.io.File
-import java.io.StringReader
+import java.io.FileOutputStream
+import java.io.IOException
+import java.net.URL
+import java.util.stream.Collectors
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory
 import kotlin.system.exitProcess
+
 
 @Throws(Throwable::class)
 fun main(vararg args: String) {
@@ -60,26 +58,26 @@ object Bootstrap : KLogging() {
 
         val groupPath = group.split("\\.".toRegex()).joinToString("/")
         val mavenMetadataUrl = "$mavenUrl/$groupPath/$artifact/maven-metadata.xml"
-        val (request, response, result) = mavenMetadataUrl.httpGet()
-            .responseString()
-        val xmlText = when(result) {
-            is Result.Success -> result.value
-            is Result.Failure -> {
-                logger.error("get maven metadata")
-                logger.error("url: ${request.url}")
-                logger.error("cUrl: ${request.cUrlString()}")
-                logger.error("request: $request")
-                logger.error("response: $response")
-                logger.error(result.error.exception) { "could not request slug-id pairs" }
-                logger.error { request }
-                throw result.error.exception
-            }
-        }
+//        val (request, response, result) = mavenMetadataUrl.httpGet()
+//            .responseString()
+//        val xmlText = when(result) {
+//            is Result.Success -> result.value
+//            is Result.Failure -> {
+//                logger.error("get maven metadata")
+//                logger.error("url: ${request.url}")
+//                logger.error("cUrl: ${request.cUrlString()}")
+//                logger.error("request: $request")
+//                logger.error("response: $response")
+//                logger.error(result.error.exception) { "could not request slug-id pairs" }
+//                logger.error { request }
+//                throw result.error.exception
+//            }
+//        }
 
         val dbFactory = DocumentBuilderFactory.newInstance()
         val dBuilder = dbFactory.newDocumentBuilder()
-        val xmlInput = InputSource(StringReader(xmlText))
-        val doc = dBuilder.parse(xmlInput)
+//        val xmlInput = InputSource(StringReader(xmlText))
+        val doc = dBuilder.parse(URL(mavenMetadataUrl).openStream())
         val xpFactory = XPathFactory.newInstance()
         val xPath = xpFactory.newXPath()
         val xpath = "/metadata/versioning/release/text()"
@@ -107,8 +105,8 @@ object Bootstrap : KLogging() {
                 assert(exists()) { "downloaded files does not seem to exist" }
                 copyTo(lastFile, overwrite = true)
             }
-        } catch (e: HttpException) {
-            logger.error("cannot download $artifact from $mavenUrl, trying to reuse last binary", e)
+        } catch (e: IOException) {
+            logger.error(e) {"cannot download $artifact from $mavenUrl, trying to reuse last binary"}
             lastFile
         }
 
@@ -153,42 +151,57 @@ object Bootstrap : KLogging() {
         val tmpFile = File(outputDir, "$artifactId-$version$classifierSuffix.$extension.tmp")
         val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
         run {
-            val (request, response, result) = artifactUrl.httpDownload()
-                .fileDestination { response, request ->
-                    tmpFile.delete()
-                    tmpFile
-                }
-//            .header("User-Agent" to useragent)
-                .response()
-            when (result) {
-                is Result.Success -> {}
-                is Result.Failure -> {
-                    logger.error("artifactUrl: $artifactUrl")
-                    logger.error("cUrl: ${request.cUrlString()}")
-                    logger.error("response: $response")
-                    logger.error(result.error.exception) { "unable to download jarfile from $artifactUrl" }
-                    throw result.error.exception
+            val url = URL(artifactUrl)
+            url.openStream().buffered().use { bis ->
+                FileOutputStream(tmpFile).use { fis ->
+                    val buffer = ByteArray(1024)
+                    var count = 0
+                    while (bis.read(buffer, 0, 1024).also { count = it } != -1) {
+                        fis.write(buffer, 0, count)
+                    }
                 }
             }
+//
+//            val (request, response, result) = artifactUrl.httpDownload()
+//                .fileDestination { response, request ->
+//                    tmpFile.delete()
+//                    tmpFile
+//                }
+////            .header("User-Agent" to useragent)
+//                .response()
+//            when (result) {
+//                is Result.Success -> {}
+//                is Result.Failure -> {
+//                    logger.error("artifactUrl: $artifactUrl")
+//                    logger.error("cUrl: ${request.cUrlString()}")
+//                    logger.error("response: $response")
+//                    logger.error(result.error.exception) { "unable to download jarfile from $artifactUrl" }
+//                    throw result.error.exception
+//                }
+//            }
         }
 
 
         if(checkMd5) {
             val md5Url = "$artifactUrl.md5"
-            val (request, response, result) =  md5Url.httpGet()
-                .responseString()
-            val md5 = when (result) {
-                is Result.Success -> {
-                    result.value
-                }
-                is Result.Failure -> {
-                    logger.error("artifactUrl: $artifactUrl")
-                    logger.error("cUrl: ${request.cUrlString()}")
-                    logger.error("response: $response")
-                    logger.error(result.error.exception) { "unable to download md5 hash from ${request.url}" }
-                    throw result.error.exception
-                }
+            val url = URL(md5Url)
+            val md5 = url.openStream().bufferedReader().use { bis ->
+                bis.lines().collect(Collectors.joining(System.lineSeparator()))
             }
+//            val (request, response, result) =  md5Url.httpGet()
+//                .responseString()
+//            val md5 = when (result) {
+//                is Result.Success -> {
+//                    result.value
+//                }
+//                is Result.Failure -> {
+//                    logger.error("artifactUrl: $artifactUrl")
+//                    logger.error("cUrl: ${request.cUrlString()}")
+//                    logger.error("response: $response")
+//                    logger.error(result.error.exception) { "unable to download md5 hash from ${request.url}" }
+//                    throw result.error.exception
+//                }
+//            }
             val fileMd5 = DigestUtils.md5Hex(tmpFile.inputStream())
             require(fileMd5 == md5) { "$artifactUrl did not match md5 hash: '$md5'" }
         }
