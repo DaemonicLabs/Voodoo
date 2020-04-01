@@ -12,7 +12,7 @@ import java.io.File
  * @author Nikky
  */
 
-object ServerPack : AbstractPack() {
+object ServerPack : AbstractPack("server") {
     override val label = "Server SK Pack"
 
     // TODO: use different output directory for server, add to plugin

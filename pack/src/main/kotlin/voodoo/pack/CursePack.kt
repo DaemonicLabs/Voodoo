@@ -34,7 +34,7 @@ import java.io.File
  * @author Nikky
  */
 
-object CursePack : AbstractPack() {
+object CursePack : AbstractPack("curse") {
     override val label = "Curse Pack"
 
     override fun File.getOutputFolder(id: String): File = resolve("curse")

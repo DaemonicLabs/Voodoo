@@ -4,13 +4,12 @@
  * Copyright (C) 2010-2014 Albert Pham <http://www.sk89q.com> and contributors
  * Please see LICENSE.txt for license information.
  */
-package newformat.entry
+package newformat.modpack.entry
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import newformat.Condition
-import voodoo.data.Side
+import newformat.modpack.Condition
 
 @Serializable
 data class FileInstall(
@@ -18,7 +17,7 @@ data class FileInstall(
     var hash: String,
     var location: String,
     var to: String,
-    var side: Side,
+    var side: Side = Side.BOTH,
 
     var size: Long = 0,
 
@@ -34,7 +33,7 @@ data class FileInstall(
 ) {
     // TODO: add extract type ?
     //  when do we extract / overwrite then ?
-    val type: String = "file"
+    var type: String = "file"
 
     // alias for "to"
     @Transient

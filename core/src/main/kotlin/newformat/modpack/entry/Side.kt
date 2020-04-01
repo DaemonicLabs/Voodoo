@@ -1,4 +1,4 @@
-package newformat.entry;
+package newformat.modpack.entry;
 
 /**
  * Created by nikky on 28/03/18.

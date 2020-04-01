@@ -27,7 +27,7 @@ import java.time.Instant
  * Created by nikky on 28/03/18.
  * @author Nikky
  */
-@Polymorphic
+//@Polymorphic
 @Serializable
 sealed class LockEntry() : CommonLockModule {
     @Serializable
@@ -212,13 +212,13 @@ sealed class LockEntry() : CommonLockModule {
 }
 
 private val json = Json(jsonConfiguration, context = SerializersModule {
-    polymorphic<LockEntry> {
-        LockEntry.Curse::class to LockEntry.Curse.serializer()
-        LockEntry.Direct::class to LockEntry.Direct.serializer()
-        LockEntry.Jenkins::class to LockEntry.Jenkins.serializer()
-        LockEntry.Local::class to LockEntry.Local.serializer()
-        LockEntry.UpdateJson::class to LockEntry.UpdateJson.serializer()
-    }
+//    polymorphic<LockEntry> {
+//        LockEntry.Curse::class to LockEntry.Curse.serializer()
+//        LockEntry.Direct::class to LockEntry.Direct.serializer()
+//        LockEntry.Jenkins::class to LockEntry.Jenkins.serializer()
+//        LockEntry.Local::class to LockEntry.Local.serializer()
+//        LockEntry.UpdateJson::class to LockEntry.UpdateJson.serializer()
+//    }
 })
 //@Serializable
 //data class LockEntryOld(

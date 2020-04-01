@@ -1,3 +1,5 @@
+import newformat.builder.FnPatternList
+
 mcVersion = "1.12.2"
 title = "Center of the Multiverse"
 authors = listOf("AnsuzThuriaz", "Falkreon", "NikkyAi")
@@ -7,6 +9,16 @@ icon = rootDir.resolve("icon.png")
 pack {
     skcraft {
         userFiles = UserFiles(
+            include = listOf(
+                "options.txt",
+                "quark.cfg",
+                "foamfix.cfg"
+            ),
+            exclude = listOf("")
+        )
+    }
+    experimental {
+        userFiles = FnPatternList(
             include = listOf(
                 "options.txt",
                 "quark.cfg",

@@ -3,11 +3,11 @@
     "common": {
         "dependencies": {
             "REQUIRED": [
-                "patchouli",
-                "mysticallib"
+                "mysticallib",
+                "patchouli"
             ]
         }
     },
     "projectID": 282940,
-    "fileID": 2915367
+    "fileID": 2918177
 }

@@ -25,6 +25,7 @@ import voodoo.data.flat.Entry
 import voodoo.util.client
 import voodoo.util.maven.MavenUtil
 import java.io.IOException
+import java.lang.Exception
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
@@ -109,7 +110,7 @@ object CurseClient : KLogging(), CoroutineScope {
 //                contentType(ContentType.Application.Json)
                 body = TextContent(json.stringify(requestSerializer, requestBody), ContentType.Application.Json)
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             logger.error("GetSlugIDPairs")
             logger.error("url: $url")
             logger.error(e) { "could not request slug-id pairs" }
@@ -268,6 +269,18 @@ object CurseClient : KLogging(), CoroutineScope {
             val url = "$ADDON_API/addon/$addonId"
             val loader: KSerializer<Addon> = Addon.serializer()
 
+            suspend fun retry(e: Exception? = null): Addon? {
+                logger.error("buildUrl: $url")
+                if(e != null) {
+                    logger.error(e) { "unable to get Addon from $url" }
+                }
+                if (retry > 0) {
+                    delay(1000)
+                    return getAddonCall(addonId, fail, retry - 1)
+                }
+                return null
+            }
+
             logger.debug("get $url")
 
             val response = try {
@@ -275,22 +288,13 @@ object CurseClient : KLogging(), CoroutineScope {
 //                header(HttpHeaders.UserAgent, useragent)
                 }
             } catch (e: IOException) {
-                logger.error("buildUrl: $url")
-                logger.error(e) { "unable to get Addon from $url" }
-                if (retry > 0) {
-                    delay(1000)
-                    return@withContext getAddonCall(addonId, fail, retry - 1)
-                }
-                return@withContext null
+                return@withContext retry(e)
+            } catch(e: TimeoutCancellationException) {
+                return@withContext retry(e)
             }
             if (!response.status.isSuccess()) {
                 logger.error { "$url returned ${response.status}" }
-                logger.error { "unable to get Addon from $url" }
-                if (retry > 0) {
-                    delay(1000)
-                    return@withContext getAddonCall(addonId, fail, retry - 1)
-                }
-                return@withContext null
+                return@withContext retry()
             }
             return@withContext json.parse(Addon.serializer(), response.readText())
         }
@@ -305,7 +309,7 @@ object CurseClient : KLogging(), CoroutineScope {
             client.get<HttpResponse>(url) {
 //                header(HttpHeaders.UserAgent, useragent)
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             logger.error("buildUrl: $url")
             logger.error(e) { "unable to get Addons from $url" }
             if (retry > 0) {
@@ -334,7 +338,7 @@ object CurseClient : KLogging(), CoroutineScope {
             client.get<HttpResponse>(url) {
 //                header(HttpHeaders.UserAgent, useragent)
             }
-        } catch (e: IOException) {
+        } catch (e: Exception) {
             logger.error("buildUrl: $url")
             logger.error(e) { "unable to get Addons from $url" }
             throw e

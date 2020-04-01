@@ -24,6 +24,18 @@
                     ""
                 ]
             }
+        },
+        "experimentalOptions": {
+            "userFiles": {
+                "include": [
+                    "options.txt",
+                    "quark.cfg",
+                    "foamfix.cfg"
+                ],
+                "exclude": [
+                    ""
+                ]
+            }
         }
     }
 }

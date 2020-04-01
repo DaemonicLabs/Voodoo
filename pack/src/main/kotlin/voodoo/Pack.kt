@@ -15,14 +15,15 @@ import kotlin.system.exitProcess
  */
 
 object Pack : KLogging() {
-    private val packMap = mapOf(
-        "sk" to SKPack,
-        "mmc-sk" to MMCSelfupdatingPack,
-        "mmc-sk-fat" to MMCSelfupdatingFatPack,
-        "mmc-fat" to MMCFatPack,
-        "server" to ServerPack,
-        "curse" to CursePack
-    )
+    private val packMap = listOf(
+        ExperimentalPack,
+        SKPack,
+        MMCSelfupdatingPack,
+        MMCSelfupdatingFatPack,
+        MMCFatPack,
+        ServerPack,
+        CursePack
+    ).associateBy { it.id }
 
 //    suspend fun main(vararg args: String) {
 //        val arguments = Arguments(ArgParser(args))

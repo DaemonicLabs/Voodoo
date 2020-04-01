@@ -6,14 +6,15 @@
 
 package voodoo
 
-import org.apache.commons.codec.digest.DigestUtils
 import voodoo.bootstrap.BootstrapConstants
 import voodoo.util.Directories
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.net.URL
+import java.security.MessageDigest
 import java.util.stream.Collectors
+import javax.xml.bind.DatatypeConverter
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory
@@ -174,8 +175,11 @@ object Bootstrap {
             val md5 = url.openStream().bufferedReader().use { bis ->
                 bis.lines().collect(Collectors.joining(System.lineSeparator()))
             }
-            val fileMd5 = DigestUtils.md5Hex(tmpFile.inputStream())
-            require(fileMd5 == md5) { "$artifactUrl did not match md5 hash: '$md5'" }
+            val md = MessageDigest.getInstance("MD5")
+            md.update(tmpFile.readBytes())
+            val digest = md.digest()
+            val fileMd5 = DatatypeConverter.printHexBinary(digest) // DigestUtils.md5Hex(tmpFile.inputStream())
+            require(fileMd5.toLowerCase() == md5.toLowerCase()) { "$artifactUrl did not match md5 hash: '$md5' file: $fileMd5" }
         }
 
         tmpFile.copyTo(targetFile, overwrite = true)

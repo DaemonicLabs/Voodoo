@@ -11,7 +11,7 @@ import java.io.File
 import java.net.URI
 import kotlin.system.exitProcess
 
-object MMCSelfupdatingPack : AbstractPack() {
+object MMCSelfupdatingPack : AbstractPack("mmc-sk") {
     override val label = "MultiMC Pack"
 
     override fun File.getOutputFolder(id: String): File = resolve("multimc-sk")

@@ -8,8 +8,8 @@ voodoo {
     addTask("build") {
         build()
     }
-    addTask(name = "import_debug") {
-        importDebug()
+    addTask(name = "pack_experimental") {
+        pack().experimental()
     }
     addTask(name = "pack_sk") {
         pack().sklauncher()

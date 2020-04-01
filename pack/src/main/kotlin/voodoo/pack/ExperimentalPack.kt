@@ -1,26 +1,22 @@
 package voodoo.pack
 
 import com.eyeem.watchadoin.Stopwatch
-import com.skcraft.launcher.builder.FeaturePattern
-import com.skcraft.launcher.builder.PackageBuilder
-import com.skcraft.launcher.model.ExtendedFeaturePattern
-import com.skcraft.launcher.model.SKModpack
-import com.skcraft.launcher.model.modpack.Feature
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.serialization.json.Json
+import newformat.PackageBuilder
+import newformat.builder.ExtendedFeaturePattern
+import newformat.builder.FeaturePattern
+import newformat.modpack.Feature
+import voodoo.Modloader
 import voodoo.data.DependencyType
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
-import voodoo.forge.ForgeUtil
 import voodoo.memoize
-import voodoo.pack.sk.SKLocation
 import voodoo.pack.sk.SKPackages
-import voodoo.pack.sk.SKWorkspace
 import voodoo.pack.sk.SkPackageFragment
 import voodoo.provider.Providers
 import voodoo.util.*
@@ -35,11 +31,11 @@ import java.time.format.DateTimeFormatter
  * @author Nikky
  */
 
-object SKPack : AbstractPack("sk") {
+object ExperimentalPack : AbstractPack("experimental") {
 
-    override val label = "SK Pack"
+    override val label = "Experimental Pack"
 
-    override fun File.getOutputFolder(id: String): File = resolve("sk")
+    override fun File.getOutputFolder(id: String): File = resolve("experimental")
 
     override suspend fun pack(
         stopwatch: Stopwatch,
@@ -49,7 +45,7 @@ object SKPack : AbstractPack("sk") {
         clean: Boolean
     ) = stopwatch {
         val cacheDir = directories.cacheHome
-        val workspaceDir = modpack.rootDir.resolve("build").resolve("workspace").absoluteFile
+        val workspaceDir = modpack.rootDir.resolve("build").resolve("experimental_workspace").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.id)
 
         val skSrcFolder = modpackDir.resolve("src")
@@ -74,25 +70,25 @@ object SKPack : AbstractPack("sk") {
             logger.warn("minecraft directory $packSrc does not exist")
         }
 
-        for (file in skSrcFolder.walkTopDown()) {
-            when {
-                file.name == "_SERVER" -> file.deleteRecursively()
-                file.name == "_CLIENT" -> file.renameTo(file.parentFile)
-            }
-        }
+//        for (file in skSrcFolder.walkTopDown()) {
+//            when {
+//                file.name == "_SERVER" -> file.deleteRecursively()
+//                file.name == "_CLIENT" -> file.renameTo(file.parentFile)
+//            }
+//        }
 
-        val loadersFolder = modpackDir.resolve("loaders")
-        logger.info("cleaning loaders $loadersFolder")
-        loadersFolder.deleteRecursively()
+//        val loadersFolder = modpackDir.resolve("loaders")
+//        logger.info("cleaning loaders $loadersFolder")
+//        loadersFolder.deleteRecursively()
 
         withPool { pool ->
             coroutineScope {
                 // download forge
-                modpack.forge?.also { forge ->
-                    val (forgeUrl, forgeFileName, _, forgeVersion) = ForgeUtil.forgeVersionOf(forge)
-                    val forgeFile = loadersFolder.resolve(forgeFileName)
-                    forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
-                } ?: logger.warn { "no forge configured" }
+//                modpack.forge?.also { forge ->
+//                    val (forgeUrl, forgeFileName, _, forgeVersion) = ForgeUtil.forgeVersionOf(forge)
+//                    val forgeFile = loadersFolder.resolve(forgeFileName)
+//                    forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
+//                } ?: logger.warn { "no forge configured" }
                 val modsFolder = skSrcFolder.resolve("mods")
                 logger.info("cleaning mods $modsFolder")
                 modsFolder.deleteRecursively()
@@ -233,38 +229,20 @@ object SKPack : AbstractPack("sk") {
                     }
 
                 //TODO: figure out icon url, and server url
-                val skmodpack = SKModpack(
-                    name = modpack.id,
-                    title = modpack.title.blankOr ?: "",
-                    thumb = thumb,
-                    server = modpack.packOptions.skCraftOptions.server,
-                    gameVersion = modpack.mcVersion,
-                    userFiles = modpack.packOptions.skCraftOptions.userFiles,
-                    launch = modpack.launch,
-                    features = patterns
-                )
+//                val skmodpack = SKModpack(
+//                    name = modpack.id,
+//                    title = modpack.title.blankOr ?: "",
+//                    thumb = thumb,
+//                    server = modpack.packOptions.skCraftOptions.server,
+//                    gameVersion = modpack.mcVersion,
+//                    userFiles = modpack.packOptions.skCraftOptions.userFiles,
+//                    launch = modpack.launch,
+//                    features = patterns
+//                )
 
-                val modpackPath = modpackDir.resolve("modpack.json")
-                modpackPath.writeText(json.stringify(SKModpack.serializer(), skmodpack))
+//                val modpackPath = modpackDir.resolve("modpack.json")
+//                modpackPath.writeText(json.stringify(SKModpack.serializer(), skmodpack))
 
-                // add to workspace.json
-                logger.info("adding ${modpack.id} to workpace.json", modpack.id)
-                val workspaceMetaFolder = workspaceDir.resolve(".modpacks")
-                workspaceMetaFolder.mkdirs()
-                val workspacePath = workspaceMetaFolder.resolve("workspace.json")
-                val workspace = if (workspacePath.exists()) {
-                    try {
-                        json.parse<SKWorkspace>(SKWorkspace.serializer(), workspacePath.readText())
-                    } catch (e: Exception) {
-                        logger.error("failed parsing: $workspacePath", e)
-                        SKWorkspace()
-                    }
-                } else {
-                    SKWorkspace()
-                }
-                workspace.packs += SKLocation(modpack.id)
-
-                workspacePath.writeText(json.stringify(SKWorkspace.serializer(), workspace))
 
                 val manifestDest = output.resolve("${modpack.id}.json")
 
@@ -273,16 +251,26 @@ object SKPack : AbstractPack("sk") {
                     .withZone(ZoneOffset.UTC)
                     .format(Instant.now())
 
-                "sk package builder".watch {
-                    PackageBuilder.main(
-                        "--version", uniqueVersion,
-                        "--input", modpackDir.path,
-                        "--output", output.path,
-                        "--manifest-dest", manifestDest.path,
-                        "--pretty-print"
+                // TODO verify modloader
+                val modloader = Modloader.Forge(modpack.forge!!)
+
+                "experimental package builder".watch {
+                    PackageBuilder.build(
+                        inputPath = modpackDir,
+                        outputPath = output,
+                        modpackId = modpack.id,
+                        modpackTitle = modpack.title ?: modpack.id,
+                        modpackVersion = uniqueVersion,
+                        gameVersion = modpack.mcVersion,
+                        modLoader = modloader,
+                        objectsLocation = "objects",
+                        userFiles = modpack.packOptions.experimentalOptions.userFiles,
+                        features = patterns
                     )
                 }
 
+                // TODO: do we keep track of all uploaded packages ?
+                // TODO: move to PackageBuilder
                 // regenerate packages.json
                 val packagesFile = output.resolve("packages.json")
                 val packages: SKPackages = if (packagesFile.exists()) {

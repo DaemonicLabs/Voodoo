@@ -26,6 +26,9 @@ class TaskBuilder() {
         fun sklauncher() {
             tasks += TaskType.Pack.SKLauncher
         }
+        fun experimental() {
+            tasks += TaskType.Pack.Experimental
+        }
         @Deprecated("renamed", ReplaceWith("multimcSk()"))
         fun multimc() {
             tasks += TaskType.Pack.MultiMCSk

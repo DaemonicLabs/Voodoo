@@ -62,8 +62,7 @@ constructor(
     } else {
         Json(JsonConfiguration(ignoreUnknownKeys = true, encodeDefaults = false))
     }
-    private val applicator: PropertiesApplicator =
-        PropertiesApplicator(manifest)
+    private val applicator: PropertiesApplicator = PropertiesApplicator()
     private val loaderLibraries = arrayListOf<Library>()
     private var mavenRepos: List<String>? = null
 
@@ -375,7 +374,7 @@ constructor(
             builder.downloadLibraries(options.librariesDir)
             builder.writeManifest(options.manifestPath)
             logSection("Done")
-            logger.info("Now upload the contents of " + options.outputPath + " to your web server or CDN!")
+            logger.info("Now upload the contents of ${options.outputPath} to your web server or CDN!")
         }
 
         private fun logSection(name: String) {

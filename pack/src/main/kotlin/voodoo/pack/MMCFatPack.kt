@@ -20,7 +20,7 @@ import voodoo.util.packToZip
 import voodoo.util.withPool
 import java.io.File
 
-object MMCFatPack : AbstractPack() {
+object MMCFatPack : AbstractPack("mmc-fat") {
     override val label = "MultiMC Pack (frozen pack)"
 
     override fun File.getOutputFolder(id: String): File = resolve("multimc-fat")

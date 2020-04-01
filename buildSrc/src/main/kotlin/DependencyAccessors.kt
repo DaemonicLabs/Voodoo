@@ -118,7 +118,7 @@ fun Project.setupDependencies(target: Project = this) {
             dependencies {
 //                api(project(":util"))
                 api(kotlin("stdlib", Kotlin.version))
-                api(group = "commons-codec", name = "commons-codec", version = "+")
+//                api(group = "commons-codec", name = "commons-codec", version = "+")
             }
         }
         rootProject.project(":core") -> {
