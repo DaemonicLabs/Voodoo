@@ -1,6 +1,10 @@
 {
     "id": "cotm",
     "mcVersion": "1.12.2",
+    "modloader": {
+        "type": "Modloader.Forge",
+        "version": "1.12.2-14.23.5.2811"
+    },
     "title": "Center of the Multiverse",
     "version": "2.2.13-testing",
     "authors": [
@@ -8,7 +12,6 @@
         "Falkreon",
         "NikkyAi"
     ],
-    "forge": "1.12.2-14.23.5.2811",
     "packOptions": {
         "multimcOptions": {
             "skPackUrl": "https://centerofthemultiverse.net/launcher/cotm.json"
