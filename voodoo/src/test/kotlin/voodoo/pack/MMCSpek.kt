@@ -9,6 +9,7 @@ import mu.KotlinLogging
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.curse.CurseClient
+import voodoo.util.useragent
 import kotlin.test.fail
 
 private val logger = KotlinLogging.logger {}
@@ -20,7 +21,7 @@ object MMCSpek : Spek({
             println("pack url: $packUrl")
 
             val (request, response, result) = packUrl.httpGet()
-                .header("User-Agent" to CurseClient.useragent)
+                .header("User-Agent" to useragent)
                 .responseString()
             when (result) {
                 is Result.Success -> Json(JsonConfiguration(ignoreUnknownKeys = true)).parse(Manifest.serializer(), result.value)

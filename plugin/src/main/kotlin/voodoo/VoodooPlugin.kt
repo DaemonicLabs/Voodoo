@@ -63,7 +63,7 @@ open class VoodooPlugin : Plugin<Project> {
             }
 
 
-            val (downloadVoodoo, voodooJar) = if (voodooExtension.local) {
+            val (downloadVoodoo, voodooJar) = if (PluginConstants.BUILD == "dev") {
                 val downloadTask = task<MavenLocalVoodooJarTask>("localVoodoo") {
                     group = "voodoo"
                     description = "Copies the voodoo jar from mavenLocal()"

@@ -1,6 +1,5 @@
 package voodoo
 
-import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.GradleBuild
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
@@ -19,7 +18,7 @@ open class MavenLocalVoodooJarTask : GradleBuild() {
         val voodooExtension = project.extensions.getByName<VoodooExtension>("voodoo")
 
         group = "voodoo"
-        val gradleBuildVile = voodooExtension.localVoodooProjectLocation?.resolve("build.gradle.kts")
+        val gradleBuildVile = voodooExtension.localVoodooProjectLocation?.resolve("build.gradle.kts").takeIf { voodooExtension.buildLocal }
 
         if(gradleBuildVile?.exists() == true) {
             buildFile = gradleBuildVile

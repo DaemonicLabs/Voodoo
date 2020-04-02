@@ -16,7 +16,7 @@ open class VoodooExtension(project: Project) {
         SharedFolders.RootDir.value = project.rootDir
     }
 
-    var local: Boolean = false
+    var buildLocal: Boolean = false
     var localVoodooProjectLocation: File? = null
 
     internal var tasks: List<CustomTask> = listOf()
