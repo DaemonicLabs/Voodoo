@@ -29,6 +29,9 @@ class TaskBuilder() {
         fun experimental() {
             tasks += TaskType.Pack.Experimental
         }
+        fun newformat() {
+            tasks += TaskType.Pack.Experimental
+        }
         @Deprecated("renamed", ReplaceWith("multimcSk()"))
         fun multimc() {
             tasks += TaskType.Pack.MultiMCSk

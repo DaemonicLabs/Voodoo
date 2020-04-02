@@ -105,6 +105,11 @@ object Hex : KLogging() {
                     e.printStackTrace()
                     oldpackFile.delete()
                     null
+                } catch (e: SerializationException) {
+                    logger.error(e.message)
+                    e.printStackTrace()
+                    oldpackFile.delete()
+                    null
                 }
             }
 
@@ -222,7 +227,7 @@ object Hex : KLogging() {
                                     return@launch
                                 }
                                 if (oldTask.hash == task.hash && target.isFile && target.sha256() == task.hash.substringAfter(':')) {
-                                    logger.info("task ${task.to} file did not change and sha1 hash matches")
+                                    logger.info("task ${task.to} file did not change and sha256 hash matches")
                                     oldTask.let {
                                         uptodateTasks.send(it)
                                     }
