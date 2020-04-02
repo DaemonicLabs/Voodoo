@@ -24,7 +24,7 @@ pipeline {
 		}
 	    stage('publish') {
             steps {
-                sh './gradlew publishAllPublicationsToModmussRepository -S'
+                sh './gradlew publish -S'
             }
         }
 	}
