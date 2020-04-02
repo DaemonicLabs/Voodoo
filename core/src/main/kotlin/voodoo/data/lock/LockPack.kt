@@ -1,5 +1,6 @@
 package voodoo.data.lock
 
+import Modloader
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
@@ -12,7 +13,6 @@ import voodoo.forge.ForgeUtil
 import voodoo.util.blankOr
 import voodoo.util.json
 import java.io.File
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Created by nikky on 28/03/18.
@@ -23,11 +23,11 @@ import java.util.concurrent.ConcurrentHashMap
 data class LockPack(
     val id: String,
     val mcVersion: String,
+    var modloader: Modloader = Modloader.None,
     val title: String? = null,
     val version: String = "1.0",
     val icon: String = "icon.png",
     val authors: List<String> = emptyList(),
-    val forge: String? = null,
     val launch: LaunchModifier = LaunchModifier(),
     var localDir: String = "local",
     var packOptions: PackOptions = PackOptions()
@@ -182,9 +182,16 @@ data class LockPack(
         }
         reports += "Pack Version" to version
         reports += "MC Version" to mcVersion
-        forge?.let {
-            val forgeVersion = runBlocking { ForgeUtil.forgeVersionOf(it).forgeVersion }
-            reports += "Forge Version" to forgeVersion
+        when(val loader = modloader) {
+            is Modloader.Forge -> {
+                val forgeVersion = runBlocking { ForgeUtil.forgeVersionOf(loader.version).forgeVersion }
+                reports += "Forge Version" to forgeVersion
+            }
+            is Modloader.Fabric -> {
+                reports += "Fabric Intermediaries Version" to loader.intermediateMappings
+                reports += "Fabric Loader Version" to loader.loader
+                reports += "Fabric Installer Version" to loader.installer
+            }
         }
         reports += "Authors" to authors.joinToString(", ")
         iconFile.takeIf { it.exists() }?.let {

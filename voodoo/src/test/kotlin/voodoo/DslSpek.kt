@@ -35,7 +35,9 @@ object DslSpek : Spek({
                 icon = File("icon.png")
                 authors = listOf("dude", "and", "friends")
                 // TODO: type = {recommended, latest} | buildnumber, make sealed class
-                forge = Forge.mc1_12_2_recommended
+                modloader {
+                    forge(version = Forge.mc1_12_2_recommended)
+                }
                 root<NestedEntry.Curse> {
                     releaseTypes = setOf(FileType.Release, FileType.Beta)
 

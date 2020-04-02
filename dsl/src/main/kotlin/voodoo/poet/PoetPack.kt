@@ -2,17 +2,14 @@ package voodoo.poet
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import com.skcraft.launcher.model.modpack.Feature
-import com.squareup.kotlinpoet.AnnotationSpec
-import com.squareup.kotlinpoet.ClassName
-import com.squareup.kotlinpoet.CodeBlock
-import com.squareup.kotlinpoet.FileSpec
-import com.squareup.kotlinpoet.asClassName
+import com.squareup.kotlinpoet.*
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.GenerateForge
 import voodoo.GenerateMods
 import voodoo.GenerateTexturePacks
 import voodoo.curse.CurseClient
+import voodoo.data.ModloaderPattern
 import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedEntry
@@ -233,27 +230,50 @@ object PoetPack : KLogging() {
             nestedPack.authors.takeIf { it != default.authors }?.let { authors ->
                 mainEnv.addStatement("authors = listOf(%L)", authors.joinToString { """"$it"""" })
             }
-            nestedPack.forge.takeIf { it != default.forge }?.let { forge ->
-                logger.info("guessing forge literal for $forge")
-                val forgeLiteral = runBlocking {
-                    val promos = ForgeUtil.promoMap()
-                    for ((identifier, number) in promos) {
-                        if (forge == number) return@runBlocking identifier
-                    }
-                    val mcVersions = ForgeUtil.mcVersionsMap()
-                    for ((_, mapping) in mcVersions) {
-                        for ((identifier, version) in mapping) {
-                            if (forge == version) return@runBlocking identifier
+            nestedPack.modloader.takeIf { it != default.pack.modloader }?.let {
+                logger.info { "generating modloader" }
+                when (it) {
+                    is ModloaderPattern.Forge -> {
+                        logger.info("guessing forge literal for ${it.version}")
+                        val forgeLiteral = runBlocking {
+                            val promos = ForgeUtil.promoMap()
+                            for ((identifier, number) in promos) {
+                                if (it.version == number) return@runBlocking identifier
+                            }
+                            val mcVersions = ForgeUtil.mcVersionsMap()
+                            for ((_, mapping) in mcVersions) {
+                                for ((identifier, version) in mapping) {
+                                    if (it.version == version) return@runBlocking identifier
+                                }
+                            }
+                            null
+                        }
+                        logger.info("forge literal guess: $forgeLiteral")
+
+                        if (forgeLiteral != null) {
+                            mainEnv.addStatement("forge = Forge.%L", forgeLiteral)
+                            mainEnv.addStatement("modloader { forge(Forge.%L) }", forgeLiteral)
+                        } else {
+                            mainEnv.addStatement("modloader { forge(%L) }", it.version)
                         }
                     }
-                    null
-                }
-                logger.info("forge literal guess: $forgeLiteral")
-
-                if (forgeLiteral != null) {
-                    mainEnv.addStatement("forge = Forge.%L", forgeLiteral)
-                } else {
-                    mainEnv.addStatement("forge = %L", forge)
+                    is ModloaderPattern.Fabric -> {
+                        // TODO: needs work ?
+                        mainEnv.addStatement(
+                            """
+                            |modloader {
+                            |    fabric(
+                            |        intermediary = %L,
+                            |        loader = %L,
+                            |        installer = %L,
+                            |    )
+                            |}
+                        """.trimMargin(),
+                            it.intermediateMappingsVersion,
+                            it.loaderVersion,
+                            it.installerVersion
+                        )
+                    }
                 }
             }
             // TODO: readd along with other PackOptions
@@ -308,11 +328,12 @@ object PoetPack : KLogging() {
                 annotationBuilder.addMember("name = %S", "Mod")
                 annotationBuilder.addMember("mc = %S", nestedPack.mcVersion ?: "1.12.2")
             }.build()
-            fileSpecBuilder.annotations += AnnotationSpec.builder(GenerateTexturePacks::class).also { annotationBuilder ->
-                annotationBuilder.useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
-                annotationBuilder.addMember("name = %S", "TexturePack")
-                annotationBuilder.addMember("mc = %S", nestedPack.mcVersion ?: "1.12.2")
-            }.build()
+            fileSpecBuilder.annotations += AnnotationSpec.builder(GenerateTexturePacks::class)
+                .also { annotationBuilder ->
+                    annotationBuilder.useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
+                    annotationBuilder.addMember("name = %S", "TexturePack")
+                    annotationBuilder.addMember("mc = %S", nestedPack.mcVersion ?: "1.12.2")
+                }.build()
             fileSpecBuilder.annotations += AnnotationSpec.builder(GenerateForge::class).also { annotationBuilder ->
                 annotationBuilder.useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
                 annotationBuilder.addMember("name = %S", "Forge")
@@ -330,7 +351,11 @@ object PoetPack : KLogging() {
         }
 
         val outputPath = scriptFile.toPath()
-        OutputStreamWriter(Files.newOutputStream(outputPath), StandardCharsets.UTF_8).use { writer -> fileSpec.writeTo(writer) }
+        OutputStreamWriter(Files.newOutputStream(outputPath), StandardCharsets.UTF_8).use { writer ->
+            fileSpec.writeTo(
+                writer
+            )
+        }
         val packScript = mainEnv.toString()
         scriptFile.appendText("\n" + packScript)
 

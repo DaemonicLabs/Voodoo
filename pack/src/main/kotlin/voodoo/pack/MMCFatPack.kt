@@ -11,7 +11,6 @@ import kotlinx.serialization.json.JsonConfiguration
 import voodoo.data.DependencyType
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
-import voodoo.forge.ForgeUtil
 import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil
 import voodoo.provider.Providers
@@ -45,7 +44,8 @@ object MMCFatPack : AbstractPack("mmc-fat") {
             icon = modpack.iconFile,
             instanceDir = instanceDir,
             mcVersion = modpack.mcVersion,
-            forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge)?.forgeVersion
+            modloader = modpack.modloader
+//            forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge)?.forgeVersion
         )
 
         minecraftDir.mkdirs()

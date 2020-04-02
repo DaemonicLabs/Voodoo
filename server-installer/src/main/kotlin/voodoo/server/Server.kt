@@ -4,6 +4,7 @@ import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import Modloader
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
@@ -26,7 +27,7 @@ object Server {
         stopwatch: Stopwatch,
         modpack: LockPack,
         serverDir: File,
-        skipForge: Boolean,
+        skipModloaderInstall: Boolean,
         clean: Boolean,
         cleanConfig: Boolean
     ) = stopwatch {
@@ -87,39 +88,44 @@ object Server {
         }
 
         // download forge
-        modpack.forge?.also { forge ->
-            val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = ForgeUtil.forgeVersionOf(forge)
-            val forgeFile = directories.runtimeDir.resolve(forgeFileName)
-            logger.info("forge: $forgeLongVersion")
-            "downloadForge".watch {
-                forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
-            }
-
-            // install forge
-            if (!skipForge) {
-                "installForge".watch {
-                    val java = arrayOf(System.getProperty("java.home"), "bin", "java").joinToString(File.separator)
-                    val args = arrayOf(java, "-jar", forgeFile.path, "--installServer")
-                    logger.debug("running " + args.joinToString(" ") { "\"$it\"" })
-                    ProcessBuilder(*args)
-                        .directory(serverDir)
-                        .redirectOutput(ProcessBuilder.Redirect.INHERIT)
-                        .redirectError(ProcessBuilder.Redirect.INHERIT)
-                        .start()
-                        .waitFor()
-
-                    // rename forge jar
-                    val forgeJar = serverDir.resolve("forge-$forgeLongVersion-universal.jar")
-                    val targetForgeJar = serverDir.resolve("forge.jar")
-                    targetForgeJar.delete()
-                    forgeJar.copyTo(targetForgeJar, overwrite = true)
+        require(modpack.modloader != null) { "no modlaoder defined" }
+        when(val modloader = modpack.modloader) {
+            is Modloader.Forge -> {
+                val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = ForgeUtil.forgeVersionOf(modloader.version)
+                val forgeFile = directories.runtimeDir.resolve(forgeFileName)
+                logger.info("forge: $forgeLongVersion")
+                "downloadForge".watch {
+                    forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
                 }
-            } else {
-                val forgeJar = serverDir.resolve("forge-installer.jar")
-                forgeFile.copyTo(forgeJar, overwrite = true)
+
+                // install forge
+                if (!skipModloaderInstall) {
+                    "installForge".watch {
+                        val java = arrayOf(System.getProperty("java.home"), "bin", "java").joinToString(File.separator)
+                        val args = arrayOf(java, "-jar", forgeFile.path, "--installServer")
+                        logger.debug("running " + args.joinToString(" ") { "\"$it\"" })
+                        ProcessBuilder(*args)
+                            .directory(serverDir)
+                            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                            .redirectError(ProcessBuilder.Redirect.INHERIT)
+                            .start()
+                            .waitFor()
+
+                        // rename forge jar
+                        val forgeJar = serverDir.resolve("forge-$forgeLongVersion-universal.jar")
+                        val targetForgeJar = serverDir.resolve("forge.jar")
+                        targetForgeJar.delete()
+                        forgeJar.copyTo(targetForgeJar, overwrite = true)
+                    }
+                } else {
+                    val forgeJar = serverDir.resolve("forge-installer.jar")
+                    forgeFile.copyTo(forgeJar, overwrite = true)
+                }
+            }
+            is Modloader.Fabric -> {
+                TODO("use fabric installer to install server")
             }
         }
-
         logger.info("finished")
     }
 }

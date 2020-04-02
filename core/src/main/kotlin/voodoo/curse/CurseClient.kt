@@ -73,6 +73,7 @@ object CurseClient : KLogging(), CoroutineScope {
 
     suspend fun graphQLRequest(
         gameVersions: List<String>? = null,
+        categories: List<String>? = null,
         section: String? = null,
         slug: String? = null
     ): List<SlugIdPair> = withContext(Dispatchers.IO) {
@@ -80,6 +81,9 @@ object CurseClient : KLogging(), CoroutineScope {
         val filters = mutableListOf("gameId: 432")
         gameVersions?.takeIf { it.isNotEmpty() }?.let {
             filters += it.joinToString("\", \"", "gameVersionList: [\"", "\"]")
+        }
+        categories?.takeIf { it.isNotEmpty() }?.let {
+            filters += it.joinToString("\", \"", "categoryList: [\"", "\"]")
         }
         section?.let {
             filters += "section: \"$it\""
@@ -110,7 +114,12 @@ object CurseClient : KLogging(), CoroutineScope {
 //                contentType(ContentType.Application.Json)
                 body = TextContent(json.stringify(requestSerializer, requestBody), ContentType.Application.Json)
             }
-        } catch (e: Exception) {
+        } catch (e: IOException) {
+            logger.error("GetSlugIDPairs")
+            logger.error("url: $url")
+            logger.error(e) { "could not request slug-id pairs" }
+            throw e
+        } catch (e: TimeoutCancellationException) {
             logger.error("GetSlugIDPairs")
             logger.error("url: $url")
             logger.error(e) { "could not request slug-id pairs" }
@@ -184,6 +193,14 @@ object CurseClient : KLogging(), CoroutineScope {
                     return@withContext getAddonFileCall(addonId, fileId, retry - 1)
                 }
                 return@withContext null
+            } catch (e: TimeoutCancellationException) {
+                logger.error("buildUrl: $url")
+                logger.error(e) { "unable to get AddonFile from $url" }
+                if (retry > 0) {
+                    delay(1000)
+                    return@withContext getAddonFileCall(addonId, fileId, retry - 1)
+                }
+                return@withContext null
             }
             if (!response.status.isSuccess()) {
                 logger.error { "$url returned ${response.status}" }
@@ -235,6 +252,14 @@ object CurseClient : KLogging(), CoroutineScope {
 //                header(HttpHeaders.UserAgent, useragent)
                 }
             } catch (e: IOException) {
+                logger.error("buildUrl: $url")
+                logger.error(e) { "unable to get AllAddonFiles from $url" }
+                if (retry > 0) {
+                    delay(1000)
+                    return@withContext getAllFilesForAddonCall(addonId, retry - 1)
+                }
+                return@withContext emptyList<AddonFile>()
+            } catch (e: TimeoutCancellationException) {
                 logger.error("buildUrl: $url")
                 logger.error(e) { "unable to get AllAddonFiles from $url" }
                 if (retry > 0) {
@@ -309,7 +334,15 @@ object CurseClient : KLogging(), CoroutineScope {
             client.get<HttpResponse>(url) {
 //                header(HttpHeaders.UserAgent, useragent)
             }
-        } catch (e: Exception) {
+        } catch (e: IOException) {
+            logger.error("buildUrl: $url")
+            logger.error(e) { "unable to get Addons from $url" }
+            if (retry > 0) {
+                delay(1000)
+                return@withContext getAddons(addonIds, fail, retry - 1)
+            }
+            return@withContext null
+        } catch (e: TimeoutCancellationException) {
             logger.error("buildUrl: $url")
             logger.error(e) { "unable to get Addons from $url" }
             if (retry > 0) {
@@ -338,7 +371,11 @@ object CurseClient : KLogging(), CoroutineScope {
             client.get<HttpResponse>(url) {
 //                header(HttpHeaders.UserAgent, useragent)
             }
-        } catch (e: Exception) {
+        } catch (e: IOException) {
+            logger.error("buildUrl: $url")
+            logger.error(e) { "unable to get Addons from $url" }
+            throw e
+        } catch (e: TimeoutCancellationException) {
             logger.error("buildUrl: $url")
             logger.error(e) { "unable to get Addons from $url" }
             throw e

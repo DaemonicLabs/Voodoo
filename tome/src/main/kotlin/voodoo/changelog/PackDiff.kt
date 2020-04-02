@@ -14,10 +14,6 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 
-val LockPack.forgeVersion: String
-    get() = runBlocking {
-        ForgeUtil.forgeVersionOf(forge)?.forgeVersion ?: "missing"
-    }
 val LockPack.authorsString: String
     get() = authors.joinToString(", ")
 val LockPack.iconHtml: String

@@ -10,7 +10,7 @@ import newformat.builder.PropertiesApplicator
 import newformat.modpack.Manifest
 import newformat.modpack.entry.FileInstall
 import newformat.modpack.entry.Side
-import voodoo.Modloader
+import Modloader
 import java.io.File
 import java.security.MessageDigest
 

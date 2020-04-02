@@ -15,8 +15,8 @@ import io.ktor.utils.io.*
 import java.io.*
 import java.net.*
 
-const val useragent = // "voodoo/$VERSION (https://github.com/DaemonicLabs/Voodoo)"
-  "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" // ""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
+const val useragent =  "voodoo/$VERSION (https://github.com/DaemonicLabs/Voodoo)"
+ // "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" // ""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 
 
 @OptIn(KtorExperimentalAPI::class)

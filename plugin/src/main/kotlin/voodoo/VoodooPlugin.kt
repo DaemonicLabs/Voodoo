@@ -144,11 +144,12 @@ open class VoodooPlugin : Plugin<Project> {
                         doLast {
                             generatedSrcDir.mkdirs()
                             val generatedFile = runBlocking {
-                                Poet.generate(
+                                Poet.generateCurseforge(
                                     name = generator.name,
                                     slugIdMap = Poet.requestSlugIdMap(
+                                        section = generator.section.sectionName,
                                         gameVersions = generator.mcVersions.toList(),
-                                        section = generator.section.sectionName
+                                        categories = generator.categories
                                     ),
                                     slugSanitizer = generator.slugSanitizer,
                                     folder = generatedSrcDir,
@@ -181,6 +182,28 @@ open class VoodooPlugin : Plugin<Project> {
                     }
                 }
 
+                val fabricGeneratorTasks = voodooExtension.fabricGenerators.map { generator ->
+                    logger.info("adding generate ${generator.name}")
+                    task<AbstractTask>("generate${generator.name}") {
+                        group = "generators"
+                        outputs.upToDateWhen { false }
+//                        outputs.cacheIf { true }
+                        dependsOn(downloadVoodoo)
+                        doLast {
+                            generatedSrcDir.mkdirs()
+                            val generatedFile = runBlocking {
+                                Poet.generateFabric(
+                                    name = generator.name,
+                                    mcVersionFilters = generator.mcVersions.toList(),
+                                    stable = generator.stable,
+                                    folder = generatedSrcDir
+                                )
+                            }
+                            logger.lifecycle("generated: $generatedFile")
+                        }
+                    }
+                }
+
                 val generateAllTask = task<AbstractTask>("generateAll") {
                     group = "generators"
                     dependsOn(curseGeneratorTasks)
@@ -205,27 +228,27 @@ open class VoodooPlugin : Plugin<Project> {
                             }
                         }
 
-//                        task<VoodooTask>(id.toLowerCase()) {
-////                            dependsOn(poet)
-//                            dependsOn(copyLibs)
-//                            dependsOn(downloadVoodoo)
-//                            dependsOn(generateAllTask)
-//
-//                            classpath(voodooJar)
-//
-//                            scriptFile = sourceFile.canonicalPath
-//                            description = id
-//                            group = id
-//
-//                            SharedFolders.setSystemProperties(id) { name: String, value: Any ->
-//                                systemProperty(name, value)
-//                            }
-//                            doFirst {
-//                                logger.lifecycle("classpath: $voodooJar")
-//                                logger.lifecycle("classpath.length(): ${voodooJar.length()}")
-//                            }
-////                            systemProperty("voodoo.jdkHome", jdkHome.path)
-//                        }
+                        task<VoodooTask>(id.toLowerCase()) {
+//                            dependsOn(poet)
+                            dependsOn(copyLibs)
+                            dependsOn(downloadVoodoo)
+                            dependsOn(generateAllTask)
+
+                            classpath(voodooJar)
+
+                            scriptFile = sourceFile.canonicalPath
+                            description = id
+                            group = id
+
+                            SharedFolders.setSystemProperties(id) { name: String, value: Any ->
+                                systemProperty(name, value)
+                            }
+                            doFirst {
+                                logger.lifecycle("classpath: $voodooJar")
+                                logger.lifecycle("classpath.length(): ${voodooJar.length()}")
+                            }
+//                            systemProperty("voodoo.jdkHome", jdkHome.path)
+                        }
 
                         voodooExtension.tasks.forEach { customTask ->
                             val (taskName, taskDescription, arguments) = customTask

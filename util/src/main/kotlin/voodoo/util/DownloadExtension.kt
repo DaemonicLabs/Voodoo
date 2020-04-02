@@ -1,9 +1,11 @@
 package voodoo.util
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.client.request.url
 import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.Url
 import io.ktor.http.isSuccess
@@ -63,7 +65,7 @@ suspend fun File.download(
                 val response = httpClient.request<HttpResponse> {
                     url(url)
                     method = HttpMethod.Get
-//                header(HttpHeaders.UserAgent, useragent)
+                    header(HttpHeaders.UserAgent, useragent)
                 }
                 if(!response.status.isSuccess()) {
                     logger.error("invalid statusCode {} from {}", response.status, url.encoded)

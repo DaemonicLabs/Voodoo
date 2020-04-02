@@ -3,6 +3,8 @@ package voodoo.data.nested
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.Transient
 import mu.KLogging
+import Modloader
+import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
 import voodoo.data.flat.ModPack
 import java.io.File
@@ -29,7 +31,9 @@ internal constructor(
     var version: String = "1.0",
     var icon: File = rootDir.resolve("icon.png"),
     var authors: List<String> = emptyList(),
+    @Deprecated("use modloader field instead")
     var forge: String? = null, // TODO: replace with generic modloader info
+    var modloader: ModloaderPattern? = null,
     var launch: LaunchModifier = LaunchModifier(),
     var localDir: String = "local",
     var sourceDir: String = id,
@@ -71,7 +75,7 @@ internal constructor(
             version = version,
             icon = icon,
             authors = authors,
-            forge = forge,
+            modloader = modloader,
             launch = launch,
             localDir = localDir,
             sourceDir = sourceDir,

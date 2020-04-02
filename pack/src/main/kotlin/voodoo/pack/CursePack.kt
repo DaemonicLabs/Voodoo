@@ -2,9 +2,6 @@ package voodoo.pack
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consume
-import kotlinx.coroutines.channels.toList
 import kotlinx.html.ATarget
 import kotlinx.html.a
 import kotlinx.html.body
@@ -14,6 +11,7 @@ import kotlinx.html.stream.createHTML
 import kotlinx.html.ul
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import Modloader
 import voodoo.data.Side
 import voodoo.data.curse.CurseFile
 import voodoo.data.curse.CurseManifest
@@ -79,7 +77,9 @@ object CursePack : AbstractPack("curse") {
         coroutineScope {
             val jobs = mutableListOf<Pair<String, Deferred<CurseFile?>>>()
 
-            val forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge)?.forgeVersion
+            val forgeVersion = (modpack.modloader as? Modloader.Forge)?.let { loader ->
+                ForgeUtil.forgeVersionOf(loader.version).forgeVersion
+            }
 
             val modsFolder = srcFolder.resolve("mods")
             logger.info("cleaning mods $modsFolder")

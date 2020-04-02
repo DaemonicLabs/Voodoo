@@ -90,6 +90,7 @@ object ForgeUtil : KLogging() {
     }
     fun forgeVersionOf(fullVersion: FullVersion): ForgeVersion {
 
+        // https://files.minecraftforge.net/maven/net/minecraftforge/forge
         val webpath = "https://files.minecraftforge.net/maven/net/minecraftforge/forge"
 
         val fileName = "forge-${fullVersion.version}-installer.jar" // "forge-mcversion-$forgeVersion(-$branch)/installer.jar"
@@ -128,6 +129,10 @@ object ForgeUtil : KLogging() {
                 header("User-Agent", Downloader.useragent)
             }
         } catch(e: IOException) {
+            logger.error("getForgeData")
+            logger.error("url: $url")
+            throw e
+        } catch(e: TimeoutCancellationException) {
             logger.error("getForgeData")
             logger.error("url: $url")
             throw e

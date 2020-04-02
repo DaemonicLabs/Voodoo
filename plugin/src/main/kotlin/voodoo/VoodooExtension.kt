@@ -6,6 +6,7 @@ import voodoo.data.TaskBuilder
 import voodoo.poet.Poet
 import voodoo.poet.generator.CurseGenerator
 import voodoo.poet.generator.CurseSection
+import voodoo.poet.generator.FabricGenerator
 import voodoo.poet.generator.ForgeGenerator
 import voodoo.util.SharedFolders
 import java.io.File
@@ -66,23 +67,36 @@ open class VoodooExtension(project: Project) {
     }
 
     internal val forgeGenerators: MutableList<ForgeGenerator> = mutableListOf()
-    fun generateForge(name: String, vararg versions: String) {
-        forgeGenerators += ForgeGenerator(name, listOf(*versions))
+    fun generateForge(name: String, vararg mcVersions: String) {
+        forgeGenerators += ForgeGenerator(name, listOf(*mcVersions))
+    }
+
+    internal val fabricGenerators: MutableList<FabricGenerator> = mutableListOf()
+    fun generateFabric(name: String, stable: Boolean = true, vararg mcVersions: String) {
+        fabricGenerators += FabricGenerator(name, stable, listOf(*mcVersions))
     }
 
     internal val curseGenerators: MutableList<CurseGenerator> = mutableListOf()
     fun generateCurseforgeMods(
         name: String,
         vararg versions: String,
+        categories: List<String> = listOf(),
         slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
     ) {
-        curseGenerators += CurseGenerator(name, CurseSection.MODS, listOf(*versions), slugSanitizer)
+        curseGenerators += CurseGenerator(
+            name = name,
+            section = CurseSection.MODS,
+            categories = categories,
+            mcVersions =  listOf(*versions),
+            slugSanitizer = slugSanitizer
+        )
     }
     fun generateCurseforgeTexturepacks(
         name: String,
         vararg versions: String,
+        categories: List<String> = listOf(),
         slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
     ) {
-        curseGenerators += CurseGenerator(name, CurseSection.TEXTURE_PACKS, listOf(*versions), slugSanitizer)
+        curseGenerators += CurseGenerator(name, CurseSection.TEXTURE_PACKS, categories, listOf(*versions), slugSanitizer)
     }
 }

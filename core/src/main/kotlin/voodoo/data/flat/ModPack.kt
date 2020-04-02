@@ -1,13 +1,12 @@
 package voodoo.data.flat
 
 import com.skcraft.launcher.model.launcher.LaunchModifier
-import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import mu.KLogging
+import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
-import voodoo.util.serializer.FileSerializer
 import java.io.File
 import java.util.Collections
 import voodoo.util.unixPath
@@ -34,7 +33,7 @@ data class ModPack(
 //    @Serializable(with = FileSerializer::class)
     var icon: File = File("icon.png"),
     val authors: List<String> = emptyList(),
-    var forge: String? = null, // TODO: replace with generic modloader info
+    var modloader: ModloaderPattern? = null,
     val launch: LaunchModifier = LaunchModifier(),
     var localDir: String = "local",
     var sourceDir: String = id,
@@ -108,7 +107,7 @@ data class ModPack(
 //        }
 //    }
 
-    fun lock(): LockPack {
+    suspend fun lock(): LockPack {
         return LockPack(
             id = id,
             title = title,
@@ -116,13 +115,16 @@ data class ModPack(
             icon = icon.absoluteFile.relativeTo(rootDir).unixPath,
             authors = authors,
             mcVersion = mcVersion,
-            forge = forge,
+            modloader = modloader?.lock() ?: Modloader.None,
             launch = launch,
             localDir = localDir,
             packOptions = packOptions
         ).also {
             it.rootDir = rootDir
             it.sourceDir = sourceDir
+
+            it.entrySet.clear()
+            it.entrySet += lockEntrySet
         }
     }
 

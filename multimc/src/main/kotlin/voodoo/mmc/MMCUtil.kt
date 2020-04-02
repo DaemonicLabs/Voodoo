@@ -5,11 +5,12 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
+import Modloader
+import voodoo.forge.ForgeUtil
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
 import voodoo.util.Platform
-import voodoo.util.json
 import voodoo.util.jsonConfiguration
 import voodoo.util.serializer.FileSerializer
 import java.awt.BorderLayout
@@ -154,7 +155,7 @@ object MMCUtil : KLogging() {
         folder: String,
         icon: File? = null,
         mcVersion: String? = null,
-        forgeVersion: String? = null,
+        modloader: Modloader?,
         instanceDir: File = with(findDir()) {
             this.resolve(
                 readCfg(this.resolve("multimc.cfg"))["InstanceDir"] ?: "instances"
@@ -189,23 +190,42 @@ object MMCUtil : KLogging() {
         } else MultiMCPack()
 
         if (mcVersion != null) {
-            if (forgeVersion != null) {
-                logger.info("forge version : $forgeVersion")
-                mmcPack.components = listOf(
-                    PackComponent(
-                        uid = "net.minecraftforge",
-                        version = forgeVersion,
-                        important = true
+            val modloaderComponents = when(val modloader = modloader) {
+                is Modloader.Forge -> {
+                    val forgeVersion = ForgeUtil.forgeVersionOf(modloader.version)?.forgeVersion
+                    logger.info("forge version : $forgeVersion")
+                    listOf(
+                        PackComponent(
+                            uid = "net.minecraftforge",
+                            version = forgeVersion,
+                            important = true
+                        )
                     )
-                ) + mmcPack.components
+                }
+                is Modloader.Fabric -> {
+                    listOf(
+                        PackComponent(
+                            uid = "net.fabricmc.intermediary",
+                            version = modloader.intermediateMappings,
+                            important = true
+                        ),
+                        PackComponent(
+                            uid = "net.fabricmc.fabric-loader",
+                            version = modloader.loader,
+                            important = true
+                        )
+                    )
+                }
+                else -> listOf()
             }
+
             mmcPack.components = listOf(
                 PackComponent(
                     uid = "net.minecraft",
                     version = mcVersion,
                     important = true
                 )
-            ) + mmcPack.components
+            ) + modloaderComponents + mmcPack.components
         }
         mmcPackPath.writeText(json.stringify(MultiMCPack.serializer(), mmcPack))
 

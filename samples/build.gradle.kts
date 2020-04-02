@@ -5,6 +5,7 @@ plugins {
 
 voodoo {
     local = true
+//    localVoodooProjectLocation = rootDir.parentFile
     addTask("build") {
         build()
     }
@@ -44,11 +45,15 @@ voodoo {
     }
 
     generateCurseforgeMods("Mod", "1.12", "1.12.1", "1.12.2")
+    generateCurseforgeMods("FabricMod", "1.15", "1.15.1", "1.15.2", categories = listOf("Fabric"))
     generateCurseforgeTexturepacks("TexturePack", "1.12", "1.12.1", "1.12.2")
     generateForge("Forge_12_2", "1.12.2")
+    generateForge("Forge_15_2", "1.15.2")
+    generateFabric("Fabric", true)
 }
 
 repositories {
+    mavenLocal()
     maven(url = "http://maven.modmuss50.me/") {
         name = "modmuss50"
     }
@@ -60,6 +65,8 @@ repositories {
 }
 
 dependencies {
-    kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "0.5.0+")
-    kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "0.5.0+")
+    kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "0.5.0-dev")
+    kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "0.5.0-dev")
+    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.5.0-dev")
+    implementation(group = "moe.nikky.voodoo", name = "dsl", version = "0.5.0-dev")
 }

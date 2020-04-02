@@ -78,11 +78,28 @@ Task Shortcuts
 for all tasks shortcuts can be registered in the `build.gradle.kts`
 ```kotlin
 voodoo {
-    addTask(name = "rebuildAndTestMMC", parameters = listOf("build", "test mmc"))
-    addTask(name = "build", parameters = listOf("build"))
-    addTask(name = "sk", parameters = listOf("pack sk"))
-    addTask(name = "server", parameters = listOf("pack server"))
-    addTask(name = "buildAndPackAll", parameters = listOf("build", "pack sk", "pack server", "pack mmc"))
+    addTask("rebuildAndTestMMC") {
+        build()
+        test().multimc()
+    }
+    addTask("testMMC") {
+        test().multimc()
+    }
+    addTask("build") {
+        build()
+    }
+    addTask("sk") {
+        pack().sk()
+    }
+    addTask("server") {
+        pack().server()
+    }
+    addTask("buildAndPackAll") {
+        build()
+        pack().server()
+        pack().sk()
+        test().multimcFat()
+    }
 }
 ```
 these tasks will be registered for each modpack, eg `cotm_rebuildAndTestMMC` would 
@@ -95,9 +112,7 @@ examples based on [Center of the Multiverse](https://github.com/elytra/Center-of
 
 Learn how to define your `$pack.voodoo.kts` in [docs/setup](docs/setup)
 
-other samples: [samples](samples) 
-
-[Voodoo Sample Repository](https://github.com/DaemonicLabs/VoodooSamples)
+other samples: [samples](samples) and [packs](samples/packs)
 
 ## Server Deployment
 
@@ -119,7 +134,8 @@ this will:
 ## MultiMC Integration / Deployment
 
 To run a test instance use \
-`./gradlew cotm --args "test mmc"`
+`./gradlew $packname --args "test mmc"` 
+or `./gradlew cotm_testMMC` if that task was defined
 
 to compile a minimalistic MMC pack that selfupdates using the skcraft data \
 `./gradlew cotm --args "pack mmc"` \

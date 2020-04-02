@@ -37,16 +37,12 @@ object Tome : KLogging() {
     }
 
     fun LockPack.report(targetFolder: File): String {
-        val forgeVersion = runBlocking {
-            ForgeUtil.forgeVersionOf(forge)?.forgeVersion ?: "missing"
-        }
         return markdownTable(
             headers = listOf("Title", this.title()),
             content = mutableListOf(
                 listOf("ID", "`$id`"),
                 listOf("Pack Version", "`$version`"),
                 listOf("MC Version", "`$mcVersion`"),
-                listOf("Forge Version", "`$forgeVersion`"),
                 listOf("Author", "`${authors.joinToString(", ")}`")
             ).also {
                 if (iconFile.exists()) {
@@ -56,6 +52,19 @@ object Tome : KLogging() {
                         "Icon",
                         "<img src=\"${docIconFile.relativeTo(targetFolder).unixPath}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
                     )
+                }
+                when(val modloader = modloader) {
+                    is Modloader.Forge -> {
+                        val forgeVersion = runBlocking {
+                            ForgeUtil.forgeVersionOf(modloader.version)?.forgeVersion ?: "missing"
+                        }
+                        it += listOf("Forge Version", forgeVersion)
+                    }
+                    is Modloader.Fabric -> {
+                        it += listOf("Fabric Intermediaries Version", modloader.intermediateMappings)
+                        it += listOf("Fabric Installer Version", modloader.installer)
+                        it += listOf("Fabric Loader Version", modloader.loader)
+                    }
                 }
             }
         )

@@ -8,10 +8,10 @@ import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import newformat.modpack.Manifest
 import voodoo.data.DependencyType
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
-import voodoo.forge.ForgeUtil
 import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil
 import voodoo.provider.Providers
@@ -40,15 +40,16 @@ object MMCSelfupdatingFatPack : AbstractPack("mmc-sk-fat") {
 
         instanceDir.mkdirs()
 
+        val installerFilename = "mmc-installer.jar"
         val preLaunchCommand =
-            "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
+            "\"\$INST_JAVA\" -jar \"\$INST_DIR/$installerFilename\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
         val minecraftDir = MMCUtil.installEmptyPack(
             title.blankOr,
             modpack.id,
             icon = modpack.iconFile,
-            instanceDir = instanceDir,
             mcVersion = modpack.mcVersion,
-            forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge)?.forgeVersion,
+            modloader = modpack.modloader,
+            instanceDir = instanceDir,
             preLaunchCommand = preLaunchCommand
         )
 
@@ -183,10 +184,12 @@ object MMCSelfupdatingFatPack : AbstractPack("mmc-sk-fat") {
         val voodooModpackJson = instanceDir.resolve("voodoo.modpack.json")
         voodooModpackJson.download(
             skPackUrl,
-            cacheDir = cacheDir
+            cacheDir = cacheDir,
+            validator = { false }
         )
+        json.parse(Manifest.serializer(), voodooModpackJson.readText())
 
-        val multimcInstaller = instanceDir.resolve("mmc-installer.jar")
+        val multimcInstaller = instanceDir.resolve(installerFilename)
         val installer = MavenUtil.downloadArtifact(
             stopwatch = "downloadArtifact multimc installer bootstrap".watch,
             mavenUrl = PackConstants.MAVEN_URL,

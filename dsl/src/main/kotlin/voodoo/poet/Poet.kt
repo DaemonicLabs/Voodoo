@@ -7,9 +7,14 @@ import kotlinx.serialization.builtins.serializer
 import mu.KLogging
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
+import voodoo.fabric.InstallerVersion
+import voodoo.fabric.IntermediaryVersion
+import voodoo.fabric.LoaderVersion
+import voodoo.fabric.FabricUtil
 import voodoo.forge.ForgeUtil
 import voodoo.poet.generator.CurseGenerator
 import voodoo.poet.generator.CurseSection
+import voodoo.poet.generator.FabricGenerator
 import voodoo.poet.generator.ForgeGenerator
 import voodoo.util.SharedFolders
 import voodoo.util.json
@@ -30,7 +35,8 @@ object Poet : KLogging() {
     fun generateAll(
         generatedSrcDir: File, // = SharedFolders.GeneratedSrc.get(id = id),
         curseGenerators: List<CurseGenerator> = listOf(),
-        forgeGenerators: List<ForgeGenerator> = listOf()
+        forgeGenerators: List<ForgeGenerator> = listOf(),
+        fabricGenerators: List<FabricGenerator> = listOf()
     ): List<File> {
 
 //    class XY
@@ -43,10 +49,11 @@ object Poet : KLogging() {
         val files = runBlocking {
             // TODO: parallelize
             curseGenerators.map { generator ->
-                Poet.generate(
+                Poet.generateCurseforge(
                     name = generator.name,
                     slugIdMap = requestSlugIdMap(
                         gameVersions = generator.mcVersions.toList(),
+                        categories = generator.categories,
                         section = generator.section.sectionName
                     ),
                     slugSanitizer = generator.slugSanitizer,
@@ -66,12 +73,13 @@ object Poet : KLogging() {
     }
 
     fun defaultSlugSanitizer(slug: String) = slug
+        .replace('.', '_')
         .split('-')
         .joinToString("") {
             it.capitalize()
         }.decapitalize()
 
-    fun generate(
+    fun generateCurseforge(
         name: String,
         slugIdMap: Map<String, ProjectID>,
         slugSanitizer: (String) -> String,
@@ -102,7 +110,6 @@ object Poet : KLogging() {
 
         val idType = ProjectID::class.asTypeName()
         val objectBuilder = TypeSpec.objectBuilder(name)
-        objectBuilder.addKdoc(CodeBlock.of("%L \n", "${section.sectionName} generated from mc versions: $gameVersions"))
         objectBuilder.addKdoc("${section.sectionName} generated from mc versions: $gameVersions")
         slugIdMap.entries.sortedBy { (slug, id) ->
             slug
@@ -176,6 +183,99 @@ object Poet : KLogging() {
         return save(forgeBuilder.build(), targetFile)
     }
 
+    suspend fun generateFabric(
+        name: String = "Fabric",
+        mcVersionFilters: List<String>? = null,
+        stable: Boolean = false,
+        folder: File
+    ): File {
+        val targetFile = folder.resolve("$name.kt")
+//        if (targetFile.exists()) {
+//            logger.info("skipping generation of $targetFile")
+//            logger.info("file size: ${targetFile.length() / 1024.0} MB")
+//            return targetFile
+//        }
+        fun buildProperty(identifier: String, version: String): PropertySpec {
+            return PropertySpec
+                .builder(
+                    identifier.replace('-', '_').replace('.', '_'),
+                    String::class,
+                    KModifier.CONST
+                )
+                .initializer("%S", version)
+                .build()
+        }
+
+        fun TypeSpec.Builder.addGetterProperty(type: ClassName, fieldName: String, value: String) {
+            addProperty(
+                PropertySpec.builder(
+                    defaultSlugSanitizer(fieldName),
+                    type
+                )
+                    .mutable(false)
+                    .getter(
+                        FunSpec.getterBuilder()
+                            .addModifiers(KModifier.INLINE)
+                            .addCode("return %T(%S)\n", type, value)
+                            .build()
+                    )
+                    .build()
+            )
+        }
+
+        val fabricBuilder = TypeSpec.objectBuilder(name)
+
+        val intermediaries = FabricUtil.getIntermediaries().map {
+            it.version
+        }
+        val intermediaryBuilder = TypeSpec.objectBuilder("intermediary")
+        intermediaries.forEach { version ->
+//            intermediaryBuilder.addProperty(buildProperty(version, version))
+            intermediaryBuilder.addGetterProperty(
+                type = IntermediaryVersion::class.asTypeName(),
+                fieldName = "v_"+version,
+                value = version
+            )
+        }
+        fabricBuilder.addType(intermediaryBuilder.build())
+
+        // TODO: use pairs from: https://meta.fabricmc.net/v2/versions/loader/1.15 for each gameVersion
+
+        val loaders = FabricUtil.getLoaders().filter {
+            !stable || it.stable
+        }.map {
+            it.version
+        }
+        val loadersBuilder = TypeSpec.objectBuilder("loader")
+        loaders.forEach { version ->
+//            loadersBuilder.addProperty(buildProperty(version, version))
+            loadersBuilder.addGetterProperty(
+                type = LoaderVersion::class.asTypeName(),
+                fieldName =  "v_"+version,
+                value = version
+            )
+        }
+        fabricBuilder.addType(loadersBuilder.build())
+
+        val installers = FabricUtil.getInstallers().filter {
+            !stable || it.stable
+        }.map {
+            it.version
+        }
+        val installersBuilder = TypeSpec.objectBuilder("installer")
+        installers.forEach { version ->
+//            installersBuilder.addProperty(buildProperty(version, version))
+            installersBuilder.addGetterProperty(
+                type = InstallerVersion::class.asTypeName(),
+                fieldName =  "v_"+version,
+                value = version
+            )
+        }
+        fabricBuilder.addType(installersBuilder.build())
+
+        return save(fabricBuilder.build(), targetFile)
+    }
+
     private fun save(type: TypeSpec, targetFile: File): File {
         val source = FileSpec.get("", type)
         val targetFolder = targetFile.absoluteFile.parentFile.apply { mkdirs() }
@@ -196,9 +296,14 @@ object Poet : KLogging() {
         return targetFile
     }
 
-    suspend fun requestSlugIdMap(section: String, gameVersions: List<String>? = null): Map<String, ProjectID> =
+    suspend fun requestSlugIdMap(
+        section: String,
+        categories: List<String>? = null,
+        gameVersions: List<String>? = null
+    ): Map<String, ProjectID> =
         CurseClient.graphQLRequest(
             section = section,
+            categories = categories,
             gameVersions = gameVersions
         ).map { (id, slug) ->
             slug to id

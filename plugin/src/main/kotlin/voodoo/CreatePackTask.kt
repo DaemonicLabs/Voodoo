@@ -44,7 +44,7 @@ open class CreatePackTask : DefaultTask() {
             throw GradleException("mcVersion needs to be specified with --mcVersion")
 
         val modIdentifiers = runBlocking {
-            Poet.requestSlugIdMap(section = "Mods", gameVersions = listOf(mcVersion))
+            Poet.requestSlugIdMap(section = "Mods", gameVersions = listOf(mcVersion), categories = null)
         }.mapKeys { (key, _) ->
             Poet.defaultSlugSanitizer(key)
         }.toList().shuffled().take(10)

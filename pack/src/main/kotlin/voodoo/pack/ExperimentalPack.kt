@@ -11,7 +11,6 @@ import newformat.PackageBuilder
 import newformat.builder.ExtendedFeaturePattern
 import newformat.builder.FeaturePattern
 import newformat.modpack.Feature
-import voodoo.Modloader
 import voodoo.data.DependencyType
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
@@ -252,7 +251,7 @@ object ExperimentalPack : AbstractPack("experimental") {
                     .format(Instant.now())
 
                 // TODO verify modloader
-                val modloader = Modloader.Forge(modpack.forge!!)
+                val modloader = modpack.modloader ?: error("no modloader defined")
 
                 "experimental package builder".watch {
                     PackageBuilder.build(

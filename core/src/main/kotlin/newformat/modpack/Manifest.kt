@@ -1,9 +1,8 @@
 package newformat.modpack
 
-import kotlinx.serialization.PolymorphicSerializer
 import kotlinx.serialization.Serializable
 import newformat.modpack.entry.FileInstall
-import voodoo.Modloader
+import Modloader
 
 @Serializable
 data class Manifest(

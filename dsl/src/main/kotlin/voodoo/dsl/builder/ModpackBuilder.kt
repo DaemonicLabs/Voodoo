@@ -1,6 +1,7 @@
 package voodoo.dsl.builder
 
 import mu.KLogging
+import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
@@ -18,11 +19,18 @@ open class ModpackBuilder(
     var version by property(pack::version)
     var icon by property(pack::icon)
     var authors by property(pack::authors)
-    var forge by property(pack::forge)
     var launch by property(pack::launch)
     val root by readOnly(pack::root)
     var localDir by property(pack::localDir)
     var sourceDir by property(pack::sourceDir)
+
+    @Deprecated("use modloader { forge(forgeVersion) } function instead", ReplaceWith("modloader { forge(version = value) }"))
+    var forge: String
+        get() = (pack.modloader as ModloaderPattern.Forge).version
+        set(value) {
+            modloader { forge(value) }
+        }
+
 
     fun pack(configurePack: PackOptions.() -> Unit) {
         pack.packOptions.configurePack()
@@ -51,5 +59,13 @@ open class ModpackBuilder(
         val rootBuilder = GroupBuilder(entry = entry)
         entry.initRoot(rootBuilder)
         return rootBuilder.entry
+    }
+
+    @VoodooDSL
+    fun modloader(configure: ModloaderBuilder.() -> Unit) {
+        val builder = ModloaderBuilder(pack.mcVersion, pack.modloader)
+        builder.configure()
+        pack.mcVersion = builder.mcVersion
+        pack.modloader = builder.modloader
     }
 }

@@ -13,6 +13,10 @@ icon = rootDir.resolve("icon.png")
 authors = listOf("NikkyAi")
 forge = Forge_12_2.mc1_12_2_recommended
 
+fabric(
+    intermediary = Fabric.intermediary.v_1_15_2
+)
+
 pack {
 
 }

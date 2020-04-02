@@ -11,7 +11,6 @@ import kotlinx.serialization.json.JsonConfiguration
 import voodoo.data.DependencyType
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
-import voodoo.forge.ForgeUtil
 import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil
 import voodoo.util.Downloader
@@ -51,7 +50,7 @@ object MultiMCTester : AbstractTester() {
             folder,
             icon = modpack.iconFile,
             mcVersion = modpack.mcVersion,
-            forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge)?.forgeVersion
+            modloader = modpack.modloader
         )
 
         val modsDir = minecraftDir.resolve("mods")

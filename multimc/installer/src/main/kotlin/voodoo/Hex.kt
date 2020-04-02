@@ -1,8 +1,8 @@
 package voodoo
 
 
-import com.skcraft.launcher.model.modpack.FileInstall
-import com.skcraft.launcher.model.modpack.Manifest
+import Modloader
+import com.skcraft.launcher.model.modpack.Recommendation
 import com.xenomachina.argparser.ArgParser
 import io.ktor.client.request.get
 import io.ktor.client.request.header
@@ -11,18 +11,20 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
 import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
-import io.ktor.utils.io.readRemaining
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.toList
 import kotlinx.serialization.DeserializationStrategy
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
+import newformat.modpack.Manifest
+import newformat.modpack.entry.FileInstall
+import newformat.modpack.entry.Side
 import org.apache.commons.codec.digest.DigestUtils
-import voodoo.curse.CurseClient
 import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil.updateAndSelectFeatures
 import voodoo.mmc.data.MultiMCPack
@@ -30,7 +32,6 @@ import voodoo.mmc.data.PackComponent
 import voodoo.util.*
 import java.io.File
 import java.io.IOException
-import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 01/04/18.
@@ -50,8 +51,7 @@ object Hex : KLogging() {
         }
     }
 
-    private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
-    private fun File.md5Hex(): String? = DigestUtils.md5Hex(this.inputStream())
+    private fun File.sha256(): String? = DigestUtils.sha256Hex(this.inputStream())
 
     private val json = Json(JsonConfiguration(prettyPrint = true, ignoreUnknownKeys = true, encodeDefaults = true))
 
@@ -62,40 +62,35 @@ object Hex : KLogging() {
         logger.info("pack url: $packUrl")
         val loader: DeserializationStrategy<Manifest> = Manifest.serializer()
 
+
         val response = withContext(Dispatchers.IO) {
-             try {
+            try {
                 client.get<HttpResponse> {
                     url(packUrl)
-                    header(HttpHeaders.UserAgent, CurseClient.useragent)
+                    header(HttpHeaders.UserAgent, useragent)
                 }
             } catch (e: IOException) {
-                logger.error("packUrl: $packUrl")
-                logger.error(e) { "unable to get job from $packUrl" }
+                SKHandler.logger.error("packUrl: $packUrl")
+                SKHandler.logger.error(e) { "unable to get job from $packUrl" }
                 error("failed to get $packUrl")
             }
         }
         if (!response.status.isSuccess()) {
-            logger.error { "$packUrl returned ${response.status}" }
+            SKHandler.logger.error { "$packUrl returned ${response.status}" }
             error("failed with ${response.status}")
         }
-        val modpack = json.parse(Manifest.serializer(), response.readText())
 
-
-//        val (request, response, result) = packUrl.httpGet()
-//            .header("User-Agent" to CurseClient.useragent)
-//            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = loader, json = json))
-//        val modpack: Manifest = when (result) {
-//            is Result.Success -> {
-//                result.value
-//            }
-//            is Result.Failure -> {
-//                logger.error("packUrl: $packUrl")
-//                logger.error("cUrl: ${request.cUrlString()}")
-//                logger.error("response: $response")
-//                logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
-//                return
-//            }
-//        }
+        val jsonString = response.readText()
+        val modpack = try {
+            json.parse(newformat.modpack.Manifest.serializer(), jsonString)
+        } catch (e: SerializationException) {
+            return SKHandler.install(
+                json.parse(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString),
+                instanceId,
+                instanceDir,
+                minecraftDir
+            )
+        }
 
         val oldpackFile = instanceDir.resolve("voodoo.modpack.json")
         val oldpack: Manifest? = oldpackFile.takeIf { it.exists() }
@@ -103,7 +98,7 @@ object Hex : KLogging() {
                 try {
                     json.parse(loader, packFile.readText())
                         .also { pack ->
-                            logger.info("loaded old pack ${pack.name} ${pack.version}")
+                            logger.info("loaded old pack ${pack.id} ${pack.version}")
                         }
                 } catch (e: IllegalArgumentException) {
                     logger.error(e.message)
@@ -135,23 +130,22 @@ object Hex : KLogging() {
             logger.info("no old pack found")
         }
 
-        val fabricPrefix = "net.fabricmc.fabric-loader"
+//        val fabricPrefix = "net.fabricmc.fabric-loader"
+//        val forgePrefix = "net.minecraftforge:forge:"
+//        var (_, _, forgeVersion) = modpack.versionManifest?.libraries?.find {
+//            it.name.startsWith(forgePrefix)
+//        }?.name.let { it ?: "::" }.split(':')
+//        if (forgeVersion.isBlank()) {
+//            // TODO: also look for fabric version
+//            logger.error("could not parse forge version in modpack")
+//            exitProcess(2)
+//        }
+//        while (forgeVersion.count { it == '-' } > 1) {
+//            forgeVersion = forgeVersion.substringBeforeLast("-")
+//        }
+        logger.info("modloader is ${modpack.modLoader}")
 
-        val forgePrefix = "net.minecraftforge:forge:"
-        var (_, _, forgeVersion) = modpack.versionManifest?.libraries?.find {
-            it.name.startsWith(forgePrefix)
-        }?.name.let { it ?: "::" }.split(':')
-        if (forgeVersion.isBlank()) {
-            // TODO: also look for fabric version
-            logger.error("could not parse forge version in modpack")
-            exitProcess(2)
-        }
-        while (forgeVersion.count { it == '-' } > 1) {
-            forgeVersion = forgeVersion.substringBeforeLast("-")
-        }
-        logger.info("forge version is $forgeVersion")
-
-        val json =  Json(JsonConfiguration.Stable.copy(prettyPrint = true))
+        val json = Json(JsonConfiguration.Stable.copy(prettyPrint = true))
         val mapSerializer = MapSerializer(String.serializer(), Boolean.serializer())
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
@@ -162,11 +156,11 @@ object Hex : KLogging() {
         }
         val (features, reinstall) = updateAndSelectFeatures(
             selectables = modpack.features.map {
-                MMCSelectable(it.name, it.name, it.description, it.selected, it.recommendation)
+                MMCSelectable(it.name, it.name, it.description, it.selected, it.recommendation?.let { r -> Recommendation.valueOf(r.name) })
             },
             previousSelection = defaults,
             name = modpack.title.blankOr
-                ?: modpack.name!!,
+                ?: modpack.id,
             version = modpack.version!!,
             forceDisplay = forceDisplay,
             updating = oldpack != null
@@ -186,6 +180,7 @@ object Hex : KLogging() {
         withPool { pool ->
             coroutineScope {
                 for (task in modpack.tasks) {
+                    if(task.side == Side.SERVER) continue
                     launch(context = pool) {
                         val oldTask = oldTaskList.find { it.to == task.to }
 
@@ -219,14 +214,14 @@ object Hex : KLogging() {
                             if (oldTask != null) {
                                 // file exists already and existed in the last version
 
-                                if (task.isUserFile && oldTask.isUserFile) {
+                                if (task.userFile && oldTask.userFile) {
                                     logger.info("task ${task.to} is a userfile, will not be modified")
                                     oldTask.let {
                                         uptodateTasks.send(it)
                                     }
                                     return@launch
                                 }
-                                if (oldTask.hash == task.hash && target.isFile && target.sha1Hex() == task.hash) {
+                                if (oldTask.hash == task.hash && target.isFile && target.sha256() == task.hash.substringAfter(':')) {
                                     logger.info("task ${task.to} file did not change and sha1 hash matches")
                                     oldTask.let {
                                         uptodateTasks.send(it)
@@ -261,8 +256,8 @@ object Hex : KLogging() {
                         }
 
                         if (target.exists()) {
-                            val sha1 = target.sha1Hex()
-                            if (sha1 != task.hash) {
+                            val sha1 = target.sha256()
+                            if (sha1 != task.hash.substringAfter(':')) {
                                 logger.error("hashes do not match for task ${task.to}")
                                 logger.error(sha1)
                                 logger.error(task.hash)
@@ -278,7 +273,7 @@ object Hex : KLogging() {
         }
 
         uptodateTasks.close()
-        val toRemove = (oldpack?.tasks ?: listOf()) - uptodateTasks.toList()
+        val toRemove = (oldpack?.tasks?.filterNot { it.side == Side.SERVER } ?: listOf()) - uptodateTasks.toList()
         logger.info("files to delete: ${toRemove.map { it.to }}")
 
         // iterate old and delete
@@ -294,47 +289,40 @@ object Hex : KLogging() {
             json.parse(MultiMCPack.serializer(), mmcPackPath.readText())
         } else MultiMCPack()
 
-        /*
-        fabric:
-        {
-            // can be ignored: "cachedName": "Intermediary Mappings",
-            // can be ignored: "cachedRequires": [
-                {
-                    "equals": "1.15.2",
-                    "uid": "net.minecraft"
-                }
-            ],
-            // can be ignored: "cachedVersion": "1.15.2",
-            // can be ignored?: "cachedVolatile": true,
-            "dependencyOnly": true,
-            "uid": "net.fabricmc.intermediary",
-            "version": "1.15.2"
-        },
-        {
-            // can be ignored: "cachedName": "Fabric Loader",
-            // can be ignored: "cachedRequires": [
-                {
-                    "uid": "net.fabricmc.intermediary"
-                }
-            ],
-            // can be ignored: "cachedVersion": "0.7.8+build.189",
-            "uid": "net.fabricmc.fabric-loader",
-            "version": "0.7.8+build.189"
+        val modloaderComponents = when (val modloader = modpack.modLoader) {
+            is Modloader.Forge -> {
+                listOf(
+                    PackComponent(
+                        uid = "net.minecraftforge",
+                        version = modloader.version.substringAfter("${modpack.gameVersion}-"),
+                        important = true
+                    )
+                )
+            }
+            is Modloader.Fabric -> {
+                listOf(
+                    PackComponent(
+                        uid = "net.fabricmc.intermediary",
+                        version = modloader.intermediateMappings,
+                        important = true
+                    ),
+                    PackComponent(
+                        uid = "net.fabricmc.fabric-loader",
+                        version = modloader.loader,
+                        important = true
+                    )
+                )
+            }
+            else -> listOf()
         }
-         */
 
         mmcPack.components = listOf(
             PackComponent(
                 uid = "net.minecraft",
-                version = modpack.gameVersion!!,
-                important = true
-            ),
-            PackComponent(
-                uid = "net.minecraftforge",
-                version = forgeVersion.substringAfter("${modpack.gameVersion}-"),
+                version = modpack.gameVersion,
                 important = true
             )
-        ) + mmcPack.components
+        ) + modloaderComponents + mmcPack.components
         mmcPackPath.writeText(json.stringify(MultiMCPack.serializer(), mmcPack))
 
         oldpackFile.createNewFile()

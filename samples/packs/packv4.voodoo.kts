@@ -1,9 +1,3 @@
-import voodoo.data.Side
-import voodoo.data.UserFiles
-import voodoo.data.curse.FileType
-import voodoo.provider.CurseProvider
-import voodoo.provider.JenkinsProvider
-
 mcVersion = "1.12.2"
 title = "1.12.2 Pack v4"
 authors = listOf("therealfarfetchd")

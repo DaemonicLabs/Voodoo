@@ -12,7 +12,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import kotlinx.serialization.json.Json
+import Modloader
 import voodoo.data.DependencyType
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
@@ -88,11 +88,12 @@ object SKPack : AbstractPack("sk") {
         withPool { pool ->
             coroutineScope {
                 // download forge
-                modpack.forge?.also { forge ->
-                    val (forgeUrl, forgeFileName, _, forgeVersion) = ForgeUtil.forgeVersionOf(forge)
+                (modpack.modloader as? Modloader.Forge)?.apply {
+                    val (forgeUrl, forgeFileName, _, forgeVersion) = ForgeUtil.forgeVersionOf(version)
                     val forgeFile = loadersFolder.resolve(forgeFileName)
                     forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
                 } ?: logger.warn { "no forge configured" }
+
                 val modsFolder = skSrcFolder.resolve("mods")
                 logger.info("cleaning mods $modsFolder")
                 modsFolder.deleteRecursively()

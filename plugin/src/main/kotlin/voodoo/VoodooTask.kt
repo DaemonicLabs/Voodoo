@@ -22,6 +22,9 @@ open class VoodooTask : JavaExec() {
         if (scriptFile == null) {
             throw GradleException("--script was not set")
         }
+        if (args.isEmpty()) {
+            throw GradleException("--args is not set")
+        }
         val fullArgs = mutableListOf(scriptFile!!)
         logger.lifecycle("adding arguments to $fullArgs")
         logger.lifecycle("adding $args")

@@ -27,12 +27,14 @@ object MMCSelfupdatingPack : AbstractPack("mmc-sk") {
         val instanceDir = cacheDir.resolve("MMC").resolve(modpack.id)
         instanceDir.deleteRecursively()
 
+        val installerFilename = "mmc-installer.jar"
         val preLaunchCommand =
-            "\"\$INST_JAVA\" -jar \"\$INST_DIR/mmc-installer.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
+            "\"\$INST_JAVA\" -jar \"\$INST_DIR/$installerFilename\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
         val minecraftDir = MMCUtil.installEmptyPack(
             modpack.title.blankOr,
             modpack.id,
             icon = modpack.iconFile,
+            modloader = modpack.modloader,
             instanceDir = instanceDir,
             preLaunchCommand = preLaunchCommand
         )
@@ -56,7 +58,7 @@ object MMCSelfupdatingPack : AbstractPack("mmc-sk") {
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         urlFile.writeText(skPackUrl)
 
-        val multimcInstaller = instanceDir.resolve("mmc-installer.jar")
+        val multimcInstaller = instanceDir.resolve(installerFilename)
         val installer = MavenUtil.downloadArtifact(
             stopwatch = "downloadArtifact multimc installer bootstrap".watch,
             mavenUrl = PackConstants.MAVEN_URL,

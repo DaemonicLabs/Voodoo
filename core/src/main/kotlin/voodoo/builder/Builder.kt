@@ -64,8 +64,7 @@ object Builder : KLogging() {
                 val lockedPack = "lock".watch {
                     modpack.lock()
                 }
-                lockedPack.entrySet.clear()
-                lockedPack.entrySet += modpack.lockEntrySet
+
 
                 "writeLockEntries".watch {
                     lockedPack.writeLockEntries()
