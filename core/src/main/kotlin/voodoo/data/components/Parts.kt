@@ -27,6 +27,7 @@ interface CommonImmutable {
     val fileName: String?
     val fileNameRegex: String
     val validMcVersions: Set<String>
+    val invalidMcVersions: Set<String>
     val enabled: Boolean
 }
 interface CommonMutable : CommonImmutable {
@@ -46,6 +47,7 @@ interface CommonMutable : CommonImmutable {
     override var fileName: String?
     override var fileNameRegex: String
     override var validMcVersions: Set<String>
+    override var invalidMcVersions: Set<String>
     override var enabled: Boolean
 }
 

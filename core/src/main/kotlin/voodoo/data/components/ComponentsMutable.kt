@@ -31,6 +31,7 @@ data class CommonComponent(
     override var fileName: String? = null,
     override var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
     override var validMcVersions: Set<String> = setOf(),
+    override var invalidMcVersions: Set<String> = setOf(),
     override var enabled: Boolean = true
 ) : CommonMutable
 

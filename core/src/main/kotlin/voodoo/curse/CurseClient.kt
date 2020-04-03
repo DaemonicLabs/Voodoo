@@ -437,8 +437,20 @@ object CurseClient : KLogging(), CoroutineScope {
             }
 
             if (files.isEmpty()) {
-                logger.error("validMcVersions: ${entry.validMcVersions}")
+                logger.error("validMcVersions: $mcVersion + ${entry.validMcVersions}")
                 logger.error("filtered files did not match mcVersions: $mcVersions $oldFiles")
+            }
+            oldFiles = files
+        }
+
+        if (files.isNotEmpty()) {
+            files = files.filterNot { f ->
+                entry.invalidMcVersions.any { v -> f.gameVersion.contains(v) }
+            }
+
+            if (files.isEmpty()) {
+                logger.error("invalidMcVersions: ${entry.invalidMcVersions}")
+                logger.error("filtered files did match invalidMcVersions: ${entry.invalidMcVersions} $oldFiles")
             }
             oldFiles = files
         }
