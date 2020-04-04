@@ -233,6 +233,7 @@ open class VoodooPlugin : Plugin<Project> {
                     group = "generators"
                     dependsOn(curseGeneratorTasks)
                     dependsOn(forgeGeneratorTasks)
+                    dependsOn(fabricGeneratorTasks)
                 }
 
                 SharedFolders.PackDir.get()

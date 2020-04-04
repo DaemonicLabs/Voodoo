@@ -28,8 +28,9 @@ object Downloader : KLogging() {
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" // ""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 }
 
-fun File.safeCopyTo(otherFile: File, logger: KLogger = Downloader.logger, overwrite: Boolean = true, failAllowed: Boolean = false): Boolean {
-        logger.debug("copying $this -> $otherFile")
+fun File.safeCopyTo(otherFile: File, overwrite: Boolean = true, failAllowed: Boolean = false): Boolean {
+    val logger = Downloader.logger
+    logger.debug("copying $this -> $otherFile")
         try {
             this.parentFile.mkdirs()
             this.copyTo(otherFile, overwrite = overwrite)
@@ -55,9 +56,9 @@ suspend fun File.download(
     cacheDir: File,
     validator: (file: File) -> Boolean = { true },
     httpClient: HttpClient = client,
-    logger: KLogger = Downloader.logger,
     retries: Int = 3
 ) = withContext(Dispatchers.IO) {
+    val logger = Downloader.logger
     val thisFile = this@download
     for (retries in (0..retries)) {
         val cacheFile = cacheDir.resolve(thisFile.name)
