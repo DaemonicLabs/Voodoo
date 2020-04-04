@@ -229,9 +229,7 @@ object SKHandler : KLogging() {
                             val sha1 = target.sha1Hex()
                             if (sha1 != task.hash) {
                                 logger.error("hashes do not match for task ${task.to}")
-                                logger.error(sha1)
-                                logger.error(task.hash)
-                                error("hashes for ${task.to} do not match")
+                                error("hashes for ${task.to} do not match, expected: ${task.hash} actual: $sha1")
                             } else {
                                 logger.trace("task ${task.to} validated")
                             }
