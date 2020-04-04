@@ -166,7 +166,7 @@ object SKHandler : KLogging() {
 
                         if (target.exists()) {
                             if (oldTask != null) {
-                                // file exists already and existed in the last version
+                                // file exists already and task existed in the last version
 
                                 if (task.isUserFile && oldTask.isUserFile) {
                                     logger.info("task ${task.to} is a userfile, will not be modified")
@@ -191,8 +191,8 @@ object SKHandler : KLogging() {
                                         cacheDir = cacheFolder,
                                         validator = { file ->
                                             val sha1 = file.sha1Hex()
-                                            logger.info { "comparing $sha1 == ${task.hash} of file: $file" }
-                                            sha1 != task.hash
+                                            logger.info("comparing $sha1 == ${task.hash} of file: $file")
+                                            sha1 == task.hash
                                         }
                                     )
                                     oldTask.let {
@@ -209,8 +209,8 @@ object SKHandler : KLogging() {
                                     cacheDir = cacheFolder,
                                     validator = { file ->
                                         val sha1 = file.sha1Hex()
-                                        logger.info { "comparing $sha1 == ${task.hash} of file: $file" }
-                                        sha1 != task.hash
+                                        logger.info("comparing $sha1 == ${task.hash} of file: $file")
+                                        sha1 == task.hash
                                     }
                                 )
                             }

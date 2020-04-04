@@ -117,6 +117,7 @@ suspend fun File.download(
             logger.debug("saving $url -> $thisFile")
             response.content.copyAndClose(thisFile.writeChannel())
 
+            logger.debug("sunning validator on $thisFile")
             if (!validator(thisFile)) {
                 logger.error("$thisFile did not pass validation")
                 cacheFile.delete()
