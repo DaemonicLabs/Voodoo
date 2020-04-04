@@ -9,12 +9,19 @@ class EntryBuilder<E: NestedEntry>(
     entry: E
 ) : AbstractBuilder<E>(entry) {
     //    var id by property(entry::id)
-    var name by property(entry::name)
-    var websiteUrl by property(entry::websiteUrl)
-    var fileNameRegex by property(entry::fileNameRegex)
+//    var name by property(entry::name)
+//    var websiteUrl by property(entry::websiteUrl)
+//    var fileNameRegex by property(entry::fileNameRegex)
 
     @VoodooDSL
+    @Deprecated("use invoke operator", replaceWith = ReplaceWith("this.invoke(configureEntry)"), level = DeprecationLevel.WARNING)
     infix fun configure(configureEntry: E.(EntryBuilder<E>) -> Unit): EntryBuilder<E> {
+        entry.configureEntry(this)
+        return this
+    }
+
+    @VoodooDSL
+    operator fun invoke(configureEntry: E.(EntryBuilder<E>) -> Unit): EntryBuilder<E> {
         entry.configureEntry(this)
         return this
     }
@@ -31,6 +38,7 @@ class EntryBuilder<E: NestedEntry>(
 //        fileNameRegex = r
 //    }
 
+    @VoodooDSL
     fun dependencies(type: DependencyType = DependencyType.REQUIRED, vararg dependencies: String)  {
         entry.dependencies[type] = ((entry.dependencies[type]?.toSet() ?: setOf()) + dependencies).toList()
     }

@@ -1,5 +1,6 @@
 package voodoo.dsl.builder
 
+import optional
 import voodoo.data.OptionalData
 import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
@@ -28,13 +29,12 @@ abstract class AbstractBuilder<E: NestedEntry>(
 //    var fileName by property(entry::fileName)
 //    var validMcVersions by property(entry::validMcVersions)
 
+    @Deprecated("use extension functions instead of builder functions", replaceWith = ReplaceWith("this.optional(block)"))
     fun optional(block: OptionalBuilder.() -> Unit) {
-        val optionalData = entry.optionalData?.copy() ?: OptionalData()
-        val builder = OptionalBuilder(optionalData)
-        builder.block()
-        entry.optionalData = optionalData
+        entry.optional(block)
     }
 
+    @Deprecated("use extension functions instead of builder functions", replaceWith = ReplaceWith("this.optional(block)"))
     fun replaceDependencies(vararg replacements: Pair<ProjectID, ProjectID>) {
         val mutableMap =  entry.replaceDependencies.toMutableMap()
         replacements.forEach { (original, replacement) ->

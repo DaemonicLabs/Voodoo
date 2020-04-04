@@ -35,7 +35,7 @@ suspend fun File.download(
     httpClient: HttpClient = client,
     logger: KLogger = Downloader.logger,
     retries: Int = 3
-): File = withContext(Dispatchers.IO) {
+) = withContext(Dispatchers.IO) {
     for (retries in (0..retries)) {
         val cacheFile = cacheDir.resolve(this@download.name)
         logger.info("downloading $url -> ${this@download}")
@@ -101,7 +101,7 @@ suspend fun File.download(
         this@download.copyTo(cacheFile, overwrite = true)
 
         logger.debug("done downloading $url -> ${this@download})")
-        return@withContext cacheFile
+        return@withContext
     }
     error("failed to download $url")
 }

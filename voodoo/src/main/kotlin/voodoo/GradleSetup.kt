@@ -95,6 +95,8 @@ object GradleSetup : KLogging() {
             dependencies {
                 kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "${VoodooConstants.VERSION}+")
                 kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "${VoodooConstants.VERSION}+")
+                implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "${VoodooConstants.VERSION}+")
+                implementation(group = "moe.nikky.voodoo", name = "dsl", version = "${VoodooConstants.VERSION}+")
             }
         """.trimIndent()
 

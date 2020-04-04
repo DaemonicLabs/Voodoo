@@ -288,7 +288,7 @@ root<Curse> {
 
         group {
             side = Side.BOTH
-            it.optional {
+            optional {
                 selected = false
             }
         }.list {
@@ -328,7 +328,7 @@ root<Curse> {
 
             // OPT-OUT
             group {
-                it.optional {
+                optional {
                     selected = true
                     skRecommendation = Recommendation.starred
                 }
@@ -372,7 +372,7 @@ root<Curse> {
             }
             // OPT-IN
             group {
-                it.optional {
+                optional {
                     selected = false
                 }
             }.list {

@@ -24,7 +24,7 @@ open class ModpackBuilder(
     var localDir by property(pack::localDir)
     var sourceDir by property(pack::sourceDir)
 
-    @Deprecated("use modloader { forge(forgeVersion) } function instead", ReplaceWith("modloader { forge(version = value) }"))
+    @Deprecated("use modloader { forge(forgeVersion) } function instead", ReplaceWith("modloader {\n    forge(version = value)\n}"), level = DeprecationLevel.ERROR)
     var forge: String
         get() = (pack.modloader as ModloaderPattern.Forge).version
         set(value) {

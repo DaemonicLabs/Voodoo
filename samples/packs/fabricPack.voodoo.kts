@@ -1,4 +1,3 @@
-
 mcVersion = "1.15.2"
 version = "0.0.1"
 icon = rootDir.resolve("icon.png")
@@ -22,15 +21,20 @@ pack {
 
 root<Curse> {
     releaseTypes = setOf(FileType.Release, FileType.Beta)
-
     it.list {
-        +FabricMod.fabricApi
+        +FabricMod.fabricApi {
 
-        +FabricMod.betternether
+        }
+
+        +FabricMod.betternether {
+
+        }
 
         +FabricMod.tabInventoryFabric
 
-        +FabricMod.roughlyEnoughItems
+        +FabricMod.roughlyEnoughItems {
+            version = "abc"
+        }
         +FabricMod.roughlyEnoughResources
         group {
             side = Side.CLIENT

@@ -32,6 +32,25 @@ open class ListBuilder<E : NestedEntry>(
         return entryBuilder
     }
 
+    @VoodooDSL
+    operator fun String.invoke(configureEntry: E.(EntryBuilder<E>) -> Unit): EntryBuilder<E> {
+        require(parent.entry !is NestedEntry.Curse) {
+            "You cannot add this to a Curse group"
+        }
+        val entry = parent.entry::class.createInstance().also {
+            it.id = this
+            it.nodeName = this
+        }
+        val builder = EntryBuilder(entry)
+        entry.configureEntry(builder)
+        return builder
+    }
+    open operator fun EntryBuilder<E>.unaryPlus(): EntryBuilder<E> {
+        this@ListBuilder.entries += this
+        return this
+    }
+
+
     /**
      * Curse specific list function
      * allows for curse specific adding of entries
@@ -57,6 +76,27 @@ open class ListBuilder<E : NestedEntry>(
         entries += entryBuilder
         return entryBuilder
     }
+    @VoodooDSL
+    operator fun ProjectID.invoke(configureEntry: NestedEntry.Curse.(EntryBuilder<NestedEntry.Curse>) -> Unit): EntryBuilder<NestedEntry.Curse> {
+        require(parent.entry is NestedEntry.Curse) {
+            "sorry about that, you should only add Curse mods inside Curse groups"
+        }
+        // TODO: keep numerical id around and fix it up later ?
+        // TODO: should simplify code and tests
+        val curseSlugsFile = SharedFolders.BuildCache.get().resolve("curseSlugs.json")
+        val curseSlugs =  json.parse(MapSerializer(ProjectID, String.serializer()), curseSlugsFile.readText())
+        val stringId = curseSlugs[this] ?: runBlocking {
+            CurseClient.getAddon(this@invoke)?.slug
+        } ?: throw NullPointerException("no id: '${this.value}' found in idToSlugMap")
+        val entry = NestedEntry.Curse().also {
+            it.id = stringId
+            it.nodeName = stringId
+            it.projectID = this
+        }
+        val builder = EntryBuilder(entry)
+        entry.configureEntry(builder)
+        return builder
+    }
 
     @VoodooDSL
     fun group(
@@ -76,7 +116,7 @@ open class ListBuilder<E : NestedEntry>(
      * and add to Entrylist
      */
     @VoodooDSL
-    @Deprecated("renamed to withType, use class references to subtypes of voodoo.data.nested.NestedEntry")
+    @Deprecated("renamed to withType and withTypeClass, use class references to subtypes of voodoo.data.nested.NestedEntry")
     inline fun <reified N: NestedEntry> withProvider(
         groupName: String? = null,
         block: N.( GroupBuilder<N>) -> Unit = {}
