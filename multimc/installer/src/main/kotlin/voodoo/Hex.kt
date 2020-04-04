@@ -212,7 +212,7 @@ object Hex : KLogging() {
                             "$objectsUrl/${task.location}"
                         }
                         val target = minecraftDir.resolve(task.to)
-                        val chunkedHash = task.hash.chunked(6).joinToString("/")
+                        val chunkedHash = task.hash.substringAfter(':').chunked(6).joinToString("/")
                         val cacheFolder = directories.cacheHome.resolve(chunkedHash)
 
                         if (target.exists()) {
