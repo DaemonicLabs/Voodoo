@@ -21,7 +21,7 @@ open class ListBuilder<E : NestedEntry>(
 
     open operator fun String.unaryPlus(): EntryBuilder<E> {
         require(parent.entry !is NestedEntry.Curse) {
-            "You cannot add this to a Curse group"
+            "You cannot add this to a Curse group: $this"
         }
         val entry = parent.entry::class.createInstance().also {
             it.id = this
@@ -35,7 +35,7 @@ open class ListBuilder<E : NestedEntry>(
     @VoodooDSL
     operator fun String.invoke(configureEntry: E.(EntryBuilder<E>) -> Unit): EntryBuilder<E> {
         require(parent.entry !is NestedEntry.Curse) {
-            "You cannot add this to a Curse group"
+            "You cannot add this to a Curse group: $this"
         }
         val entry = parent.entry::class.createInstance().also {
             it.id = this
@@ -58,7 +58,7 @@ open class ListBuilder<E : NestedEntry>(
     @VoodooDSL
     operator fun ProjectID.unaryPlus(): EntryBuilder<NestedEntry.Curse> {
         require(parent.entry is NestedEntry.Curse) {
-            "sorry about that, you should only add Curse mods inside Curse groups"
+            "sorry about that, you should only add Curse mods inside Curse groups, $this"
         }
         // TODO: keep numerical id around and fix it up later ?
         // TODO: should simplify code and tests
@@ -79,7 +79,7 @@ open class ListBuilder<E : NestedEntry>(
     @VoodooDSL
     operator fun ProjectID.invoke(configureEntry: NestedEntry.Curse.(EntryBuilder<NestedEntry.Curse>) -> Unit): EntryBuilder<NestedEntry.Curse> {
         require(parent.entry is NestedEntry.Curse) {
-            "sorry about that, you should only add Curse mods inside Curse groups"
+            "sorry about that, you should only add Curse mods inside Curse groups, this: $this"
         }
         // TODO: keep numerical id around and fix it up later ?
         // TODO: should simplify code and tests

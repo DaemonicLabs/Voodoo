@@ -251,7 +251,6 @@ object PoetPack : KLogging() {
                         logger.info("forge literal guess: $forgeLiteral")
 
                         if (forgeLiteral != null) {
-                            mainEnv.addStatement("forge = Forge.%L", forgeLiteral)
                             mainEnv.addStatement("modloader { forge(Forge.%L) }", forgeLiteral)
                         } else {
                             mainEnv.addStatement("modloader { forge(%L) }", it.version)
