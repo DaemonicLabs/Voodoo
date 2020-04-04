@@ -41,7 +41,6 @@ voodoo {
         pack().multimcSkFat()
         pack().multimcFat()
         pack().curse()
-        test().multimc()
     }
 
     generateCurseforgeMods("Mod", "1.12", "1.12.1", "1.12.2")

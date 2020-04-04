@@ -19,6 +19,7 @@ import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.*
 import java.io.File
+import java.security.MessageDigest
 import kotlin.system.exitProcess
 
 /**
@@ -30,7 +31,11 @@ object SKHandler : KLogging() {
     private val directories = Directories.get(moduleName = "multimc")
 //    val kit = Toolkit.getDefaultToolkit()
 
-    private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.inputStream())
+    private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.readBytes())
+//    private fun File.sha1Hex(): String {
+//        val digest = MessageDigest.getInstance("SHA-1")
+//        return digest.digest(this.readBytes()).toHexString()
+//    }
 
     private val json = Json(JsonConfiguration(prettyPrint = true, ignoreUnknownKeys = true, encodeDefaults = true))
 
@@ -77,9 +82,6 @@ object SKHandler : KLogging() {
         } else {
             logger.info("no old pack found")
         }
-
-        val fabricPrefix = "net.fabricmc.fabric-loader"
-
         val forgePrefix = "net.minecraftforge:forge:"
         var (_, _, forgeVersion) = modpack.versionManifest?.libraries?.find {
             it.name.startsWith(forgePrefix)
@@ -182,19 +184,35 @@ object SKHandler : KLogging() {
                                 } else {
                                     // mismatching hash.. override file
                                     logger.info("task ${task.to} mismatching hash.. reset and override file")
+                                    target.delete()
+                                    target.parentFile.mkdirs()
+                                    target.download(
+                                        url = url,
+                                        cacheDir = cacheFolder,
+                                        validator = { file ->
+                                            val sha1 = file.sha1Hex()
+                                            logger.info { "comparing $sha1 == ${task.hash} of file: $file" }
+                                            sha1 != task.hash
+                                        }
+                                    )
                                     oldTask.let {
                                         uptodateTasks.send(it)
                                     }
-                                    target.delete()
-                                    target.parentFile.mkdirs()
-                                    target.download(url, cacheFolder)
                                 }
                             } else {
                                 // file exists but was not in the last version.. reset to make sure
                                 logger.info("task ${task.to} exists but was not in the last version.. reset to make sure")
                                 target.delete()
                                 target.parentFile.mkdirs()
-                                target.download(url, cacheFolder)
+                                target.download(
+                                    url = url,
+                                    cacheDir = cacheFolder,
+                                    validator = { file ->
+                                        val sha1 = file.sha1Hex()
+                                        logger.info { "comparing $sha1 == ${task.hash} of file: $file" }
+                                        sha1 != task.hash
+                                    }
+                                )
                             }
                         } else {
                             // new file
@@ -213,6 +231,7 @@ object SKHandler : KLogging() {
                                 logger.error("hashes do not match for task ${task.to}")
                                 logger.error(sha1)
                                 logger.error(task.hash)
+                                error("hashes for ${task.to} do not match")
                             } else {
                                 logger.trace("task ${task.to} validated")
                             }
@@ -241,35 +260,6 @@ object SKHandler : KLogging() {
             json.parse(MultiMCPack.serializer(), mmcPackPath.readText())
         } else MultiMCPack()
 
-        /*
-        fabric:
-        {
-            // can be ignored: "cachedName": "Intermediary Mappings",
-            // can be ignored: "cachedRequires": [
-                {
-                    "equals": "1.15.2",
-                    "uid": "net.minecraft"
-                }
-            ],
-            // can be ignored: "cachedVersion": "1.15.2",
-            // can be ignored?: "cachedVolatile": true,
-            "dependencyOnly": true,
-            "uid": "net.fabricmc.intermediary",
-            "version": "1.15.2"
-        },
-        {
-            // can be ignored: "cachedName": "Fabric Loader",
-            // can be ignored: "cachedRequires": [
-                {
-                    "uid": "net.fabricmc.intermediary"
-                }
-            ],
-            // can be ignored: "cachedVersion": "0.7.8+build.189",
-            "uid": "net.fabricmc.fabric-loader",
-            "version": "0.7.8+build.189"
-        }
-         */
-
         mmcPack.components = listOf(
             PackComponent(
                 uid = "net.minecraft",
@@ -286,22 +276,5 @@ object SKHandler : KLogging() {
 
         oldpackFile.createNewFile()
         oldpackFile.writeText(json.stringify(Manifest.serializer(), modpack))
-    }
-
-    private class Arguments(parser: ArgParser) {
-        val instanceId by parser.storing(
-            "--id",
-            help = "\$INST_ID - ID of the instance"
-        )
-
-        val instanceDir by parser.storing(
-            "--inst",
-            help = "\$INST_DIR - absolute path of the instance"
-        ) { File(this) }
-
-        val minecraftDir by parser.storing(
-            "--mc",
-            help = "\$INST_MC_DIR - absolute path of minecraft"
-        ) { File(this) }
     }
 }

@@ -16,6 +16,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import mu.KLogger
 import mu.KLogging
+import voodoo.util.ShellUtil.runProcess
 import java.io.File
 import java.io.IOException
 
@@ -36,11 +37,14 @@ fun File.safeCopyTo(otherFile: File, overwrite: Boolean = true, failAllowed: Boo
             this.copyTo(otherFile, overwrite = overwrite)
             return true
         } catch (e: FileAlreadyExistsException) {
+            e.printStackTrace()
             val fileIsLocked = !this.renameTo(this)
             logger.error("failed to copy file $this to $otherFile .. file is locked ? $fileIsLocked")
             val delete = otherFile.delete()
             if(!delete) {
                 if(failAllowed) return false
+                // TODO: run handle ${this.name}
+//                runProcess("handle ${this.name}")
                 error("failed to delete $otherFile")
             } else {
                 logger.info { "deleted $otherFile and trying again" }

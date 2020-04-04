@@ -44,6 +44,8 @@ object Hex : KLogging() {
 
     @JvmStatic
     fun main(vararg args: String) = runBlocking {
+        System.setProperty(DEBUG_PROPERTY_NAME, "on")
+
         val arguments = Arguments(ArgParser(args))
 
         arguments.run {
@@ -51,7 +53,7 @@ object Hex : KLogging() {
         }
     }
 
-    private fun File.sha256(): String? = DigestUtils.sha256Hex(this.inputStream())
+    private fun File.sha256(): String? = DigestUtils.sha256Hex(readBytes())
 
     private val json = Json(JsonConfiguration(prettyPrint = true, ignoreUnknownKeys = true, encodeDefaults = true))
 
