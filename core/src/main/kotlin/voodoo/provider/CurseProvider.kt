@@ -236,6 +236,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
                     } else {
                         val normalized = computeNormalizedArray(file.readBytes())
                         val fileFingerprint = Murmur2Lib.hash32(normalized, 1)
+                        logger.debug { "comparing ${fileFingerprint.toLong().toInt()} to ${addonFile.packageFingerprint.toInt()}" }
                         addonFile.packageFingerprint.toInt() == fileFingerprint.toLong().toInt()
                     }
             }

@@ -10,7 +10,9 @@ title = "Pokemans Reloaded"
 version = "1.1"
 icon = rootDir.resolve("icon.png")
 authors = listOf("capitalthree", "NikkyAi")
-forge = Forge_12_2.mc1_12_2_recommended
+modloader {
+    forge(Forge_12_2.mc1_12_2_recommended)
+}
 
 //pack {
 //    multimc {
@@ -24,7 +26,7 @@ root<Curse> { builder ->
     builder.list {
         //TODO: group mods by category (eg. tweakers)
         +Mod.abyssalcraft
-        +Mod.advancedRocketry configure {
+        +Mod.advancedRocketry {
             releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
         }
         +Mod.apricornTreeFarm
@@ -86,7 +88,7 @@ root<Curse> { builder ->
                     skRecommendation = Recommendation.starred
                 }
             }.list {
-                +Mod.xaerosMinimap configure {
+                +Mod.xaerosMinimap {
                     description = "lightweight minimap"
                 }
             }

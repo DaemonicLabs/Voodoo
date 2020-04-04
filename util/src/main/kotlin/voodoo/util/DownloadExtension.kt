@@ -36,21 +36,33 @@ suspend fun File.download(
     logger: KLogger = Downloader.logger,
     retries: Int = 3
 ) = withContext(Dispatchers.IO) {
+    val thisFile = this@download
     for (retries in (0..retries)) {
-        val cacheFile = cacheDir.resolve(this@download.name)
-        logger.info("downloading $url -> ${this@download}")
+        val cacheFile = cacheDir.resolve(thisFile.name)
+        logger.info("downloading $url -> ${thisFile}")
         logger.debug("cacheFile $cacheFile")
         if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
 
         logger.debug("validating $cacheFile existence and hash")
         if (cacheFile.exists() && cacheFile.isFile && validator(cacheFile)) {
             logger.info("file: $cacheFile exists and can skip download")
-            this@download.parentFile.mkdirs()
-            cacheFile.copyTo(this@download, overwrite = true)
+            thisFile.parentFile.mkdirs()
+            cacheFile.copyTo(thisFile, overwrite = true)
+            delay(100)
+
+            if (!validator(thisFile)) {
+                logger.error("$thisFile did not pass validation")
+                cacheFile.delete()
+                delay(1000)
+                continue
+            }
+
+            logger.debug("done downloading $url -> $thisFile")
+            delay(100)
+            return@withContext
         } else {
             val response = try {
-                httpClient.request<HttpResponse> {
-                    url(url)
+                httpClient.request<HttpResponse>(url) {
                     method = HttpMethod.Get
                     header(HttpHeaders.UserAgent, useragent)
                 }
@@ -72,14 +84,14 @@ suspend fun File.download(
                 continue
             }
             logger.debug("writing $url -> $cacheFile")
-            this@download.parentFile.mkdirs()
-            this@download.createNewFile()
+            thisFile.parentFile.mkdirs()
+            thisFile.createNewFile()
 
-            logger.debug("saving $url -> ${this@download}")
-            response.content.copyAndClose(this@download.writeChannel())
+            logger.debug("saving $url -> $thisFile")
+            response.content.copyAndClose(thisFile.writeChannel())
         }
 
-        logger.debug("saving $url -> $this")
+//        logger.debug("saving $url -> $thisFile")
 //        try {
 //            this@download.parentFile.mkdirs()
 //            cacheFile.copyTo(this@download, overwrite = true)
@@ -90,17 +102,19 @@ suspend fun File.download(
 //                cacheFile.copyTo(this@download, overwrite = true)
 //        }
 
-        if (!validator(this@download)) {
-            logger.error("${this@download} did not pass validation")
+        if (!validator(thisFile)) {
+            logger.error("$thisFile did not pass validation")
             cacheFile.delete()
             delay(1000)
             continue
         }
 
+        logger.debug("saving to cache $thisFile -> $cacheFile")
         cacheFile.parentFile.mkdirs()
-        this@download.copyTo(cacheFile, overwrite = true)
+        thisFile.copyTo(cacheFile, overwrite = true)
 
-        logger.debug("done downloading $url -> ${this@download})")
+        logger.debug("done downloading $url -> $thisFile")
+        delay(100)
         return@withContext
     }
     error("failed to download $url")
