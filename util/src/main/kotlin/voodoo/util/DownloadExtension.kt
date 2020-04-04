@@ -28,6 +28,28 @@ object Downloader : KLogging() {
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" // ""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
 }
 
+fun File.safeCopyTo(otherFile: File, logger: KLogger = Downloader.logger, overwrite: Boolean = true, failAllowed: Boolean = false): Boolean {
+        logger.debug("copying $this -> $otherFile")
+        try {
+            this.parentFile.mkdirs()
+            this.copyTo(otherFile, overwrite = overwrite)
+            return true
+        } catch (e: FileAlreadyExistsException) {
+            val fileIsLocked = !this.renameTo(this)
+            logger.error("failed to copy file $this to $otherFile .. file is locked ? $fileIsLocked")
+            val delete = otherFile.delete()
+            if(!delete) {
+                if(failAllowed) return false
+                error("failed to delete $otherFile")
+            } else {
+                logger.info { "deleted $otherFile and trying again" }
+                return this.safeCopyTo(otherFile, overwrite = overwrite)
+            }
+//            if (!fileIsLocked)
+//                this.safeCopyTo(otherFile, overwrite = overwrite)
+        }
+}
+
 suspend fun File.download(
     url: String,
     cacheDir: File,
@@ -47,7 +69,7 @@ suspend fun File.download(
         if (cacheFile.exists() && cacheFile.isFile && validator(cacheFile)) {
             logger.info("file: $cacheFile exists and can skip download")
             thisFile.parentFile.mkdirs()
-            cacheFile.copyTo(thisFile, overwrite = true)
+            cacheFile.safeCopyTo(thisFile, overwrite = true)
             delay(100)
 
             if (!validator(thisFile)) {
@@ -89,6 +111,24 @@ suspend fun File.download(
 
             logger.debug("saving $url -> $thisFile")
             response.content.copyAndClose(thisFile.writeChannel())
+
+            if (!validator(thisFile)) {
+                logger.error("$thisFile did not pass validation")
+                cacheFile.delete()
+                delay(1000)
+                continue
+            }
+
+            logger.debug("saving to cache $thisFile -> $cacheFile")
+            cacheFile.parentFile.mkdirs()
+            val copied = thisFile.safeCopyTo(cacheFile, overwrite = true, failAllowed = true)
+            if(!copied) {
+                logger.error { "error in copying to cache" }
+            }
+
+            logger.debug("done downloading $url -> $thisFile")
+            delay(100)
+            return@withContext
         }
 
 //        logger.debug("saving $url -> $thisFile")
@@ -101,21 +141,6 @@ suspend fun File.download(
 //            if (!fileIsLocked)
 //                cacheFile.copyTo(this@download, overwrite = true)
 //        }
-
-        if (!validator(thisFile)) {
-            logger.error("$thisFile did not pass validation")
-            cacheFile.delete()
-            delay(1000)
-            continue
-        }
-
-        logger.debug("saving to cache $thisFile -> $cacheFile")
-        cacheFile.parentFile.mkdirs()
-        thisFile.copyTo(cacheFile, overwrite = true)
-
-        logger.debug("done downloading $url -> $thisFile")
-        delay(100)
-        return@withContext
     }
     error("failed to download $url")
 }

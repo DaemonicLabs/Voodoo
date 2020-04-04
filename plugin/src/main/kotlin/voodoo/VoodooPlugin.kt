@@ -1,16 +1,14 @@
 package voodoo
 
 import kotlinx.coroutines.runBlocking
-import org.gradle.api.DefaultTask
-import org.gradle.api.JavaVersion
-import org.gradle.api.Plugin
-import org.gradle.api.Project
+import org.gradle.api.*
+import org.gradle.api.artifacts.ExternalModuleDependency
+import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.internal.AbstractTask
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.SourceSetContainer
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.task
+import org.gradle.kotlin.dsl.*
+import org.gradle.kotlin.dsl.accessors.runtime.addExternalModuleDependencyTo
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import voodoo.plugin.PluginConstants
@@ -77,9 +75,36 @@ open class VoodooPlugin : Plugin<Project> {
                 downloadTask to downloadTask.jarFile
             }
 
-//            project.dependencies {
-//                add("api", files(voodooJar))
-//            }
+            project.repositories {
+                maven(url = "http://maven.modmuss50.me/") {
+                    name = "modmuss50"
+                }
+                maven(url = "https://kotlin.bintray.com/kotlinx") {
+                    name = "kotlinx"
+                }
+                mavenCentral()
+                jcenter()
+            }
+
+            fun DependencyHandler.addDependency(
+                targetConfiguration: String,
+                group: String,
+                name: String,
+                version: String? = null,
+                configuration: String? = null,
+                classifier: String? = null,
+                ext: String? = null,
+                dependencyConfiguration: Action<ExternalModuleDependency>? = null
+            ): ExternalModuleDependency = addExternalModuleDependencyTo(
+                this, targetConfiguration, group, name, version, configuration, classifier, ext, dependencyConfiguration
+            )
+
+            project.dependencies {
+                addDependency("kotlinScriptDef", group = "moe.nikky.voodoo", name = "voodoo", version = PluginConstants.FULL_VERSION )
+                addDependency("kotlinScriptDef", group = "moe.nikky.voodoo", name = "dsl", version = PluginConstants.FULL_VERSION )
+                addDependency("implementation", group = "moe.nikky.voodoo", name = "voodoo", version = PluginConstants.FULL_VERSION )
+                addDependency("implementation", group = "moe.nikky.voodoo", name = "dsl", version = PluginConstants.FULL_VERSION )
+            }
 
             task<AbstractTask>("voodooVersion") {
                 group = "voodoo"
