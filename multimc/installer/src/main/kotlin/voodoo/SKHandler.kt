@@ -103,7 +103,7 @@ object SKHandler : KLogging() {
         } else {
             mapOf()
         }
-        val (features, reinstall) = updateAndSelectFeatures(
+        val (features, reinstall, skipUpdate) = updateAndSelectFeatures(
             selectables = modpack.features.map {
                 MMCSelectable(it.name, it.name, it.description, it.selected, it.recommendation)
             },
@@ -112,8 +112,12 @@ object SKHandler : KLogging() {
                 ?: modpack.name!!,
             version = modpack.version!!,
             forceDisplay = forceDisplay,
-            updating = oldpack != null
+            installing = oldpack == null,
+            updateRequired = oldpack?.version != modpack.version
         )
+        if(skipUpdate) {
+            return
+        }
         featureJson.writeText(
             json.stringify(mapSerializer, features)
         )

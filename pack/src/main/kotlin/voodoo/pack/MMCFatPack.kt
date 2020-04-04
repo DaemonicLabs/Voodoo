@@ -87,7 +87,8 @@ object MMCFatPack : AbstractPack("mmc-fat") {
             modpack.title.blankOr
                 ?: modpack.id, modpack.version,
             forceDisplay = false,
-            updating = false // featureJson.exists()
+            installing = true,
+            updateRequired = true
         )
         logger.debug("result: optionals: $optionals")
         if (!optionals.isEmpty()) {

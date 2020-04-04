@@ -89,8 +89,11 @@ object MMCSelfupdatingFatPack : AbstractPack("mmc-sk-fat") {
                 MMCSelectable(it)
             },
             previousSelection,
-            modpack.title.blankOr
-                ?: modpack.id, modpack.version, forceDisplay = false, updating = featureJson.exists()
+            name = modpack.title.blankOr ?: modpack.id,
+            version = modpack.version,
+            forceDisplay = false,
+            installing = true,
+            updateRequired = true
         )
         MMCFatPack.logger.debug("result: optionals: $optionals")
         if (!optionals.isEmpty()) {
@@ -109,7 +112,7 @@ object MMCSelfupdatingFatPack : AbstractPack("mmc-sk-fat") {
                     launch(context = coroutineContext + pool) {
                         val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
 
-                        val matchedOptioalsList = if(modpack.isEntryOptional(entry.id)) {
+                        val matchedOptioalsList = if (modpack.isEntryOptional(entry.id)) {
                             val selectedSelf = optionals[entry.id] ?: true
                             if (!selectedSelf) {
                                 MMCUtil.logger.info("${entry.displayName} is disabled, skipping download")
@@ -163,7 +166,6 @@ object MMCSelfupdatingFatPack : AbstractPack("mmc-sk-fat") {
         }
 
 
-
         val skPackUrl = modpack.packOptions.multimcOptions.skPackUrl
             ?: run {
                 modpack.packOptions.baseUrl?.let { baseUrl ->
@@ -197,7 +199,7 @@ object MMCSelfupdatingFatPack : AbstractPack("mmc-sk-fat") {
             artifactId = "bootstrap",
             version = PackConstants.FULL_VERSION,
             classifier = "multimc-installer",
-            outputFile =  multimcInstaller,
+            outputFile = multimcInstaller,
             outputDir = directories.cacheHome
         )
 //        installer.copyTo(multimcInstaller)

@@ -116,7 +116,7 @@ object Hex : KLogging() {
         var forceDisplay = false
         if (oldpack != null) {
             if (oldpack.version == modpack.version) {
-                logger.info("no update required ? hold shift to force a update (WIP)")
+                logger.info("no update required")
                 // TODO: show timeout
 
 //                delay(1000)
@@ -159,7 +159,7 @@ object Hex : KLogging() {
         } else {
             mapOf()
         }
-        val (features, reinstall) = updateAndSelectFeatures(
+        val (features, reinstall, skipUpdate) = updateAndSelectFeatures(
             selectables = modpack.features.map {
                 MMCSelectable(it.name, it.name, it.description, it.selected, it.recommendation?.let { r -> Recommendation.valueOf(r.name) })
             },
@@ -168,8 +168,12 @@ object Hex : KLogging() {
                 ?: modpack.id,
             version = modpack.version!!,
             forceDisplay = forceDisplay,
-            updating = oldpack != null
+            installing = oldpack == null,
+            updateRequired = oldpack?.version != modpack.version
         )
+        if(skipUpdate) {
+            return
+        }
         featureJson.writeText(
             json.stringify(mapSerializer, features)
         )

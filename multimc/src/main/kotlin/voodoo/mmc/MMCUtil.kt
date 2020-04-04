@@ -249,14 +249,21 @@ object MMCUtil : KLogging() {
         return minecraftDir
     }
 
+    data class Response(
+        val features: Map<String, Boolean>,
+        val reinstall: Boolean,
+        val skipUpdate: Boolean
+    )
+
     fun updateAndSelectFeatures(
         selectables: List<MMCSelectable>,
         previousSelection: Map<String, Boolean>,
         name: String,
         version: String,
         forceDisplay: Boolean,
-        updating: Boolean
-    ): Pair<Map<String, Boolean>, Boolean> {
+        installing: Boolean,
+        updateRequired: Boolean
+    ): Response {
         // display the popup every time
 //        if (selectables.isEmpty() && !forceDisplay) {
 //            logger.info("no selectable features")
@@ -281,6 +288,7 @@ object MMCUtil : KLogging() {
 
         var success = false
         var reinstall = false
+        var skipUpdate = false
 
         val windowTitle =
             "Features" + if (name.isBlank()) "" else " - $name" + if (version.isBlank()) "" else " - $version"
@@ -418,14 +426,12 @@ object MMCUtil : KLogging() {
                     ipady = 4
                     insets = Insets(4, 0, 0, 0)
                 })
-//                if(updating) {
                 val buttonSkipInstall = JButton("Skip Update").apply {
-                    isEnabled = updating
-//                        toolTipText = "enable with checkbox"
+                    isEnabled = !installing
                     addActionListener {
                         success = true
+                        skipUpdate = true
                         dispose()
-                        // exitProcess(1)
                     }
                 }
                 buttonPane.add(buttonSkipInstall, GridBagConstraints().apply {
@@ -455,7 +461,7 @@ object MMCUtil : KLogging() {
                     insets = Insets(4, 0, 0, 0)
                 })
                 val checkForceReinstall = JCheckBox().apply {
-                    isEnabled = updating
+                    isEnabled = !installing || !updateRequired
                     addItemListener {
                         buttonForceReinstall.isEnabled = isSelected
                     }
@@ -469,7 +475,15 @@ object MMCUtil : KLogging() {
                     insets = Insets(4, 0, 0, 0)
                 })
 
-                val okText = if (updating) "Update" else "Install"
+                val okText = if (installing) {
+                    "Install"
+                } else {
+                    if(updateRequired) {
+                        "Update"
+                    } else {
+                        "Launch"
+                    }
+                }
                 val button = JButton(okText).apply {
                     addActionListener {
                         isVisible = false
@@ -533,6 +547,10 @@ object MMCUtil : KLogging() {
         // save statw
         mmcStateFile.writeText(json.stringify(MMCState.serializer(), MMCState(bounds = Bounds(dialog.bounds))))
 
-        return selectables.associateBy({ it.id }, { toggleButtons.getValue(it.id).isSelected }) to reinstall
+        return Response(
+            features = selectables.associateBy({ it.id }, { toggleButtons.getValue(it.id).isSelected }),
+            reinstall = reinstall,
+            skipUpdate = skipUpdate
+        )
     }
 }

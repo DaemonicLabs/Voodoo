@@ -123,7 +123,11 @@ object MultiMCTester : AbstractTester() {
                 MMCSelectable(it)
             },
             previousSelection,
-            modpack.title.blankOr ?: modpack.id, modpack.version, forceDisplay = false, updating = featureJson.exists()
+            name = modpack.title.blankOr ?: modpack.id,
+            version = modpack.version,
+            forceDisplay = false,
+            installing = !featureJson.exists(),
+            updateRequired = true
         )
         logger.debug("result: optionals: $optionals")
         if (!optionals.isEmpty()) {
