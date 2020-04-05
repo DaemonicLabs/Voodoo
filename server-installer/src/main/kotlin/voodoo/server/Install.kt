@@ -4,12 +4,10 @@ import com.eyeem.watchadoin.Stopwatch
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.InvalidArgumentException
 import com.xenomachina.argparser.default
-
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.server.installer.ServerInstallerConstants.VERSION
-import voodoo.util.asFile
 import java.io.File
 import kotlin.system.exitProcess
 
@@ -56,6 +54,7 @@ object Install : KLogging() {
     }
 
     private class Arguments(parser: ArgParser) {
+        val parentFolder = File(Install::class.java.protectionDomain.codeSource.location.toURI()).parentFile
         val targetDir by parser.positional(
             "TARGET",
             help = "output rootFolder"
@@ -70,7 +69,11 @@ object Install : KLogging() {
             "--packFile",
             help = "pack id"
         )
-            .default(File("pack.txt").takeIf { it.exists() }?.readText())
+            .default(
+                parentFolder.resolve("pack.txt").takeIf { it.exists() }?.readText()?.let { path ->
+                    parentFolder.resolve(path).path
+                }
+            )
 
         val skipForge by parser.flagging(
             "--skipForge",

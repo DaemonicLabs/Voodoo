@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import Modloader
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
+import voodoo.fabric.FabricUtil
 import voodoo.forge.ForgeUtil
 import voodoo.provider.Providers
 import voodoo.util.Directories
@@ -79,7 +80,12 @@ object Server {
                         val provider = Providers[entry.provider]
                         val targetFolder = serverDir.resolve(entry.serialFile).absoluteFile.parentFile
                         logger.info("downloading to - ${targetFolder.path}")
-                        val (_, _) = provider.download("download-${entry.id}".watch, entry, targetFolder, cacheDir)
+                        val (_, _) = provider.download(
+                            stopwatch = "download-${entry.id}".watch,
+                            entry = entry,
+                            targetFolder = targetFolder,
+                            cacheDir = cacheDir
+                        )
                     }
 //                delay(10)
                     logger.info("started job ${entry.displayName}")
@@ -87,20 +93,19 @@ object Server {
             }
         }
 
-        // download forge
-        require(modpack.modloader != null) { "no modlaoder defined" }
         when(val modloader = modpack.modloader) {
             is Modloader.Forge -> {
+                // download forge
                 val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = ForgeUtil.forgeVersionOf(modloader.version)
                 val forgeFile = directories.runtimeDir.resolve(forgeFileName)
                 logger.info("forge: $forgeLongVersion")
-                "downloadForge".watch {
+                "download-forge".watch {
                     forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
                 }
 
                 // install forge
                 if (!skipModloaderInstall) {
-                    "installForge".watch {
+                    "install-forge".watch {
                         val java = arrayOf(System.getProperty("java.home"), "bin", "java").joinToString(File.separator)
                         val args = arrayOf(java, "-jar", forgeFile.path, "--installServer")
                         logger.debug("running " + args.joinToString(" ") { "\"$it\"" })
@@ -123,7 +128,34 @@ object Server {
                 }
             }
             is Modloader.Fabric -> {
-                TODO("use fabric installer to install server")
+                val installer = FabricUtil.getInstallers().first { it.version == modloader.installer }
+                val installerFile = File(".").resolve("fabric-installer-${modloader.installer}.jar")
+
+                "download-fabric".watch {
+                    installerFile.download(
+                        url = installer.url,
+                        cacheDir = cacheDir.resolve("FABRIC").resolve(modloader.installer)
+                    )
+                }
+                // java -jar fabric-installer-0.5.2.39.jar server -dir ./server -loader version -mcversion $mcversion -downloadMinecraft
+
+                if (!skipModloaderInstall) {
+                    "install-fabric".watch {
+                        val java = arrayOf(System.getProperty("java.home"), "bin", "java").joinToString(File.separator)
+                        val args = arrayOf(java, "-jar", installerFile.path, "server",
+                            "-dir", serverDir.absolutePath,
+                            "-loader", modloader.loader,
+                            "-mcversion", modpack.mcVersion,
+                            "-downloadMinecraft"
+                        )
+                        ProcessBuilder(*args)
+                            .directory(serverDir)
+                            .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                            .redirectError(ProcessBuilder.Redirect.INHERIT)
+                            .start()
+                            .waitFor()
+                    }
+                }
             }
         }
         logger.info("finished")
