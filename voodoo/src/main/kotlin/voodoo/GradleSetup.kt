@@ -77,26 +77,10 @@ object GradleSetup : KLogging() {
                 }
 
                 generateCurseforgeMods("Mod", "1.12", "1.12.1", "1.12.2")
+                generateCurseforgeMods("FabricMod", "1.15", "1.15.1", "1.15.2", categories = listOf("Fabric"))
                 generateCurseforgeTexturepacks("TexturePack", "1.12", "1.12.1", "1.12.2")
                 generateForge("Forge", "1.12.2")
-            }
-
-            repositories {
-                maven(url = "http://maven.modmuss50.me/") {
-                    name = "modmuss50"
-                }
-                maven(url = "https://kotlin.bintray.com/kotlinx") {
-                    name = "kotlinx"
-                }
-                mavenCentral()
-                jcenter()
-            }
-
-            dependencies {
-                kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "${VoodooConstants.VERSION}+")
-                kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "${VoodooConstants.VERSION}+")
-                implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "${VoodooConstants.VERSION}+")
-                implementation(group = "moe.nikky.voodoo", name = "dsl", version = "${VoodooConstants.VERSION}+")
+                generateFabric("Fabric", "1.15.2")
             }
         """.trimIndent()
 

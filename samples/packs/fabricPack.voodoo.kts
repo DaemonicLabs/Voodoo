@@ -12,6 +12,7 @@ modloader {
 
 pack {
     multimc {
+        // path t the published modpack definition (not sk always)
         skPackUrl = "https://nikky.moe/.mc/experimental/fabricpack.json"
     }
     experimental {
@@ -22,13 +23,9 @@ pack {
 root<Curse> {
     releaseTypes = setOf(FileType.Release, FileType.Beta)
     it.list {
-        +FabricMod.fabricApi {
+        +FabricMod.fabricApi
 
-        }
-
-        +FabricMod.betternether {
-
-        }
+        +FabricMod.betternether
 
         +FabricMod.tabInventoryFabric
 

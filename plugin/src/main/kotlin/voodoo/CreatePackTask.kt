@@ -66,6 +66,7 @@ open class CreatePackTask : DefaultTask() {
             mcVersion = this@CreatePackTask.mcVersion ?: throw GradleException("mcVersion was null")
             title = titleStr.takeIf { it.isNotBlank() } ?: id.capitalize()
             authors = listOf(System.getProperty("user.name"))
+            // TODO: also support fabric in newly created packs
             modloader {
                 forge("${this@apply.mcVersion}-recommended")
             }
