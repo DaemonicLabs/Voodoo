@@ -246,14 +246,31 @@ object Hex : KLogging() {
                                     }
                                     target.delete()
                                     target.parentFile.mkdirs()
-                                    target.download(url, cacheFolder)
+                                    target.download(
+                                        url = url,
+                                        cacheDir = cacheFolder,
+                                        validator = { file ->
+                                            val sha256 = file.sha256()
+                                            SKHandler.logger.info("comparing $sha256 == ${task.hash} of file: $file")
+                                            sha256 == task.hash.substringAfter(':')
+                                        }
+                                    )
                                 }
                             } else {
                                 // file exists but was not in the last version.. reset to make sure
                                 logger.info("task ${task.to} exists but was not in the last version.. reset to make sure")
                                 target.delete()
                                 target.parentFile.mkdirs()
-                                target.download(url, cacheFolder)
+
+                                target.download(
+                                    url = url,
+                                    cacheDir = cacheFolder,
+                                    validator = { file ->
+                                        val sha256 = file.sha256()
+                                        SKHandler.logger.info("comparing $sha256 == ${task.hash} of file: $file")
+                                        sha256 == task.hash.substringAfter(':')
+                                    }
+                                )
                             }
                         } else {
                             // new file
@@ -267,11 +284,10 @@ object Hex : KLogging() {
                         }
 
                         if (target.exists()) {
-                            val sha1 = target.sha256()
-                            if (sha1 != task.hash.substringAfter(':')) {
+                            val sha256 = target.sha256()
+                            if (sha256 != task.hash.substringAfter(':')) {
                                 logger.error("hashes do not match for task ${task.to}")
-                                logger.error(sha1)
-                                logger.error(task.hash)
+                                error("hashes for ${task.to} do not match, expected: ${task.hash} actual: sha-256:$sha256")
                             } else {
                                 logger.trace("task ${task.to} validated")
                             }

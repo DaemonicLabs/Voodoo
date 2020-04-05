@@ -12,6 +12,7 @@ import voodoo.forge.ForgeUtil
 import voodoo.provider.Providers
 import voodoo.util.Directories
 import voodoo.util.Downloader.logger
+import voodoo.util.ShellUtil
 import voodoo.util.download
 import voodoo.util.withPool
 import java.io.File
@@ -148,6 +149,7 @@ object Server {
                             "-mcversion", modpack.mcVersion,
                             "-downloadMinecraft"
                         )
+                        logger.debug("running: " + args.joinToString(" ") { "\"$it\"" })
                         ProcessBuilder(*args)
                             .directory(serverDir)
                             .redirectOutput(ProcessBuilder.Redirect.INHERIT)
