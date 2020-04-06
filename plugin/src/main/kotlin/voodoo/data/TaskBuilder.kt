@@ -36,6 +36,9 @@ class TaskBuilder() {
         fun multimc() {
             tasks += TaskType.Pack.MultiMCSk
         }
+        fun multimcExperimental() {
+            tasks += TaskType.Pack.MultiMCExp
+        }
         fun multimcSk() {
             tasks += TaskType.Pack.MultiMCSk
         }

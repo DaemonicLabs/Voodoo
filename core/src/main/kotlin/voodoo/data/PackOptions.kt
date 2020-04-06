@@ -22,7 +22,8 @@ data class PackOptions(
     }
 
     @Serializable data class MultiMC(
-        var skPackUrl: String? = null
+        var skPackUrl: String? = null,
+        var selfupdateUrl: String? = null
     )
     @Serializable data class SKCraft(
         var userFiles: UserFiles = UserFiles(),
