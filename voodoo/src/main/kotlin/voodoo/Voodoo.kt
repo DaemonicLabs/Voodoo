@@ -96,18 +96,12 @@ object Voodoo : KLogging() {
             val tomeDir = SharedFolders.TomeDir.get()
             val docDir = SharedFolders.DocDir.get(id)
 
-            val packFileName = "$id.pack.json"
-//    val packFile = packDir.resolve(packFileName)
             val lockFileName = "$id.lock.pack.json"
             val lockFile = rootDir.resolve(id).resolve(lockFileName)
 
             logger.info { "fullArgs: ${fullArgs.joinToString()}"}
             logger.info { "arguments: ${arguments}"}
             val funcs = mapOf<String, suspend Stopwatch.(Array<String>) -> Unit>(
-//                "import_debug" to { _ ->
-//                    Importer.flatten(nestedPack, targetFileName = packFileName)
-//                },
-//        "build_debug" to { args -> BuilderForDSL.build(packFile, rootDir, id, targetFileName = lockFileName, args = *args) },
                 "build" to { args ->
                     // TODO: only compile in this step
                     val scriptEnv = host.evalScript<MainScriptEnv>(
@@ -162,7 +156,6 @@ object Voodoo : KLogging() {
                     logger.info("finished")
                 },
                 "diff" to { _ ->
-
                     val changelogBuilder = initChangelogBuilder(
                         stopwatch = "initChangelogBuilder".watch, libs = libs, id = id, tomeDir = tomeDir, host = host
                     )

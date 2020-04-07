@@ -78,6 +78,9 @@ object PoetPack : KLogging() {
             entry.validMcVersions.takeIf { it != default.validMcVersions }?.let { validMcVersions ->
                 addStatement("validMcVersions = setOf(%L)", validMcVersions.joinToString { """"$it"""" })
             }
+            entry.invalidMcVersions.takeIf { it != default.invalidMcVersions }?.let { invalidMcVersions ->
+                addStatement("invalidMcVersions = setOf(%L)", invalidMcVersions.joinToString { """"$it"""" })
+            }
             entry.enabled.takeIf { it != default.enabled }?.let {
                 addStatement("enabled = %L", it)
             }
@@ -86,7 +89,7 @@ object PoetPack : KLogging() {
                     default as NestedEntry.Curse
                     entry.releaseTypes.takeIf { it != default.releaseTypes }?.let { curseReleaseTypes ->
                         val fileType = FileType::class.asClassName()
-                        val builder = CodeBlock.builder().add("RELEASE_TYPES = setOf(")
+                        val builder = CodeBlock.builder().add("releaseTypes = setOf(")
                         curseReleaseTypes.forEachIndexed { index, releaseType ->
                             if (index != 0) builder.add(", ")
                             builder.add("%T.%L", fileType, releaseType)
@@ -100,7 +103,7 @@ object PoetPack : KLogging() {
 //                        addStatement("curseProjectID = %T(%L)", ProjectID::class.asClassName(), it.value)
 //                    }
                     entry.fileID.takeIf { it != default.fileID }?.let {
-                        addStatement("curseFileID = %T(%L)", FileID::class.asClassName(), it.value)
+                        addStatement("fileID = %T(%L)", FileID::class.asClassName(), it.value)
                     }
                 }
                 is NestedEntry.Direct -> {
@@ -161,24 +164,24 @@ object PoetPack : KLogging() {
                         if (entryBody.isEmpty())
                             addStatement("+Mod.$identifier")
                         else
-                            beginControlFlow("+Mod.$identifier configure")
+                            beginControlFlow("+Mod.$identifier ")
                     }
                     else -> {
                         if (entryBody.isEmpty())
                             addStatement("+%S", entry.id)
                         else
-                            beginControlFlow("+%S configure", entry.id)
+                            beginControlFlow("+%S ", entry.id)
                     }
                 }
                 // provider changed
-                entry.provider != default.provider -> if (entryBody.isEmpty()) addStatement(
-                    "%T(%T)",
-                    ClassName("", "withProvider"),
-                    provider::class.asClassName()
+                entry::class.qualifiedName != default::class.qualifiedName -> if (entryBody.isEmpty()) addStatement(
+                    "%T(%L::class)",
+                    ClassName("", "withTypeClass"),
+                    entry::class.simpleName
                 ) else beginControlFlow(
-                    "%T(%T)",
-                    ClassName("", "withProvider"),
-                    provider::class.asClassName()
+                    "%T(%L::class)",
+                    ClassName("", "withTypeClass"),
+                    entry::class.simpleName
                 )
                 // everything else
                 else -> beginControlFlow("%T", ClassName("", "group"))
@@ -300,11 +303,10 @@ object PoetPack : KLogging() {
                 mainEnv.addStatement("localDir = %S", it)
             }
             val rootEntry = nestedPack.root
-            val provider = Providers[rootEntry.provider]
             mainEnv.controlFlow(
-                "%T(%T)",
+                "%T<%L>",
                 ClassName("", "root"),
-                provider::class.asClassName()
+                rootEntry::class.simpleName
             ) { rootBuilder ->
                 rootBuilder.entry(
                     rootEntry,

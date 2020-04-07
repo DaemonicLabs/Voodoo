@@ -6,6 +6,7 @@ import com.eyeem.watchadoin.Stopwatch
 import job
 import kotlinx.coroutines.runBlocking
 import list
+import optional
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.builder.Builder
@@ -13,8 +14,6 @@ import voodoo.data.Side
 import voodoo.data.curse.FileType
 import voodoo.data.lock.LockPack
 import voodoo.data.nested.NestedEntry
-import voodoo.provider.CurseProvider
-import voodoo.provider.JenkinsProvider
 import voodoo.script.MainScriptEnv
 import voodoo.util.json
 import java.io.File
@@ -57,21 +56,21 @@ object RoundTripSpek : Spek({
 
                         group {
                             side = Side.BOTH
-                            it.optional {
+                            optional {
                                 selected = false
                             }
                         }.list {
-                            +(Mod.laggoggles) configure {
+                            +(Mod.laggoggles) {
                                 description =
                                     "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                             }
 
-                            +(Mod.sampler) configure {
+                            +(Mod.sampler) {
                                 description =
                                     "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                             }
 
-                            +(Mod.openeye) configure {
+                            +(Mod.openeye) {
                                 description =
                                     "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
                             }

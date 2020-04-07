@@ -80,7 +80,7 @@ object GradleSetup : KLogging() {
                 generateCurseforgeMods("FabricMod", "1.15", "1.15.1", "1.15.2", categories = listOf("Fabric"))
                 generateCurseforgeTexturepacks("TexturePack", "1.12", "1.12.1", "1.12.2")
                 generateForge("Forge", "1.12.2")
-                generateFabric("Fabric", "1.15.2")
+                generateFabric("Fabric", stable = true)
             }
         """.trimIndent()
 

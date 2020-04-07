@@ -4,7 +4,9 @@ mcVersion = "1.12.2"
 title = "Center of the Multiverse"
 authors = listOf("AnsuzThuriaz", "Falkreon", "NikkyAi")
 version = "2.2.13-testing"
-forge = Forge_12_2.mc1_12_2.forge_14_23_5_2811
+modloader {
+    forge(Forge_12_2.mc1_12_2.forge_14_23_5_2811)
+}
 icon = rootDir.resolve("icon.png")
 pack {
     skcraft {
