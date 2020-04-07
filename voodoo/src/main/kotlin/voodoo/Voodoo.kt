@@ -38,12 +38,6 @@ import kotlin.system.exitProcess
 object Voodoo : KLogging() {
     @JvmStatic
     fun main(vararg fullArgs: String) {
-//        System.setProperty("LOGBACK_ID", fullArgs[1].substringBeforeLast(".voodoo.kts"))
-//        System.setProperty("LOGBACK_KEY",
-//            fullArgs.drop(1).chunkBy("-").joinToString("-") {
-//                it.joinToString ("_")
-//            }
-//        )
         val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
         rootLogger.level = Level.DEBUG // TODO: pass as -Dvoodoo.debug=true ?
         System.setProperty(DEBUG_PROPERTY_NAME, "on")
@@ -88,38 +82,24 @@ object Voodoo : KLogging() {
         }
         val rootDir = SharedFolders.RootDir.get().absoluteFile
 
-        val host = createJvmScriptingHost(cacheDir)
 
         val uploadDir = SharedFolders.UploadDir.get(id)
 
         val stopwatch = Stopwatch("main")
 
         val reportName = stopwatch {
+            val host = "createJvmScriptingHost".watch {
+                createJvmScriptingHost(cacheDir)
+            }
 
             val libs = rootDir.resolve("libs") // TODO: set from system property
             val tomeDir = SharedFolders.TomeDir.get()
             val docDir = SharedFolders.DocDir.get(id)
-            val tomeEnv = initTome(
-                stopwatch = "initTome".watch, libs = libs, host = host, tomeDir = tomeDir, docDir = docDir
-            )
-            logger.debug("tomeEnv: $tomeEnv")
-            val changelogBuilder = initChangelogBuilder(
-                stopwatch = "initChangelogBuilder".watch, libs = libs, id = id, tomeDir = tomeDir, host = host
-            )
-
-            val scriptEnv = host.evalScript<MainScriptEnv>(
-                stopwatch = "evalScript".watch,
-                libs = libs,
-                scriptFile = scriptFile,
-                args = *arrayOf(rootDir, id)
-            )
-
-            val nestedPack = scriptEnv.pack
 
             val packFileName = "$id.pack.json"
 //    val packFile = packDir.resolve(packFileName)
             val lockFileName = "$id.lock.pack.json"
-            val lockFile = scriptEnv.pack.sourceFolder.resolve(lockFileName)
+            val lockFile = rootDir.resolve(id).resolve(lockFileName)
 
             logger.info { "fullArgs: ${fullArgs.joinToString()}"}
             logger.info { "arguments: ${arguments}"}
@@ -129,6 +109,21 @@ object Voodoo : KLogging() {
 //                },
 //        "build_debug" to { args -> BuilderForDSL.build(packFile, rootDir, id, targetFileName = lockFileName, args = *args) },
                 "build" to { args ->
+                    // TODO: only compile in this step
+                    val scriptEnv = host.evalScript<MainScriptEnv>(
+                        stopwatch = "evalScript".watch,
+                        libs = libs,
+                        scriptFile = scriptFile,
+                        args = *arrayOf(rootDir, id)
+                    )
+
+                    val tomeEnv = initTome(
+                        stopwatch = "initTome".watch, libs = libs, host = host, tomeDir = tomeDir, docDir = docDir
+                    )
+                    logger.debug("tomeEnv: $tomeEnv")
+
+                    val nestedPack = scriptEnv.pack
+
                     val modpack = "flatten".watch {
                         Importer.flatten(this, nestedPack)
                     }
@@ -147,6 +142,9 @@ object Voodoo : KLogging() {
                     // TODO: generate full changelog between each version in order 0->1, 1->2, lastVersion->version
 
                     "diff".watch {
+                        val changelogBuilder = initChangelogBuilder(
+                            stopwatch = "initChangelogBuilder".watch, libs = libs, id = id, tomeDir = tomeDir, host = host
+                        )
                         try {
                             val diff = Diff.createDiff(
                                 stopwatch = "createDiff".watch,
@@ -164,6 +162,10 @@ object Voodoo : KLogging() {
                     logger.info("finished")
                 },
                 "diff" to { _ ->
+
+                    val changelogBuilder = initChangelogBuilder(
+                        stopwatch = "initChangelogBuilder".watch, libs = libs, id = id, tomeDir = tomeDir, host = host
+                    )
                     val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
                     val diff = Diff.createDiff(
                         stopwatch = "createDiff".watch,
@@ -277,7 +279,7 @@ object Voodoo : KLogging() {
         val tomeScripts = tomeDir.listFiles { file ->
             logger.debug("tome testing: $file")
             file.isFile && file.name.endsWith(".tome.kts")
-        }
+        }!!
 
         tomeScripts.forEach { scriptFile ->
             require(scriptFile.exists()) { "script file does not exists" }

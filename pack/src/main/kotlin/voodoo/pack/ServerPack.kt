@@ -46,10 +46,8 @@ object ServerPack : AbstractPack("server") {
 
         val sourceDir = modpack.sourceFolder // rootFolder.resolve(modpack.rootFolder).resolve(modpack.sourceDir)
         logger.info("mcDir: $sourceDir")
-        val targetSourceDir = output.resolve(modpack.sourceDir)
+        val targetSourceDir = output.resolve(modpack.id)
         if (sourceDir.exists()) {
-            modpack.sourceDir = targetSourceDir.name
-
             if (targetSourceDir.exists()) targetSourceDir.deleteRecursively()
             targetSourceDir.mkdirs()
 

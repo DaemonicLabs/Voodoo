@@ -33,8 +33,6 @@ data class LockPack(
     var packOptions: PackOptions = PackOptions()
 ) {
 
-    var sourceDir: String = id
-
     companion object : KLogging() {
 
         fun parseFiles(srcDir: File) = srcDir.walkTopDown()
@@ -60,7 +58,7 @@ data class LockPack(
 
     @Transient
     val sourceFolder: File
-        get() = rootDir.resolve(sourceDir)
+        get() = rootDir.resolve(id)
     @Transient
     val localFolder: File
         get() = rootDir.resolve(localDir)
@@ -73,10 +71,9 @@ data class LockPack(
 
     fun loadEntries(rootFolder: File = rootDir) {
         this.rootDir = rootFolder
-        val srcDir = rootFolder.resolve(sourceDir)
-        LockPack.parseFiles(srcDir)
+        LockPack.parseFiles(sourceFolder)
             .forEach { (lockEntry, file) ->
-                val relFile = file.relativeTo(srcDir)
+                val relFile = file.relativeTo(sourceFolder)
                 lockEntry.folder = relFile.parentFile
                 lockEntry.parent = this
                 addOrMerge(lockEntry) { _, newEntry -> newEntry }

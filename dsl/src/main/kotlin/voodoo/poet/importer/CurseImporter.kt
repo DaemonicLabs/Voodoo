@@ -131,8 +131,6 @@ object CurseImporter : AbstractImporter() {
                 }
             }
 
-            sourceDir = source
-            sourceDir = source
             localDir = local
             root<NestedEntry.Curse> {
                 builder ->

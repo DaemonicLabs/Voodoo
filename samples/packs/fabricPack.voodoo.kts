@@ -14,6 +14,7 @@ pack {
     multimc {
         // path t the published modpack definition (not sk always)
         skPackUrl = "https://nikky.moe/.mc/experimental/fabricpack.json"
+        selfupdateUrl = ""
     }
     experimental {
 

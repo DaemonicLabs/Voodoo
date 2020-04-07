@@ -15,6 +15,9 @@ voodoo {
     addTask(name = "pack_sk") {
         pack().sklauncher()
     }
+    addTask(name = "pack_mmc-exp") {
+        pack().multimc()
+    }
     addTask(name = "pack_mmc-sk") {
         pack().multimcSk()
     }

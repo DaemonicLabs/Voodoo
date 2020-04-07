@@ -42,7 +42,7 @@ import kotlin.system.exitProcess
 object MMCUtil : KLogging() {
     private val directories = Directories.get(moduleName = "multimc")
     private val cacheHome = directories.cacheHome
-    private val configHome = Directories.get().configHome
+    private val configHome = directories.configHome
 
     @Serializable
     data class MMCConfiguration(

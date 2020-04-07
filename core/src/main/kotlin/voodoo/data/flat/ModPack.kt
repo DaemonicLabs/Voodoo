@@ -36,7 +36,6 @@ data class ModPack(
     var modloader: ModloaderPattern? = null,
     val launch: LaunchModifier = LaunchModifier(),
     var localDir: String = "local",
-    var sourceDir: String = id,
     var docDir: String = id,
     var packOptions: PackOptions = PackOptions()
 ) {
@@ -44,7 +43,7 @@ data class ModPack(
 
     @Transient
     val sourceFolder: File
-        get() = rootDir.resolve(sourceDir)
+        get() = rootDir.resolve(id)
     @Transient
     val localFolder: File
         get() = rootDir.resolve(localDir)
@@ -90,7 +89,7 @@ data class ModPack(
 
     // TODO: call from LockPack ?
     fun loadLockEntries(folder: File = rootDir) {
-        val srcDir = folder.resolve(sourceDir)
+        val srcDir = folder.resolve(id)
         LockPack.parseFiles(srcDir)
             .forEach { (lockEntry, file) ->
                 val relFile = file.relativeTo(srcDir)
@@ -121,7 +120,6 @@ data class ModPack(
             packOptions = packOptions
         ).also {
             it.rootDir = rootDir
-            it.sourceDir = sourceDir
 
             it.entrySet.clear()
             it.entrySet += lockEntrySet

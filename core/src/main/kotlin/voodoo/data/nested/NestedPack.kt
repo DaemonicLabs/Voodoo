@@ -36,7 +36,6 @@ internal constructor(
     var modloader: ModloaderPattern? = null,
     var launch: LaunchModifier = LaunchModifier(),
     var localDir: String = "local",
-    var sourceDir: String = id,
     var docDir: String = id,
     var packOptions: PackOptions = PackOptions(),
     var root: NestedEntry = NestedEntry.Common()
@@ -60,7 +59,7 @@ internal constructor(
 
     @Transient
     val sourceFolder: File
-        get() = rootDir.resolve(sourceDir)
+        get() = rootDir.resolve(id)
     @Transient
     val localFolder: File
         get() = rootDir.resolve(localDir)
@@ -78,7 +77,6 @@ internal constructor(
             modloader = modloader,
             launch = launch,
             localDir = localDir,
-            sourceDir = sourceDir,
             docDir = docDir,
             packOptions = packOptions
         ).also {

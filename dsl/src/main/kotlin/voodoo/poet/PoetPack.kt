@@ -299,9 +299,6 @@ object PoetPack : KLogging() {
             nestedPack.localDir.takeIf { it != default.localDir }?.let {
                 mainEnv.addStatement("localDir = %S", it)
             }
-            nestedPack.sourceDir.takeIf { it != default.sourceDir }?.let {
-                mainEnv.addStatement("sourceDir = %S", it)
-            }
             val rootEntry = nestedPack.root
             val provider = Providers[rootEntry.provider]
             mainEnv.controlFlow(

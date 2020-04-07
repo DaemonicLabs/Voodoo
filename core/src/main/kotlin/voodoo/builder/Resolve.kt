@@ -31,7 +31,7 @@ suspend fun resolve(
         modPack.loadLockEntries()
     }
 
-    val srcDir = modPack.rootDir.resolve(modPack.sourceDir)
+    val srcDir = modPack.sourceFolder
 
     if (!noUpdate) {
         modPack.lockEntrySet.clear()
