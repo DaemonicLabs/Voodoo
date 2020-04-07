@@ -66,8 +66,7 @@ object GradleSetup : KLogging() {
                 addTask(name = "test_mmc") {
                     test().multimc()
                 }
-                addTask(name = "buildAndPackAll") {
-                    build()
+                addTask(name = "packAll") {
                     pack().sklauncher()
                     pack().server()
                     pack().multimcSk()
