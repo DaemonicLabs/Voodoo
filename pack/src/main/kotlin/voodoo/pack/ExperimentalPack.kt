@@ -44,7 +44,7 @@ object ExperimentalPack : AbstractPack("experimental") {
         clean: Boolean
     ) = stopwatch {
         val cacheDir = directories.cacheHome
-        val workspaceDir = modpack.rootDir.resolve("build").resolve("experimental_workspace").absoluteFile
+        val workspaceDir = modpack.rootFolder.resolve("build").resolve("experimental_workspace").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.id)
 
         val skSrcFolder = modpackDir.resolve("src")

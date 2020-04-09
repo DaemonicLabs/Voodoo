@@ -113,7 +113,7 @@ object CurseImporter : AbstractImporter() {
 //            .find { it.id.startsWith("forge-") }?.id?.substringAfterLast('.')
 
         val scriptEnv = MainScriptEnv(
-            rootDir = rootDir,
+            rootFolder = rootDir,
             id = modpackId
         ).apply {
             mcVersion = manifest.minecraft.version

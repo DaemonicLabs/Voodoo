@@ -139,6 +139,7 @@ object PackageBuilder : KLogging() {
             file.name.endsWith(INFO_FILE_SUFFIX)
                     || file.name.endsWith(URL_FILE_SUFFIX)
 //                    || (file.isDirectory && (file.name == "_SERVER" || file.name == "_CLIENT"))
+                    || file.name == ".DS_Store"
                     || !file.isFile
         }.map { file ->
             // when this is a special file, skip

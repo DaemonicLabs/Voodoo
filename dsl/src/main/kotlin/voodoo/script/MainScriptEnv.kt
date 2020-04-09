@@ -12,9 +12,9 @@ import kotlin.script.experimental.annotations.KotlinScript
     compilationConfiguration = MainScriptEnvConfiguration::class
 )
 open class MainScriptEnv(
-    val rootDir: File,
+    val rootFolder: File,
     val id: String
 ) : ModpackBuilder(NestedPack.create(
-    rootDir = rootDir,
+    rootFolder = rootFolder,
     id = id
 ))

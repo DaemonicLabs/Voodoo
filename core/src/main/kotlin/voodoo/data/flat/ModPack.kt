@@ -19,7 +19,7 @@ import voodoo.util.unixPath
 //@Serializable
 data class ModPack(
 //    @Serializable(with = FileSerializer::class)
-    var rootDir: File,
+    var rootFolder: File,
     /**
      * unique identifier
      */
@@ -43,10 +43,10 @@ data class ModPack(
 
     @Transient
     val sourceFolder: File
-        get() = rootDir.resolve(id)
+        get() = rootFolder.resolve(id)
     @Transient
     val localFolder: File
-        get() = rootDir.resolve(localDir)
+        get() = rootFolder.resolve(localDir)
 
     // we want this to be serialized for debugging purposes ?
     val entrySet: MutableSet<Entry> = Collections.synchronizedSet(mutableSetOf())
@@ -88,7 +88,7 @@ data class ModPack(
     }
 
     // TODO: call from LockPack ?
-    fun loadLockEntries(folder: File = rootDir) {
+    fun loadLockEntries(folder: File = rootFolder) {
         val srcDir = folder.resolve(id)
         LockPack.parseFiles(srcDir)
             .forEach { (lockEntry, file) ->
@@ -111,7 +111,7 @@ data class ModPack(
             id = id,
             title = title,
             version = version,
-            icon = icon.absoluteFile.relativeTo(rootDir).unixPath,
+            icon = icon.absoluteFile.relativeTo(rootFolder).unixPath,
             authors = authors,
             mcVersion = mcVersion,
             modloader = modloader?.lock() ?: Modloader.None,
@@ -119,7 +119,7 @@ data class ModPack(
             localDir = localDir,
             packOptions = packOptions
         ).also {
-            it.rootDir = rootDir
+            it.rootFolder = rootFolder
 
             it.entrySet.clear()
             it.entrySet += lockEntrySet

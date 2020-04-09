@@ -3,7 +3,6 @@ package voodoo.data.nested
 import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.Transient
 import mu.KLogging
-import Modloader
 import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
 import voodoo.data.flat.ModPack
@@ -15,7 +14,7 @@ import java.io.File
  */
 data class NestedPack
 internal constructor(
-    val rootDir: File,
+    val rootFolder: File,
     /**
      * unique identifier
      */
@@ -29,7 +28,7 @@ internal constructor(
      */
     var title: String? = null,
     var version: String = "1.0",
-    var icon: File = rootDir.resolve("icon.png"),
+    var icon: File = rootFolder.resolve("icon.png"),
     var authors: List<String> = emptyList(),
     @Deprecated("use modloader field instead")
     var forge: String? = null, // TODO: replace with generic modloader info
@@ -41,9 +40,9 @@ internal constructor(
     var root: NestedEntry = NestedEntry.Common()
 ) {
     companion object : KLogging() {
-        fun create(rootDir: File, id: String, builder: (NestedPack) -> Unit = {}): NestedPack {
+        fun create(rootFolder: File, id: String, builder: (NestedPack) -> Unit = {}): NestedPack {
             val pack = NestedPack(
-                rootDir = rootDir,
+                rootFolder = rootFolder,
                 id = id
             )
             builder(pack)
@@ -52,22 +51,22 @@ internal constructor(
     }
 
     init {
-        if (!rootDir.isAbsolute) {
-            throw IllegalStateException("rootDir: '$rootDir' is not absolute")
+        if (!rootFolder.isAbsolute) {
+            throw IllegalStateException("rootDir: '$rootFolder' is not absolute")
         }
     }
 
     @Transient
     val sourceFolder: File
-        get() = rootDir.resolve(id)
+        get() = rootFolder.resolve(id)
     @Transient
     val localFolder: File
-        get() = rootDir.resolve(localDir)
+        get() = rootFolder.resolve(localDir)
 
     // TODO: possibly this flattening step will not be necessary
     suspend fun flatten(): ModPack {
         return ModPack(
-            rootDir = rootDir,
+            rootFolder = rootFolder,
             id = id,
             mcVersion = mcVersion ?: throw IllegalStateException("mcVersion must be set for pack '$id'"),
             title = title,

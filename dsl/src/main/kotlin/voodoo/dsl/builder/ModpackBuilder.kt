@@ -22,6 +22,7 @@ open class ModpackBuilder(
     var launch by property(pack::launch)
     val root by readOnly(pack::root)
     var localDir by property(pack::localDir)
+    val sourceFolder by readOnly(pack::sourceFolder)
 
     @Deprecated("use modloader { forge(forgeVersion) } function instead", ReplaceWith("modloader {\n    forge(version = value)\n}"), level = DeprecationLevel.ERROR)
     var forge: String

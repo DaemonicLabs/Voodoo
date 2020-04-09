@@ -49,7 +49,7 @@ object SKPack : AbstractPack("sk") {
         clean: Boolean
     ) = stopwatch {
         val cacheDir = directories.cacheHome
-        val workspaceDir = modpack.rootDir.resolve("build").resolve("workspace").absoluteFile
+        val workspaceDir = modpack.rootFolder.resolve("build").resolve("workspace").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.id)
 
         val skSrcFolder = modpackDir.resolve("src")

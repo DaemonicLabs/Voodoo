@@ -46,31 +46,31 @@ data class LockPack(
                 throw IllegalStateException("rootDir: '$rootDir' is not absolute")
             }
             val lockpack: LockPack = json.parse(LockPack.serializer(), packFile.readText())
-            lockpack.rootDir = rootDir
+            lockpack.rootFolder = rootDir
             lockpack.loadEntries()
             return lockpack
         }
     }
 
     @Transient
-    lateinit var rootDir: File
+    lateinit var rootFolder: File
 //        private set
 
     @Transient
     val sourceFolder: File
-        get() = rootDir.resolve(id)
+        get() = rootFolder.resolve(id)
     @Transient
     val localFolder: File
-        get() = rootDir.resolve(localDir)
+        get() = rootFolder.resolve(localDir)
     @Transient
     val iconFile: File
-        get() = rootDir.resolve(icon)
+        get() = rootFolder.resolve(icon)
 
     @Transient
     val entrySet: MutableSet<LockEntry> = mutableSetOf()
 
-    fun loadEntries(rootFolder: File = rootDir) {
-        this.rootDir = rootFolder
+    fun loadEntries(rootFolder: File = this.rootFolder) {
+        this.rootFolder = rootFolder
         LockPack.parseFiles(sourceFolder)
             .forEach { (lockEntry, file) ->
                 val relFile = file.relativeTo(sourceFolder)
@@ -192,7 +192,7 @@ data class LockPack(
         }
         reports += "Authors" to authors.joinToString(", ")
         iconFile.takeIf { it.exists() }?.let {
-            reports += "Icon" to "<img src=\"${it.relativeTo(rootDir).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
+            reports += "Icon" to "<img src=\"${it.relativeTo(rootFolder).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
         }
 
         return reports

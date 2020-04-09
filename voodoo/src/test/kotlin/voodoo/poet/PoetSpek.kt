@@ -17,7 +17,7 @@ object PoetSpek : Spek({
             }
         }
         val scriptEnv by memoized {
-            MainScriptEnv(rootDir = rootFolder, id = "new-pack").apply {
+            MainScriptEnv(rootFolder = rootFolder, id = "new-pack").apply {
                 mcVersion = "1.12.2"
                 authors = listOf("blarb something", "nikky")
                 root<NestedEntry.Curse> {

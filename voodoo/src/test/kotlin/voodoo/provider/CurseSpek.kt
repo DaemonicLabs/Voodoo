@@ -25,7 +25,7 @@ object CurseSpek : Spek({
         }
 
         val scriptEnv by memoized {
-            MainScriptEnv(rootDir = rootFolder, id = "curse_spek").apply {
+            MainScriptEnv(rootFolder = rootFolder, id = "curse_spek").apply {
                 mcVersion = "1.12.2"
                 title = "Curse Spek"
                 root<NestedEntry.Curse> { builder ->

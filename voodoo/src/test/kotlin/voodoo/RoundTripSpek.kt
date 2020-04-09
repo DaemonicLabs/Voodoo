@@ -29,7 +29,7 @@ object RoundTripSpek : Spek({
         }
 
         val scriptEnv by memoized {
-            MainScriptEnv(rootDir = rootFolder, id = "some-id").apply {
+            MainScriptEnv(rootFolder = rootFolder, id = "some-id").apply {
                 mcVersion = "1.12.2"
                 version = "1.0"
                 icon = rootFolder.resolve("icon.png")
@@ -95,7 +95,7 @@ object RoundTripSpek : Spek({
             val jsonText = json.stringify(LockPack.serializer(), lockpack)
             println(jsonText)
             val parsedLockPack = json.parse(LockPack.serializer(), jsonText)
-            parsedLockPack.rootDir = rootFolder
+            parsedLockPack.rootFolder = rootFolder
             println(lockpack)
             println(parsedLockPack)
             assertEquals(lockpack, parsedLockPack)

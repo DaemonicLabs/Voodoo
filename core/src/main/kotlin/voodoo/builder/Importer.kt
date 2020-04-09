@@ -11,7 +11,7 @@ object Importer : KLogging() {
         stopwatch: Stopwatch,
         nestedPack: NestedPack
     ): ModPack = stopwatch {
-        val targetFolder = nestedPack.rootDir
+        val targetFolder = nestedPack.rootFolder
         targetFolder.walkTopDown().asSequence()
             .filter {
                 it.isFile && it.name.endsWith(".entry.json")

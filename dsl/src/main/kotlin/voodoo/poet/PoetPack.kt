@@ -215,7 +215,7 @@ object PoetPack : KLogging() {
     ) {
         Thread.currentThread().contextClassLoader = PoetPack::class.java.classLoader
         val mainEnv = CodeBlock.builder().let { mainEnv ->
-            val default = MainScriptEnv(rootDir = nestedPack.rootDir, id = nestedPack.id).apply {
+            val default = MainScriptEnv(rootFolder = nestedPack.rootFolder, id = nestedPack.id).apply {
                 mcVersion = nestedPack.mcVersion
             }
             nestedPack.mcVersion.let {
@@ -228,7 +228,7 @@ object PoetPack : KLogging() {
                 mainEnv.addStatement("version = %S", it)
             }
             nestedPack.icon.takeIf { it != default.icon }?.let {
-                mainEnv.addStatement("icon = rootDir.resolve(%S)", it.relativeTo(nestedPack.rootDir).path)
+                mainEnv.addStatement("icon = rootDir.resolve(%S)", it.relativeTo(nestedPack.rootFolder).path)
             }
             nestedPack.authors.takeIf { it != default.authors }?.let { authors ->
                 mainEnv.addStatement("authors = listOf(%L)", authors.joinToString { """"$it"""" })

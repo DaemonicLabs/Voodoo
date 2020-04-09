@@ -60,7 +60,7 @@ open class CreatePackTask : DefaultTask() {
 //        }
 
         val scriptEnv = MainScriptEnv(
-            rootDir = rootDir,
+            rootFolder = rootDir,
             id = id ?: throw GradleException("id was null")
         ).apply {
             mcVersion = this@CreatePackTask.mcVersion ?: throw GradleException("mcVersion was null")
