@@ -41,12 +41,12 @@ data class LockPack(
             }
             .map { LockEntry.loadEntry(it, srcDir) to it }
 
-        fun parse(packFile: File, rootDir: File): LockPack {
-            if (!rootDir.isAbsolute) {
-                throw IllegalStateException("rootDir: '$rootDir' is not absolute")
+        fun parse(packFile: File, rootFolder: File): LockPack {
+            if (!rootFolder.isAbsolute) {
+                throw IllegalStateException("rootFolder: '$rootFolder' is not absolute")
             }
             val lockpack: LockPack = json.parse(LockPack.serializer(), packFile.readText())
-            lockpack.rootFolder = rootDir
+            lockpack.rootFolder = rootFolder
             lockpack.loadEntries()
             return lockpack
         }

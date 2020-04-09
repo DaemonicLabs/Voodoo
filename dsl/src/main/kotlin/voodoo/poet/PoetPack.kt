@@ -228,7 +228,7 @@ object PoetPack : KLogging() {
                 mainEnv.addStatement("version = %S", it)
             }
             nestedPack.icon.takeIf { it != default.icon }?.let {
-                mainEnv.addStatement("icon = rootDir.resolve(%S)", it.relativeTo(nestedPack.rootFolder).path)
+                mainEnv.addStatement("icon = rootFolder.resolve(%S)", it.relativeTo(nestedPack.rootFolder).path)
             }
             nestedPack.authors.takeIf { it != default.authors }?.let { authors ->
                 mainEnv.addStatement("authors = listOf(%L)", authors.joinToString { """"$it"""" })

@@ -52,7 +52,7 @@ internal constructor(
 
     init {
         if (!rootFolder.isAbsolute) {
-            throw IllegalStateException("rootDir: '$rootFolder' is not absolute")
+            throw IllegalStateException("rootFolder: '$rootFolder' is not absolute")
         }
     }
 

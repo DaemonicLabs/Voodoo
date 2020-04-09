@@ -1,9 +1,7 @@
 package voodoo.changelog
 
-import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.data.lock.LockPack
-import voodoo.forge.ForgeUtil
 import voodoo.markdownTable
 import voodoo.provider.Providers
 import voodoo.util.json
@@ -11,8 +9,6 @@ import voodoo.util.unixPath
 import java.io.File
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
 
 val LockPack.authorsString: String
     get() = authors.joinToString(", ")

@@ -35,7 +35,7 @@ object CurseImporter : AbstractImporter() {
     suspend fun import(
         modpackId: String,
         sourceUrl: String,
-        rootDir: File,
+        rootFolder: File,
         packsDir: File
     ) {
 //        Thread.currentThread().contextClassLoader = CurseImporter::class.java.classLoader
@@ -66,7 +66,7 @@ object CurseImporter : AbstractImporter() {
 
         val source = modpackId
         val local = "local"
-        val sourceFolder = rootDir.resolve(source)
+        val sourceFolder = rootFolder.resolve(source)
         sourceFolder.deleteRecursively()
         sourceFolder.mkdirs()
 
@@ -113,7 +113,7 @@ object CurseImporter : AbstractImporter() {
 //            .find { it.id.startsWith("forge-") }?.id?.substringAfterLast('.')
 
         val scriptEnv = MainScriptEnv(
-            rootFolder = rootDir,
+            rootFolder = rootFolder,
             id = modpackId
         ).apply {
             mcVersion = manifest.minecraft.version
@@ -145,7 +145,7 @@ object CurseImporter : AbstractImporter() {
                     val modsFolder = sourceFolder.resolve("mods")
                     if (modsFolder.exists()) {
                         withType<NestedEntry.Local>().list {
-                            val localFolder = rootDir.resolve(local)
+                            val localFolder = rootFolder.resolve(local)
                             this@CurseImporter.logger.info("listing $modsFolder")
                             modsFolder.listFiles { file ->
                                 this@CurseImporter.logger.debug("testing $file")

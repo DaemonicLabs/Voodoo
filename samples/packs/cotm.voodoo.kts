@@ -7,7 +7,7 @@ version = "2.2.13-testing"
 modloader {
     forge(Forge_12_2.mc1_12_2.forge_14_23_5_2811)
 }
-icon = rootDir.resolve("icon.png")
+icon = rootFolder.resolve("icon.png")
 pack {
     skcraft {
         userFiles = UserFiles(

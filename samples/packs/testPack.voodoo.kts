@@ -9,7 +9,7 @@
 
 mcVersion = "1.12.2"
 version = "1.1.2"
-icon = rootDir.resolve("icon.png")
+icon = rootFolder.resolve("icon.png")
 authors = listOf("NikkyAi")
 forge = Forge_12_2.mc1_12_2_recommended
 

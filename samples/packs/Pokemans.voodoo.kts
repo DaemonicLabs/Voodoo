@@ -8,7 +8,7 @@ import com.skcraft.launcher.model.modpack.Recommendation
 mcVersion = "1.12.2"
 title = "Pokemans Reloaded"
 version = "1.1"
-icon = rootDir.resolve("icon.png")
+icon = rootFolder.resolve("icon.png")
 authors = listOf("capitalthree", "NikkyAi")
 modloader {
     forge(Forge_12_2.mc1_12_2_recommended)

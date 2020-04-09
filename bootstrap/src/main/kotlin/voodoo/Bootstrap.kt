@@ -106,7 +106,7 @@ object Bootstrap {
         println("Downloading the $artifact binary...")
         val file = try {
             download().apply {
-                assert(exists()) { "downloaded files does not seem to exist" }
+                require(exists()) { "downloaded files does not seem to exist" }
                 copyTo(lastFile, overwrite = true)
             }
         } catch (e: IOException) {
@@ -144,17 +144,30 @@ object Bootstrap {
         classifier: String? = null,
         extension: String = "jar",
         outputDir: File,
-        outputFile: File? = null,
-        checkMd5: Boolean = true
+        outputFile: File? = null
     ): File {
-        val groupPath = group.split("\\.".toRegex()).joinToString("/")
-
-//        val jarUrl = "http://maven.modmuss50.me/moe/nikky/voodoo/voodoo/0.4.8-3/voodoo-0.4.8-3.jar"
+        val groupPath = group.replace('.', '/')
 
         val classifierSuffix = classifier?.let { "-$it"} ?: ""
         val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$version$classifierSuffix.$extension"
         val tmpFile = File(outputDir, "$artifactId-$version$classifierSuffix.$extension.tmp")
         val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
+
+        val md5 = URL("$artifactUrl.md5").openStream().bufferedReader().use { bis ->
+            bis.lines().collect(Collectors.joining(System.lineSeparator()))
+        }
+
+        if(targetFile.exists()) {
+            val md = MessageDigest.getInstance("MD5")
+            md.update(targetFile.readBytes())
+            val digest = md.digest()
+            val fileMd5 = DatatypeConverter.printHexBinary(digest) // DigestUtils.md5Hex(tmpFile.inputStream())
+            if(fileMd5.toLowerCase() == md5.toLowerCase()) {
+                println("cached file matched md5 hash")
+                return targetFile
+            }
+        }
+
         run {
             val url = URL(artifactUrl)
             url.openStream().buffered().use { bis ->
@@ -169,12 +182,7 @@ object Bootstrap {
         }
 
 
-        if(checkMd5) {
-            val md5Url = "$artifactUrl.md5"
-            val url = URL(md5Url)
-            val md5 = url.openStream().bufferedReader().use { bis ->
-                bis.lines().collect(Collectors.joining(System.lineSeparator()))
-            }
+        run {
             val md = MessageDigest.getInstance("MD5")
             md.update(tmpFile.readBytes())
             val digest = md.digest()

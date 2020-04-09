@@ -43,7 +43,7 @@ object Install : KLogging() {
                 // TODO: load proper rootDir
                 val modpack = LockPack.parse(
                     packFile = packFile,
-                    rootDir = packFile.parentFile.parentFile
+                    rootFolder = packFile.parentFile.parentFile
                 )
 
                 Server.install("install".watch, modpack, targetDir, skipForge, clean, cleanConfig)
