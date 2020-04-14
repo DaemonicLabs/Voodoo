@@ -4,6 +4,7 @@ import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import mu.KLogging
 import voodoo.data.DependencyType
+import voodoo.data.EntryReportData
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import java.io.File
@@ -75,27 +76,27 @@ abstract class ProviderBase(
         return null
     }
 
-    open fun reportData(entry: LockEntry): MutableList<Pair<String, String>> {
-        return mutableListOf(
-            Pair("ID", "${entry.id}")
-        ).also { list ->
-            list += Pair("Version", "${entry.version()}")
-            list += Pair("Provider", "${entry.provider}")
+    open fun reportData(entry: LockEntry): MutableMap<EntryReportData, String> {
+        return mutableMapOf(
+            EntryReportData.ID to entry.id
+        ).also { data ->
+            data[EntryReportData.VERSION] = entry.version()
+            data[EntryReportData.PROVIDER] = entry.provider
             entry.fileName?.let { fileName ->
-                list += Pair("Filename", "$fileName")
+                data[EntryReportData.FILE_NAME] = fileName
             }
-            list += Pair("Side", "${entry.side}")
+            data[EntryReportData.SIDE] = "${entry.side}"
             entry.description?.let {
-                list += Pair("Description", "$it")
+                data[EntryReportData.DESCRIPTION] = it
             }
-            list += Pair("Optional", "${entry.optional}")
+            data[EntryReportData.OPTIONAL] = "${entry.optional}"
             entry.dependencies.takeIf { it.isNotEmpty() }?.let { dependencies ->
 
                 dependencies[DependencyType.REQUIRED]?.takeIf { it.isNotEmpty() }?.let { required ->
-                    list += Pair("Required Dependencies", required.joinToString(", "))
+                    data[EntryReportData.DEPENDENCIES_REQUIRED] = required.sorted().joinToString(", ")
                 }
-                dependencies[DependencyType.OPTIONAL]?.takeIf { it.isNotEmpty() }?.let { required ->
-                    list += Pair("Optional Dependencies", required.joinToString(", "))
+                dependencies[DependencyType.OPTIONAL]?.takeIf { it.isNotEmpty() }?.let { optional ->
+                    data[EntryReportData.DEPENDENCIES_OPTIONAL] = optional.sorted().joinToString(", ")
                 }
 //                dependencies[DependencyType.EmbeddedLibrary]?.takeIf { it.isNotEmpty() }?.let { required ->
 //                    list += Triple("dependencies_embedded", "Embedded Dependencies", required.joinToString(", ", "", ""))

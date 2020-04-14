@@ -42,6 +42,10 @@ open class VoodooExtension(project: Project) {
         SharedFolders.RootDir.resolver = resolver
     }
 
+    fun gitRoot(resolver: (rootDir: File) -> File) {
+        SharedFolders.GitRoot.resolver = resolver
+    }
+
     fun packDirectory(resolver: (rootDir: File) -> File) {
         SharedFolders.PackDir.resolver = resolver
     }

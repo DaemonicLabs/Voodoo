@@ -2,6 +2,7 @@ package voodoo.provider
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
+import voodoo.data.EntryReportData
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import voodoo.util.download
@@ -53,10 +54,11 @@ object DirectProvider : ProviderBase("Direct Provider") {
         return entry.url.substringBeforeLast('.').substringAfterLast('/')
     }
 
-    override fun reportData(entry: LockEntry): MutableList<Pair<String, String>> {
+    override fun reportData(entry: LockEntry): MutableMap<EntryReportData, String> {
         entry as LockEntry.Direct
-        val data = super.reportData(entry)
-        data += "Url" to entry.url
-        return data
+        return super.reportData(entry).also { data ->
+            data[EntryReportData.FILE_NAME] = entry.fileName ?: entry.url.substringAfterLast('/')
+            data[EntryReportData.DIRECT_URL] = entry.url
+        }
     }
 }

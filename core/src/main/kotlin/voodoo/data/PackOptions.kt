@@ -23,8 +23,10 @@ data class PackOptions(
 
     @Serializable data class MultiMC(
         var skPackUrl: String? = null,
-        var selfupdateUrl: String? = null
+        var selfupdateUrl: String? = null,
+        var instanceCfg: List<Pair<String, String>> = listOf()
     )
+
     @Serializable data class SKCraft(
         var userFiles: UserFiles = UserFiles(),
         var server: SKServer? = null,

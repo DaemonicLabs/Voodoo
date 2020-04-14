@@ -45,7 +45,7 @@ open class VoodooPlugin : Plugin<Project> {
 //                }
 // //                dependsOn(poet)
 //            }
-            val generatedSrcDir = SharedFolders.GeneratedSrcShared.get()
+            val generatedSharedSrcDir = SharedFolders.GeneratedSrcShared.get()
 
             extensions.configure<JavaPluginExtension> {
                 sourceCompatibility = JavaVersion.VERSION_1_8
@@ -149,13 +149,13 @@ open class VoodooPlugin : Plugin<Project> {
 //                val runtimeClasspath = maybeCreate("main").runtimeClasspath
                 extensions.configure<KotlinJvmProjectExtension> {
                     sourceSets.maybeCreate("main").kotlin.apply {
-                        srcDir(generatedSrcDir)
+                        srcDir(generatedSharedSrcDir)
                     }
                 }
 
                 extensions.configure<IdeaModel> {
                     module {
-                        generatedSourceDirs.add(generatedSrcDir)
+                        generatedSourceDirs.add(generatedSharedSrcDir)
                     }
                 }
 
@@ -167,7 +167,7 @@ open class VoodooPlugin : Plugin<Project> {
 //                        outputs.cacheIf { true }
                         dependsOn(downloadVoodoo)
                         doLast {
-                            generatedSrcDir.mkdirs()
+                            generatedSharedSrcDir.mkdirs()
                             val generatedFile = runBlocking {
                                 Poet.generateCurseforge(
                                     name = generator.name,
@@ -177,7 +177,7 @@ open class VoodooPlugin : Plugin<Project> {
                                         categories = generator.categories
                                     ),
                                     slugSanitizer = generator.slugSanitizer,
-                                    folder = generatedSrcDir,
+                                    folder = generatedSharedSrcDir,
                                     section = generator.section,
                                     gameVersions = generator.mcVersions.toList()
                                 )
@@ -194,12 +194,12 @@ open class VoodooPlugin : Plugin<Project> {
 //                        outputs.cacheIf { true }
                         dependsOn(downloadVoodoo)
                         doLast {
-                            generatedSrcDir.mkdirs()
+                            generatedSharedSrcDir.mkdirs()
                             val generatedFile = runBlocking {
                                 Poet.generateForge(
                                     name = generator.name,
                                     mcVersionFilters = generator.mcVersions.toList(),
-                                    folder = generatedSrcDir
+                                    folder = generatedSharedSrcDir
                                 )
                             }
                             logger.lifecycle("generated: $generatedFile")
@@ -215,13 +215,13 @@ open class VoodooPlugin : Plugin<Project> {
 //                        outputs.cacheIf { true }
                         dependsOn(downloadVoodoo)
                         doLast {
-                            generatedSrcDir.mkdirs()
+                            generatedSharedSrcDir.mkdirs()
                             val generatedFile = runBlocking {
                                 Poet.generateFabric(
                                     name = generator.name,
                                     mcVersionFilters = generator.mcVersions.toList(),
                                     stable = generator.stable,
-                                    folder = generatedSrcDir
+                                    folder = generatedSharedSrcDir
                                 )
                             }
                             logger.lifecycle("generated: $generatedFile")

@@ -1,7 +1,9 @@
+import voodoo.data.EntryReportData
+
 builder = object : ChangelogBuilder() {
-    override fun updatedEntry(id: String, newMetaInfo: Map<String, String>, oldMetaInfo: Map<String, String>): String? {
+    override fun updatedEntry(id: String, newMetaInfo: Map<EntryReportData, String>, oldMetaInfo: Map<EntryReportData, String>): String? {
         logger.debug { "TEST updated: $id" }
-        return diffTable(newMetaInfo = newMetaInfo, oldMetaInfo = oldMetaInfo)
+        return diffTableEntry(newMetaInfo = newMetaInfo, oldMetaInfo = oldMetaInfo)
             ?.let { t ->
                 buildString {
                     appendln("changed $id")

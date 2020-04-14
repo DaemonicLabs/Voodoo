@@ -1,13 +1,20 @@
 plugins {
 //    kotlin("scripting") version "1.3.70"
-    id("voodoo") version "0.5.0-dev"
+    id("voodoo") version "0.5.1-dev"
 }
 
 voodoo {
+    gitRoot {
+        rootDir.parentFile
+    }
+
 //    buildLocal = true
 //    localVoodooProjectLocation = rootDir.parentFile
     addTask("build") {
         build()
+    }
+    addTask("changelog") {
+        changelog()
     }
     addTask(name = "pack_experimental") {
         pack().experimental()
@@ -16,7 +23,7 @@ voodoo {
         pack().sklauncher()
     }
     addTask(name = "pack_mmc-exp") {
-        pack().multimc()
+        pack().multimcExperimental()
     }
     addTask(name = "pack_mmc-sk") {
         pack().multimcSk()
@@ -67,8 +74,8 @@ repositories {
 }
 
 dependencies {
-//    kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "0.5.0-dev")
-//    kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "0.5.0-dev")
-//    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.5.0-dev")
-//    implementation(group = "moe.nikky.voodoo", name = "dsl", version = "0.5.0-dev")
+//    kotlinScriptDef(group = "moe.nikky.voodoo", name = "voodoo", version = "0.5.1-dev")
+//    kotlinScriptDef(group = "moe.nikky.voodoo", name = "dsl", version = "0.5.1-dev")
+//    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.5.1-dev")
+//    implementation(group = "moe.nikky.voodoo", name = "dsl", version = "0.5.1-dev")
 }

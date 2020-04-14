@@ -42,7 +42,7 @@ object Bootstrap {
 
     private val directories: Directories = Directories.get(moduleName = "$artifact-bootstrap")
     private val binariesDir: File = directories.cacheHome
-    private val lastFile: File = binariesDir.resolve("newest")
+    private val lastFile: File = binariesDir.resolve("newest.jar")
 
     fun cleanup() {
         val files = binariesDir.listFiles { pathname -> pathname.name.endsWith(".tmp") }

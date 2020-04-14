@@ -64,16 +64,6 @@ sealed class Entry: CommonMutable {
         }
     }
 
-    data class UpdateJson(
-        private val common: CommonComponent = CommonComponent(),
-        private val _updateJson: UpdateJsonComponent = UpdateJsonComponent()
-    ) : Entry(), CommonMutable by common, UpdateJsonMutable by _updateJson {
-        init {
-            provider = UpdateJsonProvider.id
-            optional = optionalData != null
-        }
-    }
-
     companion object : KLogging()
 
     @Transient

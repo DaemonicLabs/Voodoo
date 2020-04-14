@@ -7,8 +7,11 @@ import java.io.File
 logger.info("initializing credits")
 
 generator = object : TomeGenerator() {
-    override suspend fun generateHtml(modPack: ModPack, lockPack: LockPack, targetFolder: File): String {
-        logger.info("writing credits for pack ${modPack.id}")
+    override suspend fun generateHtml(
+        lockPack: LockPack,
+        targetFolder: File
+    ): String {
+        logger.info("writing credits for pack ${lockPack.id}")
 
         return buildString {
             append(
@@ -18,7 +21,7 @@ generator = object : TomeGenerator() {
                     |""".trimMargin()
             )
 
-            modPack.lockEntrySet.sortedBy { it.displayName.toLowerCase() }.forEach { entry ->
+            lockPack.entrySet.sortedBy { it.displayName.toLowerCase() }.forEach { entry ->
                 val provider = Providers[entry.provider]
                 val thumbnailUrl = provider.getThumbnail(entry)
                 val title = provider.generateName(entry)

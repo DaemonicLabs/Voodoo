@@ -49,6 +49,7 @@ object MMCSelfupdatingFatPack : AbstractPack("mmc-sk-fat") {
             icon = modpack.iconFile,
             mcVersion = modpack.mcVersion,
             modloader = modpack.modloader,
+            extraCfg = modpack.packOptions.multimcOptions.instanceCfg,
             instanceDir = instanceDir,
             preLaunchCommand = preLaunchCommand
         )

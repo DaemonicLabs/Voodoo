@@ -1,45 +1,53 @@
 package voodoo.changelog
 
 import mu.KLogging
-import voodoo.data.lock.LockPack
+import voodoo.data.EntryReportData
+import voodoo.data.PackReportData
 import voodoo.markdownTable
 import voodoo.util.blankOr
 
 open class ChangelogBuilder : KLogging() {
+    open val filename: String = "changelog.md"
+    open val fullFilename: String = "complete_changelog.md"
+
+    /***
+     * main function generating the complete changelog
+     */
+    open fun StringBuilder.writeFullChangelog(
+        steps: List<ChangelogStepData>
+    ) {
+        steps.dropLast(1).forEach { step->
+            writeChangelog(step)
+            appendln()
+            appendln()
+            appendln()
+        }
+        writeChangelog(steps.last())
+    }
+
     /***
      * main function generating the changelog
      */
     open fun StringBuilder.writeChangelog(
-        newPack: LockPack,
-        oldPack: LockPack?,
-        newPackMetaInfo: Map<String, String>,
-        oldPackMetaInfo: Map<String, String>,
-        newEntryMetaInfo: Map<String, Map<String, String>>,
-        oldEntryMetaInfo: Map<String, Map<String, String>>
+        step: ChangelogStepData
     ) {
-        writePackInfo(newPack, oldPack, newPackMetaInfo, oldPackMetaInfo)
+        writePackInfo(step.newPackMetaInfo, step.oldPackMetaInfo)
 
-        writeEntries(newPack, oldPack, newEntryMetaInfo, oldEntryMetaInfo)
-
-        appendln()
-        appendln()
-        appendln()
+        writeEntries(step.newEntryMetaInfo, step.oldEntryMetaInfo)
     }
 
     open fun StringBuilder.writePackInfo(
-        newPack: LockPack,
-        oldPack: LockPack?,
-        newMetaInfo: Map<String, String>,
-        oldMetaInfo: Map<String, String>
+        newMetaInfo: Map<PackReportData, String>,
+        oldMetaInfo: Map<PackReportData, String>
     ) {
-        val title = "# ${newPack.title.blankOr ?: newPack.id} ${newPack.version}"
+        val title = "# ${newMetaInfo[PackReportData.TITLE].blankOr ?: newMetaInfo[PackReportData.ID]} ${newMetaInfo[PackReportData.VERSION]}"
         appendln(title)
         val table = if (oldMetaInfo.isEmpty()) {
             markdownTable(headers = listOf("Property", "Value"), content = newMetaInfo.map { (key, meta) ->
-                listOf(key, meta)
+                listOf(key.humanReadable, meta)
             })
         } else {
-            diffTable(newMetaInfo = newMetaInfo, oldMetaInfo = oldMetaInfo)
+            diffTablePack(newMetaInfo = newMetaInfo, oldMetaInfo = oldMetaInfo)
         }
         table?.let {
             appendln()
@@ -48,10 +56,8 @@ open class ChangelogBuilder : KLogging() {
     }
 
     open fun StringBuilder.writeEntries(
-        newPack: LockPack,
-        oldPack: LockPack?,
-        newMetaInfo: Map<String, Map<String, String>>,
-        oldMetaInfo: Map<String, Map<String, String>>
+        newMetaInfo: Map<String, Map<EntryReportData, String>>,
+        oldMetaInfo: Map<String, Map<EntryReportData, String>>
     ) {
         val addedEntries = newMetaInfo
             .filter { (id, _) ->
@@ -118,9 +124,9 @@ open class ChangelogBuilder : KLogging() {
         }
     }
 
-    open fun addedEntry(id: String, metaInfo: Map<String, String>): String? {
+    open fun addedEntry(id: String, metaInfo: Map<EntryReportData, String>): String? {
         logger.debug { "added entry: $id, $metaInfo" }
-        return diffTable(newMetaInfo = metaInfo, oldMetaInfo = mapOf())
+        return diffTableEntry(newMetaInfo = metaInfo, oldMetaInfo = mapOf())
             ?.let { t ->
                 buildString {
                     appendln("added `$id`")
@@ -130,9 +136,9 @@ open class ChangelogBuilder : KLogging() {
             }
     }
 
-    open fun removedEntry(id: String, metaInfo: Map<String, String>): String? {
+    open fun removedEntry(id: String, metaInfo: Map<EntryReportData, String>): String? {
         logger.debug { "removed entry: $id, $metaInfo" }
-        return diffTable(newMetaInfo = mapOf(), oldMetaInfo = metaInfo)
+        return diffTableEntry(newMetaInfo = mapOf(), oldMetaInfo = metaInfo)
             ?.let { t ->
                 buildString {
                     appendln("removed `$id`")
@@ -142,9 +148,9 @@ open class ChangelogBuilder : KLogging() {
             }
     }
 
-    open fun updatedEntry(id: String, newMetaInfo: Map<String, String>, oldMetaInfo: Map<String, String>): String? {
+    open fun updatedEntry(id: String, newMetaInfo: Map<EntryReportData, String>, oldMetaInfo: Map<EntryReportData, String>): String? {
         logger.debug { "updated entry: $id, $oldMetaInfo -> $newMetaInfo" }
-        return diffTable(newMetaInfo = newMetaInfo, oldMetaInfo = oldMetaInfo)
+        return diffTableEntry(newMetaInfo = newMetaInfo, oldMetaInfo = oldMetaInfo)
             ?.let { t ->
                 buildString {
                     appendln("updated `$id`")
@@ -154,10 +160,38 @@ open class ChangelogBuilder : KLogging() {
             }
     }
 
+    protected fun diffTableEntry(
+        propHeader: String = "Property",
+        oldheader: String = "old value",
+        newheader: String = "new value",
+        newMetaInfo: Map<EntryReportData, String>,
+        oldMetaInfo: Map<EntryReportData, String>
+    ) = diffTable(
+        propHeader = propHeader,
+        oldheader = oldheader,
+        newheader = newheader,
+        newMetaInfo = newMetaInfo.mapKeys { (reportData, _) -> reportData.humanReadable },
+        oldMetaInfo = oldMetaInfo.mapKeys { (reportData, _) -> reportData.humanReadable }
+    )
+
+    protected fun diffTablePack(
+        propHeader: String = "Property",
+        oldheader: String = "old value",
+        newheader: String = "new value",
+        newMetaInfo: Map<PackReportData, String>,
+        oldMetaInfo: Map<PackReportData, String>
+    ) = diffTable(
+        propHeader = propHeader,
+        oldheader = oldheader,
+        newheader = newheader,
+        newMetaInfo = newMetaInfo.mapKeys { (reportData, _) -> reportData.humanReadable },
+        oldMetaInfo = oldMetaInfo.mapKeys { (reportData, _) -> reportData.humanReadable }
+    )
+
     /***
      * generates a markdown table
      */
-    protected fun diffTable(
+    open fun diffTable(
         propHeader: String = "Property",
         oldheader: String = "old value",
         newheader: String = "new value",

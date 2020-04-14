@@ -6,7 +6,7 @@ data class TomeEnv(
     var docRoot: File
 ) {
     internal var generators: MutableMap<String, TomeGenerator> =
-        mutableMapOf("modlist.md" to ModlistGenerator)
+        mutableMapOf("modlist.md" to ModlistGeneratorMarkdown)
         private set
 
     fun add(file: String, generator: TomeGenerator) {
@@ -14,6 +14,6 @@ data class TomeEnv(
     }
 
     override fun toString(): String {
-        return "tomeEnv(docRoot=$docRoot, generators=$generators)"
+        return "TomeEnv(docRoot=$docRoot, generators=$generators)"
     }
 }

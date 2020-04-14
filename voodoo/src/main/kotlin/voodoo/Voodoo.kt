@@ -31,7 +31,6 @@ import voodoo.util.Directories
 import voodoo.util.SharedFolders
 import voodoo.voodoo.VoodooConstants
 import java.io.File
-import java.io.FileNotFoundException
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.system.exitProcess
 
@@ -125,46 +124,39 @@ object Voodoo : KLogging() {
                         Builder.build(this, modpack, id = id, /*targetFileName = lockFileName,*/ args = *args)
                     }
                     "tome".watch {
-                        Tome.generate(this, modpack, lockPack, tomeEnv, uploadDir)
+                        Tome.generate(this, lockPack, tomeEnv, uploadDir)
                     }
 
-                    // TODO: add changelog field to pack
-                    // TODO: write `.meta/$id/$version.meta.json`
-                    // TODO: if the file did not exist (so it is the first commit that changes the version):
-                    //   TODO: get parent git hash, write to `$lastVersion.commithash.txt`
-                    // TODO: generate diff between $version and $lastVersion
-                    // TODO: generate full changelog between each version in order 0->1, 1->2, lastVersion->version
+                    // TODO: just generate meta info
 
-                    "diff".watch {
-                        val changelogBuilder = initChangelogBuilder(
-                            stopwatch = "initChangelogBuilder".watch, libs = libs, id = id, tomeDir = tomeDir, host = host
-                        )
-                        try {
-                            val diff = Diff.createDiff(
-                                stopwatch = "createDiff".watch,
-                                docDir = docDir,
-                                rootDir = rootDir.absoluteFile,
-                                newPack = lockPack,
-                                changelogBuilder = changelogBuilder
-                            )
-                            logger.debug { "diff: $diff" }
-                        } catch (e: FileNotFoundException) {
-                            e.printStackTrace()
-                        }
-                    }
-
+                    Diff.writeMetaInfo(
+                        stopwatch = "writeMetaInfo".watch,
+                        rootDir = rootDir.absoluteFile,
+                        newPack = lockPack
+                    )
                     logger.info("finished")
                 },
-                "diff" to { _ ->
+                // TODO: git tag task
+                // TODO: make changelog tasks
+                "changelog" to { _ ->
+
+
                     val changelogBuilder = initChangelogBuilder(
                         stopwatch = "initChangelogBuilder".watch, libs = libs, id = id, tomeDir = tomeDir, host = host
                     )
-                    val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
-                    val diff = Diff.createDiff(
+                    val lockPack = LockPack.parse(lockFile.absoluteFile, rootDir)
+
+                    val tomeEnv = initTome(
+                        stopwatch = "initTome".watch, libs = libs, host = host, tomeDir = tomeDir, docDir = docDir
+                    )
+                    "tome".watch {
+                        Tome.generate(this, lockPack, tomeEnv, uploadDir)
+                    }
+                    Diff.createChangelog(
                         stopwatch = "createDiff".watch,
                         docDir = docDir,
                         rootDir = rootDir.absoluteFile,
-                        newPack = modpack,
+                        currentPack = lockPack,
                         changelogBuilder = changelogBuilder
                     )
                 },

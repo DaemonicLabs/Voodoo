@@ -5,7 +5,6 @@ import voodoo.GenerateForge
 import voodoo.GenerateMods
 import voodoo.GenerateTexturePacks
 import voodoo.Include
-import voodoo.provider.*
 import voodoo.poet.Poet
 import voodoo.poet.generator.CurseGenerator
 import voodoo.poet.generator.CurseSection
@@ -19,12 +18,6 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
     val logger = KotlinLogging.logger {}
 
     defaultImports(
-        CurseProvider::class,
-        DirectProvider::class,
-        JenkinsProvider::class,
-        LocalProvider::class,
-        UpdateJsonProvider::class,
-
         voodoo.data.UserFiles::class,
         voodoo.data.DependencyType::class,
         voodoo.data.PackOptions::class,
@@ -38,7 +31,6 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         voodoo.data.nested.NestedEntry.Direct::class,
         voodoo.data.nested.NestedEntry.Jenkins::class,
         voodoo.data.nested.NestedEntry.Local::class,
-        voodoo.data.nested.NestedEntry.UpdateJson::class,
 
         com.skcraft.launcher.model.SKServer::class,
         com.skcraft.launcher.model.modpack.Recommendation::class,
@@ -60,7 +52,6 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         "voodoo.data.*",
         "voodoo.data.curse.*",
         "voodoo.data.nested.NestedEntry.*",
-        "voodoo.provider.*",
         "com.skcraft.launcher.model.SKServer",
         "com.skcraft.launcher.model.modpack.Recommendation"
     )

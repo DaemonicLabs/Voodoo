@@ -7,16 +7,13 @@ import voodoo.data.lock.LockPack
 import java.io.File
 
 abstract class TomeGenerator : KLogging() {
-    open suspend fun generateHtml(
-        stopwatch: Stopwatch,
-        modPack: ModPack,
+    open suspend fun Stopwatch.generateHtmlMeasured(
         lockPack: LockPack,
         targetFolder: File
-    ): String = stopwatch {
-        generateHtml(modPack, lockPack, targetFolder)
+    ): String {
+        return generateHtml(lockPack, targetFolder)
     }
     open suspend fun generateHtml(
-        modPack: ModPack,
         lockPack: LockPack,
         targetFolder: File
     ): String {

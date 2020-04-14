@@ -14,7 +14,7 @@ object Tome : KLogging() {
 
     suspend fun generate(
         stopwatch: Stopwatch,
-        modpack: ModPack,
+//        modpack: ModPack,
         lockPack: LockPack,
         tomeEnv: TomeEnv,
         uploadDir: File
@@ -26,12 +26,16 @@ object Tome : KLogging() {
             val targetFile = docDir.resolve(file)
             logger.info("generating $file targetFile: $targetFile")
             targetFile.parentFile.mkdirs()
-            val fileContent = generator.generateHtml(
-                stopwatch = "$file - stopwatch".watch,
-                modPack = modpack,
-                lockPack = lockPack,
-                targetFolder = targetFile.parentFile
-            )
+            val fileContent = "$file - stopwatch".watch {
+                with(generator) {
+                    generateHtmlMeasured(
+//                    stopwatch =,
+//                modPack = modpack,
+                        lockPack = lockPack,
+                        targetFolder = targetFile.parentFile
+                    )
+                }
+            }
             targetFile.writeText(fileContent)
         }
     }

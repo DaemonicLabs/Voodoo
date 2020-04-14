@@ -10,8 +10,8 @@ class TaskBuilder() {
     fun build() {
         tasks += TaskType.Build
     }
-    fun diff() {
-        tasks += TaskType.Diff
+    fun changelog() {
+        tasks += TaskType.Changelog
     }
     fun pack(): PackContext {
         val packContext = PackContext(tasks)

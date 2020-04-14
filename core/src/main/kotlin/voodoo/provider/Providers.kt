@@ -11,7 +11,6 @@ object Providers : KLogging() {
             "CURSE" to CurseProvider,
             "JENKINS" to JenkinsProvider,
             "DIRECT" to DirectProvider,
-            "JSON" to UpdateJsonProvider,
             "LOCAL" to LocalProvider
         )
     }

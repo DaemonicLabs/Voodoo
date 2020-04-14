@@ -3,7 +3,9 @@ package voodoo.provider
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 import voodoo.core.CoreConstants.VERSION
+import voodoo.data.EntryReportData
 import voodoo.data.Quadruple
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
@@ -48,6 +50,15 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         }
     }
 
+    suspend fun getDownloadUrl(
+        entry: LockEntry.Jenkins
+    ): Pair<String, String> {
+        val build = build(entry.job, entry.jenkinsUrl, entry.buildNumber)
+        val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)
+        val url = build.url + "artifact/" + artifact.relativePath
+        return url to artifact.fileName
+    }
+
     override suspend fun download(
         stopwatch: Stopwatch,
         entry: LockEntry,
@@ -59,11 +70,9 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
 //        if (entry.job.isBlank()) {
 //            entry.job = entry.id
 //        }
+        val (url, fileName) = getDownloadUrl(entry)
 
-        val build = build(entry.job, entry.jenkinsUrl, entry.buildNumber)
-        val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)
-        val url = build.url + "artifact/" + artifact.relativePath
-        val targetFile = targetFolder.resolve(entry.fileName ?: artifact.fileName)
+        val targetFile = targetFolder.resolve(entry.fileName ?: fileName)
         targetFile.download(url, cacheDir.resolve("JENKINS").resolve(entry.job).resolve(entry.buildNumber.toString()))
         return@stopwatch url to targetFile
     }
@@ -148,11 +157,17 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         return JenkinsServer(url)
     }
 
-    override fun reportData(entry: LockEntry): MutableList<Pair<String, String>> {
+    override fun reportData(entry: LockEntry): MutableMap<EntryReportData, String> {
         entry as LockEntry.Jenkins
-        val data = super.reportData(entry)
-        data += "Job" to entry.job
-        data += "Build" to "${entry.buildNumber}"
-        return data
+        val (url, fileName) = runBlocking {
+            getDownloadUrl(entry)
+        }
+        return super.reportData(entry).also { data ->
+//            data["BaseUrl"] = entry.jenkinsUrl // do we need this ?
+            data[EntryReportData.FILE_NAME] = entry.fileName ?: fileName
+            data[EntryReportData.DIRECT_URL] = url
+            data[EntryReportData.JENKINS_JOB] = entry.job
+            data[EntryReportData.JENKINS_BUILD] = "${entry.buildNumber}"
+        }
     }
 }

@@ -67,17 +67,6 @@ sealed class NestedEntry(
         }
     }
 
-    data class UpdateJson(
-        override var nodeName: String? = null,
-        val common: CommonComponent = CommonComponent(),
-        val _updateJson: UpdateJsonComponent = UpdateJsonComponent(),
-        override var entries: List<NestedEntry> = emptyList()
-    ) : NestedEntry(nodeName, entries), CommonMutable by common, UpdateJsonMutable by _updateJson {
-        init {
-            provider = UpdateJsonProvider.id
-        }
-    }
-
     val debugIdentifier: String get() = nodeName ?: id
 
     companion object : KLogging() {
@@ -139,14 +128,6 @@ sealed class NestedEntry(
                     },
                     local = entry.local.copy()
                 )
-                is UpdateJson -> Entry.UpdateJson(
-                    common = with(entry.common) {
-                        copy(
-                            optionalData = optionalData?.copy()
-                        )
-                    },
-                    _updateJson = entry._updateJson.copy()
-                )
             }
         }.toList()
     }
@@ -176,9 +157,6 @@ sealed class NestedEntry(
                 }
                 entry is Local && this is Local -> {
                     mergeProperties<LocalMutable>(this, entry, Local())
-                }
-                entry is UpdateJson && this is UpdateJson -> {
-                    mergeProperties<UpdateJsonMutable>(this, entry, UpdateJson())
                 }
             }
 

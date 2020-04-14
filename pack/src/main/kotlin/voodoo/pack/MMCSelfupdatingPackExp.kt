@@ -35,6 +35,7 @@ object MMCSelfupdatingPackExp : AbstractPack("mmc-experimental") {
             modpack.id,
             icon = modpack.iconFile,
             modloader = modpack.modloader,
+            extraCfg = modpack.packOptions.multimcOptions.instanceCfg,
             instanceDir = instanceDir,
             preLaunchCommand = preLaunchCommand
         )

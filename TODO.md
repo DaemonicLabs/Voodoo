@@ -1,5 +1,21 @@
 # voodoo 2
 
+## changelog v2
+
+steps:
+1. build  
+   delete `.meta/${pack.id}`  
+   generate `pack.meta.json` and `entries.meta.json`
+2. pin version (create git tag)
+3. generate changelogs  
+   list git tags, filter by prefix
+   `git archive -o "${tag}_meta.zip" "${tag}:.meta/${pack.id}"`  
+   `git archive -o "${tag}Source.zip" "${tag}:${pack.id}"`  
+   `unzip`
+
+important: meta folder and packid make the meta files resolvable
+files can be retrieved from old versions annotated by tag
+
 ## modules
 
 - core  

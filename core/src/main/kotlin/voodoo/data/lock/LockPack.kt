@@ -8,6 +8,7 @@ import kotlinx.serialization.Transient
 import mu.KLogging
 import voodoo.data.DependencyType
 import voodoo.data.PackOptions
+import voodoo.data.PackReportData
 import voodoo.data.Side
 import voodoo.forge.ForgeUtil
 import voodoo.util.blankOr
@@ -172,29 +173,32 @@ data class LockPack(
     /***
      * creates a report of key-name-value triples
      */
-    fun report(): List<Pair<String, String>> {
-        val reports = mutableListOf("id" to id)
+    fun report(): Map<PackReportData, String> {
+        val reports = mutableListOf(
+            PackReportData.ID to id
+        )
         title.blankOr?.let {
-            reports += "Title" to "$title"
+            reports += PackReportData.TITLE to "$title"
         }
-        reports += "Pack Version" to version
-        reports += "MC Version" to mcVersion
+        reports += PackReportData.VERSION to version
+        reports += PackReportData.MC_VERSION to mcVersion
         when(val loader = modloader) {
             is Modloader.Forge -> {
                 val forgeVersion = runBlocking { ForgeUtil.forgeVersionOf(loader.version).forgeVersion }
-                reports += "Forge Version" to forgeVersion
+                reports += PackReportData.FORGE_VERSION to forgeVersion
             }
             is Modloader.Fabric -> {
-                reports += "Fabric Intermediaries Version" to loader.intermediateMappings
-                reports += "Fabric Loader Version" to loader.loader
-                reports += "Fabric Installer Version" to loader.installer
+                reports += PackReportData.FABRIC_INTERMEDIARIES_VERSION to loader.intermediateMappings
+                reports += PackReportData.FABRIC_LOADER_VERSION to loader.loader
+                reports += PackReportData.FABRIC_INSTALLER_VERSION to loader.installer
             }
         }
-        reports += "Authors" to authors.joinToString(", ")
+        reports += PackReportData.AUTHORS to authors.joinToString(", ")
         iconFile.takeIf { it.exists() }?.let {
-            reports += "Icon" to "<img src=\"${it.relativeTo(rootFolder).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
+            reports += PackReportData.ICON_SRC to it.relativeTo(rootFolder).path
+            reports += PackReportData.ICON_HTML to "<img src=\"${it.relativeTo(rootFolder).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
         }
 
-        return reports
+        return reports.toMap()
     }
 }

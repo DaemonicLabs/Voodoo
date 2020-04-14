@@ -9,6 +9,8 @@ import voodoo.util.unixPath
 import java.io.File
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
+import voodoo.data.EntryReportData
+import voodoo.data.PackReportData
 
 val LockPack.authorsString: String
     get() = authors.joinToString(", ")
@@ -19,71 +21,106 @@ data class PackDiff(
     val newPack: LockPack,
     val oldPack: LockPack?
 ) : KLogging() {
-    fun writeChangelog(newMeta: File, oldMeta: File?, docDir: File, generator: ChangelogBuilder) {
-        val oldMeta = oldMeta ?: File.createTempFile("empty", "")
-        val newPackMetaInfo = writePackMetaInformation(newMeta, newPack)
-        val oldPackMetaInfo = readPackMetaInformation(oldMeta)
-
-        logger.debug("reading newMeta: $newMeta, $newPack")
-        logger.debug("reading oldMeta: $oldMeta")
-        val newEntryMetaInfo = writeEntryMetaInformation(newMeta, newPack)
-        val oldEntryMetaInfo = readEntryMetaInformation(oldMeta)
-
-        docDir.mkdirs()
-        val changelogFile = newMeta.resolve(Filename.changelog)
-
-        val currentChangelogText = buildString {
-            // TODO:  write changelog
-
-            with(generator) {
-                this@buildString.writeChangelog(
-                    newPack,
-                    oldPack,
-                    newPackMetaInfo,
-                    oldPackMetaInfo,
-                    newEntryMetaInfo,
-                    oldEntryMetaInfo
-                )
-            }
-        }
-
-        logger.info("writing changelog to $changelogFile")
-
-        // write changelog into changelogFile
-        changelogFile.writeText(currentChangelogText)
-
-        oldMeta.mkdirs()
-
-        // copy files to documentation
-        changelogFile.copyTo(docDir.resolve(Filename.changelog), overwrite = true)
-    }
-
     companion object : KLogging() {
         private object Filename {
-            const val changelog = "changelog.md"
-            const val completeChangelog = "complete_changelog.md"
             const val packMeta = "pack.meta.json"
             const val entryMeta = "entry.meta.json"
         }
 
-        fun writeFullChangelog(meta: File, versions: List<String>, docDir: File) {
-            // TODO: generate changelogs from scratch every time
-            val changelogs = versions.mapNotNull { version ->
-                meta.resolve(version).resolve(Filename.changelog).takeIf { it.exists() }?.readText()
+        fun writeChangelog(oldMeta: File?, newMeta: File, tmpChangelogFile: File, docDir: File, generator: ChangelogBuilder): File {
+            val oldMeta = oldMeta ?: File.createTempFile("empty", "")
+            val oldPackMetaInfo = readPackMetaInformation(oldMeta)
+            val newPackMetaInfo = readPackMetaInformation(newMeta)
+
+            logger.debug("reading newMeta: $newMeta")
+            logger.debug("reading oldMeta: $oldMeta")
+            val newEntryMetaInfo = readEntryMetaInformation(newMeta)
+            val oldEntryMetaInfo = readEntryMetaInformation(oldMeta)
+
+            docDir.mkdirs()
+//            val changelogFile = workingDir.resolve(generator.filename)
+
+            val currentChangelogText = buildString {
+                // TODO:  write changelog
+
+                with(generator) {
+                    this@buildString.writeChangelog(
+                        ChangelogStepData(
+                            newPackMetaInfo = newPackMetaInfo,
+                            oldPackMetaInfo = oldPackMetaInfo,
+                            newEntryMetaInfo = newEntryMetaInfo,
+                            oldEntryMetaInfo = oldEntryMetaInfo
+                        )
+                    )
+                }
             }
-            val fullChangelogFile = meta.resolve(Filename.completeChangelog)
-            fullChangelogFile.writeText(changelogs.joinToString("\n"))
-            fullChangelogFile.copyTo(docDir.resolve(Filename.completeChangelog), overwrite = true)
+
+            logger.info("writing changelog to $tmpChangelogFile")
+
+            // write changelog into changelogFile
+            tmpChangelogFile.writeText(currentChangelogText)
+
+            // copy files to documentation
+            tmpChangelogFile.copyTo(docDir.resolve(generator.filename), overwrite = true)
+
+            return tmpChangelogFile
+        }
+
+        fun writeFullChangelog(
+            steps: List<Pair<File?, File>>,
+            docDir: File,
+            tmpChangelogFile: File,
+            generator: ChangelogBuilder
+        ) {
+            val changelogSteps = steps.map { (oldMeta, newMeta) ->
+                val oldMeta = oldMeta ?: File.createTempFile("empty", "")
+                val oldPackMetaInfo = readPackMetaInformation(oldMeta)
+                val newPackMetaInfo = readPackMetaInformation(newMeta)
+
+                logger.debug("reading newMeta: $newMeta")
+                logger.debug("reading oldMeta: $oldMeta")
+                val newEntryMetaInfo = readEntryMetaInformation(newMeta)
+                val oldEntryMetaInfo = readEntryMetaInformation(oldMeta)
+                ChangelogStepData(
+                    newPackMetaInfo = newPackMetaInfo,
+                    oldPackMetaInfo = oldPackMetaInfo,
+                    newEntryMetaInfo = newEntryMetaInfo,
+                    oldEntryMetaInfo = oldEntryMetaInfo
+                )
+            }
+
+            val fullChangelogText = buildString {
+                // TODO:  write changelog
+
+                with(generator) {
+                    this@buildString.writeFullChangelog(
+                        steps = changelogSteps
+                    )
+                }
+            }
+
+            logger.info("writing changelog to $tmpChangelogFile")
+
+            // write changelog into changelogFile
+            tmpChangelogFile.writeText(fullChangelogText)
+
+            // copy files to documentation
+            tmpChangelogFile.copyTo(docDir.resolve(generator.fullFilename), overwrite = true)
+
         }
 
         private val packMetaSerializer = MapSerializer(String.serializer(), String.serializer())
         private val entryMetaSerializer = MapSerializer(String.serializer(), packMetaSerializer)
 
-        fun writePackMetaInformation(newMeta: File, pack: LockPack): Map<String, String> {
-            val reportMap = pack.report().toMap()
+        fun writePackMetaInformation(newMeta: File, pack: LockPack): Map<PackReportData, String> {
+            val reportMap = pack.report()
+
+            val reportDataForJson = reportMap.mapKeys { (reportData, _) ->
+                reportData.key
+            }
 
             val reportFile = newMeta.resolve(Filename.packMeta)
-            val json = json.stringify(packMetaSerializer, reportMap)
+            val json = json.stringify(packMetaSerializer, reportDataForJson)
 
             newMeta.mkdirs()
             reportFile.writeText(json)
@@ -91,24 +128,29 @@ data class PackDiff(
             return reportMap
         }
 
-        fun readPackMetaInformation(oldMeta: File): Map<String, String> {
+        fun readPackMetaInformation(oldMeta: File): Map<PackReportData, String> {
             val reportFile = oldMeta.resolve(Filename.packMeta)
             if (!reportFile.exists()) return mapOf()
-            return json.parse(packMetaSerializer, reportFile.readText())
+            return json.parse(packMetaSerializer, reportFile.readText()).mapKeys { (key, _) ->
+                PackReportData.getByKey(key)!!
+            }
         }
 
-        fun writeEntryMetaInformation(newMeta: File, pack: LockPack): Map<String, Map<String, String>> {
+        fun writeEntryMetaInformation(newMeta: File, pack: LockPack): Map<String, MutableMap<EntryReportData, String>> {
             val reportMap = pack.entrySet.sortedBy {
                 it.displayName.toLowerCase()
             }.associate { entry ->
                 val provider = Providers[entry.provider]
 
                 entry.id.toLowerCase() to provider.reportData(entry)
-            }.mapValues { (id, pairs) ->
-                pairs.toMap()
+            }
+            val reportDataForJson = reportMap.mapValues { (_, entryData) ->
+                entryData.mapKeys { (reportData, _) ->
+                    reportData.key
+                }
             }
             val reportFile = newMeta.resolve(Filename.entryMeta)
-            val json = json.stringify(entryMetaSerializer, reportMap)
+            val json = json.stringify(entryMetaSerializer, reportDataForJson)
 
             newMeta.mkdirs()
             logger.info("writing $reportFile")
@@ -117,15 +159,14 @@ data class PackDiff(
             return reportMap
         }
 
-        fun readEntryMetaInformation(oldMeta: File): Map<String, Map<String, String>> {
+        fun readEntryMetaInformation(oldMeta: File): Map<String, Map<EntryReportData, String>> {
             val reportFile = oldMeta.resolve(Filename.entryMeta)
             if (!reportFile.exists()) return mapOf()
-            return json.parse(entryMetaSerializer, reportFile.readText())
-//            return (json.parseJson(reportFile.readText()) as JsonObject).content.mapValues { (key, value) ->
-//                (value as JsonObject).content.mapValues { (key, value) ->
-//                    (value as JsonPrimitive).content
-//                }
-//            }
+            return json.parse(entryMetaSerializer, reportFile.readText()).mapValues {(_, entryData) ->
+                entryData.mapKeys { (key, _) ->
+                    EntryReportData.getByKey(key)!!
+                }
+            }
         }
 
         private fun changeTable(

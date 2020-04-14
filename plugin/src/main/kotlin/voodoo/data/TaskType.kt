@@ -7,7 +7,7 @@ sealed class TaskType(open val command: String) {
 
     object Build: TaskType("build")
 
-    object Diff: TaskType("diff")
+    object Changelog: TaskType("changelog")
 
     sealed class Pack(subCommand: String): TaskType("pack $subCommand") {
         object Experimental: Pack(ExperimentalPack.id)

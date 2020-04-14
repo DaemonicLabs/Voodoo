@@ -44,7 +44,8 @@ object MMCFatPack : AbstractPack("mmc-fat") {
             icon = modpack.iconFile,
             instanceDir = instanceDir,
             mcVersion = modpack.mcVersion,
-            modloader = modpack.modloader
+            modloader = modpack.modloader,
+            extraCfg = modpack.packOptions.multimcOptions.instanceCfg
 //            forgeVersion = ForgeUtil.forgeVersionOf(modpack.forge)?.forgeVersion
         )
 

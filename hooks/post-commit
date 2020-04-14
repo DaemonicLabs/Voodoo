@@ -1,0 +1,25 @@
+#!/bin/sh
+
+# get the last commit Id
+lastCommit=$(git log -1 HEAD)
+
+echo "lastCommit: $lastCommit"
+
+tagfolder="./build/git-tags"
+
+if [ -d "$tagfolder" ]; then
+    for tagfile in $tagfolder/* ; do
+        echo "tagfile: $tagfile"
+        echo ""
+        cat $tagfile
+        echo ""
+        pack_id=$(basename $tagfile)
+        version=$(cat $tagfile)
+
+        # TODO: create annotated tag from tagfile
+        git tag --force --annotate --message "$pack_id version $version" "${pack_id}_${version}"
+    done
+    
+    echo "done creating tags, deleting git-tags"
+    rm -r ./build/git-tags/
+fi

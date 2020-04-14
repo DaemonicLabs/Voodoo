@@ -352,6 +352,30 @@ object CurseClient : KLogging(), CoroutineScope {
         return@withContext json.parse(Addon.serializer().list, response.readText())
     }
 
+//    suspend fun getDownloadUrl(addonId: ProjectID, fileId: FileID): String = withContext(Dispatchers.IO) {
+//        val url = "$ADDON_API/addon/$addonId/file/$fileId/download-url"
+//
+//        logger.info("get $url")
+//        val response = try {
+//            client.get<HttpResponse>(url) {
+////                header(HttpHeaders.UserAgent, useragent)
+//            }
+//        } catch (e: IOException) {
+//            logger.error("url: $url")
+//            logger.error(e) { "unable to get Addon-Url from $url" }
+//            throw e
+//        } catch (e: TimeoutCancellationException) {
+//            logger.error("url: $url")
+//            logger.error(e) { "unable to get Addon-Url from $url" }
+//            throw e
+//        }
+//        if (!response.status.isSuccess()) {
+//            logger.error { "$url returned ${response.status}" }
+//            error { "unable to get Addon-Url from $url" }
+//        }
+//        return@withContext response.readText()
+//    }
+
     suspend fun getFileChangelog(addonId: ProjectID, fileId: Int): String  = withContext(Dispatchers.IO) {
         val url = "$ADDON_API/addon/$addonId/file/$fileId/changelog"
 
@@ -361,17 +385,17 @@ object CurseClient : KLogging(), CoroutineScope {
 //                header(HttpHeaders.UserAgent, useragent)
             }
         } catch (e: IOException) {
-            logger.error("buildUrl: $url")
-            logger.error(e) { "unable to get Addons from $url" }
+            logger.error("url: $url")
+            logger.error(e) { "unable to get Addon changelog from $url" }
             throw e
         } catch (e: TimeoutCancellationException) {
-            logger.error("buildUrl: $url")
-            logger.error(e) { "unable to get Addons from $url" }
+            logger.error("url: $url")
+            logger.error(e) { "unable to get Addon changelog from $url" }
             throw e
         }
         if (!response.status.isSuccess()) {
             logger.error { "$url returned ${response.status}" }
-            error { "unable to get Addons from $url" }
+            error { "unable to get Addon changelog from $url" }
         }
         return@withContext response.readText()
     }

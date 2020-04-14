@@ -11,11 +11,9 @@ mcVersion = "1.12.2"
 version = "1.1.2"
 icon = rootFolder.resolve("icon.png")
 authors = listOf("NikkyAi")
-forge = Forge_12_2.mc1_12_2_recommended
-
-fabric(
-    intermediary = Fabric.intermediary.v_1_15_2
-)
+modloader {
+    forge(Forge_12_2.mc1_12_2_recommended)
+}
 
 pack {
 

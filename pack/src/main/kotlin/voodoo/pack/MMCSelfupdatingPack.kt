@@ -35,6 +35,7 @@ object MMCSelfupdatingPack : AbstractPack("mmc-sk") {
             modpack.id,
             icon = modpack.iconFile,
             modloader = modpack.modloader,
+            extraCfg = modpack.packOptions.multimcOptions.instanceCfg,
             instanceDir = instanceDir,
             preLaunchCommand = preLaunchCommand
         )

@@ -156,6 +156,7 @@ object MMCUtil : KLogging() {
         icon: File? = null,
         mcVersion: String? = null,
         modloader: Modloader?,
+        extraCfg: List<Pair<String, String>> = listOf(),
         instanceDir: File = with(findDir()) {
             this.resolve(
                 readCfg(this.resolve("multimc.cfg"))["InstanceDir"] ?: "instances"
@@ -242,6 +243,9 @@ object MMCUtil : KLogging() {
         if (preLaunchCommand != null) {
             cfg["OverrideCommands"] = "true"
             cfg["PreLaunchCommand"] = preLaunchCommand
+        }
+        extraCfg.forEach { (key, value) ->
+            cfg[key] = value
         }
 
         writeCfg(cfgFile, cfg)

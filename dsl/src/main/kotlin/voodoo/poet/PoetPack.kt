@@ -133,18 +133,6 @@ object PoetPack : KLogging() {
                         addStatement("fileSrc = %S", it)
                     }
                 }
-                is NestedEntry.UpdateJson -> {
-                    default as NestedEntry.UpdateJson
-                    entry.updateJson.takeIf { it != default.updateJson }?.let {
-                        addStatement("updateJson = %S", it)
-                    }
-                    entry.updateChannel.takeIf { it != default.updateChannel }?.let {
-                        addStatement("updateChannel = %L", it)
-                    }
-                    entry.template.takeIf { it != default.template }?.let {
-                        addStatement("template = %S", it)
-                    }
-                }
                 else -> {
                     logger.info("unknown provider: ${provider::javaClass}")
                 }

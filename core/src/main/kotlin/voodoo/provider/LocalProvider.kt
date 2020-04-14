@@ -2,6 +2,7 @@ package voodoo.provider
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
+import voodoo.data.EntryReportData
 import voodoo.data.flat.Entry
 import voodoo.data.lock.LockEntry
 import java.io.File
@@ -50,10 +51,11 @@ object LocalProvider : ProviderBase("Local Provider") {
         return entry.fileSrc.substringBeforeLast('/')
     }
 
-    override fun reportData(entry: LockEntry): MutableList<Pair<String, String>> {
+    override fun reportData(entry: LockEntry): MutableMap<EntryReportData, String> {
         entry as LockEntry.Local
-        val data = super.reportData(entry)
-        data += "File Src" to entry.fileSrc
-        return data
+        return super.reportData(entry).also { data ->
+            data[EntryReportData.FILE_NAME] = entry.fileName ?: entry.fileSrc.substringAfterLast("/")
+            data[EntryReportData.LOCAL_FILESRC] = entry.fileSrc
+        }
     }
 }

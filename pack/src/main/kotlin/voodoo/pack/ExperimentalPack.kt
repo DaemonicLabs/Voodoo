@@ -108,8 +108,7 @@ object ExperimentalPack : AbstractPack("experimental") {
                             )
                             if (url != null
                                 && ((entry is LockEntry.Direct && entry.useUrlTxt) ||
-                                        (entry is LockEntry.Curse && entry.useUrlTxt) ||
-                                        (entry is LockEntry.UpdateJson && entry.useUrlTxt))
+                                        (entry is LockEntry.Curse && entry.useUrlTxt))
                             ) {
                                 val urlTxtFile = targetFolder.resolve(file.name + ".url.txt")
                                 urlTxtFile.writeText(url)

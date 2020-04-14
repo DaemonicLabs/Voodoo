@@ -2,7 +2,9 @@ mcVersion = "1.12.2"
 title = "1.12.2 Pack v4"
 authors = listOf("therealfarfetchd")
 version = "1.0.0"
-forge = Forge_12_2.mc1_12_2_latest
+modloader {
+    forge(Forge_12_2.mc1_12_2_latest)
+}
 icon = rootFolder.resolve("icon.png")
 pack {
     skcraft {

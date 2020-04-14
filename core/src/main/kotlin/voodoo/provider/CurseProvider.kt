@@ -9,6 +9,7 @@ import voodoo.curse.CurseClient.getAddon
 import voodoo.curse.CurseClient.getAddonFile
 import voodoo.curse.hash.Murmur2Lib
 import voodoo.curse.hash.computeNormalizedArray
+import voodoo.data.EntryReportData
 import voodoo.data.curse.AddOnFileDependency
 import voodoo.data.curse.CurseDependencyType
 import voodoo.data.curse.FileID
@@ -232,13 +233,15 @@ object CurseProvider : ProviderBase("Curse Provider") {
             cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),
             validator = { file ->
                 file.exists() && if (entry.skipFingerprintCheck) {
-                        true
-                    } else {
-                        val normalized = computeNormalizedArray(file.readBytes())
-                        val fileFingerprint = Murmur2Lib.hash32(normalized, 1)
-                        logger.debug { "comparing ${fileFingerprint.toLong().toInt()} to ${addonFile.packageFingerprint.toInt()}" }
-                        addonFile.packageFingerprint.toInt() == fileFingerprint.toLong().toInt()
+                    true
+                } else {
+                    val normalized = computeNormalizedArray(file.readBytes())
+                    val fileFingerprint = Murmur2Lib.hash32(normalized, 1)
+                    logger.debug {
+                        "comparing ${fileFingerprint.toLong().toInt()} to ${addonFile.packageFingerprint.toInt()}"
                     }
+                    addonFile.packageFingerprint.toInt() == fileFingerprint.toLong().toInt()
+                }
             }
         )
 
@@ -268,16 +271,18 @@ object CurseProvider : ProviderBase("Curse Provider") {
         }
     }
 
-    override fun reportData(entry: LockEntry): MutableList<Pair<String, String>> {
+    override fun reportData(entry: LockEntry): MutableMap<EntryReportData, String> {
         entry as LockEntry.Curse
         logger.debug("reporting for: $entry")
         val addon = runBlocking { getAddon(entry.projectID)!! }
         val addonFile = runBlocking { getAddonFile(entry.projectID, entry.fileID)!! }
-
-        val data = super.reportData(entry)
-        data += "Release Type" to "${addonFile.releaseType}"
-        data += "CF Authors" to addon.authors.sortedBy { it.name.toUpperCase() }.joinToString { it.name }
-        return data
+        return super.reportData(entry).also { data ->
+            data[EntryReportData.FILE_NAME] = entry.fileName ?: addonFile.fileName
+            data[EntryReportData.DIRECT_URL] = addonFile.downloadUrl
+            data[EntryReportData.CURSE_RELEASE_TYPE] = "${addonFile.releaseType}"
+            // TODO: support lists ?
+            data[EntryReportData.CURSE_AUTHORS] = addon.authors.sortedBy { it.name.toUpperCase() }.joinToString { it.name }
+        }
     }
 
     override fun validate(lockEntry: LockEntry): Boolean {
