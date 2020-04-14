@@ -14,7 +14,6 @@ import java.io.IOException
 import java.net.URL
 import java.security.MessageDigest
 import java.util.stream.Collectors
-import javax.xml.bind.DatatypeConverter
 import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory
@@ -161,7 +160,7 @@ object Bootstrap {
             val md = MessageDigest.getInstance("MD5")
             md.update(targetFile.readBytes())
             val digest = md.digest()
-            val fileMd5 = DatatypeConverter.printHexBinary(digest) // DigestUtils.md5Hex(tmpFile.inputStream())
+            val fileMd5 = digest.toHexString() // DigestUtils.md5Hex(tmpFile.inputStream())
             if(fileMd5.toLowerCase() == md5.toLowerCase()) {
                 println("cached file matched md5 hash")
                 return targetFile
@@ -186,7 +185,7 @@ object Bootstrap {
             val md = MessageDigest.getInstance("MD5")
             md.update(tmpFile.readBytes())
             val digest = md.digest()
-            val fileMd5 = DatatypeConverter.printHexBinary(digest) // DigestUtils.md5Hex(tmpFile.inputStream())
+            val fileMd5 = digest.toHexString() // DigestUtils.md5Hex(tmpFile.inputStream())
             require(fileMd5.toLowerCase() == md5.toLowerCase()) { "$artifactUrl did not match md5 hash: '$md5' file: $fileMd5" }
         }
 
@@ -194,4 +193,5 @@ object Bootstrap {
         tmpFile.delete()
         return targetFile
     }
+    fun ByteArray.toHexString(): String = joinToString("", transform = { "%02x".format(it) })
 }
