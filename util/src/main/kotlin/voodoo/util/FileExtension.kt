@@ -34,8 +34,5 @@ private val WINDOWS_SEPARATOR = '\\'
  */
 val File.unixPath: String
         get() {
-            val path = this.path
-            return if (path == null || path.indexOf(WINDOWS_SEPARATOR) == NOT_FOUND) {
-                path
-            } else path.replace(WINDOWS_SEPARATOR, UNIX_SEPARATOR)
+            return path.replace(WINDOWS_SEPARATOR, UNIX_SEPARATOR)
         }

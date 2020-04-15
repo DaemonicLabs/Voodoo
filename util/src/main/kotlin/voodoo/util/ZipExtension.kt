@@ -1,24 +1,26 @@
 package voodoo.util
 
+import java.io.File
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
-fun packToZip(sourceDir: Path, zipFilePath: Path) {
-    zipFilePath.toFile().let { if (it.exists()) it.delete() }
+fun packToZip(sourceDir: File, zipFile: File) {
+    zipFile.let { if (it.exists()) it.delete() }
 
-    val zipFile = Files.createFile(zipFilePath)
-
-    ZipOutputStream(Files.newOutputStream(zipFile)).use { stream ->
-        Files.walk(sourceDir).filter { path -> !Files.isDirectory(path) }.forEach { path ->
-            val zipEntry = ZipEntry(path.toString().substring(sourceDir.toString().length + 1).replace('\\', '/'))
-
-            stream.putNextEntry(zipEntry)
-            stream.write(Files.readAllBytes(path))
-            stream.closeEntry()
+    zipFile.createNewFile()
+    zipFile.outputStream().use { os ->
+        ZipOutputStream(os).use { stream ->
+            sourceDir.walkTopDown().filter { file -> !file.isDirectory }.forEach { file ->
+                val zipEntry = ZipEntry(file.relativeTo(sourceDir).unixPath)
+                stream.putNextEntry(zipEntry)
+                stream.write(file.readBytes())
+                stream.closeEntry()
+            }
         }
     }
+
 }
 
 // fun File.packToZip(sourceDir: File) {

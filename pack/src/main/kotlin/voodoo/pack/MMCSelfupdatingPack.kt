@@ -84,7 +84,7 @@ object MMCSelfupdatingPack : AbstractPack("mmc-sk") {
         val instanceZip = output.resolve(modpack.id + ".zip")
 
         instanceZip.delete()
-        packToZip(zipRootDir.toPath(), instanceZip.toPath())
+        packToZip(zipRootDir, instanceZip)
         logger.info("created mmc pack $instanceZip")
     }
 }
