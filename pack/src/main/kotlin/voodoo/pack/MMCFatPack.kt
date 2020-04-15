@@ -32,9 +32,10 @@ object MMCFatPack : AbstractPack("mmc-fat") {
         clean: Boolean
     ) = stopwatch {
         val cacheDir = directories.cacheHome
-        val instanceDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id)
+        val zipRootDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id)
+        val instanceDir = zipRootDir.resolve(modpack.id)
         val title = modpack.title.blankOr ?: modpack.id
-        instanceDir.deleteRecursively()
+        zipRootDir.deleteRecursively()
 
         instanceDir.mkdirs()
 
@@ -165,7 +166,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
         val instanceZip = output.resolve(modpack.id + ".zip")
 
         instanceZip.delete()
-        packToZip(instanceDir.toPath(), instanceZip.toPath())
+        packToZip(zipRootDir.toPath(), instanceZip.toPath())
         logger.info("created mmc pack $instanceZip")
     }
 }

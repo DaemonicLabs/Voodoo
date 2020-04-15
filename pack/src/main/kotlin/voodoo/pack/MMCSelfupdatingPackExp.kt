@@ -24,8 +24,9 @@ object MMCSelfupdatingPackExp : AbstractPack("mmc-experimental") {
         clean: Boolean
     ) = stopwatch {
         val cacheDir = directories.cacheHome
-        val instanceDir = cacheDir.resolve("MMC").resolve(modpack.id)
-        instanceDir.deleteRecursively()
+        val zipRootDir = cacheDir.resolve("MMC").resolve(modpack.id)
+        val instanceDir = zipRootDir.resolve(modpack.id)
+        zipRootDir.deleteRecursively()
 
         val installerFilename = "mmc-installer.jar"
         val preLaunchCommand =
@@ -83,7 +84,7 @@ object MMCSelfupdatingPackExp : AbstractPack("mmc-experimental") {
         val instanceZip = output.resolve(modpack.id + ".zip")
 
         instanceZip.delete()
-        packToZip(instanceDir.toPath(), instanceZip.toPath())
+        packToZip(zipRootDir.toPath(), instanceZip.toPath())
         logger.info("created mmc pack $instanceZip")
     }
 }
