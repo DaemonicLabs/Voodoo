@@ -96,8 +96,9 @@ object Server {
 
         when(val modloader = modpack.modloader) {
             is Modloader.Forge -> {
+                modloader.forgeVersion
                 // download forge
-                val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = ForgeUtil.forgeVersionOf(modloader.version)
+                val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = ForgeUtil.forgeVersionOf(modloader)
                 val forgeFile = directories.runtimeDir.resolve(forgeFileName)
                 logger.info("forge: $forgeLongVersion")
                 "download-forge".watch {

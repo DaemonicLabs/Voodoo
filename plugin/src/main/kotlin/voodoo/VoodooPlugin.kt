@@ -11,14 +11,15 @@ import org.gradle.kotlin.dsl.*
 import org.gradle.kotlin.dsl.accessors.runtime.addExternalModuleDependencyTo
 import org.gradle.plugins.ide.idea.model.IdeaModel
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import voodoo.plugin.PluginConstants
+import voodoo.plugin.GeneratedConstants
 import voodoo.poet.Poet
 import voodoo.util.SharedFolders
+import java.util.*
 
 open class VoodooPlugin : Plugin<Project> {
     override fun apply(project: Project) {
         val voodooExtension = project.run {
-            logger.lifecycle("version: ${PluginConstants.FULL_VERSION}")
+            logger.lifecycle("version: ${GeneratedConstants.FULL_VERSION}")
 
             pluginManager.apply("org.gradle.idea")
             pluginManager.apply("org.jetbrains.kotlin.jvm")
@@ -61,7 +62,7 @@ open class VoodooPlugin : Plugin<Project> {
             }
 
 
-            val (downloadVoodoo, voodooJar) = if (PluginConstants.BUILD == "dev") {
+            val (downloadVoodoo, voodooJar) = if (GeneratedConstants.BUILD == "dev") {
                 val downloadTask = task<MavenLocalVoodooJarTask>("localVoodoo") {
                     group = "voodoo"
                     description = "Copies the voodoo jar from mavenLocal()"
@@ -100,17 +101,27 @@ open class VoodooPlugin : Plugin<Project> {
             )
 
             project.dependencies {
-                addDependency("kotlinScriptDef", group = "moe.nikky.voodoo", name = "voodoo", version = PluginConstants.FULL_VERSION )
-                addDependency("kotlinScriptDef", group = "moe.nikky.voodoo", name = "dsl", version = PluginConstants.FULL_VERSION )
-                addDependency("implementation", group = "moe.nikky.voodoo", name = "voodoo", version = PluginConstants.FULL_VERSION )
-                addDependency("implementation", group = "moe.nikky.voodoo", name = "dsl", version = PluginConstants.FULL_VERSION )
+                addDependency("kotlinScriptDef", group = "moe.nikky.voodoo", name = "voodoo", version = GeneratedConstants.FULL_VERSION )
+                addDependency("kotlinScriptDef", group = "moe.nikky.voodoo", name = "dsl", version = GeneratedConstants.FULL_VERSION )
+                addDependency("implementation", group = "moe.nikky.voodoo", name = "voodoo", version = GeneratedConstants.FULL_VERSION )
+                addDependency("implementation", group = "moe.nikky.voodoo", name = "dsl", version = GeneratedConstants.FULL_VERSION )
             }
 
             task<AbstractTask>("voodooVersion") {
                 group = "voodoo"
                 description = "prints the used voodoo version"
                 doFirst {
-                    logger.lifecycle("version: ${PluginConstants.FULL_VERSION}")
+                    logger.lifecycle("version: ${GeneratedConstants.FULL_VERSION}")
+                    val props = Properties()
+                    props.load(VoodooPlugin::class.java.getResourceAsStream("/maven.properties"))
+                    val dependencies = props.mapNotNull { (k, v) ->
+                        if (k is String && v is String) k to v else null
+                    }.toMap()
+                    val width = dependencies.keys.map{it.length}.max() ?: 0
+
+                    dependencies.forEach { (project, version) ->
+                        logger.lifecycle("  ${project}:  ${version.padStart(width)}")
+                    }
                 }
             }
 

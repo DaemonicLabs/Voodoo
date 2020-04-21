@@ -82,11 +82,11 @@ object ServerPack : AbstractPack("server") {
 
         val installer = MavenUtil.downloadArtifact(
             "downloadArtifact server installer".watch,
-            mavenUrl = PackConstants.MAVEN_URL,
-            group = PackConstants.MAVEN_GROUP,
+            mavenUrl = GeneratedConstants.MAVEN_URL,
+            group = GeneratedConstants.MAVEN_GROUP,
             artifactId = "server-installer",
-            version = PackConstants.FULL_VERSION,
-            classifier = PackConstants.MAVEN_SHADOW_CLASSIFIER,
+            version = ModuleServerInstaller.FULL_VERSION,
+            classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
             outputDir = directories.cacheHome
         )
 

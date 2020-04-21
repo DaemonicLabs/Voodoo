@@ -6,7 +6,7 @@ import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.api.tasks.TaskAction
-import voodoo.plugin.PluginConstants
+import voodoo.plugin.GeneratedConstants
 import voodoo.util.maven.MavenUtil
 import java.io.File
 
@@ -16,7 +16,7 @@ open class DownloadVoodooTask : DefaultTask() {
     @OutputFile
     val lastFile = outputFolder.resolve("last.txt")
     @OutputFile
-    val jarFile: File = outputFolder.resolve("voodoo-${PluginConstants.FULL_VERSION}.jar")
+    val jarFile: File = outputFolder.resolve("voodoo-${GeneratedConstants.FULL_VERSION}.jar")
 
     init {
         group = "voodoo"
@@ -46,16 +46,16 @@ open class DownloadVoodooTask : DefaultTask() {
             runBlocking {
                 MavenUtil.downloadArtifact(
                     stopwatch = "downloadArtifact voodoo".watch,
-                    mavenUrl = PluginConstants.MAVEN_URL,
-                    group = PluginConstants.MAVEN_GROUP,
+                    mavenUrl = GeneratedConstants.MAVEN_URL,
+                    group = GeneratedConstants.MAVEN_GROUP,
                     artifactId = "voodoo",
-                    version = PluginConstants.FULL_VERSION,
-                    classifier = PluginConstants.MAVEN_SHADOW_CLASSIFIER,
+                    version = GeneratedConstants.FULL_VERSION,
+                    classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
                     outputDir = outputFolder,
                     outputFile = jarFile
                 )
             }
-            lastFile.writeText(PluginConstants.FULL_VERSION)
+            lastFile.writeText(GeneratedConstants.FULL_VERSION)
         }
         logger.info(stopwatch.toStringPretty())
     }

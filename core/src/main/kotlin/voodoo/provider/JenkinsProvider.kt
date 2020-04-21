@@ -4,7 +4,7 @@ import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import voodoo.core.CoreConstants.VERSION
+import voodoo.core.GeneratedConstants.VERSION
 import voodoo.data.EntryReportData
 import voodoo.data.Quadruple
 import voodoo.data.flat.Entry

@@ -17,7 +17,7 @@ import kotlin.script.experimental.host.toScriptSource
 object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
     val logger = KotlinLogging.logger {}
 
-    defaultImports(
+    val imports = listOf(
         voodoo.data.UserFiles::class,
         voodoo.data.DependencyType::class,
         voodoo.data.PackOptions::class,
@@ -32,6 +32,8 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         voodoo.data.nested.NestedEntry.Jenkins::class,
         voodoo.data.nested.NestedEntry.Local::class,
 
+        moe.nikky.voodoo.format.FnPatternList::class,
+
         com.skcraft.launcher.model.SKServer::class,
         com.skcraft.launcher.model.modpack.Recommendation::class,
 
@@ -39,7 +41,10 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         GenerateMods::class,
         GenerateTexturePacks::class,
         Include::class
-    )
+    ).map {
+        it.qualifiedName!!
+    }
+
     defaultImports.append(
         "voodoo.*",
         "voodoo.Include",
@@ -52,8 +57,10 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         "voodoo.data.*",
         "voodoo.data.curse.*",
         "voodoo.data.nested.NestedEntry.*",
+        "moe.nikky.voodoo.format.*",
         "com.skcraft.launcher.model.SKServer",
-        "com.skcraft.launcher.model.modpack.Recommendation"
+        "com.skcraft.launcher.model.modpack.Recommendation",
+        *(imports.toTypedArray())
     )
 
     compilerOptions.append("-jvm-target", "1.8")

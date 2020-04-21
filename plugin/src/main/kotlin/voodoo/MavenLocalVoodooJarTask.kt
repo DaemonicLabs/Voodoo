@@ -4,7 +4,7 @@ import org.gradle.api.tasks.GradleBuild
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.OutputFile
 import org.gradle.kotlin.dsl.getByName
-import voodoo.plugin.PluginConstants
+import voodoo.plugin.GeneratedConstants
 import voodoo.util.maven.MavenUtil
 import java.io.File
 
@@ -12,7 +12,7 @@ open class MavenLocalVoodooJarTask : GradleBuild() {
     @OutputDirectory
     val outputFolder = project.buildDir.resolve("voodoo")
     @OutputFile
-    val jarFile: File = outputFolder.resolve("voodoo-${PluginConstants.FULL_VERSION}.jar")
+    val jarFile: File = outputFolder.resolve("voodoo-${GeneratedConstants.FULL_VERSION}.jar")
 
     init {
         val voodooExtension = project.extensions.getByName<VoodooExtension>("voodoo")
@@ -31,10 +31,10 @@ open class MavenLocalVoodooJarTask : GradleBuild() {
 
         doLast {
             val shadowJarFile: File = MavenUtil.localMavenFile(
-                group = PluginConstants.MAVEN_GROUP,
+                group = GeneratedConstants.MAVEN_GROUP,
                 artifactId = "voodoo",
-                version = PluginConstants.FULL_VERSION,
-                classifier = PluginConstants.MAVEN_SHADOW_CLASSIFIER
+                version = GeneratedConstants.FULL_VERSION,
+                classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER
             )
             shadowJarFile.copyTo(jarFile, overwrite = true)
         }

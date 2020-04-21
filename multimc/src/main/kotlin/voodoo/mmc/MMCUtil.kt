@@ -193,7 +193,7 @@ object MMCUtil : KLogging() {
         if (mcVersion != null) {
             val modloaderComponents = when(val modloader = modloader) {
                 is Modloader.Forge -> {
-                    val forgeVersion = ForgeUtil.forgeVersionOf(modloader.version)?.forgeVersion
+                    val forgeVersion = modloader.forgeVersion
                     logger.info("forge version : $forgeVersion")
                     listOf(
                         PackComponent(

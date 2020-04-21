@@ -10,7 +10,7 @@ repositories {
 }
 
 dependencies {
-    compile(group = "com.squareup", name = "kotlinpoet", version = "1.0.0-RC1")
+    implementation(group = "com.squareup", name = "kotlinpoet", version = "1.5.0")
 }
 
 configure<GradlePluginDevelopmentExtension> {

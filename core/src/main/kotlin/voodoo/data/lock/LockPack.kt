@@ -184,8 +184,8 @@ data class LockPack(
         reports += PackReportData.MC_VERSION to mcVersion
         when(val loader = modloader) {
             is Modloader.Forge -> {
-                val forgeVersion = runBlocking { ForgeUtil.forgeVersionOf(loader.version).forgeVersion }
-                reports += PackReportData.FORGE_VERSION to forgeVersion
+                // TODO: add mcversion and branch ?
+                reports += PackReportData.FORGE_VERSION to loader.forgeVersion
             }
             is Modloader.Fabric -> {
                 reports += PackReportData.FABRIC_INTERMEDIARIES_VERSION to loader.intermediateMappings

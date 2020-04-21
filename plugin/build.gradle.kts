@@ -3,11 +3,12 @@ plugins {
     `kotlin-dsl`
 }
 
-val major: String by project
-val minor: String by project
-val patch: String by project
+
+val semVer = SemanticVersion.read(project)
+val (major, minor, patch) = semVer
+
 //// use "SNAPSHOT" on CI and "dev" locally
-val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "SNAPSHOT" } ?: "dev"
+val versionSuffix = System.getenv("BUILD_NUMBER")?.let { "SNAPSHOT" } ?: "local"
 version = "$major.$minor.$patch-$versionSuffix"
 
 gradlePlugin {

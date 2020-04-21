@@ -16,11 +16,11 @@ import kotlin.system.exitProcess
 
 object Pack : KLogging() {
     private val packMap = listOf(
-        ExperimentalPack,
-        MMCSelfupdatingPackExp,
+        VoodooPackager,
+        MMCSelfupdatingPackVoodoo,
         SKPack,
-        MMCSelfupdatingPack,
-        MMCSelfupdatingFatPack,
+        MMCSelfupdatingPackSk,
+        MMCSelfupdatingFatPackSk,
         MMCFatPack,
         ServerPack,
         CursePack

@@ -23,34 +23,38 @@ class TaskBuilder() {
     }
 
     class PackContext(private val tasks: MutableList<TaskType>) {
+        @Deprecated("will be removed")
         fun sklauncher() {
             tasks += TaskType.Pack.SKLauncher
         }
-        fun experimental() {
-            tasks += TaskType.Pack.Experimental
+        fun voodoo() {
+            tasks += TaskType.Pack.VoodooPackage
         }
-        fun newformat() {
-            tasks += TaskType.Pack.Experimental
+        @Deprecated("renamed", ReplaceWith("voodoo()"))
+        fun experimental() {
+            tasks += TaskType.Pack.VoodooPackage
         }
         @Deprecated("renamed", ReplaceWith("multimcSk()"))
         fun multimc() {
             tasks += TaskType.Pack.MultiMCSk
         }
-        fun multimcExperimental() {
-            tasks += TaskType.Pack.MultiMCExp
+        fun multimcVoodoo() {
+            tasks += TaskType.Pack.MultiMCVoodoo
         }
+        @Deprecated("renamed", ReplaceWith("multimcVoodoo()"))
+        fun multimcExperimental() {
+            tasks += TaskType.Pack.MultiMCVoodoo
+        }
+        @Deprecated("will be removed")
         fun multimcSk() {
             tasks += TaskType.Pack.MultiMCSk
         }
+        @Deprecated("will be removed")
         fun multimcSkFat() {
             tasks += TaskType.Pack.MultiMCSkFat
         }
         fun multimcFat() {
             tasks += TaskType.Pack.MultiMCFat
-        }
-        @Deprecated("removed", ReplaceWith("multimcSk()"))
-        fun multimcStatic() {
-            tasks += TaskType.Pack.MultiMCSk
         }
         fun server() {
             tasks += TaskType.Pack.Server

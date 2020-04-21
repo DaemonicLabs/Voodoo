@@ -1,16 +1,14 @@
 package voodoo.pack
 
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
 import com.skcraft.launcher.model.modpack.Manifest
+import io.ktor.client.request.get
+import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import mu.KotlinLogging
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
-import voodoo.curse.CurseClient
-import voodoo.util.useragent
-import kotlin.test.fail
+import voodoo.util.client
 
 private val logger = KotlinLogging.logger {}
 
@@ -20,15 +18,8 @@ object MMCSpek : Spek({
             val packUrl = "https://launcher.towerdevs.xyz/descentfrozenhell.json"
             println("pack url: $packUrl")
 
-            val (request, response, result) = packUrl.httpGet()
-                .header("User-Agent" to useragent)
-                .responseString()
-            when (result) {
-                is Result.Success -> Json(JsonConfiguration(ignoreUnknownKeys = true)).parse(Manifest.serializer(), result.value)
-                is Result.Failure -> {
-                    logger.error(result.error.exception) { "could not retrieve pack, ${result.error}" }
-                    fail("http request failed")
-                }
+            runBlocking {
+                client.get<Manifest>(packUrl)
             }
         }
         it("load") {

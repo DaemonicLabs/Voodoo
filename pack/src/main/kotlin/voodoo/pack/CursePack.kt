@@ -77,7 +77,7 @@ object CursePack : AbstractPack("curse") {
             val jobs = mutableListOf<Pair<String, Deferred<CurseFile?>>>()
 
             val forgeVersion = (modpack.modloader as? Modloader.Forge)?.let { loader ->
-                ForgeUtil.forgeVersionOf(loader.version).forgeVersion
+                ForgeUtil.forgeVersionOf(loader.forgeVersion)
             }
 
             val modsFolder = srcFolder.resolve("mods")

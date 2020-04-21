@@ -29,7 +29,7 @@ import voodoo.script.TomeScript
 import voodoo.tome.TomeEnv
 import voodoo.util.Directories
 import voodoo.util.SharedFolders
-import voodoo.voodoo.VoodooConstants
+import voodoo.voodoo.GeneratedConstants
 import java.io.File
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.system.exitProcess
@@ -43,7 +43,7 @@ object Voodoo : KLogging() {
 
         Thread.sleep(1000) // wait for logger to catch up
 
-        logger.debug("using Voodoo: ${VoodooConstants.FULL_VERSION}")
+        logger.debug("using Voodoo: ${GeneratedConstants.FULL_VERSION}")
         logger.debug("full arguments: ${fullArgs.joinToString(", ", "[", "]") { it }}")
         logger.debug("system.properties:")
         System.getProperties().forEach { k, v ->
@@ -169,7 +169,7 @@ object Voodoo : KLogging() {
                     TesterForDSL.main("test".watch, modpack, args = *args)
                 },
                 "version" to { _ ->
-                    logger.info(VoodooConstants.FULL_VERSION)
+                    logger.info(GeneratedConstants.FULL_VERSION)
                 }
             )
 
@@ -179,7 +179,7 @@ object Voodoo : KLogging() {
                 } else {
                     logger.error("unknown command '$cmd'")
                 }
-                logger.warn("voodoo ${VoodooConstants.FULL_VERSION}")
+                logger.warn("voodoo ${GeneratedConstants.FULL_VERSION}")
                 logger.warn("commands: ")
                 funcs.keys.forEach { key ->
                     logger.warn("> $key")

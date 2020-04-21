@@ -7,7 +7,7 @@ import com.xenomachina.argparser.default
 import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.data.lock.LockPack
-import voodoo.server.installer.ServerInstallerConstants.VERSION
+import voodoo.server.installer.GeneratedConstants.VERSION
 import java.io.File
 import kotlin.system.exitProcess
 

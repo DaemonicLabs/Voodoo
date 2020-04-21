@@ -30,12 +30,14 @@ rootProject.name = "voodoo-parent"
 include("voodoo")
 include("core")
 include("dsl")
+include("format", "format:packager")
 include("multimc", "multimc:installer")
-include("util")
+include("util", "util:download", "util:maven", "util:jenkins")
 include("tome", "pack", "pack:tester")
 include("server-installer")
-include("bootstrap")
+include("bootstrap", "bootstrap:multimc-installer", "bootstrap:voodoo")
 
+//TODO: remove
 include("skcraft")
 
 include("plugin")

@@ -21,10 +21,9 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
-import newformat.modpack.Manifest
-import newformat.modpack.entry.FileInstall
-import newformat.modpack.entry.Side
-import org.apache.commons.codec.digest.DigestUtils
+import moe.nikky.voodoo.format.modpack.Manifest
+import moe.nikky.voodoo.format.modpack.entry.FileInstall
+import moe.nikky.voodoo.format.modpack.entry.Side
 import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil.updateAndSelectFeatures
 import voodoo.mmc.data.MultiMCPack
@@ -53,8 +52,6 @@ object Hex : KLogging() {
         }
     }
 
-    private fun File.sha256(): String? = DigestUtils.sha256Hex(readBytes())
-
     private val json = Json(JsonConfiguration(prettyPrint = true, ignoreUnknownKeys = true, encodeDefaults = true))
 
     private suspend fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
@@ -64,7 +61,6 @@ object Hex : KLogging() {
         logger.info("pack url: $packUrl")
         val loader: DeserializationStrategy<Manifest> = Manifest.serializer()
 
-
         val response = withContext(Dispatchers.IO) {
             try {
                 client.get<HttpResponse> {
@@ -72,19 +68,19 @@ object Hex : KLogging() {
                     header(HttpHeaders.UserAgent, useragent)
                 }
             } catch (e: IOException) {
-                SKHandler.logger.error("packUrl: $packUrl")
-                SKHandler.logger.error(e) { "unable to get job from $packUrl" }
+                logger.error("packUrl: $packUrl")
+                logger.error(e) { "unable to get pack from $packUrl" }
                 error("failed to get $packUrl")
             }
         }
         if (!response.status.isSuccess()) {
-            SKHandler.logger.error { "$packUrl returned ${response.status}" }
+            logger.error { "$packUrl returned ${response.status}" }
             error("failed with ${response.status}")
         }
 
         val jsonString = response.readText()
         val modpack = try {
-            json.parse(newformat.modpack.Manifest.serializer(), jsonString)
+            json.parse(Manifest.serializer(), jsonString)
         } catch (e: SerializationException) {
             return SKHandler.install(
                 json.parse(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString),
@@ -195,7 +191,7 @@ object Hex : KLogging() {
                     launch(context = pool) {
                         val oldTask = oldTaskList.find { it.to == task.to }
 
-                        val whenTask = task.conditionWhen
+                        val whenTask = task.condition
                         if (whenTask != null) {
                             val download = when (whenTask.ifSwitch) {
                                 "requireAny" -> {
@@ -232,7 +228,7 @@ object Hex : KLogging() {
                                     }
                                     return@launch
                                 }
-                                if (oldTask.hash == task.hash && target.isFile && target.sha256() == task.hash.substringAfter(':')) {
+                                if (oldTask.hash == task.hash && target.isFile && target.sha256Hex() == task.hash.substringAfter(':')) {
                                     logger.info("task ${task.to} file did not change and sha256 hash matches")
                                     oldTask.let {
                                         uptodateTasks.send(it)
@@ -250,8 +246,8 @@ object Hex : KLogging() {
                                         url = url,
                                         cacheDir = cacheFolder,
                                         validator = { file ->
-                                            val sha256 = file.sha256()
-                                            SKHandler.logger.info("comparing $sha256 == ${task.hash} of file: $file")
+                                            val sha256 = file.sha256Hex()
+                                            logger.info("comparing $sha256 == ${task.hash} of file: $file")
                                             sha256 == task.hash.substringAfter(':')
                                         }
                                     )
@@ -266,8 +262,8 @@ object Hex : KLogging() {
                                     url = url,
                                     cacheDir = cacheFolder,
                                     validator = { file ->
-                                        val sha256 = file.sha256()
-                                        SKHandler.logger.info("comparing $sha256 == ${task.hash} of file: $file")
+                                        val sha256 = file.sha256Hex()
+                                        logger.info("comparing $sha256 == ${task.hash} of file: $file")
                                         sha256 == task.hash.substringAfter(':')
                                     }
                                 )
@@ -284,7 +280,7 @@ object Hex : KLogging() {
                         }
 
                         if (target.exists()) {
-                            val sha256 = target.sha256()
+                            val sha256 = target.sha256Hex()
                             if (sha256 != task.hash.substringAfter(':')) {
                                 logger.error("hashes do not match for task ${task.to}")
                                 error("hashes for ${task.to} do not match, expected: ${task.hash} actual: sha-256:$sha256")
@@ -321,7 +317,7 @@ object Hex : KLogging() {
                 listOf(
                     PackComponent(
                         uid = "net.minecraftforge",
-                        version = modloader.version.substringAfter("${modpack.gameVersion}-"),
+                        version = modloader.forgeVersion,
                         important = true
                     )
                 )

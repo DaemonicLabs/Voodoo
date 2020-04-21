@@ -22,7 +22,7 @@ open class GenerateConstantsTask : DefaultTask() {
 
     init {
         group = "build"
-        description = "Generates Constants"
+        description = "Generates GeneratedConstants"
     }
 
     @TaskAction
@@ -31,7 +31,9 @@ open class GenerateConstantsTask : DefaultTask() {
         extension.files.forEach { builder ->
 
             val constantBuilder =
-                TypeSpec.objectBuilder(ClassName(builder.pkg, builder.className))
+                TypeSpec.objectBuilder(ClassName(builder.pkg, builder.className)).apply {
+                    modifiers += KModifier.INTERNAL
+                }
 
             builder.fields.forEach { (key, value) ->
                 when (value) {

@@ -10,11 +10,14 @@ sealed class TaskType(open val command: String) {
     object Changelog: TaskType("changelog")
 
     sealed class Pack(subCommand: String): TaskType("pack $subCommand") {
-        object Experimental: Pack(ExperimentalPack.id)
+        object VoodooPackage: Pack(VoodooPackager.id)
+        object MultiMCVoodoo: Pack(MMCSelfupdatingPackVoodoo.id)
+        @Deprecated("will be removed")
         object SKLauncher: Pack(SKPack.id)
-        object MultiMCExp: Pack(MMCSelfupdatingPackExp.id)
-        object MultiMCSk: Pack(MMCSelfupdatingPack.id)
-        object MultiMCSkFat: Pack(MMCSelfupdatingFatPack.id)
+        @Deprecated("will be removed")
+        object MultiMCSk: Pack(MMCSelfupdatingPackSk.id)
+        @Deprecated("will be removed")
+        object MultiMCSkFat: Pack(MMCSelfupdatingFatPackSk.id)
         object MultiMCFat: Pack(MMCFatPack.id)
         object Server: Pack(ServerPack.id)
         object Curse: Pack(CursePack.id)

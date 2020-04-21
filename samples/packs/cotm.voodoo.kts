@@ -1,5 +1,3 @@
-import newformat.builder.FnPatternList
-
 mcVersion = "1.12.2"
 title = "Center of the Multiverse"
 authors = listOf("AnsuzThuriaz", "Falkreon", "NikkyAi")

@@ -6,11 +6,6 @@
  */
 package com.skcraft.launcher.builder
 
-import com.github.kittinunf.fuel.core.extensions.cUrlString
-import com.github.kittinunf.fuel.coroutines.awaitByteArrayResponseResult
-import com.github.kittinunf.fuel.coroutines.awaitStringResponseResult
-import com.github.kittinunf.fuel.httpGet
-import com.github.kittinunf.result.Result
 import com.skcraft.launcher.LauncherUtils
 import com.skcraft.launcher.model.loader.InstallProfile
 import com.skcraft.launcher.model.minecraft.Library
@@ -18,9 +13,14 @@ import com.skcraft.launcher.model.minecraft.VersionManifest
 import com.skcraft.launcher.model.modpack.Manifest
 import com.skcraft.launcher.util.Environment
 import com.xenomachina.argparser.ArgParser
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.client.request.url
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readText
+import io.ktor.http.HttpHeaders
+import io.ktor.http.isSuccess
+import kotlinx.coroutines.*
 import kotlinx.io.InputStream
 import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.InternalSerializationApi
@@ -29,9 +29,7 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
-import voodoo.util.Downloader
-import voodoo.util.copyInputStreamToFile
-import voodoo.util.withPool
+import voodoo.util.*
 import java.io.Closeable
 import java.io.File
 import java.io.IOException
@@ -194,24 +192,26 @@ constructor(
                                 }
                                 val url = baseUrl + pathname
                                 val tempFile = File.createTempFile("launcherlib", null)
+
                                 try {
                                     logger.info("Downloading library " + library.name + " from " + url + "...")
-                                    val (request, response, result) = url.httpGet()
-                                        .header("User-Agent" to Downloader.useragent)
-                                        .awaitByteArrayResponseResult()
-                                    val bytes = when (result) {
-                                        is Result.Success -> result.value
-                                        is Result.Failure -> {
-                                            logger.error("downloadLibraries")
-                                            logger.error("url: $url")
-                                            logger.error("cUrl: ${request.cUrlString()}")
-                                            logger.error(result.error.exception) { "Could not get file from $url: ${response.statusCode}" }
-                                            continue@loop
-                                        }
-                                    }
+                                    tempFile.download(url, cacheDir = tempFile.parentFile)
+//                                    val (request, response, result) = url.httpGet()
+//                                        .header("User-Agent" to Downloader.useragent)
+//                                        .awaitByteArrayResponseResult()
+//                                    val bytes = when (result) {
+//                                        is Result.Success -> result.value
+//                                        is Result.Failure -> {
+//                                            logger.error("downloadLibraries")
+//                                            logger.error("url: $url")
+//                                            logger.error("cUrl: ${request.cUrlString()}")
+//                                            logger.error(result.error.exception) { "Could not get file from $url: ${response.statusCode}" }
+//                                            continue@loop
+//                                        }
+//                                    }
 
                                     logger.info("writing to $tempFile")
-                                    tempFile.writeBytes(bytes)
+//                                    tempFile.writeBytes(bytes)
                                 } catch (e: Exception) {
                                     logger.info("Could not get file from $url: ${e.message}")
                                     continue
@@ -277,26 +277,26 @@ constructor(
             val url = String.format(properties.getProperty("versionManifestUrl"), manifest.gameVersion)
             logger.info("Fetching version manifest from $url...")
 
-            val (request, response, result) = url.httpGet()
-                .header("User-Agent" to Downloader.useragent)
-                .awaitStringResponseResult()
-            manifest.versionManifest = when (result) {
-                is Result.Success -> {
-                    val jsonString = result.value
-                    val tmp = File.createTempFile("lib", ".json")
-                    tmp.writeText(jsonString)
-                    logger.info("parsing json: $tmp")
-                    json.parse(VersionManifest.serializer(), jsonString)
-                }
-                is Result.Failure -> {
-                    logger.error("readVersionManifest")
+            val response = withContext(Dispatchers.IO) {
+                try {
+                    client.get<HttpResponse> {
+                        url(url)
+                        header(HttpHeaders.UserAgent, useragent)
+                    }
+                } catch (e: IOException) {
                     logger.error("url: $url")
-                    logger.error("cUrl: ${request.cUrlString()}")
-                    logger.error("response: $response")
-                    logger.error(result.error.exception) { "cannot parse manifest from $url" }
-                    throw result.error.exception
+                    logger.error(e) { "unable to get pack from $url" }
+                    error("failed to get $url")
                 }
             }
+            if (!response.status.isSuccess()) {
+                logger.error { "$url returned ${response.status}" }
+                error("failed with ${response.status}")
+            }
+
+            val jsonString = response.readText()
+            manifest.versionManifest = json.parse(VersionManifest.serializer(), jsonString)
+
         }
     }
 

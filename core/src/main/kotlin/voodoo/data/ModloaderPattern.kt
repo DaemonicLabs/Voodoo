@@ -16,7 +16,7 @@ sealed class ModloaderPattern {
         // https://files.minecraftforge.net/maven/net/minecraftforge/forge/maven-metadata.xml
         val version: String
     ) : ModloaderPattern() {
-        override suspend fun lock() = Modloader.Forge(version = version)
+        override suspend fun lock() = Modloader.Forge.parse(version = version)
     }
     // look up versions from https://meta.fabricmc.net/
     data class Fabric(

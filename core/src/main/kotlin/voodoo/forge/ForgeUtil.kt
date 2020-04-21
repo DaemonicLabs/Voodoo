@@ -88,8 +88,23 @@ object ForgeUtil : KLogging() {
         if (version == null) return null
         return forgeVersionOf(version)
     }
-    fun forgeVersionOf(fullVersion: FullVersion): ForgeVersion {
+    fun forgeVersionOf(modloader: Modloader.Forge): ForgeVersion {
+        // https://files.minecraftforge.net/maven/net/minecraftforge/forge
+        val webpath = "https://files.minecraftforge.net/maven/net/minecraftforge/forge"
 
+        val version = "${modloader.mcVersion}-${modloader.mcVersion}" + (modloader.branch ?.let { "-$it" } ?: "")
+
+        val fileName = "forge-${version}-installer.jar" // "forge-mcversion-$forgeVersion(-$branch)/installer.jar"
+        val url = "$webpath/${version}/$fileName"
+
+        return ForgeVersion(
+            url,
+            fileName,
+            version,
+            modloader.forgeVersion
+        )
+    }
+    fun forgeVersionOf(fullVersion: FullVersion): ForgeVersion {
         // https://files.minecraftforge.net/maven/net/minecraftforge/forge
         val webpath = "https://files.minecraftforge.net/maven/net/minecraftforge/forge"
 

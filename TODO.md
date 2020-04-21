@@ -1,4 +1,52 @@
-# voodoo 2
+## semver reminder on submodules
+
+version.properties is used by the buildsystem to generate `version`
+lastVersion.properties is untracked
+
+do we still need buildnumbers when we have full semantic versions ?
+
+checkSourceVerified task on each submodule
+- looks up a marker file
+- checks if the hashes of `src` match the marker
+- include hashes of project dependencies
+
+increase{Major|Minor|Patch} and verifyCompatible tasks on each submodule
+- if lastVersion.properties does not exist
+  - copy version.properties to lastVersion.properties
+- update semver parts (based on lastVersion.properties)
+- update marker file
+
+preCommit
+ - checkSourceVerified
+ - checkSemverChanges
+ - delete lastVersion.properties if check passed
+
+generate constants files for versions of all the modules at time of compilation
+```kotlin
+package moe.nikky.voodoo.core
+internal object DependencyVersions {
+    const val util = "1.4.5-3"
+}
+```
+
+IMPORTANT DEV FEATURE
+TODO: open UI for semver control
+   each project o na separate line
+   buttons: increment{Major|Minor|Patch} noChange reset
+   show pending changes of dependencies (and warnings)
+
+TODO: do not re-publish modules that had no changes in CI and dev
+
+TO TEST:
+   - does not publishing all jars make dependencies still work ?
+   - force subproject with changed dependencies to bump version
+   - how to filter subprojects to publish
+
+TODO: multinc-installer downloads next bootstrap-multimc-installer and updates PRE_LAUNCH command
+
+IN-PROGRESS: split util into multiple sub-modules
+
+TODO: merge tome into dsl ?
 
 ## changelog v2
 

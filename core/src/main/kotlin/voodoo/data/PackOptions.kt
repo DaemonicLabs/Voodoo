@@ -2,7 +2,7 @@ package voodoo.data
 
 import com.skcraft.launcher.model.SKServer
 import kotlinx.serialization.Serializable
-import newformat.builder.FnPatternList
+import moe.nikky.voodoo.format.FnPatternList
 
 @Serializable
 data class PackOptions(
@@ -11,12 +11,15 @@ data class PackOptions(
     var experimentalOptions: ExperimentalPackOptions = ExperimentalPackOptions(),
     var baseUrl: String? = null
 ) {
+    @PackDSL
     fun multimc(configure: MultiMC.() -> Unit) {
         multimcOptions.configure()
     }
+    @PackDSL
     fun skcraft(configure: SKCraft.() -> Unit) {
         skCraftOptions.configure()
     }
+    @PackDSL
     fun experimental(configure: ExperimentalPackOptions.() -> Unit) {
         experimentalOptions.configure()
     }

@@ -12,14 +12,12 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
-import org.apache.commons.codec.digest.DigestUtils
 import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil.updateAndSelectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.*
 import java.io.File
-import java.security.MessageDigest
 import kotlin.system.exitProcess
 
 /**
@@ -31,7 +29,6 @@ object SKHandler : KLogging() {
     private val directories = Directories.get(moduleName = "multimc")
 //    val kit = Toolkit.getDefaultToolkit()
 
-    private fun File.sha1Hex(): String? = DigestUtils.sha1Hex(this.readBytes())
 //    private fun File.sha1Hex(): String {
 //        val digest = MessageDigest.getInstance("SHA-1")
 //        return digest.digest(this.readBytes()).toHexString()

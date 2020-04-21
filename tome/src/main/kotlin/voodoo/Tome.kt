@@ -59,10 +59,7 @@ object Tome : KLogging() {
                 }
                 when(val modloader = modloader) {
                     is Modloader.Forge -> {
-                        val forgeVersion = runBlocking {
-                            ForgeUtil.forgeVersionOf(modloader.version)?.forgeVersion ?: "missing"
-                        }
-                        it += listOf("Forge Version", forgeVersion)
+                        it += listOf("Forge Version", modloader.forgeVersion)
                     }
                     is Modloader.Fabric -> {
                         it += listOf("Fabric Intermediaries Version", modloader.intermediateMappings)

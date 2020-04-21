@@ -2,6 +2,7 @@ package voodoo.dsl.builder
 
 import mu.KLogging
 import voodoo.data.ModloaderPattern
+import voodoo.data.PackDSL
 import voodoo.data.PackOptions
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
@@ -31,7 +32,7 @@ open class ModpackBuilder(
             modloader { forge(value) }
         }
 
-
+    @PackDSL
     fun pack(configurePack: PackOptions.() -> Unit) {
         pack.packOptions.configurePack()
     }
