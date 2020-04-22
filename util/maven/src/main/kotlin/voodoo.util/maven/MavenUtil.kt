@@ -41,7 +41,6 @@ object MavenUtil : KLogging() {
     }
 
     suspend fun downloadArtifact(
-        stopwatch: Stopwatch,
         mavenUrl: String,
         group: String,
         artifactId: String,
@@ -51,7 +50,7 @@ object MavenUtil : KLogging() {
         outputDir: File,
         outputFile: File? = null,
         verifyChecksum: Boolean = true
-    ) = stopwatch {
+    ): File {
         val classifierSuffix = classifier?.let { "-$it"} ?: ""
 
         if(version.endsWith("-local") && group == "moe.nikky.voodoo") {
@@ -65,7 +64,7 @@ object MavenUtil : KLogging() {
             val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
             file.copyTo(targetFile, true)
 
-            return@stopwatch targetFile
+            return targetFile
         }
 
 
@@ -123,7 +122,7 @@ object MavenUtil : KLogging() {
 
         tmpFile.copyTo(targetFile, overwrite = true)
         tmpFile.delete()
-        return@stopwatch targetFile
+        return targetFile
     }
 
     suspend fun getMavenMetadata(

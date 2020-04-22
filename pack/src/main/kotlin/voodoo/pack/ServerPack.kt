@@ -80,15 +80,16 @@ object ServerPack : AbstractPack("server") {
         // TODO: special-case in local dev mode ?
         // TODO:   package fatJar from localVoodoo then ?
 
-        val installer = MavenUtil.downloadArtifact(
-            "downloadArtifact server installer".watch,
-            mavenUrl = GeneratedConstants.MAVEN_URL,
-            group = GeneratedConstants.MAVEN_GROUP,
-            artifactId = "server-installer",
-            version = ModuleServerInstaller.FULL_VERSION,
-            classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
-            outputDir = directories.cacheHome
-        )
+        val installer = "downloadArtifact server installer".watch {
+            MavenUtil.downloadArtifact(
+                mavenUrl = GeneratedConstants.MAVEN_URL,
+                group = GeneratedConstants.MAVEN_GROUP,
+                artifactId = "server-installer",
+                version = ModuleServerInstaller.FULL_VERSION,
+                classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
+                outputDir = directories.cacheHome
+            )
+        }
 
         val serverInstaller = output.resolve("server-installer.jar")
         installer.copyTo(serverInstaller)

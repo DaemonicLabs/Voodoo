@@ -133,12 +133,12 @@ object MMCUtil : KLogging() {
         }
     }
 
-    private fun readCfg(cfgFile: File): SortedMap<String, String> =
+    fun readCfg(cfgFile: File): SortedMap<String, String> =
         cfgFile.bufferedReader().useLines { lines ->
             lines.map { Pair(it.substringBefore('='), it.substringAfter('=')) }.toMap().toSortedMap()
         }
 
-    private fun writeCfg(cfgFile: File, properties: Map<String, String>) {
+    fun writeCfg(cfgFile: File, properties: Map<String, String>) {
         cfgFile.createNewFile()
         cfgFile.writeText(
             properties.map { (key, value) -> "$key=$value" }

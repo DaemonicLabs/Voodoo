@@ -326,11 +326,24 @@ tasks.register<DefaultTask>("versionInfo") {
             val current = SemanticVersion.read(subProject)
             val last = SemanticVersion.readLastIfExists(subProject)
 
-            logger.lifecycle("[${subProject.name}] ${last?.let { "$it ->" } ?: ""} $current")
+            val versionMessage = if(last != null && last != current) {
+                "$last -> $current"
+            } else {
+                current.toString()
+            }
+            logger.lifecycle("[${subProject.name}] $versionMessage")
+            val expectedSourceChecksum = subProject.sourceChecksum()
+            val actualSourceChecksum = subProject.checksumFile.takeIf { it.exists() }?.readText()?.trim()
+            if(expectedSourceChecksum != actualSourceChecksum) {
+                logger.lifecycle(" source checksum: expected: $actualSourceChecksum actual: $expectedSourceChecksum")
+            }
+
             subProject.dependenciesSemverChanges().forEach { (depProjectName, change) ->
                 // TODO: get change types [Major, Minor, Patch]
                 val (depLast, depCurrent) = change
-                logger.lifecycle(" - ${depProjectName}: $depLast -> $depCurrent")
+                if(depLast != depCurrent) {
+                    logger.lifecycle(" - ${depProjectName}: $depLast -> $depCurrent")
+                }
             }
         }
     }
@@ -479,56 +492,54 @@ subprojects {
             }
         }
 
+        fun Project.incrementPatchForDependents(causeVersion: SemanticVersion) {
+            projectDependents().forEach { project ->
+                val nextSemver = SemanticVersion.readLast(project).incrementPatch()
+                val currentSemver = SemanticVersion.read(project)
+//            logger.lifecycle("increment patch for ${name} $nextSemver -> $nextSemver")
+                if(currentSemver <= nextSemver) {
+                    logger.lifecycle("increment patch for ${project.name} $nextSemver -> $nextSemver")
+                    nextSemver.write(project)
+
+                    project.writeDependenciesVersions(
+                        project.readDependenciesVersionsFromFile() + (this.name to causeVersion.toString())
+                    )
+                    project.incrementPatchForDependents(nextSemver)
+                }
+            }
+        }
 
         tasks.register<DefaultTask>(project.name + "-incrementMajor") {
             group = "semver-${project.name}"
             doLast {
                 val oldSemver = SemanticVersion.readLast(project)
-                oldSemver.incrementMajor().write(project)
+                val nextSemVer = oldSemver.incrementMajor()
+                nextSemVer.write(project)
                 project.checksumFile.writeText(project.sourceChecksum())
 
-                project.projectDependentsAll().forEach { depProject ->
-                    val nextSemVer = SemanticVersion.readLast(depProject).incrementPatch()
-                    val currentSemVer = SemanticVersion.read(depProject)
-                    if(currentSemVer < nextSemVer) {
-                        logger.lifecycle("increment patch for ${depProject.name} $currentSemVer -> $nextSemVer")
-                        nextSemVer.write(depProject)
-                    }
-                }
+                project.incrementPatchForDependents(nextSemVer)
             }
         }
         tasks.register<DefaultTask>(project.name + "-incrementMinor") {
             group = "semver-${project.name}"
             doLast {
                 val oldSemver = SemanticVersion.readLast(project)
-                oldSemver.incrementMinor().write(project)
+                val nextSemVer = oldSemver.incrementMinor()
+                nextSemVer.write(project)
                 project.checksumFile.writeText(project.sourceChecksum())
 
-                project.projectDependentsAll().forEach { depProject ->
-                    val nextSemVer = SemanticVersion.readLast(depProject).incrementPatch()
-                    val currentSemVer = SemanticVersion.read(depProject)
-                    if(currentSemVer < nextSemVer) {
-                        logger.lifecycle("increment patch for ${depProject.name} $currentSemVer -> $nextSemVer")
-                        nextSemVer.write(depProject)
-                    }
-                }
+                project.incrementPatchForDependents(nextSemVer)
             }
         }
         tasks.register<DefaultTask>(project.name + "-incrementPatch") {
             group = "semver-${project.name}"
             doLast {
                 val oldSemver = SemanticVersion.readLast(project)
-                oldSemver.incrementPatch().write(project)
+                val nextSemVer = oldSemver.incrementPatch()
+                nextSemVer.write(project)
                 project.checksumFile.writeText(project.sourceChecksum())
 
-                project.projectDependentsAll().forEach { depProject ->
-                    val nextSemVer = SemanticVersion.readLast(depProject).incrementPatch()
-                    val currentSemVer = SemanticVersion.read(depProject)
-                    if(currentSemVer < nextSemVer) {
-                        logger.lifecycle("increment patch for ${depProject.name} $currentSemVer -> $nextSemVer")
-                        nextSemVer.write(depProject)
-                    }
-                }
+                project.incrementPatchForDependents(nextSemVer)
             }
         }
         tasks.register<DefaultTask>(project.name + "-wipeDependenciesWarnings") {
@@ -548,13 +559,13 @@ subprojects {
 //                last.write(project)
 //            }
 //        }
-        tasks.register<DefaultTask>(project.name + "-noVersionChange") {
-            group = "semver-${project.name}"
-            doLast {
-                logger.warn("ignoring possible incompatibility")
-                project.checksumFile.writeText(project.sourceChecksum())
-            }
-        }
+//        tasks.register<DefaultTask>(project.name + "-noVersionChange") {
+//            group = "semver-${project.name}"
+//            doLast {
+//                logger.warn("ignoring possible incompatibility")
+//                project.checksumFile.writeText(project.sourceChecksum())
+//            }
+//        }
         if(project.hasProperty("precommit")) {
             tasks.register<DefaultTask>( "overrideLastVersion") {
 //                group = "semver-${project.name}"
@@ -627,13 +638,6 @@ subprojects {
                     field("MAVEN_GROUP") value group.toString()
                     field("MAVEN_ARTIFACT") value project.name
                     field("MAVEN_SHADOW_CLASSIFIER") value Maven.shadowClassifier
-
-                    project.projectDependents().forEach { pr ->
-                        logger.lifecycle("adding dependency $pr")
-                        field(
-                            "DEP_" + pr.name.split("-")
-                                .joinToString("_") { it.toUpperCase() }) value pr.version.toString()
-                    }
                 }
                 project.rootProject.subprojects.forEach { pr ->
                     if (pr == project) return@forEach

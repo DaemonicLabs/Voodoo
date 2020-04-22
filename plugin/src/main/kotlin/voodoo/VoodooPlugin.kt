@@ -113,7 +113,7 @@ open class VoodooPlugin : Plugin<Project> {
                 doFirst {
                     logger.lifecycle("version: ${GeneratedConstants.FULL_VERSION}")
                     val props = Properties()
-                    props.load(VoodooPlugin::class.java.getResourceAsStream("/maven.properties"))
+                    props.load(VoodooPlugin::class.java.getResourceAsStream("/dependencies.properties"))
                     val dependencies = props.mapNotNull { (k, v) ->
                         if (k is String && v is String) k to v else null
                     }.toMap()

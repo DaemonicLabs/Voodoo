@@ -194,16 +194,18 @@ object MMCSelfupdatingFatPackSk : AbstractPack("mmc-sk-fat") {
         json.parse(Manifest.serializer(), voodooModpackJson.readText())
 
         val multimcInstaller = instanceDir.resolve(installerFilename)
-        val installer = MavenUtil.downloadArtifact(
-            stopwatch = "downloadArtifact multimc installer bootstrap".watch,
-            mavenUrl = GeneratedConstants.MAVEN_URL,
-            group = GeneratedConstants.MAVEN_GROUP,
-            artifactId = "bootstrap-multimc-installer",
-            version = ModuleBootstrapMultimcInstaller.FULL_VERSION,
-            classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
-            outputFile = multimcInstaller,
-            outputDir = directories.cacheHome
-        )
+        val installer = "downloadArtifact multimc installer bootstrap".watch {
+            MavenUtil.downloadArtifact(
+                mavenUrl = GeneratedConstants.MAVEN_URL,
+                group = GeneratedConstants.MAVEN_GROUP,
+                artifactId = "bootstrap-multimc-installer",
+                version = ModuleBootstrapMultimcInstaller.FULL_VERSION,
+                classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
+                outputFile = multimcInstaller,
+                outputDir = directories.cacheHome
+            )
+        }
+
 //        installer.copyTo(multimcInstaller)
 
         val packignore = instanceDir.resolve(".packignore")

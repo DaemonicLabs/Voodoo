@@ -25,10 +25,14 @@ import moe.nikky.voodoo.format.modpack.Manifest
 import moe.nikky.voodoo.format.modpack.entry.FileInstall
 import moe.nikky.voodoo.format.modpack.entry.Side
 import voodoo.mmc.MMCSelectable
+import voodoo.mmc.MMCUtil
 import voodoo.mmc.MMCUtil.updateAndSelectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
+import voodoo.multimc.installer.GeneratedConstants
+import voodoo.multimc.installer.ModuleBootstrapMultimcInstaller
 import voodoo.util.*
+import voodoo.util.maven.MavenUtil
 import java.io.File
 import java.io.IOException
 
@@ -48,8 +52,56 @@ object Hex : KLogging() {
         val arguments = Arguments(ArgParser(args))
 
         arguments.run {
+            selfupdate(instanceDir)
             install(instanceId, instanceDir, minecraftDir)
         }
+    }
+
+    private suspend fun selfupdate(instanceDir: File) {
+        val voodooFolder = instanceDir.resolve(".voodoo").apply {mkdirs()}
+        val toDeleteFile = voodooFolder.resolve("to-delete.txt")
+        toDeleteFile.parentFile.mkdirs()
+        if(toDeleteFile.exists()) {
+            instanceDir.resolve(toDeleteFile.readText())
+                .takeIf { it.exists() }
+                ?.delete()
+        }
+
+        val cfgFile = instanceDir.resolve("instance.cfg")
+        val cfg = MMCUtil.readCfg(cfgFile)
+
+        val oldPreLaunchCommand = cfg["PreLaunchCommand"]
+
+        if(cfg["OverrideCommands"] == "true" && oldPreLaunchCommand != null) {
+            val installerFilename = "mmc-installer-${ModuleBootstrapMultimcInstaller.FULL_VERSION}"
+
+            val currentJarFilePath = oldPreLaunchCommand.substringAfter("\"\$INST_JAVA\" -jar \"\$INST_DIR/").substringBefore("\"")
+            val currentJarFile = instanceDir.resolve(currentJarFilePath)
+
+            if(currentJarFile.exists() && currentJarFile.name != installerFilename) {
+                val installerFile = MavenUtil.downloadArtifact(
+                    mavenUrl = GeneratedConstants.MAVEN_URL,
+                    group = GeneratedConstants.MAVEN_GROUP,
+                    artifactId = "bootstrap-multimc-installer",
+                    version = ModuleBootstrapMultimcInstaller.FULL_VERSION,
+                    classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
+                    outputFile = instanceDir.resolve(installerFilename),
+                    outputDir = instanceDir
+                )
+                val preLaunchCommand =
+                    "\"\$INST_JAVA\" -jar \"\$INST_DIR/${installerFile.toRelativeString(instanceDir).replace('\\', '/')}\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
+
+                cfg["PreLaunchCommand"] = preLaunchCommand
+
+                MMCUtil.writeCfg(cfgFile, cfg)
+
+                toDeleteFile.writeText(currentJarFile.toRelativeString(instanceDir))
+            }
+        } else {
+            logger.info("commands are not enabled, not updating bootstrapper")
+        }
+
+
     }
 
     private val json = Json(JsonConfiguration(prettyPrint = true, ignoreUnknownKeys = true, encodeDefaults = true))
