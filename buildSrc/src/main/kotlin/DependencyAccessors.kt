@@ -84,6 +84,7 @@ fun Project.setupDependencies(target: Project = this, projectOnly: Boolean = fal
         rootProject.project(":voodoo") -> {
             dependencies {
                 apiRecursive(project(":dsl"))
+                apiRecursive(project(":tome"))
                 apiRecursive(project(":util:util-download"))
 
                 implementation(project(":core"))
@@ -102,11 +103,14 @@ fun Project.setupDependencies(target: Project = this, projectOnly: Boolean = fal
                 if(!projectOnly) {
                     implementation(Argparser.dependency)
 
-//                    api(kotlin("stdlib-jdk8", Kotlin.version))
+                    // script evaluations
                     implementation(kotlin("script-util", Kotlin.version))
                     implementation(kotlin("scripting-jvm-host-embeddable", Kotlin.version))
                     implementation(kotlin("scripting-compiler-embeddable", Kotlin.version))
                     implementation(kotlin("scripting-compiler-impl-embeddable", Kotlin.version))
+
+                    // script definitions
+                    implementation(kotlin("scripting-jvm", Kotlin.version))
 
                     testImplementation(kotlin("test", Kotlin.version))
 
@@ -167,7 +171,7 @@ fun Project.setupDependencies(target: Project = this, projectOnly: Boolean = fal
 //                implementation(project(":util:util-download"))
 
                 if(!projectOnly) {
-                    implementation(kotlin("scripting-jvm", Kotlin.version))
+//                    implementation(kotlin("scripting-jvm", Kotlin.version))
 
                     // required for InvalidScriptResolverAnnotation
 //                implementation(kotlin("compiler-embeddable", Kotlin.version))

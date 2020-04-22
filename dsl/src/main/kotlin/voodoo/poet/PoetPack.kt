@@ -14,9 +14,9 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
+import voodoo.dsl.builder.ModpackBuilder
 import voodoo.forge.ForgeUtil
 import voodoo.provider.Providers
-import voodoo.script.MainScriptEnv
 import java.io.File
 import java.io.OutputStreamWriter
 import java.nio.charset.StandardCharsets
@@ -203,7 +203,7 @@ object PoetPack : KLogging() {
     ) {
         Thread.currentThread().contextClassLoader = PoetPack::class.java.classLoader
         val mainEnv = CodeBlock.builder().let { mainEnv ->
-            val default = MainScriptEnv(rootFolder = nestedPack.rootFolder, id = nestedPack.id).apply {
+            val default = ModpackBuilder(NestedPack.create(rootFolder = nestedPack.rootFolder, id = nestedPack.id)).apply {
                 mcVersion = nestedPack.mcVersion
             }
             nestedPack.mcVersion.let {

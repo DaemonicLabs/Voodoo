@@ -1,6 +1,6 @@
 package voodoo.script
 
-import voodoo.Include
+import voodoo.script.annotation.Include
 import kotlin.script.experimental.api.ScriptCompilationConfiguration
 import kotlin.script.experimental.api.defaultImports
 import kotlin.script.experimental.api.refineConfiguration

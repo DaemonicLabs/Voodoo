@@ -1,4 +1,4 @@
-package voodoo
+package voodoo.script.annotation
 
 import voodoo.util.SharedFolders
 import kotlin.script.experimental.api.ResultWithDiagnostics
@@ -64,7 +64,8 @@ annotation class Include(val filename: String) {
 
         fun configureIncludes(context: ScriptConfigurationRefinementContext): ResultWithDiagnostics<ScriptCompilationConfiguration> {
             val reports: MutableList<ScriptDiagnostic> = mutableListOf()
-            val compilationConfiguration = configureIncludes(reports, context)
+            val compilationConfiguration =
+                configureIncludes(reports, context)
             return compilationConfiguration.asSuccess(reports)
         }
     }

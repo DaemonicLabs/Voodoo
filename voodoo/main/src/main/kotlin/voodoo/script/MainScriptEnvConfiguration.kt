@@ -4,11 +4,11 @@ import mu.KotlinLogging
 import voodoo.GenerateForge
 import voodoo.GenerateMods
 import voodoo.GenerateTexturePacks
-import voodoo.Include
 import voodoo.poet.Poet
 import voodoo.poet.generator.CurseGenerator
 import voodoo.poet.generator.CurseSection
 import voodoo.poet.generator.ForgeGenerator
+import voodoo.script.annotation.Include
 import voodoo.util.SharedFolders
 import kotlin.script.experimental.api.*
 import kotlin.script.experimental.host.FileBasedScriptSource
@@ -47,7 +47,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
 
     defaultImports.append(
         "voodoo.*",
-        "voodoo.Include",
+        "voodoo.script.annotation.Include",
         "voodoo.dsl.*",
         "voodoo.provider.CurseProvider",
         "voodoo.provider.DirectProvider",

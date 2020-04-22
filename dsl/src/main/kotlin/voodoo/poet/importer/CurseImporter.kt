@@ -15,7 +15,8 @@ import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.FileType
 import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
-import voodoo.script.MainScriptEnv
+import voodoo.data.nested.NestedPack
+import voodoo.dsl.builder.ModpackBuilder
 import voodoo.util.UnzipUtility.unzip
 import voodoo.util.blankOr
 import voodoo.util.download
@@ -112,9 +113,11 @@ object CurseImporter : AbstractImporter() {
 //        val forge = manifest.minecraft.modLoaders
 //            .find { it.id.startsWith("forge-") }?.id?.substringAfterLast('.')
 
-        val scriptEnv = MainScriptEnv(
-            rootFolder = rootFolder,
-            id = modpackId
+        val scriptEnv = ModpackBuilder(
+            NestedPack.create(
+                rootFolder = rootFolder,
+                id = modpackId
+            )
         ).apply {
             mcVersion = manifest.minecraft.version
             authors = listOf(manifest.author)

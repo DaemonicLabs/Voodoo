@@ -11,9 +11,10 @@ import org.gradle.api.tasks.options.Option
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
+import voodoo.data.nested.NestedPack
+import voodoo.dsl.builder.ModpackBuilder
 import voodoo.poet.Poet
 import voodoo.poet.PoetPack
-import voodoo.script.MainScriptEnv
 import java.io.File
 
 open class CreatePackTask : DefaultTask() {
@@ -59,9 +60,11 @@ open class CreatePackTask : DefaultTask() {
 //            ForgeUtil.deferredPromo.await()
 //        }
 
-        val scriptEnv = MainScriptEnv(
-            rootFolder = rootDir,
-            id = id ?: throw GradleException("id was null")
+        val scriptEnv = ModpackBuilder(
+            NestedPack.create(
+                rootFolder = rootDir,
+                id = id ?: throw GradleException("id was null")
+            )
         ).apply {
             mcVersion = this@CreatePackTask.mcVersion ?: throw GradleException("mcVersion was null")
             title = titleStr.takeIf { it.isNotBlank() } ?: id.capitalize()
