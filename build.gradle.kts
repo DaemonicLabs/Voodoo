@@ -14,7 +14,6 @@ plugins {
     `project-report`
     kotlin("jvm") version Kotlin.version
     kotlin("plugin.scripting") version Kotlin.version
-    id("moe.nikky.persistentCounter") version "0.0.8-SNAPSHOT"
     constantsGenerator apply false
     id("com.github.johnrengelman.shadow") version "4.0.0" apply false
     id("com.vanniktech.dependency.graph.generator") version "0.5.0"
@@ -422,7 +421,7 @@ subprojects {
 
     apply {
         plugin("idea")
-        plugin("moe.nikky.persistentCounter")
+//        plugin("moe.nikky.persistentCounter")
 //        plugin("org.jmailen.kotlinter")
 //        plugin("io.gitlab.arturbosch.detekt")
     }
@@ -452,7 +451,6 @@ subprojects {
                 jvmTarget = "1.8"
                 freeCompilerArgs = listOf(
 //                "-XXLanguage:+InlineClasses",
-//                "-XX:SamConversionForKotlinFunctions",
 //                "-progressive"
                 )
             }
@@ -595,11 +593,11 @@ subprojects {
 
     val (major, minor, patch) = semVer
 
-    val buildnumber = counter.variable(id = "buildnumber", key = "$major.$minor.$patch")
+//    val buildnumber = counter.variable(id = "buildnumber", key = "$major.$minor.$patch")
 
-    val versionSuffix = if (Env.isCI) "$buildnumber" else "local"
+//    val versionSuffix = if (Env.isCI) "$buildnumber" else "local"
 
-    val fullVersion = "$major.$minor.$patch-$versionSuffix"
+    val fullVersion = "$major.$minor.$patch" + if(!Env.isCI) { "-local" } else ""
 
     version = fullVersion
 
@@ -627,8 +625,8 @@ subprojects {
                     field("JENKINS_BUILD_NUMBER") value (System.getenv("BUILD_NUMBER")?.toIntOrNull() ?: -1)
                     field("GRADLE_VERSION") value Gradle.version
                     field("KOTLIN_VERSION") value Kotlin.version
-                    field("BUILD_NUMBER") value buildnumber
-                    field("BUILD") value versionSuffix
+//                    field("BUILD_NUMBER") value buildnumber
+//                    field("BUILD") value versionSuffix
                     field("MAJOR_VERSION") value major
                     field("MINOR_VERSION") value minor
                     field("PATCH_VERSION") value patch

@@ -3,3 +3,4 @@
 ./gradlew checkSemVerChanges checkSourceChecksum overrideLastVersion -Pprecommit
 
 git add **/.meta/publish.txt || true
+git status

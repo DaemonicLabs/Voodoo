@@ -45,7 +45,6 @@ open class DownloadVoodooTask : DefaultTask() {
         stopwatch {
             runBlocking {
                 MavenUtil.downloadArtifact(
-                    stopwatch = "downloadArtifact voodoo".watch,
                     mavenUrl = GeneratedConstants.MAVEN_URL,
                     group = GeneratedConstants.MAVEN_GROUP,
                     artifactId = "voodoo",
