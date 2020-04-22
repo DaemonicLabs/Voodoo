@@ -12,6 +12,7 @@ import com.eyeem.watchadoin.TraceEventsReport
 import com.eyeem.watchadoin.saveAsSvg
 import com.eyeem.watchadoin.asTraceEventsReport
 import com.eyeem.watchadoin.saveAsHtml
+import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.DEBUG_PROPERTY_NAME
 import kotlinx.coroutines.runBlocking
@@ -20,21 +21,19 @@ import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
 import org.slf4j.LoggerFactory
 import voodoo.builder.Builder
-import voodoo.builder.Importer
 import voodoo.changelog.ChangelogBuilder
-import voodoo.data.lock.LockPack
 import voodoo.script.ChangeScript
 import voodoo.script.MainScriptEnv
 import voodoo.script.TomeScript
 import voodoo.tome.TomeEnv
 import voodoo.util.Directories
 import voodoo.util.SharedFolders
-import voodoo.voodoo.GeneratedConstants
+import voodoo.voodoo.main.GeneratedConstants
 import java.io.File
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.system.exitProcess
 
-object Voodoo : KLogging() {
+object VoodooMain : KLogging() {
     @JvmStatic
     fun main(vararg fullArgs: String) {
         val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
@@ -101,7 +100,7 @@ object Voodoo : KLogging() {
             logger.info { "fullArgs: ${fullArgs.joinToString()}"}
             logger.info { "arguments: ${arguments}"}
             val funcs = mapOf<String, suspend Stopwatch.(Array<String>) -> Unit>(
-                "build" to { args ->
+                VoodooTask.Build.key to { args ->
                     // TODO: only compile in this step
                     val scriptEnv = host.evalScript<MainScriptEnv>(
                         stopwatch = "evalScript".watch,
@@ -117,59 +116,63 @@ object Voodoo : KLogging() {
 
                     val nestedPack = scriptEnv.pack
 
-                    val modpack = "flatten".watch {
-                        Importer.flatten(this, nestedPack)
-                    }
-                    val lockPack = "build".watch {
-                        Builder.build(this, modpack, id = id, /*targetFileName = lockFileName,*/ args = *args)
-                    }
-                    "tome".watch {
-                        Tome.generate(this, lockPack, tomeEnv, uploadDir)
-                    }
+                    Builder.logger.debug("parsing args: ${args.joinToString(", ")}")
+                    val parser = ArgParser(args)
+                    val arguments = voodoo.builder.BuilderArguments(parser)
+                    parser.force()
 
-                    // TODO: just generate meta info
-
-                    Diff.writeMetaInfo(
-                        stopwatch = "writeMetaInfo".watch,
-                        rootDir = rootDir.absoluteFile,
-                        newPack = lockPack
+                    // TODO: pass extra args object
+                    VoodooTask.Build.execute(
+                        this,
+                        id,
+                        nestedPack,
+                        tomeEnv,
+                        arguments.noUpdate,
+                        arguments.entries
                     )
                     logger.info("finished")
                 },
                 // TODO: git tag task
                 // TODO: make changelog tasks
-                "changelog" to { _ ->
-
-
+                VoodooTask.Changelog.key to { _ ->
                     val changelogBuilder = initChangelogBuilder(
                         stopwatch = "initChangelogBuilder".watch, libs = libs, id = id, tomeDir = tomeDir, host = host
                     )
-                    val lockPack = LockPack.parse(lockFile.absoluteFile, rootDir)
-
                     val tomeEnv = initTome(
                         stopwatch = "initTome".watch, libs = libs, host = host, tomeDir = tomeDir, docDir = docDir
                     )
-                    "tome".watch {
-                        Tome.generate(this, lockPack, tomeEnv, uploadDir)
+
+                    VoodooTask.Changelog.execute(this, id, changelogBuilder, tomeEnv)
+                },
+                VoodooTask.Pack.key to { args ->
+                    // TODO: pass pack method
+                    val arguments = voodoo.pack.PackArguments(ArgParser(args))
+                    val packer = Pack.packMap[arguments.method.toLowerCase()] ?: run {
+                        Pack.logger.error("no such packing method: ${arguments.method}")
+                        exitProcess(-1)
                     }
-                    Diff.createChangelog(
-                        stopwatch = "createDiff".watch,
-                        docDir = docDir,
-                        rootDir = rootDir.absoluteFile,
-                        currentPack = lockPack,
-                        changelogBuilder = changelogBuilder
-                    )
+                    VoodooTask.Pack.execute(this, id, packer)
                 },
-                "pack" to { args ->
-                    val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
-                    Pack.pack("pack".watch, modpack, uploadDir, *args)
+                VoodooTask.Test.key to { args ->
+                    // TODO: pass test method
+                    val arguments = voodoo.test.TestArguments(ArgParser(args))
+
+                    val testMethod = when (arguments.method) {
+                        "mmc" -> TestMethod.MultiMC(clean = arguments.clean)
+                        else -> error("no such method found for ${arguments.method}")
+                    }
+
+                    VoodooTask.Test.execute(this, id, testMethod)
                 },
-                "test" to { args ->
-                    val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
-                    TesterForDSL.main("test".watch, modpack, args = *args)
-                },
-                "version" to { _ ->
-                    logger.info(GeneratedConstants.FULL_VERSION)
+                VoodooTask.Version.key to { _ ->
+                    logger.info("voodoo-main: " + GeneratedConstants.FULL_VERSION)
+                    logger.info("voodoo: " + VoodooTask.Version.version)
+
+                    val dependencies = VoodooTask.Version.dependencies()
+                    val width = dependencies.keys.map{it.length}.max() ?: 0
+                    dependencies.forEach { (project, version) ->
+                        logger.info("  ${project}:  ${version.padStart(width)}")
+                    }
                 }
             )
 

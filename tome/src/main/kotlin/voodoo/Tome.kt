@@ -1,11 +1,8 @@
 package voodoo
 
 import com.eyeem.watchadoin.Stopwatch
-import kotlinx.coroutines.runBlocking
 import mu.KLogging
-import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockPack
-import voodoo.forge.ForgeUtil
 import voodoo.tome.TomeEnv
 import voodoo.util.unixPath
 import java.io.File

@@ -7,8 +7,8 @@ import voodoo.util.Platform
 import voodoo.util.ShellUtil
 import voodoo.util.UnzipUtility
 import voodoo.util.download
-import voodoo.voodoo.GeneratedConstants
-import voodoo.voodoo.ModulePlugin
+import voodoo.voodoo.main.GeneratedConstants
+import voodoo.voodoo.main.ModulePlugin
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermission

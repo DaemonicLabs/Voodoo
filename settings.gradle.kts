@@ -27,7 +27,7 @@ plugins {
 
 rootProject.name = "voodoo-parent"
 
-include("voodoo")
+include("voodoo", "voodoo:main")
 include("core")
 include("dsl")
 include("format", "format:packager")

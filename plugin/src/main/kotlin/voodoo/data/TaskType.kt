@@ -2,9 +2,8 @@ package voodoo.data
 
 import voodoo.pack.*
 
+//TODO: unify with code in :voodoo
 sealed class TaskType(open val command: String) {
-    object ImportDebug: TaskType("import_debug")
-
     object Build: TaskType("build")
 
     object Changelog: TaskType("changelog")

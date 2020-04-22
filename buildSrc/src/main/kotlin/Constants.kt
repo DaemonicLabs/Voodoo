@@ -41,14 +41,6 @@ object Kotlinpoet {
     val dependency = create(group = "com.squareup", name = "kotlinpoet", version = version)
 }
 
-object Fuel {
-    const val version = "2.2.1"
-    private const val group = "com.github.kittinunf.fuel"
-    val dependency = create(group = group, name = "fuel", version = version)
-    val dependencyCoroutines = create(group = group, name = "fuel-coroutines", version = version)
-    val dependencySerialization = create(group = group, name = "fuel-kotlinx-serialization", version = version)
-}
-
 object Ktor {
     const val version = "1.3.2"
     val dependency = create(group = "io.ktor", name = "ktor-client-cio", version = version)

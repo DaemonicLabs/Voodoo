@@ -32,7 +32,7 @@ println(
 """
 )
 val runnableProjects = mapOf(
-    project("voodoo") to "voodoo.Voodoo",
+    project("voodoo:voodoo-main") to "voodoo.VoodooMain",
     project("multimc:multimc-installer") to "voodoo.Hex",
     project("server-installer") to "voodoo.server.Install",
     project("bootstrap:bootstrap-voodoo") to "voodoo.Bootstrap",
@@ -50,7 +50,7 @@ val noKotlin = listOf(
     project("bootstrap:bootstrap-multimc-installer")
 )
 val mavenMarkers = mapOf(
-    project("bootstrap:bootstrap-voodoo") to "voodoo",
+    project("bootstrap:bootstrap-voodoo") to "voodoo-main",
     project("bootstrap:bootstrap-multimc-installer") to "multimc-installer"
 )
 
@@ -570,13 +570,11 @@ subprojects {
                 doLast {
                     val current = SemanticVersion.read(project)
                     val last = SemanticVersion.readLast(project)
-                    val publishMarker =  projectDir.resolve(".meta/publish.txt")
-                    if(current > last) {
-                        publishMarker.writeText("$last -> $current")
-                    } else {
-                        publishMarker.takeIf { it.exists() }
-                            ?.delete()
-                    }
+//                    val publishMarker =  projectDir.resolve(".meta/publish.txt")
+//                    if(current > last) {
+//                        val text = (publishMarker.readLines().toSet() + current).joinToString("\n")
+//                        publishMarker.writeText(text)
+//                    }
 //                    current.write(project, ".meta/lastVersion.properties")
                     projectDir.resolve(SemanticVersion.filename).copyTo(projectDir.resolve(SemanticVersion.lastFilename), overwrite = true)
                 }
@@ -674,7 +672,7 @@ subprojects {
         main.get().resources.srcDir(genResourceFolder)
     }
     // add dependencies.properties to resources
-    if(project == project(":plugin")) {
+    if(project == project(":plugin") || project == project(":voodoo")) {
         afterEvaluate {
             val props = Properties()
             val dependenciesPropertiesFile = genResourceFolder.resolve("dependencies.properties")
@@ -771,9 +769,9 @@ subprojects {
         from(javadoc)
     }
 
-    val publishMarker = project.projectDir.resolve(".meta/publish.txt")
-    if(publishMarker.exists()) {
-        logger.lifecycle("registering publishing for $project : ${if(publishMarker.exists()) publishMarker.readText() else ""}")
+//    val publishMarker = project.projectDir.resolve(".meta/publish.txt")
+//    if(publishMarker.exists()) {
+//        logger.lifecycle("registering publishing for $project : ${if(publishMarker.exists()) publishMarker.readText() else ""}")
         publishing {
             publications {
                 create("default", MavenPublication::class.java) {
@@ -800,7 +798,7 @@ subprojects {
                 }
             }
         }
-    }
+//    }
 }
 
 val urls = mavenMarkers.map { (pr, target) ->

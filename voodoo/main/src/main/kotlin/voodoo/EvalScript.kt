@@ -87,7 +87,7 @@ inline fun <reified T> ResultWithDiagnostics<EvaluationResult>.get(scriptFile: F
     }
     println(this)
     val evalResult = valueOr {
-        Voodoo.logger.error("evaluation failed")
+        VoodooMain.logger.error("evaluation failed")
         exitProcess(1)
     }
 
@@ -108,15 +108,15 @@ inline fun <reified T> ResultWithDiagnostics<EvaluationResult>.get(scriptFile: F
             resultValue.scriptInstance as T
         }
         is ResultValue.Unit -> {
-            Voodoo.logger.info("evaluation returned Unit")
+            VoodooMain.logger.info("evaluation returned Unit")
             resultValue.scriptInstance as T
         }
         is ResultValue.Error -> {
-            Voodoo.logger.error("evaluation failed with $resultValue")
+            VoodooMain.logger.error("evaluation failed with $resultValue")
             exitProcess(-1)
         }
         ResultValue.NotEvaluated -> {
-            Voodoo.logger.error("not evaluated")
+            VoodooMain.logger.error("not evaluated")
             exitProcess(-1)
         }
     }

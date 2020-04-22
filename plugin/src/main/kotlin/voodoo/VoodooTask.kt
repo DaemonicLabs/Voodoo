@@ -7,6 +7,7 @@ import org.gradle.api.tasks.TaskAction
 import org.gradle.api.tasks.options.Option
 import java.io.File
 
+// TODO: encode arguments to voodoo as json
 open class VoodooTask : JavaExec() {
     @Input
     @Option(option = "script", description = "voodoo script file")
@@ -22,7 +23,7 @@ open class VoodooTask : JavaExec() {
         if (scriptFile == null) {
             throw GradleException("--script was not set")
         }
-        if (args.isEmpty()) {
+        if (args?.isEmpty() != false) {
             throw GradleException("--args is not set")
         }
         val fullArgs = mutableListOf(scriptFile!!)

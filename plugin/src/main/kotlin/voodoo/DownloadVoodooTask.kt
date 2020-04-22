@@ -47,7 +47,7 @@ open class DownloadVoodooTask : DefaultTask() {
                 MavenUtil.downloadArtifact(
                     mavenUrl = GeneratedConstants.MAVEN_URL,
                     group = GeneratedConstants.MAVEN_GROUP,
-                    artifactId = "voodoo",
+                    artifactId = "voodoo-main",
                     version = GeneratedConstants.FULL_VERSION,
                     classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
                     outputDir = outputFolder,

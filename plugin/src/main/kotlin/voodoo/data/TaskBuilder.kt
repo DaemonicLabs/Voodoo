@@ -3,10 +3,6 @@ package voodoo.data
 class TaskBuilder() {
     internal val tasks: MutableList<TaskType> = mutableListOf()
 
-    fun importDebug() {
-        tasks += TaskType.ImportDebug
-    }
-
     fun build() {
         tasks += TaskType.Build
     }

@@ -3,7 +3,6 @@ package org.gradle.kotlin.dsl
 import Apache
 import Argparser
 import Coroutines
-import Fuel
 import Kotlin
 import Kotlinpoet
 import KotlinxHtml
@@ -17,14 +16,6 @@ import org.gradle.api.artifacts.ExternalModuleDependency
 import org.gradle.api.artifacts.ProjectDependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.kotlin.dsl.accessors.runtime.addDependencyTo
-
-//private fun DependencyHandler.project(
-//    path: String,
-//    configuration: String? = null
-//): ProjectDependency = project(
-//            if (configuration != null) mapOf("path" to path, "configuration" to configuration)
-//            else mapOf("path" to path)
-//        ) as ProjectDependency
 
 private fun DependencyHandler.compile(dependencyNotation: Any): Dependency? =
     add("compile", dependencyNotation)
@@ -92,7 +83,25 @@ fun Project.setupDependencies(target: Project = this, projectOnly: Boolean = fal
     when (target) {
         rootProject.project(":voodoo") -> {
             dependencies {
+                apiRecursive(project(":dsl"))
+                apiRecursive(project(":util:util-download"))
+
+                implementation(project(":core"))
+                implementation(project(":pack"))
+                implementation(project(":pack:pack-tester"))
+
+                testImplementation(project(":core"))
+                testImplementation(project(":pack"))
                 if(!projectOnly) {
+                    testImplementation(Coroutines.dependency)
+                }
+            }
+        }
+        rootProject.project(":voodoo:voodoo-main") -> {
+            dependencies {
+                if(!projectOnly) {
+                    implementation(Argparser.dependency)
+
 //                    api(kotlin("stdlib-jdk8", Kotlin.version))
                     implementation(kotlin("script-util", Kotlin.version))
                     implementation(kotlin("scripting-jvm-host-embeddable", Kotlin.version))
@@ -110,17 +119,7 @@ fun Project.setupDependencies(target: Project = this, projectOnly: Boolean = fal
                     // spek requires kotlin-reflect, can be omitted if already in the classpath
                     testRuntimeOnly(kotlin("reflect", Kotlin.version))
                 }
-//                api(project(":dsl"))
-                apiRecursive(project(":dsl"))
-                apiRecursive(project(":util:util-download"))
-
-                implementation(project(":core"))
-                implementation(project(":pack"))
-                implementation(project(":pack:pack-tester"))
-
-                testImplementation(Coroutines.dependency)
-                testImplementation(project(":core"))
-                testImplementation(project(":pack"))
+                apiRecursive(project(":voodoo"))
             }
         }
         rootProject.project(":bootstrap") -> {
@@ -154,7 +153,7 @@ fun Project.setupDependencies(target: Project = this, projectOnly: Boolean = fal
                 if(!projectOnly) {
                     api(Apache.commonsCompress)
 
-                    api(Argparser.dependency)
+//                    api(Argparser.dependency)
                 }
             }
         }
@@ -205,6 +204,9 @@ fun Project.setupDependencies(target: Project = this, projectOnly: Boolean = fal
                 apiRecursive(project(":multimc"))
 
                 implementation(project(":util:util-download"))
+                if(!projectOnly) {
+                    implementation(Argparser.dependency)
+                }
             }
         }
         rootProject.project(":pack") -> {
@@ -230,6 +232,7 @@ fun Project.setupDependencies(target: Project = this, projectOnly: Boolean = fal
         }
         rootProject.project(":plugin") -> {
             dependencies {
+                apiRecursive(project(":voodoo"))
                 apiRecursive(project(":dsl"))
 //                implementation(project(":util:util-download"))
 //                implementation(project(":util:util-maven"))
@@ -243,6 +246,9 @@ fun Project.setupDependencies(target: Project = this, projectOnly: Boolean = fal
                 apiRecursive(project(":core"))
 
                 implementation(project(":util:util-download"))
+                if(!projectOnly) {
+                    implementation(Argparser.dependency)
+                }
             }
         }
         rootProject.project(":skcraft") -> {
@@ -250,6 +256,7 @@ fun Project.setupDependencies(target: Project = this, projectOnly: Boolean = fal
                 apiRecursive(project(":core"))
 //                implementation(project(":util:util-download"))
                 if(!projectOnly) {
+                    implementation(Argparser.dependency)
                     api(group = "commons-lang", name = "commons-lang", version = "2.6")
                     api(group = "commons-io", name = "commons-io", version = "2.6")
                     api(group = "org.tukaani", name = "xz", version = "1.0")

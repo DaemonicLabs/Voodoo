@@ -1,6 +1,6 @@
 plugins {
 //    kotlin("scripting") version "1.3.70"
-    id("voodoo") version "0.5.2-local"
+    id("voodoo") version "0.5.5-local"
 }
 
 voodoo {
@@ -16,21 +16,21 @@ voodoo {
     addTask("changelog") {
         changelog()
     }
-    addTask(name = "pack_experimental") {
-        pack().experimental()
+    addTask(name = "pack_voodoo") {
+        pack().voodoo()
     }
-    addTask(name = "pack_sk") {
-        pack().sklauncher()
+    addTask(name = "pack_mmc-voodoo") {
+        pack().multimcVoodoo()
     }
-    addTask(name = "pack_mmc-exp") {
-        pack().multimcExperimental()
-    }
-    addTask(name = "pack_mmc-sk") {
-        pack().multimcSk()
-    }
-    addTask(name = "pack_mmc-sk-fat") {
-        pack().multimcSkFat()
-    }
+//    addTask(name = "pack_sk") {
+//        pack().sklauncher()
+//    }
+//    addTask(name = "pack_mmc-sk") {
+//        pack().multimcSk()
+//    }
+//    addTask(name = "pack_mmc-sk-fat") {
+//        pack().multimcSkFat()
+//    }
     addTask(name = "pack_mmc-fat") {
         pack().multimcFat()
     }
@@ -45,10 +45,10 @@ voodoo {
     }
     addTask(name = "buildAndPackAll") {
         build()
-        pack().sklauncher()
+//        pack().sklauncher()
         pack().server()
-        pack().multimcSk()
-        pack().multimcSkFat()
+//        pack().multimcSk()
+//        pack().multimcSkFat()
         pack().multimcFat()
         pack().curse()
     }

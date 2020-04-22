@@ -63,7 +63,10 @@ object Diff : KLogging() {
 
         // copying current version
         val currentVersion = "${currentPack.version}-dev"
-        val currentData =  GitArchiveFolders(cacheHome.resolve("meta").resolve(currentVersion), cacheHome.resolve("sources").resolve(currentVersion))
+        val currentData = GitArchiveFolders(
+            cacheHome.resolve("meta").resolve(currentVersion),
+            cacheHome.resolve("sources").resolve(currentVersion)
+        )
         run {
             currentData.meta.let { meta ->
                 meta.deleteRecursively()
@@ -179,12 +182,24 @@ object Diff : KLogging() {
                 generator = changelogBuilder
             )
             val diffFile = if (oldSource != null) {
-                writeDiff(rootFolder = sourcesFolder, oldSource = oldSource, newSource = newSource, diffFile = cacheHome.resolve("${newVersion}_changes.diff"), docDir = docDir)
+                writeDiff(
+                    rootFolder = sourcesFolder,
+                    oldSource = oldSource,
+                    newSource = newSource,
+                    diffFile = cacheHome.resolve("${newVersion}_changes.diff"),
+                    docDir = docDir
+                )
             } else {
                 val emptySource = sourcesFolder.resolve(".empty")
                 emptySource.deleteRecursively()
                 emptySource.mkdirs()
-                writeDiff(rootFolder = sourcesFolder, oldSource = emptySource, newSource = newSource, diffFile = cacheHome.resolve("${newVersion}_changes.diff"), docDir = docDir).also {
+                writeDiff(
+                    rootFolder = sourcesFolder,
+                    oldSource = emptySource,
+                    newSource = newSource,
+                    diffFile = cacheHome.resolve("${newVersion}_changes.diff"),
+                    docDir = docDir
+                ).also {
                     emptySource.deleteRecursively() // delete the useless empty folder afterwards
                 }
             }
