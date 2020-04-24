@@ -13,6 +13,7 @@ data class Modpack(
 
     var features: List<FeatureWithPattern> = listOf(),
 
+    // TODO: look into this: icon for multimc and modpack ?
     var thumb: String? = null,
 
     //TODO: use this to setup server.dat in the future ?

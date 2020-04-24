@@ -1,3 +1,16 @@
+## version listing
+
+file in multimc instance to choose version
+
+popup allows user to pick version
+
+keep track of all versions in the pack src in `versions.json` or similar
+
+tasks to modify versions.json
+
+
+TODO: add changelogs/docs to the format manifest and upload
+
 ## semver reminder on submodules
 
 version.properties is used by the buildsystem to generate `version`

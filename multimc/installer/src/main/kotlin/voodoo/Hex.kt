@@ -52,7 +52,7 @@ object Hex : KLogging() {
         val arguments = Arguments(ArgParser(args))
 
         arguments.run {
-            selfupdate(instanceDir)
+//            selfupdate(instanceDir)
             install(instanceId, instanceDir, minecraftDir)
         }
     }
@@ -95,7 +95,7 @@ object Hex : KLogging() {
 
                 MMCUtil.writeCfg(cfgFile, cfg)
 
-                toDeleteFile.writeText(currentJarFile.toRelativeString(instanceDir))
+//                toDeleteFile.writeText(currentJarFile.toRelativeString(instanceDir))
             }
         } else {
             logger.info("commands are not enabled, not updating bootstrapper")
@@ -131,8 +131,37 @@ object Hex : KLogging() {
         }
 
         val jsonString = response.readText()
+
+
+
         val modpack = try {
-            json.parse(Manifest.serializer(), jsonString)
+            try {
+                // look up versions from a listing
+                val versionListing = json.parse(MapSerializer(String.serializer(), String.serializer()), jsonString)
+                val targetVersion = instanceDir.resolve("channel.txt").takeIf { it.exists() }?.readText()?.trim() ?: "latest"
+                val versionPointer = versionListing[targetVersion]
+
+                val packUrl = packUrl.substringBeforeLast('/') + "/" + versionPointer
+                val response = withContext(Dispatchers.IO) {
+                    try {
+                        client.get<HttpResponse> {
+                            url(packUrl)
+                            header(HttpHeaders.UserAgent, useragent)
+                        }
+                    } catch (e: IOException) {
+                        logger.error("packUrl: $packUrl")
+                        logger.error(e) { "unable to get pack from $packUrl" }
+                        error("failed to get $packUrl")
+                    }
+                }
+                if (!response.status.isSuccess()) {
+                    logger.error { "$packUrl returned ${response.status}" }
+                    error("failed with ${response.status}")
+                }
+                json.parse(Manifest.serializer(), response.readText())
+            } catch (e: SerializationException) {
+                json.parse(Manifest.serializer(), jsonString)
+            }
         } catch (e: SerializationException) {
             return SKHandler.install(
                 json.parse(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString),
