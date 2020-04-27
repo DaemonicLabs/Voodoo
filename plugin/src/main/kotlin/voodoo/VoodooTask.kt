@@ -15,7 +15,7 @@ open class VoodooTask : JavaExec() {
 
     init {
         group = "voodoo"
-        main = "voodoo.Voodoo"
+        main = "voodoo.VoodooMain"
     }
 
     @TaskAction
