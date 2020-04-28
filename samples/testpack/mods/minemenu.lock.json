@@ -1,0 +1,10 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "description": "Radial menu that can be used for command/keyboard shortcuts. Not selected by default because random keybinds cannot be added to radial menu.",
+        "optionalData": {
+        }
+    },
+    "projectID": 222378,
+    "fileID": 2756790
+}

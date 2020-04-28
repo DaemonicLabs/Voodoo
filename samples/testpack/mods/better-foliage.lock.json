@@ -1,0 +1,15 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "description": "Improves the fauna in the world. Very heavy, but very pretty. (Sane defaults set.)",
+        "optionalData": {
+        },
+        "dependencies": {
+            "REQUIRED": [
+                "shadowfacts-forgelin"
+            ]
+        }
+    },
+    "projectID": 228529,
+    "fileID": 2852872
+}

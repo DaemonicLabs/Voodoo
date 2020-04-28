@@ -11,6 +11,12 @@ tasks to modify versions.json
 
 TODO: add changelogs/docs to the format manifest and upload
 
+## subset of versions:
+
+- voodoo (plugin, pack building process)
+- format (multimc-installer, other things parsing format)
+
+
 ## semver reminder on submodules
 
 version.properties is used by the buildsystem to generate `version`

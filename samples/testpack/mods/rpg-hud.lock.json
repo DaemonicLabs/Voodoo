@@ -1,0 +1,10 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "description": "Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)",
+        "optionalData": {
+        }
+    },
+    "projectID": 235670,
+    "fileID": 2483068
+}

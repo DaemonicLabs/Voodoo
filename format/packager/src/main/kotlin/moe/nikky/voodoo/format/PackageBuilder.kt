@@ -9,6 +9,7 @@ import moe.nikky.voodoo.format.modpack.Manifest
 import moe.nikky.voodoo.format.modpack.entry.FileInstall
 import moe.nikky.voodoo.format.modpack.entry.Side
 import Modloader
+import voodoo.format.packager.ModuleFormat
 import java.io.File
 import java.security.MessageDigest
 
@@ -103,9 +104,10 @@ object PackageBuilder : KLogging() {
         //    !gameVersion.isNullOoEmpty
         // takes features from applicator.featuresInUse (see scan step?)
         // serialize manifest to $manfiestDest
-        logger.info {}
+        logger.info {""}
         logger.info { "--- Writing Manifest... ---" }
         val manifest = Manifest(
+            formatVersion = ModuleFormat.VERSION,
             title = modpackTitle,
             version = modpackVersion,
             id = modpackId,
@@ -119,7 +121,7 @@ object PackageBuilder : KLogging() {
         manifestDest.absoluteFile.parentFile.mkdirs()
         manifestDest.writeText(json.stringify(Manifest.serializer(), manifest))
 
-        logger.info {}
+        logger.info {""}
         logger.info { "--- Done ---" }
         // done
         logger.info { "Now upload the contents of $outputPath to your web server or CDN!" }
@@ -130,7 +132,7 @@ object PackageBuilder : KLogging() {
         destDir: File,
         onEntry: (FileInstall) -> Unit
     ): List<FileInstall> {
-        logger.info {}
+        logger.info {""}
         logger.info { "--- Adding files to modpack... ---" }
         val entries = filesDir.walkBottomUp().filterNot { file ->
             // conditions to skip files / folders

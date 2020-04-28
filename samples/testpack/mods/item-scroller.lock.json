@@ -1,0 +1,10 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "description": "Alternative to MouseTweaks.",
+        "optionalData": {
+        }
+    },
+    "projectID": 242064,
+    "fileID": 2581199
+}

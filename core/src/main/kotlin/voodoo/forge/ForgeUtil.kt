@@ -92,7 +92,7 @@ object ForgeUtil : KLogging() {
         // https://files.minecraftforge.net/maven/net/minecraftforge/forge
         val webpath = "https://files.minecraftforge.net/maven/net/minecraftforge/forge"
 
-        val version = "${modloader.mcVersion}-${modloader.mcVersion}" + (modloader.branch ?.let { "-$it" } ?: "")
+        val version = "${modloader.mcVersion}-${modloader.forgeVersion}" + (modloader.branch ?.let { "-$it" } ?: "")
 
         val fileName = "forge-${version}-installer.jar" // "forge-mcversion-$forgeVersion(-$branch)/installer.jar"
         val url = "$webpath/${version}/$fileName"

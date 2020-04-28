@@ -32,9 +32,9 @@ import java.time.format.DateTimeFormatter
 
 object VoodooPackager : AbstractPack("experimental") {
 
-    override val label = "Experimental Pack"
+    override val label = "Voodoo Packager"
 
-    override fun File.getOutputFolder(id: String): File = resolve("experimental")
+    override fun File.getOutputFolder(id: String): File = resolve("voodoo")
 
     override suspend fun pack(
         stopwatch: Stopwatch,

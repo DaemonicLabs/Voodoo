@@ -1,0 +1,10 @@
+{
+    "type": "voodoo.data.lock.LockEntry.Curse",
+    "common": {
+        "description": "Smol light-level overlay if you aren't using Dynamic Surroundings.",
+        "optionalData": {
+        }
+    },
+    "projectID": 226670,
+    "fileID": 2563430
+}

@@ -32,7 +32,7 @@ open class MavenLocalVoodooJarTask : GradleBuild() {
         doLast {
             val shadowJarFile: File = MavenUtil.localMavenFile(
                 group = GeneratedConstants.MAVEN_GROUP,
-                artifactId = "voodoo",
+                artifactId = "voodoo-main",
                 version = GeneratedConstants.FULL_VERSION,
                 classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER
             )

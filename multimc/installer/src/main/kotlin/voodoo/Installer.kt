@@ -41,7 +41,7 @@ import java.io.IOException
  * @author Nikky
  */
 
-object Hex : KLogging() {
+object Installer : KLogging() {
     private val directories = Directories.get(moduleName = "multimc")
 //    val kit = Toolkit.getDefaultToolkit()
 
@@ -100,8 +100,6 @@ object Hex : KLogging() {
         } else {
             logger.info("commands are not enabled, not updating bootstrapper")
         }
-
-
     }
 
     private val json = Json(JsonConfiguration(prettyPrint = true, ignoreUnknownKeys = true, encodeDefaults = true))
@@ -111,7 +109,6 @@ object Hex : KLogging() {
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         val packUrl = urlFile.readText().trim()
         logger.info("pack url: $packUrl")
-        val loader: DeserializationStrategy<Manifest> = Manifest.serializer()
 
         val response = withContext(Dispatchers.IO) {
             try {
@@ -133,49 +130,66 @@ object Hex : KLogging() {
         val jsonString = response.readText()
 
 
-
-        val modpack = try {
-            try {
-                // look up versions from a listing
-                val versionListing = json.parse(MapSerializer(String.serializer(), String.serializer()), jsonString)
-                val targetVersion = instanceDir.resolve("channel.txt").takeIf { it.exists() }?.readText()?.trim() ?: "latest"
-                val versionPointer = versionListing[targetVersion]
-
-                val packUrl = packUrl.substringBeforeLast('/') + "/" + versionPointer
-                val response = withContext(Dispatchers.IO) {
-                    try {
-                        client.get<HttpResponse> {
-                            url(packUrl)
-                            header(HttpHeaders.UserAgent, useragent)
-                        }
-                    } catch (e: IOException) {
-                        logger.error("packUrl: $packUrl")
-                        logger.error(e) { "unable to get pack from $packUrl" }
-                        error("failed to get $packUrl")
-                    }
-                }
-                if (!response.status.isSuccess()) {
-                    logger.error { "$packUrl returned ${response.status}" }
-                    error("failed with ${response.status}")
-                }
-                json.parse(Manifest.serializer(), response.readText())
-            } catch (e: SerializationException) {
-                json.parse(Manifest.serializer(), jsonString)
-            }
-        } catch (e: SerializationException) {
+        // try skcraft handling
+        try {
+            val skcraftManifest = json.parse(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString)
             return SKHandler.install(
-                json.parse(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString),
+                skcraftManifest,
                 instanceId,
                 instanceDir,
                 minecraftDir
             )
+        } catch (e: SerializationException) {
+            logger.info ("not a skcraft manifest")
         }
+
+        // TODO: load correct installer for formatVersion
+
+        val modpack = json.parse(Manifest.serializer(), jsonString)
+
+        // TODO: implement version listing later
+//        try {
+//            try {
+//                // look up versions from a listing
+//                val versionListing = json.parse(MapSerializer(String.serializer(), String.serializer()), jsonString)
+//                val targetVersion = instanceDir.resolve("channel.txt").takeIf { it.exists() }?.readText()?.trim() ?: "latest"
+//                val versionPointer = versionListing[targetVersion]
+//
+//                val packUrl = packUrl.substringBeforeLast('/') + "/" + versionPointer
+//                val response = withContext(Dispatchers.IO) {
+//                    try {
+//                        client.get<HttpResponse> {
+//                            url(packUrl)
+//                            header(HttpHeaders.UserAgent, useragent)
+//                        }
+//                    } catch (e: IOException) {
+//                        logger.error("packUrl: $packUrl")
+//                        logger.error(e) { "unable to get pack from $packUrl" }
+//                        error("failed to get $packUrl")
+//                    }
+//                }
+//                if (!response.status.isSuccess()) {
+//                    logger.error { "$packUrl returned ${response.status}" }
+//                    error("failed with ${response.status}")
+//                }
+//                json.parse(Manifest.serializer(), response.readText())
+//            } catch (e: SerializationException) {
+//                json.parse(Manifest.serializer(), jsonString)
+//            }
+//        } catch (e: SerializationException) {
+//            return SKHandler.install(
+//                json.parse(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString),
+//                instanceId,
+//                instanceDir,
+//                minecraftDir
+//            )
+//        }
 
         val oldpackFile = instanceDir.resolve("voodoo.modpack.json")
         val oldpack: Manifest? = oldpackFile.takeIf { it.exists() }
             ?.let { packFile ->
                 try {
-                    json.parse(loader, packFile.readText())
+                    json.parse(Manifest.serializer(), packFile.readText())
                         .also { pack ->
                             logger.info("loaded old pack ${pack.id} ${pack.version}")
                         }

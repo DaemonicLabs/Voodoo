@@ -33,7 +33,7 @@ println(
 )
 val runnableProjects = mapOf(
     project("voodoo:voodoo-main") to "voodoo.VoodooMain",
-    project("multimc:multimc-installer") to "voodoo.Hex",
+    project("multimc:multimc-installer") to "voodoo.Initializer",
     project("server-installer") to "voodoo.server.Install",
     project("bootstrap:bootstrap-voodoo") to "voodoo.Bootstrap",
     project("bootstrap:bootstrap-multimc-installer") to "voodoo.Bootstrap"
@@ -686,7 +686,30 @@ subprojects {
                 props.store(it, null)
             }
         }
+    }
 
+    if(project == project(":multimc:multimc-installer")) {
+        afterEvaluate {
+            val formatPropsFile = project.projectDir.resolve("format.properties")
+            val props = Properties()
+            formatPropsFile.parentFile.mkdirs()
+            if(formatPropsFile.exists()) {
+                formatPropsFile.bufferedReader().use {
+                    props.load(it)
+                }
+            }
+            val formatVersion = project(":format").version.toString().substringBefore("-")
+            props.setProperty(formatVersion, project.version.toString().substringBefore("-"))
+            formatPropsFile.bufferedWriter().use {
+                props.store(it, null)
+            }
+            formatPropsFile.writeText(
+                formatPropsFile.readText().lines().drop(1).joinToString("\n")
+            )
+
+            formatPropsFile.copyTo(genResourceFolder.resolve("format.properties"), overwrite = true)
+
+        }
     }
 
     // maven marker installation

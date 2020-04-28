@@ -4,10 +4,12 @@ import Modloader
 import kotlinx.serialization.Serializable
 import moe.nikky.voodoo.format.Feature
 import moe.nikky.voodoo.format.modpack.entry.FileInstall
+import voodoo.format.GeneratedConstants
+import voodoo.format.ModuleMultimcInstaller
 
 @Serializable
 data class Manifest(
-
+    val formatVersion: String? = null,
     // what is this even ?
     //var minimumVersion: Int = 0,
 

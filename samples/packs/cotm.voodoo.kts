@@ -452,27 +452,27 @@ root<Curse> {
                     description = "Multi-mod compatible resource pack."
                 }
 
-                withTypeClass(Direct::class).list {
-                    +"Optifine" {
-                        description =
-                            "Adds a variety of client and video options. Notorious for being problematic. Use with caution."
-                        url = "https://centerofthemultiverse.net/launcher/mirror/OptiFine_1.12.2_HD_U_E3.jar"
-                    }
-
-                    +"Slice" {
-                        description = "Custom client font based off of Chicago. Made by Falkreon."
-                        folder = "resourcepacks"
-                        url = "https://centerofthemultiverse.net/launcher/mirror/Slice.zip"
-                    }
-
-                    +"SEUS Renewed" {
-                        description =
-                            "Gorgeous shaderpack, incredibly demanding. Best for screenshots, not gameplay. (requires Optifine)"
-                        folder = "shaderpacks"
-                        url = "https://centerofthemultiverse.net/launcher/mirror/SEUS-Renewed-1.0.0.zip"
-                    }
-
-                }
+//                withTypeClass(Direct::class).list {
+//                    +"Optifine" {
+//                        description =
+//                            "Adds a variety of client and video options. Notorious for being problematic. Use with caution."
+//                        url = "https://centerofthemultiverse.net/launcher/mirror/OptiFine_1.12.2_HD_U_E3.jar"
+//                    }
+//
+//                    +"Slice" {
+//                        description = "Custom client font based off of Chicago. Made by Falkreon."
+//                        folder = "resourcepacks"
+//                        url = "https://centerofthemultiverse.net/launcher/mirror/Slice.zip"
+//                    }
+//
+//                    +"SEUS Renewed" {
+//                        description =
+//                            "Gorgeous shaderpack, incredibly demanding. Best for screenshots, not gameplay. (requires Optifine)"
+//                        folder = "shaderpacks"
+//                        url = "https://centerofthemultiverse.net/launcher/mirror/SEUS-Renewed-1.0.0.zip"
+//                    }
+//
+//                }
             }
         }
     }
