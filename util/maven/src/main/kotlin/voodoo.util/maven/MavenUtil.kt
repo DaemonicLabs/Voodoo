@@ -1,6 +1,5 @@
 package voodoo.util.maven
 
-import com.eyeem.watchadoin.Stopwatch
 import io.ktor.client.request.get
 import io.ktor.client.request.url
 import io.ktor.client.statement.HttpResponse
@@ -189,8 +188,10 @@ object MavenUtil : KLogging() {
 
         val xPathExpression = "metadata/versioning/versions/version/text()"
         val nodeList: NodeList = xPath.evaluate(xPathExpression, doc, XPathConstants.NODESET) as NodeList
-        val list = (0..nodeList.length).map { i ->
-            nodeList.item(i).textContent
+        logger.info { "nodeList: $nodeList" }
+        val list = (0 until nodeList.length).mapNotNull { i ->
+//            logger.info { "item($i): ${nodeList.item(i)}" }
+            nodeList.item(i)?.textContent
         }
         return list
     }
