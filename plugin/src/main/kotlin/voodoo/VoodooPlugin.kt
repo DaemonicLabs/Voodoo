@@ -202,7 +202,7 @@ open class VoodooPlugin : Plugin<Project> {
                     task<AbstractTask>("generate${generator.name}") {
                         group = "generators"
                         outputs.upToDateWhen { false }
-//                        outputs.cacheIf { true }
+                        outputs.cacheIf { false }
                         dependsOn(downloadVoodoo)
                         doLast {
                             generatedSharedSrcDir.mkdirs()
@@ -223,7 +223,7 @@ open class VoodooPlugin : Plugin<Project> {
                     task<AbstractTask>("generate${generator.name}") {
                         group = "generators"
                         outputs.upToDateWhen { false }
-//                        outputs.cacheIf { true }
+                        outputs.cacheIf { false }
                         dependsOn(downloadVoodoo)
                         doLast {
                             generatedSharedSrcDir.mkdirs()
@@ -242,6 +242,7 @@ open class VoodooPlugin : Plugin<Project> {
 
                 val generateAllTask = task<AbstractTask>("generateAll") {
                     group = "generators"
+                    outputs.upToDateWhen { false }
                     dependsOn(curseGeneratorTasks)
                     dependsOn(forgeGeneratorTasks)
                     dependsOn(fabricGeneratorTasks)
