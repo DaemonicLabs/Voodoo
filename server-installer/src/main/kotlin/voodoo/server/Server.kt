@@ -23,7 +23,7 @@ import java.io.File
  */
 
 object Server {
-    private val directories = Directories.get("server")
+    private val directories = Directories.get(moduleName = "server")
 
     suspend fun install(
         stopwatch: Stopwatch,
@@ -56,7 +56,7 @@ object Server {
                     file.name.endsWith(".entry.json") -> file.delete()
                     file.name.endsWith(".lock.json") -> file.delete()
                     file.name.endsWith(".lock.pack.json") -> file.delete()
-                    file.isDirectory && file.listFiles().isEmpty() -> file.delete()
+                    file.isDirectory && file.listFiles()!!.isEmpty() -> file.delete()
                 }
             }
         } else {
@@ -119,10 +119,10 @@ object Server {
                             .waitFor()
 
                         // rename forge jar
-                        val forgeJar = serverDir.resolve("forge-$forgeLongVersion-universal.jar")
-                        val targetForgeJar = serverDir.resolve("forge.jar")
-                        targetForgeJar.delete()
-                        forgeJar.copyTo(targetForgeJar, overwrite = true)
+//                        val forgeJar = serverDir.resolve("forge-$forgeLongVersion-universal.jar")
+//                        val targetForgeJar = serverDir.resolve("forge.jar")
+//                        targetForgeJar.delete()
+//                        forgeJar.copyTo(targetForgeJar, overwrite = true)
                     }
                 } else {
                     val forgeJar = serverDir.resolve("forge-installer.jar")
