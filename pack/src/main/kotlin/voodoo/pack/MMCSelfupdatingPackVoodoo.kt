@@ -11,10 +11,10 @@ import java.io.File
 import java.net.URI
 import kotlin.system.exitProcess
 
-object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-experimental") {
+object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
     override val label = "MultiMC Pack"
 
-    override fun File.getOutputFolder(id: String): File = resolve("multimc-experimental")
+    override fun File.getOutputFolder(id: String): File = resolve("multimc-voodoo")
 
     override suspend fun pack(
         stopwatch: Stopwatch,

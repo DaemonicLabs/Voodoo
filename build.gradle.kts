@@ -740,6 +740,10 @@ subprojects {
             }
         }
         kotlin.sourceSets["main"].resources.srcDir(genResourceFolder)
+
+        tasks.withType<KotlinCompile> {
+            dependsOn(generateMavenMarker)
+        }
     }
 
     runnableProjects[project]?.let { mainClass ->
