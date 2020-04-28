@@ -129,9 +129,11 @@ object Installer : KLogging() {
 
         val jsonString = response.readText()
 
+        val jsonElement = json.parseJson(jsonString)
+        val formatVersion = jsonElement.jsonObject["formatVersion"]?.primitive?.content
 
-        // try skcraft handling
-        try {
+        if(formatVersion == null) {
+            logger.info ("not a voodoo-format manifest")
             val skcraftManifest = json.parse(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString)
             return SKHandler.install(
                 skcraftManifest,
@@ -139,7 +141,7 @@ object Installer : KLogging() {
                 instanceDir,
                 minecraftDir
             )
-        } catch (e: SerializationException) {
+        } else {
             logger.info ("not a skcraft manifest")
         }
 

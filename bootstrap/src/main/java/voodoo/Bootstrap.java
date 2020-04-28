@@ -20,7 +20,7 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 public class Bootstrap {
-    private static final File binariesDir = new File(".voodoo/");
+    private static final File binariesDir = new File("../.voodoo/");
     private static final File lastFile = new File(binariesDir, "newest.jar");
     private static final Properties props = new Properties();
 

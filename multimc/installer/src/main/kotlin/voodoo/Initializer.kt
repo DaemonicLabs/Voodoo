@@ -63,9 +63,11 @@ object Initializer: KLogging() {
 
         val jsonString = response.readText()
 
-        // try skcraft handling
-        try {
-            val json = Json(JsonConfiguration(prettyPrint = true, ignoreUnknownKeys = false))
+        val jsonElement = json.parseJson(jsonString)
+        val formatVersion = jsonElement.jsonObject["formatVersion"]?.primitive?.content
+
+        if(formatVersion == null) {
+            Installer.logger.info ("not a voodoo-format manifest")
             val skcraftManifest = json.parse(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString)
             return SKHandler.install(
                 skcraftManifest,
@@ -73,14 +75,9 @@ object Initializer: KLogging() {
                 instanceDir,
                 minecraftDir
             )
-        } catch (e: SerializationException) {
+        } else {
             Installer.logger.info ("not a skcraft manifest")
         }
-
-
-        val jsonElement = json.parseJson(jsonString)
-
-        val formatVersion = jsonElement.jsonObject["formatVersion"]?.primitive?.content
 
         val props = Properties()
         props.load(Initializer::class.java.getResourceAsStream("/format.properties"))
@@ -101,6 +98,8 @@ object Initializer: KLogging() {
             } else {
                 "$installerVersion-local"
             }
+
+            logger.info { "downloading multimc-installer $fullVersion" }
 
             val installerFile = MavenUtil.downloadArtifact(
                 mavenUrl = GeneratedConstants.MAVEN_URL,
