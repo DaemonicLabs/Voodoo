@@ -65,6 +65,7 @@ object Initializer: KLogging() {
 
         // try skcraft handling
         try {
+            val json = Json(JsonConfiguration(prettyPrint = true, ignoreUnknownKeys = false))
             val skcraftManifest = json.parse(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString)
             return SKHandler.install(
                 skcraftManifest,
