@@ -11,6 +11,7 @@ import io.ktor.utils.io.copyAndClose
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import mu.KLogging
+import org.w3c.dom.NodeList
 import org.xml.sax.InputSource
 import voodoo.util.client
 import voodoo.util.toHexString
@@ -126,12 +127,10 @@ object MavenUtil : KLogging() {
     }
 
     suspend fun getMavenMetadata(
-        stopwatch: Stopwatch,
         mavenUrl: String,
         group: String,
         artifactId: String
-    ): String = stopwatch {
-
+    ): String {
         val groupPath = group.split("\\.".toRegex()).joinToString("/")
         val metadataUrl = "$mavenUrl/$groupPath/$artifactId/maven-metadata.xml"
 
@@ -153,12 +152,11 @@ object MavenUtil : KLogging() {
     }
 
     suspend fun getLatestVersionFromMavenMetadata(
-        stopwatch: Stopwatch,
         mavenUrl: String,
         group: String,
         artifactId: String
-    ): String = stopwatch {
-        val metadataXml = getMavenMetadata("get metadata".watch, mavenUrl, group, artifactId)
+    ): String {
+        val metadataXml = getMavenMetadata(mavenUrl, group, artifactId)
 
         val dbFactory = DocumentBuilderFactory.newInstance()
         val dBuilder = dbFactory.newDocumentBuilder()
@@ -171,7 +169,30 @@ object MavenUtil : KLogging() {
         val xPathExpression = "metadata/versioning/latest/text()"
 
         val latest = xPath.evaluate(xPathExpression, doc, XPathConstants.STRING) as String
-        latest
+        return latest
+    }
+
+    suspend fun getALlVersionFromMavenMetadata(
+        mavenUrl: String,
+        group: String,
+        artifactId: String
+    ): List<String> {
+        val metadataXml = getMavenMetadata(mavenUrl, group, artifactId)
+
+        val dbFactory = DocumentBuilderFactory.newInstance()
+        val dBuilder = dbFactory.newDocumentBuilder()
+        val xmlInput = metadataXml
+        val doc = dBuilder.parse(InputSource(ByteArrayInputStream(xmlInput.toByteArray(Charsets.UTF_8))))
+
+        val xpFactory = XPathFactory.newInstance()
+        val xPath = xpFactory.newXPath()
+
+        val xPathExpression = "metadata/versioning/versions/version/text()"
+        val nodeList: NodeList = xPath.evaluate(xPathExpression, doc, XPathConstants.NODESET) as NodeList
+        val list = (0..nodeList.length).map { i ->
+            nodeList.item(i).textContent
+        }
+        return list
     }
 
 }

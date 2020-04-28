@@ -56,7 +56,7 @@ pipeline {
                     webhookURL: discordWebhookId
                 )
             }
-            // sh './gradlew buildnumberIncrement'
+            sh './gradlew buildnumberIncrement'
         }
     }
 }

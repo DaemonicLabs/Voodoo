@@ -88,11 +88,24 @@ object Initializer: KLogging() {
 
             val cacheFolder = Directories.get(moduleName = "installer").cacheHome
 
+            val fullVersion = if(GeneratedConstants.JENKINS_BUILD_NUMBER > 0) {
+                val versions = MavenUtil.getALlVersionFromMavenMetadata(
+                    mavenUrl = GeneratedConstants.MAVEN_URL,
+                    group = GeneratedConstants.MAVEN_GROUP,
+                    artifactId = "multimc-installer"
+                ).filter {
+                    it.startsWith(installerVersion)
+                }
+                versions.max()!!
+            } else {
+                "$installerVersion-local"
+            }
+
             val installerFile = MavenUtil.downloadArtifact(
                 mavenUrl = GeneratedConstants.MAVEN_URL,
                 group = GeneratedConstants.MAVEN_GROUP,
                 artifactId = "multimc-installer",
-                version = installerVersion + (if(GeneratedConstants.JENKINS_BUILD_NUMBER < 0) "-local" else ""),
+                version = fullVersion,
                 classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
                 outputDir = cacheFolder
             )
