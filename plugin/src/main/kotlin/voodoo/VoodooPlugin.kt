@@ -101,9 +101,9 @@ open class VoodooPlugin : Plugin<Project> {
             )
 
             project.dependencies {
-                addDependency("kotlinScriptDef", group = "moe.nikky.voodoo", name = "voodoo", version = GeneratedConstants.FULL_VERSION )
+                addDependency("kotlinScriptDef", group = "moe.nikky.voodoo", name = "voodoo-main", version = GeneratedConstants.FULL_VERSION )
                 addDependency("kotlinScriptDef", group = "moe.nikky.voodoo", name = "dsl", version = GeneratedConstants.FULL_VERSION )
-                addDependency("implementation", group = "moe.nikky.voodoo", name = "voodoo", version = GeneratedConstants.FULL_VERSION )
+                addDependency("implementation", group = "moe.nikky.voodoo", name = "voodoo-main", version = GeneratedConstants.FULL_VERSION )
                 addDependency("implementation", group = "moe.nikky.voodoo", name = "dsl", version = GeneratedConstants.FULL_VERSION )
             }
 
