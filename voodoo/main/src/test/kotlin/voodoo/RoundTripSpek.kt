@@ -47,12 +47,12 @@ object RoundTripSpek : Spek({
 
                         +(Mod.rftools)
 
-                        withType<NestedEntry.Jenkins> {
-                            jenkinsUrl = "https://ci.elytradev.com/"
-                            side = Side.SERVER
-                        }.list {
-                            +"BTFU" job "elytra/BTFU/master"
-                        }
+//                        withType<NestedEntry.Jenkins> {
+//                            jenkinsUrl = "https://ci.elytradev.com/"
+//                            side = Side.SERVER
+//                        }.list {
+//                            +"BTFU" job "elytra/BTFU/master"
+//                        }
 
                         group {
                             side = Side.BOTH

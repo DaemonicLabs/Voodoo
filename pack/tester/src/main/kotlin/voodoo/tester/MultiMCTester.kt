@@ -126,7 +126,7 @@ object MultiMCTester : AbstractTester() {
             previousSelection,
             name = modpack.title.blankOr ?: modpack.id,
             version = modpack.version,
-            forceDisplay = false,
+            enableTimeout = false,
             installing = !featureJson.exists(),
             updateRequired = true
         )

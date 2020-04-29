@@ -88,7 +88,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
             previousSelection,
             modpack.title.blankOr
                 ?: modpack.id, modpack.version,
-            forceDisplay = false,
+            enableTimeout = false,
             installing = true,
             updateRequired = true
         )

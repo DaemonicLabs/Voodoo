@@ -1,43 +1,27 @@
 package voodoo.mmc
 
+import Modloader
 import com.skcraft.launcher.model.modpack.Recommendation
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
-import Modloader
-import voodoo.forge.ForgeUtil
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
 import voodoo.util.Platform
 import voodoo.util.jsonConfiguration
 import voodoo.util.serializer.FileSerializer
-import java.awt.BorderLayout
-import java.awt.Color
-import java.awt.Component
-import java.awt.Dialog
-import java.awt.GridBagConstraints
-import java.awt.GridBagLayout
-import java.awt.Insets
-import java.awt.Rectangle
+import java.awt.*
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.io.File
 import java.io.IOException
-import java.util.SortedMap
+import java.util.*
 import java.util.concurrent.TimeUnit
-import javax.swing.JButton
-import javax.swing.JCheckBox
-import javax.swing.JDialog
-import javax.swing.JFrame
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.JScrollPane
-import javax.swing.JToggleButton
-import javax.swing.SwingConstants
-import javax.swing.UIManager
+import javax.swing.*
 import kotlin.system.exitProcess
+
 
 object MMCUtil : KLogging() {
     private val directories = Directories.get(moduleName = "multimc")
@@ -191,7 +175,7 @@ object MMCUtil : KLogging() {
         } else MultiMCPack()
 
         if (mcVersion != null) {
-            val modloaderComponents = when(val modloader = modloader) {
+            val modloaderComponents = when (val modloader = modloader) {
                 is Modloader.Forge -> {
                     val forgeVersion = modloader.forgeVersion
                     logger.info("forge version : $forgeVersion")
@@ -237,7 +221,7 @@ object MMCUtil : KLogging() {
             sortedMapOf<String, String>()
 
         cfg["InstanceType"] = "OneSix"
-        if(name != null) cfg["name"] = name
+        if (name != null) cfg["name"] = name
         cfg["iconKey"] = iconKey
 
         if (preLaunchCommand != null) {
@@ -264,7 +248,7 @@ object MMCUtil : KLogging() {
         previousSelection: Map<String, Boolean>,
         name: String,
         version: String,
-        forceDisplay: Boolean,
+        enableTimeout: Boolean,
         installing: Boolean,
         updateRequired: Boolean
     ): Response {
@@ -281,12 +265,16 @@ object MMCUtil : KLogging() {
         logger.debug { selectables }
         logger.debug { previousSelection }
 
+        var userInteraction = false
         val toggleButtons = selectables.associateBy({
             it.id
         }, {
             JToggleButton(it.name, previousSelection[it.id] ?: it.selected)
                 .apply {
                     horizontalAlignment = SwingConstants.RIGHT
+                    addChangeListener { event ->
+                        userInteraction = true
+                    }
                 }
         })
 
@@ -294,9 +282,14 @@ object MMCUtil : KLogging() {
         var reinstall = false
         var skipUpdate = false
 
+
         val windowTitle =
             "Features" + if (name.isBlank()) "" else " - $name" + if (version.isBlank()) "" else " - $version"
-        val dialog = object : JDialog(null as Dialog?, windowTitle, true) {
+        val dialog = object : JDialog(null as Dialog?, windowTitle, true), Runnable {
+            private var seconds = 0
+//            private val thread: Thread = Thread(this)
+            private val max = 10 //max number of seconds
+
             init {
                 modalityType = Dialog.ModalityType.APPLICATION_MODAL
 
@@ -325,6 +318,7 @@ object MMCUtil : KLogging() {
                     fun select(selected: Boolean) {
                         toggle.isSelected = selected
                         indicator.isSelected = selected
+                        userInteraction = true
                     }
                     toggle.addItemListener {
                         select(toggle.isSelected)
@@ -403,6 +397,7 @@ object MMCUtil : KLogging() {
                             }!!.selected
                             function(selected)
                         }
+                        userInteraction = true
                     }
                 }
                 buttonPane.add(buttonResetDefault, GridBagConstraints().apply {
@@ -420,6 +415,7 @@ object MMCUtil : KLogging() {
                             val selected = selectables.find { it.id == id }!!.selected
                             function(previousSelection[name] ?: selected)
                         }
+                        userInteraction = true
                     }
                 }
                 buttonPane.add(buttonResetLast, GridBagConstraints().apply {
@@ -433,6 +429,7 @@ object MMCUtil : KLogging() {
                 val buttonSkipInstall = JButton("Skip Update").apply {
                     isEnabled = !installing
                     addActionListener {
+                        userInteraction = true
                         success = true
                         skipUpdate = true
                         dispose()
@@ -451,6 +448,7 @@ object MMCUtil : KLogging() {
                     isEnabled = false
                     toolTipText = "enable with checkbox"
                     addActionListener {
+                        userInteraction = true
                         reinstall = true
                         success = true
                         dispose()
@@ -467,6 +465,7 @@ object MMCUtil : KLogging() {
                 val checkForceReinstall = JCheckBox().apply {
                     isEnabled = !installing || !updateRequired
                     addItemListener {
+                        userInteraction = true
                         buttonForceReinstall.isEnabled = isSelected
                     }
                 }
@@ -482,7 +481,7 @@ object MMCUtil : KLogging() {
                 val okText = if (installing) {
                     "Install"
                 } else {
-                    if(updateRequired) {
+                    if (updateRequired) {
                         "Update"
                     } else {
                         "Launch"
@@ -490,6 +489,7 @@ object MMCUtil : KLogging() {
                 }
                 val button = JButton(okText).apply {
                     addActionListener {
+                        userInteraction = true
                         isVisible = false
                         success = true
                         dispose()
@@ -520,12 +520,31 @@ object MMCUtil : KLogging() {
                 )
                 pack()
                 setLocationRelativeTo(null)
+                if(enableTimeout) {
+                    Thread(this).start()
+                }
             }
 
             override fun setVisible(visible: Boolean) {
                 super.setVisible(visible)
                 if (!visible) {
                     (parent as? JFrame)?.dispose()
+                }
+            }
+
+            override fun run() {
+                while (seconds < max && !userInteraction) {
+                    seconds++
+                    title = "${max - seconds} s - $windowTitle"
+                    try {
+                        Thread.sleep(1000);
+                    } catch (exc: InterruptedException) { }
+                }
+                if(!userInteraction) {
+                    success = true
+                    isVisible = false
+                } else {
+                    title = windowTitle
                 }
             }
         }

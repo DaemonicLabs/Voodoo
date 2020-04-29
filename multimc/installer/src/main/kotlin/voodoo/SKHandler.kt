@@ -3,7 +3,6 @@ package voodoo
 
 import com.skcraft.launcher.model.modpack.FileInstall
 import com.skcraft.launcher.model.modpack.Manifest
-import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.toList
@@ -110,7 +109,7 @@ object SKHandler : KLogging() {
             name = modpack.title.blankOr
                 ?: modpack.name!!,
             version = modpack.version!!,
-            forceDisplay = forceDisplay,
+            enableTimeout = true,
             installing = oldpack == null,
             updateRequired = oldpack?.version != modpack.version
         )

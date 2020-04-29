@@ -262,7 +262,7 @@ object Installer : KLogging() {
             name = modpack.title.blankOr
                 ?: modpack.id,
             version = modpack.version!!,
-            forceDisplay = forceDisplay,
+            enableTimeout = true,
             installing = oldpack == null,
             updateRequired = oldpack?.version != modpack.version
         )

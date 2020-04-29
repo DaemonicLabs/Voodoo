@@ -93,7 +93,7 @@ object MMCSelfupdatingFatPackSk : AbstractPack("mmc-sk-fat") {
             previousSelection,
             name = modpack.title.blankOr ?: modpack.id,
             version = modpack.version,
-            forceDisplay = false,
+            enableTimeout = false,
             installing = true,
             updateRequired = true
         )
