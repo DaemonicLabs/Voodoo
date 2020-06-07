@@ -1,5 +1,5 @@
 {
-    "type": "voodoo.data.lock.LockEntry.Curse",
+    "type": "curse",
     "common": {
         "side": "CLIENT",
         "description": "Radial menu that can be used for command/keyboard shortcuts. Some keybinds cannot be added to radial menu.",

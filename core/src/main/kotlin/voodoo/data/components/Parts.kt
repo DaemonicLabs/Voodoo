@@ -1,5 +1,6 @@
 package voodoo.data.components
 
+import kotlinx.serialization.Transient
 import voodoo.data.DependencyType
 import voodoo.data.OptionalData
 import voodoo.data.Side
@@ -11,7 +12,7 @@ import voodoo.data.provider.UpdateChannel
 
 
 interface CommonImmutable {
-    val provider: String
+    @Transient val provider: String
     val id: String
     val name: String?
     val folder: String
@@ -31,7 +32,6 @@ interface CommonImmutable {
     val enabled: Boolean
 }
 interface CommonMutable : CommonImmutable {
-    override var provider: String
     override var id: String
     override var name: String?
     override var folder: String

@@ -2,10 +2,10 @@
     "id": "fabricpack",
     "mcVersion": "1.15.2",
     "modloader": {
-        "type": "Modloader.Fabric",
-        "loader": "0.7.8+build.189",
+        "type": "modloader.Fabric",
+        "loader": "0.8.7+build.201",
         "intermediateMappings": "1.15.2",
-        "installer": "0.5.2.39"
+        "installer": "0.5.2.40"
     },
     "version": "0.0.1",
     "authors": [
@@ -13,7 +13,8 @@
     ],
     "packOptions": {
         "multimcOptions": {
-            "skPackUrl": "https://nikky.moe/.mc/experimental/fabricpack.json"
+            "skPackUrl": "https://nikky.moe/.mc/experimental/fabricpack.json",
+            "selfupdateUrl": ""
         }
     }
 }

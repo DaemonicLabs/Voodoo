@@ -1,5 +1,5 @@
 {
-    "type": "voodoo.data.lock.LockEntry.Curse",
+    "type": "curse",
     "common": {
         "fileName": "Unity.zip",
         "description": "Multi-mod compatible resource pack. Very nice, but does have some broken textures here and there.",

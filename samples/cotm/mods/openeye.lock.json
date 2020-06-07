@@ -1,5 +1,5 @@
 {
-    "type": "voodoo.data.lock.LockEntry.Curse",
+    "type": "curse",
     "common": {
         "description": "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack.",
         "optionalData": {

@@ -8,34 +8,52 @@ import moe.nikky.voodoo.format.FnPatternList
 data class PackOptions(
     var multimcOptions: MultiMC = MultiMC(),
     var skCraftOptions: SKCraft = SKCraft(),
-    var experimentalOptions: ExperimentalPackOptions = ExperimentalPackOptions(),
+    var experimentalOptions: VoodooPackOptions = VoodooPackOptions(),
     var baseUrl: String? = null
 ) {
+    var userFiles: FnPatternList
+            get() = experimentalOptions.userFiles
+            set(value) {
+                experimentalOptions.userFiles = value
+            }
+
     @PackDSL
     fun multimc(configure: MultiMC.() -> Unit) {
         multimcOptions.configure()
     }
+
     @PackDSL
     fun skcraft(configure: SKCraft.() -> Unit) {
         skCraftOptions.configure()
     }
+
     @PackDSL
-    fun experimental(configure: ExperimentalPackOptions.() -> Unit) {
+    @Deprecated("renamed to voodoo", ReplaceWith("voodoo(configure)"))
+    fun experimental(configure: VoodooPackOptions.() -> Unit) {
+       voodoo(configure)
+    }
+
+    @PackDSL
+    fun voodoo(configure: VoodooPackOptions.() -> Unit) {
         experimentalOptions.configure()
     }
 
-    @Serializable data class MultiMC(
+    @Serializable
+    data class MultiMC(
         var skPackUrl: String? = null,
         var selfupdateUrl: String? = null,
         var instanceCfg: List<Pair<String, String>> = listOf()
     )
 
-    @Serializable data class SKCraft(
+    @Serializable
+    data class SKCraft(
         var userFiles: UserFiles = UserFiles(),
         var server: SKServer? = null,
         var thumb: String? = null
     )
-    @Serializable data class ExperimentalPackOptions(
+
+    @Deprecated("planned to be inlined into parent DSL structure")
+    @Serializable data class VoodooPackOptions(
         var userFiles: FnPatternList = FnPatternList()
     )
 }

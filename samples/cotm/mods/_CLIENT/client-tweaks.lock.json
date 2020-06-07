@@ -1,5 +1,5 @@
 {
-    "type": "voodoo.data.lock.LockEntry.Curse",
+    "type": "curse",
     "common": {
         "side": "CLIENT",
         "description": "Various client related fixes and tweaks, all in a handy menu.",

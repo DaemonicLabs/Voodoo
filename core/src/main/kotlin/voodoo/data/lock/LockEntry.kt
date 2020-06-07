@@ -1,10 +1,7 @@
 package voodoo.data.lock
 
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.Polymorphic
-import kotlinx.serialization.PolymorphicSerializer
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.Transient
+import kotlinx.serialization.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonDecodingException
 import kotlinx.serialization.modules.SerializersModule
@@ -29,8 +26,12 @@ import java.time.Instant
  */
 //@Polymorphic
 @Serializable
-sealed class LockEntry() : CommonLockModule {
+sealed class LockEntry : CommonLockModule {
+    @Transient
+    abstract val provider: String
+
     @Serializable
+    @SerialName("curse")
     data class Curse(
         @Transient override var _id: String = "",
         val common: CommonLockComponent = CommonLockComponent(),
@@ -39,26 +40,28 @@ sealed class LockEntry() : CommonLockModule {
         val useUrlTxt: Boolean = true,
         val skipFingerprintCheck: Boolean = true
     ) : LockEntry(), CommonLockModule by common {
+        override val provider = CurseProvider.id
         init {
             optional = optionalData != null
-            provider = CurseProvider.id
         }
     }
 
     @Serializable
+    @SerialName("direct")
     data class Direct(
         @Transient override var _id: String = "",
         val common: CommonLockComponent = CommonLockComponent(),
         val url: String = "",
         val useUrlTxt: Boolean = true
     ) : LockEntry(), CommonLockModule by common {
+        override val provider = DirectProvider.id
         init {
             optional = optionalData != null
-            provider = DirectProvider.id
         }
     }
 
     @Serializable
+    @SerialName("jenkins")
     data class Jenkins(
         @Transient override var _id: String = "",
         val common: CommonLockComponent = CommonLockComponent(),
@@ -67,26 +70,25 @@ sealed class LockEntry() : CommonLockModule {
         val buildNumber: Int = -1,
         val fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$"
     ) : LockEntry(), CommonLockModule by common {
+        override val provider = JenkinsProvider.id
         init {
             optional = optionalData != null
-            provider = JenkinsProvider.id
         }
     }
 
     @Serializable
+    @SerialName("local")
     data class Local(
         @Transient override var _id: String = "",
         val common: CommonLockComponent = CommonLockComponent(),
         var fileSrc: String = ""
     ) : LockEntry(), CommonLockModule by common {
+        override val provider = LocalProvider.id
         init {
             optional = optionalData != null
-            provider = LocalProvider.id
         }
     }
 
-    @Transient
-    lateinit var provider: String
 
 //    @Transient
 //    lateinit var idField: String // id might not always match the filename

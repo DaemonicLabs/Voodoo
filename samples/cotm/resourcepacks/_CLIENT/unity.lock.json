@@ -1,5 +1,5 @@
 {
-    "type": "voodoo.data.lock.LockEntry.Curse",
+    "type": "curse",
     "common": {
         "fileName": "Unity.zip",
         "side": "CLIENT",

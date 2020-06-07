@@ -1,5 +1,5 @@
 {
-    "type": "voodoo.data.lock.LockEntry.Curse",
+    "type": "curse",
     "common": {
         "side": "CLIENT",
         "description": "Improves the flora in the world. Very heavy, but very pretty. (Sane defaults set.)",

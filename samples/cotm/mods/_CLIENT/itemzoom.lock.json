@@ -1,5 +1,5 @@
 {
-    "type": "voodoo.data.lock.LockEntry.Curse",
+    "type": "curse",
     "common": {
         "side": "CLIENT",
         "description": "Enable this if you like to get a closer look at item textures.",

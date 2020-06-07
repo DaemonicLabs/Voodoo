@@ -10,7 +10,7 @@ import kotlin.reflect.KMutableProperty0
 @VoodooDSL
 class ModloaderBuilder(
     internal var mcVersion: String?,
-    internal var modloader: ModloaderPattern?
+    internal var modloader: ModloaderPattern
 ) {
     @VoodooDSL
     fun forge(version: String) {
@@ -30,9 +30,9 @@ class ModloaderBuilder(
         installer: InstallerVersion? = null
     ) {
         modloader = ModloaderPattern.Fabric(
-                intermediateMappingsVersion = intermediary,
-                loaderVersion = loader,
-                installerVersion = installer
+                intermediateMappingsVersion = intermediary.version,
+                loaderVersion = loader?.version,
+                installerVersion = installer?.version
             )
 
         if(mcVersion == null) {

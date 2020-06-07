@@ -1,5 +1,5 @@
 {
-    "type": "voodoo.data.lock.LockEntry.Jenkins",
+    "type": "jenkins",
     "jenkinsUrl": "https://ci.elytradev.com",
     "job": "elytra/InfraRedstone/1.12.2",
     "buildNumber": 21

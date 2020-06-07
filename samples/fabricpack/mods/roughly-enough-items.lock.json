@@ -1,0 +1,12 @@
+{
+    "type": "curse",
+    "common": {
+        "dependencies": {
+            "REQUIRED": [
+                "fabric-api"
+            ]
+        }
+    },
+    "projectID": 310111,
+    "fileID": 2968247
+}

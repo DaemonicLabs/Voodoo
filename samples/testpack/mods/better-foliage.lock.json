@@ -1,5 +1,5 @@
 {
-    "type": "voodoo.data.lock.LockEntry.Curse",
+    "type": "curse",
     "common": {
         "description": "Improves the fauna in the world. Very heavy, but very pretty. (Sane defaults set.)",
         "optionalData": {

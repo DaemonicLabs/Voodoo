@@ -215,8 +215,8 @@ object PoetPack : KLogging() {
             nestedPack.version.takeIf { it != default.version }?.let {
                 mainEnv.addStatement("version = %S", it)
             }
-            nestedPack.icon.takeIf { it != default.icon }?.let {
-                mainEnv.addStatement("icon = rootFolder.resolve(%S)", it.relativeTo(nestedPack.rootFolder).path)
+            nestedPack.iconPath.takeIf { it != default.iconPath }?.let {
+                mainEnv.addStatement("iconPath = %S", it)
             }
             nestedPack.authors.takeIf { it != default.authors }?.let { authors ->
                 mainEnv.addStatement("authors = listOf(%L)", authors.joinToString { """"$it"""" })
@@ -263,6 +263,9 @@ object PoetPack : KLogging() {
                             it.loaderVersion,
                             it.installerVersion
                         )
+                    }
+                    is ModloaderPattern.None -> {
+
                     }
                 }
             }

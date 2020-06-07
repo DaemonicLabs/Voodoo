@@ -1,5 +1,5 @@
 {
-    "type": "voodoo.data.lock.LockEntry.Jenkins",
+    "type": "jenkins",
     "jenkinsUrl": "https://ci.elytradev.com",
     "job": "elytra/MagicArsenal/master",
     "buildNumber": 90

@@ -1,73 +1,84 @@
 package voodoo.data.nested
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import mu.KLogging
 import voodoo.data.components.*
 import voodoo.data.flat.Entry
-import voodoo.provider.*
+import voodoo.provider.CurseProvider
+import voodoo.provider.DirectProvider
+import voodoo.provider.JenkinsProvider
+import voodoo.provider.LocalProvider
 import java.io.File
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.functions
 import kotlin.reflect.full.memberProperties
 
-sealed class NestedEntry(
-    open var nodeName: String? = null,
-    open var entries: List<NestedEntry> = emptyList()
-) : CommonMutable {
+@Serializable
+sealed class NestedEntry : CommonMutable {
+    abstract var nodeName: String?
+    abstract var entries: List<NestedEntry>
+//    @Transient
+//    abstract val provider: String
+
+    @Serializable
+    @SerialName("common")
     data class Common(
-        override var nodeName: String? = null,
+        @Transient override var nodeName: String? = null,
         val common: CommonComponent = CommonComponent(),
         override var entries: List<NestedEntry> = emptyList()
-    ) : NestedEntry(nodeName, entries), CommonMutable by common {
-        init {
-            provider = ""
-        }
+    ) : NestedEntry(), CommonMutable by common {
+        override val provider = ""
     }
 
+    @Serializable
+    @SerialName("curse")
     data class Curse(
-        override var nodeName: String? = null,
+        @Transient override var nodeName: String? = null,
         val common: CommonComponent = CommonComponent(),
         val curse: CurseComponent = CurseComponent(),
         override var entries: List<NestedEntry> = emptyList()
-    ) : NestedEntry(nodeName, entries), CommonMutable by common, CurseMutable by curse {
-        init {
-            provider = CurseProvider.id
-        }
+    ) : NestedEntry(), CommonMutable by common, CurseMutable by curse {
+        override val provider = CurseProvider.id
     }
 
+    @Serializable
+    @SerialName("direct")
     data class Direct(
-        override var nodeName: String? = null,
+        @Transient override var nodeName: String? = null,
         val common: CommonComponent = CommonComponent(),
         val direct: DirectComponent = DirectComponent(),
         override var entries: List<NestedEntry> = emptyList()
-    ) : NestedEntry(nodeName, entries), CommonMutable by common, DirectMutable by direct {
-        init {
-            provider = DirectProvider.id
-        }
+    ) : NestedEntry(), CommonMutable by common, DirectMutable by direct {
+        override val provider = DirectProvider.id
     }
 
+    @Serializable
+    @SerialName("jenkins")
     data class Jenkins(
-        override var nodeName: String? = null,
+        @Transient override var nodeName: String? = null,
         val common: CommonComponent = CommonComponent(),
         val jenkins: JenkinsComponent = JenkinsComponent(),
         override var entries: List<NestedEntry> = emptyList()
-    ) : NestedEntry(nodeName, entries), CommonMutable by common, JenkinsMutable by jenkins {
-        init {
-            provider = JenkinsProvider.id
-        }
+    ) : NestedEntry(), CommonMutable by common, JenkinsMutable by jenkins {
+        override val provider = JenkinsProvider.id
     }
 
+    @Serializable
+    @SerialName("local")
     data class Local(
-        override var nodeName: String? = null,
+        @Transient override var nodeName: String? = null,
         val common: CommonComponent = CommonComponent(),
         val local: LocalComponent = LocalComponent(),
         override var entries: List<NestedEntry> = emptyList()
-    ) : NestedEntry(nodeName, entries), CommonMutable by common, LocalMutable by local {
-        init {
-            provider = LocalProvider.id
-        }
+    ) : NestedEntry(), CommonMutable by common, LocalMutable by local {
+        override val provider = LocalProvider.id
     }
 
-    val debugIdentifier: String get() = nodeName ?: id
+    @Transient
+    private val debugIdentifier: String
+        get() = nodeName ?: id
 
     companion object : KLogging() {
 //        val DEFAULT = NestedEntry()

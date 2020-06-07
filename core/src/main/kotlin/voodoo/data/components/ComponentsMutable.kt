@@ -1,5 +1,6 @@
 package voodoo.data.components
 
+import kotlinx.serialization.Serializable
 import voodoo.data.DependencyType
 import voodoo.data.OptionalData
 import voodoo.data.Side
@@ -14,8 +15,10 @@ import voodoo.data.provider.UpdateChannel
  * @author Nikky
  */
 
+@Serializable
 data class CommonComponent(
-    override var provider: String = "",
+    @Deprecated("use type checks instead of a stringtype thing, will be replaced with a constant in each specialized component")
+    @Transient override var provider: String = "",
     override var id: String = "",
     override var name: String? = null,
     override var folder: String = "mods",
@@ -35,6 +38,7 @@ data class CommonComponent(
     override var enabled: Boolean = true
 ) : CommonMutable
 
+@Serializable
 data class CurseComponent(
     override var releaseTypes: Set<FileType> = setOf(
         FileType.Release,
@@ -46,24 +50,20 @@ data class CurseComponent(
     override var skipFingerprintCheck: Boolean = true
 ) : CurseMutable
 
+@Serializable
 data class DirectComponent(
     override var url: String = "",
     override var useUrlTxt: Boolean = true
 ) : DirectMutable
 
+@Serializable
 data class JenkinsComponent(
     override var jenkinsUrl: String = "",
     override var job: String = "",
     override var buildNumber: Int = -1
 ) : JenkinsMutable
 
+@Serializable
 data class LocalComponent(
     override var fileSrc: String = ""
 ) : LocalMutable
-
-data class UpdateJsonComponent(
-    override var updateJson: String = "",
-    override var updateChannel: UpdateChannel = UpdateChannel.RECOMMENDED,
-    override var template: String = "",
-    override var useUrlTxt: Boolean = true
-): UpdateJsonMutable

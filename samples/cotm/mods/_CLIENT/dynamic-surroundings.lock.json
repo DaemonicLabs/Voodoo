@@ -1,5 +1,5 @@
 {
-    "type": "voodoo.data.lock.LockEntry.Curse",
+    "type": "curse",
     "common": {
         "side": "CLIENT",
         "description": "Caution: Resource heavy. Lots of configurable features that add immersive sound/visual effects. Includes light-level overlay.",

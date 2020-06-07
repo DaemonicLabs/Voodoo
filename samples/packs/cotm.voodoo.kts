@@ -17,7 +17,7 @@ pack {
             exclude = listOf("")
         )
     }
-    experimental {
+    voodoo {
         userFiles = FnPatternList(
             include = listOf(
                 "options.txt",

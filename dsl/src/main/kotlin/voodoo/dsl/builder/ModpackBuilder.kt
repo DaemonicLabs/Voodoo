@@ -9,6 +9,7 @@ import voodoo.data.nested.NestedPack
 import voodoo.dsl.VoodooDSL
 import voodoo.property
 import voodoo.readOnly
+import java.io.File
 import kotlin.reflect.full.createInstance
 
 @VoodooDSL
@@ -18,6 +19,7 @@ open class ModpackBuilder(
     var mcVersion by property(pack::mcVersion)
     var title by property(pack::title)
     var version by property(pack::version)
+    var iconPath by property(pack::iconPath)
     var icon by property(pack::icon)
     var authors by property(pack::authors)
     var launch by property(pack::launch)

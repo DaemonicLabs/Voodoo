@@ -1,3 +1,4 @@
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 // TODO: is this all we need ?
@@ -5,6 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 sealed class Modloader {
     @Serializable
+    @SerialName("modloader.Forge")
     data class Forge(
         // TODO: maybe just second part of `1.15.2-31.1.35` ? is this clear enough for the server to download the installer ?
         // https://files.minecraftforge.net/maven/net/minecraftforge/forge/maven-metadata.xml
@@ -40,6 +42,7 @@ sealed class Modloader {
 
     // look up versions from https://meta.fabricmc.net/
     @Serializable
+    @SerialName("modloader.Fabric")
     data class Fabric(
         // https://meta.fabricmc.net/v2/versions/loader
         val loader: String,

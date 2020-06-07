@@ -18,16 +18,21 @@ import kotlinx.coroutines.DEBUG_PROPERTY_NAME
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import kotlinx.serialization.modules.SerializersModule
 import mu.KLogging
 import org.slf4j.LoggerFactory
 import voodoo.builder.Builder
 import voodoo.changelog.ChangelogBuilder
+import voodoo.data.ModloaderPattern
+import voodoo.data.nested.NestedPack
 import voodoo.script.ChangeScript
 import voodoo.script.MainScriptEnv
 import voodoo.script.TomeScript
 import voodoo.tome.TomeEnv
 import voodoo.util.Directories
 import voodoo.util.SharedFolders
+import voodoo.util.json
+import voodoo.util.jsonConfiguration
 import voodoo.voodoo.main.GeneratedConstants
 import java.io.File
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
@@ -44,10 +49,10 @@ object VoodooMain : KLogging() {
 
         logger.debug("using Voodoo: ${GeneratedConstants.FULL_VERSION}")
         logger.debug("full arguments: ${fullArgs.joinToString(", ", "[", "]") { it }}")
-        logger.debug("system.properties:")
-        System.getProperties().forEach { k, v ->
-            logger.debug { "  $k = $v" }
-        }
+//        logger.debug("system.properties:")
+//        System.getProperties().forEach { k, v ->
+//            logger.debug { "  $k = $v" }
+//        }
 
         if (fullArgs.isEmpty()) {
             GradleSetup.main()
@@ -115,6 +120,11 @@ object VoodooMain : KLogging() {
                     logger.debug("tomeEnv: $tomeEnv")
 
                     val nestedPack = scriptEnv.pack
+
+                    // debug
+//                    rootDir.resolve(id).resolve("$id.nested.pack.json").writeText(
+//                        json.stringify(NestedPack.serializer(), nestedPack)
+//                    )
 
                     Builder.logger.debug("parsing args: ${args.joinToString(", ")}")
                     val parser = ArgParser(args)

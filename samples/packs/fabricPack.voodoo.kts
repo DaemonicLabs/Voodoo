@@ -16,7 +16,7 @@ pack {
         skPackUrl = "https://nikky.moe/.mc/experimental/fabricpack.json"
         selfupdateUrl = ""
     }
-    experimental {
+    voodoo {
 
     }
 }
@@ -31,7 +31,7 @@ root<Curse> {
         +FabricMod.tabInventoryFabric
 
         +FabricMod.roughlyEnoughItems {
-            version = "abc"
+//            version = "abc"
         }
         +FabricMod.roughlyEnoughResources
         group {

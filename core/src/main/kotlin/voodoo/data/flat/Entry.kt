@@ -18,8 +18,8 @@ sealed class Entry: CommonMutable {
     data class Common(
         val common: CommonComponent = CommonComponent()
     ) : Entry(), CommonMutable by common {
+        override val provider = ""
         init {
-            provider = ""
             optional = optionalData != null
         }
     }
@@ -28,8 +28,8 @@ sealed class Entry: CommonMutable {
         private val common: CommonComponent = CommonComponent(),
         private val curse: CurseComponent = CurseComponent()
     ) : Entry(), CommonMutable by common, CurseMutable by curse {
+        override val provider = CurseProvider.id
         init {
-            provider = CurseProvider.id
             optional = optionalData != null
         }
     }
@@ -38,8 +38,8 @@ sealed class Entry: CommonMutable {
         private val common: CommonComponent = CommonComponent(),
         private val direct: DirectComponent = DirectComponent()
     ) : Entry(), CommonMutable by common, DirectMutable by direct {
+        override val provider = DirectProvider.id
         init {
-            provider = DirectProvider.id
             optional = optionalData != null
         }
     }
@@ -48,8 +48,8 @@ sealed class Entry: CommonMutable {
         private val common: CommonComponent = CommonComponent(),
         private val jenkins: JenkinsComponent = JenkinsComponent()
     ) : Entry(), CommonMutable by common, JenkinsMutable by jenkins {
+        override val provider = JenkinsProvider.id
         init {
-            provider = JenkinsProvider.id
             optional = optionalData != null
         }
     }
@@ -58,8 +58,8 @@ sealed class Entry: CommonMutable {
         private val common: CommonComponent = CommonComponent(),
         private val local: LocalComponent = LocalComponent()
     ) : Entry(), CommonMutable by common, LocalMutable by local {
+        override val provider = LocalProvider.id
         init {
-            provider = LocalProvider.id
             optional = optionalData != null
         }
     }

@@ -1,5 +1,5 @@
 {
-    "type": "voodoo.data.lock.LockEntry.Curse",
+    "type": "curse",
     "common": {
         "description": "Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)",
         "optionalData": {
