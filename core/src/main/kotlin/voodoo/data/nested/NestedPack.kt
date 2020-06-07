@@ -46,7 +46,11 @@ data class NestedPack(
     var icon: File
         get()= rootFolder.resolve(iconPath)
         set(value) {
-            iconPath = value.relativeTo(rootFolder).path
+            iconPath = if(value.isAbsolute) {
+                value.relativeTo(rootFolder).path
+            } else {
+                value.path
+            }
         }
 
     companion object : KLogging() {
