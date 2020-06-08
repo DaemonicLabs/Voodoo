@@ -94,7 +94,7 @@ object Initializer: KLogging() {
                 ).filter {
                     it.startsWith(installerVersion)
                 }
-                versions.max()!!
+                versions.max() ?: error("no installer version $installerVersion for pack format version $formatVersion found")
             } else {
                 "$installerVersion-local"
             }

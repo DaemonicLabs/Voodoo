@@ -52,5 +52,14 @@ root<Curse> {
         +Mod.mouseTweaks
 
         addOptionalMods()
+
+        // SERVER OPTIONAL MODS
+        group {
+            side = Side.SERVER
+            optional { selected = false }
+        }.list {
+            +Mod.btfuContinuousRsyncIncrementalBackup { name = "BTFU"; description = "Best backup mod in existence! (setup required)" }
+            +Mod.matterlink { description = "MatterBridge endpoint for Minecraft servers (requires relay)" }
+        }
     }
 }

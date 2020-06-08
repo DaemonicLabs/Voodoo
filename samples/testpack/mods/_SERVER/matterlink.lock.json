@@ -1,0 +1,16 @@
+{
+    "type": "curse",
+    "common": {
+        "side": "SERVER",
+        "description": "MatterBridge endpoint for Minecraft servers (requires relay)",
+        "optionalData": {
+        },
+        "dependencies": {
+            "REQUIRED": [
+                "shadowfacts-forgelin"
+            ]
+        }
+    },
+    "projectID": 287323,
+    "fileID": 2695256
+}

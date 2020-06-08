@@ -1,6 +1,6 @@
 plugins {
 //    kotlin("scripting") version "1.3.70"
-    id("voodoo") version "0.5.11-local"
+    id("voodoo") version "0.5.12-local"
 }
 
 voodoo {

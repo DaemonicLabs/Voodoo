@@ -2,7 +2,7 @@
     "id": "testpack",
     "mcVersion": "1.12.2",
     "modloader": {
-        "type": "Modloader.Forge",
+        "type": "modloader.Forge",
         "mcVersion": "1.12.2",
         "forgeVersion": "14.23.5.2768"
     },

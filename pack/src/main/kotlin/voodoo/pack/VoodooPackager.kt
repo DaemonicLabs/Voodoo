@@ -11,6 +11,7 @@ import moe.nikky.voodoo.format.PackageBuilder
 import moe.nikky.voodoo.format.builder.ExtendedFeaturePattern
 import moe.nikky.voodoo.format.FeatureWithPattern
 import moe.nikky.voodoo.format.Feature
+import moe.nikky.voodoo.format.modpack.entry.Side
 import voodoo.data.DependencyType
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
@@ -303,7 +304,8 @@ object VoodooPackager : AbstractPack("experimental") {
                     name = featureName,
                     selected = entryFeature.selected,
                     description = description,
-                    recommendation = entryFeature.recommendation
+                    recommendation = entryFeature.recommendation,
+                    side = Side.valueOf(entry.side.name)
                 )
             )
             processFeature("$featureName-process".watch, modPack, feature)

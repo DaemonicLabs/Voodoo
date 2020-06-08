@@ -255,7 +255,7 @@ object Installer : KLogging() {
             mapOf()
         }
         val (features, reinstall, skipUpdate) = updateAndSelectFeatures(
-            selectables = modpack.features.map {
+            selectables = modpack.features.filter { it.side != Side.SERVER }.map {
                 MMCSelectable(it.name, it.name, it.description, it.selected, it.recommendation?.let { r -> Recommendation.valueOf(r.name) })
             },
             previousSelection = defaults,

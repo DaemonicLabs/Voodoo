@@ -82,7 +82,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
             mapOf<String, Boolean>()
         }
         val (optionals, reinstall) = MMCUtil.updateAndSelectFeatures(
-            modpack.optionalEntries.map {
+            modpack.optionalEntries.filter{ it.side != Side.SERVER }.map {
                 MMCSelectable(it)
             },
             previousSelection,
