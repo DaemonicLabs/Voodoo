@@ -1,8 +1,11 @@
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonLiteral
+import kotlinx.serialization.json.JsonTransformingSerializer
 
 // TODO: is this all we need ?
-// TODO: maybe convert to merged data structure? less typesafety ? control over type variable
+// TODO: maybe convert to merged data structure? less typesafety vs control over type variable
 @Serializable
 sealed class Modloader {
     @Serializable
@@ -54,4 +57,18 @@ sealed class Modloader {
 
     @Serializable
     object None : Modloader() // not sure if we want to keep this
+}
+
+// TODO: remove ugly woraround, use https://github.com/Kotlin/kotlinx.serialization/pull/772 once available
+object ModloaderSerializer : JsonTransformingSerializer<Modloader>(Modloader.serializer(), "type_transform") {
+    override fun readTransform(element: JsonElement): JsonElement {
+        val newType = when(val type = element.jsonObject.getPrimitive("type").content) {
+            "Modloader.Fabric" -> "modloader.Fabric"
+            "Modloader.Forge" -> "modloader.Forge"
+            else -> type
+        }
+        val mutableEntries = element.jsonObject.toMutableMap()
+        mutableEntries["type"] = JsonLiteral(newType)
+        return element.jsonObject.copy(mutableEntries).also { println(it) }
+    }
 }

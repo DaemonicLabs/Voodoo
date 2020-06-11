@@ -2,13 +2,10 @@ package voodoo.data.lock
 
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.*
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonDecodingException
-import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.json.*
 import mu.KLogging
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
-import voodoo.data.provider.UpdateChannel
 import voodoo.provider.CurseProvider
 import voodoo.provider.DirectProvider
 import voodoo.provider.JenkinsProvider
@@ -16,7 +13,6 @@ import voodoo.provider.LocalProvider
 import voodoo.provider.ProviderBase
 import voodoo.provider.Providers
 import voodoo.util.json
-import voodoo.util.jsonConfiguration
 import java.io.File
 import java.time.Instant
 
@@ -24,7 +20,6 @@ import java.time.Instant
  * Created by nikky on 28/03/18.
  * @author Nikky
  */
-//@Polymorphic
 @Serializable
 sealed class LockEntry : CommonLockModule {
     @Transient
@@ -161,7 +156,7 @@ sealed class LockEntry : CommonLockModule {
 //    fun isLocal(): Boolean = provider == LocalProvider.id
 
     fun serialize(): String {
-        val jsonString = json.stringify(LockEntry.serializer(), this)
+        val jsonString = json.stringify(LockEntrySerializer, this)
         logger.debug { "serializing '$this'" }
         logger.debug { " -> " }
         logger.debug { "$jsonString" }
@@ -173,7 +168,7 @@ sealed class LockEntry : CommonLockModule {
         fun loadEntry(file: File, srcDir: File): LockEntry {
             logger.debug("parsing: $file")
             return try {
-                val lockEntry: LockEntry = json.parse(LockEntry.serializer(), file.readText())
+                val lockEntry: LockEntry = json.parse(LockEntrySerializer, file.readText())
                 lockEntry.folder = file.parentFile.relativeTo(srcDir)
                 lockEntry.changeId(file.name.substringBefore(".lock.json"))
                 lockEntry
@@ -187,12 +182,29 @@ sealed class LockEntry : CommonLockModule {
 
 //        fun install(builder: SerializersModuleBuilder) {
 //            builder.polymorphic<LockEntry> {
-//                LockEntry.Curse::class to LockEntry.Curse.serializer()
-//                LockEntry.Direct::class to LockEntry.Direct.serializer()
-//                LockEntry.Jenkins::class to LockEntry.Jenkins.serializer()
-//                LockEntry.Local::class to LockEntry.Local.serializer()
-//                LockEntry.UpdateJson::class to LockEntry.UpdateJson.serializer()
+//                subclass(Curse.serializer())
+//                subclass(Direct.serializer())
+//                subclass(Jenkins.serializer())
+//                subclass(Local.serializer())
+//                default {
+//
+//                }
 //            }
 //        }
+    }
+}
+
+object LockEntrySerializer : JsonTransformingSerializer<LockEntry>(LockEntry.serializer(), "type_transform") {
+    override fun readTransform(element: JsonElement): JsonElement {
+        val newType = when(val type = element.jsonObject.getPrimitive("type").content) {
+            "voodoo.data.lock.LockEntry.Curse" -> "curse"
+            "voodoo.data.lock.LockEntry.Direct" -> "direct"
+            "voodoo.data.lock.LockEntry.Jenkins" -> "jenkins"
+            "voodoo.data.lock.LockEntry.Local" -> "local"
+            else -> type
+        }
+        val mutableEntries = element.jsonObject.toMutableMap()
+        mutableEntries["type"] = JsonLiteral(newType)
+        return element.jsonObject.copy(mutableEntries).also { println(it) }
     }
 }

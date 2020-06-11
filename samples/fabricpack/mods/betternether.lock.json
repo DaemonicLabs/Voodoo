@@ -1,5 +1,5 @@
 {
-    "type": "curse",
+    "type": "voodoo.data.lock.LockEntry.Curse",
     "common": {
         "dependencies": {
             "REQUIRED": [
