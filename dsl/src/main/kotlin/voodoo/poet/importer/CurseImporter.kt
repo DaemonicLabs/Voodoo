@@ -50,7 +50,8 @@ object CurseImporter : AbstractImporter() {
             val url = URL(sourceUrl)
             zipFile.download(
                 sourceUrl,
-                directories.cacheHome.resolve("DIRECT").resolve(url.host + url.path.substringBeforeLast('/'))
+                cacheDir = null
+//                directories.cacheHome.resolve("DIRECT").resolve(url.host + url.path.substringBeforeLast('/'))
             )
             zipFile
         }
