@@ -214,7 +214,6 @@ object CurseProvider : ProviderBase("Curse Provider") {
 
     val isOptional = CurseProvider::isOptionalCall.memoize()
 
-    @ExperimentalUnsignedTypes
     override suspend fun download(
         stopwatch: Stopwatch,
         entry: LockEntry,
@@ -231,16 +230,18 @@ object CurseProvider : ProviderBase("Curse Provider") {
         targetFile.download(
             addonFile.downloadUrl,
             cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),
-            validator = { file ->
+            validator = { bytes, file ->
                 file.exists() && if (entry.skipFingerprintCheck) {
                     true
                 } else {
-                    val normalized = computeNormalizedArray(file.readBytes())
+//                    val normalized = computeNormalizedArray(file.readBytes())
+                    val normalized = computeNormalizedArray(bytes)
                     val fileFingerprint = Murmur2Lib.hash32(normalized, 1)
-                    logger.debug {
-                        "comparing ${fileFingerprint.toLong().toInt()} to ${addonFile.packageFingerprint.toInt()}"
-                    }
-                    addonFile.packageFingerprint.toInt() == fileFingerprint.toLong().toInt()
+                    if(addonFile.packageFingerprint.toInt() != fileFingerprint.toLong().toInt())
+                    {
+                        logger.error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint) file: $file")
+                        false
+                    } else true
                 }
             }
         )
@@ -252,7 +253,9 @@ object CurseProvider : ProviderBase("Curse Provider") {
         if (addonFile.packageFingerprint.toInt() != fileFingerprint.toLong().toInt()) {
             logger.error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
             logger.error("curseforge murmur2 fingerprints are unreliable")
-            error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
+            if(!entry.skipFingerprintCheck) {
+                error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
+            }
         } else {
             logger.debug { "[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint matches: ${addonFile.packageFingerprint}" }
         }

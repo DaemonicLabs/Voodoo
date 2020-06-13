@@ -342,8 +342,8 @@ object Installer : KLogging() {
                                     target.download(
                                         url = url,
                                         cacheDir = cacheFolder,
-                                        validator = { file ->
-                                            val sha256 = file.sha256Hex()
+                                        validator = { bytes, file ->
+                                            val sha256 = bytes.sha256Hex()
                                             logger.info("comparing $sha256 == ${task.hash} of file: $file")
                                             sha256 == task.hash.substringAfter(':')
                                         }
@@ -358,8 +358,8 @@ object Installer : KLogging() {
                                 target.download(
                                     url = url,
                                     cacheDir = cacheFolder,
-                                    validator = { file ->
-                                        val sha256 = file.sha256Hex()
+                                    validator = { bytes, file ->
+                                        val sha256 = bytes.sha256Hex()
                                         logger.info("comparing $sha256 == ${task.hash} of file: $file")
                                         sha256 == task.hash.substringAfter(':')
                                     }

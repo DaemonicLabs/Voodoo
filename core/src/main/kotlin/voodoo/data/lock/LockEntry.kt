@@ -33,7 +33,7 @@ sealed class LockEntry : CommonLockModule {
         val projectID: ProjectID = ProjectID.INVALID,
         val fileID: FileID = FileID.INVALID,
         val useUrlTxt: Boolean = true,
-        val skipFingerprintCheck: Boolean = true
+        val skipFingerprintCheck: Boolean = false
     ) : LockEntry(), CommonLockModule by common {
         override val provider = CurseProvider.id
         init {

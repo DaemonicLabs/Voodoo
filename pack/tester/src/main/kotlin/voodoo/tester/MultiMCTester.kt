@@ -144,7 +144,7 @@ object MultiMCTester : AbstractTester() {
                 modpack.entrySet.forEach { entry ->
                     if (entry.side == Side.SERVER) return@forEach
                     launch(pool + CoroutineName(entry.id)) {
-                        val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
+                        val folder = minecraftDir.resolve(entry.folder).absoluteFile
 
                         if(modpack.isEntryOptional(entry.id)) {
                             val selectedSelf = optionals[entry.id] ?: true

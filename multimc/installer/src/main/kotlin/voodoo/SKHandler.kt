@@ -185,8 +185,8 @@ object SKHandler : KLogging() {
                                     target.download(
                                         url = url,
                                         cacheDir = cacheFolder,
-                                        validator = { file ->
-                                            val sha1 = file.sha1Hex()
+                                        validator = { bytes, file ->
+                                            val sha1 = bytes.sha1Hex()
                                             logger.info("comparing $sha1 == ${task.hash} of file: $file")
                                             sha1 == task.hash
                                         }
@@ -203,8 +203,8 @@ object SKHandler : KLogging() {
                                 target.download(
                                     url = url,
                                     cacheDir = cacheFolder,
-                                    validator = { file ->
-                                        val sha1 = file.sha1Hex()
+                                    validator = { bytes, file ->
+                                        val sha1 = bytes.sha1Hex()
                                         logger.info("comparing $sha1 == ${task.hash} of file: $file")
                                         sha1 == task.hash
                                     }

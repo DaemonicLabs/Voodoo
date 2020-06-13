@@ -40,3 +40,5 @@ val File.unixPath: String
 
 fun File.sha256Hex(): String? = MessageDigest.getInstance("SHA-256").digest(readBytes()).toHexString()
 fun File.sha1Hex(): String? = MessageDigest.getInstance("SHA-1").digest(readBytes()).toHexString()
+fun ByteArray.sha256Hex(): String? = MessageDigest.getInstance("SHA-256").digest(this).toHexString()
+fun ByteArray.sha1Hex(): String? = MessageDigest.getInstance("SHA-1").digest(this).toHexString()

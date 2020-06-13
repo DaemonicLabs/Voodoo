@@ -1,6 +1,7 @@
 package voodoo.pack
 
 import com.eyeem.watchadoin.Stopwatch
+import io.ktor.client.request.get
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -188,8 +189,8 @@ object MMCSelfupdatingFatPackSk : AbstractPack("mmc-sk-fat") {
         val voodooModpackJson = instanceDir.resolve("voodoo.modpack.json")
         voodooModpackJson.download(
             skPackUrl,
-            cacheDir = cacheDir,
-            validator = { false }
+            cacheDir = null // TODO: use null here to signal not to use cache ?
+//            validator = { false }
         )
         json.parse(Manifest.serializer(), voodooModpackJson.readText())
 
