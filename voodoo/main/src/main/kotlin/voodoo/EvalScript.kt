@@ -1,6 +1,7 @@
 package voodoo
 
 import com.eyeem.watchadoin.Stopwatch
+import mu.KotlinLogging
 import java.io.File
 import kotlin.script.experimental.api.*
 import kotlin.script.experimental.host.toScriptSource
@@ -13,6 +14,8 @@ import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.script.experimental.jvmhost.JvmScriptCompiler
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
 import kotlin.system.exitProcess
+
+val logger_evalScript = KotlinLogging.logger {}
 
 fun createJvmScriptingHost(cacheDir: File): BasicJvmScriptingHost {
 //    val cache = FileBasedScriptCache(cacheDir)
@@ -87,7 +90,7 @@ inline fun <reified T> ResultWithDiagnostics<EvaluationResult>.get(scriptFile: F
     }
     println(this)
     val evalResult = valueOr {
-        VoodooMain.logger.error("evaluation failed")
+        logger_evalScript.error("evaluation failed")
         exitProcess(1)
     }
 
@@ -108,15 +111,15 @@ inline fun <reified T> ResultWithDiagnostics<EvaluationResult>.get(scriptFile: F
             resultValue.scriptInstance as T
         }
         is ResultValue.Unit -> {
-            VoodooMain.logger.info("evaluation returned Unit")
+            logger_evalScript.info("evaluation returned Unit")
             resultValue.scriptInstance as T
         }
         is ResultValue.Error -> {
-            VoodooMain.logger.error("evaluation failed with $resultValue")
+            logger_evalScript.error("evaluation failed with $resultValue")
             exitProcess(-1)
         }
         ResultValue.NotEvaluated -> {
-            VoodooMain.logger.error("not evaluated")
+            logger_evalScript.error("not evaluated")
             exitProcess(-1)
         }
     }

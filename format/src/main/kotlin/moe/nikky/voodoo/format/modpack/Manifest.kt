@@ -27,8 +27,8 @@ data class Manifest(
     var objectsLocation: String,
 
     // no longer required / move to versionManifest ?
-    @Serializable(with=ModloaderSerializer::class)
     var gameVersion: String,
+    @Serializable(with=ModloaderSerializer::class)
     var modLoader: Modloader,
 
     var features: List<Feature> = emptyList(),
