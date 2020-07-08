@@ -154,13 +154,13 @@ object SKPack : AbstractPack("sk") {
                             logger.info("processing feature entry $id")
                             val featureEntry = modpack.findEntryById(id)!!
                             val dependencies = getDependencies(modpack, id)
-                            logger.info("required dependencies of $id: ${featureEntry.dependencies[DependencyType.REQUIRED]}")
-                            logger.info("optional dependencies of $id: ${featureEntry.dependencies[DependencyType.OPTIONAL]}")
+                            logger.info("required dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.REQUIRED}.keys}")
+                            logger.info("optional dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.OPTIONAL}.keys}")
                             feature.entries += dependencies.asSequence().filter { entry ->
                                 logger.debug("  testing ${entry.id}")
                                 // find all other entries that depend on this dependency
                                 val dependants = modpack.entrySet.filter { otherEntry ->
-                                    otherEntry.dependencies[DependencyType.REQUIRED]?.any {
+                                    otherEntry.dependencies.filterValues { it == DependencyType.REQUIRED }.keys.any {
                                         it == entry.id
                                     } ?: false
                                 }
@@ -363,7 +363,7 @@ object SKPack : AbstractPack("sk") {
                     processedEntries += entry_id
                     continue
                 }
-                var depNames = entry.dependencies.values.flatten()
+                var depNames = entry.dependencies.keys.toList()
                 logger.info("depNames: $depNames")
                 depNames = depNames.filter { dependencyId ->
                     modPack.isEntryOptional(dependencyId)
@@ -382,17 +382,10 @@ object SKPack : AbstractPack("sk") {
     private fun getDependenciesCall(lockPack: LockPack, entryId: String): List<LockEntry> {
         logger.debug("getDependencies of $entryId")
         val entry = lockPack.findEntryById(entryId) ?: return emptyList()
-        val result = mutableListOf(entry)
-        for ((depType, entryList) in entry.dependencies) {
-//            if (depType == DependencyType.EmbeddedLibrary) continue
-//            if (depType == DependencyType.Include) continue
-//            if (depType == DependencyType.Tool) continue
-            logger.debug("getting sub dependencies of type $depType, list: $entryList")
-            for (depName in entryList) {
-                result += getDependencies(lockPack, depName)
-            }
+        logger.debug("getting dependencies: ${entry.dependencies}")
+        return entry.dependencies.flatMap { (depName, depType) ->
+            getDependencies(lockPack, depName)
         }
-        return result
     }
 
     private val getDependencies: (lockPack: LockPack, entryName: String) -> List<LockEntry>

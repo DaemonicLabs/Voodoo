@@ -2,7 +2,6 @@ package voodoo.data.lock
 
 import Modloader
 import com.skcraft.launcher.model.launcher.LaunchModifier
-import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import mu.KLogging
@@ -10,7 +9,6 @@ import voodoo.data.DependencyType
 import voodoo.data.PackOptions
 import voodoo.data.PackReportData
 import voodoo.data.Side
-import voodoo.forge.ForgeUtil
 import voodoo.util.blankOr
 import voodoo.util.json
 import java.io.File
@@ -131,7 +129,7 @@ data class LockPack(
         get() = entrySet.filter { it.optional }
 
     fun getDependants(entryId: String, dependencyType: DependencyType): List<LockEntry> {
-        return entrySet.filter { it.dependencies[dependencyType]?.contains(entryId) ?: false }
+        return entrySet.filter { it.dependencies[entryId] == dependencyType }
     }
 
 //    @Transient
@@ -159,9 +157,15 @@ data class LockPack(
     private val dependencyCache = mutableMapOf<Pair<String, DependencyType>, List<LockEntry>>()
 
     fun dependencies(entryId: String, dependencyType: DependencyType): List<LockEntry> {
-        val entry = findEntryById(entryId)!!
-        return dependencyCache.computeIfAbsent(entryId to dependencyType) {
-            entry.dependencies[dependencyType]?.map { findEntryById(it)!! } ?: listOf()
+        return dependencyCache.computeIfAbsent(entryId to dependencyType) { (entryId, dependencyType) ->
+            val entry = findEntryById(entryId)!!
+            entry.dependencies
+                .filterValues { it == dependencyType }
+                .keys
+                .map { depEntryId ->
+                    findEntryById(depEntryId)!!
+                }
+//            entry.dependencies[dependencyType]?.map { findEntryById(it)!! } ?: listOf()
         }
     }
 

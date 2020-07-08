@@ -92,12 +92,16 @@ abstract class ProviderBase(
             data[EntryReportData.OPTIONAL] = "${entry.optional}"
             entry.dependencies.takeIf { it.isNotEmpty() }?.let { dependencies ->
 
-                dependencies[DependencyType.REQUIRED]?.takeIf { it.isNotEmpty() }?.let { required ->
-                    data[EntryReportData.DEPENDENCIES_REQUIRED] = required.sorted().joinToString(", ")
-                }
-                dependencies[DependencyType.OPTIONAL]?.takeIf { it.isNotEmpty() }?.let { optional ->
-                    data[EntryReportData.DEPENDENCIES_OPTIONAL] = optional.sorted().joinToString(", ")
-                }
+                dependencies.filterValues { it == DependencyType.REQUIRED }
+                    .keys.toList().takeIf { it.isNotEmpty() }
+                    ?.let { required ->
+                        data[EntryReportData.DEPENDENCIES_REQUIRED] = required.sorted().joinToString(", ")
+                    }
+                dependencies.filterValues { it == DependencyType.OPTIONAL }
+                    .keys.toList().takeIf { it.isNotEmpty() }
+                    ?.let { optional ->
+                        data[EntryReportData.DEPENDENCIES_OPTIONAL] = optional.sorted().joinToString(", ")
+                    }
 //                dependencies[DependencyType.EmbeddedLibrary]?.takeIf { it.isNotEmpty() }?.let { required ->
 //                    list += Triple("dependencies_embedded", "Embedded Dependencies", required.joinToString(", ", "", ""))
 //                }

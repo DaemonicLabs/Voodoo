@@ -40,6 +40,8 @@ class EntryBuilder<E: NestedEntry>(
 
     @VoodooDSL
     fun dependencies(type: DependencyType = DependencyType.REQUIRED, vararg dependencies: String)  {
-        entry.dependencies[type] = ((entry.dependencies[type]?.toSet() ?: setOf()) + dependencies).toList()
+        dependencies.forEach { dep ->
+            entry.dependencies.putIfAbsent(dep, type)
+        }
     }
 }

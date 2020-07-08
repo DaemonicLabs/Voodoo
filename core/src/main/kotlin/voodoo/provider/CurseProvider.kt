@@ -130,12 +130,10 @@ object CurseProvider : ProviderBase("Curse Provider") {
         entry: Entry.Curse,
         addEntry: SendChannel<Pair<Entry, String>>
     ) {
-        val predefinedDependencies = entry.dependencies.flatMap { (depType, slugs) ->
-            slugs.map { slug ->
-                val id = CurseClient.getProjectIdBySlug(slug)
-                    ?: throw IllegalStateException("cannot find id for slug: $slug")
-                AddOnFileDependency(id, CurseDependencyType.values().first { depType == it.depType })
-            }
+        val predefinedDependencies = entry.dependencies.map { (slug, depType) ->
+            val id = CurseClient.getProjectIdBySlug(slug)
+                ?: throw IllegalStateException("cannot find id for slug: $slug")
+            AddOnFileDependency(id, CurseDependencyType.values().first { depType == it.depType })
         }
         val addon = getAddon(addonId)
             ?: throw IllegalStateException("addon $addonId could not be resolved, entry: $entry")
@@ -163,7 +161,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
 //            val depends = entry.dependencies
                 val depType = curseDepType.depType
                 if (depType != null) {
-                    var dependsSet = entry.dependencies[depType]?.toSet() ?: setOf<String>()
+                    var dependsSet = entry.dependencies.filterValues { it == depType }.keys
                     logger.info("get dependency $curseDepType = $dependsSet + ${depAddon.slug}")
                     if (!dependsSet.contains(depAddon.slug)) {
                         val replacementId = entry.replaceDependencies[depAddon.id]
@@ -178,14 +176,18 @@ object CurseProvider : ProviderBase("Curse Provider") {
                             } else {
                                 logger.info("ignoring dependency ${depAddon.id} ${depAddon.slug}")
                             }
-                            entry.dependencies[curseDepType.depType] = dependsSet.toList()
-                            continue
+//                            dependsSet.forEach {
+//                                entry.dependencies.putIfAbsent(it, depType)
+//                            }
+//                            continue
                         }
 
                         logger.info("${entry.id} adding dependency ${depAddon.id}  ${depAddon.slug}")
                         dependsSet += depAddon.slug
                     }
-                    entry.dependencies[depType] = dependsSet.toList()
+                    dependsSet.forEach {
+                        entry.dependencies.putIfAbsent(it, depType)
+                    }
                     logger.info("set dependency $curseDepType = $dependsSet")
                 }
 

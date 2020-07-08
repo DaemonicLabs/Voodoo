@@ -20,7 +20,7 @@ interface CommonImmutable {
     val optionalData: OptionalData?
     val side: Side
     val websiteUrl: String
-    val dependencies: MutableMap<DependencyType, List<String>>
+    val dependencies: MutableMap<String, DependencyType>
     val replaceDependencies: Map<ProjectID, ProjectID>
     val packageType: PackageType
     val transient: Boolean // this entry got added as dependency for somethin
@@ -39,7 +39,7 @@ interface CommonMutable : CommonImmutable {
     override var optionalData: OptionalData?
     override var side: Side
     override var websiteUrl: String
-    override var dependencies: MutableMap<DependencyType, List<String>>
+    override var dependencies: MutableMap<String, DependencyType>
     override var replaceDependencies: Map<ProjectID, ProjectID>
     override var packageType: PackageType
     override var transient: Boolean // this entry got added as dependency for somethin

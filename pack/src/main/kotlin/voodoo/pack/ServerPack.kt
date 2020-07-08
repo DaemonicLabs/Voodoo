@@ -1,6 +1,7 @@
 package voodoo.pack
 
 import com.eyeem.watchadoin.Stopwatch
+import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.util.maven.MavenUtil
 import voodoo.util.toJson
@@ -36,12 +37,15 @@ object ServerPack : AbstractPack("server") {
         logger.info("local: $localDir")
         if (localDir.exists()) {
             val targetLocalDir = output.resolve("local")
-            modpack.localDir = targetLocalDir.name
-
+            modpack.localDir = targetLocalDir.toRelativeString(output)
             if (targetLocalDir.exists()) targetLocalDir.deleteRecursively()
-            targetLocalDir.mkdirs()
-
-            localDir.copyRecursively(targetLocalDir, true)
+            modpack.entrySet.filterIsInstance(LockEntry.Local::class.java)
+                .forEach { localEntry ->
+                    val src = localDir.resolve(localEntry.fileSrc)
+                    val target = targetLocalDir.resolve(localEntry.fileSrc)
+                    target.absoluteFile.parentFile.mkdirs()
+                    src.copyTo(target, overwrite = true)
+                }
         }
 
         val sourceDir = modpack.sourceFolder // rootFolder.resolve(modpack.rootFolder).resolve(modpack.sourceDir)

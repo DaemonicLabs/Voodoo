@@ -11,7 +11,7 @@ interface CommonLockModule {
     val side: Side
     val description: String?
     val optionalData: OptionalData?
-    val dependencies: Map<DependencyType, List<String>>
+    val dependencies: Map<String, DependencyType>
 }
 
 @Serializable
@@ -21,5 +21,5 @@ data class CommonLockComponent(
     override val side: Side = Side.BOTH,
     override val description: String? = null,
     override val optionalData: OptionalData? = null,
-    override val dependencies: Map<DependencyType, List<String>> = mapOf()
+    override val dependencies: Map<String, DependencyType> = mapOf()
 ):CommonLockModule
