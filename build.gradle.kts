@@ -693,24 +693,29 @@ subprojects {
     if(project == project(":multimc:multimc-installer")) {
         afterEvaluate {
             val formatPropsFile = project.projectDir.resolve("format.properties")
-            val props = Properties()
+            val propsMap = mutableMapOf<String, String>()
             formatPropsFile.parentFile.mkdirs()
             if(formatPropsFile.exists()) {
                 formatPropsFile.bufferedReader().use {
-                    props.load(it)
+                    val a = it.readLines()
+                        .filter { it.contains("=") }
+                        .map {
+                            val (key, value) = it.split('=', limit = 2)
+                            key to value
+                        }
+                        .toMap(propsMap)
                 }
             }
             val formatVersion = project(":format").version.toString().substringBefore("-")
-            props.setProperty(formatVersion, project.version.toString().substringBefore("-"))
+            propsMap[formatVersion] = project.version.toString().substringBefore("-")
+            val sortedProps = propsMap.toSortedMap()
             formatPropsFile.bufferedWriter().use {
-                props.store(it, null)
+                sortedProps.forEach { k, v ->
+                    it.appendln("$k=$v")
+                }
             }
-            formatPropsFile.writeText(
-                formatPropsFile.readText().lines().drop(1).joinToString("\n")
-            )
 
             formatPropsFile.copyTo(genResourceFolder.resolve("format.properties"), overwrite = true)
-
         }
     }
 

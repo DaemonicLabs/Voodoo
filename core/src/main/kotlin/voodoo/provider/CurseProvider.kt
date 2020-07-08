@@ -228,23 +228,31 @@ object CurseProvider : ProviderBase("Curse Provider") {
         }
         val targetFile = targetFolder.resolve(entry.fileName ?: addonFile.fileName)
         targetFile.download(
-            addonFile.downloadUrl,
-            cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),
+            url = addonFile.downloadUrl,
+            cacheDir = cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),
             validator = { bytes, file ->
-                file.exists() && if (entry.skipFingerprintCheck) {
+                val fileLenghtMatches = addonFile.fileLength == bytes.size.toLong()
+                if(!fileLenghtMatches) {
+                    logger.warn("[${entry.id} ${entry.projectID}:${addonFile.id}] file length do not match expected: ${addonFile.fileLength} actual: (${bytes.size})")
+                }
+                file.exists() && fileLenghtMatches && if (entry.skipFingerprintCheck) {
                     true
                 } else {
 //                    val normalized = computeNormalizedArray(file.readBytes())
                     val normalized = computeNormalizedArray(bytes)
                     val fileFingerprint = Murmur2Lib.hash32(normalized, 1)
-                    if(addonFile.packageFingerprint.toInt() != fileFingerprint.toLong().toInt())
-                    {
+                    if(addonFile.packageFingerprint.toInt() != fileFingerprint.toLong().toInt()) {
                         logger.error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint) file: $file")
                         false
                     } else true
                 }
             }
         )
+
+        if(addonFile.fileLength != targetFile.length()) {
+            error("[${entry.id} ${entry.projectID}:${addonFile.id}] file length do not match expected: ${addonFile.fileLength} actual: (${targetFile.length()})")
+        }
+
 
         val normalized = computeNormalizedArray(targetFile.readBytes())
         val fileFingerprint = Murmur2Lib.hash32(normalized, 1)

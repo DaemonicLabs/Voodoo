@@ -15,6 +15,7 @@ import com.eyeem.watchadoin.saveAsHtml
 import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.DEBUG_PROPERTY_NAME
+import kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
@@ -43,7 +44,7 @@ object VoodooMain : KLogging() {
     fun main(vararg fullArgs: String) {
         val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
         rootLogger.level = Level.DEBUG // TODO: pass as -Dvoodoo.debug=true ?
-        System.setProperty(DEBUG_PROPERTY_NAME, "on")
+        System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
 
         Thread.sleep(1000) // wait for logger to catch up
 

@@ -12,7 +12,6 @@ import voodoo.forge.ForgeUtil
 import voodoo.provider.Providers
 import voodoo.util.Directories
 import voodoo.util.Downloader.logger
-import voodoo.util.ShellUtil
 import voodoo.util.download
 import voodoo.util.withPool
 import java.io.File
@@ -100,6 +99,7 @@ object Server {
                 // download forge
                 val (forgeUrl, forgeFileName, forgeLongVersion, forgeVersion) = ForgeUtil.forgeVersionOf(modloader)
                 val forgeFile = directories.runtimeDir.resolve(forgeFileName)
+                forgeFile.parentFile.mkdirs()
                 logger.info("forge: $forgeLongVersion")
                 "download-forge".watch {
                     forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))

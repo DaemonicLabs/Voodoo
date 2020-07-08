@@ -73,8 +73,9 @@ suspend fun File.download(
             if (cacheFile.exists() && cacheFile.isFile && validator(cacheFile.readBytes(), cacheFile)) {
                 logger.info("file: $cacheFile exists and can skip download")
                 thisFile.parentFile.mkdirs()
-                thisFile.createNewFile()
-                thisFile.writeBytes(thisFile.readBytes())
+//                thisFile.createNewFile()
+//                thisFile.writeBytes(thisFile.readBytes())
+                cacheFile.copyTo(thisFile, overwrite = true)
 //                cacheFile.safeCopyTo(thisFile, overwrite = true)
                 delay(100)
 
