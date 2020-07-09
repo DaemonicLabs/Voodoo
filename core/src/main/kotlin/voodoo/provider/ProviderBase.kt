@@ -44,7 +44,7 @@ abstract class ProviderBase(
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
-    ): Pair<String?, File>
+    ): Pair<String?, File>?
 
     abstract suspend fun generateName(entry: LockEntry): String
 

@@ -172,7 +172,7 @@ object MultiMCTester : AbstractTester() {
 
                         val provider = entry.provider()
                         val targetFolder = minecraftDir.resolve(folder)
-                        val (url, file) = provider.download(
+                        provider.download(
                             "download-${entry.id}".watch,
                             entry,
                             targetFolder,

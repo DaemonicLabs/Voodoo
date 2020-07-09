@@ -11,7 +11,6 @@ import voodoo.data.flat.ModPack
 import voodoo.provider.Providers
 import voodoo.util.withPool
 import java.util.Collections
-import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 28/03/18.
@@ -22,46 +21,23 @@ private val logger = KotlinLogging.logger {}
 
 suspend fun resolve(
     stopwatch: Stopwatch,
-    modPack: ModPack,
-    noUpdate: Boolean = false,
-    updateEntries: List<String> = listOf()
+    modPack: ModPack
 ) = stopwatch {
-    "loadLockEntries".watch {
-        //        this.loadEntries(folder)
-        modPack.loadLockEntries()
-    }
 
     val srcDir = modPack.sourceFolder
 
-    if (!noUpdate) {
-        modPack.lockEntrySet.clear()
-        // delete all lockfiles
-        srcDir.walkTopDown().asSequence()
-            .filter {
-                it.isFile && it.name.endsWith(".lock.json")
-            }
-            .forEach {
-                it.delete()
-            }
-    } else {
-        for (entryId in updateEntries) {
-            val entry = modPack.findEntryById(entryId)
-            if (entry == null) {
-                logger.error("entry $entryId not found")
-                exitProcess(-1)
-            }
-            modPack.lockEntrySet.find { it.id == entryId }?.let {
-                it.serialFile.delete()
-                modPack.lockEntrySet.remove(it)
-            }
+    // delete all lockfiles
+    srcDir.walkTopDown().asSequence()
+        .filter {
+            it.isFile && it.name.endsWith(".lock.json")
         }
-    }
+        .forEach {
+            it.delete()
+        }
 
-    if (!noUpdate) {
-        // remove all transient entries
-        modPack.lockEntrySet.removeIf { entry ->
-            modPack.findEntryById(entry.id)?.transient ?: true
-        }
+    // remove all transient entries
+    modPack.lockEntrySet.removeIf { entry ->
+        modPack.findEntryById(entry.id)?.transient ?: true
     }
 
     // recalculate all dependencies

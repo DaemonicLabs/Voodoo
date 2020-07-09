@@ -1,16 +1,11 @@
 package voodoo.pack
 
 import com.eyeem.watchadoin.Stopwatch
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.*
+import moe.nikky.voodoo.format.Feature
+import moe.nikky.voodoo.format.FeatureWithPattern
 import moe.nikky.voodoo.format.PackageBuilder
 import moe.nikky.voodoo.format.builder.ExtendedFeaturePattern
-import moe.nikky.voodoo.format.FeatureWithPattern
-import moe.nikky.voodoo.format.Feature
 import moe.nikky.voodoo.format.modpack.entry.Side
 import voodoo.data.DependencyType
 import voodoo.data.lock.LockEntry
@@ -19,7 +14,10 @@ import voodoo.memoize
 import voodoo.pack.sk.SKPackages
 import voodoo.pack.sk.SkPackageFragment
 import voodoo.provider.Providers
-import voodoo.util.*
+import voodoo.util.blankOr
+import voodoo.util.json
+import voodoo.util.unixPath
+import voodoo.util.withPool
 import java.io.File
 import java.net.URI
 import java.time.Instant
@@ -95,7 +93,7 @@ object VoodooPackager : AbstractPack("experimental") {
 
                 // download entries
                 val targetFiles = "download entries".watch {
-                    val deferredFiles: List<Deferred<Pair<String, File>>> = modpack.entrySet.map { entry ->
+                    val deferredFiles: List<Deferred<Pair<String, File>?>> = modpack.entrySet.map { entry ->
                         async(context = pool + CoroutineName("download-${entry.id}")) {
                             val provider = Providers[entry.provider]
 
@@ -106,7 +104,7 @@ object VoodooPackager : AbstractPack("experimental") {
                                 entry,
                                 targetFolder,
                                 cacheDir
-                            )
+                            ) ?: return@async null
                             if (url != null
                                 && ((entry is LockEntry.Direct && entry.useUrlTxt) ||
                                         (entry is LockEntry.Curse && entry.useUrlTxt))
@@ -123,7 +121,7 @@ object VoodooPackager : AbstractPack("experimental") {
                     }
                     delay(10)
                     logger.info("waiting for file jobs to finish")
-                    deferredFiles.awaitAll().toMap()
+                    deferredFiles.awaitAll().filterNotNull().toMap()
                 }
 
                 val features = mutableListOf<ExtendedFeaturePattern>()
@@ -149,8 +147,8 @@ object VoodooPackager : AbstractPack("experimental") {
                             logger.info("processing feature entry $id")
                             val featureEntry = modpack.findEntryById(id)!!
                             val dependencies = getDependencies(modpack, id)
-                            SKPack.logger.info("required dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.REQUIRED}.keys}")
-                            SKPack.logger.info("optional dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.OPTIONAL}.keys}")
+                            SKPack.logger.info("required dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.REQUIRED }.keys}")
+                            SKPack.logger.info("optional dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.OPTIONAL }.keys}")
                             feature.entries += dependencies.asSequence().filter { entry ->
                                 logger.debug("  testing ${entry.id}")
                                 // find all other entries that depend on this dependency

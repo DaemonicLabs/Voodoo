@@ -221,7 +221,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
-    ): Pair<String, File> = stopwatch {
+    ): Pair<String?, File>? = stopwatch {
         entry as LockEntry.Curse
         val addonFile = getAddonFile(entry.projectID, entry.fileID)
         if (addonFile == null) {

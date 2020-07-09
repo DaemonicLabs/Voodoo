@@ -2,6 +2,7 @@ package voodoo.provider
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import list
 import org.spekframework.spek2.Spek
@@ -69,7 +70,7 @@ object CurseSpek : Spek({
                                     entry.provider().download(Stopwatch("download"), entry, targetFolder, cacheDir)
                                 }
                             }
-                        deferredFiles.map { it.await() }
+                        deferredFiles.awaitAll().filterNotNull()
                     }
                 }
                 it("files were downloaded") {

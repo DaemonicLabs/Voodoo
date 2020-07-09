@@ -6,10 +6,7 @@ import kotlinx.serialization.Transient
 import mu.KLogging
 import voodoo.data.components.*
 import voodoo.data.flat.Entry
-import voodoo.provider.CurseProvider
-import voodoo.provider.DirectProvider
-import voodoo.provider.JenkinsProvider
-import voodoo.provider.LocalProvider
+import voodoo.provider.*
 import java.io.File
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.functions
@@ -76,6 +73,16 @@ sealed class NestedEntry : CommonMutable {
         override val provider = LocalProvider.id
     }
 
+    @Serializable
+    @SerialName("noop")
+    data class Noop(
+        @Transient override var nodeName: String? = null,
+        val common: CommonComponent = CommonComponent(),
+        override var entries: List<NestedEntry> = emptyList()
+    ): NestedEntry(), CommonMutable by common {
+        override val provider = NoopProvider.id
+    }
+
     @Transient
     private val debugIdentifier: String
         get() = nodeName ?: id
@@ -138,6 +145,13 @@ sealed class NestedEntry : CommonMutable {
                         )
                     },
                     local = entry.local.copy()
+                )
+                is Noop -> Entry.Noop(
+                    common = with(entry.common) {
+                        copy(
+                            optionalData = optionalData?.copy()
+                        )
+                    }
                 )
             }
         }.toList()

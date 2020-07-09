@@ -31,6 +31,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         voodoo.data.nested.NestedEntry.Direct::class,
         voodoo.data.nested.NestedEntry.Jenkins::class,
         voodoo.data.nested.NestedEntry.Local::class,
+        voodoo.data.nested.NestedEntry.Noop::class,
 
         moe.nikky.voodoo.format.FnPatternList::class,
 

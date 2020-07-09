@@ -1,5 +1,6 @@
 package voodoo.pack
 
+import Modloader
 import com.eyeem.watchadoin.Stopwatch
 import com.skcraft.launcher.builder.FeaturePattern
 import com.skcraft.launcher.builder.PackageBuilder
@@ -12,7 +13,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
-import Modloader
 import voodoo.data.DependencyType
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
@@ -100,7 +100,7 @@ object SKPack : AbstractPack("sk") {
 
                 // download entries
                 val targetFiles = "download entries".watch {
-                    val deferredFiles: List<Deferred<Pair<String, File>>> = modpack.entrySet.map { entry ->
+                    val deferredFiles: List<Deferred<Pair<String, File>?>> = modpack.entrySet.map { entry ->
                         async(context = pool + CoroutineName("download-${entry.id}")) {
                             val provider = Providers[entry.provider]
 
@@ -111,7 +111,7 @@ object SKPack : AbstractPack("sk") {
                                 entry,
                                 targetFolder,
                                 cacheDir
-                            )
+                            ) ?: return@async null
                             if (url != null
                                 && ((entry is LockEntry.Direct && entry.useUrlTxt) ||
                                         (entry is LockEntry.Curse && entry.useUrlTxt))
@@ -128,7 +128,7 @@ object SKPack : AbstractPack("sk") {
                     }
                     delay(10)
                     logger.info("waiting for file jobs to finish")
-                    deferredFiles.awaitAll().toMap()
+                    deferredFiles.awaitAll().filterNotNull().toMap()
                 }
 
                 val features = mutableListOf<ExtendedFeaturePattern>()
@@ -154,8 +154,8 @@ object SKPack : AbstractPack("sk") {
                             logger.info("processing feature entry $id")
                             val featureEntry = modpack.findEntryById(id)!!
                             val dependencies = getDependencies(modpack, id)
-                            logger.info("required dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.REQUIRED}.keys}")
-                            logger.info("optional dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.OPTIONAL}.keys}")
+                            logger.info("required dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.REQUIRED }.keys}")
+                            logger.info("optional dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.OPTIONAL }.keys}")
                             feature.entries += dependencies.asSequence().filter { entry ->
                                 logger.debug("  testing ${entry.id}")
                                 // find all other entries that depend on this dependency

@@ -127,19 +127,12 @@ object VoodooMain : KLogging() {
 //                        json.stringify(NestedPack.serializer(), nestedPack)
 //                    )
 
-                    Builder.logger.debug("parsing args: ${args.joinToString(", ")}")
-                    val parser = ArgParser(args)
-                    val arguments = voodoo.builder.BuilderArguments(parser)
-                    parser.force()
-
                     // TODO: pass extra args object
                     VoodooTask.Build.execute(
                         this,
                         id,
                         nestedPack,
-                        tomeEnv,
-                        arguments.noUpdate,
-                        arguments.entries
+                        tomeEnv
                     )
                     logger.info("finished")
                 },

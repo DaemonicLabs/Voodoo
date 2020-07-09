@@ -28,9 +28,7 @@ object Builder : KLogging() {
         modpack: ModPack,
         id: String,
         targetFileName: String = "$id.lock.pack.json",
-        targetFile: File = modpack.sourceFolder.resolve(targetFileName),
-        noUpdate: Boolean = false,
-        entriesFilter: List<String> = listOf()
+        targetFile: File = modpack.sourceFolder.resolve(targetFileName)
     ): LockPack = runBlocking {
         stopwatch {
             modpack.entrySet.forEach { entry ->
@@ -40,9 +38,7 @@ object Builder : KLogging() {
             try {
                 resolve(
                     "resolve".watch,
-                    modpack,
-                    noUpdate = noUpdate && entriesFilter.isEmpty(),
-                    updateEntries = entriesFilter
+                    modpack
                 )
             } catch (e: Exception) {
                 e.printStackTrace()

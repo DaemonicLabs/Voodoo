@@ -90,6 +90,7 @@ object CursePack : AbstractPack("curse") {
                 // download entries
                 for (entry in modpack.entrySet) {
                     if (entry.side == Side.SERVER) continue
+                    if (entry is LockEntry.Noop) continue
                     jobs += "install_${entry.id}" to async<CurseFile?>(context = coroutineContext + CoroutineName("install_${entry.id}") + pool) {
                         "install_${entry.id}".watch {
                             logger.info("starting job: install '${entry.id}' entry: $entry")
@@ -109,7 +110,7 @@ object CursePack : AbstractPack("curse") {
                                     }
                             } else {
                                 logger.debug { "is not a curse thing: $entry" }
-                                val (_, file) = provider.download("download_${entry.id}".watch, entry, targetFolder, cacheDir)
+                                val (_, file) = provider.download("download_${entry.id}".watch, entry, targetFolder, cacheDir) ?: return@watch null
                                 if (!required) {
                                     val optionalFile = file.parentFile.resolve(file.name + ".disabled")
                                     file.renameTo(optionalFile)

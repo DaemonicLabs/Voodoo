@@ -1,7 +1,6 @@
 package voodoo.pack
 
 import com.eyeem.watchadoin.Stopwatch
-import io.ktor.client.request.get
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -137,7 +136,7 @@ object MMCSelfupdatingFatPackSk : AbstractPack("mmc-sk-fat") {
                             entry,
                             targetFolder,
                             cacheDir
-                        )
+                        ) ?: return@launch
 
                         if (!matchedOptioalsList.isEmpty()) {
                             val selected = matchedOptioalsList.any { optionals[it.id] ?: false }

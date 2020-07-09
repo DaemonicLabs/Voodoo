@@ -36,7 +36,7 @@ object DirectProvider : ProviderBase("Direct Provider") {
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
-    ): Pair<String, File> = stopwatch {
+    ): Pair<String?, File>? = stopwatch {
         entry as LockEntry.Direct
         val fileName = entry.fileName ?: entry.url.substringAfterLast('/')
         val targetFile = targetFolder.resolve(fileName)

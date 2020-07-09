@@ -131,7 +131,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
                             entry,
                             targetFolder,
                             cacheDir
-                        )
+                        ) ?: return@launch
 
                         if (!matchedOptioalsList.isEmpty()) {
                             val selected = matchedOptioalsList.any { optionals[it.id] ?: false }

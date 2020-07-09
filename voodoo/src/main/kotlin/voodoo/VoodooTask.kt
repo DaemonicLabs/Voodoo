@@ -18,16 +18,14 @@ sealed class VoodooTask(open val key: String) {
             stopwatch: Stopwatch,
             id: String,
             nestedPack: NestedPack,
-            tomeEnv: TomeEnv?,
-            noUpdate: Boolean = false,
-            entriesFilter: List<String> = listOf()
+            tomeEnv: TomeEnv?
         ) = stopwatch {
             "buildTask".watch {
                 val modpack = "flatten".watch {
                     Importer.flatten(this, nestedPack)
                 }
                 val lockPack = "build".watch {
-                    Builder.build(this, modpack, id = id, noUpdate = noUpdate, entriesFilter = entriesFilter)
+                    Builder.build(this, modpack, id = id)
                 }
 
                 if (tomeEnv != null) {

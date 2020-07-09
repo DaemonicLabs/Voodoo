@@ -63,6 +63,15 @@ sealed class Entry: CommonMutable {
         }
     }
 
+    data class Noop(
+        private val common: CommonComponent = CommonComponent()
+    ) : Entry(), CommonMutable by common {
+        override val provider = NoopProvider.id
+        init {
+            optional = optionalData != null
+        }
+    }
+
     companion object : KLogging()
 
     @Transient

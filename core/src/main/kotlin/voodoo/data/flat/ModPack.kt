@@ -87,25 +87,6 @@ data class ModPack(
         }
     }
 
-    // TODO: call from LockPack ?
-    fun loadLockEntries(folder: File = rootFolder) {
-        val srcDir = folder.resolve(id)
-        LockPack.parseFiles(srcDir)
-            .forEach { (lockEntry, file) ->
-                val relFile = file.relativeTo(srcDir)
-                lockEntry.folder = relFile.parentFile
-                addOrMerge(lockEntry) { _, newEntry -> newEntry }
-            }
-    }
-
-//    @Deprecated("looks suspect")
-//    fun writeEntries(rootFolder: File = rootDir) {
-//        val srcDir = rootFolder.resolve(sourceDir)
-//        entrySet.forEach { entry ->
-//            entry.serialize(srcDir)
-//        }
-//    }
-
     suspend fun lock(): LockPack {
         return LockPack(
             id = id,

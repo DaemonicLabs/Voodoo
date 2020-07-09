@@ -64,7 +64,7 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
-    ): Pair<String, File> = stopwatch {
+    ): Pair<String?, File>? = stopwatch {
         entry as LockEntry.Jenkins
         require(entry.job.isNotBlank()) { "entry: '${entry.id}' does not have the jenkins job set" }
 //        if (entry.job.isBlank()) {

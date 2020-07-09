@@ -80,7 +80,7 @@ object Server {
                         val provider = Providers[entry.provider]
                         val targetFolder = serverDir.resolve(entry.serialFile).absoluteFile.parentFile
                         logger.info("downloading to - ${targetFolder.path}")
-                        val (_, _) = provider.download(
+                        provider.download(
                             stopwatch = "download-${entry.id}".watch,
                             entry = entry,
                             targetFolder = targetFolder,

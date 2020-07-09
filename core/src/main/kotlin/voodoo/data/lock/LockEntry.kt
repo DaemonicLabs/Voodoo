@@ -6,12 +6,7 @@ import kotlinx.serialization.json.*
 import mu.KLogging
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
-import voodoo.provider.CurseProvider
-import voodoo.provider.DirectProvider
-import voodoo.provider.JenkinsProvider
-import voodoo.provider.LocalProvider
-import voodoo.provider.ProviderBase
-import voodoo.provider.Providers
+import voodoo.provider.*
 import voodoo.util.json
 import java.io.File
 import java.time.Instant
@@ -79,6 +74,18 @@ sealed class LockEntry : CommonLockModule {
         var fileSrc: String = ""
     ) : LockEntry(), CommonLockModule by common {
         override val provider = LocalProvider.id
+        init {
+            optional = optionalData != null
+        }
+    }
+
+    @Serializable
+    @SerialName("noop")
+    data class Noop(
+        @Transient override var _id: String = "",
+        val common: CommonLockComponent = CommonLockComponent()
+    ) : LockEntry(), CommonLockModule by common {
+        override val provider = NoopProvider.id
         init {
             optional = optionalData != null
         }

@@ -32,7 +32,7 @@ object LocalProvider : ProviderBase("Local Provider") {
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
-    ): Pair<String?, File> = stopwatch {
+    ): Pair<String?, File>? = stopwatch {
         entry as LockEntry.Local
         val fileSrc = entry.parent.localFolder.resolve(entry.fileSrc)
         val targetFile = targetFolder.resolve(fileSrc.name)
