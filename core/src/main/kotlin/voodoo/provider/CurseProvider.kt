@@ -197,6 +197,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
                     side = entry.side
                     transient = true
                     releaseTypes = entry.releaseTypes
+                    validMcVersions = entry.validMcVersions
                     projectID = depAddon.id
                 }
                 logger.debug("adding dependency: $depEntry")
