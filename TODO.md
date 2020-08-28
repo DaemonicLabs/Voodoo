@@ -1,3 +1,12 @@
+## another rewrite
+
+- use ONE version (0.6.0-SNAPSHOT)
+- publish to bintray (try out overwrite=1 with -SNAPSHOT versions)
+- use github actions
+- add github action TESTS with java version matrix
+- add script-less entry point
+- add json-schema
+
 ## version listing
 
 file in multimc instance to choose version

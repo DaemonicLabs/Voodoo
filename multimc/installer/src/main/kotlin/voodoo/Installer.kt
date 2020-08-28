@@ -30,7 +30,6 @@ import voodoo.mmc.MMCUtil.updateAndSelectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.multimc.installer.GeneratedConstants
-import voodoo.multimc.installer.ModuleBootstrapMultimcInstaller
 import voodoo.util.*
 import voodoo.util.maven.MavenUtil
 import java.io.File
@@ -73,7 +72,7 @@ object Installer : KLogging() {
         val oldPreLaunchCommand = cfg["PreLaunchCommand"]
 
         if(cfg["OverrideCommands"] == "true" && oldPreLaunchCommand != null) {
-            val installerFilename = "mmc-installer-${ModuleBootstrapMultimcInstaller.FULL_VERSION}"
+            val installerFilename = "mmc-installer-${GeneratedConstants.FULL_VERSION}"
 
             val currentJarFilePath = oldPreLaunchCommand.substringAfter("\"\$INST_JAVA\" -jar \"\$INST_DIR/").substringBefore("\"")
             val currentJarFile = instanceDir.resolve(currentJarFilePath)
@@ -83,7 +82,7 @@ object Installer : KLogging() {
                     mavenUrl = GeneratedConstants.MAVEN_URL,
                     group = GeneratedConstants.MAVEN_GROUP,
                     artifactId = "bootstrap-multimc-installer",
-                    version = ModuleBootstrapMultimcInstaller.FULL_VERSION,
+                    version = GeneratedConstants.FULL_VERSION,
                     classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
                     outputFile = instanceDir.resolve(installerFilename),
                     outputDir = instanceDir

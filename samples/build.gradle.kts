@@ -1,16 +1,5 @@
 plugins {
-    val props = File("../plugin/.meta/version.properties").useLines {lines ->
-        lines.filterNot { it.isBlank() }
-            .map {
-                it.substringBefore('=') to it.substringAfter('=')
-            }
-            .toMap()
-    }
-    val major = props.getValue("major")
-    val minor = props.getValue("minor")
-    val patch = props.getValue("patch")
-
-    id("voodoo") version "$major.$minor.$patch-local"
+    id("voodoo")
 }
 
 voodoo {

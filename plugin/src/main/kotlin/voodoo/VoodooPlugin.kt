@@ -62,7 +62,8 @@ open class VoodooPlugin : Plugin<Project> {
             }
 
 
-            val (downloadVoodoo, voodooJar) = if (GeneratedConstants.JENKINS_BUILD_NUMBER < 0) {
+            val isLocal = false // GeneratedConstants.JENKINS_BUILD_NUMBER < 0
+            val (downloadVoodoo, voodooJar) = if (isLocal) {
                 val downloadTask = task<MavenLocalVoodooJarTask>("localVoodoo") {
                     group = "voodoo"
                     description = "Copies the voodoo jar from mavenLocal()"
@@ -71,15 +72,13 @@ open class VoodooPlugin : Plugin<Project> {
             } else {
                 val downloadTask = task<DownloadVoodooTask>("downloadVoodoo") {
                     group = "voodoo"
-                    description = "Downloads the voodoo jar from jenkins"
+                    description = "Downloads the voodoo jar from maven"
                 }
                 downloadTask to downloadTask.jarFile
             }
 
             project.repositories {
-                maven(url = "http://maven.modmuss50.me/") {
-                    name = "modmuss50"
-                }
+                maven(url = "https://dl.bintray.com/nikkyai/github/")
                 maven(url = "https://kotlin.bintray.com/kotlinx") {
                     name = "kotlinx"
                 }
@@ -112,16 +111,6 @@ open class VoodooPlugin : Plugin<Project> {
                 description = "prints the used voodoo version"
                 doFirst {
                     logger.lifecycle("version: ${GeneratedConstants.FULL_VERSION}")
-                    val props = Properties()
-                    props.load(VoodooPlugin::class.java.getResourceAsStream("/dependencies.properties"))
-                    val dependencies = props.mapNotNull { (k, v) ->
-                        if (k is String && v is String) k to v else null
-                    }.toMap()
-                    val width = dependencies.keys.map{it.length}.max() ?: 0
-
-                    dependencies.forEach { (project, version) ->
-                        logger.lifecycle("  ${project}:  ${version.padStart(width)}")
-                    }
                 }
             }
 

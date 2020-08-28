@@ -66,7 +66,7 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
                 mavenUrl = GeneratedConstants.MAVEN_URL,
                 group = GeneratedConstants.MAVEN_GROUP,
                 artifactId = "bootstrap-multimc-installer",
-                version = ModuleBootstrapMultimcInstaller.FULL_VERSION,
+                version = GeneratedConstants.FULL_VERSION,
                 classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
                 outputFile = multimcInstaller,
                 outputDir = directories.cacheHome

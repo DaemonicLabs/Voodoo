@@ -89,7 +89,7 @@ object ServerPack : AbstractPack("server") {
                 mavenUrl = GeneratedConstants.MAVEN_URL,
                 group = GeneratedConstants.MAVEN_GROUP,
                 artifactId = "server-installer",
-                version = ModuleServerInstaller.FULL_VERSION,
+                version = GeneratedConstants.FULL_VERSION,
                 classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
                 outputDir = directories.cacheHome
             )

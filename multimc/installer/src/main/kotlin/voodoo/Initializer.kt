@@ -24,7 +24,7 @@ import java.io.IOException
 import java.util.*
 import kotlin.system.exitProcess
 
-object Initializer: KLogging() {
+object Initializer : KLogging() {
 
     @JvmStatic
     fun main(vararg args: String) = runBlocking {
@@ -66,8 +66,8 @@ object Initializer: KLogging() {
         val jsonElement = json.parseJson(jsonString)
         val formatVersion = jsonElement.jsonObject["formatVersion"]?.primitive?.content
 
-        if(formatVersion == null) {
-            Installer.logger.info ("not a voodoo-format manifest")
+        if (formatVersion == null) {
+            Installer.logger.info("not a voodoo-format manifest")
             val skcraftManifest = json.parse(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString)
             return SKHandler.install(
                 skcraftManifest,
@@ -76,28 +76,28 @@ object Initializer: KLogging() {
                 minecraftDir
             )
         } else {
-            Installer.logger.info ("not a skcraft manifest")
+            Installer.logger.info("not a skcraft manifest")
         }
 
-        val props = Properties()
-        props.load(Initializer::class.java.getResourceAsStream("/format.properties"))
-        val installerVersion = formatVersion?.let { props.getProperty(it) }
-        if(installerVersion != null) {
+//        val props = Properties()
+//        props.load(Initializer::class.java.getResourceAsStream("/format.properties"))
+        val installerVersion = formatVersion//?.let { props.getProperty(it) }
+        if (installerVersion != null) {
 
             val cacheFolder = Directories.get(moduleName = "installer").cacheHome
 
-            val fullVersion = if(GeneratedConstants.JENKINS_BUILD_NUMBER > 0) {
-                val versions = MavenUtil.getALlVersionFromMavenMetadata(
-                    mavenUrl = GeneratedConstants.MAVEN_URL,
-                    group = GeneratedConstants.MAVEN_GROUP,
-                    artifactId = "multimc-installer"
-                ).filter {
-                    it.startsWith(installerVersion)
-                }
-                versions.max() ?: error("no installer version $installerVersion for pack format version $formatVersion found")
-            } else {
-                "$installerVersion-local"
+//            val fullVersion = if(GeneratedConstants.JENKINS_BUILD_NUMBER > 0) {
+            val versions = MavenUtil.getALlVersionFromMavenMetadata(
+                mavenUrl = GeneratedConstants.MAVEN_URL,
+                group = GeneratedConstants.MAVEN_GROUP,
+                artifactId = "multimc-installer"
+            ).filter {
+                it.startsWith(installerVersion)
             }
+            val fullVersion = versions.max() ?: error("no installer version $installerVersion for pack format version $formatVersion found")
+//            } else {
+//                "$installerVersion-local"
+//            }
 
             logger.info { "downloading multimc-installer $fullVersion" }
 
@@ -110,7 +110,18 @@ object Initializer: KLogging() {
                 outputDir = cacheFolder
             )
 
-            val exitStatus = ProcessBuilder("java", "-cp", installerFile.absolutePath, "voodoo.Installer", "--id", instanceId, "--inst", instanceDir.path, "--mc", minecraftDir.path)
+            val exitStatus = ProcessBuilder(
+                "java",
+                "-cp",
+                installerFile.absolutePath,
+                "voodoo.Installer",
+                "--id",
+                instanceId,
+                "--inst",
+                instanceDir.path,
+                "--mc",
+                minecraftDir.path
+            )
                 .directory(File(".").absoluteFile)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
                 .redirectError(ProcessBuilder.Redirect.INHERIT)
@@ -118,7 +129,7 @@ object Initializer: KLogging() {
                 .waitFor()
             exitProcess(exitStatus)
         } else {
-            logger.info("no formatversion or matching installer version found, trying anywaws")
+            logger.info("no formatversion or matching installer version found, trying anyways with current version")
             Installer.main("--id", instanceId, "--inst", instanceDir.path, "--mc", minecraftDir.path)
         }
 

@@ -8,7 +8,6 @@ import voodoo.util.ShellUtil
 import voodoo.util.UnzipUtility
 import voodoo.util.download
 import voodoo.voodoo.main.GeneratedConstants
-import voodoo.voodoo.main.ModulePlugin
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.attribute.PosixFilePermission
@@ -39,7 +38,7 @@ object GradleSetup : KLogging() {
             plugins {
                 // kotlin("jvm") version "${GeneratedConstants.KOTLIN_VERSION}" // automatically applied
                 // idea // automatically applied
-                id("voodoo") version "${ModulePlugin.FULL_VERSION}"
+                id("voodoo") version "${GeneratedConstants.FULL_VERSION}"
             }
 
             voodoo {
@@ -83,9 +82,7 @@ object GradleSetup : KLogging() {
         val settings = """
             pluginManagement {
                 repositories {
-                    maven(url = "http://maven.modmuss50.me/") {
-                        name = "modmuss50"
-                    }
+                    maven(url = "https://dl.bintray.com/nikkyai/github/")
                     maven(url = "https://kotlin.bintray.com/kotlinx") {
                         name = "kotlinx"
                     }

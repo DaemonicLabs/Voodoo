@@ -25,66 +25,6 @@ object Jenkins : KLogging()
 private val json = Json(JsonConfiguration(encodeDefaults = false, ignoreUnknownKeys = true))
 private val useragent = "voodoo/${GeneratedConstants.VERSION}"
 
-@Deprecated("hosting on jenkins is being phased out")
-suspend fun downloadVoodoo(
-    stopwatch: Stopwatch,
-    component: String,
-    binariesDir: File,
-    outputFile: File? = null,
-    bootstrap: Boolean = true,
-    serverUrl: String = GeneratedConstants.JENKINS_URL,
-    job: String = GeneratedConstants.JENKINS_JOB,
-    buildNumber: Int? = null
-): File = stopwatch {
-    val moduleName = "${if (bootstrap) "bootstrap-" else ""}$component"
-    val fileRegex = "$moduleName.*\\.jar"
-
-    val server = JenkinsServer(serverUrl)
-    val jenkinsJob = server.getJob(job, useragent)!!
-    val build = jenkinsJob.lastSuccessfulBuild?.details(useragent)!!
-    val actualBuildNumber = buildNumber ?: build.number
-    Jenkins.logger.info("lastSuccessfulBuild: $buildNumber")
-    Jenkins.logger.info("chosen build: $actualBuildNumber")
-    Jenkins.logger.debug("looking for $fileRegex")
-    val re = Regex(fileRegex)
-    val artifact = build.artifacts.find {
-        Jenkins.logger.debug(it.fileName)
-        re.matches(it.fileName)
-    }
-    if (artifact == null) {
-        Jenkins.logger.error("did not find {} in {}", fileRegex, build.artifacts)
-        throw Exception()
-    }
-    val artifactUrl = build.url + "artifact/" + artifact.relativePath
-//    val tmpFile = File(binariesDir, "$moduleName-$actualBuildNumber.tmp")
-    val targetFile = outputFile ?: File(binariesDir, "$moduleName-$actualBuildNumber.jar")
-
-    targetFile.download(
-        artifactUrl,
-        binariesDir
-    )
-//    val (request, response, result) = artifactUrl.httpDownload()
-//        .fileDestination { response, request ->
-//            tmpFile.delete()
-//            tmpFile
-//        }
-//        .header("User-Agent" to useragent)
-//        .awaitByteArrayResponseResult()
-//    when (result) {
-//        is Result.Success -> {}
-//        is Result.Failure -> {
-//            Jenkins.logger.error("artifactUrl: $artifactUrl")
-//            Jenkins.logger.error("cUrl: ${request.cUrlString()}")
-//            Jenkins.logger.error("response: $response")
-//            Jenkins.logger.error(result.error.exception) { "unable to download jarfile from $artifactUrl" }
-//            throw result.error.exception
-//        }
-//    }
-//
-//    tmpFile.renameTo(targetFile)
-    return@stopwatch targetFile
-}
-
 class JenkinsServer(
     val serverUrl: String
 ) {

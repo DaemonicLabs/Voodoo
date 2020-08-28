@@ -9,7 +9,7 @@ import moe.nikky.voodoo.format.modpack.Manifest
 import moe.nikky.voodoo.format.modpack.entry.FileInstall
 import moe.nikky.voodoo.format.modpack.entry.Side
 import Modloader
-import voodoo.format.packager.ModuleFormat
+import voodoo.format.packager.GeneratedConstants
 import java.io.File
 import java.security.MessageDigest
 
@@ -107,7 +107,7 @@ object PackageBuilder : KLogging() {
         logger.info {""}
         logger.info { "--- Writing Manifest... ---" }
         val manifest = Manifest(
-            formatVersion = ModuleFormat.VERSION,
+            formatVersion = GeneratedConstants.VERSION,
             title = modpackTitle,
             version = modpackVersion,
             id = modpackId,

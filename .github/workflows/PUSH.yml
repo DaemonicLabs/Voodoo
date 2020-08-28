@@ -1,0 +1,36 @@
+name: PUSH
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: openjdk:8-jdk
+      options: --user root
+    steps:
+      - uses: actions/setup-java@v1
+        with:
+          java-version: 8
+
+      - name: 'Clone Repo'
+        uses: actions/checkout@v2
+
+      - name: 'Validate Gradle Wrapper'
+        uses: gradle/wrapper-validation-action@v1
+
+      - name: 'Build'
+        run: './gradlew clean build --full-stacktrace'
+
+      - name: 'Publish to BinTray'
+        run: './gradlew bintrayUpload -Pnodryrun --stacktrace'
+        env:
+          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
+
+      - name: 'Publish Plugin to BinTray'
+        run: './gradlew bintrayUpload -Pnodryrun --stacktrace'
+        working-directory: 'plugin'
+        env:
+          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}

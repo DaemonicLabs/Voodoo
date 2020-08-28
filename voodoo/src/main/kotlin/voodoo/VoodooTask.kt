@@ -119,12 +119,5 @@ sealed class VoodooTask(open val key: String) {
 
     object Version : VoodooTask("version") {
         val version = GeneratedConstants.FULL_VERSION
-        fun dependencies(): Map<String, String> {
-            val props = Properties()
-            props.load(VoodooTask::class.java.getResourceAsStream("/dependencies.properties"))
-            return props.mapNotNull { (k, v) ->
-                if (k is String && v is String) k to v else null
-            }.toMap()
-        }
     }
 }

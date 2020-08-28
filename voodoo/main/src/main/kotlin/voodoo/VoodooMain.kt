@@ -169,14 +169,7 @@ object VoodooMain : KLogging() {
                     VoodooTask.Test.execute(this, id, testMethod)
                 },
                 VoodooTask.Version.key to { _ ->
-                    logger.info("voodoo-main: " + GeneratedConstants.FULL_VERSION)
-                    logger.info("voodoo: " + VoodooTask.Version.version)
-
-                    val dependencies = VoodooTask.Version.dependencies()
-                    val width = dependencies.keys.map{it.length}.max() ?: 0
-                    dependencies.forEach { (project, version) ->
-                        logger.info("  ${project}:  ${version.padStart(width)}")
-                    }
+                    logger.info("voodoo version: " + GeneratedConstants.FULL_VERSION)
                 }
             )
 
