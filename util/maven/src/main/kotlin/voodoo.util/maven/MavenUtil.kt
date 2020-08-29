@@ -62,9 +62,10 @@ object MavenUtil : KLogging() {
                 extension = extension
             )
             val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
+            targetFile.absoluteFile.parentFile.mkdirs()
             file.copyTo(targetFile, true)
 
-            return targetFile
+            return targetFile.absoluteFile
         }
 
 
@@ -73,6 +74,7 @@ object MavenUtil : KLogging() {
         val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$version$classifierSuffix.$extension"
         val tmpFile = File(outputDir, "$artifactId-$version$classifierSuffix.$extension.tmp")
         val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
+        targetFile.absoluteFile.parentFile.mkdirs()
         run {
             tmpFile.delete()
             val response = withContext(Dispatchers.IO) {
@@ -122,7 +124,7 @@ object MavenUtil : KLogging() {
 
         tmpFile.copyTo(targetFile, overwrite = true)
         tmpFile.delete()
-        return targetFile
+        return targetFile.absoluteFile
     }
 
     suspend fun getMavenMetadata(

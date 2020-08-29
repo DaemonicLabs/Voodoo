@@ -1,8 +1,3 @@
-//@file:GenerateMods("Mod", "1.12")
-//@file:GenerateMods("Mod", "1.12.1")
-//@file:GenerateMods("Mod", "1.12.2")
-//@file:GenerateForge("Forge_12_2", "1.12.2")
-
 import com.skcraft.launcher.model.modpack.Recommendation
 
 mcVersion = "1.12.2"

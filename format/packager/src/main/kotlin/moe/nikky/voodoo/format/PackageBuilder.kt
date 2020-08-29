@@ -31,6 +31,7 @@ object PackageBuilder : KLogging() {
         inputPath: File,
         outputPath: File,
         modpackId: String,
+        installerLocation: String,
         modpackTitle: String = modpackId,
         modpackVersion: String,
         gameVersion: String,
@@ -107,7 +108,7 @@ object PackageBuilder : KLogging() {
         logger.info {""}
         logger.info { "--- Writing Manifest... ---" }
         val manifest = Manifest(
-            formatVersion = GeneratedConstants.VERSION,
+            installerLocation = installerLocation,
             title = modpackTitle,
             version = modpackVersion,
             id = modpackId,

@@ -38,7 +38,9 @@ val File.unixPath: String
             return path.replace(WINDOWS_SEPARATOR, UNIX_SEPARATOR)
         }
 
-fun File.sha256Hex(): String? = MessageDigest.getInstance("SHA-256").digest(readBytes()).toHexString()
-fun File.sha1Hex(): String? = MessageDigest.getInstance("SHA-1").digest(readBytes()).toHexString()
-fun ByteArray.sha256Hex(): String? = MessageDigest.getInstance("SHA-256").digest(this).toHexString()
-fun ByteArray.sha1Hex(): String? = MessageDigest.getInstance("SHA-1").digest(this).toHexString()
+fun File.sha256Hex(): String = MessageDigest.getInstance("SHA-256").digest(readBytes()).toHexString()
+fun File.sha1Hex(): String = MessageDigest.getInstance("SHA-1").digest(readBytes()).toHexString()
+fun File.md5Hex(): String = MessageDigest.getInstance("MD5").digest(readBytes()).toHexString()
+fun ByteArray.sha256Hex(): String = MessageDigest.getInstance("SHA-256").digest(this).toHexString()
+fun ByteArray.sha1Hex(): String = MessageDigest.getInstance("SHA-1").digest(this).toHexString()
+fun ByteArray.md5Hex(): String = MessageDigest.getInstance("MD5").digest(this).toHexString()

@@ -82,7 +82,7 @@ public class Bootstrap {
 
         String[] debugArgs;
         if(System.getProperty("kotlinx.coroutines.debug") != null) {
-            debugArgs = new String[]{"-Dkotlinx.coroutines.debug"};
+            debugArgs = new String[]{"-Dkotlinx.coroutines.debug=on"};
         } else {
             debugArgs = new String[0];
         }

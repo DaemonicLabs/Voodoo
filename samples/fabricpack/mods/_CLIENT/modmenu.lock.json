@@ -4,5 +4,6 @@
         "side": "CLIENT"
     },
     "projectID": 308702,
-    "fileID": 2902148
+    "fileID": 2902148,
+    "skipFingerprintCheck": true
 }

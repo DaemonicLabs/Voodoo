@@ -24,13 +24,26 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
         clean: Boolean
     ) = stopwatch {
         val cacheDir = directories.cacheHome
-        val zipRootDir = cacheDir.resolve("MMC").resolve(modpack.id)
+        val zipRootDir = cacheDir.resolve("MULTIMC").resolve(modpack.id)
         val instanceDir = zipRootDir.resolve(modpack.id)
         zipRootDir.deleteRecursively()
 
-        val installerFilename = "mmc-installer.jar"
+        val installer = "downloadArtifact multimc installer".watch {
+            MavenUtil.downloadArtifact(
+                mavenUrl = GeneratedConstants.MAVEN_URL,
+                group = GeneratedConstants.MAVEN_GROUP,
+                artifactId = "multimc-installer",
+                version = GeneratedConstants.FULL_VERSION,
+                classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
+                outputFile = instanceDir.resolve(".voodoo").resolve("multimc-installer.jar"),
+                outputDir = instanceDir.resolve(".voodoo")
+            )
+        }
+        val installerFilename = installer.toRelativeString(instanceDir).replace('\\', '/')
         val preLaunchCommand =
-            "\"\$INST_JAVA\" -jar \"\$INST_DIR/$installerFilename\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
+            "\"\$INST_JAVA\" -jar \"\$INST_DIR/$installerFilename\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\" --phase pre"
+        val postExitCommand =
+            "\"\$INST_JAVA\" -jar \"\$INST_DIR/.voodoo/post.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\" --phase post"
         val minecraftDir = MMCUtil.installEmptyPack(
             modpack.title.blankOr,
             modpack.id,
@@ -38,7 +51,8 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
             modloader = modpack.modloader,
             extraCfg = modpack.packOptions.multimcOptions.instanceCfg,
             instanceDir = instanceDir,
-            preLaunchCommand = preLaunchCommand
+            preLaunchCommand = preLaunchCommand,
+            postExitCommand = postExitCommand
         )
 
         logger.info("created pack in $minecraftDir")
@@ -59,20 +73,6 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
         }
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         urlFile.writeText(selfupdateUrl)
-
-        val multimcInstaller = instanceDir.resolve(installerFilename)
-        val installer = "downloadArtifact multimc installer bootstrap".watch {
-            MavenUtil.downloadArtifact(
-                mavenUrl = GeneratedConstants.MAVEN_URL,
-                group = GeneratedConstants.MAVEN_GROUP,
-                artifactId = "bootstrap-multimc-installer",
-                version = GeneratedConstants.FULL_VERSION,
-                classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
-                outputFile = multimcInstaller,
-                outputDir = directories.cacheHome
-            )
-        }
-//        installer.copyTo(multimcInstaller)
 
         val packignore = instanceDir.resolve(".packignore")
         packignore.writeText(

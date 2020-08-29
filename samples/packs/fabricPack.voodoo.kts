@@ -1,3 +1,5 @@
+import kotlinx.atomicfu.pauseLockFreeOp
+
 mcVersion = "1.15.2"
 version = "0.0.1"
 icon = rootFolder.resolve("icon.png")
@@ -12,9 +14,7 @@ modloader {
 
 pack {
     multimc {
-        // path t the published modpack definition (not sk always)
-        skPackUrl = "https://nikky.moe/.mc/experimental/fabricpack.json"
-        selfupdateUrl = ""
+        selfupdateUrl = "https://nikky.moe/.mc/experimental/fabricpack.json"
     }
     voodoo {
 

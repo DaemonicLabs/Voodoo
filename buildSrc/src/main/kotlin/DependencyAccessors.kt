@@ -131,11 +131,11 @@ fun Project.setupDependencies(target: Project = this, projectOnly: Boolean = fal
 //                api(kotlin("stdlib", Kotlin.version))
             }
         }
-        rootProject.project(":bootstrap:bootstrap-multimc-installer") -> {
-            dependencies {
-                apiRecursive(project(":bootstrap"))
-            }
-        }
+//        rootProject.project(":bootstrap:bootstrap-multimc-installer") -> {
+//            dependencies {
+//                apiRecursive(project(":bootstrap"))
+//            }
+//        }
         rootProject.project(":bootstrap:bootstrap-voodoo") -> {
             dependencies {
                 apiRecursive(project(":bootstrap"))

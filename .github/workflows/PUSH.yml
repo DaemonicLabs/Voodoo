@@ -22,15 +22,9 @@ jobs:
       - name: 'Build'
         run: './gradlew clean build --full-stacktrace'
 
-      - name: 'Publish to BinTray'
-        run: './gradlew bintrayUpload -Pnodryrun --stacktrace'
-        env:
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
+#      - name: 'Publish to BinTray'
+#        run: './gradlew bintrayUpload -Pnodryrun --stacktrace'
+#        env:
+#          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+#          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
 
-      - name: 'Publish Plugin to BinTray'
-        run: './gradlew bintrayUpload -Pnodryrun --stacktrace'
-        working-directory: 'plugin'
-        env:
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}

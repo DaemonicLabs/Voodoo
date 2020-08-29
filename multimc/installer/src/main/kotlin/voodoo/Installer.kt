@@ -4,36 +4,30 @@ package voodoo
 import Modloader
 import com.skcraft.launcher.model.modpack.Recommendation
 import com.xenomachina.argparser.ArgParser
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.url
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
-import io.ktor.http.HttpHeaders
-import io.ktor.http.isSuccess
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.toList
-import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import mu.KLogging
 import moe.nikky.voodoo.format.modpack.Manifest
 import moe.nikky.voodoo.format.modpack.entry.FileInstall
 import moe.nikky.voodoo.format.modpack.entry.Side
+import mu.KLogging
 import voodoo.mmc.MMCSelectable
-import voodoo.mmc.MMCUtil
 import voodoo.mmc.MMCUtil.updateAndSelectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
-import voodoo.multimc.installer.GeneratedConstants
 import voodoo.util.*
-import voodoo.util.maven.MavenUtil
 import java.io.File
 import java.io.IOException
+import java.nio.file.Paths
+import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 01/04/18.
@@ -41,7 +35,8 @@ import java.io.IOException
  */
 
 object Installer : KLogging() {
-    private val directories = Directories.get(moduleName = "multimc")
+    private val directories = Directories.get(moduleName = "MULTIMC")
+    val cacheHome by lazy { directories.cacheHome }
 //    val kit = Toolkit.getDefaultToolkit()
 
     @JvmStatic
@@ -52,58 +47,73 @@ object Installer : KLogging() {
 
         arguments.run {
 //            selfupdate(instanceDir)
-            install(instanceId, instanceDir, minecraftDir)
+            install(instanceId, instanceDir, minecraftDir, phase)
         }
     }
 
-    private suspend fun selfupdate(instanceDir: File) {
-        val voodooFolder = instanceDir.resolve(".voodoo").apply {mkdirs()}
+    private suspend fun selfupdate(instanceDir: File, installerUrl: String, phase: String): File? {
+        logger.info { "installer url from modpack: $installerUrl" }
+        val voodooFolder = instanceDir.resolve(".voodoo").apply { mkdirs() }
+        voodooFolder.listFiles().forEach {
+            it.delete()
+        }
         val toDeleteFile = voodooFolder.resolve("to-delete.txt")
         toDeleteFile.parentFile.mkdirs()
-        if(toDeleteFile.exists()) {
-            instanceDir.resolve(toDeleteFile.readText())
-                .takeIf { it.exists() }
-                ?.delete()
-        }
+        val currentJarFile = File(Installer::class.java.protectionDomain.codeSource.location.toURI())
+        logger.info { "currentJarFile: ${currentJarFile.toRelativeString(instanceDir)}" }
+        logger.info { "sha256: ${currentJarFile.sha256Hex()}" }
+        when (phase) {
+            "post" -> {
+                if (toDeleteFile.exists()) {
+                    val success = toDeleteFile.readLines().all { toDelete ->
+                        logger.info {"deleting $toDelete"}
+                        instanceDir.resolve(toDelete)
+                            .takeIf { it.exists() }
+                            ?.delete()
+                            ?: true
+                    }
+                    if(success) {
+                        logger.info { "all files sucessfully deleted" }
+                        toDeleteFile.delete()
+                    }
+                }
 
-        val cfgFile = instanceDir.resolve("instance.cfg")
-        val cfg = MMCUtil.readCfg(cfgFile)
-
-        val oldPreLaunchCommand = cfg["PreLaunchCommand"]
-
-        if(cfg["OverrideCommands"] == "true" && oldPreLaunchCommand != null) {
-            val installerFilename = "mmc-installer-${GeneratedConstants.FULL_VERSION}"
-
-            val currentJarFilePath = oldPreLaunchCommand.substringAfter("\"\$INST_JAVA\" -jar \"\$INST_DIR/").substringBefore("\"")
-            val currentJarFile = instanceDir.resolve(currentJarFilePath)
-
-            if(currentJarFile.exists() && currentJarFile.name != installerFilename) {
-                val installerFile = MavenUtil.downloadArtifact(
-                    mavenUrl = GeneratedConstants.MAVEN_URL,
-                    group = GeneratedConstants.MAVEN_GROUP,
-                    artifactId = "bootstrap-multimc-installer",
-                    version = GeneratedConstants.FULL_VERSION,
-                    classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
-                    outputFile = instanceDir.resolve(installerFilename),
-                    outputDir = instanceDir
-                )
-                val preLaunchCommand =
-                    "\"\$INST_JAVA\" -jar \"\$INST_DIR/${installerFile.toRelativeString(instanceDir).replace('\\', '/')}\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\""
-
-                cfg["PreLaunchCommand"] = preLaunchCommand
-
-                MMCUtil.writeCfg(cfgFile, cfg)
-
-//                toDeleteFile.writeText(currentJarFile.toRelativeString(instanceDir))
+                // copy post.jar to multinc-installer.jar
+                currentJarFile.copyTo(voodooFolder.resolve("multimc-installer.jar"), overwrite = true)
+                exitProcess(0)
             }
-        } else {
-            logger.info("commands are not enabled, not updating bootstrapper")
+            "pre" -> {
+                // always copy current jar to post.jar
+                val postFile = voodooFolder.resolve("post.jar")
+                currentJarFile.copyTo(postFile, overwrite = true)
+
+                // checking for update
+                logger.info { "downloading sha256 from $installerUrl.sha256" }
+                val newSha256 = client.get<String>(urlString = installerUrl + ".sha256")
+
+                if (currentJarFile.exists() && currentJarFile.sha256Hex().equals(newSha256, ignoreCase = true)) {
+                    logger.info { "file exists and sha256 matches" }
+                    return null
+                }
+
+                logger.info { "downloading $installerUrl" }
+                postFile.download(installerUrl, cacheHome)
+                return postFile
+            }
+            else -> {
+                return null
+            }
         }
     }
 
     private val json = Json(JsonConfiguration(prettyPrint = true, ignoreUnknownKeys = true, encodeDefaults = true))
 
-    private suspend fun install(instanceId: String, instanceDir: File, minecraftDir: File) {
+    private suspend fun install(
+        instanceId: String,
+        instanceDir: File,
+        minecraftDir: File,
+        phase: String
+    ) {
         logger.info("installing into $instanceId")
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         val packUrl = urlFile.readText().trim()
@@ -128,25 +138,48 @@ object Installer : KLogging() {
 
         val jsonString = response.readText()
 
-        val jsonElement = json.parseJson(jsonString)
-        val formatVersion = jsonElement.jsonObject["formatVersion"]?.primitive?.content
+        val modpack = json.parse(Manifest.serializer(), jsonString)
+        val newJar = selfupdate(instanceDir, packUrl.substringBeforeLast('/') + "/" + modpack.installerLocation, phase)
+        if (newJar != null) {
+            val java = Paths.get(System.getProperty("java.home"), "bin", "java").toFile().path
+            val workingDir = File(System.getProperty("user.dir"))
+            val debugArgs: Array<String>
 
-        if(formatVersion == null) {
-            logger.info ("not a voodoo-format manifest")
-            val skcraftManifest = json.parse(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString)
-            return SKHandler.install(
-                skcraftManifest,
+            debugArgs = if (System.getProperty(DEBUG_PROPERTY_NAME) != null) {
+                arrayOf("-D$DEBUG_PROPERTY_NAME=$DEBUG_PROPERTY_VALUE_ON")
+            } else {
+                arrayOf()
+            }
+
+            val args = arrayOf<String>(
+                java,
+                *debugArgs,
+                "-jar",
+                newJar.path,
+                "--id",
                 instanceId,
-                instanceDir,
-                minecraftDir
+                "--inst",
+                instanceDir.path,
+                "--mc",
+                minecraftDir.path,
+                "--phase",
+                "reboot"
             )
-        } else {
-            logger.info ("not a skcraft manifest")
+
+            logger.info { "Executing ${args.joinToString()}" }
+            System.err.println("\nrebooting...\n\n\n")
+            val exitStatus = ProcessBuilder(*args)
+                .directory(workingDir)
+                .redirectOutput(ProcessBuilder.Redirect.INHERIT)
+                .redirectError(ProcessBuilder.Redirect.INHERIT)
+                .start()
+                .waitFor()
+            exitProcess(exitStatus)
         }
 
-        // TODO: load correct installer for formatVersion
-
-        val modpack = json.parse(Manifest.serializer(), jsonString)
+        if(phase == "post") {
+            return
+        }
 
         // TODO: implement version listing later
 //        try {
@@ -255,7 +288,12 @@ object Installer : KLogging() {
         }
         val (features, reinstall, skipUpdate) = updateAndSelectFeatures(
             selectables = modpack.features.filter { it.side != Side.SERVER }.map {
-                MMCSelectable(it.name, it.name, it.description, it.selected, it.recommendation?.let { r -> Recommendation.valueOf(r.name) })
+                MMCSelectable(
+                    it.name,
+                    it.name,
+                    it.description,
+                    it.selected,
+                    it.recommendation?.let { r -> Recommendation.valueOf(r.name) })
             },
             previousSelection = defaults,
             name = modpack.title.blankOr
@@ -265,7 +303,7 @@ object Installer : KLogging() {
             installing = oldpack == null,
             updateRequired = oldpack?.version != modpack.version
         )
-        if(skipUpdate) {
+        if (skipUpdate) {
             return
         }
         featureJson.writeText(
@@ -283,7 +321,7 @@ object Installer : KLogging() {
         withPool { pool ->
             coroutineScope {
                 for (task in modpack.tasks) {
-                    if(task.side == Side.SERVER) continue
+                    if (task.side == Side.SERVER) continue
                     launch(context = pool) {
                         val oldTask = oldTaskList.find { it.to == task.to }
 
@@ -311,7 +349,7 @@ object Installer : KLogging() {
                         }
                         val target = minecraftDir.resolve(task.to)
                         val chunkedHash = task.hash.substringAfter(':').chunked(6).joinToString("/")
-                        val cacheFolder = directories.cacheHome.resolve("HEX").resolve(chunkedHash)
+                        val cacheFolder = cacheHome.resolve("HEX").resolve(chunkedHash)
 
                         if (target.exists()) {
                             if (oldTask != null) {
@@ -324,7 +362,10 @@ object Installer : KLogging() {
                                     }
                                     return@launch
                                 }
-                                if (oldTask.hash == task.hash && target.isFile && target.sha256Hex() == task.hash.substringAfter(':')) {
+                                if (oldTask.hash == task.hash && target.isFile && target.sha256Hex() == task.hash.substringAfter(
+                                        ':'
+                                    )
+                                ) {
                                     logger.info("task ${task.to} file did not change and sha256 hash matches")
                                     oldTask.let {
                                         uptodateTasks.send(it)
@@ -463,5 +504,10 @@ object Installer : KLogging() {
             "--mc",
             help = "\$INST_MC_DIR - absolute path of minecraft"
         ) { File(this) }
+
+        val phase by parser.storing(
+            "--phase",
+            help = "loading phase, pre or post"
+        )
     }
 }

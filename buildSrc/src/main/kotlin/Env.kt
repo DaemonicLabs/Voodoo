@@ -4,5 +4,5 @@ object Env {
         ?.let { "-$it" }
         ?: ""
 
-    val isCI = System.getenv("BUILD_NUMBER") != null
+    val isCI = System.getenv("CI") != null
 }

@@ -14,10 +14,8 @@ import voodoo.memoize
 import voodoo.pack.sk.SKPackages
 import voodoo.pack.sk.SkPackageFragment
 import voodoo.provider.Providers
-import voodoo.util.blankOr
-import voodoo.util.json
-import voodoo.util.unixPath
-import voodoo.util.withPool
+import voodoo.util.*
+import voodoo.util.maven.MavenUtil
 import java.io.File
 import java.net.URI
 import java.time.Instant
@@ -228,6 +226,20 @@ object VoodooPackager : AbstractPack("experimental") {
 
                 //TODO: figure out icon url, and server url
 
+                val toolsDir = output.resolve("tools").apply { mkdirs() }
+                val installer = "downloadArtifact multimc installer".watch {
+                    MavenUtil.downloadArtifact(
+                        mavenUrl = GeneratedConstants.MAVEN_URL,
+                        group = GeneratedConstants.MAVEN_GROUP,
+                        artifactId = "multimc-installer",
+                        version = GeneratedConstants.FULL_VERSION,
+                        classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
+                        outputFile = null,
+                        outputDir = toolsDir
+                    )
+                }
+                installer.parentFile.resolve(installer.name + ".sha256").writeText(installer.sha256Hex())
+
                 val uniqueVersion = "${modpack.version}." + DateTimeFormatter
                     .ofPattern("yyyyMMddHHmm")
                     .withZone(ZoneOffset.UTC)
@@ -236,11 +248,12 @@ object VoodooPackager : AbstractPack("experimental") {
                 // TODO verify modloader
                 val modloader = modpack.modloader ?: error("no modloader defined")
 
-                "experimental package builder".watch {
+                "voodoo package builder".watch {
                     PackageBuilder.build(
                         inputPath = modpackDir,
                         outputPath = output,
                         modpackId = modpack.id,
+                        installerLocation = installer.toRelativeString(output).replace('\\', '/'),
                         modpackTitle = modpack.title ?: modpack.id,
                         modpackVersion = uniqueVersion,
                         gameVersion = modpack.mcVersion,

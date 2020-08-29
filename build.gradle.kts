@@ -31,25 +31,21 @@ println(
 )
 val runnableProjects = mapOf(
     project("voodoo:voodoo-main") to "voodoo.VoodooMain",
-    project("multimc:multimc-installer") to "voodoo.Initializer",
+    project("multimc:multimc-installer") to "voodoo.Installer",
     project("server-installer") to "voodoo.server.Install",
-    project("bootstrap:bootstrap-voodoo") to "voodoo.Bootstrap",
-    project("bootstrap:bootstrap-multimc-installer") to "voodoo.Bootstrap"
+    project("bootstrap:bootstrap-voodoo") to "voodoo.Bootstrap"
 )
 val noConstants = listOf(
     project("skcraft"),
     project("bootstrap"),
-    project("bootstrap:bootstrap-voodoo"),
-    project("bootstrap:bootstrap-multimc-installer")
+    project("bootstrap:bootstrap-voodoo")
 )
 val noKotlin = listOf(
     project("bootstrap"),
-    project("bootstrap:bootstrap-voodoo"),
-    project("bootstrap:bootstrap-multimc-installer")
+    project("bootstrap:bootstrap-voodoo")
 )
 val mavenMarkers = mapOf(
-    project("bootstrap:bootstrap-voodoo") to "voodoo-main",
-    project("bootstrap:bootstrap-multimc-installer") to "multimc-installer"
+    project("bootstrap:bootstrap-voodoo") to "voodoo-main"
 )
 
 val bintrayOrg: String? = System.getenv("BINTRAY_USER")

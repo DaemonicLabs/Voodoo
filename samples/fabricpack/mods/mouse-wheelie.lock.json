@@ -1,5 +1,6 @@
 {
     "type": "curse",
     "projectID": 317514,
-    "fileID": 2970090
+    "fileID": 2996880,
+    "skipFingerprintCheck": true
 }

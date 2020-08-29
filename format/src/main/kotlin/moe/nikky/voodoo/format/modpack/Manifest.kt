@@ -8,7 +8,7 @@ import moe.nikky.voodoo.format.modpack.entry.FileInstall
 
 @Serializable
 data class Manifest(
-    val formatVersion: String? = null,
+    val installerLocation: String,
     // what is this even ?
     //var minimumVersion: Int = 0,
 

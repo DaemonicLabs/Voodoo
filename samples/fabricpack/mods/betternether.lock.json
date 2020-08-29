@@ -1,12 +1,11 @@
 {
-    "type": "voodoo.data.lock.LockEntry.Curse",
+    "type": "curse",
     "common": {
         "dependencies": {
-            "REQUIRED": [
-                "fabric-api"
-            ]
+            "fabric-api": "REQUIRED"
         }
     },
     "projectID": 311377,
-    "fileID": 2945371
+    "fileID": 2983313,
+    "skipFingerprintCheck": true
 }

@@ -35,7 +35,7 @@ include("multimc", "multimc:installer")
 include("util", "util:download", "util:maven", "util:jenkins")
 include("tome", "pack", "pack:tester")
 include("server-installer")
-include("bootstrap", "bootstrap:multimc-installer", "bootstrap:voodoo")
+include("bootstrap", "bootstrap:voodoo")
 
 //TODO: remove
 include("skcraft")

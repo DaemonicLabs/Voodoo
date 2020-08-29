@@ -146,7 +146,8 @@ object MMCUtil : KLogging() {
                 readCfg(this.resolve("multimc.cfg"))["InstanceDir"] ?: "instances"
             ).resolve(folder)
         },
-        preLaunchCommand: String? = null
+        preLaunchCommand: String? = null,
+        postExitCommand: String? = null
     ): File {
         instanceDir.mkdirs()
 
@@ -227,6 +228,10 @@ object MMCUtil : KLogging() {
         if (preLaunchCommand != null) {
             cfg["OverrideCommands"] = "true"
             cfg["PreLaunchCommand"] = preLaunchCommand
+        }
+        if (postExitCommand != null) {
+            cfg["OverrideCommands"] = "true"
+            cfg["PostExitCommand"] = postExitCommand
         }
         extraCfg.forEach { (key, value) ->
             cfg[key] = value
