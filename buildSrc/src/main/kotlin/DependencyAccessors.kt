@@ -96,6 +96,7 @@ fun Project.setupDependencies(target: Project = this, projectOnly: Boolean = fal
                 if(!projectOnly) {
                     testImplementation(Coroutines.dependency)
                 }
+
             }
         }
         rootProject.project(":voodoo:voodoo-main") -> {
@@ -111,6 +112,8 @@ fun Project.setupDependencies(target: Project = this, projectOnly: Boolean = fal
 
                     // script definitions
                     implementation(kotlin("scripting-jvm", Kotlin.version))
+
+                    implementation("com.github.Ricky12Awesome:json-schema-serialization:0.5.2")
 
                     testImplementation(kotlin("test", Kotlin.version))
 

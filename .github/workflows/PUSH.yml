@@ -4,15 +4,14 @@ on: [push]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java: [ 8-jdk, 11-jdk, 14-jdk ]
+    runs-on: ubuntu-20.04
     container:
-      image: openjdk:8-jdk
+      image: openjdk:${{ matrix.java }}
       options: --user root
     steps:
-      - uses: actions/setup-java@v1
-        with:
-          java-version: 8
-
       - name: 'Clone Repo'
         uses: actions/checkout@v2
 

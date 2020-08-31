@@ -12,6 +12,7 @@ import com.eyeem.watchadoin.TraceEventsReport
 import com.eyeem.watchadoin.saveAsSvg
 import com.eyeem.watchadoin.asTraceEventsReport
 import com.eyeem.watchadoin.saveAsHtml
+import com.github.ricky12awesome.jss.stringifyToSchema
 import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.DEBUG_PROPERTY_NAME
@@ -19,12 +20,11 @@ import kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.modules.SerializersModule
+import kotlinx.serialization.json.JsonLiteral
+import kotlinx.serialization.json.JsonObject
 import mu.KLogging
 import org.slf4j.LoggerFactory
-import voodoo.builder.Builder
 import voodoo.changelog.ChangelogBuilder
-import voodoo.data.ModloaderPattern
 import voodoo.data.nested.NestedPack
 import voodoo.script.ChangeScript
 import voodoo.script.MainScriptEnv
@@ -33,7 +33,6 @@ import voodoo.tome.TomeEnv
 import voodoo.util.Directories
 import voodoo.util.SharedFolders
 import voodoo.util.json
-import voodoo.util.jsonConfiguration
 import voodoo.voodoo.main.GeneratedConstants
 import java.io.File
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
@@ -86,9 +85,6 @@ object VoodooMain : KLogging() {
         }
         val rootDir = SharedFolders.RootDir.get().absoluteFile
 
-
-        val uploadDir = SharedFolders.UploadDir.get(id)
-
         val stopwatch = Stopwatch("main")
 
         val reportName = stopwatch {
@@ -99,9 +95,6 @@ object VoodooMain : KLogging() {
             val libs = rootDir.resolve("libs") // TODO: set from system property
             val tomeDir = SharedFolders.TomeDir.get()
             val docDir = SharedFolders.DocDir.get(id)
-
-            val lockFileName = "$id.lock.pack.json"
-            val lockFile = rootDir.resolve(id).resolve(lockFileName)
 
             logger.info { "fullArgs: ${fullArgs.joinToString()}"}
             logger.info { "arguments: ${arguments}"}
@@ -120,12 +113,22 @@ object VoodooMain : KLogging() {
                     )
                     logger.debug("tomeEnv: $tomeEnv")
 
-                    val nestedPack = scriptEnv.pack
+//                    val nestedPack = scriptEnv.pack
 
                     // debug
-//                    rootDir.resolve(id).resolve("$id.nested.pack.json").writeText(
-//                        json.stringify(NestedPack.serializer(), nestedPack)
-//                    )
+                    val jsonObj = json.toJson(NestedPack.serializer(), scriptEnv.pack) as JsonObject
+                    rootDir.resolve(id).resolve("$id.nested.pack.json").writeText(
+                        json.stringify(JsonObject.serializer(), JsonObject(mapOf("\$schema" to JsonLiteral(scriptEnv.pack.`$schema`)) + jsonObj))
+                    )
+                    val schemaFile = rootDir.resolve(id).resolve(scriptEnv.pack.`$schema`)
+                    schemaFile.absoluteFile.parentFile.mkdirs()
+                    schemaFile.writeText(
+                        json.stringifyToSchema(NestedPack.serializer())
+                    )
+
+                    // load nestedPack
+                    val nestedPack = json.parse(NestedPack.serializer(), rootDir.resolve(id).resolve("$id.nested.pack.json").readText())
+
 
                     // TODO: pass extra args object
                     VoodooTask.Build.execute(

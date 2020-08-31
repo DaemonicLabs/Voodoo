@@ -1,0 +1,122 @@
+{
+    "$schema": "./schema/nested.schema.json",
+    "rootFolder": "D:\\dev\\Voodoo\\samples",
+    "id": "fabricpack",
+    "mcVersion": "1.15.2",
+    "version": "0.0.1",
+    "authors": [
+        "NikkyAi"
+    ],
+    "modloader": {
+        "type": "modloader.Fabric",
+        "intermediateMappingsVersion": "1.15.2"
+    },
+    "packOptions": {
+        "multimcOptions": {
+            "selfupdateUrl": "https://nikky.moe/.mc/experimental/fabricpack.json"
+        }
+    },
+    "root": {
+        "type": "curse",
+        "entries": [
+            {
+                "type": "curse",
+                "common": {
+                    "id": "fabric-api"
+                },
+                "curse": {
+                    "projectID": 306612
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "betternether"
+                },
+                "curse": {
+                    "projectID": 311377
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "tab-inventory-fabric"
+                },
+                "curse": {
+                    "projectID": 362943
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "roughly-enough-items"
+                },
+                "curse": {
+                    "projectID": 310111
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "roughly-enough-resources"
+                },
+                "curse": {
+                    "projectID": 325625
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "side": "CLIENT"
+                },
+                "entries": [
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "roughly-enough-items"
+                        },
+                        "curse": {
+                            "projectID": 310111
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "roughly-enough-resources"
+                        },
+                        "curse": {
+                            "projectID": 325625
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "appleskin"
+                        },
+                        "curse": {
+                            "projectID": 248787
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "modmenu"
+                        },
+                        "curse": {
+                            "projectID": 308702
+                        }
+                    }
+                ]
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "mouse-wheelie"
+                },
+                "curse": {
+                    "projectID": 317514
+                }
+            }
+        ]
+    }
+}

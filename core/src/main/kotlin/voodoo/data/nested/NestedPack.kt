@@ -16,8 +16,9 @@ import java.io.File
  */
 @Serializable
 data class NestedPack(
-    @Serializable(with=FileSerializer::class)
-    val rootFolder: File,
+    val `$schema`: String = "./schema/nested.schema.json",
+//    @Serializable(with=FileSerializer::class)
+    val rootFolderPath: String,
     /**
      * unique identifier
      */
@@ -42,7 +43,9 @@ data class NestedPack(
     var packOptions: PackOptions = PackOptions(),
     var root: NestedEntry = NestedEntry.Common()
 ) {
-    @Transient
+    val rootFolder: File by lazy {
+        File(rootFolderPath)
+    }
     var icon: File
         get()= rootFolder.resolve(iconPath)
         set(value) {
@@ -56,7 +59,7 @@ data class NestedPack(
     companion object : KLogging() {
         fun create(rootFolder: File, id: String, builder: (NestedPack) -> Unit = {}): NestedPack {
             val pack = NestedPack(
-                rootFolder = rootFolder,
+                rootFolderPath = rootFolder.path,
                 id = id
             )
             builder(pack)
