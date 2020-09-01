@@ -10,13 +10,13 @@ repositories {
 }
 
 dependencies {
-    implementation(group = "com.squareup", name = "kotlinpoet", version = "1.5.0")
+    implementation(group = "com.squareup", name = "kotlinpoet", version = "1.6.0")
 }
 
 configure<GradlePluginDevelopmentExtension> {
     plugins {
-        create("constGenerator") {
-            id = "constantsGenerator"
+        create("constantsGenerator") {
+            id = "moe.nikky.plugin.constants"
             implementationClass = "plugin.GeneratorPlugin"
         }
     }

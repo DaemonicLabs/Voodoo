@@ -1,5 +1,5 @@
 plugins {
-    id("moe.nikky.voodoo")
+    id("moe.nikky.voodoo") version "0.6.0-local"
 }
 
 voodoo {
@@ -21,15 +21,9 @@ voodoo {
     addTask(name = "pack_mmc-voodoo") {
         pack().multimcVoodoo()
     }
-//    addTask(name = "pack_sk") {
-//        pack().sklauncher()
-//    }
-//    addTask(name = "pack_mmc-sk") {
-//        pack().multimcSk()
-//    }
-//    addTask(name = "pack_mmc-sk-fat") {
-//        pack().multimcSkFat()
-//    }
+    addTask(name = "pack_sk") {
+        pack().sklauncher()
+    }
     addTask(name = "pack_mmc-fat") {
         pack().multimcFat()
     }
@@ -44,12 +38,12 @@ voodoo {
     }
     addTask(name = "buildAndPackAll") {
         build()
-//        pack().sklauncher()
+        pack().sklauncher()
         pack().server()
-//        pack().multimcSk()
-//        pack().multimcSkFat()
         pack().multimcFat()
         pack().curse()
+        pack().voodoo()
+        pack().multimcVoodoo()
     }
 
     generateCurseforgeMods("Mod", "1.12", "1.12.1", "1.12.2")

@@ -4,4 +4,4 @@
 //        gradlePluginPortal()
 //    }
 //}
-rootProject.name = "buildSrc"
+rootProject.name = "buildUtil"

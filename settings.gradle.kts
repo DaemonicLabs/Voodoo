@@ -38,6 +38,7 @@ plugins {
 
 rootProject.name = "voodoo-parent"
 
+includeBuild("buildUtil")
 include(":voodoo", ":voodoo:main")
 include(":core")
 include(":dsl")

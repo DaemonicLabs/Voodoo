@@ -11,7 +11,7 @@ plugins {
     kotlin("jvm")
     kotlin("plugin.scripting") apply false
     kotlin("plugin.serialization") apply false
-    constantsGenerator apply false
+    id("moe.nikky.plugin.constants") apply false
     id("com.github.johnrengelman.shadow") apply false
     id("org.jmailen.kotlinter") apply false
     id("com.jfrog.bintray") apply false
@@ -49,7 +49,7 @@ val baseVersion = "0.6.0"
 val isCI = System.getenv("CI") != null
 
 // TODO: load version.gradle.kts and detect version in git tags
-val versionSuffix = if (Env.isCI) "SNAPSHOT" else "local"
+val versionSuffix = if (isCI) "SNAPSHOT" else "local"
 //val versionSuffix = if (Env.isCI) "$buildnumber" else "local"
 
 val fullVersion = "$baseVersion-$versionSuffix" // TODO: just use -SNAPSHOT always ?
@@ -149,7 +149,7 @@ subprojects {
         }
 
         if (project !in noConstants) {
-            apply(plugin ="constantsGenerator")
+            apply(plugin ="moe.nikky.plugin.constants")
 
             val folder = listOf("voodoo") + project.name.split('-')
             afterEvaluate {
