@@ -2,7 +2,7 @@ package voodoo.curse
 
 
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.features.BrowserUserAgent
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
@@ -44,7 +44,7 @@ object CurseClient : KLogging(), CoroutineScope {
     //"voodoo/$VERSION (https://github.com/DaemonicLabs/Voodoo)"
 
     @OptIn(KtorExperimentalAPI::class)
-    private val client = HttpClient(CIO) {
+    private val client = HttpClient(OkHttp) {
         BrowserUserAgent()
         install(JsonFeature) {
             serializer = KotlinxSerializer()

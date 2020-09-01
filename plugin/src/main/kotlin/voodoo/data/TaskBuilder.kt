@@ -26,28 +26,12 @@ class TaskBuilder() {
         fun voodoo() {
             tasks += TaskType.Pack.VoodooPackage
         }
-        @Deprecated("renamed", ReplaceWith("voodoo()"))
-        fun experimental() {
-            tasks += TaskType.Pack.VoodooPackage
-        }
-        @Deprecated("renamed", ReplaceWith("multimcSk()"))
-        fun multimc() {
-            tasks += TaskType.Pack.MultiMCSk
-        }
         fun multimcVoodoo() {
             tasks += TaskType.Pack.MultiMCVoodoo
         }
         @Deprecated("renamed", ReplaceWith("multimcVoodoo()"))
         fun multimcExperimental() {
             tasks += TaskType.Pack.MultiMCVoodoo
-        }
-        @Deprecated("will be removed")
-        fun multimcSk() {
-            tasks += TaskType.Pack.MultiMCSk
-        }
-        @Deprecated("will be removed")
-        fun multimcSkFat() {
-            tasks += TaskType.Pack.MultiMCSkFat
         }
         fun multimcFat() {
             tasks += TaskType.Pack.MultiMCFat

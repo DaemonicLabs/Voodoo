@@ -129,7 +129,7 @@ open class VoodooPlugin : Plugin<Project> {
 
             val libs = project.rootDir.resolve("libs")
 
-            val copyLibs = task<AbstractTask>("copyVoodooLibs") {
+            val copyLibs = task<DefaultTask>("copyVoodooLibs") {
                 dependsOn(downloadVoodoo)
                 doFirst {
                     val libraries = voodooConfiguration.resolve()

@@ -5,8 +5,6 @@ package voodoo
  * @author Nikky
  */
 
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.Logger
 import com.eyeem.watchadoin.Stopwatch
 import com.eyeem.watchadoin.TraceEventsReport
 import com.eyeem.watchadoin.saveAsSvg
@@ -22,8 +20,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.json.JsonLiteral
 import kotlinx.serialization.json.JsonObject
-import mu.KLogging
-import org.slf4j.LoggerFactory
+import mu.KotlinLogging
 import voodoo.changelog.ChangelogBuilder
 import voodoo.data.nested.NestedPack
 import voodoo.script.ChangeScript
@@ -38,11 +35,12 @@ import java.io.File
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.system.exitProcess
 
-object VoodooMain : KLogging() {
+object VoodooMain {
+    val logger = KotlinLogging.logger {}
     @JvmStatic
     fun main(vararg fullArgs: String) {
-        val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
-        rootLogger.level = Level.DEBUG // TODO: pass as -Dvoodoo.debug=true ?
+//        val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
+//        rootLogger.level = Level.INFO // TODO: pass as -Dvoodoo.debug=true ?
         System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
 
         Thread.sleep(1000) // wait for logger to catch up

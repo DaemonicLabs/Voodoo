@@ -1,5 +1,5 @@
 plugins {
-    id("voodoo")
+    id("moe.nikky.voodoo")
 }
 
 voodoo {

@@ -1,7 +1,7 @@
 package voodoo.util
 
 import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.features.UserAgent
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.json.serializer.KotlinxSerializer
@@ -13,7 +13,7 @@ const val useragent = "voodoo/${GeneratedConstants.VERSION} (https://github.com/
 
 
 @OptIn(KtorExperimentalAPI::class)
-val client = HttpClient(CIO) {
+val client = HttpClient(OkHttp) {
     install(UserAgent) {
         agent = useragent
     }

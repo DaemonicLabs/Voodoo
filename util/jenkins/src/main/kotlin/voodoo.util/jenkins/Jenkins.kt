@@ -1,6 +1,5 @@
 package voodoo.util.jenkins
 
-import com.eyeem.watchadoin.Stopwatch
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.url
@@ -14,10 +13,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
-import voodoo.util.jenkins.GeneratedConstants
 import voodoo.util.client
-import voodoo.util.download
-import java.io.File
 import java.io.IOException
 
 object Jenkins : KLogging()

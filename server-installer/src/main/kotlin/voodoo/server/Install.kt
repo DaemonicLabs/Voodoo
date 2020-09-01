@@ -1,7 +1,5 @@
 package voodoo.server
 
-import ch.qos.logback.classic.Level
-import ch.qos.logback.classic.Logger
 import com.eyeem.watchadoin.Stopwatch
 import com.xenomachina.argparser.ArgParser
 import com.xenomachina.argparser.InvalidArgumentException
@@ -24,8 +22,8 @@ import kotlin.system.exitProcess
 object Install : KLogging() {
     @JvmStatic
     fun main(vararg args: String): Unit = runBlocking {
-        val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
-        rootLogger.level = Level.DEBUG // TODO: pass as -Dvoodoo.debug=true ?
+//        val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
+//        rootLogger.level = Level.DEBUG // TODO: pass as -Dvoodoo.debug=true ?
         System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
 
         Thread.sleep(500) // wait for logger to catch up

@@ -18,12 +18,28 @@ jobs:
       - name: 'Validate Gradle Wrapper'
         uses: gradle/wrapper-validation-action@v1
 
+      - name: 'Check'
+        run: './gradlew clean build check --full-stacktrace'
+
+  publish:
+    runs-on: ubuntu-20.04
+    container:
+      image: openjdk:8-jdk
+      options: --user root
+    steps:
+      - name: 'Clone Repo'
+        uses: actions/checkout@v2
+
+      - name: 'Validate Gradle Wrapper'
+        uses: gradle/wrapper-validation-action@v1
+
       - name: 'Build'
         run: './gradlew clean build --full-stacktrace'
 
-#      - name: 'Publish to BinTray'
-#        run: './gradlew bintrayUpload -Pnodryrun --stacktrace'
-#        env:
-#          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-#          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
+      - name: 'Publish to BinTray'
+        run: './gradlew bintrayUpload --stacktrace'
+#        run: './gradlew bintrayUpload --stacktrace -Pnodryrun'
+        env:
+          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+          BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
 

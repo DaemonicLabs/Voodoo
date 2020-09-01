@@ -1,13 +1,10 @@
 package voodoo
 
 import com.eyeem.watchadoin.Stopwatch
-import com.xenomachina.argparser.ArgParser
-import com.xenomachina.argparser.default
 import mu.KLogging
 import voodoo.data.lock.LockPack
 import voodoo.pack.*
 import java.io.File
-import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 28/03/18.
@@ -19,8 +16,6 @@ object Pack : KLogging() {
         VoodooPackager,
         MMCSelfupdatingPackVoodoo,
         SKPack,
-        MMCSelfupdatingPackSk,
-        MMCSelfupdatingFatPackSk,
         MMCFatPack,
         ServerPack,
         CursePack
@@ -40,13 +35,5 @@ object Pack : KLogging() {
             clean = true
         )
         logger.info("finished packaging")
-    }
-
-    private class Arguments(parser: ArgParser) {
-        val methode by parser.positional(
-            "METHOD",
-            help = "format to package into"
-        ) { this.toLowerCase() }
-            .default("")
     }
 }

@@ -3,6 +3,11 @@ plugins {
     `kotlin-dsl`
 }
 
+dependencies {
+    api(project(":voodoo"))
+    api(project(":dsl"))
+    implementation(kotlin("gradle-plugin", "_"))
+}
 
 //val semVer = SemanticVersion.read(project)
 //val (major, minor, patch) = semVer
@@ -13,8 +18,8 @@ plugins {
 
 gradlePlugin {
     plugins {
-        register("voodooPoet") {
-            id = "voodoo"
+        register("voodoo") {
+            id = "moe.nikky.voodoo"
             implementationClass = "voodoo.VoodooPlugin"
         }
     }

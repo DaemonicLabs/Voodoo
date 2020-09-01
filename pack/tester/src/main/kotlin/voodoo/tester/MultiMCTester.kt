@@ -31,12 +31,12 @@ object MultiMCTester : AbstractTester() {
         modpack: LockPack,
         clean: Boolean
     ) = stopwatch {
-        val folder = "voodoo_test_${modpack.id}"
+        val folderName = "voodoo_test_${modpack.id}"
         val title = "${modpack.title.blankOr ?: modpack.id} Test Instance"
 
         val cacheDir = directories.cacheHome
         val multimcDir = MMCUtil.findDir()
-        val instanceDir = multimcDir.resolve("instances").resolve(folder)
+        val instanceDir = multimcDir.resolve("instances").resolve(folderName)
 
         if (clean) {
             logger.info("cleaning old instance dir ($instanceDir)")
@@ -47,7 +47,7 @@ object MultiMCTester : AbstractTester() {
 
         val minecraftDir = MMCUtil.installEmptyPack(
             title,
-            folder,
+            folderName,
             icon = modpack.iconFile,
             mcVersion = modpack.mcVersion,
             modloader = modpack.modloader,
@@ -97,13 +97,12 @@ object MultiMCTester : AbstractTester() {
 
         logger.info("sorting client / server mods")
         for (file in minecraftDir.walkTopDown()) {
-            when {
-                // file.name.endsWith(".lock.json") -> file.delete()
-                file.name == "_CLIENT" -> {
+            when (file.name) {
+                "_CLIENT" -> {
                     file.copyRecursively(file.parentFile, overwrite = true)
                     file.deleteRecursively()
                 }
-                file.name == "_SERVER" -> {
+                "_SERVER" -> {
                     file.deleteRecursively()
                 }
             }
@@ -131,7 +130,7 @@ object MultiMCTester : AbstractTester() {
             updateRequired = true
         )
         logger.debug("result: optionals: $optionals")
-        if (!optionals.isEmpty()) {
+        if (optionals.isNotEmpty()) {
             featureJson.createNewFile()
             featureJson.writeText(json.stringify(featureSerializer, optionals))
         }
@@ -198,6 +197,6 @@ object MultiMCTester : AbstractTester() {
         }
 
 //        MMCUtil.startInstance(title)
-        MMCUtil.startInstance(folder)
+        MMCUtil.startInstance(folderName)
     }
 }

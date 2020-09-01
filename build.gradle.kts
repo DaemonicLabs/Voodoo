@@ -2,50 +2,36 @@ import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import plugin.GenerateConstantsTask
-import java.util.*
 
 plugins {
     wrapper
     idea
-    `maven-publish`
+//    `maven-publish`
     `project-report`
-    kotlin("jvm") version Kotlin.version
-    kotlin("plugin.scripting") version Kotlin.version
+    kotlin("jvm")
+    kotlin("plugin.scripting") apply false
+    kotlin("plugin.serialization") apply false
     constantsGenerator apply false
-    id("com.github.johnrengelman.shadow") version "4.0.0" apply false
-    id("com.vanniktech.dependency.graph.generator") version "0.5.0"
-    id("org.jmailen.kotlinter") version "1.21.0"
-    id("com.jfrog.bintray") version "1.8.3" apply false
-//    id("io.gitlab.arturbosch.detekt") version "1.7.0"
-    id(Serialization.plugin) version Kotlin.version
+    id("com.github.johnrengelman.shadow") apply false
+    id("org.jmailen.kotlinter") apply false
+    id("com.jfrog.bintray") apply false
+    id("com.vanniktech.dependency.graph.generator")
 }
 
 println(
     """
-*******************************************
- You are building Voodoo Toolset ! 
+    *******************************************
+     You are building Voodoo Toolset ! 
+    
+     Output files will be in [subproject]/build/libs
+    *******************************************
+    """.trimIndent()
+)
 
- Output files will be in [subproject]/build/libs
-*******************************************
-"""
-)
-val runnableProjects = mapOf(
-    project("voodoo:voodoo-main") to "voodoo.VoodooMain",
-    project("multimc:multimc-installer") to "voodoo.Installer",
-    project("server-installer") to "voodoo.server.Install",
-    project("bootstrap:bootstrap-voodoo") to "voodoo.Bootstrap"
-)
 val noConstants = listOf(
-    project("skcraft"),
-    project("bootstrap"),
-    project("bootstrap:bootstrap-voodoo")
+    project("skcraft")
 )
-val noKotlin = listOf(
-    project("bootstrap"),
-    project("bootstrap:bootstrap-voodoo")
-)
-val mavenMarkers = mapOf(
-    project("bootstrap:bootstrap-voodoo") to "voodoo-main"
+val noKotlin: List<Project> = listOf(
 )
 
 val bintrayOrg: String? = System.getenv("BINTRAY_USER")
@@ -53,7 +39,14 @@ val bintrayApiKey: String? = System.getenv("BINTRAY_API_KEY")
 val bintrayRepository = "github"
 val bintrayPackage = "voodoo"
 
+object Maven {
+    val url = "https://dl.bintray.com/nikkyai/github"
+    val shadowClassifier = "all"
+}
+
 val baseVersion = "0.6.0"
+
+val isCI = System.getenv("CI") != null
 
 // TODO: load version.gradle.kts and detect version in git tags
 val versionSuffix = if (Env.isCI) "SNAPSHOT" else "local"
@@ -110,16 +103,14 @@ subprojects {
     configurations.all {
         resolutionStrategy.eachDependency {
             if (requested.group == "org.jetbrains.kotlin") {
-                useVersion(Kotlin.version)
-                because("We use kotlin version ${Kotlin.version}")
+                useVersion(Constants.Kotlin.version)
+                because("We use kotlin version ${Constants.Kotlin.version}")
             }
         }
     }
 
     group = rootProject.group
     version = rootProject.version
-
-    setupDependencies(this)
 
     apply {
         plugin("idea")
@@ -128,16 +119,7 @@ subprojects {
     }
 
 
-    if (project !in noKotlin) {
-        apply {
-            plugin("kotlin")
-            plugin("kotlinx-serialization")
-
-            if (project == project(":dsl")) {
-//            plugin("plugin.scripting")
-                plugin("org.jetbrains.kotlin.plugin.scripting")
-            }
-        }
+    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         tasks.withType<KotlinCompile> {
             kotlinOptions {
                 apiVersion = "1.3"
@@ -149,22 +131,58 @@ subprojects {
                 )
             }
         }
-        kotlin {
+        configure<org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension> {
             experimental {
 //                newInference = "enable" //1.3
 //                contracts = "enable" //1.3
             }
         }
-    } else {
-        apply {
-            plugin("java")
+        configure<JavaPluginExtension> {
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
+        }
+        base {
+            archivesBaseName = name.toLowerCase()
+        }
+        val jar by tasks.getting(Jar::class) {
+            archiveVersion.set("")
+        }
+
+        if (project !in noConstants) {
+            apply(plugin ="constantsGenerator")
+
+            val folder = listOf("voodoo") + project.name.split('-')
+            afterEvaluate {
+                configure<ConstantsExtension> {
+                    constantsObject(
+                        pkg = folder.joinToString("."),
+                        className = "GeneratedConstants"
+                    ) {
+                        field("GRADLE_VERSION") value Constants.Gradle.version
+                        field("KOTLIN_VERSION") value Constants.Kotlin.version
+                        field("BUILD") value versionSuffix
+                        field("VERSION") value fullVersion
+                        field("FULL_VERSION") value fullVersion
+                        field("MAVEN_URL") value Maven.url
+                        field("MAVEN_GROUP") value group.toString()
+                        field("MAVEN_ARTIFACT") value project.name
+                        field("MAVEN_SHADOW_CLASSIFIER") value Maven.shadowClassifier
+                    }
+                }
+            }
+
+            val generateConstants by tasks.getting(GenerateConstantsTask::class) {
+                outputs.upToDateWhen { false }
+                kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
+            }
+
+            // TODO depend on kotlin tasks in the plugin too ?
+            tasks.withType<KotlinCompile> {
+                dependsOn(generateConstants)
+            }
         }
     }
 
-    java {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
 
     idea {
         module {
@@ -172,144 +190,45 @@ subprojects {
         }
     }
 
-    base {
-        archivesBaseName = name.toLowerCase()
-    }
-    val jar by tasks.getting(Jar::class) {
-        archiveVersion.set("")
-    }
-
-    if (project !in noConstants) {
-        apply {
-            plugin("constantsGenerator")
-        }
-
-        val folder = listOf("voodoo") + project.name.split('-')
-        afterEvaluate {
-            configure<ConstantsExtension> {
-                constantsObject(
-                    pkg = folder.joinToString("."),
-                    className = "GeneratedConstants"
-                ) {
-//                    field("JENKINS_URL") value Jenkins.url
-//                    field("JENKINS_JOB") value Jenkins.job
-//                    field("JENKINS_BUILD_NUMBER") value (System.getenv("BUILD_NUMBER")?.toIntOrNull() ?: -1)
-                    field("GRADLE_VERSION") value Gradle.version
-                    field("KOTLIN_VERSION") value Kotlin.version
-                    field("BUILD") value versionSuffix
-                    field("VERSION") value fullVersion
-                    field("FULL_VERSION") value fullVersion
-                    field("MAVEN_URL") value Maven.url
-                    field("MAVEN_GROUP") value group.toString()
-                    field("MAVEN_ARTIFACT") value project.name
-                    field("MAVEN_SHADOW_CLASSIFIER") value Maven.shadowClassifier
-                }
-//                project.rootProject.subprojects.forEach { pr ->
-//                    if (pr == project) return@forEach
-//                    val (major, minor, patch) = SemanticVersion.read(pr)
-//                    constantsObject(
-//                        pkg = folder.joinToString("."),
-//                        className = "Module" + pr.name.split("-").joinToString("") { it.capitalize() }
-//                    ) {
-//                        field("VERSION") value "$major.$minor.$patch"
-//                        field("FULL_VERSION") value pr.version.toString()
-//                    }
-//                }
-                constantsObject(
-                    pkg = folder.joinToString("."),
-                    className = "Modules"
-                ) {
-
-                }
-            }
-        }
 
 
-        val generateConstants by tasks.getting(GenerateConstantsTask::class) {
-            outputs.upToDateWhen { false }
-            kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
-        }
-
-        // TODO depend on kotlin tasks in the plugin too ?
-        tasks.withType<KotlinCompile> {
-            dependsOn(generateConstants)
-        }
-    }
-
-    val genResourceFolder = project.buildDir.resolve("generated-resource")
-    sourceSets {
-        main.get().resources.srcDir(genResourceFolder)
-    }
-
-    // maven marker installation (used by bootstrap)
-    mavenMarkers[project]?.let { target ->
-        val artifactMarker = genResourceFolder.resolve("maven.properties")
-
-        val generateMavenMarker = tasks.register<DefaultTask>("generateMavenMarker") {
-            outputs.upToDateWhen { false }
-
-            doFirst {
-                genResourceFolder.deleteRecursively()
-            }
-
-            doLast {
-                with(Properties()) {
-                    setProperty("url", Maven.url)
-                    setProperty("group", project.group.toString())
-                    setProperty("name", target)
-                    setProperty("classifier", Maven.shadowClassifier)
-
-                    artifactMarker.parentFile.mkdirs()
-                    artifactMarker.bufferedWriter().use {
-                        store(it, null)
-                    }
-                }
-            }
-        }
-        kotlin.sourceSets["main"].resources.srcDir(genResourceFolder)
-
-        tasks.withType<KotlinCompile> {
-            dependsOn(generateMavenMarker)
-        }
-    }
-
-    runnableProjects[project]?.let { mainClass ->
-        apply<ApplicationPlugin>()
-
-        configure<JavaApplication> {
-            mainClassName = mainClass
-        }
-
-        apply(plugin = "com.github.johnrengelman.shadow")
-
-        val runDir = rootProject.file("samples")
-
-        val run by tasks.getting(JavaExec::class) {
-            doFirst {
-                runDir.mkdirs()
-            }
-            workingDir = runDir
-        }
-
-        val runShadow by tasks.getting(JavaExec::class) {
-            doFirst {
-                runDir.mkdirs()
-            }
-            workingDir = runDir
-        }
-
-        val shadowJar by tasks.getting(ShadowJar::class) {
-            archiveClassifier.set(Maven.shadowClassifier)
-//                archiveVersion.set(fullVersion)
-//                archiveFileName.set("${project.name.toLowerCase()}-$versionSuffix.${archiveExtension.getOrNull()}")
-        }
-
-        val build by tasks.getting(Task::class) {
-            dependsOn(shadowJar)
-        }
-    }
+//    val genResourceFolder = project.buildDir.resolve("generated-resource")
+//    sourceSets {
+//        main.get().resources.srcDir(genResourceFolder)
+//    }
 
     afterEvaluate {
+        if(pluginManager.hasPlugin("application")) {
+            logger.lifecycle("apply shadowJar")
+            apply(plugin = "com.github.johnrengelman.shadow")
+
+            val runDir = rootProject.file("samples")
+
+            val run by tasks.getting(JavaExec::class) {
+                doFirst {
+                    runDir.mkdirs()
+                }
+                workingDir = runDir
+            }
+
+            val runShadow by tasks.getting(JavaExec::class) {
+                doFirst {
+                    runDir.mkdirs()
+                }
+                workingDir = runDir
+            }
+
+            val shadowJar by tasks.getting(ShadowJar::class) {
+                archiveClassifier.set(Maven.shadowClassifier)
+//                archiveVersion.set(fullVersion)
+//                archiveFileName.set("${project.name.toLowerCase()}-$versionSuffix.${archiveExtension.getOrNull()}")
+            }
+
+            val build by tasks.getting(Task::class) {
+                dependsOn(shadowJar)
+            }
+        }
+
         // publishing
         apply(plugin = "maven-publish")
 
@@ -324,36 +243,35 @@ subprojects {
             from(javadoc)
         }
 
-        val publicationName = "default"
-        publishing {
+        configure<PublishingExtension> {
             publications {
-                create<MavenPublication>(publicationName) {
+                create<MavenPublication>("default") {
                     from(components["java"])
                     artifact(sourcesJar.get())
                     artifact(javadocJar.get())
                     artifactId = project.name.toLowerCase()
                 }
-                if (project in runnableProjects) {
+                if (pluginManager.hasPlugin("com.github.johnrengelman.shadow")) {
                     create("shadow", MavenPublication::class.java) {
                         (project.extensions.getByName("shadow") as ShadowExtension).component(this)
                     }
                 }
             }
-            repositories {
-                maven(url = "http://mavenupload.modmuss50.me/") {
-                    val mavenPass: String? = project.properties["mavenPass"] as String?
-                    mavenPass?.let {
-                        credentials {
-                            username = "buildslave"
-                            password = mavenPass
-                        }
-                    }
-                }
-            }
+//            repositories {
+//                maven(url = "http://mavenupload.modmuss50.me/") {
+//                    val mavenPass: String? = project.properties["mavenPass"] as String?
+//                    mavenPass?.let {
+//                        credentials {
+//                            username = "buildslave"
+//                            password = mavenPass
+//                        }
+//                    }
+//                }
+//            }
         }
         apply(from = "${rootDir.path}/mavenPom.gradle.kts")
 
-        val markerPublicationNames = if(pluginManager.hasPlugin("org.gradle.java-gradle-plugin")) {
+        val markerPublicationNames = if (pluginManager.hasPlugin("org.gradle.java-gradle-plugin")) {
             val pluginNames = the<GradlePluginDevelopmentExtension>().plugins.names
             logger.lifecycle("pluginNames: $pluginNames")
             val markerPublicationNames = pluginNames.map { pluginName ->
@@ -364,6 +282,7 @@ subprojects {
         } else {
             arrayOf()
         }
+        val publicationNames = the<PublishingExtension>().publications.names.toTypedArray()
         if (bintrayOrg != null && bintrayApiKey != null) {
             project.apply(plugin = "com.jfrog.bintray")
             configure<com.jfrog.bintray.gradle.BintrayExtension> {
@@ -372,7 +291,7 @@ subprojects {
                 publish = true
                 override = true
                 dryRun = !properties.containsKey("nodryrun")
-                setPublications(publicationName, *markerPublicationNames)
+                setPublications(*publicationNames, *markerPublicationNames)
                 pkg(delegateClosureOf<com.jfrog.bintray.gradle.BintrayExtension.PackageConfig> {
                     repo = bintrayRepository
                     name = bintrayPackage
@@ -391,24 +310,31 @@ subprojects {
 //            logger.error("bintray credentials not configured properly")
         }
     }
-
-
-
 }
 
-val urls = mavenMarkers.map { (pr, target) ->
-    with(pr) {
-        "${Maven.url}/${group.toString().replace('.', '/')}/$name/$version/${name}-${version}-all.jar"
-    }
-}
-val writeMavenUrls = tasks.create("writeMavenUrls") {
-    val urlFile = rootProject.file("mavenUrls.txt")
-    doLast {
-        logger.lifecycle("writing maven urls to $urlFile")
-        urlFile.delete()
-        urlFile.createNewFile()
-        urlFile.writeText(urls.joinToString("\n"))
-    }
-//            outputs.file(urlFile)
-    outputs.upToDateWhen { false }
+dependencyGraphGenerator {
+    generators += com.vanniktech.dependency.graph.generator.DependencyGraphGeneratorExtension.Generator(
+        name = "projects",
+        include = { dep ->
+            logger.lifecycle("include: $dep ${dep.moduleGroup} ${dep.parents}")
+            dep.moduleGroup == rootProject.group || dep.parents.any { it.moduleGroup == rootProject.group }
+        },
+        projectNode = { node, b ->
+            node
+                .add(
+                    guru.nidi.graphviz.attribute.Color.SLATEGRAY,
+                    guru.nidi.graphviz.attribute.Color.AQUAMARINE.background().fill(),
+                    guru.nidi.graphviz.attribute.Style.FILLED
+                )
+        },
+        includeProject = { project ->
+            logger.lifecycle("project: $project")
+//            project.buildFile.exists()
+            true
+        },
+        dependencyNode = { node, dep ->
+            logger.lifecycle("dep node $dep ${dep::class}")
+            node
+        }
+    )
 }

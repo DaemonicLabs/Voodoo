@@ -1,0 +1,6 @@
+ch.qos.logback:logback-classic
+               ^^^^^^^^^^^^^^^
+
+org.spekframework.spek2:*
+                  ^^^^^
+

@@ -36,9 +36,7 @@ object GradleSetup : KLogging() {
 
         val buildScript = """
             plugins {
-                // kotlin("jvm") version "${GeneratedConstants.KOTLIN_VERSION}" // automatically applied
-                // idea // automatically applied
-                id("voodoo") version "${GeneratedConstants.FULL_VERSION}"
+                id("moe.nikky.voodoo") version "${GeneratedConstants.FULL_VERSION}"
             }
 
             voodoo {
@@ -68,7 +66,7 @@ object GradleSetup : KLogging() {
                     pack().curse()
                 }
 
-//                generateCurseforgeMods("Mod", "1.12", "1.12.1", "1.12.2") // mods for 1.12.x
+            //    generateCurseforgeMods("Mod", "1.12", "1.12.1", "1.12.2") // mods for 1.12.x
                 generateCurseforgeMods("Fabric", "1.15", "1.15.1", "1.15.2", categories = listOf("Fabric")) // only fabric mods on 1.15.x
                 generateCurseforgeTexturepacks("TexturePack", "1.12", "1.12.1", "1.12.2")
                 generateForge("Forge", "1.12.2")
@@ -83,9 +81,7 @@ object GradleSetup : KLogging() {
             pluginManagement {
                 repositories {
                     maven(url = "https://dl.bintray.com/nikkyai/github/")
-                    maven(url = "https://kotlin.bintray.com/kotlinx") {
-                        name = "kotlinx"
-                    }
+                    maven(url = "https://kotlin.bintray.com/kotlinx")
                     mavenCentral()
                     gradlePluginPortal()
                 }

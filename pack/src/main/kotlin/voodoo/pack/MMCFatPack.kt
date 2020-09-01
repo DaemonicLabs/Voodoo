@@ -61,12 +61,12 @@ object MMCFatPack : AbstractPack("mmc-fat") {
         }
 
         for (file in minecraftDir.walkTopDown()) {
-            when {
-                file.name == "_CLIENT" -> {
+            when (file.name) {
+                "_CLIENT" -> {
                     file.copyRecursively(file.parentFile, overwrite = true)
                     file.deleteRecursively()
                 }
-                file.name == "_SERVER" -> {
+                "_SERVER" -> {
                     file.deleteRecursively()
                 }
             }
@@ -133,7 +133,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
                             cacheDir
                         ) ?: return@launch
 
-                        if (!matchedOptioalsList.isEmpty()) {
+                        if (matchedOptioalsList.isNotEmpty()) {
                             val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
                             if (!selected) {
                                 MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName }} is disabled, disabling ${entry.id}")
@@ -148,7 +148,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
             }
         }
 
-        logger.info("clearing serverside files and deleting lockfiles")
+        logger.info { "clearing serverside files and deleting lockfiles" }
         for (file in minecraftDir.walkTopDown()) {
             when {
                 file.name.endsWith(".lock.json") -> file.delete()
