@@ -2,7 +2,6 @@ package voodoo.data
 
 class TaskBuilder() {
     internal val tasks: MutableList<TaskType> = mutableListOf()
-
     fun build() {
         tasks += TaskType.Build
     }
@@ -19,18 +18,13 @@ class TaskBuilder() {
     }
 
     class PackContext(private val tasks: MutableList<TaskType>) {
-        @Deprecated("will be removed")
-        fun sklauncher() {
-            tasks += TaskType.Pack.SKLauncher
-        }
         fun voodoo() {
             tasks += TaskType.Pack.VoodooPackage
         }
-        fun multimcVoodoo() {
-            tasks += TaskType.Pack.MultiMCVoodoo
+        fun native() {
+            tasks += TaskType.Pack.VoodooPackage
         }
-        @Deprecated("renamed", ReplaceWith("multimcVoodoo()"))
-        fun multimcExperimental() {
+        fun multimcVoodoo() {
             tasks += TaskType.Pack.MultiMCVoodoo
         }
         fun multimcFat() {

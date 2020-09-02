@@ -61,7 +61,7 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
         val selfupdateUrl = modpack.packOptions.multimcOptions.selfupdateUrl
             ?: run {
                 modpack.packOptions.baseUrl?.let { baseUrl ->
-                    val skOutput = with(SKPack) { uploadBaseDir.getOutputFolder(modpack.id) }
+                    val skOutput = uploadBaseDir.getOutputFolder(modpack.id)
                     val skPackFile = skOutput.resolve("${modpack.id}.json")
                     val relativePath = skPackFile.relativeTo(uploadBaseDir).unixPath
                     URI(baseUrl).resolve(relativePath).toASCIIString()

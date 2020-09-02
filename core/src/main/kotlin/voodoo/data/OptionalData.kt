@@ -1,8 +1,8 @@
 package voodoo.data
 
-import com.skcraft.launcher.builder.FnPatternList
-import com.skcraft.launcher.model.modpack.Recommendation
 import kotlinx.serialization.Serializable
+import moe.nikky.voodoo.format.FnPatternList
+import moe.nikky.voodoo.format.modpack.Recommendation
 
 @Serializable
 data class OptionalData(

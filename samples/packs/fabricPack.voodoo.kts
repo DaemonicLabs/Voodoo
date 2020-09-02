@@ -16,12 +16,9 @@ pack {
     multimc {
         selfupdateUrl = "https://nikky.moe/.mc/experimental/fabricpack.json"
     }
-    voodoo {
-
-    }
 }
 
-root<Curse> {
+root2<Curse> {
     releaseTypes = setOf(FileType.Release, FileType.Beta)
     it.list {
         +FabricMod.fabricApi

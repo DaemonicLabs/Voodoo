@@ -21,9 +21,6 @@ voodoo {
     addTask(name = "pack_mmc-voodoo") {
         pack().multimcVoodoo()
     }
-    addTask(name = "pack_sk") {
-        pack().sklauncher()
-    }
     addTask(name = "pack_mmc-fat") {
         pack().multimcFat()
     }
@@ -38,7 +35,6 @@ voodoo {
     }
     addTask(name = "buildAndPackAll") {
         build()
-        pack().sklauncher()
         pack().server()
         pack().multimcFat()
         pack().curse()

@@ -1,13 +1,11 @@
 package voodoo.data.nested
 
-import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import mu.KLogging
 import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
 import voodoo.data.flat.ModPack
-import voodoo.util.serializer.FileSerializer
 import java.io.File
 
 /**
@@ -37,7 +35,6 @@ data class NestedPack(
     @Deprecated("use modloader field instead")
     var forge: String? = null, // TODO: replace with generic modloader info
     var modloader: ModloaderPattern = ModloaderPattern.None,
-    var launch: LaunchModifier = LaunchModifier(),
     var localDir: String = "local",
     var docDir: String? = null,
     var packOptions: PackOptions = PackOptions(),
@@ -91,7 +88,6 @@ data class NestedPack(
             icon = icon,
             authors = authors,
             modloader = modloader,
-            launch = launch,
             localDir = localDir,
             docDir = docDir ?: id,
             packOptions = packOptions

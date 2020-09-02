@@ -148,7 +148,7 @@ object CurseImporter : AbstractImporter() {
                     }
                     val modsFolder = sourceFolder.resolve("mods")
                     if (modsFolder.exists()) {
-                        withType<NestedEntry.Local>().list {
+                        withProvider<NestedEntry.Local>().list {
                             val localFolder = rootFolder.resolve(local)
                             this@CurseImporter.logger.info("listing $modsFolder")
                             modsFolder.listFiles { file ->

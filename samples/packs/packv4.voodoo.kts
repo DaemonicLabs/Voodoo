@@ -7,16 +7,14 @@ modloader {
 }
 icon = rootFolder.resolve("icon.png")
 pack {
-    skcraft {
-        userFiles = UserFiles(
-            include = listOf(
-                "options.txt",
-                "quark.cfg",
-                "foamfix.cfg"
-            ),
-            exclude = listOf("")
-        )
-    }
+    userFiles = FnPatternList(
+        include = listOf(
+            "options.txt",
+            "quark.cfg",
+            "foamfix.cfg"
+        ),
+        exclude = listOf("")
+    )
 }
 
 root<Curse> {
@@ -31,7 +29,7 @@ root<Curse> {
         +Mod.additionalPipesForBuildcraft
         +Mod.industrialCraft
         +Mod.compactSolars
-        +Mod.worldControl
+//        +Mod.worldControl
         +Mod.projectRedBase
         +Mod.projectRedIntegration
         +Mod.projectRedLighting
@@ -74,7 +72,7 @@ root<Curse> {
         +Mod.openeye
         +Mod.vanillafix
 
-        withTypeClass(Jenkins::class) {
+        withProvider(Jenkins::class) {
             jenkinsUrl = "https://ci.rs485.network"
         }.list {
             +"logisticspipes" job "LogisticsPipes-0.10-mc112"

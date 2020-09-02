@@ -7,7 +7,7 @@ import voodoo.dsl.builder.ListBuilder
 import voodoo.dsl.builder.OptionalBuilder
 
 /**
- * Create new list as subentries
+ * Create new list of subentries
  */
 fun <E: NestedEntry> GroupBuilder<E>.list(
     initList: ListBuilder<E>.() -> Unit

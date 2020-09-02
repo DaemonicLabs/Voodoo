@@ -1,6 +1,6 @@
 package voodoo.dsl.builder
 
-import com.skcraft.launcher.model.modpack.Feature
+import moe.nikky.voodoo.format.Feature
 import voodoo.property
 
 class FeatureBuilder(feature: Feature) {

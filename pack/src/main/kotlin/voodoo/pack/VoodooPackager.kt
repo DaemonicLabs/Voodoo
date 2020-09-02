@@ -44,18 +44,18 @@ object VoodooPackager : AbstractPack("experimental") {
         val workspaceDir = modpack.rootFolder.resolve("build").resolve("experimental_workspace").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.id)
 
-        val skSrcFolder = modpackDir.resolve("src")
-        logger.info("cleaning modpack directory $skSrcFolder")
-        skSrcFolder.deleteRecursively()
+        val srcFolder = modpackDir.resolve("src")
+        logger.info("cleaning modpack directory $srcFolder")
+        srcFolder.deleteRecursively()
         logger.info("copying files into src ${modpack.sourceFolder}")
         val packSrc = modpack.sourceFolder
-        if (skSrcFolder.startsWith(packSrc)) {
-            throw IllegalStateException("cannot copy parent rootFolder '$packSrc' into subfolder '$skSrcFolder'")
+        if (srcFolder.startsWith(packSrc)) {
+            throw IllegalStateException("cannot copy parent rootFolder '$packSrc' into subfolder '$srcFolder'")
         }
         if (packSrc.exists()) {
-            logger.debug("cp -r $packSrc $skSrcFolder")
-            packSrc.copyRecursively(skSrcFolder, overwrite = true)
-            skSrcFolder.walkBottomUp().forEach {
+            logger.debug("cp -r $packSrc $srcFolder")
+            packSrc.copyRecursively(srcFolder, overwrite = true)
+            srcFolder.walkBottomUp().forEach {
                 if (it.name.endsWith(".entry.json") || it.name.endsWith(".lock.json") || it.name.endsWith(".lock.pack.json"))
                     it.delete()
                 if (it.isDirectory && it.listFiles().isEmpty()) {
@@ -85,7 +85,7 @@ object VoodooPackager : AbstractPack("experimental") {
 //                    val forgeFile = loadersFolder.resolve(forgeFileName)
 //                    forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
 //                } ?: logger.warn { "no forge configured" }
-                val modsFolder = skSrcFolder.resolve("mods")
+                val modsFolder = srcFolder.resolve("mods")
                 logger.info("cleaning mods $modsFolder")
                 modsFolder.deleteRecursively()
 
@@ -95,7 +95,7 @@ object VoodooPackager : AbstractPack("experimental") {
                         async(context = pool + CoroutineName("download-${entry.id}")) {
                             val provider = Providers[entry.provider]
 
-                            val targetFolder = skSrcFolder.resolve(entry.serialFile).parentFile
+                            val targetFolder = srcFolder.resolve(entry.serialFile).parentFile
 
                             val (url, file) = provider.download(
                                 "download-${entry.id}".watch,
@@ -145,8 +145,8 @@ object VoodooPackager : AbstractPack("experimental") {
                             logger.info("processing feature entry $id")
                             val featureEntry = modpack.findEntryById(id)!!
                             val dependencies = getDependencies(modpack, id)
-                            SKPack.logger.info("required dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.REQUIRED }.keys}")
-                            SKPack.logger.info("optional dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.OPTIONAL }.keys}")
+                            logger.info("required dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.REQUIRED }.keys}")
+                            logger.info("optional dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.OPTIONAL }.keys}")
                             feature.entries += dependencies.asSequence().filter { entry ->
                                 logger.debug("  testing ${entry.id}")
                                 // find all other entries that depend on this dependency
@@ -188,7 +188,7 @@ object VoodooPackager : AbstractPack("experimental") {
                                     }
                                 }
 
-                                feature.files.include += targetFile.relativeTo(skSrcFolder).path
+                                feature.files.include += targetFile.relativeTo(srcFolder).path
                                     .replace('\\', '/')
                                     .replace("[", "\\[")
                                     .replace("]", "\\]")
@@ -214,7 +214,7 @@ object VoodooPackager : AbstractPack("experimental") {
                 }
 
                 // load from experimental options
-                val thumb = modpack.packOptions.skCraftOptions.thumb
+                val thumb = modpack.packOptions.thumbnail
                     ?: modpack.packOptions.baseUrl?.let { baseUrl ->
                         modpack.iconFile.takeIf { it.exists() }?.let { iconFile ->
                             val targetFile = output.resolve("icon").resolve(iconFile.name)
@@ -260,7 +260,7 @@ object VoodooPackager : AbstractPack("experimental") {
 //                        thumb = thumb, // TODO:
                         modLoader = modloader,
                         objectsLocation = "objects",
-                        userFiles = modpack.packOptions.experimentalOptions.userFiles,
+                        userFiles = modpack.packOptions.userFiles,
                         features = patterns
                     )
                 }
@@ -365,9 +365,9 @@ object VoodooPackager : AbstractPack("experimental") {
     }
 
     private fun getDependenciesCall(lockPack: LockPack, entryId: String): List<LockEntry> {
-        SKPack.logger.debug("getDependencies of $entryId")
+        logger.debug("getDependencies of $entryId")
         val entry = lockPack.findEntryById(entryId) ?: return emptyList()
-        SKPack.logger.debug("getting dependencies: ${entry.dependencies}")
+        logger.debug("getting dependencies: ${entry.dependencies}")
         return entry.dependencies.flatMap { (depName, depType) ->
             getDependencies(lockPack, depName)
         }

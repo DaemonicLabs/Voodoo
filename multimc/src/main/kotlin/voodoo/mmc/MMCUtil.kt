@@ -1,10 +1,10 @@
 package voodoo.mmc
 
 import Modloader
-import com.skcraft.launcher.model.modpack.Recommendation
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
+import moe.nikky.voodoo.format.modpack.Recommendation
 import mu.KLogging
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
@@ -344,7 +344,7 @@ object MMCUtil : KLogging() {
                         }
                     )
 
-                    val recommendation = when (optionalEntry.skRecommendation) {
+                    val recommendation = when (optionalEntry.recommendation) {
                         Recommendation.starred -> {
                             val orange = Color(0xFFd09b0d.toInt())
                             JLabel("★").apply {

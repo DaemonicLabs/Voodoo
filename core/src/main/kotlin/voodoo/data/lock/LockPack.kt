@@ -1,7 +1,6 @@
 package voodoo.data.lock
 
 import Modloader
-import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
 import mu.KLogging
@@ -27,7 +26,6 @@ data class LockPack(
     val version: String = "1.0",
     val icon: String = "icon.png",
     val authors: List<String> = emptyList(),
-    val launch: LaunchModifier = LaunchModifier(),
     var localDir: String = "local",
     var packOptions: PackOptions = PackOptions()
 ) {

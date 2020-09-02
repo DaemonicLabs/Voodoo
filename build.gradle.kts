@@ -28,8 +28,8 @@ println(
     """.trimIndent()
 )
 
-val noConstants = listOf(
-    project("skcraft")
+val noConstants: List<Project> = listOf(
+//    project("skcraft")
 )
 val noKotlin: List<Project> = listOf(
 )

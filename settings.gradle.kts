@@ -48,9 +48,6 @@ include(":util", ":util:download", ":util:maven", ":util:jenkins")
 include(":tome", ":pack", ":pack:tester")
 include(":server-installer")
 
-//TODO: remove
-include(":skcraft")
-
 include(":plugin")
 
 fun prefixProject(project: ProjectDescriptor, prefix: String) {

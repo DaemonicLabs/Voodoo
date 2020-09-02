@@ -35,8 +35,8 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
 
         moe.nikky.voodoo.format.FnPatternList::class,
 
-        com.skcraft.launcher.model.SKServer::class,
-        com.skcraft.launcher.model.modpack.Recommendation::class,
+        moe.nikky.voodoo.format.modpack.Recommendation::class,
+        moe.nikky.voodoo.format.Feature::class,
 
         GenerateForge::class,
         GenerateMods::class,

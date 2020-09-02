@@ -1,9 +1,8 @@
 package voodoo.poet
 
-import com.skcraft.launcher.model.launcher.LaunchModifier
-import com.skcraft.launcher.model.modpack.Feature
 import com.squareup.kotlinpoet.*
 import kotlinx.coroutines.runBlocking
+import moe.nikky.voodoo.format.Feature
 import mu.KLogging
 import voodoo.GenerateForge
 import voodoo.GenerateMods
@@ -281,15 +280,6 @@ object PoetPack : KLogging() {
 //                    userFiles.exclude.joinToString { """"$it"""" }
 //                )
 //            }
-            nestedPack.launch.takeIf { it != default.launch }?.let { launch ->
-                mainEnv.addStatement(
-                    """launch = %T(
-                            |    flags = listOf(%L),
-                            |)""".trimMargin(),
-                    LaunchModifier::class.asClassName(),
-                    launch.flags.joinToString { """"$it"""" }
-                )
-            }
             nestedPack.localDir.takeIf { it != default.localDir }?.let {
                 mainEnv.addStatement("localDir = %S", it)
             }

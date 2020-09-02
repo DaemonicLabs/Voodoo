@@ -11,8 +11,6 @@ sealed class TaskType(open val command: String) {
     sealed class Pack(subCommand: String): TaskType("pack $subCommand") {
         object VoodooPackage: Pack(VoodooPackager.id)
         object MultiMCVoodoo: Pack(MMCSelfupdatingPackVoodoo.id)
-        @Deprecated("will be removed")
-        object SKLauncher: Pack(SKPack.id)
         object MultiMCFat: Pack(MMCFatPack.id)
         object Server: Pack(ServerPack.id)
         object Curse: Pack(CursePack.id)

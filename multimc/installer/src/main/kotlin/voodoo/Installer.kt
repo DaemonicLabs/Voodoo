@@ -2,7 +2,6 @@ package voodoo
 
 
 import Modloader
-import com.skcraft.launcher.model.modpack.Recommendation
 import com.xenomachina.argparser.ArgParser
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -16,6 +15,7 @@ import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
 import moe.nikky.voodoo.format.modpack.Manifest
+import moe.nikky.voodoo.format.modpack.Recommendation
 import moe.nikky.voodoo.format.modpack.entry.FileInstall
 import moe.nikky.voodoo.format.modpack.entry.Side
 import mu.KLogging

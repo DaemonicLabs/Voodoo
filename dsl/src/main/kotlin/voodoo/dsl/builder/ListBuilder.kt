@@ -116,7 +116,6 @@ open class ListBuilder<E : NestedEntry>(
      * and add to Entrylist
      */
     @VoodooDSL
-    @Deprecated("renamed to withType and withTypeClass, use class references to subtypes of voodoo.data.nested.NestedEntry")
     inline fun <reified N: NestedEntry> withProvider(
         groupName: String? = null,
         block: N.( GroupBuilder<N>) -> Unit = {}
@@ -133,23 +132,7 @@ open class ListBuilder<E : NestedEntry>(
      * and add to Entrylist
      */
     @VoodooDSL
-    inline fun <reified N: NestedEntry> withType(
-        groupName: String? = null,
-        block: N.( GroupBuilder<N>) -> Unit = {}
-    ): GroupBuilder<N> {
-        val entry = N::class.createInstance()
-        entry.nodeName = parent.entry.nodeName + "_" + (groupName ?: entry.provider)
-        val env = GroupBuilder(entry = entry)
-        entry.block(env)
-        return env.also { this.entries += it }
-    }
-
-    /**
-     * Create new Entry with specified provier
-     * and add to Entrylist
-     */
-    @VoodooDSL
-    fun <N: NestedEntry> withTypeClass(
+    fun <N: NestedEntry> withProvider(
         newClass: KClass<N>,
         groupName: String? = null,
         block: N.( GroupBuilder<N>) -> Unit = {}

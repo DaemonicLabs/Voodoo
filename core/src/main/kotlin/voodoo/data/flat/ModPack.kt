@@ -1,6 +1,5 @@
 package voodoo.data.flat
 
-import com.skcraft.launcher.model.launcher.LaunchModifier
 import kotlinx.serialization.Transient
 import mu.KLogging
 import voodoo.data.ModloaderPattern
@@ -34,7 +33,6 @@ data class ModPack(
     var icon: File = File("icon.png"),
     val authors: List<String> = emptyList(),
     var modloader: ModloaderPattern? = null,
-    val launch: LaunchModifier = LaunchModifier(),
     var localDir: String = "local",
     var docDir: String = id,
     var packOptions: PackOptions = PackOptions()
@@ -96,7 +94,6 @@ data class ModPack(
             authors = authors,
             mcVersion = mcVersion,
             modloader = modloader?.lock() ?: Modloader.None,
-            launch = launch,
             localDir = localDir,
             packOptions = packOptions
         ).also {

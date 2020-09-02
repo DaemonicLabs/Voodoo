@@ -1,6 +1,6 @@
 package voodoo.mmc
 
-import com.skcraft.launcher.model.modpack.Recommendation
+import moe.nikky.voodoo.format.modpack.Recommendation
 import voodoo.data.lock.LockEntry
 
 data class MMCSelectable(
@@ -8,7 +8,7 @@ data class MMCSelectable(
     val name: String = id,
     val description: String? = null,
     val selected: Boolean = false,
-    val skRecommendation: Recommendation? = null
+    val recommendation: Recommendation? = null
 ) {
     companion object {
         operator fun invoke(lockEntry: LockEntry): MMCSelectable {

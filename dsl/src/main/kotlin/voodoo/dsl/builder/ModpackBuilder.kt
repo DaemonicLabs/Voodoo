@@ -22,7 +22,6 @@ open class ModpackBuilder(
     var iconPath by property(pack::iconPath)
     var icon by property(pack::icon)
     var authors by property(pack::authors)
-    var launch by property(pack::launch)
     val root by readOnly(pack::root)
     var localDir by property(pack::localDir)
     val sourceFolder by readOnly(pack::sourceFolder)
