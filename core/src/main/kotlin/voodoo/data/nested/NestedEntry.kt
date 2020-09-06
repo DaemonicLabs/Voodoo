@@ -27,6 +27,10 @@ sealed class NestedEntry : CommonMutable {
         override var entries: List<NestedEntry> = emptyList()
     ) : NestedEntry(), CommonMutable by common {
         override val provider = ""
+
+//        companion object {
+//            operator fun invoke(builder: Common.() -> Unit) = Common().apply(builder)
+//        }
     }
 
     @Serializable
@@ -38,6 +42,10 @@ sealed class NestedEntry : CommonMutable {
         override var entries: List<NestedEntry> = emptyList()
     ) : NestedEntry(), CommonMutable by common, CurseMutable by curse {
         override val provider = CurseProvider.id
+
+        companion object {
+            operator fun invoke(builder: Curse.() -> Unit) = Curse().apply(builder)
+        }
     }
 
     @Serializable
@@ -49,6 +57,10 @@ sealed class NestedEntry : CommonMutable {
         override var entries: List<NestedEntry> = emptyList()
     ) : NestedEntry(), CommonMutable by common, DirectMutable by direct {
         override val provider = DirectProvider.id
+
+        companion object {
+            operator fun invoke(builder: Direct.() -> Unit) = Direct().apply(builder)
+        }
     }
 
     @Serializable
@@ -60,6 +72,10 @@ sealed class NestedEntry : CommonMutable {
         override var entries: List<NestedEntry> = emptyList()
     ) : NestedEntry(), CommonMutable by common, JenkinsMutable by jenkins {
         override val provider = JenkinsProvider.id
+
+        companion object {
+            operator fun invoke(builder: Jenkins.() -> Unit) = Jenkins().apply(builder)
+        }
     }
 
     @Serializable
@@ -71,6 +87,10 @@ sealed class NestedEntry : CommonMutable {
         override var entries: List<NestedEntry> = emptyList()
     ) : NestedEntry(), CommonMutable by common, LocalMutable by local {
         override val provider = LocalProvider.id
+
+        companion object {
+            operator fun invoke(builder: Local.() -> Unit) = Local().apply(builder)
+        }
     }
 
     @Serializable
@@ -81,6 +101,10 @@ sealed class NestedEntry : CommonMutable {
         override var entries: List<NestedEntry> = emptyList()
     ): NestedEntry(), CommonMutable by common {
         override val provider = NoopProvider.id
+
+        companion object {
+            operator fun invoke(builder: Noop.() -> Unit) = Noop().apply(builder)
+        }
     }
 
     @Transient

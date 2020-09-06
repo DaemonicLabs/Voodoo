@@ -2,9 +2,7 @@
     "type": "curse",
     "common": {
         "dependencies": {
-            "REQUIRED": [
-                "codechicken-lib-1-8"
-            ]
+            "codechicken-lib-1-8": "REQUIRED"
         }
     },
     "projectID": 229002,

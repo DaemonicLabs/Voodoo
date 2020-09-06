@@ -2,10 +2,8 @@
     "type": "curse",
     "common": {
         "dependencies": {
-            "REQUIRED": [
-                "mrtjpcore",
-                "project-red-base"
-            ]
+            "mrtjpcore": "REQUIRED",
+            "project-red-base": "REQUIRED"
         }
     },
     "projectID": 229050,

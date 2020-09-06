@@ -1,7 +1,6 @@
 package voodoo
 
 import kotlinx.coroutines.runBlocking
-import list
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.Input
@@ -73,12 +72,10 @@ open class CreatePackTask : DefaultTask() {
             modloader {
                 forge("${this@apply.mcVersion}-recommended")
             }
-            root<NestedEntry.Curse> { builder ->
-                builder.list {
-                    randomMods.forEach { (identifier, projectId) ->
-                        +ProjectID(projectId.value) configure {
-                            //                            projectID = projectId
-                        }
+            mods {
+                randomMods.forEach { (identifier, projectId) ->
+                    +ProjectID(projectId.value) configure {
+//                        projectID = projectId
                     }
                 }
             }

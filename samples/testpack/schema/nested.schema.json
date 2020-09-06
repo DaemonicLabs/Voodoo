@@ -1,0 +1,1212 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "$schema": {
+            "type": "string"
+        },
+        "rootFolderPath": {
+            "type": "string"
+        },
+        "id": {
+            "type": "string"
+        },
+        "mcVersion": {
+            "if": {
+                "type": "string"
+            },
+            "else": {
+                "type": "null"
+            }
+        },
+        "title": {
+            "if": {
+                "type": "string"
+            },
+            "else": {
+                "type": "null"
+            }
+        },
+        "version": {
+            "type": "string"
+        },
+        "iconPath": {
+            "type": "string"
+        },
+        "authors": {
+            "type": "array"
+        },
+        "forge": {
+            "if": {
+                "type": "string"
+            },
+            "else": {
+                "type": "null"
+            }
+        },
+        "modloader": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "object",
+                    "properties": {
+                        "modloader.Forge": {
+                            "type": "object",
+                            "properties": {
+                                "version": {
+                                    "type": "string"
+                                }
+                            },
+                            "required": [
+                                "version"
+                            ]
+                        },
+                        "modloader.Fabric": {
+                            "type": "object",
+                            "properties": {
+                                "intermediateMappingsVersion": {
+                                    "type": "string"
+                                },
+                                "loaderVersion": {
+                                    "if": {
+                                        "type": "string"
+                                    },
+                                    "else": {
+                                        "type": "null"
+                                    }
+                                },
+                                "installerVersion": {
+                                    "if": {
+                                        "type": "string"
+                                    },
+                                    "else": {
+                                        "type": "null"
+                                    }
+                                }
+                            },
+                            "required": [
+                                "intermediateMappingsVersion"
+                            ]
+                        },
+                        "voodoo.data.ModloaderPattern.None": {
+                            "type": "object"
+                        }
+                    },
+                    "required": [
+                        "modloader.Forge",
+                        "modloader.Fabric",
+                        "voodoo.data.ModloaderPattern.None"
+                    ]
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ]
+        },
+        "localDir": {
+            "type": "string"
+        },
+        "docDir": {
+            "if": {
+                "type": "string"
+            },
+            "else": {
+                "type": "null"
+            }
+        },
+        "packOptions": {
+            "type": "object",
+            "properties": {
+                "multimcOptions": {
+                    "type": "object",
+                    "properties": {
+                        "selfupdateUrl": {
+                            "if": {
+                                "type": "string"
+                            },
+                            "else": {
+                                "type": "null"
+                            }
+                        },
+                        "instanceCfg": {
+                            "type": "array"
+                        }
+                    }
+                },
+                "baseUrl": {
+                    "if": {
+                        "type": "string"
+                    },
+                    "else": {
+                        "type": "null"
+                    }
+                },
+                "thumbnail": {
+                    "if": {
+                        "type": "string"
+                    },
+                    "else": {
+                        "type": "null"
+                    }
+                },
+                "userFiles": {
+                    "type": "object",
+                    "properties": {
+                        "include": {
+                            "type": "array"
+                        },
+                        "exclude": {
+                            "type": "array"
+                        }
+                    }
+                }
+            }
+        },
+        "root": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "object",
+                    "properties": {
+                        "common": {
+                            "type": "object",
+                            "properties": {
+                                "common": {
+                                    "type": "object",
+                                    "properties": {
+                                        "provider": {
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "folder": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "optionalData": {
+                                            "if": {
+                                                "type": "object"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            },
+                                            "properties": {
+                                                "selected": {
+                                                    "type": "boolean"
+                                                },
+                                                "skRecommendation": {
+                                                    "if": {
+                                                        "type": "string"
+                                                    },
+                                                    "else": {
+                                                        "type": "null"
+                                                    },
+                                                    "enum": [
+                                                        "starred",
+                                                        "avoid"
+                                                    ]
+                                                },
+                                                "skFiles": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "include": {
+                                                            "type": "array"
+                                                        },
+                                                        "exclude": {
+                                                            "type": "array"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "side": {
+                                            "type": "string",
+                                            "enum": [
+                                                "CLIENT",
+                                                "SERVER",
+                                                "BOTH"
+                                            ]
+                                        },
+                                        "websiteUrl": {
+                                            "type": "string"
+                                        },
+                                        "dependencies": {
+                                            "type": "object",
+                                            "properties": {
+                                                "0": {
+                                                    "type": "string"
+                                                },
+                                                "1": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "REQUIRED",
+                                                        "OPTIONAL"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "0",
+                                                "1"
+                                            ]
+                                        },
+                                        "replaceDependencies": {
+                                            "type": "object",
+                                            "properties": {
+                                                "0": {
+                                                    "type": "number"
+                                                },
+                                                "1": {
+                                                    "type": "number"
+                                                }
+                                            },
+                                            "required": [
+                                                "0",
+                                                "1"
+                                            ]
+                                        },
+                                        "packageType": {
+                                            "type": "string",
+                                            "enum": [
+                                                "FOLDER",
+                                                "CTOP",
+                                                "SINGLEFILE",
+                                                "CMOD2",
+                                                "MODPACK",
+                                                "MOD",
+                                                "ANY"
+                                            ]
+                                        },
+                                        "transient": {
+                                            "type": "boolean"
+                                        },
+                                        "version": {
+                                            "type": "string"
+                                        },
+                                        "fileName": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "fileNameRegex": {
+                                            "type": "string"
+                                        },
+                                        "validMcVersions": {
+                                            "type": "array"
+                                        },
+                                        "invalidMcVersions": {
+                                            "type": "array"
+                                        },
+                                        "enabled": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                },
+                                "entries": {
+                                    "type": "array"
+                                },
+                                "provider": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "curse": {
+                            "type": "object",
+                            "properties": {
+                                "common": {
+                                    "type": "object",
+                                    "properties": {
+                                        "provider": {
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "folder": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "optionalData": {
+                                            "if": {
+                                                "type": "object"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            },
+                                            "properties": {
+                                                "selected": {
+                                                    "type": "boolean"
+                                                },
+                                                "skRecommendation": {
+                                                    "if": {
+                                                        "type": "string"
+                                                    },
+                                                    "else": {
+                                                        "type": "null"
+                                                    },
+                                                    "enum": [
+                                                        "starred",
+                                                        "avoid"
+                                                    ]
+                                                },
+                                                "skFiles": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "include": {
+                                                            "type": "array"
+                                                        },
+                                                        "exclude": {
+                                                            "type": "array"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "side": {
+                                            "type": "string",
+                                            "enum": [
+                                                "CLIENT",
+                                                "SERVER",
+                                                "BOTH"
+                                            ]
+                                        },
+                                        "websiteUrl": {
+                                            "type": "string"
+                                        },
+                                        "dependencies": {
+                                            "type": "object",
+                                            "properties": {
+                                                "0": {
+                                                    "type": "string"
+                                                },
+                                                "1": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "REQUIRED",
+                                                        "OPTIONAL"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "0",
+                                                "1"
+                                            ]
+                                        },
+                                        "replaceDependencies": {
+                                            "type": "object",
+                                            "properties": {
+                                                "0": {
+                                                    "type": "number"
+                                                },
+                                                "1": {
+                                                    "type": "number"
+                                                }
+                                            },
+                                            "required": [
+                                                "0",
+                                                "1"
+                                            ]
+                                        },
+                                        "packageType": {
+                                            "type": "string",
+                                            "enum": [
+                                                "FOLDER",
+                                                "CTOP",
+                                                "SINGLEFILE",
+                                                "CMOD2",
+                                                "MODPACK",
+                                                "MOD",
+                                                "ANY"
+                                            ]
+                                        },
+                                        "transient": {
+                                            "type": "boolean"
+                                        },
+                                        "version": {
+                                            "type": "string"
+                                        },
+                                        "fileName": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "fileNameRegex": {
+                                            "type": "string"
+                                        },
+                                        "validMcVersions": {
+                                            "type": "array"
+                                        },
+                                        "invalidMcVersions": {
+                                            "type": "array"
+                                        },
+                                        "enabled": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                },
+                                "curse": {
+                                    "type": "object",
+                                    "properties": {
+                                        "releaseTypes": {
+                                            "type": "array"
+                                        },
+                                        "projectID": {
+                                            "type": "number"
+                                        },
+                                        "fileID": {
+                                            "type": "number"
+                                        },
+                                        "useUrlTxt": {
+                                            "type": "boolean"
+                                        },
+                                        "skipFingerprintCheck": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                },
+                                "entries": {
+                                    "type": "array"
+                                },
+                                "provider": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "direct": {
+                            "type": "object",
+                            "properties": {
+                                "common": {
+                                    "type": "object",
+                                    "properties": {
+                                        "provider": {
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "folder": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "optionalData": {
+                                            "if": {
+                                                "type": "object"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            },
+                                            "properties": {
+                                                "selected": {
+                                                    "type": "boolean"
+                                                },
+                                                "skRecommendation": {
+                                                    "if": {
+                                                        "type": "string"
+                                                    },
+                                                    "else": {
+                                                        "type": "null"
+                                                    },
+                                                    "enum": [
+                                                        "starred",
+                                                        "avoid"
+                                                    ]
+                                                },
+                                                "skFiles": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "include": {
+                                                            "type": "array"
+                                                        },
+                                                        "exclude": {
+                                                            "type": "array"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "side": {
+                                            "type": "string",
+                                            "enum": [
+                                                "CLIENT",
+                                                "SERVER",
+                                                "BOTH"
+                                            ]
+                                        },
+                                        "websiteUrl": {
+                                            "type": "string"
+                                        },
+                                        "dependencies": {
+                                            "type": "object",
+                                            "properties": {
+                                                "0": {
+                                                    "type": "string"
+                                                },
+                                                "1": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "REQUIRED",
+                                                        "OPTIONAL"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "0",
+                                                "1"
+                                            ]
+                                        },
+                                        "replaceDependencies": {
+                                            "type": "object",
+                                            "properties": {
+                                                "0": {
+                                                    "type": "number"
+                                                },
+                                                "1": {
+                                                    "type": "number"
+                                                }
+                                            },
+                                            "required": [
+                                                "0",
+                                                "1"
+                                            ]
+                                        },
+                                        "packageType": {
+                                            "type": "string",
+                                            "enum": [
+                                                "FOLDER",
+                                                "CTOP",
+                                                "SINGLEFILE",
+                                                "CMOD2",
+                                                "MODPACK",
+                                                "MOD",
+                                                "ANY"
+                                            ]
+                                        },
+                                        "transient": {
+                                            "type": "boolean"
+                                        },
+                                        "version": {
+                                            "type": "string"
+                                        },
+                                        "fileName": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "fileNameRegex": {
+                                            "type": "string"
+                                        },
+                                        "validMcVersions": {
+                                            "type": "array"
+                                        },
+                                        "invalidMcVersions": {
+                                            "type": "array"
+                                        },
+                                        "enabled": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                },
+                                "direct": {
+                                    "type": "object",
+                                    "properties": {
+                                        "url": {
+                                            "type": "string"
+                                        },
+                                        "useUrlTxt": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                },
+                                "entries": {
+                                    "type": "array"
+                                },
+                                "provider": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "jenkins": {
+                            "type": "object",
+                            "properties": {
+                                "common": {
+                                    "type": "object",
+                                    "properties": {
+                                        "provider": {
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "folder": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "optionalData": {
+                                            "if": {
+                                                "type": "object"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            },
+                                            "properties": {
+                                                "selected": {
+                                                    "type": "boolean"
+                                                },
+                                                "skRecommendation": {
+                                                    "if": {
+                                                        "type": "string"
+                                                    },
+                                                    "else": {
+                                                        "type": "null"
+                                                    },
+                                                    "enum": [
+                                                        "starred",
+                                                        "avoid"
+                                                    ]
+                                                },
+                                                "skFiles": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "include": {
+                                                            "type": "array"
+                                                        },
+                                                        "exclude": {
+                                                            "type": "array"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "side": {
+                                            "type": "string",
+                                            "enum": [
+                                                "CLIENT",
+                                                "SERVER",
+                                                "BOTH"
+                                            ]
+                                        },
+                                        "websiteUrl": {
+                                            "type": "string"
+                                        },
+                                        "dependencies": {
+                                            "type": "object",
+                                            "properties": {
+                                                "0": {
+                                                    "type": "string"
+                                                },
+                                                "1": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "REQUIRED",
+                                                        "OPTIONAL"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "0",
+                                                "1"
+                                            ]
+                                        },
+                                        "replaceDependencies": {
+                                            "type": "object",
+                                            "properties": {
+                                                "0": {
+                                                    "type": "number"
+                                                },
+                                                "1": {
+                                                    "type": "number"
+                                                }
+                                            },
+                                            "required": [
+                                                "0",
+                                                "1"
+                                            ]
+                                        },
+                                        "packageType": {
+                                            "type": "string",
+                                            "enum": [
+                                                "FOLDER",
+                                                "CTOP",
+                                                "SINGLEFILE",
+                                                "CMOD2",
+                                                "MODPACK",
+                                                "MOD",
+                                                "ANY"
+                                            ]
+                                        },
+                                        "transient": {
+                                            "type": "boolean"
+                                        },
+                                        "version": {
+                                            "type": "string"
+                                        },
+                                        "fileName": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "fileNameRegex": {
+                                            "type": "string"
+                                        },
+                                        "validMcVersions": {
+                                            "type": "array"
+                                        },
+                                        "invalidMcVersions": {
+                                            "type": "array"
+                                        },
+                                        "enabled": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                },
+                                "jenkins": {
+                                    "type": "object",
+                                    "properties": {
+                                        "jenkinsUrl": {
+                                            "type": "string"
+                                        },
+                                        "job": {
+                                            "type": "string"
+                                        },
+                                        "buildNumber": {
+                                            "type": "number"
+                                        }
+                                    }
+                                },
+                                "entries": {
+                                    "type": "array"
+                                },
+                                "provider": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "local": {
+                            "type": "object",
+                            "properties": {
+                                "common": {
+                                    "type": "object",
+                                    "properties": {
+                                        "provider": {
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "folder": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "optionalData": {
+                                            "if": {
+                                                "type": "object"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            },
+                                            "properties": {
+                                                "selected": {
+                                                    "type": "boolean"
+                                                },
+                                                "skRecommendation": {
+                                                    "if": {
+                                                        "type": "string"
+                                                    },
+                                                    "else": {
+                                                        "type": "null"
+                                                    },
+                                                    "enum": [
+                                                        "starred",
+                                                        "avoid"
+                                                    ]
+                                                },
+                                                "skFiles": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "include": {
+                                                            "type": "array"
+                                                        },
+                                                        "exclude": {
+                                                            "type": "array"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "side": {
+                                            "type": "string",
+                                            "enum": [
+                                                "CLIENT",
+                                                "SERVER",
+                                                "BOTH"
+                                            ]
+                                        },
+                                        "websiteUrl": {
+                                            "type": "string"
+                                        },
+                                        "dependencies": {
+                                            "type": "object",
+                                            "properties": {
+                                                "0": {
+                                                    "type": "string"
+                                                },
+                                                "1": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "REQUIRED",
+                                                        "OPTIONAL"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "0",
+                                                "1"
+                                            ]
+                                        },
+                                        "replaceDependencies": {
+                                            "type": "object",
+                                            "properties": {
+                                                "0": {
+                                                    "type": "number"
+                                                },
+                                                "1": {
+                                                    "type": "number"
+                                                }
+                                            },
+                                            "required": [
+                                                "0",
+                                                "1"
+                                            ]
+                                        },
+                                        "packageType": {
+                                            "type": "string",
+                                            "enum": [
+                                                "FOLDER",
+                                                "CTOP",
+                                                "SINGLEFILE",
+                                                "CMOD2",
+                                                "MODPACK",
+                                                "MOD",
+                                                "ANY"
+                                            ]
+                                        },
+                                        "transient": {
+                                            "type": "boolean"
+                                        },
+                                        "version": {
+                                            "type": "string"
+                                        },
+                                        "fileName": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "fileNameRegex": {
+                                            "type": "string"
+                                        },
+                                        "validMcVersions": {
+                                            "type": "array"
+                                        },
+                                        "invalidMcVersions": {
+                                            "type": "array"
+                                        },
+                                        "enabled": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                },
+                                "local": {
+                                    "type": "object",
+                                    "properties": {
+                                        "fileSrc": {
+                                            "type": "string"
+                                        }
+                                    }
+                                },
+                                "entries": {
+                                    "type": "array"
+                                },
+                                "provider": {
+                                    "type": "string"
+                                }
+                            }
+                        },
+                        "noop": {
+                            "type": "object",
+                            "properties": {
+                                "common": {
+                                    "type": "object",
+                                    "properties": {
+                                        "provider": {
+                                            "type": "string"
+                                        },
+                                        "id": {
+                                            "type": "string"
+                                        },
+                                        "name": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "folder": {
+                                            "type": "string"
+                                        },
+                                        "description": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "optionalData": {
+                                            "if": {
+                                                "type": "object"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            },
+                                            "properties": {
+                                                "selected": {
+                                                    "type": "boolean"
+                                                },
+                                                "skRecommendation": {
+                                                    "if": {
+                                                        "type": "string"
+                                                    },
+                                                    "else": {
+                                                        "type": "null"
+                                                    },
+                                                    "enum": [
+                                                        "starred",
+                                                        "avoid"
+                                                    ]
+                                                },
+                                                "skFiles": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "include": {
+                                                            "type": "array"
+                                                        },
+                                                        "exclude": {
+                                                            "type": "array"
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        "side": {
+                                            "type": "string",
+                                            "enum": [
+                                                "CLIENT",
+                                                "SERVER",
+                                                "BOTH"
+                                            ]
+                                        },
+                                        "websiteUrl": {
+                                            "type": "string"
+                                        },
+                                        "dependencies": {
+                                            "type": "object",
+                                            "properties": {
+                                                "0": {
+                                                    "type": "string"
+                                                },
+                                                "1": {
+                                                    "type": "string",
+                                                    "enum": [
+                                                        "REQUIRED",
+                                                        "OPTIONAL"
+                                                    ]
+                                                }
+                                            },
+                                            "required": [
+                                                "0",
+                                                "1"
+                                            ]
+                                        },
+                                        "replaceDependencies": {
+                                            "type": "object",
+                                            "properties": {
+                                                "0": {
+                                                    "type": "number"
+                                                },
+                                                "1": {
+                                                    "type": "number"
+                                                }
+                                            },
+                                            "required": [
+                                                "0",
+                                                "1"
+                                            ]
+                                        },
+                                        "packageType": {
+                                            "type": "string",
+                                            "enum": [
+                                                "FOLDER",
+                                                "CTOP",
+                                                "SINGLEFILE",
+                                                "CMOD2",
+                                                "MODPACK",
+                                                "MOD",
+                                                "ANY"
+                                            ]
+                                        },
+                                        "transient": {
+                                            "type": "boolean"
+                                        },
+                                        "version": {
+                                            "type": "string"
+                                        },
+                                        "fileName": {
+                                            "if": {
+                                                "type": "string"
+                                            },
+                                            "else": {
+                                                "type": "null"
+                                            }
+                                        },
+                                        "fileNameRegex": {
+                                            "type": "string"
+                                        },
+                                        "validMcVersions": {
+                                            "type": "array"
+                                        },
+                                        "invalidMcVersions": {
+                                            "type": "array"
+                                        },
+                                        "enabled": {
+                                            "type": "boolean"
+                                        }
+                                    }
+                                },
+                                "entries": {
+                                    "type": "array"
+                                },
+                                "provider": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "required": [
+                        "common",
+                        "curse",
+                        "direct",
+                        "jenkins",
+                        "local",
+                        "noop"
+                    ]
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ]
+        }
+    },
+    "required": [
+        "rootFolderPath",
+        "id"
+    ]
+}

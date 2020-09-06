@@ -2,10 +2,8 @@
     "type": "curse",
     "common": {
         "dependencies": {
-            "REQUIRED": [
-                "forestry",
-                "jei"
-            ]
+            "forestry": "REQUIRED",
+            "jei": "REQUIRED"
         }
     },
     "projectID": 248370,

@@ -1,0 +1,155 @@
+{
+    "$schema": "./schema/nested.schema.json",
+    "rootFolderPath": "D:\\dev\\Voodoo\\samples",
+    "id": "testpack",
+    "mcVersion": "1.12.2",
+    "version": "1.1.2",
+    "authors": [
+        "NikkyAi"
+    ],
+    "modloader": {
+        "type": "modloader.Forge",
+        "version": "1.12.2-14.23.5.2768"
+    },
+    "root": {
+        "type": "common",
+        "entries": [
+            {
+                "type": "curse",
+                "entries": [
+                    {
+                        "type": "curse",
+                        "common": {
+                            "side": "CLIENT"
+                        },
+                        "entries": [
+                            {
+                                "type": "curse",
+                                "common": {
+                                    "id": "jei"
+                                },
+                                "curse": {
+                                    "projectID": 238222
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "botania"
+                        },
+                        "curse": {
+                            "projectID": 225643
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "foamfix-optimization-mod"
+                        },
+                        "curse": {
+                            "projectID": 278494
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "mekanism"
+                        },
+                        "curse": {
+                            "projectID": 268560
+                        }
+                    },
+                    {
+                        "type": "curse"
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "side": "CLIENT"
+                        },
+                        "entries": [
+                            {
+                                "type": "curse",
+                                "common": {
+                                    "id": "jei"
+                                },
+                                "curse": {
+                                    "projectID": 238222
+                                }
+                            }
+                        ]
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "rftools"
+                        },
+                        "curse": {
+                            "projectID": 224641
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "tails"
+                        },
+                        "curse": {
+                            "projectID": 223584
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "wearable-backpacks"
+                        },
+                        "curse": {
+                            "projectID": 257572
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "mouse-tweaks"
+                        },
+                        "curse": {
+                            "projectID": 60089
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "optionalData": {
+                            },
+                            "side": "SERVER"
+                        },
+                        "entries": [
+                            {
+                                "type": "curse",
+                                "common": {
+                                    "id": "btfu-continuous-rsync-incremental-backup",
+                                    "name": "BTFU",
+                                    "description": "Best backup mod in existence! (setup required)"
+                                },
+                                "curse": {
+                                    "projectID": 246105
+                                }
+                            },
+                            {
+                                "type": "curse",
+                                "common": {
+                                    "id": "matterlink",
+                                    "description": "MatterBridge endpoint for Minecraft servers (requires relay)"
+                                },
+                                "curse": {
+                                    "projectID": 287323
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+}

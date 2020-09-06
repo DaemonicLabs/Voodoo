@@ -1,0 +1,530 @@
+{
+    "rootFolderPath": "D:\\dev\\Voodoo\\samples",
+    "id": "packv4",
+    "mcVersion": "1.12.2",
+    "title": "1.12.2 Pack v4",
+    "version": "1.0.0",
+    "authors": [
+        "therealfarfetchd"
+    ],
+    "modloader": {
+        "type": "modloader.Forge",
+        "version": "1.12.2-14.23.5.2847"
+    },
+    "packOptions": {
+        "userFiles": {
+            "include": [
+                "options.txt",
+                "quark.cfg",
+                "foamfix.cfg"
+            ],
+            "exclude": [
+                ""
+            ]
+        }
+    },
+    "root": {
+        "type": "curse",
+        "common": {
+            "validMcVersions": [
+                "1.12.2",
+                "1.12.1",
+                "1.12"
+            ]
+        },
+        "curse": {
+            "releaseTypes": [
+                "Release",
+                "Beta",
+                "Alpha"
+            ]
+        },
+        "entries": [
+            {
+                "type": "curse",
+                "common": {
+                    "id": "buildcraft"
+                },
+                "curse": {
+                    "projectID": 61811
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "buildcraft-compat"
+                },
+                "curse": {
+                    "projectID": 233140
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "forestry"
+                },
+                "curse": {
+                    "projectID": 59751
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "binnies-mods"
+                },
+                "curse": {
+                    "projectID": 223525
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "additional-pipes-for-buildcraft"
+                },
+                "curse": {
+                    "projectID": 302569
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "industrial-craft"
+                },
+                "curse": {
+                    "projectID": 242638
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "compact-solars"
+                },
+                "curse": {
+                    "projectID": 228759
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "project-red-base"
+                },
+                "curse": {
+                    "projectID": 228702
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "project-red-integration"
+                },
+                "curse": {
+                    "projectID": 229045
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "project-red-lighting"
+                },
+                "curse": {
+                    "projectID": 229046
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "project-red-fabrication"
+                },
+                "curse": {
+                    "projectID": 230111
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "project-red-mechanical"
+                },
+                "curse": {
+                    "projectID": 229048
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "project-red-world"
+                },
+                "curse": {
+                    "projectID": 229049
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "project-red-compat"
+                },
+                "curse": {
+                    "projectID": 229050
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "advanced-rocketry"
+                },
+                "curse": {
+                    "projectID": 236542
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "the-aether-ii"
+                },
+                "curse": {
+                    "projectID": 223796
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "minecraft-transport-simulator"
+                },
+                "curse": {
+                    "projectID": 286703
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "transport-simulator-official-vehicle-set"
+                },
+                "curse": {
+                    "projectID": 292217
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "iron-chests"
+                },
+                "curse": {
+                    "projectID": 228756
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "mystcraft"
+                },
+                "curse": {
+                    "projectID": 224599
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "biomes-o-plenty"
+                },
+                "curse": {
+                    "projectID": 220318
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "traverse-legacy-continued"
+                },
+                "curse": {
+                    "projectID": 267769
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "wireless-redstone-cbe"
+                },
+                "curse": {
+                    "projectID": 260824
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "chicken-chunks-1-8"
+                },
+                "curse": {
+                    "projectID": 243883
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "project-74246"
+                },
+                "curse": {
+                    "projectID": 74246
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "morpheus"
+                },
+                "curse": {
+                    "projectID": 69118
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "quark"
+                },
+                "curse": {
+                    "projectID": 243121
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "streams"
+                },
+                "curse": {
+                    "projectID": 229769
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "yabba"
+                },
+                "curse": {
+                    "projectID": 255177
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "back-tools"
+                },
+                "curse": {
+                    "projectID": 229061
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "better-placement"
+                },
+                "curse": {
+                    "projectID": 278406
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "dynamic-surroundings"
+                },
+                "curse": {
+                    "projectID": 238891
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "foamfix-optimization-mod"
+                },
+                "curse": {
+                    "projectID": 278494
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "gotta-go-fast"
+                },
+                "curse": {
+                    "projectID": 282064
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "inventory-tweaks"
+                },
+                "curse": {
+                    "projectID": 223094
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "jei"
+                },
+                "curse": {
+                    "projectID": 238222
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "jei-bees"
+                },
+                "curse": {
+                    "projectID": 248370
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "just-enough-resources-jer"
+                },
+                "curse": {
+                    "projectID": 240630
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "just-enough-pattern-banners"
+                },
+                "curse": {
+                    "projectID": 263590
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "mapwriter-2"
+                },
+                "curse": {
+                    "projectID": 231387
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "openeye"
+                },
+                "curse": {
+                    "projectID": 251457
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "id": "vanillafix"
+                },
+                "curse": {
+                    "projectID": 292785
+                }
+            },
+            {
+                "type": "curse",
+                "common": {
+                    "side": "CLIENT"
+                },
+                "entries": [
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "blur"
+                        },
+                        "curse": {
+                            "projectID": 268324
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "better-foliage"
+                        },
+                        "curse": {
+                            "projectID": 228529
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "betterfps"
+                        },
+                        "curse": {
+                            "projectID": 229876
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "discordsuite"
+                        },
+                        "curse": {
+                            "projectID": 282743
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "first-person-render"
+                        },
+                        "curse": {
+                            "projectID": 280806
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "itemphysic-lite"
+                        },
+                        "curse": {
+                            "projectID": 270441
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "justthetips"
+                        },
+                        "curse": {
+                            "projectID": 275356
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "keyboard-wizard"
+                        },
+                        "curse": {
+                            "projectID": 262366
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "mage"
+                        },
+                        "curse": {
+                            "projectID": 287471
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "sound-filters"
+                        },
+                        "curse": {
+                            "projectID": 222789
+                        }
+                    },
+                    {
+                        "type": "curse",
+                        "common": {
+                            "id": "tipthescales"
+                        },
+                        "curse": {
+                            "projectID": 282313
+                        }
+                    }
+                ]
+            }
+        ]
+    }
+}

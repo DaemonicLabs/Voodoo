@@ -2,11 +2,9 @@
     "type": "curse",
     "common": {
         "dependencies": {
-            "REQUIRED": [
-                "orelib"
-            ]
+            "orelib": "REQUIRED"
         }
     },
     "projectID": 238891,
-    "fileID": 2825354
+    "fileID": 2922489
 }

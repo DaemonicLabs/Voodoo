@@ -7,9 +7,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonConfiguration
-import list
-import voodoo.poet.Poet
-import voodoo.poet.PoetPack
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.FileType
@@ -17,13 +14,15 @@ import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
 import voodoo.dsl.builder.ModpackBuilder
+import voodoo.poet.Poet
+import voodoo.poet.PoetPack
 import voodoo.util.UnzipUtility.unzip
 import voodoo.util.blankOr
 import voodoo.util.download
 import voodoo.util.withPool
 import java.io.File
 import java.net.URL
-import java.util.UUID
+import java.util.*
 
 /**
  * Created by nikky on 13/06/18.
@@ -62,7 +61,8 @@ object CurseImporter : AbstractImporter() {
         require(manifestFile.exists()) { "$manifestFile does not exist" }
         logger.info("parsing \n${manifestFile.readText()}")
 
-        val manifest: CurseManifest = Json(JsonConfiguration.Default).parse(CurseManifest.serializer(), manifestFile.readText())
+        val manifest: CurseManifest =
+            Json(JsonConfiguration.Default).parse(CurseManifest.serializer(), manifestFile.readText())
 
         val validMcVersions = mutableSetOf<String>()
 
@@ -129,26 +129,27 @@ object CurseImporter : AbstractImporter() {
             val forgeVersion = manifest.minecraft.modLoaders.find {
                 it.primary && it.id.startsWith("forge-")
             }?.id?.substringAfterLast("forge-")
-            if(forgeVersion != null) {
+            if (forgeVersion != null) {
                 modloader {
                     forge(forgeVersion)
                 }
             }
 
             localDir = local
-            root<NestedEntry.Curse> {
-                builder ->
-                this.validMcVersions = validMcVersions - manifest.minecraft.version
-                releaseTypes = sortedSetOf(FileType.Release, FileType.Beta, FileType.Alpha)
-                builder.list {
+            mods {
+
+                +NestedEntry.Curse {
+                    this.validMcVersions = validMcVersions - manifest.minecraft.version
+                    releaseTypes = sortedSetOf(FileType.Release, FileType.Beta, FileType.Alpha)
+                } list {
                     curseEntries.forEach { (identifier, versionStr, curseProjectID) ->
-                        +ProjectID(curseProjectID.value) configure {
+                        +ProjectID(curseProjectID.value) invoke {
                             version = versionStr
                         }
                     }
                     val modsFolder = sourceFolder.resolve("mods")
                     if (modsFolder.exists()) {
-                        withProvider<NestedEntry.Local>().list {
+                        +NestedEntry.Local() list {
                             val localFolder = rootFolder.resolve(local)
                             this@CurseImporter.logger.info("listing $modsFolder")
                             modsFolder.listFiles { file ->
@@ -168,7 +169,7 @@ object CurseImporter : AbstractImporter() {
                                 file.copyTo(targetFile, overwrite = true)
                                 this@CurseImporter.logger.info("adding local entry for ${relative.path}")
 
-                                +file.nameWithoutExtension configure {
+                                +file.nameWithoutExtension {
                                     fileSrc = relative.path
                                     folder = file.parentFile.relativeTo(sourceFolder).path
                                 }

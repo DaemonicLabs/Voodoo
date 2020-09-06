@@ -2,9 +2,7 @@
     "type": "curse",
     "common": {
         "dependencies": {
-            "REQUIRED": [
-                "ftblib"
-            ]
+            "ftb-library": "REQUIRED"
         }
     },
     "projectID": 255177,

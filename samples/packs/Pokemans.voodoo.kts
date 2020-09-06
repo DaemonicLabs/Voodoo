@@ -1,5 +1,3 @@
-import com.skcraft.launcher.model.modpack.Recommendation
-
 mcVersion = "1.12.2"
 title = "Pokemans Reloaded"
 version = "1.1"
@@ -11,14 +9,14 @@ modloader {
 
 //pack {
 //    multimc {
-//        skPackUrl = "insert/something/here"
+//        selfupdateUrl = "insert/something/here"
 //    }
 //}
-
-root<Curse> { builder ->
-    releaseTypes = setOf(FileType.Release, FileType.Beta)
-    skipFingerprintCheck = false
-    builder.list {
+mods {
+    +Curse {
+        releaseTypes = setOf(FileType.Release, FileType.Beta)
+        skipFingerprintCheck = false
+    } list {
         //TODO: group mods by category (eg. tweakers)
         +Mod.abyssalcraft
         +Mod.advancedRocketry {
@@ -56,42 +54,24 @@ root<Curse> { builder ->
         +Mod.timberjack
         +Mod.wearableBackpacks
 
-//        withType(Direct::class)
-//            .list {
-//                //TODO: change to local
-//                +"pixelmonDark" configure {
-//                    url =
-//                        "https://meowface.org/craft/repo/objects/db/5d/db5db11bcda204362d62705b1d5f4e5783f95c2c"
-//                    fileName = "PixelmonDark2.4.jar"
-//                }
-//                //TODO: change to local
-//                +"gameShark" configure {
-//                    url =
-//                        "https://meowface.org/craft/repo/objects/b9/21/b9216143fd5214c31e109b24fb1513eb8b23bc77"
-//                    fileName = "Gameshark-1.10.2-5.0.0.jar"
-//                }
-////                            add("gameShark") url "https://pixelmonmod.com/mirror/sidemods/gameshark/5.2.0/gameshark-1.12.2-5.2.0-universal.jar"
-////                    }
-//            }
-
-        group {
+        +Curse {
             side = Side.CLIENT
-        }.list {
-            group {
+        } list {
+            +inheritProvider {
                 optional {
                     selected = true
                     skRecommendation = Recommendation.starred
                 }
-            }.list {
+            } list {
                 +Mod.xaerosMinimap {
                     description = "lightweight minimap"
                 }
             }
-            group {
+            +inheritProvider {
                 optional {
                     selected = false
                 }
-            }.list {
+            } list {
                 //TODO: add Optifine ?
             }
         }

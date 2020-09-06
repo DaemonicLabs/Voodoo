@@ -14,34 +14,36 @@ class EntryBuilder<E: NestedEntry>(
 //    var fileNameRegex by property(entry::fileNameRegex)
 
     @VoodooDSL
-    @Deprecated("use invoke operator", replaceWith = ReplaceWith("this.invoke(configureEntry)"), level = DeprecationLevel.WARNING)
-    infix fun configure(configureEntry: E.(EntryBuilder<E>) -> Unit): EntryBuilder<E> {
-        entry.configureEntry(this)
+//    @Deprecated("use invoke operator", replaceWith = ReplaceWith("this.invoke(configureEntry)"))
+    infix fun configure(configureEntry: E.() -> Unit): EntryBuilder<E> {
+        entry.configureEntry()
         return this
     }
 
     @VoodooDSL
-    operator fun invoke(configureEntry: E.(EntryBuilder<E>) -> Unit): EntryBuilder<E> {
-        entry.configureEntry(this)
+    infix operator fun invoke(configureEntry: E.() -> Unit): EntryBuilder<E> {
+        entry.configureEntry()
         return this
     }
-
-//    infix fun name(s: String) = apply {
-//        name = s
-//    }
-//
-//    infix fun websiteUrl(s: String) = apply {
-//        websiteUrl = s
-//    }
-//
-//    infix fun fileNameRegex(r: String) = apply {
-//        fileNameRegex = r
-//    }
 
     @VoodooDSL
     fun dependencies(type: DependencyType = DependencyType.REQUIRED, vararg dependencies: String)  {
         dependencies.forEach { dep ->
             entry.dependencies.putIfAbsent(dep, type)
         }
+    }
+
+    /**
+     * Create new list of subentries
+     */
+    @VoodooDSL
+    infix fun list(
+        initList: ListBuilder<E>.() -> Unit
+    ): EntryBuilder<E> {
+        val listBuilder = ListBuilder(this.entry)
+        listBuilder.initList()
+        // add all entries from list
+        this.entry.entries += listBuilder.listEntries
+        return this
     }
 }

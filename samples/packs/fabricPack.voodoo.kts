@@ -1,5 +1,3 @@
-import kotlinx.atomicfu.pauseLockFreeOp
-
 mcVersion = "1.15.2"
 version = "0.0.1"
 icon = rootFolder.resolve("icon.png")
@@ -18,9 +16,10 @@ pack {
     }
 }
 
-root2<Curse> {
-    releaseTypes = setOf(FileType.Release, FileType.Beta)
-    it.list {
+mods {
+    +Curse {
+        releaseTypes = setOf(FileType.Release, FileType.Beta)
+    } list  {
         +FabricMod.fabricApi
 
         +FabricMod.betternether
@@ -31,9 +30,9 @@ root2<Curse> {
 //            version = "abc"
         }
         +FabricMod.roughlyEnoughResources
-        group {
+        +inheritProvider {
             side = Side.CLIENT
-        }.list {
+        } list {
             +FabricMod.roughlyEnoughItems
             +FabricMod.roughlyEnoughResources
             +FabricMod.appleskin

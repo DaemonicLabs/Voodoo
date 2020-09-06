@@ -4,7 +4,7 @@ import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
-import list
+import voodoo.dsl.list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.builder.resolve

@@ -2,11 +2,9 @@
     "type": "curse",
     "common": {
         "dependencies": {
-            "REQUIRED": [
-                "autoreglib"
-            ]
+            "autoreglib": "REQUIRED"
         }
     },
     "projectID": 243121,
-    "fileID": 2889332
+    "fileID": 2924091
 }

@@ -3,10 +3,8 @@ package voodoo
 import Forge
 import Mod
 import com.eyeem.watchadoin.Stopwatch
-import job
 import kotlinx.coroutines.runBlocking
-import list
-import optional
+import voodoo.dsl.optional
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.builder.Builder
@@ -38,14 +36,14 @@ object RoundTripSpek : Spek({
                 modloader {
                     forge(Forge.mc1_12_2_recommended)
                 }
-                root<NestedEntry.Curse> {
+                root(NestedEntry.Curse {
                     releaseTypes = setOf(FileType.Release, FileType.Beta)
 
                     // TODO: use type URL ?
-                    it.list {
-                        +(Mod.botania)
+                }) {
+                    +(Mod.botania)
 
-                        +(Mod.rftools)
+                    +(Mod.rftools)
 
 //                        withType<NestedEntry.Jenkins> {
 //                            jenkinsUrl = "https://ci.elytradev.com/"
@@ -54,31 +52,31 @@ object RoundTripSpek : Spek({
 //                            +"BTFU" job "elytra/BTFU/master"
 //                        }
 
-                        group {
-                            side = Side.BOTH
-                            optional {
-                                selected = false
-                            }
-                        }.list {
-                            +(Mod.laggoggles) {
-                                description =
-                                    "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
-                            }
-
-                            +(Mod.sampler) {
-                                description =
-                                    "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
-                            }
-
-                            +(Mod.openeye) {
-                                description =
-                                    "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
-                            }
+                    group(inheritProvider {
+                        side = Side.BOTH
+                        optional {
+                            selected = false
+                        }
+                    }) {
+                        +(Mod.laggoggles) {
+                            description =
+                                "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
                         }
 
-//                    include("other.kts")
+                        +(Mod.sampler) {
+                            description =
+                                "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
+                        }
+
+                        +(Mod.openeye) {
+                            description =
+                                "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
+                        }
                     }
+
+//                    include("other.kts")
                 }
+
             }
         }
 

@@ -2,9 +2,7 @@
     "type": "curse",
     "common": {
         "dependencies": {
-            "REQUIRED": [
-                "ichunutil"
-            ]
+            "ichunutil": "REQUIRED"
         }
     },
     "projectID": 229061,

@@ -2,6 +2,7 @@ package voodoo.dsl.builder
 
 import mu.KLogging
 import voodoo.data.ModloaderPattern
+import voodoo.data.OptionalData
 import voodoo.data.PackDSL
 import voodoo.data.PackOptions
 import voodoo.data.nested.NestedEntry
@@ -9,7 +10,7 @@ import voodoo.data.nested.NestedPack
 import voodoo.dsl.VoodooDSL
 import voodoo.property
 import voodoo.readOnly
-import java.io.File
+import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 @VoodooDSL
@@ -26,21 +27,33 @@ open class ModpackBuilder(
     var localDir by property(pack::localDir)
     val sourceFolder by readOnly(pack::sourceFolder)
 
-    @Deprecated("use modloader { forge(forgeVersion) } function instead", ReplaceWith("modloader {\n    forge(version = value)\n}"), level = DeprecationLevel.ERROR)
-    var forge: String
-        get() = (pack.modloader as ModloaderPattern.Forge).version
-        set(value) {
-            modloader { forge(value) }
-        }
-
     @PackDSL
     fun pack(configurePack: PackOptions.() -> Unit) {
         pack.packOptions.configurePack()
     }
 
+    @VoodooDSL
+    fun modloader(configure: ModloaderBuilder.() -> Unit) {
+        val builder = ModloaderBuilder(pack.mcVersion, pack.modloader)
+        builder.configure()
+        pack.mcVersion = builder.mcVersion
+        pack.modloader = builder.modloader
+    }
+
     var rootInitialized = false
 
+
     @VoodooDSL
+    fun mods(
+        initMods: ListBuilder<NestedEntry>.() -> Unit
+    ) {
+        val rootBuilder = EntryBuilder(pack.root)
+        rootBuilder.list(initMods)
+    }
+
+
+    @VoodooDSL
+    @Deprecated("use mods {} instead", ReplaceWith(""))
     inline fun <reified E: NestedEntry> root(
         initRoot: E.(GroupBuilder<E>) -> Unit
     ) {
@@ -52,22 +65,4 @@ open class ModpackBuilder(
         pack.root = rootBuilder.entry
     }
 
-    @VoodooDSL
-    inline fun <reified E: NestedEntry> rootEntry(
-        initRoot: E.(GroupBuilder<E>) -> Unit
-    ): NestedEntry {
-        val entry = E::class.createInstance()
-        entry.nodeName = "root"
-        val rootBuilder = GroupBuilder(entry = entry)
-        entry.initRoot(rootBuilder)
-        return rootBuilder.entry
-    }
-
-    @VoodooDSL
-    fun modloader(configure: ModloaderBuilder.() -> Unit) {
-        val builder = ModloaderBuilder(pack.mcVersion, pack.modloader)
-        builder.configure()
-        pack.mcVersion = builder.mcVersion
-        pack.modloader = builder.modloader
-    }
 }

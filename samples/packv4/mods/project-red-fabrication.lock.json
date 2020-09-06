@@ -2,10 +2,8 @@
     "type": "curse",
     "common": {
         "dependencies": {
-            "REQUIRED": [
-                "project-red-integration",
-                "project-red-base"
-            ]
+            "project-red-integration": "REQUIRED",
+            "project-red-base": "REQUIRED"
         }
     },
     "projectID": 230111,

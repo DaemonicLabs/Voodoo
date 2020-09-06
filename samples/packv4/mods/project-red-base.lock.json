@@ -2,11 +2,9 @@
     "type": "curse",
     "common": {
         "dependencies": {
-            "REQUIRED": [
-                "mrtjpcore",
-                "codechicken-lib-1-8",
-                "forge-multipart-cbe"
-            ]
+            "mrtjpcore": "REQUIRED",
+            "codechicken-lib-1-8": "REQUIRED",
+            "forge-multipart-cbe": "REQUIRED"
         }
     },
     "projectID": 228702,

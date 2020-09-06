@@ -2,10 +2,8 @@
     "type": "curse",
     "common": {
         "dependencies": {
-            "REQUIRED": [
-                "codechicken-lib-1-8",
-                "forge-multipart-cbe"
-            ]
+            "codechicken-lib-1-8": "REQUIRED",
+            "forge-multipart-cbe": "REQUIRED"
         }
     },
     "projectID": 260824,

@@ -8,6 +8,7 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
 import voodoo.data.curse.ProjectID
+import voodoo.data.nested.NestedEntry
 import voodoo.data.provider.UpdateChannel
 
 
@@ -49,6 +50,15 @@ interface CommonMutable : CommonImmutable {
     override var validMcVersions: Set<String>
     override var invalidMcVersions: Set<String>
     override var enabled: Boolean
+
+    /**
+     * utility function to configure optionalData
+     */
+    fun optional(configureOptional: OptionalData.() -> Unit) {
+        val optionalData = optionalData?.copy() ?: OptionalData()
+        optionalData.configureOptional()
+        this.optionalData = optionalData
+    }
 }
 
 interface CurseImmutable {

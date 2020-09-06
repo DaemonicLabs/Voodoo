@@ -2,11 +2,9 @@
     "type": "curse",
     "common": {
         "dependencies": {
-            "REQUIRED": [
-                "minecraft-transport-simulator"
-            ]
+            "minecraft-transport-simulator": "REQUIRED"
         }
     },
     "projectID": 292217,
-    "fileID": 2895775
+    "fileID": 2932414
 }

@@ -6,9 +6,7 @@
         "optionalData": {
         },
         "dependencies": {
-            "REQUIRED": [
-                "shadowfacts-forgelin"
-            ]
+            "shadowfacts-forgelin": "REQUIRED"
         }
     },
     "projectID": 287323,

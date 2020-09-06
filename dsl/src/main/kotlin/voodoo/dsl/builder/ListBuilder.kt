@@ -9,47 +9,77 @@ import voodoo.data.nested.NestedEntry
 import voodoo.dsl.VoodooDSL
 import voodoo.util.SharedFolders
 import voodoo.util.json
-import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 @VoodooDSL
-open class ListBuilder<E : NestedEntry>(
-    open val parent: GroupBuilder<E>
+class ListBuilder<E : NestedEntry>(
+    val parentEntry: E
 ) {
     private var nameCounter: Int = 0
-    val entries: MutableList<AbstractBuilder<*>> = mutableListOf()
-
-    open operator fun String.unaryPlus(): EntryBuilder<E> {
-        require(parent.entry !is NestedEntry.Curse) {
-            "You cannot add this to a Curse group: $this"
-        }
-        val entry = parent.entry::class.createInstance().also {
-            it.id = this
-            it.nodeName = this
-        }
-        val entryBuilder = EntryBuilder(entry = entry)
-        entries += entryBuilder
-        return entryBuilder
-    }
+    val listEntries: MutableList<NestedEntry> = mutableListOf()
 
     @VoodooDSL
-    operator fun String.invoke(configureEntry: E.(EntryBuilder<E>) -> Unit): EntryBuilder<E> {
-        require(parent.entry !is NestedEntry.Curse) {
+    operator fun String.unaryPlus(): EntryBuilder<E> {
+        require(parentEntry !is NestedEntry.Curse) {
             "You cannot add this to a Curse group: $this"
         }
-        val entry = parent.entry::class.createInstance().also {
+        val entry = parentEntry::class.createInstance().also {
             it.id = this
             it.nodeName = this
         }
-        val builder = EntryBuilder(entry)
-        entry.configureEntry(builder)
-        return builder
-    }
-    open operator fun EntryBuilder<E>.unaryPlus(): EntryBuilder<E> {
-        this@ListBuilder.entries += this
-        return this
+        listEntries += entry
+        return EntryBuilder(entry)
     }
 
+    /**
+     * overload so that `+("string_id" { ... })` compiles
+     */
+    @VoodooDSL
+    infix operator fun String.invoke(configureEntry: E.() -> Unit): EntryBuilder<E> {
+        require(parentEntry !is NestedEntry.Curse) {
+            "You cannot add this to a Curse group: $this"
+        }
+        val entry = parentEntry::class.createInstance().also {
+            it.id = this
+            it.nodeName = this
+        }
+        entry.configureEntry()
+        return EntryBuilder(entry)
+    }
+
+    /**
+     * overload so that `+("string_id" { ... })` compiles
+     */
+    @VoodooDSL
+    infix operator fun <N: NestedEntry> N.invoke(configureEntry: N.() -> Unit): EntryBuilder<N> {
+        require(parentEntry !is NestedEntry.Curse) {
+            "You cannot add this to a Curse group: $this"
+        }
+        this.configureEntry()
+        return EntryBuilder(this)
+    }
+
+    /**
+     * add [N] to the parent entry
+     */
+    @VoodooDSL
+    operator fun <N: NestedEntry> N.unaryPlus(): EntryBuilder<N> {
+        // TODO: pick correct node_name (if it matters for debuggability)
+//        nodeName = parentEntry.nodeName + "_" + (name ?: "group_${nameCounter++}")
+        this@ListBuilder.listEntries += this
+        return EntryBuilder(this)
+    }
+
+    /**
+     * add [N] to the parent entry
+     */
+    @VoodooDSL
+    operator fun <N: NestedEntry> EntryBuilder<N>.unaryPlus(): EntryBuilder<N> {
+        // TODO: pick correct node_name (if it matters for debuggability)
+//        nodeName = parentEntry.nodeName + "_" + (name ?: "group_${nameCounter++}")
+        this@ListBuilder.listEntries += this.entry
+        return this
+    }
 
     /**
      * Curse specific list function
@@ -57,7 +87,7 @@ open class ListBuilder<E : NestedEntry>(
      */
     @VoodooDSL
     operator fun ProjectID.unaryPlus(): EntryBuilder<NestedEntry.Curse> {
-        require(parent.entry is NestedEntry.Curse) {
+        require(parentEntry is NestedEntry.Curse) {
             "sorry about that, you should only add Curse mods inside Curse groups, $this"
         }
         // TODO: keep numerical id around and fix it up later ?
@@ -72,13 +102,16 @@ open class ListBuilder<E : NestedEntry>(
             it.nodeName = stringId
             it.projectID = this
         }
-        val entryBuilder = EntryBuilder(entry = entry)
-        entries += entryBuilder
-        return entryBuilder
+        listEntries += entry
+        return EntryBuilder(entry)
     }
+
+    /**
+     * overload so that `+(Mod.slug { ... })` compiles
+     */
     @VoodooDSL
-    operator fun ProjectID.invoke(configureEntry: NestedEntry.Curse.(EntryBuilder<NestedEntry.Curse>) -> Unit): EntryBuilder<NestedEntry.Curse> {
-        require(parent.entry is NestedEntry.Curse) {
+    operator fun ProjectID.invoke(configureEntry: NestedEntry.Curse.() -> Unit): NestedEntry.Curse {
+        require(parentEntry is NestedEntry.Curse) {
             "sorry about that, you should only add Curse mods inside Curse groups, this: $this"
         }
         // TODO: keep numerical id around and fix it up later ?
@@ -93,21 +126,27 @@ open class ListBuilder<E : NestedEntry>(
             it.nodeName = stringId
             it.projectID = this
         }
-        val builder = EntryBuilder(entry)
-        entry.configureEntry(builder)
-        return builder
+        entry.configureEntry()
+        return entry
     }
 
     @VoodooDSL
+    fun inheritProvider(builder: E.() -> Unit = {}): E {
+        val entry = parentEntry::class.createInstance()
+        return entry.apply(builder)
+    }
+
+    @VoodooDSL
+    @Deprecated("use `inheritProvider {} list {}` instead", level = DeprecationLevel.ERROR)
     fun group(
         groupName: String? = null,
         initGroup: E.(GroupBuilder<E>) -> Unit = {}
     ): GroupBuilder<E> {
-        val entry = parent.entry::class.createInstance()
-        entry.nodeName = parent.entry.nodeName + "_" + (groupName ?: "group_${nameCounter++}")
+        val entry = parentEntry::class.createInstance()
+        entry.nodeName = parentEntry.nodeName + "_" + (groupName ?: "group_${nameCounter++}")
+        listEntries += entry
         val groupBuilder = GroupBuilder(entry = entry)
         entry.initGroup(groupBuilder)
-        entries += groupBuilder
         return groupBuilder
     }
 
@@ -116,31 +155,17 @@ open class ListBuilder<E : NestedEntry>(
      * and add to Entrylist
      */
     @VoodooDSL
+    @Deprecated("use `NestedEntry.\$Type {} list {}` instead", level = DeprecationLevel.ERROR)
     inline fun <reified N: NestedEntry> withProvider(
         groupName: String? = null,
         block: N.( GroupBuilder<N>) -> Unit = {}
     ): GroupBuilder<N> {
         val entry = N::class.createInstance()
-        entry.nodeName = parent.entry.nodeName + "_" + (groupName ?: entry.provider)
-        val env = GroupBuilder(entry = entry)
-        entry.block(env)
-        return env.also { this.entries += it }
+        entry.nodeName = parentEntry.nodeName + "_" + (groupName ?: entry.provider)
+        listEntries += entry
+        val groupBuilder = GroupBuilder(entry = entry)
+        entry.block(groupBuilder)
+        return groupBuilder
     }
 
-    /**
-     * Create new Entry with specified provier
-     * and add to Entrylist
-     */
-    @VoodooDSL
-    fun <N: NestedEntry> withProvider(
-        newClass: KClass<N>,
-        groupName: String? = null,
-        block: N.( GroupBuilder<N>) -> Unit = {}
-    ): GroupBuilder<N> {
-        val entry = newClass.createInstance()
-        entry.nodeName = parent.entry.nodeName + "_" + (groupName ?: entry.provider)
-        val env = GroupBuilder(entry = entry)
-        entry.block(env)
-        return env.also { this.entries += it }
-    }
 }

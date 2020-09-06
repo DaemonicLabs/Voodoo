@@ -16,12 +16,11 @@ pack {
         exclude = listOf("")
     )
 }
-
-root<Curse> {
-    releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
-    validMcVersions = setOf("1.12.2", "1.12.1", "1.12")
-//            metaUrl = "https://curse.nikky.moe/api"
-    it.list {
+mods {
+    parentEntry.validMcVersions = setOf("1.12.2", "1.12.1", "1.12")
+    +Curse {
+        releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
+    } list {
         +Mod.buildcraft
         +Mod.buildcraftCompat
         +Mod.forestry
@@ -29,7 +28,7 @@ root<Curse> {
         +Mod.additionalPipesForBuildcraft
         +Mod.industrialCraft
         +Mod.compactSolars
-//        +Mod.worldControl
+        +Mod.worldControl
         +Mod.projectRedBase
         +Mod.projectRedIntegration
         +Mod.projectRedLighting
@@ -72,15 +71,9 @@ root<Curse> {
         +Mod.openeye
         +Mod.vanillafix
 
-        withProvider(Jenkins::class) {
-            jenkinsUrl = "https://ci.rs485.network"
-        }.list {
-            +"logisticspipes" job "LogisticsPipes-0.10-mc112"
-        }
-
-        group {
+        +inheritProvider {
             side = Side.CLIENT
-        }.list {
+        } list {
             +Mod.blur
             +Mod.betterFoliage
             +Mod.betterfps
@@ -93,6 +86,15 @@ root<Curse> {
             // +"shoulder-surfing-reloaded"
             +Mod.soundFilters
             +Mod.tipthescales
+        }
+    }
+
+
+    +Jenkins{
+        jenkinsUrl = "https://ci.rs485.network"
+    } list {
+        +"logisticspipes"{
+            job = "LogisticsPipes-0.10-mc112"
         }
     }
 }

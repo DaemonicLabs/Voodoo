@@ -3,9 +3,7 @@
     "common": {
         "side": "CLIENT",
         "dependencies": {
-            "REQUIRED": [
-                "shadowfacts-forgelin"
-            ]
+            "shadowfacts-forgelin": "REQUIRED"
         }
     },
     "projectID": 228529,

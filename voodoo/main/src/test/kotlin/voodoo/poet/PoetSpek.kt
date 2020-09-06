@@ -1,6 +1,6 @@
 package voodoo.poet
 
-import list
+import Mod
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.data.Side
@@ -20,27 +20,29 @@ object PoetSpek : Spek({
             MainScriptEnv(rootFolder = rootFolder, id = "new-pack").apply {
                 mcVersion = "1.12.2"
                 authors = listOf("blarb something", "nikky")
-                root<NestedEntry.Curse> {
+                root(NestedEntry.Curse {
                     validMcVersions = setOf("1.12.1", "1.12")
-                    it.list {
-                        +(Mod.wearableBackpacks)
-                        +(Mod.neat)
+                }) {
+                    +(Mod.wearableBackpacks)
+                    +(Mod.neat)
 
-                        group {
+                    group(
+                        inheritProvider {
                             side = Side.SERVER
-                        }.list {
-                            +(Mod.btfuContinuousRsyncIncrementalBackup)
                         }
+                    ) {
+                        +(Mod.btfuContinuousRsyncIncrementalBackup)
                     }
                 }
             }
         }
 
+
         val nestedPack by memoized {
             scriptEnv.pack
         }
 
-        it("generate kotlin source") {
+        it("generate kotlin script source") {
             PoetPack.createModpack(
                 rootFolder,
                 nestedPack

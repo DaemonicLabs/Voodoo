@@ -196,6 +196,7 @@ object PoetPack : KLogging() {
 //        }
     }
 
+    @Deprecated("generating kotlinscript is not stable, we will generate json or such instead")
     fun createModpack(
         folder: File,
         nestedPack: NestedPack

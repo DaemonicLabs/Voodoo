@@ -1,14 +1,14 @@
 package voodoo
 
 import Forge
-import job
+import Mod
 import kotlinx.coroutines.runBlocking
-import list
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.style.specification.describe
 import voodoo.data.Side
 import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedEntry
+import voodoo.dsl.job
 import voodoo.script.MainScriptEnv
 import voodoo.util.SharedFolders
 import java.io.File
@@ -38,22 +38,19 @@ object DslSpek : Spek({
                 modloader {
                     forge(version = Forge.mc1_12_2_recommended)
                 }
-                root<NestedEntry.Curse> {
+                root(NestedEntry.Curse {
                     releaseTypes = setOf(FileType.Release, FileType.Beta)
+                }) {
+                    +(Mod.botania)
+                    +(Mod.rftools)
 
-                    // TODO: use type URL ?
-                    it.list {
-                        +(Mod.botania)
-                        +(Mod.rftools)
-
-                        withType<NestedEntry.Jenkins> {
-                            side = Side.SERVER
-                        }.list {
-                            +"matterlink" job "elytra/matterlink/master"
-                        }
+                    group(NestedEntry.Jenkins {
+                        side = Side.SERVER
+                    }) {
+                        +"matterlink" job "elytra/matterlink/master"
+                    }
 
 //                    include("other.kts")
-                    }
                 }
             }
         }

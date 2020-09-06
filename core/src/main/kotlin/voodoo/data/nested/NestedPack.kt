@@ -5,6 +5,7 @@ import kotlinx.serialization.Transient
 import mu.KLogging
 import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
+import voodoo.data.components.CommonComponent
 import voodoo.data.flat.ModPack
 import java.io.File
 
@@ -38,7 +39,9 @@ data class NestedPack(
     var localDir: String = "local",
     var docDir: String? = null,
     var packOptions: PackOptions = PackOptions(),
-    var root: NestedEntry = NestedEntry.Common()
+    var root: NestedEntry = NestedEntry.Common(
+        nodeName = "root"
+    )
 ) {
     val rootFolder: File by lazy {
         File(rootFolderPath)

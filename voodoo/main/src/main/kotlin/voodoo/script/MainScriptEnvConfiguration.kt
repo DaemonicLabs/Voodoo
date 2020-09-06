@@ -25,7 +25,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         voodoo.data.curse.ProjectID::class,
         voodoo.data.curse.FileID::class,
 
-//        voodoo.data.nested.NestedEntry::class,
+        voodoo.data.nested.NestedEntry::class,
         voodoo.data.nested.NestedEntry.Common::class,
         voodoo.data.nested.NestedEntry.Curse::class,
         voodoo.data.nested.NestedEntry.Direct::class,
@@ -48,19 +48,10 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
 
     defaultImports.append(
         "voodoo.*",
-        "voodoo.script.annotation.Include",
         "voodoo.dsl.*",
-        "voodoo.provider.CurseProvider",
-        "voodoo.provider.DirectProvider",
-        "voodoo.provider.JenkinsProvider",
-        "voodoo.provider.LocalProvider",
-        "voodoo.provider.UpdateJsonProvider",
         "voodoo.data.*",
         "voodoo.data.curse.*",
-        "voodoo.data.nested.NestedEntry.*",
         "moe.nikky.voodoo.format.*",
-        "com.skcraft.launcher.model.SKServer",
-        "com.skcraft.launcher.model.modpack.Recommendation",
         *(imports.toTypedArray())
     )
 
