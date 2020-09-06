@@ -48,11 +48,9 @@ pack {
 
 mods {
     +Curse {
-        releaseTypes = setOf(FileType.Release, FileType.Beta)
-    } list {
+        entry.releaseTypes = setOf(FileType.Release, FileType.Beta)
         +inheritProvider {
-            side = Side.CLIENT
-        } list {
+            entry.side = Side.CLIENT
             +Mod.jei
         }
 
@@ -62,8 +60,7 @@ mods {
         +Mod.mekanism
 
         +inheritProvider {
-            side = Side.CLIENT
-        } list {
+            entry.side = Side.CLIENT
             +Mod.jei
         }
 
@@ -79,30 +76,28 @@ mods {
 
         // SERVER OPTIONAL MODS
         +inheritProvider {
-            side = Side.SERVER
-            optional {
+            entry.side = Side.SERVER
+            entry.optional {
                 selected = false
             }
-        } list {
             +Mod.btfuContinuousRsyncIncrementalBackup {
-                name = "BTFU"
-                description = "Best backup mod in existence! (setup required)"
+                entry.name = "BTFU"
+                entry.description = "Best backup mod in existence! (setup required)"
             }
             +Mod.matterlink {
-                description = "MatterBridge endpoint for Minecraft servers (requires relay)"
+                entry.description = "MatterBridge endpoint for Minecraft servers (requires relay)"
             }
         }
     }
 
     +Jenkins {
-        jenkinsUrl = "https://ci.elytradev.com"
-        side = Side.SERVER
-    } list {
+        entry.jenkinsUrl = "https://ci.elytradev.com"
+        entry.side = Side.SERVER
         +"matterlink" {
-            job = "elytra/MatterLink/master"
+            entry.job = "elytra/MatterLink/master"
         }
         +"btfu" {
-            job = "elytra/BTFU/multi-version"
+            entry.job = "elytra/BTFU/multi-version"
         }
     }
 }

@@ -18,8 +18,7 @@ pack {
 
 mods {
     +Curse {
-        releaseTypes = setOf(FileType.Release, FileType.Beta)
-    } list  {
+        entry.releaseTypes = setOf(FileType.Release, FileType.Beta)
         +FabricMod.fabricApi
 
         +FabricMod.betternether
@@ -31,8 +30,7 @@ mods {
         }
         +FabricMod.roughlyEnoughResources
         +inheritProvider {
-            side = Side.CLIENT
-        } list {
+            entry.side = Side.CLIENT
             +FabricMod.roughlyEnoughItems
             +FabricMod.roughlyEnoughResources
             +FabricMod.appleskin

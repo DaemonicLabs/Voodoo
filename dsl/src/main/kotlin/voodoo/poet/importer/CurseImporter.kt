@@ -139,9 +139,8 @@ object CurseImporter : AbstractImporter() {
             mods {
 
                 +NestedEntry.Curse {
-                    this.validMcVersions = validMcVersions - manifest.minecraft.version
-                    releaseTypes = sortedSetOf(FileType.Release, FileType.Beta, FileType.Alpha)
-                } list {
+                    entry.validMcVersions = validMcVersions - manifest.minecraft.version
+                    entry.releaseTypes = sortedSetOf(FileType.Release, FileType.Beta, FileType.Alpha)
                     curseEntries.forEach { (identifier, versionStr, curseProjectID) ->
                         +ProjectID(curseProjectID.value) invoke {
                             version = versionStr
@@ -149,7 +148,7 @@ object CurseImporter : AbstractImporter() {
                     }
                     val modsFolder = sourceFolder.resolve("mods")
                     if (modsFolder.exists()) {
-                        +NestedEntry.Local() list {
+                        +NestedEntry.Local {
                             val localFolder = rootFolder.resolve(local)
                             this@CurseImporter.logger.info("listing $modsFolder")
                             modsFolder.listFiles { file ->
@@ -170,8 +169,8 @@ object CurseImporter : AbstractImporter() {
                                 this@CurseImporter.logger.info("adding local entry for ${relative.path}")
 
                                 +file.nameWithoutExtension {
-                                    fileSrc = relative.path
-                                    folder = file.parentFile.relativeTo(sourceFolder).path
+                                    entry.fileSrc = relative.path
+                                    entry.folder = file.parentFile.relativeTo(sourceFolder).path
                                 }
                                 file.delete()
                             }

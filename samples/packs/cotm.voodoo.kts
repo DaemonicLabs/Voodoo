@@ -22,9 +22,8 @@ pack {
 
 mods {
     +Curse {
-        releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
-        validMcVersions = setOf("1.12.2", "1.12.1", "1.12")
-    } list {
+        entry.releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
+        entry.validMcVersions = setOf("1.12.2", "1.12.1", "1.12")
 
     // Vazkii
     +(Mod.akashicTome)
@@ -223,81 +222,76 @@ mods {
 
     // Pulled due to outstanding issues
 
-    +Direct {} list {
+    +Direct {
         +"nutrition" {
-            url = "https://github.com/WesCook/Nutrition/releases/download/v4.0.0/Nutrition-1.12.2-4.0.0.jar"
+            entry.url = "https://github.com/WesCook/Nutrition/releases/download/v4.0.0/Nutrition-1.12.2-4.0.0.jar"
         }
         +"galacticraftCore" {
-            url =
+            entry.url =
                 "https://ci.micdoodle8.com/job/Galacticraft-1.12/190/artifact/Forge/build/libs/GalacticraftCore-1.12.2-4.0.2.190.jar"
         }
         +"galacticraftPlanets" {
-            url =
+            entry.url =
                 "https://ci.micdoodle8.com/job/Galacticraft-1.12/190/artifact/Forge/build/libs/Galacticraft-Planets-1.12.2-4.0.2.190.jar"
         }
         +"micdoodleCore" {
-            url =
+            entry.url =
                 "https://ci.micdoodle8.com/job/Galacticraft-1.12/190/artifact/Forge/build/libs/MicdoodleCore-1.12.2-4.0.2.190.jar"
         }
     }
 
     +Jenkins {
-        jenkinsUrl = "https://ci.elytradev.com"
-    } list {
+        entry.jenkinsUrl = "https://ci.elytradev.com"
         // b0undrybreaker
         +"friendship-bracelet" {
-            job = "elytra/FriendshipBracelet/master"
+            entry.job = "elytra/FriendshipBracelet/master"
         }
-        +"infra-redstone" { job = "elytra/InfraRedstone/1.12.2" }
+        +"infra-redstone" { entry.job = "elytra/InfraRedstone/1.12.2" }
 
         // Falkreon
-        +"thermionics" { job = "elytra/Thermionics/master" }
-        +"thermionics-world" { job = "elytra/ThermionicsWorld/master" }
-        +"engination" { job = "elytra/Engination/master" }
-        +"magic-arsenal" { job = "elytra/MagicArsenal/master" }
+        +"thermionics" { entry.job = "elytra/Thermionics/master" }
+        +"thermionics-world" { entry.job = "elytra/ThermionicsWorld/master" }
+        +"engination" { entry.job = "elytra/Engination/master" }
+        +"magic-arsenal" { entry.job = "elytra/MagicArsenal/master" }
 
         // unascribed
-        +"glass-hearts" { job = "elytra/GlassHearts/1.12.1" }
+        +"glass-hearts" { entry.job = "elytra/GlassHearts/1.12.1" }
 
         // Darkevilmac
 //            +"architecture-craft" job "elytra/ArchitectureCraft/1.12"
     }
 
     +inheritProvider {
-        side = Side.SERVER
-    } list {
+        entry.side = Side.SERVER
         +(Mod.btfuContinuousRsyncIncrementalBackup)
         +(Mod.swingthroughgrass)
         +(Mod.colorchat)
         +Jenkins {
-            jenkinsUrl = "https://ci.elytradev.com"
-        } list {
-            +"matterlink" { job = "elytra/MatterLink/master" }
+            entry.jenkinsUrl = "https://ci.elytradev.com"
+            +"matterlink" { entry.job = "elytra/MatterLink/master" }
         }
     }
 
 
     +inheritProvider {
-        side = Side.BOTH
-        optional {
+        entry.side = Side.BOTH
+        entry.optional {
             selected = false
         }
-    } list {
         +(Mod.laggoggles) {
-            description = "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
+            entry.description = "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
         }
         +(Mod.sampler) {
-            description = "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
+            entry.description = "***Admin/diagnostic tool. Leave off unless asked to help test performance issues."
         }
         +(Mod.openeye) {
-            description =
+            entry.description =
                 "Automatically collects and submits crash reports. Enable if asked or wish to help sort issues with the pack."
         }
     }
 
     +inheritProvider {
-            side = Side.CLIENT
-    } list {
+        entry.side = Side.CLIENT
         +(Mod.toastControl)
         +(Mod.jeiIntegration)
         +(Mod.appleskin)
@@ -318,128 +312,126 @@ mods {
 
         // OPT-OUT
         +inheritProvider {
-            optional {
+            entry.optional {
                 selected = true
                 skRecommendation = Recommendation.starred
             }
-        } list {
             +(Mod.journeymap) {
-                description = "Mod-compatible mini-map."
+                entry.description = "Mod-compatible mini-map."
             }
 
             +(Mod.mage) {
-                description = "Configurable graphics enhancements. Highly recomended."
+                entry.description = "Configurable graphics enhancements. Highly recomended."
             }
 
             +(Mod.neat) {
-                description = "Simple health and unit frames."
+                entry.description = "Simple health and unit frames."
             }
 
             +(Mod.clientTweaks) {
-                description = "Various client related fixes and tweaks, all in a handy menu."
+                entry.description = "Various client related fixes and tweaks, all in a handy menu."
             }
 
             +(Mod.mouseTweaks) {
-                description = "Add extra mouse gestures for inventories and crafting grids."
+                entry.description = "Add extra mouse gestures for inventories and crafting grids."
             }
 
             +(Mod.vise) {
-                description = "More granular control over UI/HUD elements."
+                entry.description = "More granular control over UI/HUD elements."
             }
 
             +(Mod.smoothFont) {
-                description = "It smoothes fonts."
+                entry.description = "It smoothes fonts."
             }
 
             +(Mod.inventoryTweaks) {
-                description = "Adds amll changes to invetory handling to minor conviniences."
+                entry.description = "Adds amll changes to invetory handling to minor conviniences."
             }
 
             +(Mod.customFov) {
-                description = "Removes dynamic FOV shifting due to ingame effects."
+                entry.description = "Removes dynamic FOV shifting due to ingame effects."
             }
         }
         // OPT-IN
 
         +inheritProvider { //TODO: same type as parent
-            optional {
+            entry.optional {
                 selected = false
             }
-        } list {
             +(Mod.betterFoliage) {
-                description =
+                entry.description =
                     "Improves the flora in the world. Very heavy, but very pretty. (Sane defaults set.)"
             }
 
             +(Mod.thaumicJei) {
-                description = "JEI Integration for Thaumcraft."
+                entry.description = "JEI Integration for Thaumcraft."
             }
 
             +(Mod.justEnoughHarvestcraft) {
-                description = "JEI Integration for Pam's HarvestCraft."
+                entry.description = "JEI Integration for Pam's HarvestCraft."
             }
 
             +(Mod.justEnoughResourcesJer) {
-                description = "JEI Integration that gives drop-rates for mobs, dungeon loot, etc."
+                entry.description = "JEI Integration that gives drop-rates for mobs, dungeon loot, etc."
             }
 
             +(Mod.itemScroller) {
-                description = "Alternative to MouseTweaks."
+                entry.description = "Alternative to MouseTweaks."
             }
 
             +(Mod.xaerosMinimap) {
-                description = "Alternative to Journeymap."
+                entry.description = "Alternative to Journeymap."
             }
 
             +(Mod.minemenu) {
-                description =
+                entry.description =
                     "Radial menu that can be used for command/keyboard shortcuts. Some keybinds cannot be added to radial menu."
             }
 
             +(Mod.itemzoom) {
-                description = "Enable this if you like to get a closer look at item textures."
+                entry.description = "Enable this if you like to get a closer look at item textures."
             }
 
             +(Mod.lightLevelOverlayReloaded) {
-                description = "Smol light-level overlay if you aren't using Dynamic Surroundings."
+                entry.description = "Smol light-level overlay if you aren't using Dynamic Surroundings."
             }
 
             +(Mod.durabilityShow) {
-                description = "Toggle-able item/tool/armor durability HUD. Duplicates with RPG-HUD."
+                entry.description = "Toggle-able item/tool/armor durability HUD. Duplicates with RPG-HUD."
             }
 
             +(Mod.fancyBlockParticles) {
-                description =
+                entry.description =
                     "Caution: Resource heavy. Adds some flair to particle effects and animations. Highly configurable, costs fps."
             }
 
             +(Mod.dynamicSurroundings) {
-                description =
+                entry.description =
                     "Caution: Resource heavy. Lots of configurable features that add immersive sound/visual effects. Includes light-level overlay."
-                version = "3.5.4.0BETA"
+                entry.version = "3.5.4.0BETA"
             }
 
             +(Mod.rpgHud) {
-                description =
+                entry.description =
                     "Highly configurable HUD - heavier alt to Neat. (Configured for compatibility with other mods.)"
             }
 
             +(Mod.keyboardWizard) {
-                description = "Visual keybind manager."
+                entry.description = "Visual keybind manager."
             }
 
             +(Mod.chunkAnimator) {
-                description = "Configurable chunk pop-in animator."
+                entry.description = "Configurable chunk pop-in animator."
             }
 
             +(Mod.fasterLadderClimbing) {
-                description = "Helps you control ladder climb speed and allows you to go a bit faster."
+                entry.description = "Helps you control ladder climb speed and allows you to go a bit faster."
             }
 
             // Resource packs
             +TexturePack.unity {
-                fileName = "Unity.zip"
-                description = "Multi-mod compatible resource pack."
+                entry.fileName = "Unity.zip"
+                entry.description = "Multi-mod compatible resource pack."
             }
 
 //                withTypeClass(Direct::class).list {

@@ -5,7 +5,7 @@ import voodoo.data.nested.NestedEntry
 import voodoo.dsl.VoodooDSL
 import voodoo.property
 
-class EntryBuilder<E: NestedEntry>(
+open class EntryBuilder<E: NestedEntry>(
     entry: E
 ) : AbstractBuilder<E>(entry) {
     //    var id by property(entry::id)
@@ -33,17 +33,17 @@ class EntryBuilder<E: NestedEntry>(
         }
     }
 
-    /**
-     * Create new list of subentries
-     */
-    @VoodooDSL
-    infix fun list(
-        initList: ListBuilder<E>.() -> Unit
-    ): EntryBuilder<E> {
-        val listBuilder = ListBuilder(this.entry)
-        listBuilder.initList()
-        // add all entries from list
-        this.entry.entries += listBuilder.listEntries
-        return this
-    }
+//    /**
+//     * Create new list of subentries
+//     */
+//    @VoodooDSL
+//    infix fun list(
+//        initList: ListBuilder<E>.() -> Unit
+//    ): EntryBuilder<E> {
+//        val listBuilder = ListBuilder(this.entry)
+//        listBuilder.initList()
+//        // add all entries from list
+//        this.entry.entries += listBuilder.listEntries
+//        return this
+//    }
 }

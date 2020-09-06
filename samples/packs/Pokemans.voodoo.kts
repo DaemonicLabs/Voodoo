@@ -14,13 +14,12 @@ modloader {
 //}
 mods {
     +Curse {
-        releaseTypes = setOf(FileType.Release, FileType.Beta)
-        skipFingerprintCheck = false
-    } list {
+        entry.releaseTypes = setOf(FileType.Release, FileType.Beta)
+        entry.skipFingerprintCheck = false
         //TODO: group mods by category (eg. tweakers)
         +Mod.abyssalcraft
         +Mod.advancedRocketry {
-            releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
+            entry.releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
         }
         +Mod.apricornTreeFarm
         +Mod.armorplus
@@ -55,23 +54,20 @@ mods {
         +Mod.wearableBackpacks
 
         +Curse {
-            side = Side.CLIENT
-        } list {
+            entry.side = Side.CLIENT
             +inheritProvider {
-                optional {
+                entry.optional {
                     selected = true
                     skRecommendation = Recommendation.starred
                 }
-            } list {
                 +Mod.xaerosMinimap {
-                    description = "lightweight minimap"
+                    entry.description = "lightweight minimap"
                 }
             }
             +inheritProvider {
-                optional {
+                entry.optional {
                     selected = false
                 }
-            } list {
                 //TODO: add Optifine ?
             }
         }

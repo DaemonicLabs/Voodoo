@@ -43,8 +43,8 @@ sealed class NestedEntry : CommonMutable {
     ) : NestedEntry(), CommonMutable by common, CurseMutable by curse {
         override val provider = CurseProvider.id
 
-        companion object {
-            operator fun invoke(builder: Curse.() -> Unit) = Curse().apply(builder)
+        companion object: NestedEntryProvider<Curse> {
+            override fun create() = Curse()
         }
     }
 
@@ -58,8 +58,8 @@ sealed class NestedEntry : CommonMutable {
     ) : NestedEntry(), CommonMutable by common, DirectMutable by direct {
         override val provider = DirectProvider.id
 
-        companion object {
-            operator fun invoke(builder: Direct.() -> Unit) = Direct().apply(builder)
+        companion object: NestedEntryProvider<Direct> {
+            override fun create() = Direct()
         }
     }
 
@@ -73,8 +73,8 @@ sealed class NestedEntry : CommonMutable {
     ) : NestedEntry(), CommonMutable by common, JenkinsMutable by jenkins {
         override val provider = JenkinsProvider.id
 
-        companion object {
-            operator fun invoke(builder: Jenkins.() -> Unit) = Jenkins().apply(builder)
+        companion object: NestedEntryProvider<Jenkins> {
+            override fun create() = Jenkins()
         }
     }
 
@@ -88,8 +88,8 @@ sealed class NestedEntry : CommonMutable {
     ) : NestedEntry(), CommonMutable by common, LocalMutable by local {
         override val provider = LocalProvider.id
 
-        companion object {
-            operator fun invoke(builder: Local.() -> Unit) = Local().apply(builder)
+        companion object: NestedEntryProvider<Local> {
+            override fun create() = Local()
         }
     }
 
@@ -102,8 +102,8 @@ sealed class NestedEntry : CommonMutable {
     ): NestedEntry(), CommonMutable by common {
         override val provider = NoopProvider.id
 
-        companion object {
-            operator fun invoke(builder: Noop.() -> Unit) = Noop().apply(builder)
+        companion object: NestedEntryProvider<Noop> {
+            override fun create() = Noop()
         }
     }
 

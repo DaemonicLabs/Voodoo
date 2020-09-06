@@ -42,51 +42,92 @@ to add them later into a feature
 
 ### DSL concept
 
+```kotlin
+
++Curse { // this: ListBuilder<Curse> ->
+    entry.releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
+    +Mod.buildcraft
+}
+
+// TODO: operator fun NestedEntryProvider.invoke(initEntry: ListBuilder<E>.() -> Unit)
 ```
-rootEntry = Curse {
-    releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
-    validMcVersions = setOf("1.12.2", "1.12.1", "1.12")
-}.list {
-    // Vazkii
-    +(Mod.akashicTome)
-    +(Mod.botania)
-    +(Mod.psi)
-    +(Mod.quark)
-    +(Mod.morphOTool)
 
-    // Sangar
-    +(Mod.architect)
-    +(Mod.bedrockores)
+```kotlin
+mods {
+    parentEntry.validMcVersions = setOf("1.12.2", "1.12.1", "1.12")
+    +from(Curse) {
+        entry.releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
+        +Mod.buildcraft
+        +Mod.buildcraftCompat
+        +Mod.forestry
+        +Mod.binniesMods
+        +Mod.additionalPipesForBuildcraft
+        +Mod.industrialCraft
+        +Mod.compactSolars
+        +Mod.worldControl
+        +Mod.projectRedBase
+        +Mod.projectRedIntegration
+        +Mod.projectRedLighting
+        +Mod.projectRedFabrication
+        +Mod.projectRedMechanical
+        +Mod.projectRedWorld
+        +Mod.projectRedCompat
+        +Mod.advancedRocketry
+        +Mod.theAetherIi
+        +Mod.minecraftTransportSimulator
+        +Mod.transportSimulatorOfficialVehicleSet
+        +Mod.ironChests
+        +Mod.mystcraft
+        +Mod.biomesOPlenty
+        +Mod.traverseLegacyContinued
+//        +Mod.valkyrienWarfare
+        +Mod.wirelessRedstoneCbe
 
-    // HellFirePvP
-    +(Mod.astralSorcery)
+        // Misc.
+        +Mod.chickenChunks18
+        +Mod.project74246 // doomlike dungeons
+//        +Mod.muon
+        +Mod.morpheus
+        +Mod.quark
+        +Mod.streams
+        +Mod.yabba
 
+        // Util mods
+        +Mod.backTools
+        +Mod.betterPlacement
+        +Mod.dynamicSurroundings
+        +Mod.foamfixOptimizationMod
+        +Mod.gottaGoFast
+        +Mod.inventoryTweaks
+        +Mod.jei
+        +Mod.jeiBees
+        +Mod.justEnoughResourcesJer
+        +Mod.justEnoughPatternBanners
+        +Mod.mapwriter2
+        +Mod.openeye
+        +Mod.vanillafix
 
-    +inheritProvider {
-        side = Side.SERVER
-    }.list {
-        +(Mod.btfuContinuousRsyncIncrementalBackup)
-        +(Mod.swingthroughgrass)
-        +(Mod.colorchat)
-        +Jenkins {
-            jenkinsUrl = "https://ci.elytradev.com"
-        }.list {
-            +"matterlink" job "elytra/MatterLink/master"
+        +fromParent {
+            entry.side = Side.CLIENT
+            +Mod.blur
+            +Mod.betterFoliage
+            +Mod.betterfps
+            +Mod.discordsuite
+            +Mod.firstPersonRender
+            +Mod.itemphysicLite
+            +Mod.justthetips
+            +Mod.keyboardWizard
+            +Mod.mage
+            // +"shoulder-surfing-reloaded"
+            +Mod.soundFilters
+            +Mod.tipthescales
         }
     }
 
-    +Direct {}.list {
-        +"nutrition" {
-            url = "https://github.com/WesCook/Nutrition/releases/download/v4.0.0/Nutrition-1.12.2-4.0.0.jar"
-        }
-        +"galacticraftCore" {
-            url = "https://ci.micdoodle8.com/job/Galacticraft-1.12/190/artifact/Forge/build/libs/GalacticraftCore-1.12.2-4.0.2.190.jar"
-        }
-        (+"galacticraftPlanets") {
-            url = "https://ci.micdoodle8.com/job/Galacticraft-1.12/190/artifact/Forge/build/libs/Galacticraft-Planets-1.12.2-4.0.2.190.jar"
-        }
-        +"micdoodleCore" {
-            url = "https://ci.micdoodle8.com/job/Galacticraft-1.12/190/artifact/Forge/build/libs/MicdoodleCore-1.12.2-4.0.2.190.jar"
+    +from(Jenkins) {
+        entry.jenkinsUrl = "https://ci.rs485.network"
+        +"logisticspipes"{
+            job = "LogisticsPipes-0.10-mc112"
         }
     }
 }

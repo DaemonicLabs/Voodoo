@@ -1,8 +1,6 @@
 package voodoo.dsl.builder
 
 import mu.KLogging
-import voodoo.data.ModloaderPattern
-import voodoo.data.OptionalData
 import voodoo.data.PackDSL
 import voodoo.data.PackOptions
 import voodoo.data.nested.NestedEntry
@@ -10,7 +8,6 @@ import voodoo.data.nested.NestedPack
 import voodoo.dsl.VoodooDSL
 import voodoo.property
 import voodoo.readOnly
-import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 @VoodooDSL
@@ -47,8 +44,8 @@ open class ModpackBuilder(
     fun mods(
         initMods: ListBuilder<NestedEntry>.() -> Unit
     ) {
-        val rootBuilder = EntryBuilder(pack.root)
-        rootBuilder.list(initMods)
+        val rootBuilder = ListBuilder(pack.root)
+        rootBuilder.apply(initMods)
     }
 
 

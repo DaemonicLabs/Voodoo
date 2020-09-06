@@ -17,10 +17,9 @@ pack {
     )
 }
 mods {
-    parentEntry.validMcVersions = setOf("1.12.2", "1.12.1", "1.12")
+    entry.validMcVersions = setOf("1.12.2", "1.12.1", "1.12")
     +Curse {
-        releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
-    } list {
+        entry.releaseTypes = setOf(FileType.Release, FileType.Beta, FileType.Alpha)
         +Mod.buildcraft
         +Mod.buildcraftCompat
         +Mod.forestry
@@ -72,8 +71,7 @@ mods {
         +Mod.vanillafix
 
         +inheritProvider {
-            side = Side.CLIENT
-        } list {
+            entry.side = Side.CLIENT
             +Mod.blur
             +Mod.betterFoliage
             +Mod.betterfps
@@ -90,11 +88,10 @@ mods {
     }
 
 
-    +Jenkins{
-        jenkinsUrl = "https://ci.rs485.network"
-    } list {
-        +"logisticspipes"{
-            job = "LogisticsPipes-0.10-mc112"
+    +Jenkins {
+        entry.jenkinsUrl = "https://ci.rs485.network"
+        +"logisticspipes" {
+            entry.job = "LogisticsPipes-0.10-mc112"
         }
     }
 }
