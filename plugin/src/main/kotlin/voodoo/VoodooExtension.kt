@@ -99,12 +99,12 @@ open class VoodooExtension(project: Project) {
             slugSanitizer = slugSanitizer
         )
     }
-    fun generateCurseforgeTexturepacks(
+    fun generateCurseforgeResourcepacks(
         name: String,
         vararg versions: String,
         categories: List<String> = listOf(),
         slugSanitizer: (String) -> String = Poet::defaultSlugSanitizer
     ) {
-        curseGenerators += CurseGenerator(name, CurseSection.TEXTURE_PACKS, categories, listOf(*versions), slugSanitizer)
+        curseGenerators += CurseGenerator(name, CurseSection.RESOURCE_PACKS, categories, listOf(*versions), slugSanitizer)
     }
 }

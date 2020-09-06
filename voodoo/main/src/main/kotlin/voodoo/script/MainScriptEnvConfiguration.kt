@@ -3,7 +3,7 @@ package voodoo.script
 import mu.KotlinLogging
 import voodoo.GenerateForge
 import voodoo.GenerateMods
-import voodoo.GenerateTexturePacks
+import voodoo.GenerateResourcePacks
 import voodoo.poet.Poet
 import voodoo.poet.generator.CurseGenerator
 import voodoo.poet.generator.CurseSection
@@ -40,7 +40,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
 
         GenerateForge::class,
         GenerateMods::class,
-        GenerateTexturePacks::class,
+        GenerateResourcePacks::class,
         Include::class
     ).map {
         it.qualifiedName!!
@@ -105,7 +105,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
             compilationConfiguration.asSuccess(reports)
         }
 
-        onAnnotations(listOf(GenerateMods::class, GenerateTexturePacks::class, GenerateForge::class, Include::class)) { context ->
+        onAnnotations(listOf(GenerateMods::class, GenerateResourcePacks::class, GenerateForge::class, Include::class)) { context ->
             val reports: MutableList<ScriptDiagnostic> = mutableListOf()
 //            println("collectedData: '${context.collectedData}'")
 //            context.collectedData?.entries()?.forEach { (key, value) ->
@@ -142,7 +142,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
             // collect generator instructions
             val modGenerators = annotations.filterIsInstance<GenerateMods>().groupBy { it.name }
 
-            val texturePackGenerators = annotations.filterIsInstance<GenerateTexturePacks>().groupBy { it.name }
+            val resourcePackGenerators = annotations.filterIsInstance<GenerateResourcePacks>().groupBy { it.name }
 
             val curseGenerators = modGenerators.map { (file, annotations) ->
                 CurseGenerator(
@@ -150,10 +150,10 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
                     section = CurseSection.MODS,
                     mcVersions = annotations.map { it.mc }.filter { it.isNotBlank() }.distinct()
                 )
-            } + texturePackGenerators.map { (file, annotations) ->
+            } + resourcePackGenerators.map { (file, annotations) ->
                 CurseGenerator(
                     name = file,
-                    section = CurseSection.TEXTURE_PACKS,
+                    section = CurseSection.RESOURCE_PACKS,
                     mcVersions = annotations.map { it.mc }.filter { it.isNotBlank() }.distinct()
                 )
             }

@@ -3,7 +3,7 @@ package voodoo
 @Repeatable
 @Target(AnnotationTarget.FILE)
 @Retention(AnnotationRetention.SOURCE)
-annotation class GenerateTexturePacks(
+annotation class GenerateResourcePacks(
     val name: String,
     val mc: String = ""
 //    val mc: Array<String>

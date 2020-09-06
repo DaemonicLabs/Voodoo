@@ -7,7 +7,7 @@ import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.GenerateForge
 import voodoo.GenerateMods
-import voodoo.GenerateTexturePacks
+import voodoo.GenerateResourcePacks
 import voodoo.curse.CurseClient
 import voodoo.data.ModloaderPattern
 import voodoo.data.curse.FileID
@@ -317,7 +317,7 @@ object PoetPack : KLogging() {
                 annotationBuilder.addMember("name = %S", "Mod")
                 annotationBuilder.addMember("mc = %S", nestedPack.mcVersion ?: "1.12.2")
             }.build()
-            fileSpecBuilder.annotations += AnnotationSpec.builder(GenerateTexturePacks::class)
+            fileSpecBuilder.annotations += AnnotationSpec.builder(GenerateResourcePacks::class)
                 .also { annotationBuilder ->
                     annotationBuilder.useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
                     annotationBuilder.addMember("name = %S", "TexturePack")

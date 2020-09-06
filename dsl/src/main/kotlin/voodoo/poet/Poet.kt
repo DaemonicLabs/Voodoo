@@ -27,7 +27,7 @@ object Poet : KLogging() {
         SharedFolders.RootDir.value = File(args[0])
         generateAll(
             generatedSrcDir = File(args[1]),
-            curseGenerators = listOf(CurseGenerator("Mod", CurseSection.MODS)),
+            curseGenerators = listOf(CurseGenerator("Mod", CurseSection.MODS, mcVersions = listOf("1.12.2"))),
             forgeGenerators = listOf(ForgeGenerator("Forge"))
         )
     }
@@ -116,7 +116,7 @@ object Poet : KLogging() {
         }.forEach { (slug, id) ->
             val projectPage = when (section) {
                 CurseSection.MODS -> "https://www.curseforge.com/minecraft/mc-mods/$slug"
-                CurseSection.TEXTURE_PACKS -> "https://www.curseforge.com/minecraft/texture-packs/$slug"
+                CurseSection.RESOURCE_PACKS -> "https://www.curseforge.com/minecraft/texture-packs/$slug"
             }
             objectBuilder.addProperty(
                 PropertySpec.builder(
