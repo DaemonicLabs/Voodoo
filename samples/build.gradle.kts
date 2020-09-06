@@ -44,7 +44,7 @@ voodoo {
 
     generateCurseforgeMods("Mod", "1.12", "1.12.1", "1.12.2")
     generateCurseforgeMods("FabricMod", "1.15", "1.15.1", "1.15.2", categories = listOf("Fabric"))
-    generateCurseforgeTexturepacks("TexturePack", "1.12", "1.12.1", "1.12.2")
+    generateCurseforgeResourcepacks("TexturePack", "1.12", "1.12.1", "1.12.2")
     generateForge("Forge_12_2", "1.12.2")
     generateForge("Forge_15_2", "1.15.2")
     generateFabric("Fabric", true)
