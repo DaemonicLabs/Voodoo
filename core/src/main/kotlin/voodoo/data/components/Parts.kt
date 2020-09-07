@@ -15,7 +15,7 @@ interface CommonImmutable {
     @Transient val provider: String
     val id: String
     val name: String?
-    val folder: String
+    val folder: String?
     val description: String?
     val optionalData: OptionalData?
     val side: Side
@@ -34,7 +34,7 @@ interface CommonImmutable {
 interface CommonMutable : CommonImmutable {
     override var id: String
     override var name: String?
-    override var folder: String
+    override var folder: String?
     override var description: String?
     override var optionalData: OptionalData?
     override var side: Side

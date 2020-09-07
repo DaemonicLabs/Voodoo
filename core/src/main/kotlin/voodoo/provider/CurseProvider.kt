@@ -71,7 +71,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
             throw IllegalStateException("invalid file id for $entry")
         }
 
-        entry.folder = path
+        entry.folder = entry.folder ?: path
         val lock = entry.lock { commonComponent ->
             LockEntry.Curse(
                 common = commonComponent,

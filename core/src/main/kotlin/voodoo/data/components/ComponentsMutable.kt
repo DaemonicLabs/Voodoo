@@ -21,7 +21,7 @@ data class CommonComponent(
     @Transient override var provider: String = "",
     override var id: String = "",
     override var name: String? = null,
-    override var folder: String = "mods",
+    override var folder: String? = null,
     override var description: String? = null,
     override var optionalData: OptionalData? = null,
     override var side: Side = Side.BOTH,
