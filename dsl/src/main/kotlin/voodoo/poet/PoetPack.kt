@@ -320,7 +320,7 @@ object PoetPack : KLogging() {
             fileSpecBuilder.annotations += AnnotationSpec.builder(GenerateResourcePacks::class)
                 .also { annotationBuilder ->
                     annotationBuilder.useSiteTarget(AnnotationSpec.UseSiteTarget.FILE)
-                    annotationBuilder.addMember("name = %S", "TexturePack")
+                    annotationBuilder.addMember("name = %S", "ResourcePack")
                     annotationBuilder.addMember("mc = %S", nestedPack.mcVersion ?: "1.12.2")
                 }.build()
             fileSpecBuilder.annotations += AnnotationSpec.builder(GenerateForge::class).also { annotationBuilder ->

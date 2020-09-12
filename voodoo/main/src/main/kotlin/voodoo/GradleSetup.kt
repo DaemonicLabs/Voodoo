@@ -71,7 +71,7 @@ object GradleSetup : KLogging() {
 
 //                generateCurseforgeMods("Mod", "1.12", "1.12.1", "1.12.2") // mods for 1.12.x
                 generateCurseforgeMods("Fabric", "1.15", "1.15.1", "1.15.2", categories = listOf("Fabric")) // only fabric mods on 1.15.x
-                generateCurseforgeTexturepacks("TexturePack", "1.12", "1.12.1", "1.12.2")
+                generateCurseforgeResourcepacks("ResourcePack", "1.12", "1.12.1", "1.12.2")
                 generateForge("Forge", "1.12.2")
                 generateFabric("Fabric", stable = true)
             }
