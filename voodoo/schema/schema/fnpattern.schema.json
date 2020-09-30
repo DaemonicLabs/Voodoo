@@ -1,0 +1,35 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "include": {
+            "type": "array",
+            "contains": {
+                "type": "string"
+            }
+        },
+        "exclude": {
+            "type": "array",
+            "contains": {
+                "type": "string"
+            }
+        },
+        "flags": {
+            "type": "array",
+            "contains": {
+                "type": "string",
+                "enum": [
+                    "NOESCAPE",
+                    "PATHNAME",
+                    "PERIOD",
+                    "LEADING_DIR",
+                    "CASEFOLD"
+                ]
+            }
+        }
+    },
+    "required": [
+        "type",
+        "id"
+    ]
+}

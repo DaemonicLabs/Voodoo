@@ -67,6 +67,7 @@ allprojects {
         maven(url = "https://kotlin.bintray.com/kotlinx") {
             name = "KotlinX"
         }
+        maven(url = "https://dl.bintray.com/hotkeytlt/maven")
     }
 
     task<DefaultTask>("depsize") {

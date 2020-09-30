@@ -14,7 +14,6 @@ import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import voodoo.plugin.GeneratedConstants
 import voodoo.poet.Poet
 import voodoo.util.SharedFolders
-import java.util.*
 
 open class VoodooPlugin : Plugin<Project> {
     override fun apply(project: Project) {

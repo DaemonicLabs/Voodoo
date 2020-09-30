@@ -1,0 +1,15 @@
+{
+    "$schema": "./schema/modpack.schema.json",
+    "version": "1.0.0",
+    "authors": ["nikky"],
+    "mcVersion": "1.16.2",
+    "selfupdateUrl": "https://yourdomain.com/voodoo/$modpackId.json",
+    "modloader": {
+        "type": "fabric",
+        "intermediary": "1.16.2",
+        "version": "dhfdenjvb"
+    },
+    "mods": {
+        
+    }
+}

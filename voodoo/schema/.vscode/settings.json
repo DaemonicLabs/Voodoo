@@ -1,0 +1,6 @@
+{
+    "yaml.schemas": {
+        "./schema/modpack.schema.json": ".voodoo.yml"
+    },
+    "files.autoSave": "afterDelay"
+}

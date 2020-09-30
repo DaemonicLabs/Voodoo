@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "title": {
+            "type": "string"
+        },
+        "authors": {
+            "type": "array",
+            "contains": {
+                "type": "string"
+            }
+        },
+        "version": {
+            "type": "string"
+        },
+        "icon": {
+            "type": "string"
+        },
+        "mcVersion": {
+            "type": "string"
+        },
+        "modloader": {
+            "$ref": "./modloader.schema.json"
+        },
+        "selfupdateUrl": {
+            "type": "string",
+            "description": "url to upload location of $modpackId.json",
+            "examples": ["https://yourdomain.com/voodoo/$modpackId.json"]
+        },
+        "multimc": {
+            "$ref": "./multimc.schema.json"
+        },
+        "userFiles": {
+            "$ref": "./fnpattern.schema.json"
+        },
+        "$schema": {
+            "type": "string",
+            "enum": ["./schema/modpack.schema.json"]
+        },
+        "tags": {
+            "$ref": "./entry/mapping.component.schema.json"
+        },
+        "mods": {
+            "$ref": "./entry/mapping.schema.json"
+        }
+    },
+    "required": [
+        "version",
+        "mcVersion",
+        "modloader",
+        "selfupdateUrl",
+        "$schema"
+    ],
+    "additionalProperties": false
+}

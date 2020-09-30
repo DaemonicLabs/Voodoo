@@ -1,0 +1,23 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "common": {
+            "$ref": "./common.schema.json"
+        },
+        "file": {
+            "type": "string",
+            "description": "file location"
+        },
+        "tags": {
+            "type": "array",
+            "contains": {
+                "type": "string"
+            }
+        }
+    },
+    "required": [
+        "file"
+    ],
+    "additionalProperties": false
+}

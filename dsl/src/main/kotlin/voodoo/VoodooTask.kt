@@ -9,8 +9,7 @@ import voodoo.data.nested.NestedPack
 import voodoo.pack.AbstractPack
 import voodoo.tome.TomeEnv
 import voodoo.util.SharedFolders
-import voodoo.voodoo.GeneratedConstants
-import java.util.*
+import voodoo.dsl.GeneratedConstants
 
 sealed class VoodooTask(open val key: String) {
     object Build : VoodooTask("build") {

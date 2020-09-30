@@ -1,0 +1,160 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "type": "object",
+    "properties": {
+        "type": {
+            "type": "string",
+            "enum": ["curse", "direct", "jenkins", "local"]
+        }
+    },
+    "required": ["type"],
+    "anyOf": [
+        {
+            "properties": {
+                "type": {
+                    "const": "curse"
+                },
+                "common": {
+                    "$ref": "#/definitions/common"
+                },
+                "slug": {
+                    "type": "string",
+                    "description": "inferred from entry key"
+                },
+                "projectId": {
+                    "type": "integer"
+                },
+                "fileId": {
+                    "type": "integer"
+                },
+                "skipFingerprintCheck": {
+                    "type": "boolean"
+                },
+                "tags": {
+                    "type": "array",
+                    "contains": {
+                        "type": "string"
+                    }
+                }
+            },
+            "additionalProperties": false
+        },
+        {
+            "properties": {
+                "type": {
+                    "const": "direct"
+                },
+                "common": {
+                    "$ref": "#/definitions/common"
+                },
+                "url": {
+                    "type": "string",
+                    "description": "file location"
+                },
+                "tags": {
+                    "type": "array",
+                    "contains": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "url"
+            ],
+            "additionalProperties": false
+        },
+        {
+            "properties": {
+                "type": {
+                    "const": "jenkins"
+                },
+                "common": {
+                    "$ref": "#/definitions/common"
+                },
+                "job": {
+                    "type": "string",
+                    "description": "url to the job",
+                    "examples": ["http://jenkins.domain.net/job/MinecraftMod/job/1.16.2/"]
+                },
+                "tags": {
+                    "type": "array",
+                    "contains": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "job"
+            ],
+            "additionalProperties": false
+        },
+        {
+            "properties": {
+                "type": {
+                    "const": "local"
+                },
+                "common": {
+                    "$ref": "#/definitions/common"
+                },
+                "file": {
+                    "type": "string",
+                    "description": "file location"
+                },
+                "tags": {
+                    "type": "array",
+                    "contains": {
+                        "type": "string"
+                    }
+                }
+            },
+            "required": [
+                "file"
+            ],
+            "additionalProperties": false
+        }
+    ],
+    "definitions": {
+        "common": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "folder": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "side": {
+                    "type": "string",
+                    "enum": ["CLIENT", "SERVER", "BOTH"]
+                },
+                "useOriginalUrl": {
+                    "type": "boolean",
+                    "description": "set to false to enable rehosting of files in modpack dsitribution"
+                },
+                "optional": {
+                    "type": "object",
+                    "properties": {
+                        "selected": {
+                            "types": "boolean"
+                        },
+                        "recommended": {
+                            "types": "string",
+                            "enum": ["starred", "avoid"]
+                        },
+                        "files": {
+                            "$ref": "./fnpattern.schema.json",
+                            "description": "match files to be grouped with the feature"
+                        }
+                    }
+                },
+                "fileName": {
+                    "type": "string"
+                }
+            },
+            "additionalProperties": false
+        }
+    }
+}
