@@ -42,20 +42,20 @@ pipeline {
             }
         }
         success {
-            sh './gradlew writeMavenUrls'
-            script {
-               env.URLS = readFile('mavenUrls.txt')
-            }
-            withCredentials([string(credentialsId: 'discord.webhook.url', variable: 'discordWebhookId')]) {
-                discordSend(
-                    description: "Downloads: \n${env.URLS}",
-                    footer: "build in ${currentBuild.durationString.replace(' and counting', '')}",
-                    link: env.BUILD_URL,
-                    result: currentBuild.currentResult,
-                    title: JOB_NAME,
-                    webhookURL: discordWebhookId
-                )
-            }
+//            sh './gradlew writeMavenUrls'
+//            script {
+//               env.URLS = readFile('mavenUrls.txt')
+//            }
+//            withCredentials([string(credentialsId: 'discord.webhook.url', variable: 'discordWebhookId')]) {
+//                discordSend(
+//                    description: "Downloads: \n${env.URLS}",
+//                    footer: "build in ${currentBuild.durationString.replace(' and counting', '')}",
+//                    link: env.BUILD_URL,
+//                    result: currentBuild.currentResult,
+//                    title: JOB_NAME,
+//                    webhookURL: discordWebhookId
+//                )
+//            }
             sh './gradlew buildnumberIncrement'
         }
     }
