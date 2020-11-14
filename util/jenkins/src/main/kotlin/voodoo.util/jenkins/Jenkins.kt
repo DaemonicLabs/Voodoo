@@ -11,14 +11,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
 import voodoo.util.client
 import java.io.IOException
 
 object Jenkins : KLogging()
 
-private val json = Json(JsonConfiguration(encodeDefaults = false, ignoreUnknownKeys = true))
+private val json = Json {
+    encodeDefaults = false
+    ignoreUnknownKeys = true
+}
 private val useragent = "voodoo/${GeneratedConstants.VERSION}"
 
 class JenkinsServer(
@@ -43,7 +45,7 @@ class JenkinsServer(
             Jenkins.logger.error { "$requestURL returned ${response.status}" }
             return@withContext null
         }
-        return@withContext json.parse(Job.serializer(), response.readText())
+        return@withContext json.decodeFromString(Job.serializer(), response.readText())
     }
 }
 
@@ -70,7 +72,7 @@ data class Build(
             return@withContext null
         }
 
-        return@withContext json.parse(BuildWithDetails.serializer(), response.readText())
+        return@withContext json.decodeFromString(BuildWithDetails.serializer(), response.readText())
     }
 }
 

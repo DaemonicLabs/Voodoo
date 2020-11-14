@@ -7,7 +7,7 @@ dependencies {
     api(Kotlin.stdlib)
     api(kotlin("reflect", "_"))
 
-    api(KotlinX.serialization.runtime)
+    api(KotlinX.serialization.json)
     api(KotlinX.coroutines.core)
 
     api(group = "io.github.microutils", name = "kotlin-logging", version = "_")

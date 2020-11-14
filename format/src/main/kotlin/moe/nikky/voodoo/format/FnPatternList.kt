@@ -10,7 +10,7 @@ data class FnPatternList(
 
     var exclude: List<String> = arrayListOf(),
     @Transient
-    var flags: EnumSet<FnMatch.Flag> = DEFAULT_FLAGS
+    var flags: Set<FnMatch.Flag> = DEFAULT_FLAGS
 ) {
 
     fun matches(path: String): Boolean {
@@ -27,6 +27,6 @@ data class FnPatternList(
     }
 
     companion object {
-        private val DEFAULT_FLAGS = EnumSet.of<FnMatch.Flag>(FnMatch.Flag.CASEFOLD, FnMatch.Flag.PERIOD)
+        private val DEFAULT_FLAGS = setOf<FnMatch.Flag>(FnMatch.Flag.CASEFOLD, FnMatch.Flag.PERIOD)
     }
 }

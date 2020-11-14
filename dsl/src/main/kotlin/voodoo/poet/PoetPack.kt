@@ -34,7 +34,7 @@ object PoetPack : KLogging() {
 
     private fun CodeBlock.Builder.entry(entry: NestedEntry, /*default: NestedEntry,*/ root: Boolean = false) {
         val default = entry::class.createInstance()
-        val provider = Providers[entry.provider]
+        val provider = Providers.forEntry(entry)!!
         val entryBody = CodeBlock.builder().apply {
             entry.name.takeIf { it != default.name }?.let {
                 addStatement("name = %S", it)
@@ -231,7 +231,7 @@ object PoetPack : KLogging() {
                             for ((identifier, number) in promos) {
                                 if (it.version == number) return@runBlocking identifier
                             }
-                            val mcVersions = ForgeUtil.mcVersionsMap()
+                            val mcVersions = ForgeUtil.mcVersionsMapSanitized()
                             for ((_, mapping) in mcVersions) {
                                 for ((identifier, version) in mapping) {
                                     if (it.version == version) return@runBlocking identifier

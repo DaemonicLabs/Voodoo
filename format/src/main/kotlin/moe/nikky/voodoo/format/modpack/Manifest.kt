@@ -1,7 +1,6 @@
 package moe.nikky.voodoo.format.modpack
 
 import Modloader
-import ModloaderSerializer
 import kotlinx.serialization.Serializable
 import moe.nikky.voodoo.format.Feature
 import moe.nikky.voodoo.format.modpack.entry.FileInstall
@@ -26,7 +25,7 @@ data class Manifest(
 
     // no longer required / move to versionManifest ?
     var gameVersion: String,
-    @Serializable(with=ModloaderSerializer::class)
+//    @Serializable(with=ModloaderSerializer::class)
     var modLoader: Modloader,
 
     var features: List<Feature> = emptyList(),

@@ -13,7 +13,7 @@ dependencies {
 
     // script evaluations
     implementation(kotlin("script-util", "_"))
-    implementation(kotlin("scripting-jvm-host-embeddable", "_"))
+    implementation(kotlin("scripting-jvm-host", "_"))
     implementation(kotlin("scripting-compiler-embeddable", "_"))
     implementation(kotlin("scripting-compiler-impl-embeddable", "_"))
 

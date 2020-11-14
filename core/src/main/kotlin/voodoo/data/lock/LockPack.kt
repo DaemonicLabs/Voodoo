@@ -42,7 +42,7 @@ data class LockPack(
             if (!rootFolder.isAbsolute) {
                 throw IllegalStateException("rootFolder: '$rootFolder' is not absolute")
             }
-            val lockpack: LockPack = json.parse(LockPack.serializer(), packFile.readText())
+            val lockpack: LockPack = json.decodeFromString(LockPack.serializer(), packFile.readText())
             lockpack.rootFolder = rootFolder
             lockpack.loadEntries()
             return lockpack

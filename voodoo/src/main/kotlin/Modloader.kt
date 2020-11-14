@@ -1,3 +1,4 @@
+import com.github.ricky12awesome.jss.JsonSchema
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.*
@@ -7,7 +8,8 @@ import kotlinx.serialization.json.*
 @Serializable
 sealed class Modloader {
     @Serializable
-    @SerialName("Forge")
+    @SerialName("modloader.forge")
+    @JsonSchema.DefinitionRef("modloader.forge")
     data class Forge(
         // TODO: maybe just second part of `1.15.2-31.1.35` ? is this clear enough for the server to download the installer ?
         // https://files.minecraftforge.net/maven/net/minecraftforge/forge/maven-metadata.xml
@@ -25,32 +27,22 @@ sealed class Modloader {
                 )
             }
         }
-
-//        val shortVersion: ShortVersion
-//            get() = ShortVersion(forgeVersion.run {
-//                branch?.let { "$forgeVersion-$it" } ?: forgeVersion
-//            })
-//
-//        inline class ShortVersion(val version: String) {
-//            val components: List<String>
-//                get() = version.split('-')
-//            val forgeVersion: String
-//                get() = components[0]
-//            val branch: String?
-//                get() = components.getOrNull(1)
-//        }
     }
 
     // look up versions from https://meta.fabricmc.net/
     @Serializable
-    @SerialName("Fabric")
+    @SerialName("modloader.fabric")
+    @JsonSchema.DefinitionRef("modloader.fabric")
     data class Fabric(
-        // https://meta.fabricmc.net/v2/versions/loader
-        val loader: String,
-        // https://meta.fabricmc.net/v2/versions/intermediary
+        @JsonSchema.DefinitionRef("Fabric.intermediary")
+        @JsonSchema.Description(["find available versions on https://meta.fabricmc.net/v2/versions/intermediary"])
         val intermediateMappings: String,
-        // https://meta.fabricmc.net/v2/versions/installer
-        val installer: String
+        @JsonSchema.DefinitionRef("Fabric.loader")
+        @JsonSchema.Description(["find available versions on https://meta.fabricmc.net/v2/versions/loader"])
+        val loader: String? = null,
+        @JsonSchema.DefinitionRef("Fabric.installer")
+        @JsonSchema.Description(["find available versions on https://meta.fabricmc.net/v2/versions/installer"])
+        val installer: String? = null
     ) : Modloader()
 
     @Serializable

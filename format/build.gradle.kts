@@ -5,5 +5,6 @@ plugins {
 
 dependencies {
     api(Kotlin.stdlib)
-    implementation(KotlinX.serialization.runtime)
+    implementation(KotlinX.serialization.core)
+    implementation(KotlinX.serialization.json)
 }

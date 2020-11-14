@@ -26,7 +26,6 @@ sealed class NestedEntry : CommonMutable {
         val common: CommonComponent = CommonComponent(),
         override var entries: List<NestedEntry> = emptyList()
     ) : NestedEntry(), CommonMutable by common {
-        override val provider = ""
 
 //        companion object {
 //            operator fun invoke(builder: Common.() -> Unit) = Common().apply(builder)
@@ -41,7 +40,6 @@ sealed class NestedEntry : CommonMutable {
         val curse: CurseComponent = CurseComponent(),
         override var entries: List<NestedEntry> = emptyList()
     ) : NestedEntry(), CommonMutable by common, CurseMutable by curse {
-        override val provider = CurseProvider.id
 
         companion object: NestedEntryProvider<Curse> {
             override fun create() = Curse()
@@ -56,7 +54,6 @@ sealed class NestedEntry : CommonMutable {
         val direct: DirectComponent = DirectComponent(),
         override var entries: List<NestedEntry> = emptyList()
     ) : NestedEntry(), CommonMutable by common, DirectMutable by direct {
-        override val provider = DirectProvider.id
 
         companion object: NestedEntryProvider<Direct> {
             override fun create() = Direct()
@@ -71,7 +68,6 @@ sealed class NestedEntry : CommonMutable {
         val jenkins: JenkinsComponent = JenkinsComponent(),
         override var entries: List<NestedEntry> = emptyList()
     ) : NestedEntry(), CommonMutable by common, JenkinsMutable by jenkins {
-        override val provider = JenkinsProvider.id
 
         companion object: NestedEntryProvider<Jenkins> {
             override fun create() = Jenkins()
@@ -86,8 +82,6 @@ sealed class NestedEntry : CommonMutable {
         val local: LocalComponent = LocalComponent(),
         override var entries: List<NestedEntry> = emptyList()
     ) : NestedEntry(), CommonMutable by common, LocalMutable by local {
-        override val provider = LocalProvider.id
-
         companion object: NestedEntryProvider<Local> {
             override fun create() = Local()
         }
@@ -100,8 +94,6 @@ sealed class NestedEntry : CommonMutable {
         val common: CommonComponent = CommonComponent(),
         override var entries: List<NestedEntry> = emptyList()
     ): NestedEntry(), CommonMutable by common {
-        override val provider = NoopProvider.id
-
         companion object: NestedEntryProvider<Noop> {
             override fun create() = Noop()
         }

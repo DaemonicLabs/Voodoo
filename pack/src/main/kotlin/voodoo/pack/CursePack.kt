@@ -212,7 +212,7 @@ object CursePack : AbstractPack("curse") {
                 overrides = "overrides"
             )
             val manifestFile = modpackDir.resolve("manifest.json")
-            manifestFile.writeText(json.stringify(CurseManifest.serializer(), curseManifest))
+            manifestFile.writeText(json.encodeToString(CurseManifest.serializer(), curseManifest))
 
             val cursePackFile = output.resolve(with(modpack) { "$id-$version.zip" })
 

@@ -270,7 +270,7 @@ object VoodooPackager : AbstractPack("experimental") {
                 // regenerate packages.json
                 val packagesFile = output.resolve("packages.json")
                 val packages: SKPackages = if (packagesFile.exists()) {
-                    json.parse(SKPackages.serializer(), packagesFile.readText())
+                    json.decodeFromString(SKPackages.serializer(), packagesFile.readText())
                 } else {
                     SKPackages()
                 }
@@ -283,7 +283,7 @@ object VoodooPackager : AbstractPack("experimental") {
                         location = "${modpack.id}.json"
                     ).apply { packages.packages += this }
                 packFragment.version = uniqueVersion
-                packagesFile.writeText(json.stringify(SKPackages.serializer(), packages))
+                packagesFile.writeText(json.encodeToString(SKPackages.serializer(), packages))
 
                 logger.info("finished")
             }

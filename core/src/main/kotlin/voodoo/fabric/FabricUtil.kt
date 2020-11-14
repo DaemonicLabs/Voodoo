@@ -8,7 +8,8 @@ import io.ktor.http.isSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.builtins.ListSerializer
 import mu.KLogging
 import voodoo.fabric.meta.FabricInstaller
 import voodoo.fabric.meta.FabricIntermediary
@@ -43,7 +44,7 @@ object FabricUtil : KLogging() {
             logger.error("response: $response")
             error("failed receiving")
         }
-        return@withContext json.parse(FabricLoader.serializer().list, response.readText())
+        return@withContext json.decodeFromString(ListSerializer(FabricLoader.serializer()), response.readText())
     }
 
     // https://meta.fabricmc.net/v2/versions/loader/1.15
@@ -69,7 +70,7 @@ object FabricUtil : KLogging() {
             logger.error("response: $response")
             error("failed receiving")
         }
-        return@withContext json.parse(FabricLoaderForVersion.serializer().list, response.readText())
+        return@withContext json.decodeFromString(ListSerializer(FabricLoaderForVersion.serializer()), response.readText())
     }
 
     // https://meta.fabricmc.net/v2/versions/intermediary
@@ -94,7 +95,7 @@ object FabricUtil : KLogging() {
             logger.error("response: $response")
             error("failed receiving")
         }
-        return@withContext json.parse(FabricIntermediary.serializer().list, response.readText())
+        return@withContext json.decodeFromString(ListSerializer(FabricIntermediary.serializer()), response.readText())
     }
 
     // https://meta.fabricmc.net/v2/versions/installer
@@ -119,6 +120,6 @@ object FabricUtil : KLogging() {
             logger.error("response: $response")
             error("failed receiving")
         }
-        return@withContext json.parse(FabricInstaller.serializer().list, response.readText())
+        return@withContext json.decodeFromString(ListSerializer(FabricInstaller.serializer()), response.readText())
     }
 }

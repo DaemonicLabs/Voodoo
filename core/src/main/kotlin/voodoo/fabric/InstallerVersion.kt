@@ -1,10 +1,10 @@
 package voodoo.fabric
 
-import kotlinx.serialization.Decoder
-import kotlinx.serialization.Encoder
 import kotlinx.serialization.Serializer
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 
-inline class InstallerVersion (
+inline class InstallerVersion(
     val version: String
 ) {
     @Serializer(forClass = InstallerVersion::class)

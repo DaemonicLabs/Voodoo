@@ -120,7 +120,7 @@ data class PackDiff(
             }
 
             val reportFile = newMeta.resolve(Filename.packMeta)
-            val json = json.stringify(packMetaSerializer, reportDataForJson)
+            val json = json.encodeToString(packMetaSerializer, reportDataForJson)
 
             newMeta.mkdirs()
             reportFile.writeText(json)
@@ -131,7 +131,7 @@ data class PackDiff(
         fun readPackMetaInformation(oldMeta: File): Map<PackReportData, String> {
             val reportFile = oldMeta.resolve(Filename.packMeta)
             if (!reportFile.exists()) return mapOf()
-            return json.parse(packMetaSerializer, reportFile.readText()).mapKeys { (key, _) ->
+            return json.decodeFromString(packMetaSerializer, reportFile.readText()).mapKeys { (key, _) ->
                 PackReportData.getByKey(key)!!
             }
         }
@@ -150,7 +150,7 @@ data class PackDiff(
                 }
             }
             val reportFile = newMeta.resolve(Filename.entryMeta)
-            val json = json.stringify(entryMetaSerializer, reportDataForJson)
+            val json = json.encodeToString(entryMetaSerializer, reportDataForJson)
 
             newMeta.mkdirs()
             logger.info("writing $reportFile")
@@ -162,7 +162,7 @@ data class PackDiff(
         fun readEntryMetaInformation(oldMeta: File): Map<String, Map<EntryReportData, String>> {
             val reportFile = oldMeta.resolve(Filename.entryMeta)
             if (!reportFile.exists()) return mapOf()
-            return json.parse(entryMetaSerializer, reportFile.readText()).mapValues {(_, entryData) ->
+            return json.decodeFromString(entryMetaSerializer, reportFile.readText()).mapValues {(_, entryData) ->
                 entryData.mapKeys { (key, _) ->
                     EntryReportData.getByKey(key)!!
                 }

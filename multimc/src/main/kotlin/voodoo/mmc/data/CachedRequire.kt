@@ -1,10 +1,10 @@
 package voodoo.mmc.data
 
-import kotlinx.serialization.CompositeEncoder
-import kotlinx.serialization.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Serializer
+import kotlinx.serialization.encoding.CompositeEncoder
+import kotlinx.serialization.encoding.Encoder
 
 @Serializable(with = CachedRequire.Companion::class)
 data class CachedRequire(

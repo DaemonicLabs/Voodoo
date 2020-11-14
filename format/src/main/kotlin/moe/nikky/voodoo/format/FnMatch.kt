@@ -47,11 +47,11 @@ object FnMatch {
         patternPos: Int = 0,
         string: String,
         stringPos: Int = 0,
-        flags: EnumSet<Flag>
+        flags: Set<Flag>
     ): Boolean {
         var patternPos = patternPos
         var stringPos = stringPos
-        var flags = flags
+        var flags = flags.toMutableSet()
         var c: Char
 
         loop@ while (true) {
@@ -175,12 +175,12 @@ object FnMatch {
         return false
     }
 
-    private fun hasLeadingPeriod(string: String, stringPos: Int, flags: EnumSet<Flag>): Boolean {
+    private fun hasLeadingPeriod(string: String, stringPos: Int, flags: Set<Flag>): Boolean {
         return if (stringPos > string.length - 1) false else (stringPos == 0 || flags.contains(Flag.PATHNAME) && string[stringPos - 1] == '/') &&
                 string[stringPos] == '.' && flags.contains(Flag.PERIOD)
     }
 
-    private fun matchRange(pattern: String, patternPos: Int, test: Char, flags: EnumSet<Flag>): Int {
+    private fun matchRange(pattern: String, patternPos: Int, test: Char, flags: Set<Flag>): Int {
         var patternPos = patternPos
         var test = test
         val negate: Boolean

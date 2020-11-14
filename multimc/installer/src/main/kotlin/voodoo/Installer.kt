@@ -13,7 +13,6 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import moe.nikky.voodoo.format.modpack.Manifest
 import moe.nikky.voodoo.format.modpack.Recommendation
 import moe.nikky.voodoo.format.modpack.entry.FileInstall
@@ -106,8 +105,11 @@ object Installer : KLogging() {
         }
     }
 
-    private val json = Json(JsonConfiguration(prettyPrint = true, ignoreUnknownKeys = true, encodeDefaults = true))
-
+    private val json = Json {
+        prettyPrint = true
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+    }
     private suspend fun install(
         instanceId: String,
         instanceDir: File,
@@ -138,7 +140,7 @@ object Installer : KLogging() {
 
         val jsonString = response.readText()
 
-        val modpack = json.parse(Manifest.serializer(), jsonString)
+        val modpack = json.decodeFromString(Manifest.serializer(), jsonString)
         val newJar = selfupdate(instanceDir, packUrl.substringBeforeLast('/') + "/" + modpack.installerLocation, phase)
         if (newJar != null) {
             val java = Paths.get(System.getProperty("java.home"), "bin", "java").toFile().path
@@ -185,7 +187,7 @@ object Installer : KLogging() {
 //        try {
 //            try {
 //                // look up versions from a listing
-//                val versionListing = json.parse(MapSerializer(String.serializer(), String.serializer()), jsonString)
+//                val versionListing = json.decodeFromString(MapSerializer(String.serializer(), String.serializer()), jsonString)
 //                val targetVersion = instanceDir.resolve("channel.txt").takeIf { it.exists() }?.readText()?.trim() ?: "latest"
 //                val versionPointer = versionListing[targetVersion]
 //
@@ -206,13 +208,13 @@ object Installer : KLogging() {
 //                    logger.error { "$packUrl returned ${response.status}" }
 //                    error("failed with ${response.status}")
 //                }
-//                json.parse(Manifest.serializer(), response.readText())
+//                json.decodeFromString(Manifest.serializer(), response.readText())
 //            } catch (e: SerializationException) {
-//                json.parse(Manifest.serializer(), jsonString)
+//                json.decodeFromString(Manifest.serializer(), jsonString)
 //            }
 //        } catch (e: SerializationException) {
 //            return SKHandler.install(
-//                json.parse(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString),
+//                json.decodeFromString(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString),
 //                instanceId,
 //                instanceDir,
 //                minecraftDir
@@ -223,7 +225,7 @@ object Installer : KLogging() {
         val oldpack: Manifest? = oldpackFile.takeIf { it.exists() }
             ?.let { packFile ->
                 try {
-                    json.parse(Manifest.serializer(), packFile.readText())
+                    json.decodeFromString(Manifest.serializer(), packFile.readText())
                         .also { pack ->
                             logger.info("loaded old pack ${pack.id} ${pack.version}")
                         }
@@ -277,12 +279,12 @@ object Installer : KLogging() {
 //        }
         logger.info("modloader is ${modpack.modLoader}")
 
-        val json = Json(JsonConfiguration.Stable.copy(prettyPrint = true))
+        val json = Json { prettyPrint = true }
         val mapSerializer = MapSerializer(String.serializer(), Boolean.serializer())
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val defaults = if (featureJson.exists()) {
-            json.parse(mapSerializer, featureJson.readText())
+            json.decodeFromString(mapSerializer, featureJson.readText())
         } else {
             mapOf()
         }
@@ -307,7 +309,7 @@ object Installer : KLogging() {
             return
         }
         featureJson.writeText(
-            json.stringify(mapSerializer, features)
+            json.encodeToString(mapSerializer, features)
         )
         if (reinstall) {
             minecraftDir.deleteRecursively()
@@ -446,7 +448,7 @@ object Installer : KLogging() {
         // set minecraft and forge versions
         val mmcPackPath = instanceDir.resolve("mmc-pack.json")
         val mmcPack = if (mmcPackPath.exists()) {
-            json.parse(MultiMCPack.serializer(), mmcPackPath.readText())
+            json.decodeFromString(MultiMCPack.serializer(), mmcPackPath.readText())
         } else MultiMCPack()
 
         val modloaderComponents = when (val modloader = modpack.modLoader) {
@@ -483,10 +485,10 @@ object Installer : KLogging() {
                 important = true
             )
         ) + modloaderComponents + mmcPack.components
-        mmcPackPath.writeText(json.stringify(MultiMCPack.serializer(), mmcPack))
+        mmcPackPath.writeText(json.encodeToString(MultiMCPack.serializer(), mmcPack))
 
         oldpackFile.createNewFile()
-        oldpackFile.writeText(json.stringify(Manifest.serializer(), modpack))
+        oldpackFile.writeText(json.encodeToString(Manifest.serializer(), modpack))
     }
 
     private class Arguments(parser: ArgParser) {

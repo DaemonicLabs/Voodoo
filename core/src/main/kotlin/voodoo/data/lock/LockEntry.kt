@@ -163,7 +163,7 @@ sealed class LockEntry : CommonLockModule {
 //    fun isLocal(): Boolean = provider == LocalProvider.id
 
     fun serialize(): String {
-        val jsonString = json.stringify(LockEntrySerializer, this)
+        val jsonString = json.encodeToString(LockEntry.serializer(), this)
         logger.debug { "serializing '$this'" }
         logger.debug { " -> " }
         logger.debug { "$jsonString" }
@@ -175,11 +175,11 @@ sealed class LockEntry : CommonLockModule {
         fun loadEntry(file: File, srcDir: File): LockEntry {
             logger.debug("parsing: $file")
             return try {
-                val lockEntry: LockEntry = json.parse(LockEntrySerializer, file.readText())
+                val lockEntry: LockEntry = json.decodeFromString(LockEntry.serializer(), file.readText())
                 lockEntry.folder = file.parentFile.relativeTo(srcDir)
                 lockEntry.changeId(file.name.substringBefore(".lock.json"))
                 lockEntry
-            } catch (e: JsonDecodingException) {
+            } catch (e: SerializationException) {
                 logger.error("cannot read: ${file.path}")
                 logger.error { file.readText() }
                 e.printStackTrace()
@@ -201,9 +201,9 @@ sealed class LockEntry : CommonLockModule {
     }
 }
 
-object LockEntrySerializer : JsonTransformingSerializer<LockEntry>(LockEntry.serializer(), "type_transform") {
-    override fun readTransform(element: JsonElement): JsonElement {
-        val newType = when(val type = element.jsonObject.getPrimitive("type").content) {
+object LockEntrySerializer : JsonTransformingSerializer<LockEntry>(LockEntry.serializer()) {
+    override fun transformDeserialize(element: JsonElement): JsonElement {
+        val newType = when(val type = element.jsonObject.getValue("type").jsonPrimitive.content) {
             "voodoo.data.lock.LockEntry.Curse" -> "curse"
             "voodoo.data.lock.LockEntry.Direct" -> "direct"
             "voodoo.data.lock.LockEntry.Jenkins" -> "jenkins"
@@ -211,7 +211,7 @@ object LockEntrySerializer : JsonTransformingSerializer<LockEntry>(LockEntry.ser
             else -> type
         }
         val mutableEntries = element.jsonObject.toMutableMap()
-        mutableEntries["type"] = JsonLiteral(newType)
-        return element.jsonObject.copy(mutableEntries).also { println(it) }
+        mutableEntries["type"] = JsonPrimitive(newType)
+        return JsonObject(element.jsonObject + mutableEntries).also { println(it) }
     }
 }

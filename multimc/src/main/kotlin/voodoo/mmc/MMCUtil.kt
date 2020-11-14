@@ -3,14 +3,12 @@ package voodoo.mmc
 import Modloader
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import moe.nikky.voodoo.format.modpack.Recommendation
 import mu.KLogging
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
 import voodoo.util.Platform
-import voodoo.util.jsonConfiguration
 import voodoo.util.serializer.FileSerializer
 import java.awt.*
 import java.awt.event.WindowAdapter
@@ -37,11 +35,14 @@ object MMCUtil : KLogging() {
     val mmcConfig: MMCConfiguration
 
     init {
-        val jsonWithDefaults = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = true))
+        val jsonWithDefaults = Json {
+            prettyPrint = true
+            encodeDefaults = true
+        }
         val mmcConfigurationFile = configHome.resolve("multimc.json")
         logger.info("loading multimc config $mmcConfigurationFile")
         mmcConfig = when {
-            mmcConfigurationFile.exists() -> jsonWithDefaults.parse(
+            mmcConfigurationFile.exists() -> jsonWithDefaults.decodeFromString(
                 MMCConfiguration.serializer(),
                 mmcConfigurationFile.readText()
             )
@@ -50,7 +51,7 @@ object MMCUtil : KLogging() {
         logger.info("loaded config: $mmcConfig")
 
         mmcConfigurationFile.parentFile.mkdirs()
-        mmcConfigurationFile.writeText(jsonWithDefaults.stringify(MMCConfiguration.serializer(), mmcConfig))
+        mmcConfigurationFile.writeText(jsonWithDefaults.encodeToString(MMCConfiguration.serializer(), mmcConfig))
     }
 
     fun startInstance(name: String) {
@@ -167,12 +168,12 @@ object MMCUtil : KLogging() {
             "default"
         }
 
-        val json = Json(JsonConfiguration(prettyPrint = true))
+        val json = Json { prettyPrint = true }
 
         // set minecraft and forge versions
         val mmcPackPath = instanceDir.resolve("mmc-pack.json")
         val mmcPack = if (mmcPackPath.exists()) {
-            json.parse(MultiMCPack.serializer(), mmcPackPath.readText())
+            json.decodeFromString(MultiMCPack.serializer(), mmcPackPath.readText())
         } else MultiMCPack()
 
         if (mcVersion != null) {
@@ -213,7 +214,7 @@ object MMCUtil : KLogging() {
                 )
             ) + modloaderComponents + mmcPack.components
         }
-        mmcPackPath.writeText(json.stringify(MultiMCPack.serializer(), mmcPack))
+        mmcPackPath.writeText(json.encodeToString(MultiMCPack.serializer(), mmcPack))
 
         val cfgFile = instanceDir.resolve("instance.cfg")
         val cfg = if (cfgFile.exists())
@@ -555,12 +556,12 @@ object MMCUtil : KLogging() {
         }
         logger.info("created dialog")
 
-        val json = Json(jsonConfiguration.copy(isLenient = true))
+        val json = Json(voodoo.util.json) { isLenient = true }
         val mmcStateFile = configHome.resolve("mmc.state.json")
         println(mmcStateFile)
         val mmcState = mmcStateFile.takeIf { it.exists() }
             ?.let {
-                json.parse(MMCState.serializer(), it.readText())
+                json.decodeFromString(MMCState.serializer(), it.readText())
             }
         val bounds = mmcState?.bounds
         if (bounds != null) {
@@ -573,7 +574,7 @@ object MMCUtil : KLogging() {
         dialog.dispose()
 
         // save statw
-        mmcStateFile.writeText(json.stringify(MMCState.serializer(), MMCState(bounds = Bounds(dialog.bounds))))
+        mmcStateFile.writeText(json.encodeToString(MMCState.serializer(), MMCState(bounds = Bounds(dialog.bounds))))
 
         return Response(
             features = selectables.associateBy({ it.id }, { toggleButtons.getValue(it.id).isSelected }),

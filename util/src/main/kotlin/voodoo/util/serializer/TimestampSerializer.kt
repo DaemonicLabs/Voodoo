@@ -1,12 +1,13 @@
 package voodoo.util.serializer
 
-import kotlinx.serialization.Decoder
-import kotlinx.serialization.Encoder
+import kotlinx.serialization.encoding.Decoder
+import kotlinx.serialization.encoding.Encoder
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializer
-import kotlinx.serialization.json.JsonInput
-import kotlinx.serialization.json.JsonOutput
+import kotlinx.serialization.json.JsonDecoder
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.longOrNull
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -21,8 +22,8 @@ object TimestampSerializer : KSerializer<LocalDateTime> {
     }
 
     override fun deserialize(decoder: Decoder): LocalDateTime {
-        val jsonInput = decoder as JsonInput
-        val value = jsonInput.decodeJson() as JsonPrimitive
+        val jsonDecoder = decoder as JsonDecoder
+        val value = jsonDecoder.decodeJsonElement() as JsonPrimitive
         val timestamp = value.longOrNull
         if(timestamp != null) {
             return LocalDateTime.ofInstant(Instant.ofEpochMilli(timestamp), ZoneId.of("UTC"))

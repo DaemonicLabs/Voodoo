@@ -1,23 +1,11 @@
 package voodoo
 
 import com.xenomachina.argparser.ArgParser
-import io.ktor.client.request.get
-import io.ktor.client.request.header
-import io.ktor.client.request.url
-import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.readText
-import io.ktor.http.HttpHeaders
-import io.ktor.http.isSuccess
 import kotlinx.coroutines.DEBUG_PROPERTY_NAME
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import mu.KLogging
-import voodoo.util.*
 import java.io.File
-import java.io.IOException
 
 object Initializer : KLogging() {
 
@@ -32,7 +20,11 @@ object Initializer : KLogging() {
         }
     }
 
-    private val json = Json(JsonConfiguration(prettyPrint = true, ignoreUnknownKeys = true, encodeDefaults = true))
+    private val json = Json {
+        prettyPrint = true
+        ignoreUnknownKeys = true
+        encodeDefaults = true
+    }
 
     private suspend fun load(instanceId: String, instanceDir: File, minecraftDir: File, phase: String) {
 //        val urlFile = instanceDir.resolve("voodoo.url.txt")
@@ -63,7 +55,7 @@ object Initializer : KLogging() {
 
 //        if (formatVersion == null) {
 //            Installer.logger.info("not a voodoo-format manifest")
-//            val skcraftManifest = json.parse(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString)
+//            val skcraftManifest = json.decodeFromString(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString)
 //            return SKHandler.install(
 //                skcraftManifest,
 //                instanceId,

@@ -11,10 +11,7 @@ import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
 import voodoo.data.provider.UpdateChannel
 
-
-interface CommonImmutable {
-    @Transient val provider: String
-    val id: String
+interface Common {
     val name: String?
     val folder: String?
     val description: String?
@@ -22,7 +19,6 @@ interface CommonImmutable {
     val side: Side
     val websiteUrl: String
     val dependencies: MutableMap<String, DependencyType>
-    val replaceDependencies: Map<ProjectID, ProjectID>
     val packageType: PackageType
     val transient: Boolean // this entry got added as dependency for somethin
     val version: String // TODO: use regex only ?
@@ -31,6 +27,10 @@ interface CommonImmutable {
     val validMcVersions: Set<String>
     val invalidMcVersions: Set<String>
     val enabled: Boolean
+}
+interface CommonImmutable: Common {
+    val id: String
+    val replaceDependencies: Map<ProjectID, ProjectID>
 }
 interface CommonMutable : CommonImmutable {
     override var id: String

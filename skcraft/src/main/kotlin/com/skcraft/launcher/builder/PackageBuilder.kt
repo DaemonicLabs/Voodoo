@@ -116,7 +116,7 @@ constructor(
                 // Read file
                 var data = jarFile.getInputStream(profileEntry).bufferedReader().use { it.readText() }
                 data = data.replace(",\\s*\\}".toRegex(), "}") // Fix issues with trailing commas
-                val profile: InstallProfile = json.parse(InstallProfile.serializer(), data)
+                val profile: InstallProfile = json.decodeFromString(InstallProfile.serializer(), data)
                 val version = manifest.versionManifest
                 // Copy tweak class arguments
                 val args = profile.versionInfo.minecraftArguments
@@ -295,7 +295,7 @@ constructor(
             }
 
             val jsonString = response.readText()
-            manifest.versionManifest = json.parse(VersionManifest.serializer(), jsonString)
+            manifest.versionManifest = json.decodeFromString(VersionManifest.serializer(), jsonString)
 
         }
     }
@@ -310,7 +310,7 @@ constructor(
         }
         validateManifest()
         path.absoluteFile.parentFile.mkdirs()
-        path.writeText(json.stringify(Manifest.serializer(), manifest))
+        path.writeText(json.encodeToString(Manifest.serializer(), manifest))
 //        json!!.writeValue(path, manifest)
         logger.info("Wrote manifest to " + path.absolutePath)
     }
@@ -321,7 +321,7 @@ constructor(
             return if (path == null) {
                 V::class.java.newInstance()
             } else {
-                json.parse(deserializer, path.readText())
+                json.decodeFromString(deserializer, path.readText())
 //                mapper.readValue(path, V::class.java)
             }
         } catch (e: InstantiationException) {

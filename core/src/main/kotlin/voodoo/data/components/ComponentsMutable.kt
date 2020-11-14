@@ -17,8 +17,6 @@ import voodoo.data.provider.UpdateChannel
 
 @Serializable
 data class CommonComponent(
-    @Deprecated("use type checks instead of a stringtype thing, will be replaced with a constant in each specialized component")
-    @Transient override var provider: String = "",
     override var id: String = "",
     override var name: String? = null,
     override var folder: String? = null,

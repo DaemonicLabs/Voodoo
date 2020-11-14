@@ -1,6 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.ShadowExtension
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.konan.properties.loadProperties
 import plugin.GenerateConstantsTask
 
 plugins {
@@ -48,9 +49,7 @@ val baseVersion = "0.6.0"
 
 val isCI = System.getenv("CI") != null
 
-// TODO: load version.gradle.kts and detect version in git tags
 val versionSuffix = if (isCI) "SNAPSHOT" else "local"
-//val versionSuffix = if (Env.isCI) "$buildnumber" else "local"
 
 val fullVersion = "$baseVersion-$versionSuffix" // TODO: just use -SNAPSHOT always ?
 
@@ -67,7 +66,7 @@ allprojects {
         maven(url = "https://kotlin.bintray.com/kotlinx") {
             name = "KotlinX"
         }
-        maven(url = "https://dl.bintray.com/hotkeytlt/maven")
+        mavenLocal()
     }
 
     task<DefaultTask>("depsize") {
@@ -101,14 +100,14 @@ subprojects {
 //    if(!project.build.exists() && !) {
 //        return@subprojects
 //    }
-    configurations.all {
-        resolutionStrategy.eachDependency {
-            if (requested.group == "org.jetbrains.kotlin") {
-                useVersion(Constants.Kotlin.version)
-                because("We use kotlin version ${Constants.Kotlin.version}")
-            }
-        }
-    }
+//    configurations.all {
+//        resolutionStrategy.eachDependency {
+//            if (requested.group == "org.jetbrains.kotlin") {
+//                useVersion(Constants.Kotlin.version)
+//                because("We use kotlin version ${Constants.Kotlin.version}")
+//            }
+//        }
+//    }
 
     group = rootProject.group
     version = rootProject.version
@@ -123,10 +122,10 @@ subprojects {
     pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         tasks.withType<KotlinCompile> {
             kotlinOptions {
-                apiVersion = "1.3"
-                languageVersion = "1.3"
+                apiVersion = "1.4"
+                languageVersion = "1.4"
                 jvmTarget = "1.8"
-                freeCompilerArgs = listOf(
+                freeCompilerArgs += listOf(
 //                "-XXLanguage:+InlineClasses",
 //                "-progressive"
                 )
@@ -154,13 +153,14 @@ subprojects {
 
             val folder = listOf("voodoo") + project.name.split('-')
             afterEvaluate {
+                val versionsProps = loadProperties(rootProject.file("versions.properties").path)
                 configure<ConstantsExtension> {
                     constantsObject(
                         pkg = folder.joinToString("."),
                         className = "GeneratedConstants"
                     ) {
-                        field("GRADLE_VERSION") value Constants.Gradle.version
-                        field("KOTLIN_VERSION") value Constants.Kotlin.version
+                        field("GRADLE_VERSION") value gradle.gradleVersion
+                        field("KOTLIN_VERSION") value versionsProps.getProperty("version.kotlin")
                         field("BUILD") value versionSuffix
                         field("VERSION") value fullVersion
                         field("FULL_VERSION") value fullVersion

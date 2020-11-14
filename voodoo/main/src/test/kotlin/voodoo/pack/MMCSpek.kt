@@ -26,7 +26,7 @@
 //            println(manifest)
 //        }
 //        it("pack") {
-//            val jsonString = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = false)).stringify(Manifest.serializer(), manifest)
+//            val jsonString = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = false)).encodeToString(Manifest.serializer(), manifest)
 //            println(jsonString)
 //        }
 //    }

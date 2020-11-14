@@ -1,8 +1,9 @@
 package moe.nikky.voodoo.format.modpack
 
 import kotlinx.serialization.*
-import kotlinx.serialization.builtins.list
+import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.encoding.Encoder
 import moe.nikky.voodoo.format.Feature
 import java.util.*
 
@@ -61,7 +62,7 @@ class Condition(
         override fun serialize(encoder: Encoder, value: Condition) {
             val elemOutput = encoder.beginStructure(descriptor)
             elemOutput.encodeStringElement(descriptor, 0, value.ifSwitch)
-            elemOutput.encodeSerializableElement(descriptor, 1, String.serializer().list, value.features)
+            elemOutput.encodeSerializableElement(descriptor, 1, ListSerializer(String.serializer()), value.features)
             elemOutput.endStructure(descriptor)
         }
 

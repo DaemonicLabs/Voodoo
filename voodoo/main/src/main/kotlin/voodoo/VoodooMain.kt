@@ -10,7 +10,7 @@ import com.eyeem.watchadoin.TraceEventsReport
 import com.eyeem.watchadoin.saveAsSvg
 import com.eyeem.watchadoin.asTraceEventsReport
 import com.eyeem.watchadoin.saveAsHtml
-import com.github.ricky12awesome.jss.stringifyToSchema
+import com.github.ricky12awesome.jss.encodeToStringToSchema
 import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.DEBUG_PROPERTY_NAME
@@ -116,16 +116,16 @@ object VoodooMain {
                     // debug
                     val jsonObj = json.toJson(NestedPack.serializer(), scriptEnv.pack) as JsonObject
                     rootDir.resolve(id).resolve("$id.nested.pack.json").writeText(
-                        json.stringify(JsonObject.serializer(), JsonObject(mapOf("\$schema" to JsonLiteral(scriptEnv.pack.`$schema`)) + jsonObj))
+                        json.encodeToString(JsonObject.serializer(), JsonObject(mapOf("\$schema" to JsonLiteral(scriptEnv.pack.`$schema`)) + jsonObj))
                     )
                     val schemaFile = rootDir.resolve(id).resolve(scriptEnv.pack.`$schema`)
                     schemaFile.absoluteFile.parentFile.mkdirs()
                     schemaFile.writeText(
-                        json.stringifyToSchema(NestedPack.serializer())
+                        json.encodeToStringToSchema(NestedPack.serializer())
                     )
 
                     // load nestedPack
-                    val nestedPack = json.parse(NestedPack.serializer(), rootDir.resolve(id).resolve("$id.nested.pack.json").readText())
+                    val nestedPack = json.decodeFromString(NestedPack.serializer(), rootDir.resolve(id).resolve("$id.nested.pack.json").readText())
 
 
                     // TODO: pass extra args object
@@ -216,7 +216,7 @@ object VoodooMain {
         stopwatch.saveAsHtml(reportDir.resolve("${id}_$reportName.report.html"))
         val traceEventsReport = stopwatch.asTraceEventsReport()
         val jsonString = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = true))
-            .stringify(TraceEventsReport.serializer(), traceEventsReport)
+            .encodeToString(TraceEventsReport.serializer(), traceEventsReport)
         reportDir.resolve("${id}_$reportName.report.json").writeText(jsonString)
     }
 

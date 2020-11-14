@@ -28,7 +28,7 @@ class FileInfoScanner : DirectoryWalker() {
     override fun onFile(file: File, relPath: String) {
         if (file.name.endsWith(FILE_SUFFIX)) {
             val fnPattern = separatorsToUnix(getPath(relPath)) + getBaseName(getBaseName(file.name)) + "*"
-            val info: FileInfo = Json.parse(FileInfo.serializer(), file.readText()) // mapper.readValue<FileInfo>(file)
+            val info: FileInfo = Json.decodeFromString(FileInfo.serializer(), file.readText()) // mapper.readValue<FileInfo>(file)
             val feature = info.feature
             if (feature != null) {
                 if (feature.name.isEmpty()) {

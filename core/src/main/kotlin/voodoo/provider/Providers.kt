@@ -2,6 +2,7 @@ package voodoo.provider
 
 import mu.KLogging
 import voodoo.data.flat.Entry
+import voodoo.data.nested.NestedEntry
 
 object Providers : KLogging() {
     private val providers = hashMapOf<String, ProviderBase>()
@@ -15,6 +16,26 @@ object Providers : KLogging() {
             "NOOP" to NoopProvider
         )
     }
+
+    fun forEntry(entry: Entry) =
+        when(entry) {
+            is Entry.Common -> null
+            is Entry.Curse -> CurseProvider
+            is Entry.Jenkins -> JenkinsProvider
+            is Entry.Direct -> DirectProvider
+            is Entry.Local -> LocalProvider
+            is Entry.Noop -> NoopProvider
+        }
+
+    fun forEntry(entry: NestedEntry) =
+        when(entry) {
+            is NestedEntry.Common -> null
+            is NestedEntry.Curse -> CurseProvider
+            is NestedEntry.Jenkins -> JenkinsProvider
+            is NestedEntry.Direct -> DirectProvider
+            is NestedEntry.Local -> LocalProvider
+            is NestedEntry.Noop -> NoopProvider
+        }
 
     fun register(vararg pairs: Pair<String, ProviderBase>) {
         pairs.forEach { (key, provider) ->

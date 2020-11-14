@@ -7,7 +7,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import voodoo.data.DependencyType
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
@@ -108,13 +107,16 @@ object MultiMCTester : AbstractTester() {
             }
         }
 
-        val json = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = false))
+        val json = Json {
+            prettyPrint = true
+            encodeDefaults = false
+        }
         val featureSerializer = MapSerializer(String.serializer(), Boolean.serializer())
 
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val previousSelection = if (featureJson.exists()) {
-            json.parse(featureSerializer, featureJson.readText())
+            json.decodeFromString(featureSerializer, featureJson.readText())
         } else {
             mapOf<String, Boolean>()
         }
@@ -132,7 +134,7 @@ object MultiMCTester : AbstractTester() {
         logger.debug("result: optionals: $optionals")
         if (optionals.isNotEmpty()) {
             featureJson.createNewFile()
-            featureJson.writeText(json.stringify(featureSerializer, optionals))
+            featureJson.writeText(json.encodeToString(featureSerializer, optionals))
         }
         if (reinstall) {
             minecraftDir.deleteRecursively()

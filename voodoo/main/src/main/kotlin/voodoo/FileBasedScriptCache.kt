@@ -23,7 +23,7 @@ class FileBasedScriptCache(val baseDir: File) : CompiledJvmScriptsCache {
         return digestWrapper.digest().toHexString()
     }
 
-    override fun get(script: SourceCode, scriptCompilationConfiguration: ScriptCompilationConfiguration): CompiledScript<*>? {
+    override fun get(script: SourceCode, scriptCompilationConfiguration: ScriptCompilationConfiguration): CompiledScript? {
         val prefix = if (script is FileScriptSource) {
             "${script.file.name}-"
         } else ""
@@ -37,7 +37,7 @@ class FileBasedScriptCache(val baseDir: File) : CompiledJvmScriptsCache {
     }
 
     override fun store(
-        compiledScript: CompiledScript<*>,
+        compiledScript: CompiledScript,
         script: SourceCode,
         scriptCompilationConfiguration: ScriptCompilationConfiguration
     ) {
@@ -54,10 +54,10 @@ class FileBasedScriptCache(val baseDir: File) : CompiledJvmScriptsCache {
     }
 
     companion object {
-        private fun File.readCompiledScript(scriptCompilationConfiguration: ScriptCompilationConfiguration): CompiledScript<*> {
+        private fun File.readCompiledScript(scriptCompilationConfiguration: ScriptCompilationConfiguration): CompiledScript {
             return inputStream().use { fs ->
                 ObjectInputStream(fs).use { os ->
-                    (os.readObject() as KJvmCompiledScript<*>).apply {
+                    (os.readObject() as KJvmCompiledScript).apply {
                         // TODO: figure out if i need this ?
 //                        setCompilationConfiguration(scriptCompilationConfiguration)
                     }

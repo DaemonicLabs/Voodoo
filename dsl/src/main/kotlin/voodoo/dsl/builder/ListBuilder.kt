@@ -8,6 +8,7 @@ import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedEntryProvider
 import voodoo.dsl.VoodooDSL
+import voodoo.provider.Providers
 import voodoo.util.SharedFolders
 import voodoo.util.json
 import kotlin.reflect.full.createInstance
@@ -104,7 +105,7 @@ class ListBuilder<E : NestedEntry>(
         // TODO: keep numerical id around and fix it up later ?
         // TODO: should simplify code and tests
         val curseSlugsFile = SharedFolders.BuildCache.get().resolve("curseSlugs.json")
-        val curseSlugs =  json.parse(MapSerializer(ProjectID, String.serializer()), curseSlugsFile.readText())
+        val curseSlugs =  json.decodeFromString(MapSerializer(ProjectID, String.serializer()), curseSlugsFile.readText())
         val stringId = curseSlugs[this] ?: runBlocking {
             CurseClient.getAddon(this@unaryPlus)?.slug
         } ?: throw NullPointerException("no id: '${this.value}' found in idToSlugMap")
@@ -128,7 +129,7 @@ class ListBuilder<E : NestedEntry>(
         // TODO: keep numerical id around and fix it up later ?
         // TODO: should simplify code and tests
         val curseSlugsFile = SharedFolders.BuildCache.get().resolve("curseSlugs.json")
-        val curseSlugs =  json.parse(MapSerializer(ProjectID, String.serializer()), curseSlugsFile.readText())
+        val curseSlugs =  json.decodeFromString(MapSerializer(ProjectID, String.serializer()), curseSlugsFile.readText())
         val stringId = curseSlugs[this] ?: runBlocking {
             CurseClient.getAddon(this@invoke)?.slug
         } ?: throw NullPointerException("no id: '${this.value}' found in idToSlugMap")
@@ -177,7 +178,7 @@ class ListBuilder<E : NestedEntry>(
         block: N.( ListBuilder<N>) -> Unit = {}
     ): ListBuilder<N> {
         val _entry = N::class.createInstance()
-        _entry.nodeName = entry.nodeName + "_" + (groupName ?: _entry.provider)
+        _entry.nodeName = entry.nodeName + "_" + (groupName ?: Providers.forEntry(_entry)?.id)
         listEntries += _entry
         val builder = ListBuilder(entry = _entry)
         _entry.block(builder)

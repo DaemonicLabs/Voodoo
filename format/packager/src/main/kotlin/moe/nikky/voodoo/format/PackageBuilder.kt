@@ -1,7 +1,6 @@
 package moe.nikky.voodoo.format
 
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import kotlinx.serialization.modules.SerializersModule
 import mu.KLogging
 import moe.nikky.voodoo.format.builder.PropertiesApplicator
@@ -50,12 +49,11 @@ object PackageBuilder : KLogging() {
 
         val filesDir = inputPath.resolve(DEFAULT_SRC_DIRNAME)
         val objectsDir = outputPath.resolve(objectsLocation)
-        val json: Json = Json(
-            configuration = JsonConfiguration(prettyPrint = prettyPrint, encodeDefaults = false),
-            context = SerializersModule {
-//                Modloader.install(this)
-            }
-        )
+        val json: Json = Json {
+            this.prettyPrint = prettyPrint
+            encodeDefaults = false
+            serializersModule
+        }
 
         // create PackageBuilder : skip
 
@@ -120,7 +118,7 @@ object PackageBuilder : KLogging() {
         )
         manifest.validate()
         manifestDest.absoluteFile.parentFile.mkdirs()
-        manifestDest.writeText(json.stringify(Manifest.serializer(), manifest))
+        manifestDest.writeText(json.encodeToString(Manifest.serializer(), manifest))
 
         logger.info {""}
         logger.info { "--- Done ---" }

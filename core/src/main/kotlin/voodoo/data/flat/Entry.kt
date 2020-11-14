@@ -17,7 +17,6 @@ sealed class Entry: CommonMutable {
     data class Common(
         val common: CommonComponent = CommonComponent()
     ) : Entry(), CommonMutable by common {
-        override val provider = ""
         init {
             optional = optionalData != null
         }
@@ -27,7 +26,6 @@ sealed class Entry: CommonMutable {
         private val common: CommonComponent = CommonComponent(),
         private val curse: CurseComponent = CurseComponent()
     ) : Entry(), CommonMutable by common, CurseMutable by curse {
-        override val provider = CurseProvider.id
         init {
             optional = optionalData != null
         }
@@ -37,7 +35,6 @@ sealed class Entry: CommonMutable {
         private val common: CommonComponent = CommonComponent(),
         private val direct: DirectComponent = DirectComponent()
     ) : Entry(), CommonMutable by common, DirectMutable by direct {
-        override val provider = DirectProvider.id
         init {
             optional = optionalData != null
         }
@@ -47,7 +44,6 @@ sealed class Entry: CommonMutable {
         private val common: CommonComponent = CommonComponent(),
         private val jenkins: JenkinsComponent = JenkinsComponent()
     ) : Entry(), CommonMutable by common, JenkinsMutable by jenkins {
-        override val provider = JenkinsProvider.id
         init {
             optional = optionalData != null
         }
@@ -57,7 +53,6 @@ sealed class Entry: CommonMutable {
         private val common: CommonComponent = CommonComponent(),
         private val local: LocalComponent = LocalComponent()
     ) : Entry(), CommonMutable by common, LocalMutable by local {
-        override val provider = LocalProvider.id
         init {
             optional = optionalData != null
         }
@@ -66,7 +61,6 @@ sealed class Entry: CommonMutable {
     data class Noop(
         private val common: CommonComponent = CommonComponent()
     ) : Entry(), CommonMutable by common {
-        override val provider = NoopProvider.id
         init {
             optional = optionalData != null
         }
@@ -92,7 +86,7 @@ sealed class Entry: CommonMutable {
 //    fun serialize(sourceFolder: File) {
 //        val file = sourceFolder.resolve(folder).resolve("$cleanId.entry.json").absoluteFile
 //        file.absoluteFile.parentFile.mkdirs()
-//        file.writeText(json.stringify(Entry.serializer(), this))
+//        file.writeText(json.encodeToString(Entry.serializer(), this))
 //    }
 
     inline fun <reified E: LockEntry> lock(block: (CommonLockComponent) -> E): E {

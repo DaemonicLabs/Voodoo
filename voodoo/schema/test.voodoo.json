@@ -1,15 +1,87 @@
 {
     "$schema": "./schema/modpack.schema.json",
+    "title": "",
     "version": "1.0.0",
-    "authors": ["nikky"],
+    "authors": [
+        "nikky"
+    ],
+    "generators": {
+        "fabricMods": {
+            "type": "generator.curse",
+            "section": "MODS",
+            "mcVersions": [
+                "1.16.2"
+            ],
+            "categories": [
+                "Fabric"
+            ]
+        },
+        "forgeVersions": {
+            "type": "generator.forge",
+            "mcVersions": [
+                "1.16.2"
+            ]
+        }
+    },
     "mcVersion": "1.16.2",
     "selfupdateUrl": "https://yourdomain.com/voodoo/$modpackId.json",
     "modloader": {
-        "type": "fabric",
-        "intermediary": "1.16.2",
-        "version": "dhfdenjvb"
+        "type": "modloader.fabric",
+        "intermediateMappings": "1.16.2"
+    },
+    "icon": "icon.png",
+    "tags": {
+        "client": {
+            "type": "common",
+            "side": "CLIENT"
+        },
+        "server": {
+            "type": "common",
+            "side": "SERVER"
+        },
+        "optional": {
+            "type": "common",
+            "optional": {
+                "selected": false
+            }
+        },
+        "optionalDefault": {
+            "type": "common",
+            "optional": {
+                "recommendation": "starred"
+            }
+        },
+        "optionalStarred": {
+            "type": "common",
+            "optional": {
+                "recommendation": "avoid",
+                "files": {
+                    "include": [
+                        "some/file"
+                    ]
+                }
+            }
+        }
     },
     "mods": {
-        
+        "backpackmod": {
+            "type": "curse",
+            "projectName": "fabric/backpackmod"
+        },
+        "appleskin": {
+            "type": "curse",
+            "apply": [
+                "optionalStarred",
+                "client"
+            ],
+            "projectName": "fabric/appleskin"
+        },
+        "campanion": {
+            "type": "curse",
+            "apply": [
+                "optionalStarred"
+            ],
+            "projectName": "fabric/campanion"
+        }
     }
 }

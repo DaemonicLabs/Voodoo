@@ -12,6 +12,7 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+        mavenLocal()
     }
 //    resolutionStrategy {
 //        eachPlugin {
@@ -25,7 +26,7 @@ buildscript {
     repositories {
         gradlePluginPortal()
     }
-    dependencies.classpath("de.fayard.refreshVersions:refreshVersions:0.9.5")
+    dependencies.classpath("de.fayard.refreshVersions:refreshVersions:0.9.8-SNAPSHOT")
 }
 
 bootstrapRefreshVersions(
@@ -33,13 +34,22 @@ bootstrapRefreshVersions(
 )
 
 plugins {
-    id("com.gradle.enterprise").version("3.1.1")
+    id("com.gradle.enterprise").version("3.5")
+}
+
+gradleEnterprise {
+    buildScan {
+        termsOfServiceUrl = "https://gradle.com/terms-of-service"
+        termsOfServiceAgree = "yes"
+//        publishAlwaysIf(true)
+    }
 }
 
 rootProject.name = "voodoo-parent"
 
 includeBuild("buildUtil")
-include(":voodoo", ":voodoo:main")
+include(":voodoo")
+include(":voodoo:main")
 include(":core")
 include(":dsl")
 include(":format", ":format:packager")
@@ -48,7 +58,7 @@ include(":util", ":util:download", ":util:maven", ":util:jenkins")
 include(":tome", ":pack", ":pack:tester")
 include(":server-installer")
 
-include(":plugin")
+//include(":plugin")
 
 fun prefixProject(project: ProjectDescriptor, prefix: String) {
     project.name = prefix + "-" + project.name
@@ -62,13 +72,5 @@ fun prefixProject(project: ProjectDescriptor, prefix: String) {
 rootProject.children.forEach { child ->
     child.children.forEach { grandchild ->
         prefixProject(grandchild, child.name)
-    }
-}
-
-gradleEnterprise {
-    buildScan {
-        termsOfServiceUrl = "https://gradle.com/terms-of-service"
-        termsOfServiceAgree = "yes"
-//        publishAlwaysIf(true)
     }
 }

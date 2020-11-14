@@ -7,7 +7,6 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import voodoo.data.DependencyType
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
@@ -72,12 +71,15 @@ object MMCFatPack : AbstractPack("mmc-fat") {
             }
         }
 
-        val json = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = false))
+        val json = Json {
+            prettyPrint = true
+            encodeDefaults = false
+        }
 
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
         val previousSelection = if (featureJson.exists()) {
-            json.parse(MapSerializer(String.serializer(), Boolean.serializer()), featureJson.readText())
+            json.decodeFromString(MapSerializer(String.serializer(), Boolean.serializer()), featureJson.readText())
         } else {
             mapOf<String, Boolean>()
         }
@@ -95,7 +97,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
         logger.debug("result: optionals: $optionals")
         if (!optionals.isEmpty()) {
             featureJson.createNewFile()
-            featureJson.writeText(json.stringify(MapSerializer(String.serializer(), Boolean.serializer()), optionals))
+            featureJson.writeText(json.encodeToString(MapSerializer(String.serializer(), Boolean.serializer()), optionals))
         }
         if (reinstall) {
             minecraftDir.deleteRecursively()

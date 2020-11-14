@@ -38,7 +38,7 @@ object ForgeUtil : KLogging() {
 //        }
 //    }
 
-    fun mcVersionsMap(filter: List<String>? = null): Map<String, Map<String, String>> {
+    fun mcVersionsMapSanitized(filter: List<String>? = null): Map<String, Map<String, String>> {
         return forgeVersionsMap.let {
             if (filter != null && filter.isNotEmpty()) {
                 it.filterKeys { version -> filter.contains(version) }
@@ -56,6 +56,24 @@ object ForgeUtil : KLogging() {
                 }?.version ?: ""
             }.filterValues { it.isNotBlank() }
             versionIdentifier to versions
+        }
+    }
+    fun mcVersionsMap(filter: List<String>? = null): Map<String, Map<String, String>> {
+        return forgeVersionsMap.let {
+            if (filter != null && filter.isNotEmpty()) {
+                it.filterKeys { version -> filter.contains(version) }
+            } else {
+                it
+            }
+        }.entries.associate { (mcVersion, versions) ->
+            val versions = versions.associateBy { version ->
+                version.version
+            }.mapValues { (key, version) ->
+                forgeVersions.find {
+                    it.forgeVersion == version.forgeVersion
+                }?.version ?: ""
+            }.filterValues { it.isNotBlank() }
+            mcVersion to versions
         }
     }
 
@@ -158,7 +176,7 @@ object ForgeUtil : KLogging() {
             logger.error("response: $response")
             error("failed receiving")
         }
-        return@withContext json.parse(ForgeData.serializer(), response.readText())
+        return@withContext json.decodeFromString(ForgeData.serializer(), response.readText())
 
 //        val loader: KSerializer<ForgeData> = ForgeData.serializer()
 //        val (request, response, result) = url.httpGet()
@@ -166,7 +184,7 @@ object ForgeUtil : KLogging() {
 ////            .awaitObjectResponseResult(kotlinxDeserializerOf(loader = loader))
 //            .awaitStringResponseResult()
 //        when (result) {
-//            is Result.Success -> return json.parse(ForgeData.serializer(), result.value)
+//            is Result.Success -> return json.decodeFromString(ForgeData.serializer(), result.value)
 //            is Result.Failure -> {
 //                logger.error("getForgeData")
 //                logger.error("url: $url")
@@ -187,7 +205,7 @@ object ForgeUtil : KLogging() {
                 println("version: $version")
             }
 
-            val mcVersion = mcVersionsMap()
+            val mcVersion = mcVersionsMapSanitized()
             mcVersion.forEach { displayName, version ->
                 println("displayName: $displayName")
                 println("version: $version")

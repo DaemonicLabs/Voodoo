@@ -90,7 +90,7 @@ object Poet : KLogging() {
         //  write out json to lookup slugs by name later
         val curseSlugsFile = SharedFolders.BuildCache.get().resolve("curseSlugs.json")
         val allSlugIdMap: Map<ProjectID, String> = if(curseSlugsFile.exists()) {
-            json.parse(MapSerializer(ProjectID, String.serializer()), curseSlugsFile.readText())
+            json.decodeFromString(MapSerializer(ProjectID, String.serializer()), curseSlugsFile.readText())
         } else {
             mapOf()
         } + slugIdMap.map { (slug, id) ->
@@ -98,7 +98,7 @@ object Poet : KLogging() {
         }
         curseSlugsFile.parentFile.mkdirs()
         curseSlugsFile.createNewFile()
-        curseSlugsFile.writeText(json.stringify(MapSerializer(ProjectID, String.serializer()), allSlugIdMap))
+        curseSlugsFile.writeText(json.encodeToString(MapSerializer(ProjectID, String.serializer()), allSlugIdMap))
 
 
         val targetFile = folder.resolve("$name.kt")
@@ -163,7 +163,7 @@ object Poet : KLogging() {
 
         val forgeBuilder = TypeSpec.objectBuilder(name)
 
-        val mcVersions = ForgeUtil.mcVersionsMap(filter = mcVersionFilters)
+        val mcVersions = ForgeUtil.mcVersionsMapSanitized(filter = mcVersionFilters)
         val allVersions = mcVersions.flatMap { it.value.values }
         mcVersions.forEach { (versionIdentifier, numbers) ->
             val versionBuilder = TypeSpec.objectBuilder(versionIdentifier)

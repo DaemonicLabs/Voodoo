@@ -6,7 +6,6 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
 import voodoo.curse.CurseClient
 import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.FileType
@@ -62,7 +61,7 @@ object CurseImporter : AbstractImporter() {
         logger.info("parsing \n${manifestFile.readText()}")
 
         val manifest: CurseManifest =
-            Json(JsonConfiguration.Default).parse(CurseManifest.serializer(), manifestFile.readText())
+            Json.decodeFromString(CurseManifest.serializer(), manifestFile.readText())
 
         val validMcVersions = mutableSetOf<String>()
 

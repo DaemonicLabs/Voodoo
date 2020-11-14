@@ -1,6 +1,8 @@
 name: PUSH
 
-on: [push]
+on:
+  release:
+    types: [created]
 
 jobs:
   build:

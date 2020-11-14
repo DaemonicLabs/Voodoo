@@ -58,7 +58,7 @@ suspend fun resolve(
                             launch(context = pool + CoroutineName("job-${entry.id}")) {
                                 "job-${entry.id}".watch {
                                     logger.info("resolving: ${entry.id}")
-                                    val provider = Providers[entry.provider]
+                                    val provider = Providers.forEntry(entry)!!
 
                                     val lockEntry = provider.resolve(entry, modPack.mcVersion, newEntriesChannel)
                                     logger.debug("received locked entry: $lockEntry")
