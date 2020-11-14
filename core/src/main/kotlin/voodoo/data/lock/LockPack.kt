@@ -12,6 +12,7 @@ import voodoo.data.Side
 import voodoo.util.blankOr
 import voodoo.util.json
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Created by nikky on 28/03/18.
@@ -154,7 +155,7 @@ data class LockPack(
     }
 
     @Transient
-    private val dependencyCache = mutableMapOf<Pair<String, DependencyType>, List<LockEntry>>()
+    private val dependencyCache = ConcurrentHashMap<Pair<String, DependencyType>, List<LockEntry>>()
 
     fun dependencies(entryId: String, dependencyType: DependencyType): List<LockEntry> {
         return dependencyCache.computeIfAbsent(entryId to dependencyType) { (entryId, dependencyType) ->
