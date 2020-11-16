@@ -1,6 +1,6 @@
 mcVersion = "1.15.2"
 version = "0.0.1"
-icon = rootFolder.resolve("icon.png")
+icon = "icon.png"
 authors = listOf("NikkyAi")
 
 modloader {

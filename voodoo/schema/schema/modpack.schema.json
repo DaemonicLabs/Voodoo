@@ -1,307 +1,19 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "type": "object",
-    "properties": {
-        "title": {
-            "type": "string"
-        },
-        "authors": {
-            "$ref": "#/definitions/kotlin.collections.ArrayList_d4da2628"
-        },
-        "version": {
-            "type": "string"
-        },
-        "icon": {
-            "type": "string"
-        },
-        "mcVersion": {
-            "type": "string"
-        },
-        "generators": {
-            "$ref": "#/definitions/kotlin.collections.LinkedHashMap_2c25b725"
-        },
-        "modloader": {
-            "$ref": "#/definitions/Modloader_39843ab2"
-        },
-        "selfupdateUrl": {
-            "$ref": "#/definitions/kotlin.String_e61867e"
-        },
-        "tags": {
-            "$ref": "#/definitions/kotlin.collections.LinkedHashMap_17387e9f"
-        },
-        "mods": {
-            "$ref": "#/definitions/kotlin.collections.LinkedHashMap_32ceb68d"
-        },
-        "$schema": {
-            "type": "string"
-        }
-    },
-    "required": [
-        "title",
-        "version",
-        "icon",
-        "mcVersion",
-        "modloader",
-        "selfupdateUrl",
-        "tags",
-        "mods",
-        "$schema"
-    ],
+    "$ref": "#/definitions/x1ds2win2pwe0v",
     "definitions": {
-        "kotlin.collections.ArrayList_d4da2628": {
+        "1rfqvtohe97gh": {
             "type": "array",
             "items": {
-                "type": "string"
+                "enum": [
+                    "Release",
+                    "Beta",
+                    "Alpha"
+                ],
+                "$ref": "#/definitions/x1o90evh20qk1r"
             }
         },
-        "voodoo.poet.generator.CurseSection_95aaf750": {
-            "type": "string",
-            "enum": [
-                "MODS",
-                "RESOURCE_PACKS"
-            ]
-        },
-        "generator.curse_5862b395": {
-            "type": "object",
-            "properties": {
-                "section": {
-                    "$ref": "#/definitions/voodoo.poet.generator.CurseSection_95aaf750"
-                },
-                "categories": {
-                    "$ref": "#/definitions/kotlin.collections.ArrayList_d4da2628"
-                },
-                "mcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.ArrayList_d4da2628"
-                }
-            },
-            "required": [
-                "section"
-            ]
-        },
-        "generator.fabric_98b22ab8": {
-            "type": "object",
-            "properties": {
-                "stable": {
-                    "type": "boolean"
-                },
-                "mcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.ArrayList_d4da2628"
-                }
-            }
-        },
-        "generator.forge_5f952be0": {
-            "type": "object",
-            "properties": {
-                "mcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.ArrayList_d4da2628"
-                }
-            }
-        },
-        "Generator_1d460e6b": {
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "enum": [
-                        "generator.curse",
-                        "generator.fabric",
-                        "generator.forge"
-                    ]
-                }
-            },
-            "anyOf": [
-                {
-                    "$ref": "#/definitions/generator.curse_5862b395"
-                },
-                {
-                    "$ref": "#/definitions/generator.fabric_98b22ab8"
-                },
-                {
-                    "$ref": "#/definitions/generator.forge_5f952be0"
-                }
-            ],
-            "required": [
-                "type"
-            ]
-        },
-        "kotlin.collections.LinkedHashMap_2c25b725": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/Generator_1d460e6b"
-            }
-        },
-        "modloader.forge_542d46ef": {
-            "type": "object",
-            "properties": {
-                "mcVersion": {
-                    "type": "string"
-                },
-                "forgeVersion": {
-                    "type": "string"
-                },
-                "branch": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                }
-            },
-            "required": [
-                "mcVersion",
-                "forgeVersion"
-            ]
-        },
-        "Fabric.intermediary_be8a6a92": {
-            "type": "string",
-            "description": "find available versions on https://meta.fabricmc.net/v2/versions/intermediary"
-        },
-        "Fabric.loader_447ae456": {
-            "if": {
-                "type": "string"
-            },
-            "else": {
-                "type": "null"
-            },
-            "description": "find available versions on https://meta.fabricmc.net/v2/versions/loader"
-        },
-        "Fabric.installer_330052ef": {
-            "if": {
-                "type": "string"
-            },
-            "else": {
-                "type": "null"
-            },
-            "description": "find available versions on https://meta.fabricmc.net/v2/versions/installer"
-        },
-        "modloader.fabric_b7a619c4": {
-            "type": "object",
-            "properties": {
-                "intermediateMappings": {
-                    "$ref": "#/definitions/Fabric.intermediary_be8a6a92"
-                },
-                "loader": {
-                    "$ref": "#/definitions/Fabric.loader_447ae456"
-                },
-                "installer": {
-                    "$ref": "#/definitions/Fabric.installer_330052ef"
-                }
-            },
-            "required": [
-                "intermediateMappings"
-            ]
-        },
-        "Modloader.None_c337b76a": {
-            "type": "object"
-        },
-        "Modloader_39843ab2": {
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "enum": [
-                        "modloader.forge",
-                        "modloader.fabric",
-                        "Modloader.None"
-                    ]
-                }
-            },
-            "anyOf": [
-                {
-                    "$ref": "#/definitions/modloader.forge_542d46ef"
-                },
-                {
-                    "$ref": "#/definitions/modloader.fabric_b7a619c4"
-                },
-                {
-                    "$ref": "#/definitions/Modloader.None_c337b76a"
-                }
-            ],
-            "required": [
-                "type"
-            ]
-        },
-        "kotlin.String_e61867e": {
-            "type": "string",
-            "description": "url pointing to $modpackId.package.json\nyou need to upload the packaged modpack there"
-        },
-        "moe.nikky.voodoo.format.modpack.Recommendation?_1f4422d6": {
-            "if": {
-                "type": "string"
-            },
-            "else": {
-                "type": "null"
-            },
-            "enum": [
-                "starred",
-                "avoid"
-            ]
-        },
-        "moe.nikky.voodoo.format.FnPatternList_cdb77323": {
-            "type": "object",
-            "properties": {
-                "include": {
-                    "$ref": "#/definitions/kotlin.collections.ArrayList_d4da2628"
-                },
-                "exclude": {
-                    "$ref": "#/definitions/kotlin.collections.ArrayList_d4da2628"
-                }
-            }
-        },
-        "OptionalTag?_39fd54da": {
-            "if": {
-                "type": "object"
-            },
-            "else": {
-                "type": "null"
-            },
-            "properties": {
-                "selected": {
-                    "if": {
-                        "type": "boolean"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "recommendation": {
-                    "$ref": "#/definitions/moe.nikky.voodoo.format.modpack.Recommendation?_1f4422d6"
-                },
-                "files": {
-                    "$ref": "#/definitions/moe.nikky.voodoo.format.FnPatternList_cdb77323"
-                }
-            }
-        },
-        "voodoo.data.Side?_d324a198": {
-            "if": {
-                "type": "string"
-            },
-            "else": {
-                "type": "null"
-            },
-            "enum": [
-                "CLIENT",
-                "SERVER",
-                "BOTH"
-            ]
-        },
-        "voodoo.data.curse.PackageType?_7bc0ac43": {
-            "if": {
-                "type": "string"
-            },
-            "else": {
-                "type": "null"
-            },
-            "enum": [
-                "FOLDER",
-                "CTOP",
-                "SINGLEFILE",
-                "CMOD2",
-                "MODPACK",
-                "MOD",
-                "ANY"
-            ]
-        },
-        "kotlin.collections.LinkedHashSet?_d5077bc0": {
+        "x3mfv8nk70hkv": {
             "if": {
                 "type": "array"
             },
@@ -309,148 +21,13 @@
                 "type": "null"
             },
             "items": {
-                "type": "string"
+                "$ref": "#/definitions/bxi9qxnwq3gh"
             }
         },
-        "common_535c7881": {
-            "type": "object",
-            "properties": {
-                "folder": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "description": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "optional": {
-                    "$ref": "#/definitions/OptionalTag?_39fd54da"
-                },
-                "side": {
-                    "$ref": "#/definitions/voodoo.data.Side?_d324a198"
-                },
-                "websiteUrl": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "packageType": {
-                    "$ref": "#/definitions/voodoo.data.curse.PackageType?_7bc0ac43"
-                },
-                "version": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "fileName": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "fileNameRegex": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "validMcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashSet?_d5077bc0"
-                },
-                "invalidMcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashSet?_d5077bc0"
-                }
-            }
+        "1ehrf7bkolzpd": {
+            "type": "boolean"
         },
-        "PlainTag_2367490d": {
-            "properties": {
-                "type": {
-                    "type": "string",
-                    "enum": [
-                        "common"
-                    ]
-                }
-            },
-            "anyOf": [
-                {
-                    "$ref": "#/definitions/common_535c7881"
-                }
-            ],
-            "required": [
-                "type"
-            ]
-        },
-        "kotlin.collections.LinkedHashMap_17387e9f": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/PlainTag_2367490d"
-            }
-        },
-        "entry.apply_d4da2628": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
-        },
-        "Optional?_cc63c054": {
-            "if": {
-                "type": "object"
-            },
-            "else": {
-                "type": "null"
-            },
-            "properties": {
-                "selected": {
-                    "type": "boolean"
-                },
-                "recommendation": {
-                    "$ref": "#/definitions/moe.nikky.voodoo.format.modpack.Recommendation?_1f4422d6"
-                },
-                "files": {
-                    "$ref": "#/definitions/moe.nikky.voodoo.format.FnPatternList_cdb77323"
-                }
-            }
-        },
-        "voodoo.data.Side_d2f74c10": {
-            "type": "string",
-            "enum": [
-                "CLIENT",
-                "SERVER",
-                "BOTH"
-            ]
-        },
-        "voodoo.data.DependencyType_c464269b": {
-            "type": "string",
-            "enum": [
-                "REQUIRED",
-                "OPTIONAL"
-            ]
-        },
-        "kotlin.collections.LinkedHashMap_a5383b47": {
-            "type": "object",
-            "additionalProperties": {
-                "$ref": "#/definitions/voodoo.data.DependencyType_c464269b"
-            }
-        },
-        "voodoo.data.curse.PackageType_7b9356bb": {
+        "x151ijnlaghiin": {
             "type": "string",
             "enum": [
                 "FOLDER",
@@ -462,454 +39,84 @@
                 "ANY"
             ]
         },
-        "kotlin.collections.LinkedHashSet_d4da2628": {
-            "type": "array",
-            "items": {
-                "type": "string"
-            }
-        },
-        "voodoo.data.curse.FileType_516e8dbc": {
-            "type": "string",
-            "enum": [
-                "Release",
-                "Beta",
-                "Alpha"
-            ]
-        },
-        "kotlin.collections.LinkedHashSet_220dc9c8": {
-            "type": "array",
-            "items": {
-                "$ref": "#/definitions/voodoo.data.curse.FileType_516e8dbc"
-            }
-        },
-        "kotlin.String?_f4010dac": {
-            "if": {
-                "type": "string"
-            },
-            "else": {
-                "type": "null"
-            },
-            "enum": [
-                "fabricMods/[offlineskins-fabric, useful-utilities, staff-of-building, minecart-direction-follow, linkart-fabric, gravel-ores-fabric, resource-tools-fabric, grind-enchantments, cursed-table, hotbar-switcher, heads-down-display, old-mc-overlay, persistent-entities, sandbox-bootstrap, fenceplayerupper, no-strip, modern-industrialization, inv-view, taternetworking, better-weather-fabric, modular-item-frame-fabric, modsmod, astromine-discoveries, nicephore-fabric, minimal-menu, clickthrough, elytra-hopping, less-greedy-piglins, visible-enchantments, chain-suspension, low-fire, hitmarker, trident-tweaks, robins-amethyst-mod, telepistons, smart-pipes, astromine-core, better-world-list, better-wandering-traders, curses, target-dummy, draylars-battle-towers, infinity-fix, shulkerboxtooltip, fabric-furnaces, jmx, vampirelib, amecs, lambdacontrols, ok-zoomer, horsestatsvanilla, wendigoism, snowdrift, inca, winged, squidcraft, completeconfig, makkit, ezpas, ward-blocks-fabric, trumpet-skeleton-fabric, mobcountmod, fabric-forwarding, yabm, crawl, nbt-crafting, quick-shulker, giselbaers-durability-viewer, sword-parry-fabric, stacc, rpgstats, automated-crafting, reborncore, bacterium, blackstone-tools, keepinventory-command, white-rabbit, fabric-rings-of-ascension, notes-fabric, kibe, vanilla-excavators, twitch-chat, diggus-maximus, trinkets-fabric, better-than-mending, customtitlescreen, void-fog-fabric, not-enough-crashes, elytra-swap, mo-glass, jumpoverfences, sneaky-screens, simple-compat, linked-storage, fabric-passable-leaves, more-totems-of-undying, endfestation, beenfo, fly-mod-3d, simpleauth, time-to-live, dwarf-coal-fabric, carved-melons, towelette, mattocks-paxels-but-fabric, torrid-vision, primal-winter, randomconfigs-fabric, blur-fabric, repairable-anvils, crooked-crooks, warp, lambdynamiclights, just-map-unlimited, vanilladeathchest-fabric, fabric-economy, patchouli-fabric, peacefulsurface-fabric, straw-dummy, thallium, itemsortermod, advanced-nbt-tooltips, open-to-lan, xradiation, dracomelette, mumble-link-fabric, nomadbooks, flonters, potion-of-bees-fabric, auth-me, logical-zoom, mob-rebirth, filtered-receptacles, simple-emerald-tools-fabric, cleanview-fabric, wolves-with-armor, huddons-status-effects, wooden-hoppers, autoreconnect, ac-hay-bales, rings-of-flight, instantlava, dynamic-fps, nonevaporation, start-the-music, blockus, limitless, better-mod-button, iron-jetpacks-fabric, boosted-brightness, rswires, nomoreglowingpots, customskinloader, gravestones, auto-config-updated-api, rare-ice, omnitranslation, vanilla-enhanced, composing, togglewalk-mk-ii, tacocraft-fabric, fullscreeno, dihydrogen-monoxide-reloaded, campanion, thermal-conversion, extra-alchemy, crimson-moon, fabric-shield-lib, afkpeace, veggieway-fabric, cartloaders, slight-gui-modifications, compactstorage, tiny-fuel, accurate-block-placement, drop-loot-always, modsoftheworld, terrestria, materialisation, flex-fov, libcd, trees-do-not-float, auto-run, easierchests, riptide-fix, atmosfera, crashma, end-rebellion, fires-survival-tweaks, persistent-cake, song-sounds, player-events, tooltip-tool-tips, astromine-technologies, astromine-foundations, piglinfix, netherite-shulkers, monopoly, biome-picker, karam, totallybalancedcreativeflying, attack-on-titan-for-fabric, good-ol-regen, doomedfabric, headdowndisplay, dont-clear-chat-history, meal-api, shelf, fallflyinglib, durability-banks, flan, moundertweaks, drunk-fletchin-table, gotosavium-mod, raised-clouds, recently-used, fabrishot, totallybalancedfallflying, rpgz, noteblock-expansion, the-parakeet-mod, nafis, all-stackable, astromine-transportations, golems-galore, noexpensive, illuminations, hwyla, mobs-attempt-parkour, muffle, modupdater, powershot, heart-of-the-machine, glowcase, oh-the-biomes-youll-go-fabric, landmark, haema, cinderscapes, slotlink, einholzscher-tech-mod, pumice, viafabric, identity, astromine-main, industrial-revolution, repurposed-structures-fabric, origins, speed-trading, flighthelper, trade, roughly-enough-items, clothesline-fabric, borderless-mining, grid, the-backrooms, cart-boosts, ring-of-the-enderchest-fabric, easiervillagertrading, curious-shulker-boxes-fabric, couplings-for-fabric-updated, chestshop, diamond-shards-fabric, camp-fires-cook-mobs, kubejs-fabric, economical-villager-trading, hot-furnace, full-belly-sheep, protosky, repairable-tridents-fabric, curio-of-undying-fabric, player-mini-me, crowmap, slightlyvanilla, deborder, black-ether-mod, statement, hourai-elixir, fiber2cloth, on-soul-fire, sodium, curios-fabric, pig-poop, one-for-all, netherite-horse-armor, netherite-plus-mod, no-sneaking-over-magma, custom-fov-fabric, flighthud, chains-link, mutuality, portal-crafter-fabric, player-roles-fabric, ice-boat-nerf, fluid-physics, shielddisruptor, decorative, slab-helper, cake-chomps-fabric, cave-biomes, staffderpsmod, froggychair, retino, rgb-blocks, the-loved-ones, better-graves, shuffle-fabric, eggtab-fabric, custom-window-title, superaxes, lithium, armor-curve, ring-of-attraction-fabric, more-gems-fabric, transparent, extra-shields-fabric, food-tweaks, bootz, fast-furnace-for-fabric, fabric-survival-island, dynocaps, appleskin, simplex-terrain-generation, aurorakeystrokes, bigbuckets-fabric, colorful-campfire-smoke, allure, irish-wolves, multiconnect, basic-nether-ores, techreborn, launchers, little-rocket-man, audio-output, extraplayerrenderer, phosphor, notchify, creeper-spores, enchanted-tooltips, command-macros, custom-selection-box-port, traverse, clear-despawn-fabric, modmenu, craftingpad-fabric, controlling-for-fabric, litematica, fabric-language-kotlin, boring-backgrounds, simply-strawberries, just-map, building-wands, randomblockplacement, fabric-resource-loader, the-bumblezone-fabric, item-scroller, custom-crosshair-mod, music-duration-reducer, images, dank-storage-fabric, coordinate-mod, can-i-mine-this-block, melon-slabs, let-them-eat, howling-wolves, project-save-the-pets, fabric-zero, server-translations, inventory-tabs, quickmath, breakme, waymoreores, variable-spawner-hardness, craftable-utilities, villagerfix, versionchanger, bedspreads-fabric, red-bits, more-curios-totems-of-undying, reauth-fabric, libdp, nojumpscare, swim-air, flamin-hot, bedrockify, xp-storage, steed-stopper, fastgrowth, curse-of-the-gambler, kronhud, packed-storage, till-it-breaks, leadable-pandas, suitedllamas-glass-doors, hauling-hogs, colorful-cut, smoother-bedrock, angerable-patch, trianglecore, lengthy-ladders, cursed-enchanting, old-efficiency-fabric, image2map, more-chains, backpackmod, eternal-eats, project-inception, advancementinfo, xl-packets-fabric, more-toolbars, dont-drop-it, mubble, fabrictailor, ce-foodstuffs, delicious-dishes, crusade, adventurez, herbocraft, e404nnfs-emerald-tools-fabric, optifabric, game-start, fancy-fountain-passage, gunpowder-teleport, pigless-portals, swordenlarger, ugly-scoreboard-fix, customjoinmessagesfabric, clojure-lib, gunpowder-market, reinforced-diamond-mod, shut-up, creeper-confetti-fabric, scary-player-v2, ywlib, pisshiss, azuredooms-angel-ring-fabric, dontgrow, gunpowder-currency, servertick, owolib, iron-chests-fabric, gunpowder-utilities, azuredooms-jar-jar-fabric, backslot, tweakeroo, craftpresence, unforgiving-void, nbt-tooltip, orderly, clear-skies, flora-doubling-fabric, immersive-portals-mod, bucket-hat, right-click-clear, better-enchanted-books, blockmeterfabric, inmis, mouse-wheelie, mambience, expanded-storage-fabric, cloth-api, vanilla-hammers, libblockattributes, xaeros-world-map, fabric-tree-chopper, first-person-model, hard-hat-steve, redstonepower, light-block-fabric, packages, confabricate, custom-piglin-bartering, hardcore-questing-mode-fabric, simple-backpack-fabric, slip, stepupnext, improved-stations, worldtime, advancements-enlarger, gunpowder-sleepvote, nofog, lib-multipart, lib-network-stack, realistic-fire-spread, overpowered-mending, edit-sign, voxelmap, exotic-matter-library, now-playing, suitably-stackable-stew, blockshifter, deep-mob-learning-refabricated, explosive-shulker-bullets, oh-how-the-crafting-has-tabled, colytra-fabric, obsidiplates-fabric, statushud, anvil-crushing-recipes, compact-status-effects, rebindallthekeys, talltallcane, no-player-labels, beacons-for-all-fabric, extra-origins, skin-shine, obey-horses, blip-block, through-the-looking-glass, balance-of-exile, telekinesis-enchantment, cherished-worlds-fabric, size-entity-attributes, library-of-exile, energonrelics, fabric-armor, modern-glass-doors, honeymod, adabranium, jumploader, watson, chunk-pregenerator-fabric, exotic-blocks, diagonal-panes, perspective-mod-redux, fabric-more-enchantments, block-meter, flesh2leather-fabric, adorn, fabricproxy, leaf-decay, trajectoryfabric, soul-sandstone, expanded-concrete, chicken-nerf, redstone-lantern, pick-blockstate, bedrockwaters, toggle-entity-render, hookshot, shut-up-console, magnet-for-fabric, stackablepotions, ladderwarp, fabric-for-fabric, no-ambient-mobs, autoswap-updated, game-of-life-3d, mcg, randompatches-fabric, fabric-autoswitch, inventory-profiles, sit-fabric, fabric-vertical-slabs, yosbr, sandwichable, convenient-mobgriefing, solid-worlds, gameinfo, name-pain, commandspy, better-dropped-items, nowatercaves, gunpowder-mc, torohealth-damage-indicators, malilib, anvil-fix, biomore, pet-owner, self-governing-catalyst, more-fences, manymods, holographic-fabric, origins-classes, azuredooms-doom-mod-fabric, waveaway-fabric, vanilla-ingredients-cooking-expanded-work-in, sponges-plus, quickswap, overworld-two, wishing-for-sunshine-fabric, reroll, gudfps, dynmap-for-fabric, double-jump-mod, betterf3, fabric-disable-custom-worlds-advice, ziim-hud, pepeland-for-admins-mod, ferroustry-fabric, magic-mirror-fabric, flight-rings-fabric, gestus, urlostpajamas, easiercrafting, vanilla-toolsets, screenshot-to-clipboard-fabric, minihud, painting-cycle, gotta-climb-fast, roughly-searchable, soul-soil-farmland, cleancut, no-trample, prone, more-paths, platos-transporters, dynamic-sound-filters, eldritch-mobs, infinitevillagertrading, better-stones, afktape, vanilla-automated, presence-footsteps, simple-teleporters-fabric, just-another-redstone-gate-mod, trap-expansion-fabric, fat-experience-orbs, true-darkness, wild-world, roughly-enough-resources, colormatic, light-overlay, inventory-sorting, smooth-scrolling-everywhere-fabric, carpet-extra, carpet, wither-totem, falling-tree, wi-zoom, secrets-no-more, llama-steeds, highlight-unrestrictor, debrand, convenient-things, skin-swapper, water-erosion, smoke-extender, fabriblocks, respawnable-pets, pehkui, suck-eggs, autofish, trample-stopper-fabric, cloth-config, facility, stairdoors, tis-3d, minimotd-fabric, woods-plus, dysmixia, numericping, item-model-fix, into-the-w, displacer-fabric, imblockerfabric, dehand, mattocks-byg-bridge, portal-tags, tcrafting, iron, paused-panorama, opensavesfolder, enderite-mod-for-fabric, title-scrolls, wild-explorer, features-mod, eat-and-drink, nookbuild, lapis-reserve, dawn, unsuspicious-stew, age-of-exile, plant-in-a-jar, harmful-stonecutters, no-lakes, caelus-fabric, slime-block-in-the-redstone-tab, easier-enchanting, chest-tracker, rpg-hud-fabric, smoothcoasters, curious-elytra-fabric, emotecraft, elytra-recipe, mighty-mangoes, nogizmo, carpet-tis-addition, xaeros-minimap, xaeros-minimap-fair-play-edition, literally-chunk-loader, ring-of-growth-fabric, where-is-it, l12n, ring-of-the-miner-fabric, tinytweaks, mo-structures, get-off-my-lawn, pling, dark-loading-screen, held-item-info, fabric-api, antighost, spice-of-fabric, simplepipes, handy-structures, cotton, fermion, frex, fabric-discord-link, stats-keeper-fabric, canvas-renderer, cardinal-components, bow-infinity-fix, fairenchanting, lightlevel, winwonders, textile-backup, secret-rooms-fabric, window-title-changer, simple-quern, pal, minecraftcapes-mod, huddons-no-potion-glint, realistic-bakery-products-fabric, adapaxels, vertical-hotbar, cc-restitched, expanded-nether-ores, factionmapoverlaymod, invisible-frames, bluemap, unearthed-fabric, loose-trigger, plantable-flower-pots, home-camp, rei-cheat-keybind, servux, wither-cage-fix, gudasm, dwarfen-legacy, dynres, wishing-well, chat-heads, customhud, mcdw, signcopy, totem-plus, gate-of-babylon, lambdabettergrass, monetary-solutions, better-slabs, better-diamond-fabric, washing-machine, thenetherites-mod, of-capes, nethores, megane, cheatless, dungeons-of-exile, bookshelving, no-striders, simple-sound-muffler, recipeswitcher, megahax-reborn, postponed-delete, slotlock, fabricskyboxes, yungs-better-caves-fabric, capes, chest-cavity, quickcraft, peeping-creepers, rings-fabric, no-drowned, waddles-fabric, mod-credits, carrier, updatefixerupper, microdurability, depoliticize, custom-portals, fish-on-a-leash, commandaliases, dance-of-growth, world-blender-fabric, better-dispensers, craftable-fabric, enhancedcraft, legoatooms-golden-berries, less-tooltips, inconspicuous-bean-can, hellish-materials, environmentz, mesh, audiobook, textbook, chest-cavity-special-organs, geckolib-fabric, piglib, no-sleep, ae2ao, romans-stoneworks, farsighted-mobs, dead-totems, craftable-enchanted-golden-apples-fabric, dehydration, peintings, carve-my-pumpkin, anti-x-ray, medievalweapons, bag-of-feathers, anti-auto-jump, minegate-moreblocks, backslotaddon, damage-tilt, punch2prime, fallfest-2020-ghost, grabcraftlitematic, custom-stars, builders-blocks, ears, voxelmap-patch, ignis-fatuus, fabrictickrate-slow-motion-fast-forward, custom-void, camerakeybinds, username-remap, olifantenpad-fabric, drogtor, viarewind, viabackwards, too-many-binds, boring-tweaks, znepbs-food-mod, legoatooms-ender-bench, small-endermen, less-annoying-piglins, anycapes, frying-pan, true-secret-rooms, fallfest-leaves, cherry, hewo, better-controls, blockcoins, block-of-charcoal-fabric, fabric-essentials, arrfab, pauls-tweaks, queks-end, nile-milk-fix, headshot, hopper, connectible-chains, crumbs-fabric, smooth-boot, cobblestone-crafting-table, art-of-alchemy-memoriam, diamold, tis-3d-additions, custom-spawns, this-rocks, direbats-fabric, taco-bell-fabric, artifacts-fabric, publishallowcheats, villager-names-for-fabric, dadobug1111s-biomes, no-sleeping, smooth-chunks, emerald-armor-fabric, mbm-more-blocks-mod, modular-ender-storage-system]"
-            ]
-        },
-        "curse_e8b2c84b": {
+        "gcxjxbq278ch": {
             "type": "object",
             "properties": {
                 "apply": {
-                    "$ref": "#/definitions/entry.apply_d4da2628"
+                    "$ref": "#/definitions/entry.apply"
                 },
                 "name": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
                 },
                 "folder": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
                 },
                 "description": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
                 },
                 "optional": {
-                    "$ref": "#/definitions/Optional?_cc63c054"
+                    "$ref": "#/definitions/id3h0427jrb5"
                 },
                 "side": {
-                    "$ref": "#/definitions/voodoo.data.Side_d2f74c10"
+                    "enum": [
+                        "CLIENT",
+                        "SERVER",
+                        "BOTH"
+                    ],
+                    "$ref": "#/definitions/134b28soq0qgx"
                 },
                 "websiteUrl": {
-                    "type": "string"
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
                 },
                 "dependencies": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashMap_a5383b47"
+                    "$ref": "#/definitions/o2lydavs3qbl"
                 },
                 "packageType": {
-                    "$ref": "#/definitions/voodoo.data.curse.PackageType_7b9356bb"
+                    "enum": [
+                        "FOLDER",
+                        "CTOP",
+                        "SINGLEFILE",
+                        "CMOD2",
+                        "MODPACK",
+                        "MOD",
+                        "ANY"
+                    ],
+                    "$ref": "#/definitions/x151ijnlaghiin"
                 },
                 "transient": {
-                    "type": "boolean"
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
                 },
                 "version": {
-                    "type": "string"
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
                 },
                 "fileName": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
                 },
                 "fileNameRegex": {
-                    "type": "string"
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
                 },
                 "validMcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashSet_d4da2628"
+                    "$ref": "#/definitions/1mnlmne32xzi9"
                 },
                 "invalidMcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashSet_d4da2628"
+                    "$ref": "#/definitions/1mnlmne32xzi9"
                 },
                 "enabled": {
-                    "type": "boolean"
-                },
-                "releaseTypes": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashSet_220dc9c8"
-                },
-                "projectName": {
-                    "$ref": "#/definitions/kotlin.String?_f4010dac"
-                },
-                "projectID": {
-                    "if": {
-                        "type": "number"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "fileID": {
-                    "if": {
-                        "type": "number"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "useOriginalUrl": {
-                    "type": "boolean"
-                },
-                "skipFingerprintCheck": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "direct_c782c8cb": {
-            "type": "object",
-            "properties": {
-                "apply": {
-                    "$ref": "#/definitions/entry.apply_d4da2628"
-                },
-                "name": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "folder": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "description": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "optional": {
-                    "$ref": "#/definitions/Optional?_cc63c054"
-                },
-                "side": {
-                    "$ref": "#/definitions/voodoo.data.Side_d2f74c10"
-                },
-                "websiteUrl": {
-                    "type": "string"
-                },
-                "dependencies": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashMap_a5383b47"
-                },
-                "packageType": {
-                    "$ref": "#/definitions/voodoo.data.curse.PackageType_7b9356bb"
-                },
-                "transient": {
-                    "type": "boolean"
-                },
-                "version": {
-                    "type": "string"
-                },
-                "fileName": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "fileNameRegex": {
-                    "type": "string"
-                },
-                "validMcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashSet_d4da2628"
-                },
-                "invalidMcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashSet_d4da2628"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "url": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "useOriginalUrl": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "jenkins_be29dee9": {
-            "type": "object",
-            "properties": {
-                "apply": {
-                    "$ref": "#/definitions/entry.apply_d4da2628"
-                },
-                "name": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "folder": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "description": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "optional": {
-                    "$ref": "#/definitions/Optional?_cc63c054"
-                },
-                "side": {
-                    "$ref": "#/definitions/voodoo.data.Side_d2f74c10"
-                },
-                "websiteUrl": {
-                    "type": "string"
-                },
-                "dependencies": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashMap_a5383b47"
-                },
-                "packageType": {
-                    "$ref": "#/definitions/voodoo.data.curse.PackageType_7b9356bb"
-                },
-                "transient": {
-                    "type": "boolean"
-                },
-                "version": {
-                    "type": "string"
-                },
-                "fileName": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "fileNameRegex": {
-                    "type": "string"
-                },
-                "validMcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashSet_d4da2628"
-                },
-                "invalidMcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashSet_d4da2628"
-                },
-                "enabled": {
-                    "type": "boolean"
-                },
-                "jenkinsUrl": {
-                    "type": "string"
-                },
-                "job": {
-                    "type": "string"
-                },
-                "buildNumber": {
-                    "type": "number"
-                }
-            }
-        },
-        "local_d3ce36b6": {
-            "type": "object",
-            "properties": {
-                "apply": {
-                    "$ref": "#/definitions/entry.apply_d4da2628"
-                },
-                "name": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "folder": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "description": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "optional": {
-                    "$ref": "#/definitions/Optional?_cc63c054"
-                },
-                "side": {
-                    "$ref": "#/definitions/voodoo.data.Side_d2f74c10"
-                },
-                "websiteUrl": {
-                    "type": "string"
-                },
-                "dependencies": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashMap_a5383b47"
-                },
-                "packageType": {
-                    "$ref": "#/definitions/voodoo.data.curse.PackageType_7b9356bb"
-                },
-                "transient": {
-                    "type": "boolean"
-                },
-                "version": {
-                    "type": "string"
-                },
-                "fileName": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "fileNameRegex": {
-                    "type": "string"
-                },
-                "validMcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashSet_d4da2628"
-                },
-                "invalidMcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashSet_d4da2628"
-                },
-                "enabled": {
-                    "type": "boolean"
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
                 },
                 "fileSrc": {
-                    "type": "string"
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
                 }
+            },
+            "additionalProperties": false
+        },
+        "u5e5ak5d6ubl": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/bxi9qxnwq3gh"
             }
         },
-        "noop_dbf52806": {
-            "type": "object",
-            "properties": {
-                "apply": {
-                    "$ref": "#/definitions/entry.apply_d4da2628"
-                },
-                "name": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "folder": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "description": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "optional": {
-                    "$ref": "#/definitions/Optional?_cc63c054"
-                },
-                "side": {
-                    "$ref": "#/definitions/voodoo.data.Side_d2f74c10"
-                },
-                "websiteUrl": {
-                    "type": "string"
-                },
-                "dependencies": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashMap_a5383b47"
-                },
-                "packageType": {
-                    "$ref": "#/definitions/voodoo.data.curse.PackageType_7b9356bb"
-                },
-                "transient": {
-                    "type": "boolean"
-                },
-                "version": {
-                    "type": "string"
-                },
-                "fileName": {
-                    "if": {
-                        "type": "string"
-                    },
-                    "else": {
-                        "type": "null"
-                    }
-                },
-                "fileNameRegex": {
-                    "type": "string"
-                },
-                "validMcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashSet_d4da2628"
-                },
-                "invalidMcVersions": {
-                    "$ref": "#/definitions/kotlin.collections.LinkedHashSet_d4da2628"
-                },
-                "enabled": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "PlainEntry_d56d3c71": {
+        "x16c2gw0vsyghr": {
             "properties": {
                 "type": {
                     "type": "string",
@@ -924,30 +131,836 @@
             },
             "anyOf": [
                 {
-                    "$ref": "#/definitions/curse_e8b2c84b"
+                    "$ref": "#/definitions/xsrjadrr3jhtr"
                 },
                 {
-                    "$ref": "#/definitions/direct_c782c8cb"
+                    "$ref": "#/definitions/x1ogr8muobtypr"
                 },
                 {
-                    "$ref": "#/definitions/jenkins_be29dee9"
+                    "$ref": "#/definitions/112vof0tgaosh"
                 },
                 {
-                    "$ref": "#/definitions/local_d3ce36b6"
+                    "$ref": "#/definitions/gcxjxbq278ch"
                 },
                 {
-                    "$ref": "#/definitions/noop_dbf52806"
+                    "$ref": "#/definitions/xx6j7bi13dhb"
                 }
             ],
             "required": [
                 "type"
             ]
         },
-        "kotlin.collections.LinkedHashMap_32ceb68d": {
+        "Fabric.installer": {
+            "if": {
+                "type": "string"
+            },
+            "else": {
+                "type": "null"
+            },
+            "description": "find available versions on https://meta.fabricmc.net/v2/versions/installer"
+        },
+        "1krbfuk1xrw1t": {
+            "type": "string",
+            "enum": [
+                "REQUIRED",
+                "OPTIONAL"
+            ]
+        },
+        "entry.apply": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/bxi9qxnwq3gh"
+            }
+        },
+        "modloader.fabric": {
+            "type": "object",
+            "properties": {
+                "intermediateMappings": {
+                    "description": "find available versions on https://meta.fabricmc.net/v2/versions/intermediary",
+                    "$ref": "#/definitions/Fabric.intermediary"
+                },
+                "loader": {
+                    "description": "find available versions on https://meta.fabricmc.net/v2/versions/loader",
+                    "$ref": "#/definitions/Fabric.loader"
+                },
+                "installer": {
+                    "description": "find available versions on https://meta.fabricmc.net/v2/versions/installer",
+                    "$ref": "#/definitions/Fabric.installer"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "intermediateMappings"
+            ]
+        },
+        "Fabric.loader": {
+            "if": {
+                "type": "string"
+            },
+            "else": {
+                "type": "null"
+            },
+            "description": "find available versions on https://meta.fabricmc.net/v2/versions/loader"
+        },
+        "xw7t04w8wxczj": {
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "common"
+                    ]
+                }
+            },
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/xzqv7zoncydd"
+                }
+            ],
+            "required": [
+                "type"
+            ]
+        },
+        "xjnsi7yijrldr": {
+            "if": {
+                "type": "number"
+            },
+            "else": {
+                "type": "null"
+            }
+        },
+        "xzqv7zoncydd": {
+            "type": "object",
+            "properties": {
+                "folder": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "description": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "optional": {
+                    "$ref": "#/definitions/x10nyyb7xodgcf"
+                },
+                "side": {
+                    "enum": [
+                        "CLIENT",
+                        "SERVER",
+                        "BOTH"
+                    ],
+                    "$ref": "#/definitions/x1cmzbou8shekf"
+                },
+                "websiteUrl": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "packageType": {
+                    "enum": [
+                        "FOLDER",
+                        "CTOP",
+                        "SINGLEFILE",
+                        "CMOD2",
+                        "MODPACK",
+                        "MOD",
+                        "ANY"
+                    ],
+                    "$ref": "#/definitions/xaygo1sgzyqyn"
+                },
+                "version": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "fileName": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "fileNameRegex": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "validMcVersions": {
+                    "$ref": "#/definitions/x3mfv8nk70hkv"
+                },
+                "invalidMcVersions": {
+                    "$ref": "#/definitions/x3mfv8nk70hkv"
+                }
+            },
+            "additionalProperties": false
+        },
+        "Fabric.intermediary": {
+            "type": "string",
+            "description": "find available versions on https://meta.fabricmc.net/v2/versions/intermediary"
+        },
+        "19ymerplvvxtt": {
+            "type": "object",
+            "properties": {
+                "stable": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "mcVersions": {
+                    "$ref": "#/definitions/u5e5ak5d6ubl"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x1elfow68joo2m": {
+            "if": {
+                "type": "string"
+            },
+            "else": {
+                "type": "null"
+            },
+            "enum": [
+                "fabricMods/[emerald-armor-fabric, dadobug1111s-biomes, publishallowcheats, modular-ender-storage-system, no-sleeping, more-paths, roughly-searchable, painting-cycle, gotta-climb-fast, soul-soil-farmland, no-trample, cleancut, better-stones, prone, infinitevillagertrading, platos-transporters, eldritch-mobs, afktape, vanilla-automated, dynamic-sound-filters, item-scroller, custom-crosshair-mod, more-fences, biomore, manymods, self-governing-catalyst, waveaway, wishing-for-sunshine-fabric, reroll, quickswap, azuredooms-doom-mod-fabric, vanilla-ingredients-cooking-expanded-work-in, pet-owner, holographic-fabric, gudfps, origins-classes, overworld-two, sponges-plus, artifacts-fabric, pepeland-for-admins-mod, gestus, ferroustry-fabric, fabric-disable-custom-worlds-advice, betterf3, urlostpajamas, ziim-hud, double-jump-mod, flight-rings-fabric, magic-mirror-fabric, netherite-shulkers, astromine-foundations, piglinfix, song-sounds, karam, monopoly, meal-api, totallybalancedcreativeflying, tooltip-tool-tips, fallflyinglib, attack-on-titan-for-fabric, player-events, astromine-technologies, biome-picker, doomedfabric, good-ol-regen, headdowndisplay, durability-banks, dont-clear-chat-history, shelf, dungeons-of-exile, nafis, gotosavium-mod, recently-used, flan, drunk-fletchin-table, fabrishot, moundertweaks, raised-clouds, rpgz, the-parakeet-mod, totallybalancedfallflying, noteblock-expansion, astromine-transportations, all-stackable, zephyr, squidcraft, completeconfig, makkit, ezpas, ward-blocks-fabric, sodium, netherite-horse-armor, custom-fov-fabric, flighthud, pig-poop, on-soul-fire, curios-fabric, no-sneaking-over-magma, netherite-plus-mod, chains-link, slab-helper, ice-boat-nerf, fluid-physics, decorative, portal-crafter-fabric, shielddisruptor, player-roles-fabric, mutuality, cake-chomps-fabric, presence-footsteps, simple-teleporters-fabric, trap-expansion-fabric, just-another-redstone-gate-mod, fat-experience-orbs, huddons-status-effects, huddons-no-potion-glint, wooden-hoppers, expanded-nether-ores, factionmapoverlaymod, loose-trigger, invisible-frames, adapaxels, cc-restitched, customhud, realistic-bakery-products-fabric, vertical-hotbar, autoreconnect, rings-of-flight, unearthed-fabric, ac-hay-bales, bluemap, megahax-reborn, rei-cheat-keybind, home-camp, dwarfen-legacy, plantable-flower-pots, gudasm, servux, wither-cage-fix, e404nnfs-emerald-tools-fabric, optifabric, game-start, fancy-fountain-passage, torrid-vision, repairable-anvils, randomconfigs-fabric, warp, blur-fabric, primal-winter, mattocks-paxels-but-fabric, just-map-unlimited, thallium, itemsortermod, crooked-crooks, fabric-economy, lambdynamiclights, vanilladeathchest-fabric, patchouli-fabric, open-to-lan, straw-dummy, peacefulsurface-fabric, xradiation, no-striders, quickcraft, megane, chest-cavity, capes, peeping-creepers, postponed-delete, simple-sound-muffler, enhancedcraft, cheatless, audiobook, slotlock, rings-fabric, nethores, recipeswitcher, textbook, fabricskyboxes, yungs-better-caves-fabric, exotic-matter-library, mouse-wheelie, mambience, expanded-storage-fabric, vanilla-hammers, cloth-api, libblockattributes, xaeros-world-map, offlineskins-fabric, staff-of-building, useful-utilities, minecart-direction-follow, linkart-fabric, gravel-ores-fabric, xl-packets-fabric, dont-drop-it, mubble, more-toolbars, ce-foodstuffs, herbocraft, crusade, fabrictailor, delicious-dishes, adventurez, fabric-vertical-slabs, yosbr, sandwichable, convenient-mobgriefing, solid-worlds, rswires, nomoreglowingpots, customskinloader, antighost, basic-nether-ores, xaeros-minimap, xaeros-minimap-fair-play-edition, flonters, potion-of-bees-fabric, nomad-books, logical-zoom, auth-me, easiervillagertrading, quick-shulker, signcopy, thenetherites-mod, dynres, washing-machine, monetary-solutions, direbats-fabric, of-capes, totem-plus, gate-of-babylon, wishing-well, mcdw, bookshelving, better-slabs, chat-heads, staffderpsmod, cave-biomes, froggychair, boring-tweaks, retino, better-enchanted-books, blockmeterfabric, inmis, honeymod, adabranium, jumploader, watson, chunk-pregenerator-fabric, custom-selection-box-port, modmenu, traverse, controlling-for-fabric, clear-despawn-fabric, craftingpad-fabric, fabric-language-kotlin, litematica, minihud, smoke-extender, fabriblocks, bacterium, keepinventory-command, blackstone-tools, white-rabbit, fabric-rings-of-ascension, kibe, notes-fabric, stairdoors, illuminations, flamin-hot, nojumpscare, more-curios-totems-of-undying, fastgrowth, steed-stopper, curse-of-the-gambler, bedrockify, red-bits, swim-air, reauth-fabric, xp-storage, libdp, packed-storage, colorful-cut, hauling-hogs, trianglecore, old-efficiency-fabric, leadable-pandas, kronhud, image2map, angerable-patch, smoother-bedrock, eternal-eats, cursed-enchanting, till-it-breaks, suitedllamas-glass-doors, backpackmod, lengthy-ladders, project-inception, more-chains, advancementinfo, malilib, suitably-stackable-stew, now-playing, statushud, anvil-crushing-recipes, deep-mob-learning-refabricated, oh-how-the-crafting-has-tabled, blockshifter, rebindallthekeys, geckolib-fabric, compact-status-effects, obsidiplates-fabric, beacons-for-all-fabric, colytra-fabric, telekinesis-enchantment, through-the-looking-glass, size-entity-attributes, energonrelics, skin-shine, talltallcane, cherished-worlds-fabric, blip-block, no-player-labels, library-of-exile, extra-origins, balance-of-exile, hwyla, giselbaers-durability-viewer, taco-bell-fabric, tis-3d-additions, custom-spawns, this-rocks, world-stripper-fabric, better-dropped-items, nowatercaves, gunpowder-mc, trade, flighthelper, crowmap, dwarf-coal-fabric, carved-melons, towelette, techreborn, better-mod-button, limitless, boosted-brightness, iron-jetpacks-fabric, appleskin, fast-furnace-for-fabric, bootz, food-tweaks, dynocaps, fabric-survival-island, nofog, fabric-more-enchantments, flesh2leather-fabric, mesh, block-meter, adorn, leaf-decay, fabricproxy, fabric-armor, modern-glass-doors, mob-rebirth, exotic-blocks, diagonal-panes, chestshop, curious-shulker-boxes-fabric, camp-fires-cook-mobs, couplings-for-fabric-updated, kubejs-fabric, diamond-shards-fabric, protosky, repairable-tridents-fabric, curio-of-undying-fabric, player-mini-me, hot-furnace, full-belly-sheep, economical-villager-trading, inca, the-loved-ones, shuffle-fabric, better-graves, custom-window-title, eggtab-fabric, lithium, superaxes, sword-parry-fabric, rpgstats, stacc, automated-crafting, handy-structures, spice-of-fabric, fermion, simplepipes, frex, cotton, stats-keeper-fabric, canvas-renderer, fabric-discord-link, cardinal-components, resource-tools-fabric, grind-enchantments, blockus, rgb-blocks, ash-another-simple-hud, respawnable-pets, suck-eggs, pehkui, autofish, trample-stopper-fabric, facility, cloth-config, little-rocket-man, launchers, extraplayerrenderer, phosphor, audio-output, notchify, filtered-receptacles, simple-emerald-tools-fabric, wolves-with-armor, cleanview-fabric, sneaky-screens, simple-compat, linked-storage, more-totems-of-undying, endfestation, fabric-passable-leaves, fly-mod-3d, simpleauth, time-to-live, beenfo, allure, irish-wolves, multiconnect, lambdacontrols, ok-zoomer, more-gems-fabric, ring-of-attraction-fabric, extra-shields-fabric, armor-curve, transparent, hewo, blockcoins, fallfest-leaves, opchanter, anycapes, frying-pan, legoatooms-ender-bench, better-controls, fabric-essentials, block-of-charcoal-fabric, better-world-list, map-tooltip, better-wandering-traders, compactstorage, packages, confabricate, light-block-fabric, custom-piglin-bartering, hardcore-questing-mode-fabric, slip, simple-backpack-fabric, sit-fabric, black-ether-mod, statement, hourai-elixir, fiber2cloth, secrets-no-more, fabric-api, anvil-fix, aurorakeystrokes, simplex-terrain-generation, colorful-campfire-smoke, bigbuckets-fabric, horsestatsvanilla, snowdrift, anthropophagy, auto-run, easierchests, lib-network-stack, realistic-fire-spread, overpowered-mending, edit-sign, lib-multipart, yabm, nbt-crafting, crawl, old-mc-overlay, persistent-entities, sandbox-bootstrap, visible-enchantments, modsmod, cursed-table, fenceplayerupper, hotbar-switcher, taternetworking, no-strip, inv-view, heads-down-display, better-weather-fabric, astromine-discoveries, better-diamond-fabric, modern-industrialization, nicephore-fabric, modular-item-frame-fabric, less-greedy-piglins, clickthrough, minimal-menu, chain-suspension, elytra-hopping, telepistons, smart-pipes, hitmarker, trident-tweaks, low-fire, robins-amethyst-mod, astromine-core, golems-galore, noexpensive, crimson-moon, fabric-shield-lib, cartloaders, veggieway-fabric, afkpeace, slight-gui-modifications, creeper-spores, enchanted-tooltips, command-macros, reborncore, tiny-fuel, drop-loot-always, accurate-block-placement, terrestria, modsoftheworld, materialisation, trees-do-not-float, flex-fov, libcd, bow-infinity-fix, slightlyvanilla, deborder, slime-block-in-the-redstone-tab, harmful-stonecutters, age-of-exile, plant-in-a-jar, chest-tracker, smoothcoasters, caelus-fabric, curious-elytra-fabric, rpg-hud-fabric, nogizmo, easier-enchanting, mighty-mangoes, carpet-tis-addition, elytra-recipe, no-lakes, emotecraft, persistent-cake, l12n, where-is-it, ring-of-growth-fabric, literally-chunk-loader, ring-of-the-miner-fabric, mo-structures, tinytweaks, connectible-chains, smooth-boot, cobblestone-crafting-table, hopper, diamold, smooth-chunks, art-of-alchemy-memoriam, vanilla-toolsets, customtitlescreen, elytra-swap, void-fog-fabric, not-enough-crashes, jumpoverfences, mo-glass, perspective-mod-redux, atmosfera, riptide-fix, crashma, end-rebellion, carpet-extra, carpet, falling-tree, wither-totem, wi-zoom, orderly, clear-skies, flora-doubling-fabric, immersive-portals-mod, bucket-hat, right-click-clear, fallfest-2020-ghost, carve-my-pumpkin, anti-x-ray, custom-stars, bag-of-feathers, punch2prime, damage-tilt, minegate-moreblocks, backslotaddon, anti-auto-jump, grabcraftlitematic, medievalweapons, true-darkness, easiercrafting, vanilla-enhanced, rare-ice, auto-config-updated-api, composing, gravestones, togglewalk-mk-ii, campanion, dihydrogen-monoxide-reloaded, omnitranslation, fullscreeno, tacocraft-fabric, winwonders, lightlevel, textile-backup, fairenchanting, window-title-changer, simple-quern, secret-rooms-fabric, pal, minecraftcapes-mod, trumpet-skeleton-fabric, improved-stations, stepupnext, gunpowder-sleepvote, advancements-enlarger, worldtime, queks-end, arrfab, pauls-tweaks, headshot, nile-milk-fix, instantlava, dynamic-fps, nonevaporation, start-the-music, less-tooltips, craftable-fabric, no-drowned, better-dispensers, updatefixerupper, dead-totems, microdurability, mod-credits, legoatooms-golden-berries, dance-of-growth, depoliticize, custom-portals, fish-on-a-leash, commandaliases, world-blender-fabric, builders-blocks, carrier, curses, boring-backgrounds, simply-strawberries, just-map, fabric-resource-loader, randomblockplacement, building-wands, the-bumblezone-fabric, voxelmap, better-than-mending, fabric-autoswitch, inventory-profiles, torohealth-damage-indicators, tweakeroo, craftpresence, vanilla-excavators, twitch-chat, diggus-maximus, trinkets-fabric, fabric-tree-chopper, hard-hat-steve, first-person-model, redstonepower, dracomelette, mumble-link-fabric, cotton-resources, fires-survival-tweaks, muffle, powershot, mobs-attempt-parkour, modupdater, haema, glowcase, landmark, oh-the-biomes-youll-go-fabric, cinderscapes, slotlink, einholzscher-tech-mod, heart-of-the-machine, color-unchained, pumice, speed-trading, industrial-revolution, identity, origins, repurposed-structures-fabric, astromine-main, viafabric, melon-slabs, quickmath, server-translations, music-duration-reducer, howling-wolves, breakme, lambdabettergrass, coordinate-mod, dank-storage-fabric, fabric-zero, images, project-save-the-pets, waymoreores, inventory-tabs, versionchanger, can-i-mine-this-block, ducts, craftable-utilities, villagerfix, bedspreads-fabric, variable-spawner-hardness, columns, swordenlarger, gunpowder-teleport, pigless-portals, clojure-lib, customjoinmessagesfabric, shut-up, ugly-scoreboard-fix, reinforced-diamond-mod, gunpowder-market, owolib, ywlib, gunpowder-currency, pisshiss, gunpowder-utilities, servertick, creeper-confetti-fabric, azuredooms-jar-jar-fabric, azuredooms-angel-ring-fabric, dontgrow, iron-chests-fabric, backslot, trajectoryfabric, toggle-entity-render, soul-sandstone, magnet-for-fabric, expanded-concrete, redstone-lantern, bedrockwaters, chicken-nerf, pick-blockstate, shut-up-console, hookshot, stackablepotions, mcg, no-ambient-mobs, fabric-for-fabric, randompatches-fabric, autoswap-updated, ladderwarp, game-of-life-3d, jmx, amecs, vampirelib, unforgiving-void, nbt-tooltip, screenshot-to-clipboard-fabric, tis-3d, llama-steeds, debrand, skin-swapper, highlight-unrestrictor, convenient-things, water-erosion, the-backrooms, cart-boosts, ring-of-the-enderchest-fabric, viarewind, cherry, fabrictickrate-slow-motion-fast-forward, erroring-entity-remover, voxelmap-patch, small-endermen, ears, ignis-fatuus, continue-button, znepbs-food-mod, crumbs-fabric, too-many-binds, custom-void, viabackwards, camerakeybinds, less-annoying-piglins, username-remap, drogtor, olifantenpad-fabric, hellish-materials, craftable-enchanted-golden-apples-fabric, romans-stoneworks, dehydration, farsighted-mobs, piglib, no-sleep, environmentz, peintings, chest-cavity-special-organs, ae2ao, wild-world, colormatic, roughly-enough-resources, light-overlay, inventory-sorting, smooth-scrolling-everywhere-fabric, gameinfo, name-pain, commandspy, get-off-my-lawn, pling, dark-loading-screen, held-item-info, thermal-conversion, extra-alchemy, into-the-w, minimotd-fabric, numericping, iron, dysmixia, woods-plus, imblockerfabric, item-model-fix, title-scrolls, displacer-fabric, tcrafting, dehand, portal-tags, enderite-mod-for-fabric, features-mod, lapis-reserve, paused-panorama, nookbuild, mattocks-byg-bridge, wild-explorer, unsuspicious-stew, dawn, mbm-more-blocks-mod, mobcountmod, fabric-forwarding, roughly-enough-items, clothesline-fabric, borderless-mining, grid, infinity-fix, fabric-furnaces, draylars-battle-towers, target-dummy, shulkerboxtooltip, ancient-gateways, moreweaponry, pandora-mc, colored-slime-blocks, playerless, nile-enchantment-fix, colorful-columns, netherite-horse-armor-fabric, simply-sulfur, blocksmelt, dispenser-configurator]"
+            ]
+        },
+        "x1ogr8muobtypr": {
+            "type": "object",
+            "properties": {
+                "apply": {
+                    "$ref": "#/definitions/entry.apply"
+                },
+                "name": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "folder": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "description": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "optional": {
+                    "$ref": "#/definitions/id3h0427jrb5"
+                },
+                "side": {
+                    "enum": [
+                        "CLIENT",
+                        "SERVER",
+                        "BOTH"
+                    ],
+                    "$ref": "#/definitions/134b28soq0qgx"
+                },
+                "websiteUrl": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "dependencies": {
+                    "$ref": "#/definitions/o2lydavs3qbl"
+                },
+                "packageType": {
+                    "enum": [
+                        "FOLDER",
+                        "CTOP",
+                        "SINGLEFILE",
+                        "CMOD2",
+                        "MODPACK",
+                        "MOD",
+                        "ANY"
+                    ],
+                    "$ref": "#/definitions/x151ijnlaghiin"
+                },
+                "transient": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "version": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "fileName": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "fileNameRegex": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "validMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "invalidMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "enabled": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "url": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "useOriginalUrl": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                }
+            },
+            "additionalProperties": false
+        },
+        "xx6j7bi13dhb": {
+            "type": "object",
+            "properties": {
+                "apply": {
+                    "$ref": "#/definitions/entry.apply"
+                },
+                "name": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "folder": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "description": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "optional": {
+                    "$ref": "#/definitions/id3h0427jrb5"
+                },
+                "side": {
+                    "enum": [
+                        "CLIENT",
+                        "SERVER",
+                        "BOTH"
+                    ],
+                    "$ref": "#/definitions/134b28soq0qgx"
+                },
+                "websiteUrl": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "dependencies": {
+                    "$ref": "#/definitions/o2lydavs3qbl"
+                },
+                "packageType": {
+                    "enum": [
+                        "FOLDER",
+                        "CTOP",
+                        "SINGLEFILE",
+                        "CMOD2",
+                        "MODPACK",
+                        "MOD",
+                        "ANY"
+                    ],
+                    "$ref": "#/definitions/x151ijnlaghiin"
+                },
+                "transient": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "version": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "fileName": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "fileNameRegex": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "validMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "invalidMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "enabled": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                }
+            },
+            "additionalProperties": false
+        },
+        "id3h0427jrb5": {
+            "if": {
+                "type": "object"
+            },
+            "else": {
+                "type": "null"
+            },
+            "properties": {
+                "selected": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "recommendation": {
+                    "enum": [
+                        "starred",
+                        "avoid"
+                    ],
+                    "$ref": "#/definitions/4holsd0m641t"
+                },
+                "files": {
+                    "$ref": "#/definitions/xm0v4gp91e3un"
+                }
+            },
+            "additionalProperties": false
+        },
+        "1t4m2ns465ukh": {
             "type": "object",
             "additionalProperties": {
-                "$ref": "#/definitions/PlainEntry_d56d3c71"
+                "$ref": "#/definitions/x16c2gw0vsyghr"
             }
+        },
+        "38bknf7hbfgh": {
+            "if": {
+                "type": "number"
+            },
+            "else": {
+                "type": "null"
+            }
+        },
+        "112vof0tgaosh": {
+            "type": "object",
+            "properties": {
+                "apply": {
+                    "$ref": "#/definitions/entry.apply"
+                },
+                "name": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "folder": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "description": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "optional": {
+                    "$ref": "#/definitions/id3h0427jrb5"
+                },
+                "side": {
+                    "enum": [
+                        "CLIENT",
+                        "SERVER",
+                        "BOTH"
+                    ],
+                    "$ref": "#/definitions/134b28soq0qgx"
+                },
+                "websiteUrl": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "dependencies": {
+                    "$ref": "#/definitions/o2lydavs3qbl"
+                },
+                "packageType": {
+                    "enum": [
+                        "FOLDER",
+                        "CTOP",
+                        "SINGLEFILE",
+                        "CMOD2",
+                        "MODPACK",
+                        "MOD",
+                        "ANY"
+                    ],
+                    "$ref": "#/definitions/x151ijnlaghiin"
+                },
+                "transient": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "version": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "fileName": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "fileNameRegex": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "validMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "invalidMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "enabled": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "jenkinsUrl": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "job": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "buildNumber": {
+                    "$ref": "#/definitions/918scyce3cht"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x1o90evh20qk1r": {
+            "type": "string",
+            "enum": [
+                "Release",
+                "Beta",
+                "Alpha"
+            ]
+        },
+        "x1cmzbou8shekf": {
+            "if": {
+                "type": "string"
+            },
+            "else": {
+                "type": "null"
+            },
+            "enum": [
+                "CLIENT",
+                "SERVER",
+                "BOTH"
+            ]
+        },
+        "x3wcko3mv5xj3": {
+            "type": "string",
+            "enum": [
+                "MODS",
+                "RESOURCE_PACKS"
+            ]
+        },
+        "xm0v4gp91e3un": {
+            "type": "object",
+            "properties": {
+                "include": {
+                    "$ref": "#/definitions/u5e5ak5d6ubl"
+                },
+                "exclude": {
+                    "$ref": "#/definitions/u5e5ak5d6ubl"
+                }
+            },
+            "additionalProperties": false
+        },
+        "nnbrzaxq8m4h": {
+            "if": {
+                "type": "boolean"
+            },
+            "else": {
+                "type": "null"
+            }
+        },
+        "4holsd0m641t": {
+            "if": {
+                "type": "string"
+            },
+            "else": {
+                "type": "null"
+            },
+            "enum": [
+                "starred",
+                "avoid"
+            ]
+        },
+        "modloader.forge": {
+            "type": "object",
+            "properties": {
+                "mcVersion": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "forgeVersion": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "branch": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "mcVersion",
+                "forgeVersion"
+            ]
+        },
+        "o2lydavs3qbl": {
+            "type": "object",
+            "additionalProperties": {
+                "enum": [
+                    "REQUIRED",
+                    "OPTIONAL"
+                ],
+                "$ref": "#/definitions/1krbfuk1xrw1t"
+            }
+        },
+        "x1ds2win2pwe0v": {
+            "type": "object",
+            "properties": {
+                "title": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "authors": {
+                    "$ref": "#/definitions/u5e5ak5d6ubl"
+                },
+                "version": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "icon": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "mcVersion": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "generators": {
+                    "$ref": "#/definitions/xoe5n56nsnx8f"
+                },
+                "modloader": {
+                    "$ref": "#/definitions/x1682vqs0nr37j"
+                },
+                "selfupdateUrl": {
+                    "description": "url pointing to $modpackId.package.json\nyou need to upload the packaged modpack there",
+                    "$ref": "#/definitions/bxi9qy27bme1"
+                },
+                "tags": {
+                    "$ref": "#/definitions/x1swihm5f2lipr"
+                },
+                "mods": {
+                    "$ref": "#/definitions/1t4m2ns465ukh"
+                },
+                "$schema": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "title",
+                "version",
+                "icon",
+                "mcVersion",
+                "modloader",
+                "selfupdateUrl",
+                "tags",
+                "mods",
+                "$schema"
+            ]
+        },
+        "x186d2oiqx3gn3": {
+            "type": "object",
+            "properties": {
+                "mcVersions": {
+                    "$ref": "#/definitions/u5e5ak5d6ubl"
+                }
+            },
+            "additionalProperties": false
+        },
+        "8ajuc2id08ht": {
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "generator.curse",
+                        "generator.fabric",
+                        "generator.forge"
+                    ]
+                }
+            },
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/x488mpoavabl"
+                },
+                {
+                    "$ref": "#/definitions/19ymerplvvxtt"
+                },
+                {
+                    "$ref": "#/definitions/x186d2oiqx3gn3"
+                }
+            ],
+            "required": [
+                "type"
+            ]
+        },
+        "x1682vqs0nr37j": {
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "modloader.forge",
+                        "modloader.fabric",
+                        "Modloader.None"
+                    ]
+                }
+            },
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/modloader.forge"
+                },
+                {
+                    "$ref": "#/definitions/modloader.fabric"
+                },
+                {
+                    "$ref": "#/definitions/xdt0ytjqwdqm7"
+                }
+            ],
+            "required": [
+                "type"
+            ]
+        },
+        "xdt0ytjqwdqm7": {
+            "type": "object"
+        },
+        "xaygo1sgzyqyn": {
+            "if": {
+                "type": "string"
+            },
+            "else": {
+                "type": "null"
+            },
+            "enum": [
+                "FOLDER",
+                "CTOP",
+                "SINGLEFILE",
+                "CMOD2",
+                "MODPACK",
+                "MOD",
+                "ANY"
+            ]
+        },
+        "x10nyyb7xodgcf": {
+            "if": {
+                "type": "object"
+            },
+            "else": {
+                "type": "null"
+            },
+            "properties": {
+                "selected": {
+                    "$ref": "#/definitions/nnbrzaxq8m4h"
+                },
+                "recommendation": {
+                    "enum": [
+                        "starred",
+                        "avoid"
+                    ],
+                    "$ref": "#/definitions/4holsd0m641t"
+                },
+                "files": {
+                    "$ref": "#/definitions/xm0v4gp91e3un"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x1elfow6x7wf7j": {
+            "if": {
+                "type": "string"
+            },
+            "else": {
+                "type": "null"
+            }
+        },
+        "bxi9qy27bme1": {
+            "type": "string",
+            "description": "url pointing to $modpackId.package.json\nyou need to upload the packaged modpack there"
+        },
+        "918scyce3cht": {
+            "type": "number"
+        },
+        "1mnlmne32xzi9": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/bxi9qxnwq3gh"
+            }
+        },
+        "bxi9qxnwq3gh": {
+            "type": "string"
+        },
+        "x1swihm5f2lipr": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/xw7t04w8wxczj"
+            }
+        },
+        "xoe5n56nsnx8f": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/8ajuc2id08ht"
+            }
+        },
+        "x488mpoavabl": {
+            "type": "object",
+            "properties": {
+                "section": {
+                    "enum": [
+                        "MODS",
+                        "RESOURCE_PACKS"
+                    ],
+                    "$ref": "#/definitions/x3wcko3mv5xj3"
+                },
+                "categories": {
+                    "$ref": "#/definitions/u5e5ak5d6ubl"
+                },
+                "mcVersions": {
+                    "$ref": "#/definitions/u5e5ak5d6ubl"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "section"
+            ]
+        },
+        "xsrjadrr3jhtr": {
+            "type": "object",
+            "properties": {
+                "apply": {
+                    "$ref": "#/definitions/entry.apply"
+                },
+                "name": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "folder": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "description": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "optional": {
+                    "$ref": "#/definitions/id3h0427jrb5"
+                },
+                "side": {
+                    "enum": [
+                        "CLIENT",
+                        "SERVER",
+                        "BOTH"
+                    ],
+                    "$ref": "#/definitions/134b28soq0qgx"
+                },
+                "websiteUrl": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "dependencies": {
+                    "$ref": "#/definitions/o2lydavs3qbl"
+                },
+                "packageType": {
+                    "enum": [
+                        "FOLDER",
+                        "CTOP",
+                        "SINGLEFILE",
+                        "CMOD2",
+                        "MODPACK",
+                        "MOD",
+                        "ANY"
+                    ],
+                    "$ref": "#/definitions/x151ijnlaghiin"
+                },
+                "transient": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "version": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "fileName": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "fileNameRegex": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "validMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "invalidMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "enabled": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "releaseTypes": {
+                    "$ref": "#/definitions/1rfqvtohe97gh"
+                },
+                "projectName": {
+                    "$ref": "#/definitions/x1elfow68joo2m"
+                },
+                "projectID": {
+                    "$ref": "#/definitions/38bknf7hbfgh"
+                },
+                "fileID": {
+                    "$ref": "#/definitions/xjnsi7yijrldr"
+                },
+                "useOriginalUrl": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "skipFingerprintCheck": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                }
+            },
+            "additionalProperties": false
+        },
+        "134b28soq0qgx": {
+            "type": "string",
+            "enum": [
+                "CLIENT",
+                "SERVER",
+                "BOTH"
+            ]
         }
     }
 }

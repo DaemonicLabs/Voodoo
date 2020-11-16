@@ -10,18 +10,15 @@ import com.eyeem.watchadoin.TraceEventsReport
 import com.eyeem.watchadoin.saveAsSvg
 import com.eyeem.watchadoin.asTraceEventsReport
 import com.eyeem.watchadoin.saveAsHtml
-import com.github.ricky12awesome.jss.encodeToStringToSchema
 import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.DEBUG_PROPERTY_NAME
 import kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonConfiguration
-import kotlinx.serialization.json.JsonLiteral
-import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import voodoo.changelog.ChangelogBuilder
+import voodoo.cli.VoodooCommand
 import voodoo.data.nested.NestedPack
 import voodoo.script.ChangeScript
 import voodoo.script.MainScriptEnv
@@ -38,7 +35,12 @@ import kotlin.system.exitProcess
 object VoodooMain {
     val logger = KotlinLogging.logger {}
     @JvmStatic
-    fun main(vararg fullArgs: String) {
+    fun main(vararg args: String) {
+        VoodooCommand().main(args)
+    }
+
+    @JvmStatic
+    fun mainOld(vararg fullArgs: String) {
 //        val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
 //        rootLogger.level = Level.INFO // TODO: pass as -Dvoodoo.debug=true ?
         System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
@@ -103,7 +105,7 @@ object VoodooMain {
                         stopwatch = "evalScript".watch,
                         libs = libs,
                         scriptFile = scriptFile,
-                        args = *arrayOf(rootDir, id)
+                        args = arrayOf()
                     )
 
                     val tomeEnv = initTome(
@@ -114,15 +116,15 @@ object VoodooMain {
 //                    val nestedPack = scriptEnv.pack
 
                     // debug
-                    val jsonObj = json.toJson(NestedPack.serializer(), scriptEnv.pack) as JsonObject
+                    val jsonObj = json.encodeToJsonElement(NestedPack.serializer(), scriptEnv.pack) as JsonObject
                     rootDir.resolve(id).resolve("$id.nested.pack.json").writeText(
-                        json.encodeToString(JsonObject.serializer(), JsonObject(mapOf("\$schema" to JsonLiteral(scriptEnv.pack.`$schema`)) + jsonObj))
+                        json.encodeToString(JsonObject.serializer(), JsonObject(mapOf("\$schema" to JsonPrimitive(scriptEnv.pack.`$schema`)) + jsonObj))
                     )
-                    val schemaFile = rootDir.resolve(id).resolve(scriptEnv.pack.`$schema`)
-                    schemaFile.absoluteFile.parentFile.mkdirs()
-                    schemaFile.writeText(
-                        json.encodeToStringToSchema(NestedPack.serializer())
-                    )
+//                    val schemaFile = rootDir.resolve(id).resolve(scriptEnv.pack.`$schema`)
+//                    schemaFile.absoluteFile.parentFile.mkdirs()
+//                    schemaFile.writeText(
+//                        json.encodeToSchema(NestedPack.serializer())
+//                    )
 
                     // load nestedPack
                     val nestedPack = json.decodeFromString(NestedPack.serializer(), rootDir.resolve(id).resolve("$id.nested.pack.json").readText())
@@ -130,10 +132,11 @@ object VoodooMain {
 
                     // TODO: pass extra args object
                     VoodooTask.Build.execute(
-                        this,
-                        id,
-                        nestedPack,
-                        tomeEnv
+                        stopwatch = this,
+                        id = id,
+                        nestedPack = nestedPack,
+                        tomeEnv = tomeEnv,
+                        rootFolder = rootDir
                     )
                     logger.info("finished")
                 },
@@ -215,7 +218,10 @@ object VoodooMain {
         stopwatch.saveAsSvg(reportDir.resolve("${id}_$reportName.report.svg"))
         stopwatch.saveAsHtml(reportDir.resolve("${id}_$reportName.report.html"))
         val traceEventsReport = stopwatch.asTraceEventsReport()
-        val jsonString = Json(JsonConfiguration(prettyPrint = true, encodeDefaults = true))
+        val jsonString = Json {
+            prettyPrint = true
+            encodeDefaults = true
+        }
             .encodeToString(TraceEventsReport.serializer(), traceEventsReport)
         reportDir.resolve("${id}_$reportName.report.json").writeText(jsonString)
     }

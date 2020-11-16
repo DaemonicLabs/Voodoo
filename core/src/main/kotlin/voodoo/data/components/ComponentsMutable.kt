@@ -25,7 +25,7 @@ data class CommonComponent(
     override var side: Side = Side.BOTH,
     override var websiteUrl: String = "",
     override var dependencies: MutableMap<String, DependencyType> = mutableMapOf(),
-    override var replaceDependencies: Map<ProjectID, ProjectID> = mapOf(),
+//    override var replaceDependencies: Map<ProjectID, ProjectID> = mapOf(),
     override var packageType: PackageType = PackageType.MOD,
     override var transient: Boolean = false, // this entry got added as dependency for something else
     override var version: String = "", // TODO: use regex only ?

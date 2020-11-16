@@ -1,0 +1,16 @@
+{
+    "mcVersion": "1.15.2",
+    "version": "0.0.1",
+    "authors": [
+        "NikkyAi"
+    ],
+    "modloader": {
+        "type": "modloader.Fabric",
+        "intermediateMappingsVersion": "1.15.2"
+    },
+    "packOptions": {
+        "multimcOptions": {
+            "selfupdateUrl": "https://nikky.moe/.mc/experimental/fabricpack.json"
+        }
+    }
+}

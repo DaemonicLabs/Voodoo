@@ -3,6 +3,7 @@ package voodoo.dsl.builder
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
+import mu.KotlinLogging
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
@@ -14,11 +15,16 @@ import voodoo.util.json
 import kotlin.reflect.full.createInstance
 
 @VoodooDSL
-class ListBuilder<E : NestedEntry>(
-    entry: E
-) : EntryBuilder<E>(entry) {
+data class ListBuilder<E : NestedEntry>(
+    override val id: String,
+    override val entry: E
+) : EntryBuilder<E>(id, entry) {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     private var nameCounter: Int = 0
-    val listEntries: MutableList<NestedEntry> = mutableListOf()
+    val mapEntries: MutableMap<String, NestedEntry> = mutableMapOf()
 
     @VoodooDSL
     operator fun String.unaryPlus(): EntryBuilder<E> {
@@ -26,11 +32,12 @@ class ListBuilder<E : NestedEntry>(
             "You cannot add this to a Curse group: $this"
         }
         val _entry = entry::class.createInstance().also {
-            it.id = this
+//            it.id = this
             it.nodeName = this
         }
-        listEntries += _entry
-        return EntryBuilder(_entry)
+        require(this !in mapEntries) { "overriding id '${this}' is not allowed" }
+        mapEntries[this] = _entry
+        return EntryBuilder(this, _entry)
     }
 
     /**
@@ -42,10 +49,10 @@ class ListBuilder<E : NestedEntry>(
             "You cannot add this to a Curse group: $this"
         }
         val _entry = entry::class.createInstance().also {
-            it.id = this
+//            it.id = this
             it.nodeName = this
         }
-        return EntryBuilder(_entry).apply(configureEntry)
+        return EntryBuilder(this, _entry).apply(configureEntry)
     }
 
 //    @VoodooDSL
@@ -76,8 +83,13 @@ class ListBuilder<E : NestedEntry>(
         // TODO: pick correct node_name (if it matters for debuggability)
 //        nodeName = entry.nodeName + "_" + (name ?: "group_${nameCounter++}")
         val _entry = this.create()
-        this@ListBuilder.listEntries += _entry
-        val listBuilder = ListBuilder(_entry)
+        val listBuilder = ListBuilder("provider_${_entry.provider}", _entry)
+        require(listBuilder.id !in this@ListBuilder.mapEntries) {
+            logger.error { "overriding id '${listBuilder.id}' is not allowed" }
+            "overriding id '${listBuilder.id}' is not allowed"
+        }
+        this@ListBuilder.mapEntries[listBuilder.id] = _entry
+        this@ListBuilder.entry.entries += listBuilder.id to _entry
         listBuilder.apply(configureEntry)
         return listBuilder
     }
@@ -89,7 +101,14 @@ class ListBuilder<E : NestedEntry>(
     operator fun <N: NestedEntry> EntryBuilder<N>.unaryPlus(): EntryBuilder<N> {
         // TODO: pick correct node_name (if it matters for debuggability)
 //        nodeName = entry.nodeName + "_" + (name ?: "group_${nameCounter++}")
-        this@ListBuilder.listEntries += this.entry
+        logger.info { "${this@ListBuilder.id} +$this" }
+        require(this.id !in this@ListBuilder.mapEntries || this.entry == this@ListBuilder.mapEntries[this.id]) {
+            logger.error { "overriding id '${this.id}' is not allowed, replaces: ${this@ListBuilder.mapEntries[this.id]}" }
+            "overriding id '${this.id}' is not allowed, replaces: ${this@ListBuilder.mapEntries[this.id]}"
+        }
+        this@ListBuilder.mapEntries[this.id] = this.entry
+        this@ListBuilder.entry.entries += this.id to this.entry
+        logger.info { "mapEntries: ${this@ListBuilder.mapEntries}" }
         return this
     }
 
@@ -109,13 +128,16 @@ class ListBuilder<E : NestedEntry>(
         val stringId = curseSlugs[this] ?: runBlocking {
             CurseClient.getAddon(this@unaryPlus)?.slug
         } ?: throw NullPointerException("no id: '${this.value}' found in idToSlugMap")
+        logger.info { "${this@ListBuilder.id} +$stringId $this" }
         val _entry = NestedEntry.Curse().also {
-            it.id = stringId
             it.nodeName = stringId
             it.projectID = this
         }
-        listEntries += _entry
-        return EntryBuilder(_entry)
+        require(stringId !in mapEntries) { "overriding id '${stringId}' is not allowed" }
+        mapEntries[stringId] = _entry
+        this@ListBuilder.entry.entries += stringId to _entry
+        logger.info { "mapEntries: ${mapEntries}" }
+        return EntryBuilder(stringId, _entry)
     }
 
     /**
@@ -134,11 +156,10 @@ class ListBuilder<E : NestedEntry>(
             CurseClient.getAddon(this@invoke)?.slug
         } ?: throw NullPointerException("no id: '${this.value}' found in idToSlugMap")
         val _entry = NestedEntry.Curse().also {
-            it.id = stringId
             it.nodeName = stringId
             it.projectID = this
         }
-        val builder = EntryBuilder(entry = _entry)
+        val builder = EntryBuilder(id = stringId, entry = _entry)
         builder.configureEntry()
         return builder
     }
@@ -146,9 +167,9 @@ class ListBuilder<E : NestedEntry>(
     @VoodooDSL
     fun inheritProvider(configureEntry: ListBuilder<E>.() -> Unit = {}): ListBuilder<E> {
         val _entry = entry::class.createInstance()
-        val builder = ListBuilder(_entry)
+        val builder = ListBuilder("inheritProvider_${nameCounter++}", _entry)
         builder.apply(configureEntry)
-        _entry.entries += builder.listEntries
+        _entry.entries += builder.mapEntries
         return builder
     }
 
@@ -158,13 +179,7 @@ class ListBuilder<E : NestedEntry>(
         groupName: String? = null,
         initGroup: E.(ListBuilder<E>) -> Unit = {}
     ): ListBuilder<E> {
-        val _entry = entry::class.createInstance()
-        _entry.nodeName = entry.nodeName + "_" + (groupName ?: "group_${nameCounter++}")
-        listEntries += _entry
-        val builder = ListBuilder(entry = _entry)
-        _entry.initGroup(builder)
-        _entry.entries += builder.listEntries
-        return builder
+        error("use `inheritProvider {} list {}` instead")
     }
 
     /**
@@ -177,12 +192,7 @@ class ListBuilder<E : NestedEntry>(
         groupName: String? = null,
         block: N.( ListBuilder<N>) -> Unit = {}
     ): ListBuilder<N> {
-        val _entry = N::class.createInstance()
-        _entry.nodeName = entry.nodeName + "_" + (groupName ?: Providers.forEntry(_entry)?.id)
-        listEntries += _entry
-        val builder = ListBuilder(entry = _entry)
-        _entry.block(builder)
-        return builder
+        error("use `NestedEntry.\$Type {} list {}` instead")
     }
 
 }

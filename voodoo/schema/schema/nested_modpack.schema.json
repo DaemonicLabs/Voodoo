@@ -1,0 +1,816 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$ref": "#/definitions/1tzdlm50foxs1",
+    "definitions": {
+        "1tzdlm50foxs1": {
+            "type": "object",
+            "properties": {
+                "$schema": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "mcVersion": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "title": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "version": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "icon": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "authors": {
+                    "$ref": "#/definitions/u5e5ak5d6ubl"
+                },
+                "modloader": {
+                    "$ref": "#/definitions/xf2h1vi1f9wjj"
+                },
+                "localDir": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "docDir": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "packOptions": {
+                    "$ref": "#/definitions/x1ch9adqnfgsn3"
+                },
+                "root": {
+                    "$ref": "#/definitions/11kwe1hprugw1"
+                }
+            },
+            "additionalProperties": false
+        },
+        "63ukszapf08x": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "folder": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "description": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "optionalData": {
+                    "$ref": "#/definitions/1gyow6ibuu58h"
+                },
+                "side": {
+                    "enum": [
+                        "CLIENT",
+                        "SERVER",
+                        "BOTH"
+                    ],
+                    "$ref": "#/definitions/134b28soq0qgx"
+                },
+                "websiteUrl": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "dependencies": {
+                    "$ref": "#/definitions/o2lydavs3qbl"
+                },
+                "packageType": {
+                    "enum": [
+                        "FOLDER",
+                        "CTOP",
+                        "SINGLEFILE",
+                        "CMOD2",
+                        "MODPACK",
+                        "MOD",
+                        "ANY"
+                    ],
+                    "$ref": "#/definitions/x151ijnlaghiin"
+                },
+                "transient": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "version": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "fileName": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "fileNameRegex": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "validMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "invalidMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "enabled": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "entries": {
+                    "$ref": "#/definitions/4w6wk8jm6b5t"
+                },
+                "jenkinsProperties": {
+                    "$ref": "#/definitions/1ertyve9d0lxd"
+                }
+            },
+            "additionalProperties": false
+        },
+        "1rfqvtohe97gh": {
+            "type": "array",
+            "items": {
+                "enum": [
+                    "Release",
+                    "Beta",
+                    "Alpha"
+                ],
+                "$ref": "#/definitions/x1o90evh20qk1r"
+            }
+        },
+        "x1o90evh20qk1r": {
+            "type": "string",
+            "enum": [
+                "Release",
+                "Beta",
+                "Alpha"
+            ]
+        },
+        "x96zzwf73m1hb": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "folder": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "description": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "optionalData": {
+                    "$ref": "#/definitions/1gyow6ibuu58h"
+                },
+                "side": {
+                    "enum": [
+                        "CLIENT",
+                        "SERVER",
+                        "BOTH"
+                    ],
+                    "$ref": "#/definitions/134b28soq0qgx"
+                },
+                "websiteUrl": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "dependencies": {
+                    "$ref": "#/definitions/o2lydavs3qbl"
+                },
+                "packageType": {
+                    "enum": [
+                        "FOLDER",
+                        "CTOP",
+                        "SINGLEFILE",
+                        "CMOD2",
+                        "MODPACK",
+                        "MOD",
+                        "ANY"
+                    ],
+                    "$ref": "#/definitions/x151ijnlaghiin"
+                },
+                "transient": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "version": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "fileName": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "fileNameRegex": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "validMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "invalidMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "enabled": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "entries": {
+                    "$ref": "#/definitions/4w6wk8jm6b5t"
+                },
+                "localProperties": {
+                    "$ref": "#/definitions/xoc6cr0sa1fr3"
+                }
+            },
+            "additionalProperties": false
+        },
+        "xm0v4gp91e3un": {
+            "type": "object",
+            "properties": {
+                "include": {
+                    "$ref": "#/definitions/u5e5ak5d6ubl"
+                },
+                "exclude": {
+                    "$ref": "#/definitions/u5e5ak5d6ubl"
+                }
+            },
+            "additionalProperties": false
+        },
+        "xmdidyfmiigx": {
+            "type": "object",
+            "properties": {
+                "selfupdateUrl": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "instanceCfg": {
+                    "$ref": "#/definitions/tzj7j8hxqu4h"
+                }
+            },
+            "additionalProperties": false
+        },
+        "2l13tbjy6by9": {
+            "type": "object",
+            "properties": {
+                "releaseTypes": {
+                    "$ref": "#/definitions/1rfqvtohe97gh"
+                },
+                "projectID": {
+                    "$ref": "#/definitions/1du1v83kzxp1d"
+                },
+                "fileID": {
+                    "$ref": "#/definitions/hg6p3d3od8g1"
+                },
+                "useUrlTxt": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "skipFingerprintCheck": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                }
+            },
+            "additionalProperties": false
+        },
+        "1ehrf7bkolzpd": {
+            "type": "boolean"
+        },
+        "4holsd0m641t": {
+            "if": {
+                "type": "string"
+            },
+            "else": {
+                "type": "null"
+            },
+            "enum": [
+                "starred",
+                "avoid"
+            ]
+        },
+        "x1w687pbh5e327": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "version"
+            ]
+        },
+        "11kwe1hprugw1": {
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "common",
+                        "curse",
+                        "direct",
+                        "jenkins",
+                        "local",
+                        "noop"
+                    ]
+                }
+            },
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/bano4c3ajpxd"
+                },
+                {
+                    "$ref": "#/definitions/stts5n6io35t"
+                },
+                {
+                    "$ref": "#/definitions/aqu8oq49o3cx"
+                },
+                {
+                    "$ref": "#/definitions/63ukszapf08x"
+                },
+                {
+                    "$ref": "#/definitions/x96zzwf73m1hb"
+                },
+                {
+                    "$ref": "#/definitions/xb14h3bmw0hdr"
+                }
+            ],
+            "required": [
+                "type"
+            ]
+        },
+        "x151ijnlaghiin": {
+            "type": "string",
+            "enum": [
+                "FOLDER",
+                "CTOP",
+                "SINGLEFILE",
+                "CMOD2",
+                "MODPACK",
+                "MOD",
+                "ANY"
+            ]
+        },
+        "o2lydavs3qbl": {
+            "type": "object",
+            "additionalProperties": {
+                "enum": [
+                    "REQUIRED",
+                    "OPTIONAL"
+                ],
+                "$ref": "#/definitions/1krbfuk1xrw1t"
+            }
+        },
+        "xn70djx3zpn27": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "useUrlTxt": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                }
+            },
+            "additionalProperties": false
+        },
+        "u5e5ak5d6ubl": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/bxi9qxnwq3gh"
+            }
+        },
+        "bano4c3ajpxd": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "folder": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "description": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "optionalData": {
+                    "$ref": "#/definitions/1gyow6ibuu58h"
+                },
+                "side": {
+                    "enum": [
+                        "CLIENT",
+                        "SERVER",
+                        "BOTH"
+                    ],
+                    "$ref": "#/definitions/134b28soq0qgx"
+                },
+                "websiteUrl": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "dependencies": {
+                    "$ref": "#/definitions/o2lydavs3qbl"
+                },
+                "packageType": {
+                    "enum": [
+                        "FOLDER",
+                        "CTOP",
+                        "SINGLEFILE",
+                        "CMOD2",
+                        "MODPACK",
+                        "MOD",
+                        "ANY"
+                    ],
+                    "$ref": "#/definitions/x151ijnlaghiin"
+                },
+                "transient": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "version": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "fileName": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "fileNameRegex": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "validMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "invalidMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "enabled": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "entries": {
+                    "$ref": "#/definitions/4w6wk8jm6b5t"
+                }
+            },
+            "additionalProperties": false
+        },
+        "4w6wk8jm6b5t": {
+            "type": "object",
+            "additionalProperties": {
+                "$ref": "#/definitions/11kwe1hprugw1"
+            }
+        },
+        "x1ch9adqnfgsn3": {
+            "type": "object",
+            "properties": {
+                "multimcOptions": {
+                    "$ref": "#/definitions/xmdidyfmiigx"
+                },
+                "baseUrl": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "thumbnail": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "userFiles": {
+                    "$ref": "#/definitions/xm0v4gp91e3un"
+                }
+            },
+            "additionalProperties": false
+        },
+        "1ertyve9d0lxd": {
+            "type": "object",
+            "properties": {
+                "jenkinsUrl": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "job": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "buildNumber": {
+                    "$ref": "#/definitions/918scyce3cht"
+                }
+            },
+            "additionalProperties": false
+        },
+        "x1xj7pa4d73jen": {
+            "type": "object",
+            "properties": {
+                "intermediateMappingsVersion": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "loaderVersion": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "installerVersion": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "intermediateMappingsVersion"
+            ]
+        },
+        "1krbfuk1xrw1t": {
+            "type": "string",
+            "enum": [
+                "REQUIRED",
+                "OPTIONAL"
+            ]
+        },
+        "hg6p3d3od8g1": {
+            "type": "number"
+        },
+        "1du1v83kzxp1d": {
+            "type": "number"
+        },
+        "x1elfow6x7wf7j": {
+            "if": {
+                "type": "string"
+            },
+            "else": {
+                "type": "null"
+            }
+        },
+        "xxa85lwfzifwf": {
+            "type": "object",
+            "properties": {
+                "first": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "second": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                }
+            },
+            "additionalProperties": false,
+            "required": [
+                "first",
+                "second"
+            ]
+        },
+        "918scyce3cht": {
+            "type": "number"
+        },
+        "1mnlmne32xzi9": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/bxi9qxnwq3gh"
+            }
+        },
+        "bxi9qxnwq3gh": {
+            "type": "string"
+        },
+        "xf2h1vi1f9wjj": {
+            "properties": {
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "modloader.Forge",
+                        "modloader.Fabric",
+                        "voodoo.data.ModloaderPattern.None"
+                    ]
+                }
+            },
+            "anyOf": [
+                {
+                    "$ref": "#/definitions/x1w687pbh5e327"
+                },
+                {
+                    "$ref": "#/definitions/x1xj7pa4d73jen"
+                },
+                {
+                    "$ref": "#/definitions/k3klmnfxdmgx"
+                }
+            ],
+            "required": [
+                "type"
+            ]
+        },
+        "xoc6cr0sa1fr3": {
+            "type": "object",
+            "properties": {
+                "fileSrc": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                }
+            },
+            "additionalProperties": false
+        },
+        "stts5n6io35t": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "folder": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "description": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "optionalData": {
+                    "$ref": "#/definitions/1gyow6ibuu58h"
+                },
+                "side": {
+                    "enum": [
+                        "CLIENT",
+                        "SERVER",
+                        "BOTH"
+                    ],
+                    "$ref": "#/definitions/134b28soq0qgx"
+                },
+                "websiteUrl": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "dependencies": {
+                    "$ref": "#/definitions/o2lydavs3qbl"
+                },
+                "packageType": {
+                    "enum": [
+                        "FOLDER",
+                        "CTOP",
+                        "SINGLEFILE",
+                        "CMOD2",
+                        "MODPACK",
+                        "MOD",
+                        "ANY"
+                    ],
+                    "$ref": "#/definitions/x151ijnlaghiin"
+                },
+                "transient": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "version": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "fileName": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "fileNameRegex": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "validMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "invalidMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "enabled": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "entries": {
+                    "$ref": "#/definitions/4w6wk8jm6b5t"
+                },
+                "curseProperties": {
+                    "$ref": "#/definitions/2l13tbjy6by9"
+                }
+            },
+            "additionalProperties": false
+        },
+        "k3klmnfxdmgx": {
+            "type": "object"
+        },
+        "aqu8oq49o3cx": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "folder": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "description": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "optionalData": {
+                    "$ref": "#/definitions/1gyow6ibuu58h"
+                },
+                "side": {
+                    "enum": [
+                        "CLIENT",
+                        "SERVER",
+                        "BOTH"
+                    ],
+                    "$ref": "#/definitions/134b28soq0qgx"
+                },
+                "websiteUrl": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "dependencies": {
+                    "$ref": "#/definitions/o2lydavs3qbl"
+                },
+                "packageType": {
+                    "enum": [
+                        "FOLDER",
+                        "CTOP",
+                        "SINGLEFILE",
+                        "CMOD2",
+                        "MODPACK",
+                        "MOD",
+                        "ANY"
+                    ],
+                    "$ref": "#/definitions/x151ijnlaghiin"
+                },
+                "transient": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "version": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "fileName": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "fileNameRegex": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "validMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "invalidMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "enabled": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "entries": {
+                    "$ref": "#/definitions/4w6wk8jm6b5t"
+                },
+                "directProperties": {
+                    "$ref": "#/definitions/xn70djx3zpn27"
+                }
+            },
+            "additionalProperties": false
+        },
+        "tzj7j8hxqu4h": {
+            "type": "array",
+            "items": {
+                "$ref": "#/definitions/xxa85lwfzifwf"
+            }
+        },
+        "xb14h3bmw0hdr": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "folder": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "description": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "optionalData": {
+                    "$ref": "#/definitions/1gyow6ibuu58h"
+                },
+                "side": {
+                    "enum": [
+                        "CLIENT",
+                        "SERVER",
+                        "BOTH"
+                    ],
+                    "$ref": "#/definitions/134b28soq0qgx"
+                },
+                "websiteUrl": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "dependencies": {
+                    "$ref": "#/definitions/o2lydavs3qbl"
+                },
+                "packageType": {
+                    "enum": [
+                        "FOLDER",
+                        "CTOP",
+                        "SINGLEFILE",
+                        "CMOD2",
+                        "MODPACK",
+                        "MOD",
+                        "ANY"
+                    ],
+                    "$ref": "#/definitions/x151ijnlaghiin"
+                },
+                "transient": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "version": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "fileName": {
+                    "$ref": "#/definitions/x1elfow6x7wf7j"
+                },
+                "fileNameRegex": {
+                    "$ref": "#/definitions/bxi9qxnwq3gh"
+                },
+                "validMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "invalidMcVersions": {
+                    "$ref": "#/definitions/1mnlmne32xzi9"
+                },
+                "enabled": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "entries": {
+                    "$ref": "#/definitions/4w6wk8jm6b5t"
+                }
+            },
+            "additionalProperties": false
+        },
+        "1gyow6ibuu58h": {
+            "if": {
+                "type": "object"
+            },
+            "else": {
+                "type": "null"
+            },
+            "properties": {
+                "selected": {
+                    "$ref": "#/definitions/1ehrf7bkolzpd"
+                },
+                "skRecommendation": {
+                    "enum": [
+                        "starred",
+                        "avoid"
+                    ],
+                    "$ref": "#/definitions/4holsd0m641t"
+                },
+                "skFiles": {
+                    "$ref": "#/definitions/xm0v4gp91e3un"
+                }
+            },
+            "additionalProperties": false
+        },
+        "134b28soq0qgx": {
+            "type": "string",
+            "enum": [
+                "CLIENT",
+                "SERVER",
+                "BOTH"
+            ]
+        }
+    }
+}

@@ -10,6 +10,7 @@ import voodoo.pack.AbstractPack
 import voodoo.tome.TomeEnv
 import voodoo.util.SharedFolders
 import voodoo.dsl.GeneratedConstants
+import java.io.File
 
 sealed class VoodooTask(open val key: String) {
     object Build : VoodooTask("build") {
@@ -17,18 +18,24 @@ sealed class VoodooTask(open val key: String) {
             stopwatch: Stopwatch,
             id: String,
             nestedPack: NestedPack,
+            rootFolder: File,
             tomeEnv: TomeEnv?
         ) = stopwatch {
             "buildTask".watch {
                 val modpack = "flatten".watch {
-                    Importer.flatten(this, nestedPack)
+                    Importer.flatten(
+                        stopwatch = this,
+                        nestedPack = nestedPack,
+                        id = id,
+                        targetFolder = rootFolder
+                    )
                 }
                 val lockPack = "build".watch {
                     Builder.build(this, modpack, id = id)
                 }
 
                 if (tomeEnv != null) {
-                    val uploadDir = SharedFolders.UploadDir.get(nestedPack.id)
+                    val uploadDir = SharedFolders.UploadDir.get(id)
                     val rootDir = SharedFolders.RootDir.get().absoluteFile
 
                     // TODO: merge tome into core

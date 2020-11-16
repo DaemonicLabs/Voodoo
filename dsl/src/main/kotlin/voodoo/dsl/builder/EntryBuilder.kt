@@ -6,8 +6,12 @@ import voodoo.dsl.VoodooDSL
 import voodoo.property
 
 open class EntryBuilder<E: NestedEntry>(
-    entry: E
+    open val id: String,
+    override val entry: E
 ) : AbstractBuilder<E>(entry) {
+
+    override fun toString(): String = "voodoo.dsl.EntryBuilder(id=$id, entry=$entry)"
+
     //    var id by property(entry::id)
 //    var name by property(entry::name)
 //    var websiteUrl by property(entry::websiteUrl)

@@ -11,6 +11,7 @@ dependencies {
     api(KotlinX.coroutines.core)
 
     api(group = "io.github.microutils", name = "kotlin-logging", version = "_")
+    api(group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-slf4j", version = "_")
     implementation(group = "ch.qos.logback", name = "logback-classic", version = "_") {
         exclude(module = "javax.mail")
     }

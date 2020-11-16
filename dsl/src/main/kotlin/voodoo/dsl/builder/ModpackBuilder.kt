@@ -17,12 +17,11 @@ open class ModpackBuilder(
     var mcVersion by property(pack::mcVersion)
     var title by property(pack::title)
     var version by property(pack::version)
-    var iconPath by property(pack::iconPath)
     var icon by property(pack::icon)
     var authors by property(pack::authors)
     val root by readOnly(pack::root)
     var localDir by property(pack::localDir)
-    val sourceFolder by readOnly(pack::sourceFolder)
+//    val sourceFolder by readOnly(pack::sourceFolder)
 
     @PackDSL
     fun pack(configurePack: PackOptions.() -> Unit) {
@@ -44,8 +43,9 @@ open class ModpackBuilder(
     fun mods(
         initMods: ListBuilder<NestedEntry>.() -> Unit
     ) {
-        val rootBuilder = ListBuilder(pack.root)
+        val rootBuilder = ListBuilder("root", pack.root)
         rootBuilder.apply(initMods)
+        logger.info { "pack.root: ${pack.root}" }
     }
 
 
@@ -54,7 +54,7 @@ open class ModpackBuilder(
     inline fun <reified E: NestedEntry> root(
         initRoot: E.(GroupBuilder<E>) -> Unit
     ) {
-        require(!rootInitialized) { "root was already initialized for ${pack.id}" }
+        require(!rootInitialized) { "root was already initialized for ${pack}" }
         val entry = E::class.createInstance()
         entry.nodeName = "root"
         val rootBuilder = GroupBuilder(entry = entry)

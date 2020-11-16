@@ -20,16 +20,17 @@ dependencies {
     // script definitions
     implementation(kotlin("scripting-jvm", "_"))
 
-    implementation("com.github.Ricky12Awesome:json-schema-serialization:0.5.2")
-
-    testImplementation(kotlin("test", "_"))
-
-    testImplementation("org.spekframework.spek2:spek-dsl-jvm:_")
-    testImplementation("org.spekframework.spek2:spek-runner-junit5:_")
-    testRuntimeOnly("org.junit.platform:junit-platform-engine:_")
+    implementation(group = "ch.qos.logback", name = "logback-classic", version = "_") {
+        exclude(module = "javax.mail")
+    }
+//    implementation("com.github.Ricky12Awesome:json-schema-serialization:_")
 
     // spek requires kotlin-reflect, can be omitted if already in the classpath
     testRuntimeOnly(kotlin("reflect", "_"))
+
+    testImplementation(kotlin("test", "_"))
+    testImplementation(group = "org.junit.jupiter", name = "junit-jupiter-api", version = "_")
+    testRuntimeOnly(group = "org.junit.jupiter", name = "junit-jupiter-engine", version = "_")
 }
 
 application {

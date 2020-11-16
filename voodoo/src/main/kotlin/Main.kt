@@ -1,3 +1,7 @@
+import com.charleskorn.kaml.PolymorphismStyle
+import com.charleskorn.kaml.SequenceStyle
+import com.charleskorn.kaml.Yaml
+import com.charleskorn.kaml.YamlConfiguration
 import com.github.ricky12awesome.jss.dsl.ExperimentalJsonSchemaDSL
 import com.github.ricky12awesome.jss.encodeToSchema
 import kotlinx.coroutines.runBlocking
@@ -9,6 +13,7 @@ import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.jsonObject
 import mu.KotlinLogging
 import voodoo.curse.CurseClient
+import voodoo.data.nested.NestedPack
 import voodoo.forge.ForgeUtil
 import java.io.File
 
@@ -23,21 +28,37 @@ object Main {
         val rootDir = File(".").absoluteFile
         val id = "test"
 
-//        val modpackConfig  = Yaml.default.decodeFromString(
-//            ModpackPlain.serializer(),
-//            File("test.voodoo.yml").readText()
-//        )
-
         val json = Json {
             prettyPrint = true
         }
-        // TODO: generate json later
-        // debug
         val schemaFile = rootDir.resolve("schema/modpack.schema.json")
         schemaFile.absoluteFile.parentFile.mkdirs()
         schemaFile.writeText(
             json.encodeToSchema(ModpackPlain.serializer())
         )
+        val nestedPackSchemaFile = rootDir.resolve("schema/nested_modpack.schema.json").also { file ->
+            file.absoluteFile.parentFile.mkdirs()
+            file.writeText(
+                json.encodeToSchema(NestedPack.serializer())
+            )
+        }
+
+
+        val yaml = Yaml (
+            configuration = YamlConfiguration(
+                polymorphismStyle = PolymorphismStyle.Tag,
+                sequenceStyle = SequenceStyle.Flow
+            )
+        )
+        val nestedCfg  = yaml.decodeFromString(
+            NestedPack.serializer(),
+            File("nested_test.nested_voodoo.yml").readText()
+        )
+        logger.info { nestedCfg }
+
+        // TODO: generate json later
+        // debug
+
 
         val testFile = File("test.voodoo.json").absoluteFile
 

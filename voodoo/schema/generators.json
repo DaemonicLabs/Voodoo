@@ -1,0 +1,35 @@
+{
+  "Mod": {
+    "type": "generator.curse",
+    "section": "MODS",
+    "mcVersions": [
+      "1.12", "1.12.1", "1.12.2"
+    ]
+  },
+  "FabricMod": {
+    "type": "generator.curse",
+    "section": "MODS",
+    "mcVersions": [
+      "1.15", "1.15.1", "1.15.2"
+    ],
+    "categories": [
+      "Fabric"
+    ]
+  },
+  "Forge_12_2": {
+    "type": "generator.forge",
+    "mcVersions": [
+      "1.12.2"
+    ]
+  },
+  "Forge_15_2": {
+    "type": "generator.forge",
+    "mcVersions": [
+      "1.15.2"
+    ]
+  },
+  "Fabric": {
+    "type": "generator.fabric",
+    "stable": true
+  }
+}

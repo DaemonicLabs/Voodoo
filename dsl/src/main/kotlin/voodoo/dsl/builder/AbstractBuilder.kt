@@ -5,5 +5,5 @@ import voodoo.dsl.VoodooDSL
 
 @VoodooDSL
 abstract class AbstractBuilder<E: NestedEntry>(
-    val entry: E
+    open val entry: E
 )

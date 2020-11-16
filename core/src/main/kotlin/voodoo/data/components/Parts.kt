@@ -30,7 +30,7 @@ interface Common {
 }
 interface CommonImmutable: Common {
     val id: String
-    val replaceDependencies: Map<ProjectID, ProjectID>
+//    val replaceDependencies: Map<ProjectID, ProjectID>
 }
 interface CommonMutable : CommonImmutable {
     override var id: String
@@ -41,7 +41,7 @@ interface CommonMutable : CommonImmutable {
     override var side: Side
     override var websiteUrl: String
     override var dependencies: MutableMap<String, DependencyType>
-    override var replaceDependencies: Map<ProjectID, ProjectID>
+//    override var replaceDependencies: Map<ProjectID, ProjectID>
     override var packageType: PackageType
     override var transient: Boolean // this entry got added as dependency for somethin
     override var version: String // TODO: use regex only ?

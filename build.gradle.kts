@@ -220,6 +220,7 @@ subprojects {
             }
 
             val shadowJar by tasks.getting(ShadowJar::class) {
+                archiveBaseName.set(project.name)
                 archiveClassifier.set(Maven.shadowClassifier)
 //                archiveVersion.set(fullVersion)
 //                archiveFileName.set("${project.name.toLowerCase()}-$versionSuffix.${archiveExtension.getOrNull()}")

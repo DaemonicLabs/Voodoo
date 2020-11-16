@@ -8,8 +8,6 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
 import voodoo.data.curse.ProjectID
-import voodoo.poet.Poet
-import voodoo.poet.generator.CurseSection
 
 @Serializable
 data class ModpackPlain(
@@ -27,34 +25,6 @@ data class ModpackPlain(
 ) {
     @Required
     var `$schema` = "./modpack.schema.json"
-}
-
-@Serializable
-sealed class Generator() {
-    abstract val mcVersions: List<String>
-    @Serializable
-    @SerialName("generator.curse")
-    data class Curse(
-        val section: CurseSection,
-        val categories: List<String> = emptyList(),
-        override val mcVersions: List<String> = emptyList()
-    ) : Generator()
-
-    /**
-     * generates Fabric versions
-     */
-    @Serializable
-    @SerialName("generator.fabric")
-    data class Fabric(
-        val stable: Boolean = true,
-        override val mcVersions: List<String> = emptyList()
-    ): Generator()
-
-    @Serializable
-    @SerialName("generator.forge")
-    data class Forge(
-        override val mcVersions: List<String> = emptyList()
-    ): Generator()
 }
 
 
@@ -118,7 +88,7 @@ sealed class PlainTag {
 
 @Serializable
 sealed class PlainEntry(
-    @JsonSchema.DefinitionRef("entry.apply")
+    @JsonSchema.Definition("entry.apply")
     @JsonSchema.StringEnum(["replace_with_tags"])
     val apply: List<String> = listOf(),
     var name: String? = null,

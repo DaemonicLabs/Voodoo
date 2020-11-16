@@ -9,7 +9,7 @@ import kotlinx.serialization.json.*
 sealed class Modloader {
     @Serializable
     @SerialName("modloader.forge")
-    @JsonSchema.DefinitionRef("modloader.forge")
+    @JsonSchema.Definition("modloader.forge")
     data class Forge(
         // TODO: maybe just second part of `1.15.2-31.1.35` ? is this clear enough for the server to download the installer ?
         // https://files.minecraftforge.net/maven/net/minecraftforge/forge/maven-metadata.xml
@@ -32,15 +32,15 @@ sealed class Modloader {
     // look up versions from https://meta.fabricmc.net/
     @Serializable
     @SerialName("modloader.fabric")
-    @JsonSchema.DefinitionRef("modloader.fabric")
+    @JsonSchema.Definition("modloader.fabric")
     data class Fabric(
-        @JsonSchema.DefinitionRef("Fabric.intermediary")
+        @JsonSchema.Definition("Fabric.intermediary")
         @JsonSchema.Description(["find available versions on https://meta.fabricmc.net/v2/versions/intermediary"])
         val intermediateMappings: String,
-        @JsonSchema.DefinitionRef("Fabric.loader")
+        @JsonSchema.Definition("Fabric.loader")
         @JsonSchema.Description(["find available versions on https://meta.fabricmc.net/v2/versions/loader"])
         val loader: String? = null,
-        @JsonSchema.DefinitionRef("Fabric.installer")
+        @JsonSchema.Definition("Fabric.installer")
         @JsonSchema.Description(["find available versions on https://meta.fabricmc.net/v2/versions/installer"])
         val installer: String? = null
     ) : Modloader()

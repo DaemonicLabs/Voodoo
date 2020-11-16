@@ -1,0 +1,32 @@
+# id: nested_test
+packOptions:
+  baseUrl: https://yourdomain.com/voodoo/$modpackId.json
+  multimcOptions:
+    selfupdateUrl: https://yourdomain.com/voodoo/$modpackId.json
+
+version: 1.0.0
+authors:
+  - nikky
+icon: icon.png,
+mcVersion: 1.16.2,
+modloader: !<modloader.Fabric>
+  # type: modloader.Fabric
+  intermediateMappingsVersion: 1.16.2
+root: !<curse>
+  validMcVersions: [ "1.16.2", "1.16.1", "1.16" ]
+  curseProperties:
+    releaseTypes: [ Alpha, Beta, Release ]
+    useUrlTxt: true
+  entries: 
+    appleskin: !<curse>
+      name: appleskin
+    campanion: !<curse>
+      name: campanion
+    jenkins: !<jenkins>
+      jenkinsProperties:
+        jenkinsUrl: "https://jenkins.modmuss50.me/"
+      entries: 
+        modmenu: !<jenkins>
+          jenkinsProperties:
+            job: Prospector/Fabric/ModMenu-1.16.1
+

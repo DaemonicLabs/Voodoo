@@ -10,6 +10,7 @@ import voodoo.poet.generator.CurseSection
 import voodoo.poet.generator.ForgeGenerator
 import voodoo.script.annotation.Include
 import voodoo.util.SharedFolders
+import java.io.File
 import kotlin.script.experimental.api.*
 import kotlin.script.experimental.host.FileBasedScriptSource
 import kotlin.script.experimental.host.toScriptSource
@@ -72,12 +73,13 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
             require(context.script is FileBasedScriptSource) { "${context.script::class} != FileBasedScriptSource" }
             val scriptFile = (context.script as FileBasedScriptSource).file
             // TODO? make sure rootFolder points at the correct folder
-            SharedFolders.RootDir.value = scriptFile.parentFile.parentFile
+//            SharedFolders.RootDir.value = scriptFile.parentFile.parentFile
             val rootDir = SharedFolders.RootDir.get()
 
             val generatedSharedSrc = SharedFolders.GeneratedSrcShared.get()
+            println("generatedSharedSrc: $generatedSharedSrc")
 
-            val globalGeneratedFiles = generatedSharedSrc.listFiles { file -> file.extension == "kt" }!!.toList()
+            val globalGeneratedFiles = generatedSharedSrc.takeIf { it.exists() }?.listFiles { file -> file.extension == "kt" }?.toList()
 
 //            val reports: MutableList<ScriptDiagnostic> = mutableListOf()
 //            val annotations = context.collectedData?.get(ScriptCollectedData.foundAnnotations).also {
@@ -86,9 +88,12 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
 //            println("bp annotations: $annotations")
 
             val compilationConfiguration = ScriptCompilationConfiguration(context.compilationConfiguration) {
-                importScripts.append(globalGeneratedFiles.map { it.toScriptSource() })
+                globalGeneratedFiles?.let {
+                    importScripts.append(it.map(File::toScriptSource))
+                }
                 reports += ScriptDiagnostic(
-                    "adding global generated files: ${globalGeneratedFiles.map { it.relativeTo(rootDir) }}",
+                    ScriptDiagnostic.unspecifiedInfo,
+                    "adding global generated files: ${globalGeneratedFiles?.map { it.relativeTo(rootDir) }}",
                     ScriptDiagnostic.Severity.INFO
                 )
             }
@@ -111,7 +116,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
                         "InvalidScriptResolverAnnotation found"
                     }
                 }
-                reports += ScriptDiagnostic("found annotations: '$annotations'", severity = ScriptDiagnostic.Severity.DEBUG)
+                reports += ScriptDiagnostic(ScriptDiagnostic.unspecifiedInfo,"found annotations: '$annotations'", severity = ScriptDiagnostic.Severity.DEBUG)
             }?.takeIf { it.isNotEmpty() }
                 ?: run {
                     // TODO use a fallback generator ?
@@ -128,7 +133,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
             val id = scriptFile.name.substringBeforeLast(".voodoo.kts").toLowerCase()
 
             val generatedFilesDir = SharedFolders.GeneratedSrc.get(id).absoluteFile
-            reports += ScriptDiagnostic("generatedFilesDir: $generatedFilesDir", ScriptDiagnostic.Severity.DEBUG)
+            reports += ScriptDiagnostic(ScriptDiagnostic.unspecifiedInfo, "generatedFilesDir: $generatedFilesDir", ScriptDiagnostic.Severity.DEBUG)
 
             // collect generator instructions
             val modGenerators = annotations.filterIsInstance<GenerateMods>().groupBy { it.name }
@@ -148,7 +153,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
                     mcVersions = annotations.map { it.mc }.filter { it.isNotBlank() }.distinct()
                 )
             }
-            reports += ScriptDiagnostic("curseGenerators: $curseGenerators", ScriptDiagnostic.Severity.DEBUG)
+            reports += ScriptDiagnostic(ScriptDiagnostic.unspecifiedInfo, "curseGenerators: $curseGenerators", ScriptDiagnostic.Severity.DEBUG)
 
             val forgeGenerators = annotations.filterIsInstance<GenerateForge>().groupBy { it.name }
                 .map { (file, annotations) ->
@@ -158,7 +163,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
                     )
                 }
 
-            reports += ScriptDiagnostic("forgeGenerators: $forgeGenerators", ScriptDiagnostic.Severity.DEBUG)
+            reports += ScriptDiagnostic(4, "forgeGenerators: $forgeGenerators", ScriptDiagnostic.Severity.DEBUG)
 
             // TODO: get generator from plugin
 
@@ -173,6 +178,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
             val compilationConfiguration = ScriptCompilationConfiguration(includeCompilationConfiguration) {
                 importScripts.append(generatedFiles.map { it.toScriptSource() })
                 reports += ScriptDiagnostic(
+                    ScriptDiagnostic.unspecifiedInfo,
                     "generated: ${generatedFiles.map { it.relativeTo(rootDir) }}",
                     ScriptDiagnostic.Severity.INFO
                 )

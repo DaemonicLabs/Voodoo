@@ -164,23 +164,20 @@ object CurseProvider : ProviderBase("Curse Provider") {
                     var dependsSet = entry.dependencies.filterValues { it == depType }.keys
                     logger.info("get dependency $curseDepType = $dependsSet + ${depAddon.slug}")
                     if (!dependsSet.contains(depAddon.slug)) {
-                        val replacementId = entry.replaceDependencies[depAddon.id]
-                        if (replacementId != null) {
-                            if (replacementId != ProjectID.INVALID) {
-                                logger.info("${entry.id} adding replaced dependency ${depAddon.id} ${depAddon.slug} -> $replacementId")
-                                val replacementAddon = CurseClient.getAddon(replacementId) ?: run {
-                                    logger.error("cannot resolve replacement dependency $replacementId")
-                                    throw IllegalStateException("cannot resolve replacement dependency $replacementId")
-                                }
-                                dependsSet += replacementAddon.slug
-                            } else {
-                                logger.info("ignoring dependency ${depAddon.id} ${depAddon.slug}")
-                            }
-//                            dependsSet.forEach {
-//                                entry.dependencies.putIfAbsent(it, depType)
+                        // TODO: use string keys in replaceDependencies
+//                        val replacementId = entry.replaceDependencies[depAddon.id]
+//                        if (replacementId != null) {
+//                            if (replacementId != ProjectID.INVALID) {
+//                                logger.info("${entry.id} adding replaced dependency ${depAddon.id} ${depAddon.slug} -> $replacementId")
+//                                val replacementAddon = CurseClient.getAddon(replacementId) ?: run {
+//                                    logger.error("cannot resolve replacement dependency $replacementId")
+//                                    throw IllegalStateException("cannot resolve replacement dependency $replacementId")
+//                                }
+//                                dependsSet += replacementAddon.slug
+//                            } else {
+//                                logger.info("ignoring dependency ${depAddon.id} ${depAddon.slug}")
 //                            }
-//                            continue
-                        }
+//                        }
 
                         logger.info("${entry.id} adding dependency ${depAddon.id}  ${depAddon.slug}")
                         dependsSet += depAddon.slug

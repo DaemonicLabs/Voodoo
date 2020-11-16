@@ -28,7 +28,7 @@ annotation class Include(val filename: String) {
 //                println("compilationConfiguration    $key => $value")
 //            }
             val annotations = context.collectedData?.get(ScriptCollectedData.foundAnnotations).also {
-                reports += ScriptDiagnostic("found annotations: '$it'", severity = ScriptDiagnostic.Severity.DEBUG)
+                reports += ScriptDiagnostic(ScriptDiagnostic.unspecifiedInfo, "found annotations: '$it'", severity = ScriptDiagnostic.Severity.DEBUG)
             }?.takeIf { it.isNotEmpty() }
                 ?: return context.compilationConfiguration
 
@@ -51,6 +51,7 @@ annotation class Include(val filename: String) {
                     importScripts.append(includedScript.toScriptSource())
 //                    println("including '$includedScript'")
                     reports += ScriptDiagnostic(
+                        ScriptDiagnostic.unspecifiedInfo,
                         "including '$includedScript'",
                         severity = ScriptDiagnostic.Severity.INFO
                     )

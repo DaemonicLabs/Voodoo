@@ -3,43 +3,59 @@ package voodoo.data.nested
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import mu.KLogging
+import mu.KotlinLogging
+import voodoo.data.DependencyType
+import voodoo.data.OptionalData
+import voodoo.data.Side
 import voodoo.data.components.*
+import voodoo.data.curse.PackageType
 import voodoo.data.flat.Entry
-import voodoo.provider.*
-import java.io.File
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.functions
 import kotlin.reflect.full.memberProperties
 
 @Serializable
-sealed class NestedEntry : CommonMutable {
+sealed class NestedEntry(
+    override var name: String? = null,
+    override var folder: String? = null,
+    override var description: String? = null,
+    override var optionalData: OptionalData? = null,
+    override var side: Side = Side.BOTH,
+    override var websiteUrl: String = "",
+    override var dependencies: MutableMap<String, DependencyType> = mutableMapOf(),
+//    override var replaceDependencies: Map<ProjectID, ProjectID> = mapOf(), // TODO: replace with Map<String, ...>
+    override var packageType: PackageType = PackageType.MOD,
+    override var transient: Boolean = false, // this entry got added as dependency for something else
+    override var version: String = "", // TODO: use regex only ?
+    override var fileName: String? = null,
+    override var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
+    override var validMcVersions: Set<String> = setOf(),
+    override var invalidMcVersions: Set<String> = setOf(),
+    override var enabled: Boolean = true,
+) : Common {
+    abstract var entries: Map<String, NestedEntry>
     abstract var nodeName: String?
-    abstract var entries: List<NestedEntry>
-//    @Transient
-//    abstract val provider: String
+    abstract val provider: String
 
     @Serializable
     @SerialName("common")
     data class Common(
         @Transient override var nodeName: String? = null,
-        val common: CommonComponent = CommonComponent(),
-        override var entries: List<NestedEntry> = emptyList()
-    ) : NestedEntry(), CommonMutable by common {
+        override var entries: Map<String, NestedEntry> = emptyMap()
+    ) : NestedEntry() {
+        @Transient override val provider = "common"
 
-//        companion object {
-//            operator fun invoke(builder: Common.() -> Unit) = Common().apply(builder)
-//        }
     }
 
     @Serializable
     @SerialName("curse")
     data class Curse(
         @Transient override var nodeName: String? = null,
-        val common: CommonComponent = CommonComponent(),
+        @SerialName("curseProperties")
         val curse: CurseComponent = CurseComponent(),
-        override var entries: List<NestedEntry> = emptyList()
-    ) : NestedEntry(), CommonMutable by common, CurseMutable by curse {
+        override var entries: Map<String, NestedEntry> = emptyMap()
+    ) : NestedEntry(), CurseMutable by curse {
+        @Transient override val provider = "curse"
 
         companion object: NestedEntryProvider<Curse> {
             override fun create() = Curse()
@@ -50,10 +66,11 @@ sealed class NestedEntry : CommonMutable {
     @SerialName("direct")
     data class Direct(
         @Transient override var nodeName: String? = null,
-        val common: CommonComponent = CommonComponent(),
+        @SerialName("directProperties")
         val direct: DirectComponent = DirectComponent(),
-        override var entries: List<NestedEntry> = emptyList()
-    ) : NestedEntry(), CommonMutable by common, DirectMutable by direct {
+        override var entries: Map<String, NestedEntry> = emptyMap()
+    ) : NestedEntry(), DirectMutable by direct {
+        @Transient override val provider = "direct"
 
         companion object: NestedEntryProvider<Direct> {
             override fun create() = Direct()
@@ -64,10 +81,11 @@ sealed class NestedEntry : CommonMutable {
     @SerialName("jenkins")
     data class Jenkins(
         @Transient override var nodeName: String? = null,
-        val common: CommonComponent = CommonComponent(),
+        @SerialName("jenkinsProperties")
         val jenkins: JenkinsComponent = JenkinsComponent(),
-        override var entries: List<NestedEntry> = emptyList()
-    ) : NestedEntry(), CommonMutable by common, JenkinsMutable by jenkins {
+        override var entries: Map<String, NestedEntry> = emptyMap()
+    ) : NestedEntry(), JenkinsMutable by jenkins {
+        @Transient override val provider = "jenkins"
 
         companion object: NestedEntryProvider<Jenkins> {
             override fun create() = Jenkins()
@@ -78,10 +96,11 @@ sealed class NestedEntry : CommonMutable {
     @SerialName("local")
     data class Local(
         @Transient override var nodeName: String? = null,
-        val common: CommonComponent = CommonComponent(),
+        @SerialName("localProperties")
         val local: LocalComponent = LocalComponent(),
-        override var entries: List<NestedEntry> = emptyList()
-    ) : NestedEntry(), CommonMutable by common, LocalMutable by local {
+        override var entries: Map<String, NestedEntry> = emptyMap()
+    ) : NestedEntry(), LocalMutable by local {
+        @Transient override val provider = "local"
         companion object: NestedEntryProvider<Local> {
             override fun create() = Local()
         }
@@ -91,100 +110,98 @@ sealed class NestedEntry : CommonMutable {
     @SerialName("noop")
     data class Noop(
         @Transient override var nodeName: String? = null,
-        val common: CommonComponent = CommonComponent(),
-        override var entries: List<NestedEntry> = emptyList()
-    ): NestedEntry(), CommonMutable by common {
+        override var entries: Map<String, NestedEntry> = emptyMap()
+    ): NestedEntry() {
+        @Transient override val provider = "noop"
         companion object: NestedEntryProvider<Noop> {
             override fun create() = Noop()
         }
     }
 
-    @Transient
-    private val debugIdentifier: String
-        get() = nodeName ?: id
+//    private val debugIdentifier: String
+//        get() = nodeName ?: toString()
 
-    companion object : KLogging() {
-//        val DEFAULT = NestedEntry()
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 
-    suspend fun flatten(parentFile: File? = null): List<Entry> {
-        flatten("", parentFile)
+    private fun toCommonComponent(id: String) = CommonComponent(
+//        id = id,
+        name = name,
+        folder = folder,
+        description = description,
+        optionalData = optionalData?.copy(),
+        side = side,
+        websiteUrl = websiteUrl,
+        dependencies = dependencies,
+        packageType = packageType,
+        transient = transient,
+        version = version,
+        fileName = fileName,
+        fileNameRegex = fileNameRegex,
+        validMcVersions = validMcVersions,
+        invalidMcVersions = invalidMcVersions,
+        enabled = enabled
+    )
 
-        // remove duplicate entries
-        val ids = mutableSetOf<String>()
+    fun flatten(id: String = "root"): List<Entry> {
+        flatten("", id)
 
-        entries.forEach { entry ->
-            if (entry.id in ids) {
-                entries -= entry
-            } else {
-                ids += entry.id
-            }
-        }
+        // no longer of use because duplicate ids cannot happen
+//        // remove duplicate entries
+//        val ids = mutableSetOf<String>()
+//
+//        entries.forEach { entry ->
+//            if (entry.id in ids) {
+//                entries -= entry
+//            } else {
+//                ids += entry.id
+//            }
+//        }
         // copy entries
-        return entries.filter { it.enabled }.map { entry ->
-            when (entry) {
-                is Common -> Entry.Common(
-                    common = with(entry.common) {
-                        copy(
-                            optionalData = optionalData?.copy()
-                        )
-                    }
-                )
-                is Curse -> Entry.Curse(
-                    common = with(entry.common) {
-                        copy(
-                            optionalData = optionalData?.copy()
-                        )
-                    },
-                    curse = entry.curse.copy()
-                )
-                is Direct -> Entry.Direct(
-                    common = with(entry.common) {
-                        copy(
-                            optionalData = optionalData?.copy()
-                        )
-                    },
-                    direct = entry.direct.copy()
-                )
-                is Jenkins -> Entry.Jenkins(
-                    common = with(entry.common) {
-                        copy(
-                            optionalData = optionalData?.copy()
-                        )
-                    },
-                    jenkins = entry.jenkins.copy()
-                )
-                is Local -> Entry.Local(
-                    common = with(entry.common) {
-                        copy(
-                            optionalData = optionalData?.copy()
-                        )
-                    },
-                    local = entry.local.copy()
-                )
-                is Noop -> Entry.Noop(
-                    common = with(entry.common) {
-                        copy(
-                            optionalData = optionalData?.copy()
-                        )
-                    }
-                )
+        return entries.filterValues { it.enabled }.map { (id, entry) ->
+            with(entry) {
+                when (this) {
+                    is Common -> Entry.Common(
+                        common = toCommonComponent(id)
+                    )
+                    is Curse -> Entry.Curse(
+                        common = toCommonComponent(id),
+                        curse = curse.copy()
+                    )
+                    is Direct -> Entry.Direct(
+                        common = toCommonComponent(id),
+                        direct = direct.copy()
+                    )
+                    is Jenkins -> Entry.Jenkins(
+                        common = toCommonComponent(id),
+                        jenkins = jenkins.copy()
+                    )
+                    is Local -> Entry.Local(
+                        common = toCommonComponent(id),
+                        local = local.copy()
+                    )
+                    is Noop -> Entry.Noop(
+                        common = toCommonComponent(id)
+                    )
+                }
             }
+
         }.toList()
     }
 
-    private suspend fun flatten(indent: String, parentFile: File? = null) {
-        val toDelete = mutableListOf<NestedEntry>()
+    private fun flatten(indent: String, parentId: String) {
+//        val toDelete = mutableListOf<String>()
 
-        entries.forEach { entry ->
-            logger.debug { "$indent pre_flatten: ${entry.debugIdentifier}" }
+        entries = entries.filter { (id, entry) ->
+            logger.debug { "$indent pre_flatten: ${entry}" }
 
             // set feature of entry from `this` or DEFAULT
 
-            logger.debug { "$indent copying fields of '${this.debugIdentifier}' -> '${entry.debugIdentifier}'" }
+            logger.debug { "$indent copying fields of '${parentId}' -> '${id}'" }
 
             // TODO: avoid creating and throwing away objects for defaults
-            mergeProperties<CommonMutable>(this, entry, Common())
+            mergeProperties<voodoo.data.components.Common>(this, entry, Common())
 
             when {
                 entry is Curse && this is Curse -> {
@@ -201,45 +218,23 @@ sealed class NestedEntry : CommonMutable {
                 }
             }
 
-//            for (prop in NestedEntry::class.memberProperties) {
-//                if (prop is KMutableProperty<*>) {
-//                    val otherValue = prop.get(entry)
-//                    val thisValue = prop.get(this)
-//                    val defaultValue = prop.get(DEFAULT)
-//                    if (otherValue == defaultValue && thisValue != defaultValue) {
-//                        if (prop.name != "entries" && prop.name != "template") {
-//                            // clone maps
-//                            when (thisValue) {
-//                                is MutableMap<*, *> -> {
-//                                    val map = thisValue.toMutableMap()
-//                                    // copy lists
-//                                    map.forEach { k, v ->
-//                                        if (v is List<*>) {
-//                                            map[k] = v.toList()
-//                                        }
-//                                    }
-//                                    prop.setter.call(entry, map)
-//                                }
-//                                is Set<*> -> prop.setter.call(entry, thisValue.toSet())
-//                                else ->
-//                                    prop.setter.call(entry, thisValue)
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-
-            entry.flatten("$indent|  ", parentFile)
-            if (entry.entries.isNotEmpty() || entry.id.isBlank()) {
-                toDelete += entry
+            entry.flatten("$indent|  ", id)
+            if (entry.entries.isNotEmpty() || id.isBlank()) {
+//                toDelete += id
+                this.entries += entry.entries
+                false
+            } else {
+                true
             }
 
-            entry.entries.forEach { entries += it }
-            entry.entries = emptyList()
+//            entry.entries.forEach { (id, entry) ->
+//                this.entries += id to entry
+//            }
+//            entry.entries = emptyMap()
         }
-        entries = entries.filter { !toDelete.contains(it) }
-        entries.forEach { entry ->
-            if (entry.id.isEmpty()) {
+//        entries = entries.filterKeys { !toDelete.contains(it) }
+        entries.forEach { (id, entry) ->
+            if (id.isBlank()) {
                 logger.error { entry }
                 error("entries with blank id must not persist")
             }
