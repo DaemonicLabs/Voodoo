@@ -8,6 +8,7 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
 import voodoo.data.curse.ProjectID
+import voodoo.generator.Generator
 
 @Serializable
 data class ModpackPlain(

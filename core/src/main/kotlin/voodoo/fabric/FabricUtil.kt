@@ -7,6 +7,7 @@ import io.ktor.client.statement.readText
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.builtins.ListSerializer
@@ -22,7 +23,7 @@ import java.io.IOException
 object FabricUtil : KLogging() {
 
     // https://meta.fabricmc.net/v2/versions/loader
-    suspend fun getLoaders(): List<FabricLoader> = withContext(Dispatchers.IO) {
+    suspend fun getLoaders(): List<FabricLoader> = withContext(MDCContext() + Dispatchers.IO) {
         val url = "https://meta.fabricmc.net/v2/versions/loader"
 
         val response = try {
@@ -48,7 +49,7 @@ object FabricUtil : KLogging() {
     }
 
     // https://meta.fabricmc.net/v2/versions/loader/1.15
-    suspend fun getLoadersForGameversion(version: String): List<FabricLoaderForVersion> = withContext(Dispatchers.IO) {
+    suspend fun getLoadersForGameversion(version: String): List<FabricLoaderForVersion> = withContext(MDCContext() + Dispatchers.IO) {
         val url = "https://meta.fabricmc.net/v2/versions/loader/$version"
 
         val response = try {
@@ -74,7 +75,7 @@ object FabricUtil : KLogging() {
     }
 
     // https://meta.fabricmc.net/v2/versions/intermediary
-    suspend fun getIntermediaries() : List<FabricIntermediary> = withContext(Dispatchers.IO) {
+    suspend fun getIntermediaries() : List<FabricIntermediary> = withContext(MDCContext() + Dispatchers.IO) {
         val url = "https://meta.fabricmc.net/v2/versions/intermediary"
         val response = try {
             client.get<HttpResponse>(url) {
@@ -99,7 +100,7 @@ object FabricUtil : KLogging() {
     }
 
     // https://meta.fabricmc.net/v2/versions/installer
-    suspend fun getInstallers() : List<FabricInstaller> = withContext(Dispatchers.IO) {
+    suspend fun getInstallers() : List<FabricInstaller> = withContext(MDCContext() + Dispatchers.IO) {
         val url = "https://meta.fabricmc.net/v2/versions/installer"
         val response = try {
             client.get<HttpResponse>(url) {

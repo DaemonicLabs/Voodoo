@@ -9,7 +9,6 @@ plugins {
 
 dependencies {
     implementation(project(":voodoo"))
-    implementation("com.xenomachina:kotlin-argparser:_")
 
     // script evaluations
     implementation(kotlin("script-util", "_"))

@@ -21,8 +21,7 @@ inline fun <reified R> withPool(
     threads: Int = System.getenv("VOODOO_MULTITHREADING")?.toIntOrNull() ?: Runtime.getRuntime().availableProcessors() - 1,
     execute: (pool: ExecutorCoroutineDispatcher) -> R
 ): R {
-    val pool = newFixedThreadPoolContext(threads, name)
-    val r = execute(pool)
-    pool.close()
-    return r
+    return newFixedThreadPoolContext(threads, name).use { pool ->
+        execute(pool)
+    }
 }

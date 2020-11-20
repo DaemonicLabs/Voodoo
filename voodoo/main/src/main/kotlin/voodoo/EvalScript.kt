@@ -27,14 +27,14 @@ fun createJvmScriptingHost(cacheDir: File): BasicJvmScriptingHost {
 
 inline fun <reified T : Any> BasicJvmScriptingHost.evalScript(
     stopwatch: Stopwatch,
-    libs: File,
+    libs: File?,
     scriptFile: File,
     vararg args: Any?,
     compilationConfig: ScriptCompilationConfiguration = createJvmCompilationConfigurationFromTemplate<T> {
         jvm {
             dependenciesFromCurrentContext(wholeClasspath = false)
 
-            if (libs.exists()) {
+            if (libs != null && libs.exists()) {
                 libs.walkTopDown()
                     .filter { file ->
                         file.name.endsWith(".jar")

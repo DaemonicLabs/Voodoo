@@ -15,6 +15,7 @@ import com.github.ajalt.clikt.parameters.types.file
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
 import voodoo.VoodooTask
+import voodoo.changelog.ChangelogBuilder
 import voodoo.data.nested.NestedPack
 import voodoo.tome.ModlistGeneratorMarkdown
 import voodoo.tome.TomeEnv
@@ -22,17 +23,20 @@ import voodoo.util.Directories
 import voodoo.util.json
 import java.io.File
 
-class BuildCommand(
+class ChangelogCommand(
 //    private val rootDir: File
 ): CliktCommand(
-    name = "build",
+    name = "changelog",
     help = ""
 ) {
-    val rootDir by requireObject<File>()
+    val cliContext by requireObject<CLIContext>()
     val packFile by argument(
         "pack",
         "pack .voodoo.json file"
     ).file(mustExist = true, canBeFile = true, canBeDir = false, mustBeReadable = true, mustBeWritable = false, canBeSymlink = false)
+        .validate { file ->
+            require(file.endsWith(".voodoo.json")) { "filename must end with .voodoo.json" }
+        }
 
     val id by option(
         "--id",
@@ -43,11 +47,11 @@ class BuildCommand(
 
     override fun run() = runBlocking(MDCContext()) {
         val stopwatch = Stopwatch(commandName)
+        val rootDir = cliContext.rootDir
 
         stopwatch {
 //            val id = packFile.name.substringBeforeLast(".voodoo.json")
 //            val rootDir = packFile.parentFile
-            val nestedPack = json.decodeFromString(NestedPack.serializer(), packFile.readText())
 
             val tomeEnv = TomeEnv(
                 rootDir.resolve("docs")
@@ -55,18 +59,14 @@ class BuildCommand(
                 add("modlist.md", ModlistGeneratorMarkdown)
             }
 
-            VoodooTask.Build.execute(
-                stopwatch = this,
-                id = id,
-                nestedPack = nestedPack,
-                tomeEnv = tomeEnv,
-                rootFolder = rootDir
-            )
+            val defaultChangelogBuilder = object : ChangelogBuilder() {}
+
+            VoodooTask.Changelog.execute(this, id, defaultChangelogBuilder, tomeEnv)
         }
 
         val reportDir= File("reports").apply { mkdirs() }
-        stopwatch.saveAsSvg(reportDir.resolve("${id}_build.report.svg"))
-        stopwatch.saveAsHtml(reportDir.resolve("${id}_build.report.html"))
+        stopwatch.saveAsSvg(reportDir.resolve("${id}_changelog.report.svg"))
+        stopwatch.saveAsHtml(reportDir.resolve("${id}_changelog.report.html"))
 
     }
 }

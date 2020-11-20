@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter
  * @author Nikky
  */
 
-object VoodooPackager : AbstractPack("experimental") {
+object VoodooPackager : AbstractPack("voodoo") {
 
     override val label = "Voodoo Packager"
 
@@ -40,6 +40,8 @@ object VoodooPackager : AbstractPack("experimental") {
         uploadBaseDir: File,
         clean: Boolean
     ) = stopwatch {
+        val directories = Directories.get()
+
         val cacheDir = directories.cacheHome
         val workspaceDir = modpack.rootFolder.resolve("build").resolve("experimental_workspace").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.id)

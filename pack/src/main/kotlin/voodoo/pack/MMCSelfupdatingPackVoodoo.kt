@@ -3,6 +3,7 @@ package voodoo.pack
 import com.eyeem.watchadoin.Stopwatch
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
+import voodoo.util.Directories
 import voodoo.util.blankOr
 import voodoo.util.maven.MavenUtil
 import voodoo.util.packToZip
@@ -23,6 +24,8 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
         uploadBaseDir: File,
         clean: Boolean
     ) = stopwatch {
+        val directories = Directories.get()
+
         val cacheDir = directories.cacheHome
         val zipRootDir = cacheDir.resolve("MULTIMC").resolve(modpack.id)
         val instanceDir = zipRootDir.resolve(modpack.id)

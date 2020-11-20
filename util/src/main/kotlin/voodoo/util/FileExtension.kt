@@ -38,6 +38,8 @@ val File.unixPath: String
             return path.replace(WINDOWS_SEPARATOR, UNIX_SEPARATOR)
         }
 
+fun File.toRelativeUnixPath(base: File): String = toRelativeString(base).replace(WINDOWS_SEPARATOR, UNIX_SEPARATOR)
+
 fun File.sha256Hex(): String = MessageDigest.getInstance("SHA-256").digest(readBytes()).toHexString()
 fun File.sha1Hex(): String = MessageDigest.getInstance("SHA-1").digest(readBytes()).toHexString()
 fun File.md5Hex(): String = MessageDigest.getInstance("MD5").digest(readBytes()).toHexString()

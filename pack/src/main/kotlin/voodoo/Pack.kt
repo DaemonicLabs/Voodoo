@@ -21,8 +21,6 @@ object Pack : KLogging() {
     ).associateBy { it.id }
 
     suspend fun pack(stopwatch: Stopwatch, modpack: LockPack, uploadBaseDir: File, packer: AbstractPack) = stopwatch {
-        logger.info("parsing arguments")
-
         val output = with(packer) { uploadBaseDir.getOutputFolder(modpack.id) }
         output.mkdirs()
 

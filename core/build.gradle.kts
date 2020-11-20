@@ -10,6 +10,9 @@ dependencies {
 
     // voodoo format
     api(project(":format"))
+
+    api("com.github.Ricky12Awesome:json-schema-serialization:_")
+
     // curseclient
     implementation(Ktor.client.okHttp)
 //    api(Ktor.client.cio)

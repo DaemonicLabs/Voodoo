@@ -20,17 +20,18 @@ object Diff : KLogging() {
         rootDir: File,
         newPack: LockPack
     ) = stopwatch {
-        val metaDataLocation = getMetaDataLocation(rootDir, newPack.id)
-        metaDataLocation.deleteRecursively()
-        val newPackMetaInfo = PackDiff.writePackMetaInformation(metaDataLocation, newPack)
-        val newEntryMetaInfo = PackDiff.writeEntryMetaInformation(metaDataLocation, newPack)
-
-        // TODO: find git root directory instead of gradle root
-        val gitRoot = SharedFolders.GitRoot.get()
-        val tagfile = gitRoot.resolve("build").resolve("git-tags").resolve(newPack.id)
-        tagfile.parentFile.mkdirs()
-        // TODO: write git-tag command ?
-        tagfile.writeText(newPack.version)
+        //TODO: delete or redo from scratch
+//        val metaDataLocation = getMetaDataLocation(rootDir, newPack.id)
+//        metaDataLocation.deleteRecursively()
+//        val newPackMetaInfo = PackDiff.writePackMetaInformation(metaDataLocation, newPack)
+//        val newEntryMetaInfo = PackDiff.writeEntryMetaInformation(metaDataLocation, newPack)
+//
+//        // TODO: find git root directory instead of gradle root
+//        val gitRoot = SharedFolders.GitRoot.get()
+//        val tagfile = gitRoot.resolve("build").resolve("git-tags").resolve(newPack.id)
+//        tagfile.parentFile.mkdirs()
+//        // TODO: write git-tag command ?
+//        tagfile.writeText(newPack.version)
     }
 
     private data class GitArchiveFolders(

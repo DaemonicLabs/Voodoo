@@ -5,9 +5,7 @@ import com.eyeem.watchadoin.saveAsHtml
 import com.eyeem.watchadoin.saveAsSvg
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
-import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.arguments.convert
 import com.github.ajalt.clikt.parameters.arguments.validate
 import com.github.ajalt.clikt.parameters.options.defaultLazy
 import com.github.ajalt.clikt.parameters.options.option
@@ -17,17 +15,13 @@ import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import mu.KotlinLogging
-import voodoo.VoodooTask
 import voodoo.createJvmScriptingHost
-import voodoo.curse.CurseClient
 import voodoo.data.nested.NestedPack
 import voodoo.evalScript
-import voodoo.forge.ForgeUtil
+import voodoo.generator.Generator
 import voodoo.poet.Poet
 import voodoo.poet.Poet.defaultSlugSanitizer
 import voodoo.script.MainScriptEnv
-import voodoo.tome.ModlistGeneratorMarkdown
-import voodoo.tome.TomeEnv
 import voodoo.util.Directories
 import voodoo.util.SharedFolders
 import voodoo.util.json
@@ -51,7 +45,10 @@ class EvalScriptCommand(
     val outputFile by argument(
         "output",
         "output pack .voodoo.json file"
-    ).file(mustExist = false, canBeFile = true, canBeDir = false, mustBeReadable = true, mustBeWritable = true, canBeSymlink = false)
+    ).file(mustExist = false, canBeFile = true, canBeDir = false, mustBeReadable = false, mustBeWritable = true, canBeSymlink = false)
+        .validate { file ->
+            require(file.name.endsWith(".voodoo.json")) { "output file must be of type '.voodoo.json'" }
+        }
 
     val id by option(
         "--id",
@@ -70,10 +67,9 @@ class EvalScriptCommand(
         stopwatch {
             val cacheDir = directories.cacheHome
 
-            val libs = rootDir.resolve("libs") // TODO: set from system property
-
             //generate src files
 //            val generatedSharedSrcDir = SharedFolders.GeneratedSrcShared.resolver(scriptFile.absoluteFile.parentFile.parentFile)
+            SharedFolders.GeneratedSrcShared.resolver = { rootDir -> rootDir.resolve("generated_src") }
             val generatedSharedSrcDir = SharedFolders.GeneratedSrcShared.get()
 
             // generateCurseforgeMods("FabricMod", "1.15", "1.15.1", "1.15.2", categories = listOf("Fabric"))
@@ -88,7 +84,7 @@ class EvalScriptCommand(
 
             runBlocking(MDCContext()) {
                 generatorsCurse.forEach { (name, generator) ->
-                    val file = Poet.generateCurseforge(
+                    val file = Poet.generateCurseforgeKt(
                         name = name,
                         slugIdMap = Poet.requestSlugIdMap(
                             section = generator.section.sectionName,
@@ -104,7 +100,7 @@ class EvalScriptCommand(
                 }
 
                 generatorsForge.forEach { (name, generator) ->
-                    val file = Poet.generateForge(
+                    val file = Poet.generateForgeKt(
                         name = name,
                         mcVersionFilters = generator.mcVersions.toList(),
                         folder = generatedSharedSrcDir
@@ -113,10 +109,10 @@ class EvalScriptCommand(
                 }
 
                 generatorsFabric.forEach { (name, generator) ->
-                    val file = Poet.generateFabric(
+                    val file = Poet.generateFabricKt(
                         name = name,
                         mcVersionFilters = generator.mcVersions.toList(),
-                        stable = generator.stable,
+                        stable = generator.requireStable,
                         folder = generatedSharedSrcDir
                     )
                     logger.info { "generated $file" }
@@ -129,7 +125,7 @@ class EvalScriptCommand(
 
             val scriptEnv = host.evalScript<MainScriptEnv>(
                 stopwatch = "evalScript".watch,
-                libs = libs,
+                libs = null,
                 scriptFile = scriptFile,
                 args = arrayOf()
             )

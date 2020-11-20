@@ -27,6 +27,4 @@ abstract class AbstractPack(open val id: String) : KLogging() {
         uploadBaseDir: File,
         clean: Boolean = true
     )
-
-    val directories = Directories.get()
 }

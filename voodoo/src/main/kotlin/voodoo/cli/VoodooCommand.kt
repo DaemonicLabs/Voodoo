@@ -2,25 +2,23 @@ package voodoo.cli
 
 import ch.qos.logback.classic.Level
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.core.findOrSetObject
 import com.github.ajalt.clikt.core.subcommands
-import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.versionOption
 import com.github.ajalt.clikt.parameters.types.file
 import mu.KotlinLogging
+import mu.withLoggingContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import voodoo.util.Directories
 import voodoo.util.SharedFolders
-import voodoo.voodoo.main.GeneratedConstants
+import voodoo.voodoo.GeneratedConstants
 import java.io.File
 
 class VoodooCommand : CliktCommand(
 //    name = "Voodoo",
-    help = "",
+    help = "modpack building magic",
 //    allowMultipleSubcommands = true
 //    invokeWithoutSubcommand = true
 ) {
@@ -29,6 +27,14 @@ class VoodooCommand : CliktCommand(
     }
     init {
         versionOption(GeneratedConstants.FULL_VERSION)
+        subcommands(
+//            EvalScriptCommand(),
+            GenerateSchemaCommand(),
+            BuildCommand(),
+            ChangelogCommand(),
+            PackCommand(),
+            LaunchCommand()
+        )
     }
 
     val rootDir by option("--rootDir",
@@ -47,22 +53,30 @@ class VoodooCommand : CliktCommand(
         }
         .default(Level.INFO)
 
-    init {
-        subcommands(
-            EvalScriptCommand(),
-            BuildCommand(),
-            ChangelogCommand()
+    val cliContext by lazy {
+        logger.debug { "creating CLI context" }
+        CLIContext(
+            rootDir = rootDir
         )
     }
 
 //    val rootDir: File by findOrSetObject { rootDir }
 
-    override fun run() {
+    override fun run(): Unit = withLoggingContext("command" to commandName) {
         logger.info { "running voodoo" }
-        currentContext.obj = rootDir
+
+        // setting up CLI context
+        currentContext.obj = cliContext
+
+        logger.info { "context: $cliContext" }
+
+        // setting loglevel
+        logger.info { "setting loglevel = $logLevel" }
         val rootLogger = LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME) as ch.qos.logback.classic.Logger
         rootLogger.level = logLevel
 
+        // initializing SharedFolders
+        // TODO: if possible remove shared folders
         if(!SharedFolders.RootDir.defaultInitialized) {
             SharedFolders.RootDir.value = rootDir.absoluteFile
         }

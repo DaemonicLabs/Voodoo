@@ -53,7 +53,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
         synchronized(resolved) {
             val count = resolved.count { entry.id == it }
             if (count > 1) {
-                throw IllegalStateException("duplicate effort ${entry.id} entry counted: $count")
+                throw IllegalStateException("duplicate effort '${entry.id}' entry counted: $count")
             }
         }
 

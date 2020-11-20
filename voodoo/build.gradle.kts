@@ -17,6 +17,12 @@ dependencies {
     api(project(":pack"))
     api(project(":pack:pack-tester"))
 
+    implementation(KotlinX.coroutines.debug)
+
+    implementation(group = "ch.qos.logback", name = "logback-classic", version = "_") {
+        exclude(module = "javax.mail")
+    }
+
     testImplementation(project(":core"))
     testImplementation(project(":pack"))
 

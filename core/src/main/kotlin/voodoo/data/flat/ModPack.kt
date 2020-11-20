@@ -1,5 +1,6 @@
 package voodoo.data.flat
 
+import com.eyeem.watchadoin.Stopwatch
 import kotlinx.serialization.Transient
 import mu.KLogging
 import voodoo.data.ModloaderPattern
@@ -85,23 +86,26 @@ data class ModPack(
         }
     }
 
-    suspend fun lock(): LockPack {
-        return LockPack(
-            id = id,
-            title = title,
-            version = version,
-            icon = icon.absoluteFile.relativeTo(rootFolder).unixPath,
-            authors = authors,
-            mcVersion = mcVersion,
-            modloader = modloader?.lock() ?: Modloader.None,
-            localDir = localDir,
-            packOptions = packOptions
-        ).also {
-            it.rootFolder = rootFolder
+    suspend fun lock(stopwatch: Stopwatch): LockPack = stopwatch {
+        "creating Lockpack".watch {
+            LockPack(
+                id = id,
+                title = title,
+                version = version,
+                icon = icon.absoluteFile.relativeTo(rootFolder).unixPath,
+                authors = authors,
+                mcVersion = mcVersion,
+                modloader = modloader?.lock() ?: Modloader.None,
+                localDir = localDir,
+                packOptions = packOptions
+            ).also {
+                it.rootFolder = rootFolder
 
-            it.entrySet.clear()
-            it.entrySet += lockEntrySet
+                it.entrySet.clear()
+                it.entrySet += lockEntrySet
+            }
         }
+
     }
 
     fun findEntryById(id: String) = entrySet.find { it.id == id }

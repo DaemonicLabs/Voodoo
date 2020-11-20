@@ -1,8 +1,6 @@
 package voodoo.builder
 
 import com.eyeem.watchadoin.Stopwatch
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.runBlocking
 import mu.KLogging
 import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockPack
@@ -23,30 +21,32 @@ object Builder : KLogging() {
      * @param entriesFilter only updates the entries with the specified ids
      */
 
-    fun build(
+    suspend fun build(
         stopwatch: Stopwatch,
         modpack: ModPack,
         id: String,
         targetFileName: String = "$id.lock.pack.json",
         targetFile: File = modpack.sourceFolder.resolve(targetFileName)
-    ): LockPack = runBlocking {
-        stopwatch {
-            modpack.entrySet.forEach { entry ->
-                logger.info("id: ${entry.id} entry: $entry")
-            }
+    ): LockPack = stopwatch {
+        modpack.entrySet.forEach { entry ->
+            logger.info("id: ${entry.id} entry: $entry")
+        }
 
+        "resolve". watch {
             try {
                 resolve(
-                    "resolve".watch,
+                    this,
                     modpack
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
-                coroutineContext.cancel()
+//                coroutineContext.cancel()
                 exitProcess(1)
             }
+        }
 
 
+        "validate".watch {
             modpack.lockEntrySet.forEach { lockEntry ->
                 val provider = Providers[lockEntry.provider]
                 if (!provider.validate(lockEntry)) {
@@ -54,22 +54,19 @@ object Builder : KLogging() {
                     throw IllegalStateException("entry did not validate")
                 }
             }
-
-            logger.info("Creating locked pack...")
-            val lockedPack = "lock".watch {
-                modpack.lock()
-            }
-
-
-            "writeLockEntries".watch {
-                lockedPack.writeLockEntries()
-            }
-
-            logger.info("Writing lock file... $targetFile")
-            targetFile.parentFile.mkdirs()
-            targetFile.writeText(lockedPack.toJson(LockPack.serializer()))
-
-            lockedPack
         }
+
+        logger.info("Creating locked pack...")
+        val lockedPack = modpack.lock("lock".watch)
+
+        "writeLockEntries".watch {
+            lockedPack.writeLockEntries()
+        }
+
+        logger.info("Writing lock file... $targetFile")
+        targetFile.parentFile.mkdirs()
+        targetFile.writeText(lockedPack.toJson(LockPack.serializer()))
+
+        lockedPack
     }
 }

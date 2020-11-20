@@ -13,6 +13,7 @@ import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil
 import voodoo.provider.Providers
+import voodoo.util.Directories
 import voodoo.util.blankOr
 import voodoo.util.packToZip
 import voodoo.util.withPool
@@ -30,6 +31,8 @@ object MMCFatPack : AbstractPack("mmc-fat") {
         uploadBaseDir: File,
         clean: Boolean
     ) = stopwatch {
+        val directories = Directories.get()
+
         val cacheDir = directories.cacheHome
         val zipRootDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id)
         val instanceDir = zipRootDir.resolve(modpack.id)

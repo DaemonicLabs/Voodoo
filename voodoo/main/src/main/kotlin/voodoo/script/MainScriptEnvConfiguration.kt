@@ -37,12 +37,7 @@ object MainScriptEnvConfiguration : ScriptCompilationConfiguration({
         moe.nikky.voodoo.format.FnPatternList::class,
 
         moe.nikky.voodoo.format.modpack.Recommendation::class,
-        moe.nikky.voodoo.format.Feature::class,
-
-        GenerateForge::class,
-        GenerateMods::class,
-        GenerateResourcePacks::class,
-        Include::class
+        moe.nikky.voodoo.format.Feature::class
     ).map {
         it.qualifiedName!!
     }

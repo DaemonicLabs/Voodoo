@@ -42,6 +42,7 @@ data class CurseComponent(
         FileType.Release,
         FileType.Beta
     ),
+//    override var projectName: String? = null,
     override var projectID: ProjectID = ProjectID.INVALID,
     override var fileID: FileID = FileID.INVALID,
     override var useUrlTxt: Boolean = true,

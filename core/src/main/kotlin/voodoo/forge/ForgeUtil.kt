@@ -77,21 +77,20 @@ object ForgeUtil : KLogging() {
         }
     }
 
-    suspend fun promoMap(): Map<String, String> {
+    suspend fun promoMapSanitized(): Map<String, String> {
         val promoData = deferredPromo.await()
         return promoData.promos.mapKeys { (key, version) ->
-            val keyIdentifier = key.replace('-', '_').replace('.', '_').run {
-                if (this.first().isDigit())
-                    "mc$this"
-                else
-                    this
-            }
+            val keyIdentifier = key.replace('-', '_').replace('.', '_')
             keyIdentifier
         }.mapValues { (key, version) ->
             forgeVersions.find {
                 it.forgeVersion == version
             }?.version ?: ""
         }.filterValues { it.isNotBlank() }
+    }
+
+    suspend fun promoMap(): Map<String, String> {
+        return deferredPromo.await().promos
     }
 
     @JvmName("forgeVersionOfNullable")
@@ -199,7 +198,7 @@ object ForgeUtil : KLogging() {
     @JvmStatic
     fun main(vararg args: String) {
         runBlocking {
-            val promos = promoMap()
+            val promos = promoMapSanitized()
             promos.forEach { displayName, version ->
                 println("displayName: $displayName")
                 println("version: $version")

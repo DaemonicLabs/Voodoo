@@ -12,6 +12,7 @@ import io.ktor.content.*
 import io.ktor.http.*
 import io.ktor.util.*
 import kotlinx.coroutines.*
+import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
@@ -82,7 +83,7 @@ object CurseClient : KLogging(), CoroutineScope {
         categories: List<String>? = null,
         section: String? = null,
         slug: String? = null
-    ): List<SlugIdPair> = withContext(Dispatchers.IO) {
+    ): List<SlugIdPair> = withContext(MDCContext() + Dispatchers.IO) {
         val url = "https://curse.nikky.moe/graphql"
         val filters = mutableListOf("gameId: 432")
         gameVersions?.takeIf { it.isNotEmpty() }?.let {
@@ -418,6 +419,7 @@ object CurseClient : KLogging(), CoroutineScope {
         val addon = if (!addonId.valid) {
 //            slug.takeUnless { it.isBlank() }
 //                ?.let { getAddonBySlug(it) }
+            logger.error { "addon id $addonId is invalid" }
             throw java.lang.IllegalStateException("$addonId is invalid")
         } else {
             getAddon(addonId)

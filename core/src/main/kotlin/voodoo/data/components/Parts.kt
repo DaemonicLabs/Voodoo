@@ -63,6 +63,7 @@ interface CommonMutable : CommonImmutable {
 
 interface CurseImmutable {
     val releaseTypes: Set<FileType>
+//    val projectName: String?
     val projectID: ProjectID
     val fileID: FileID
     val useUrlTxt: Boolean
@@ -70,6 +71,7 @@ interface CurseImmutable {
 }
 interface CurseMutable: CurseImmutable {
     override var releaseTypes: Set<FileType>
+//    override var projectName: String?
     override var projectID: ProjectID
     override var fileID: FileID
     override var useUrlTxt: Boolean

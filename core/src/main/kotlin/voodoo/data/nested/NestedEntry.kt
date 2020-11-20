@@ -1,5 +1,6 @@
 package voodoo.data.nested
 
+import com.github.ricky12awesome.jss.JsonSchema
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
@@ -13,6 +14,8 @@ import voodoo.data.flat.Entry
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.functions
 import kotlin.reflect.full.memberProperties
+
+private val logger = KotlinLogging.logger {}
 
 @Serializable
 sealed class NestedEntry(
@@ -51,6 +54,8 @@ sealed class NestedEntry(
     @SerialName("curse")
     data class Curse(
         @Transient override var nodeName: String? = null,
+        @JsonSchema.StringEnum(["replace_with_curseforge_projects"])
+        var projectName: String? = null,
         @SerialName("curseProperties")
         val curse: CurseComponent = CurseComponent(),
         override var entries: Map<String, NestedEntry> = emptyMap()
@@ -126,7 +131,7 @@ sealed class NestedEntry(
     }
 
     private fun toCommonComponent(id: String) = CommonComponent(
-//        id = id,
+        id = id,
         name = name,
         folder = folder,
         description = description,
@@ -159,41 +164,50 @@ sealed class NestedEntry(
 //            }
 //        }
         // copy entries
-        return entries.filterValues { it.enabled }.map { (id, entry) ->
+
+        logger.trace { "flattened entries: ${entries}" }
+
+        val entryList = entries.filterValues { it.enabled }.map { (entryId, entry) ->
+//            if(!entry.enabled) return null
+
+            logger.trace { "converting to Entry: id=$entryId nestedEntry=$entry" }
             with(entry) {
                 when (this) {
                     is Common -> Entry.Common(
-                        common = toCommonComponent(id)
+                        common = toCommonComponent(entryId)
                     )
                     is Curse -> Entry.Curse(
-                        common = toCommonComponent(id),
+                        common = toCommonComponent(entryId),
                         curse = curse.copy()
                     )
                     is Direct -> Entry.Direct(
-                        common = toCommonComponent(id),
+                        common = toCommonComponent(entryId),
                         direct = direct.copy()
                     )
                     is Jenkins -> Entry.Jenkins(
-                        common = toCommonComponent(id),
+                        common = toCommonComponent(entryId),
                         jenkins = jenkins.copy()
                     )
                     is Local -> Entry.Local(
-                        common = toCommonComponent(id),
+                        common = toCommonComponent(entryId),
                         local = local.copy()
                     )
                     is Noop -> Entry.Noop(
-                        common = toCommonComponent(id)
+                        common = toCommonComponent(entryId)
                     )
                 }
             }
-
         }.toList()
+
+        logger.trace { "entryList: $entryList"}
+
+        return entryList
     }
 
     private fun flatten(indent: String, parentId: String) {
 //        val toDelete = mutableListOf<String>()
 
-        entries = entries.filter { (id, entry) ->
+        entries.forEach { (id, entry) ->
             logger.debug { "$indent pre_flatten: ${entry}" }
 
             // set feature of entry from `this` or DEFAULT
@@ -218,19 +232,17 @@ sealed class NestedEntry(
                 }
             }
 
+            logger.trace { "$indent copying to parent: ${entry.entries.keys}" }
+            this.entries += entry.entries
             entry.flatten("$indent|  ", id)
+        }
+        entries = entries.filter { (id, entry) ->
             if (entry.entries.isNotEmpty() || id.isBlank()) {
-//                toDelete += id
-                this.entries += entry.entries
+                logger.trace { "dropping group: $id" }
                 false
             } else {
                 true
             }
-
-//            entry.entries.forEach { (id, entry) ->
-//                this.entries += id to entry
-//            }
-//            entry.entries = emptyMap()
         }
 //        entries = entries.filterKeys { !toDelete.contains(it) }
         entries.forEach { (id, entry) ->
@@ -239,6 +251,7 @@ sealed class NestedEntry(
                 error("entries with blank id must not persist")
             }
         }
+        logger.trace { "$indent post_flatten: entries: ${entries.keys}" }
     }
 }
 
@@ -269,7 +282,7 @@ private inline fun <reified T : Any> mergeProperties(a: T, other: T, default: T)
                                 val copyFuncRef =
                                     thisClass.functions.find { it.name == "copy" && it.parameters.isEmpty() }
                                 if (copyFuncRef != null) {
-                                    NestedPack.logger.debug("copy found for $thisClass")
+                                    logger.debug("copy found for $thisClass")
                                     prop.setter.call(other, copyFuncRef.call(thisValue))
                                 } else {
                                     prop.setter.call(other, thisValue)

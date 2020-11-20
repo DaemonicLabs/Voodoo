@@ -1,6 +1,7 @@
 package voodoo.data
 
 import Modloader
+import com.github.ricky12awesome.jss.JsonSchema
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.modules.SerializersModuleBuilder
@@ -30,12 +31,15 @@ sealed class ModloaderPattern {
     data class Fabric(
         // https://meta.fabricmc.net/v2/versions/intermediary
 //        @Serializable(with=IntermediaryVersion.Companion::class)
+        @JsonSchema.StringEnum(["replace_with_fabric_intermediaries"])
         val intermediateMappingsVersion: String,
         // https://meta.fabricmc.net/v2/versions/loader
 //        @Serializable(with=LoaderVersion.Companion::class)
+        @JsonSchema.StringEnum(["replace_with_fabric_loaders"])
         val loaderVersion: String? = null,
         // https://meta.fabricmc.net/v2/versions/installer
 //        @Serializable(with=InstallerVersion.Companion::class)
+        @JsonSchema.StringEnum(["replace_with_fabric_installers"])
         val installerVersion: String? = null
     ) : ModloaderPattern() {
         override suspend fun lock() = Modloader.Fabric(

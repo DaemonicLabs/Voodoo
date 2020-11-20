@@ -1,3 +1,6 @@
+package voodoo.generator
+
+import com.github.ricky12awesome.jss.JsonSchema
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import voodoo.poet.generator.CurseSection
@@ -19,7 +22,7 @@ sealed class Generator {
     @Serializable
     @SerialName("generator.fabric")
     data class Fabric(
-        val stable: Boolean = true,
+        val requireStable: Boolean = true,
         override val mcVersions: List<String> = emptyList()
     ): Generator()
 

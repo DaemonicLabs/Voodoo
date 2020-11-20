@@ -49,7 +49,7 @@ object Poet : KLogging() {
         val files = runBlocking {
             // TODO: parallelize
             curseGenerators.map { generator ->
-                Poet.generateCurseforge(
+                Poet.generateCurseforgeKt(
                     name = generator.name,
                     slugIdMap = requestSlugIdMap(
                         gameVersions = generator.mcVersions.toList(),
@@ -62,7 +62,7 @@ object Poet : KLogging() {
                     gameVersions = generator.mcVersions.toList()
                 )
             } + forgeGenerators.map { generator ->
-                Poet.generateForge(
+                Poet.generateForgeKt(
                     name = generator.name,
                     mcVersionFilters = generator.mcVersions.toList(), // generator.mcVersions.toList(),
                     folder = generatedSrcDir
@@ -79,7 +79,79 @@ object Poet : KLogging() {
             it.capitalize()
         }.decapitalize()
 
-    fun generateCurseforge(
+    suspend fun generateCurseforgeAutocomplete(
+        categories: List<String> = emptyList(),
+        section: CurseSection,
+        mcVersions: List<String>
+    ) : Map<String, String> {
+        val slugIdMap = requestSlugIdMap(
+            gameVersions = mcVersions.toList(),
+            categories = categories,
+            section = section.sectionName
+        )
+
+        return slugIdMap.mapValues { (_, id) ->
+            id.toString()
+        }.toSortedMap()
+    }
+
+    suspend fun generateForgeAutocomplete(
+        mcVersionFilter: List<String>
+    ) : Map<String, String> {
+        val mcVersionsMap = ForgeUtil.mcVersionsMap(filter = mcVersionFilter)
+
+        val flatVersions = mcVersionsMap.flatMap { (versionIdentifier, numbers) ->
+            numbers.map {  (buildIdentifier, fullversion) ->
+                "$versionIdentifier/$buildIdentifier" to fullversion
+            }
+        }
+
+        val allVersions = mcVersionsMap.flatMap { it.value.values }
+        val promos = ForgeUtil.promoMap()
+        val filteredPromos = promos.filterValues { version ->
+            allVersions.contains(version)
+        }
+
+        return filteredPromos + flatVersions
+    }
+
+    suspend fun generateFabricIntermediariesAutocomplete(
+        requireStable: Boolean = false,
+        versionsFilter: List<String> = emptyList()
+    ): Map<String, String> {
+        return FabricUtil.getIntermediaries()
+            .run {
+                if(versionsFilter.isNotEmpty()) filter { it.version in versionsFilter } else this
+            }
+            .run {
+                if(requireStable) filter { it.stable } else this
+            }
+            .associate {
+                it.version to it.version
+            }
+            .toSortedMap()
+    }
+
+    suspend fun generateFabricLoadersAutocomplete(
+        requireStable: Boolean = false
+    ): Map<String, String> {
+        return FabricUtil.getLoaders().filter {
+            !requireStable || it.stable
+        }.associate {
+            it.version to it.version
+        }.toSortedMap()
+    }
+    suspend fun generateFabricInstallersAutocomplete(
+        requireStable: Boolean = false
+    ): Map<String, String> {
+        return FabricUtil.getInstallers().filter {
+            !requireStable || it.stable
+        }.associate {
+            it.version to it.version
+        }.toSortedMap()
+    }
+
+    fun generateCurseforgeKt(
         name: String,
         slugIdMap: Map<String, ProjectID>,
         slugSanitizer: (String) -> String,
@@ -138,7 +210,7 @@ object Poet : KLogging() {
         return save(objectBuilder.build(), targetFile)
     }
 
-    suspend fun generateForge(
+    suspend fun generateForgeKt(
         name: String = "Forge",
         mcVersionFilters: List<String>? = null,
         folder: File
@@ -173,7 +245,7 @@ object Poet : KLogging() {
             forgeBuilder.addType(versionBuilder.build())
         }
 
-        val promos = ForgeUtil.promoMap()
+        val promos = ForgeUtil.promoMapSanitized()
         for ((keyIdentifier, version) in promos) {
             if (allVersions.contains(version)) {
                 forgeBuilder.addProperty(buildProperty(keyIdentifier, version))
@@ -183,7 +255,7 @@ object Poet : KLogging() {
         return save(forgeBuilder.build(), targetFile)
     }
 
-    suspend fun generateFabric(
+    suspend fun generateFabricKt(
         name: String = "Fabric",
         mcVersionFilters: List<String>? = null,
         stable: Boolean = false,

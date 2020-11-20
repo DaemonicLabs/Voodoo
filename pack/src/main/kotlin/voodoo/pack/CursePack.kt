@@ -20,10 +20,7 @@ import voodoo.data.lock.LockPack
 import voodoo.forge.ForgeUtil
 import voodoo.provider.CurseProvider
 import voodoo.provider.Providers
-import voodoo.util.blankOr
-import voodoo.util.json
-import voodoo.util.packToZip
-import voodoo.util.withPool
+import voodoo.util.*
 import java.io.File
 
 /**
@@ -43,6 +40,8 @@ object CursePack : AbstractPack("curse") {
         uploadBaseDir: File,
         clean: Boolean
     ) = stopwatch {
+        val directories = Directories.get()
+
         val cacheDir = directories.cacheHome
         val workspaceDir = directories.cacheHome.resolve("curse-workspace")
         val modpackDir = workspaceDir.resolve(with(modpack) { "$id-$version" })

@@ -3,6 +3,7 @@ package voodoo.pack
 import com.eyeem.watchadoin.Stopwatch
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
+import voodoo.util.Directories
 import voodoo.util.maven.MavenUtil
 import voodoo.util.toJson
 import voodoo.util.unixPath
@@ -26,6 +27,8 @@ object ServerPack : AbstractPack("server") {
         uploadBaseDir: File,
         clean: Boolean
     ) = stopwatch {
+        val directories = Directories.get()
+
         if (clean) {
             logger.info("cleaning server directory $output")
             output.deleteRecursively()

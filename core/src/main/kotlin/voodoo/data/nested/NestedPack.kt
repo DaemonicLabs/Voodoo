@@ -2,6 +2,7 @@ package voodoo.data.nested
 
 import kotlinx.serialization.Serializable
 import mu.KLogging
+import mu.KotlinLogging
 import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
 import voodoo.data.flat.ModPack
@@ -33,7 +34,8 @@ data class NestedPack(
         nodeName = "root"
     )
 ) {
-    companion object : KLogging() {
+    companion object {
+        private val logger = KotlinLogging.logger {}
         fun create(builder: (NestedPack) -> Unit = {}): NestedPack {
             val pack = NestedPack()
             builder(pack)

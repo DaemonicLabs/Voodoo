@@ -10,6 +10,7 @@ import com.eyeem.watchadoin.TraceEventsReport
 import com.eyeem.watchadoin.saveAsSvg
 import com.eyeem.watchadoin.asTraceEventsReport
 import com.eyeem.watchadoin.saveAsHtml
+import com.github.ajalt.clikt.core.subcommands
 import com.xenomachina.argparser.ArgParser
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.DEBUG_PROPERTY_NAME
@@ -18,8 +19,10 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import voodoo.changelog.ChangelogBuilder
+import voodoo.cli.EvalScriptCommand
 import voodoo.cli.VoodooCommand
 import voodoo.data.nested.NestedPack
+import voodoo.pack.PackArguments
 import voodoo.script.ChangeScript
 import voodoo.script.MainScriptEnv
 import voodoo.script.TomeScript
@@ -36,7 +39,9 @@ object VoodooMain {
     val logger = KotlinLogging.logger {}
     @JvmStatic
     fun main(vararg args: String) {
-        VoodooCommand().main(args)
+        VoodooCommand().apply {
+            subcommands(EvalScriptCommand())
+        }.main(args)
     }
 
     @JvmStatic
@@ -132,7 +137,7 @@ object VoodooMain {
 
                     // TODO: pass extra args object
                     VoodooTask.Build.execute(
-                        stopwatch = this,
+                        stopwatch = "buildTask".watch,
                         id = id,
                         nestedPack = nestedPack,
                         tomeEnv = tomeEnv,
@@ -154,7 +159,7 @@ object VoodooMain {
                 },
                 VoodooTask.Pack.key to { args ->
                     // TODO: pass pack method
-                    val arguments = voodoo.pack.PackArguments(ArgParser(args))
+                    val arguments = PackArguments(ArgParser(args))
                     val packer = Pack.packMap[arguments.method.toLowerCase()] ?: run {
                         Pack.logger.error("no such packing method: ${arguments.method}")
                         exitProcess(-1)

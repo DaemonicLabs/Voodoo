@@ -5,7 +5,10 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.slf4j.MDCContext
 import mu.KotlinLogging
+import mu.withLoggingContext
+import org.slf4j.MDC
 import voodoo.data.flat.Entry
 import voodoo.data.flat.ModPack
 import voodoo.provider.Providers
@@ -55,50 +58,54 @@ suspend fun resolve(
                 "loop unresolved".watch {
                     coroutineScope {
                         for (entry in unresolved) {
-                            launch(context = pool + CoroutineName("job-${entry.id}")) {
-                                "job-${entry.id}".watch {
-                                    logger.info("resolving: ${entry.id}")
-                                    val provider = Providers.forEntry(entry)!!
+                            withLoggingContext("entry-id" to entry.id) {
+                                launch(MDCContext() + CoroutineName("job-${entry.id}") + pool) {
+                                    "job-${entry.id}".watch {
+                                        logger.info("resolving: ${entry.id}")
+                                        logger.trace { "processing: $entry" }
+                                        val provider = voodoo.provider.Providers.forEntry(entry)!!
 
-                                    val lockEntry = provider.resolve(entry, modPack.mcVersion, newEntriesChannel)
-                                    logger.debug("received locked entry: $lockEntry")
+                                        val lockEntry = provider.resolve(entry, modPack.mcVersion, newEntriesChannel)
+                                        logger.debug("received locked entry: $lockEntry")
 
-                                    logger.debug("validating: $lockEntry")
-                                    if (!provider.validate(lockEntry)) {
-                                        throw IllegalStateException("did not pass validation")
-                                    }
+                                        logger.debug("validating: $lockEntry")
+                                        if (!provider.validate(lockEntry)) {
+                                            throw IllegalStateException("did not pass validation")
+                                        }
 
-                                    logger.debug("trying to merge entry")
-                                    val actualLockEntry = modPack.addOrMerge(lockEntry) { old, new ->
-                                        old ?: new
-                                    }
-                                    logger.debug("merged entry: $actualLockEntry")
+                                        logger.debug("trying to merge entry")
+                                        val actualLockEntry = modPack.addOrMerge(lockEntry) { old, new ->
+                                            old ?: new
+                                        }
+                                        logger.debug("merged entry: $actualLockEntry")
 
-                                    logger.debug("validating: actual $actualLockEntry")
-                                    if (!provider.validate(actualLockEntry)) {
-                                        logger.error { actualLockEntry }
-                                        throw IllegalStateException("actual entry did not validate")
-                                    }
+                                        logger.debug("validating: actual $actualLockEntry")
+                                        if (!provider.validate(actualLockEntry)) {
+                                            logger.error { actualLockEntry }
+                                            throw IllegalStateException("actual entry did not validate")
+                                        }
 
 //                    logger.debug("setting display name")
 //                    actualLockEntry.name = actualLockEntry.name()
 
 //                                    logger.debug("adding to resolved")
-                                    resolved += entry.id
+                                        resolved += entry.id
 
 //                                    logger.debug("resolved: $resolved")
-                                    val unresolvedEntries =
-                                        modPack.entrySet.asSequence().map { entry -> entry.id }.filter { id ->
-                                            !resolved.contains(
-                                                id
-                                            )
-                                        }.toList()
-                                    logger.debug("unresolved: ${unresolvedEntries}")
-                                }
+                                        val unresolvedEntries =
+                                            modPack.entrySet.asSequence().map { entry -> entry.id }.filter { id ->
+                                                !resolved.contains(
+                                                    id
+                                                )
+                                            }.toList()
+                                        logger.debug("unresolved: ${unresolvedEntries}")
+                                    }
 
-                            }.also {
-                                logger.info("started job resolve ${entry.id}")
+                                }.also {
+                                    logger.info("started job resolve ${entry.id}")
+                                }
                             }
+
                         }
                     }
                 }
@@ -145,7 +152,4 @@ suspend fun resolve(
     }.takeUnless { it.isEmpty() }?.let {
         throw IllegalStateException("unresolved entries: $it")
     }
-//    exitProcess(-1)
-
-    // TODO: rethink history, since packs are now mainly file based
 }
