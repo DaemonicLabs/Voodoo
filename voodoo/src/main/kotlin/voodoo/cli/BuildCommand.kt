@@ -60,8 +60,10 @@ class BuildCommand(
                     val addonid = Autocompletions.curseforge[name]?.toIntOrNull()
                     require( addonid != null) { "cannot find replacement for $name / ${Autocompletions.curseforge[name]}" }
                     entry.curse.projectID = ProjectID(addonid)
+                    if(entry.name == null) {
+                        entry.name = name.substringAfterLast('/')
+                    }
                 }
-
             }
             else -> {}
         }
@@ -93,7 +95,6 @@ class BuildCommand(
                             loaderVersion = Autocompletions.fabricLoaders[modloader.loaderVersion] ?: modloader.loaderVersion,
                             installerVersion = Autocompletions.fabricInstallers[modloader.installerVersion] ?: modloader.installerVersion
                         )
-
                         is ModloaderPattern.Forge -> modloader.copy(
                             version = Autocompletions.forge[modloader.version] ?: modloader.version
                         )

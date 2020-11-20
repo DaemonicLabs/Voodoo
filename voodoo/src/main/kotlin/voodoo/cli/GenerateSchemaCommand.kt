@@ -46,6 +46,9 @@ class GenerateSchemaCommand : CliktCommand(
                         .replace("\"replace_with_curseforge_projects\"",
                             Autocompletions.curseforge.keys.joinToString(",") { "\"$it\"" }
                         )
+                        .replace("\"replace_with_forge_versions\"",
+                            Autocompletions.forge.keys.joinToString(",") { "\"$it\"" }
+                        )
                         .replace("\"replace_with_fabric_intermediaries\"",
                             Autocompletions.fabricIntermediaries.keys.joinToString(",") { "\"$it\"" }
                         )

@@ -20,6 +20,7 @@ sealed class ModloaderPattern {
         // TODO: split
         // TODO: maybe just second part of `1.15.2-31.1.35` ? is this clear enough for the server to download the installer ?
         // https://files.minecraftforge.net/maven/net/minecraftforge/forge/maven-metadata.xml
+        @JsonSchema.StringEnum(["replace_with_forge_versions"])
         val version: String
     ) : ModloaderPattern() {
         override suspend fun lock() = Modloader.Forge.parse(version = version)

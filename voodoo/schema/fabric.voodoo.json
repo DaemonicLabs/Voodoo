@@ -19,6 +19,9 @@
         "entries": {
             "provider_curse": {
                 "type": "curse",
+                "curseProperties": {
+                    "releaseTypes": ["Alpha", "Beta", "Release"]
+                },
                 "entries": {
                     "fabric-api": {
                         "type": "curse",
