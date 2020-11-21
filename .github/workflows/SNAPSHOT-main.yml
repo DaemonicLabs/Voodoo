@@ -40,5 +40,5 @@ jobs:
          body: Snapshot Release ${{ env.VERSION }}
          gzip: folders
          files: >
-           voodoo.jar:voodoo/build.libs/voodoo-${{ env.VERSION }}-all.jar
-           voodoo-with-scripting.jar:voodoo/main/build.libs/voodoo-main-${{ env.VERSION }}-all.jar
+           voodoo-${{ env.VERSION }}.jar:voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar
+           voodoo-with-scripting-${{ env.VERSION }}.jar:voodoo/main/build/libs/voodoo-main-${{ env.VERSION }}-all.jar
