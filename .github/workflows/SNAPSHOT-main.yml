@@ -20,20 +20,20 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
       - name: Build with Gradle
-        run: ./gradlew build shadowJar
+        run: ./gradlew build shadowJar exportVersion
       - name: Set enviroment for github-release
         run: |
           echo ::set-env name=BRANCH::"${GITHUB_REF##*/}"
-        # todo: get version (0.6.0) before release step
+          echo ::set-env name=VERSION::"${cat version.txt}"
       - uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: snapshot-${{ env.BRANCH }}-${{ env.GITHUB_RUN_NUMBER }}
+          tag: v${{ env.VERSION }}-snapshot-${{ env.BRANCH }}-${{ env.GITHUB_RUN_NUMBER }}
           commitish: ${{ env.BRANCH }}
           name: ${{ env.RELEASE_NAME }}
           prerelease: true
-          body: Snapshot Release
+          body: Snapshot Release ${{ env.VERSION }}
           gzip: folders
           files: >
-            voodoo.jar:voodoo/build.libs/voodoo-0.6.0-all.jar
-            voodoo-with-scripting.jar:voodoo/main/build.libs/voodoo-main-0.6.0-all.jar
+            voodoo.jar:voodoo/build.libs/voodoo-${{ env.VERSION }}-all.jar
+            voodoo-with-scripting.jar:voodoo/main/build.libs/voodoo-main-${{ env.VERSION }}-all.jar

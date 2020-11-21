@@ -14,7 +14,7 @@ plugins {
     kotlin("plugin.serialization") apply false
     id("moe.nikky.plugin.constants") apply false
     id("com.github.johnrengelman.shadow") apply false
-    id("org.jmailen.kotlinter") apply false
+//    id("org.jmailen.kotlinter") apply false
     id("com.jfrog.bintray") apply false
     id("com.vanniktech.dependency.graph.generator")
 }
@@ -47,14 +47,27 @@ object Maven {
 
 val baseVersion = "0.6.0"
 
+val releaseVersion = properties["version"] as String?
+
 val isCI = System.getenv("CI") != null
 
-val versionSuffix = if (isCI) "SNAPSHOT" else "local"
+val versionSuffix = when {
+    isCI -> "-SNAPSHOT"
+    else -> "-local"
+}
 
-val fullVersion = "$baseVersion-$versionSuffix" // TODO: just use -SNAPSHOT always ?
+val fullVersion = "$baseVersion$versionSuffix" // TODO: just use -SNAPSHOT always ?
 
 group = "moe.nikky.voodoo"
-version = fullVersion
+version = releaseVersion ?: fullVersion
+
+task<DefaultTask>("exportVersion") {
+    group = "help"
+    description = "exports $version to version.txt"
+    doLast {
+        rootDir.resolve("version.txt").writeText(version.toString())
+    }
+}
 
 allprojects {
     repositories {

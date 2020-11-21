@@ -19,6 +19,8 @@ dependencies {
     // script definitions
     implementation(kotlin("scripting-jvm", "_"))
 
+    implementation(KotlinX.coroutines.debug)
+
     implementation(group = "ch.qos.logback", name = "logback-classic", version = "_") {
         exclude(module = "javax.mail")
     }
@@ -61,15 +63,15 @@ val compileTestKotlin by tasks.getting(KotlinCompile::class) {
 
 // SPEK
 
-repositories {
-    maven(url = "https://dl.bintray.com/spekframework/spek-dev")
-}
+//repositories {
+//    maven(url = "https://dl.bintray.com/spekframework/spek-dev")
+//}
 
 val cleanTest by tasks.getting(Delete::class)
 
 tasks.withType<Test> {
     useJUnitPlatform {
-        includeEngines("spek2")
+//        includeEngines("spek2")
     }
     dependsOn(cleanTest)
 }

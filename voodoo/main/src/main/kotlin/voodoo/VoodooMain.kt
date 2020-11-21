@@ -5,18 +5,14 @@ package voodoo
  * @author Nikky
  */
 
-import com.eyeem.watchadoin.Stopwatch
-import com.eyeem.watchadoin.TraceEventsReport
-import com.eyeem.watchadoin.saveAsSvg
-import com.eyeem.watchadoin.asTraceEventsReport
-import com.eyeem.watchadoin.saveAsHtml
+import com.eyeem.watchadoin.*
 import com.github.ajalt.clikt.core.subcommands
 import com.xenomachina.argparser.ArgParser
-import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.DEBUG_PROPERTY_NAME
-import kotlinx.coroutines.DEBUG_PROPERTY_VALUE_ON
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.json.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.debug.DebugProbes
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import mu.KotlinLogging
 import voodoo.changelog.ChangelogBuilder
 import voodoo.cli.EvalScriptCommand
@@ -37,8 +33,13 @@ import kotlin.system.exitProcess
 
 object VoodooMain {
     val logger = KotlinLogging.logger {}
+
     @JvmStatic
     fun main(vararg args: String) {
+
+        @OptIn(ExperimentalCoroutinesApi::class)
+        DebugProbes.install()
+
         VoodooCommand().apply {
             subcommands(EvalScriptCommand())
         }.main(args)
@@ -68,7 +69,7 @@ object VoodooMain {
         val cacheDir = directories.cacheHome
 
         val arguments = fullArgs.drop(1)
-        logger.info { "arguments: ${arguments}"}
+        logger.info { "arguments: ${arguments}" }
         val script = fullArgs.getOrNull(0)?.apply {
             require(isNotBlank()) { "'$this' configuration script name cannot be blank" }
             require(endsWith(".voodoo.kts")) { "'$this' configuration script filename must end with .voodoo.kts" }
@@ -85,7 +86,7 @@ object VoodooMain {
 
         logger.debug("id: $id")
 
-        if(!SharedFolders.RootDir.defaultInitialized) {
+        if (!SharedFolders.RootDir.defaultInitialized) {
             SharedFolders.RootDir.value = File(System.getProperty("user.dir")).absoluteFile
         }
         val rootDir = SharedFolders.RootDir.get().absoluteFile
@@ -101,8 +102,8 @@ object VoodooMain {
             val tomeDir = SharedFolders.TomeDir.get()
             val docDir = SharedFolders.DocDir.get(id)
 
-            logger.info { "fullArgs: ${fullArgs.joinToString()}"}
-            logger.info { "arguments: ${arguments}"}
+            logger.info { "fullArgs: ${fullArgs.joinToString()}" }
+            logger.info { "arguments: ${arguments}" }
             val funcs = mapOf<String, suspend Stopwatch.(Array<String>) -> Unit>(
                 VoodooTask.Build.key to { args ->
                     // TODO: only compile in this step
@@ -123,7 +124,8 @@ object VoodooMain {
                     // debug
                     val jsonObj = json.encodeToJsonElement(NestedPack.serializer(), scriptEnv.pack) as JsonObject
                     rootDir.resolve(id).resolve("$id.nested.pack.json").writeText(
-                        json.encodeToString(JsonObject.serializer(), JsonObject(mapOf("\$schema" to JsonPrimitive(scriptEnv.pack.`$schema`)) + jsonObj))
+                        json.encodeToString(JsonObject.serializer(),
+                            JsonObject(mapOf("\$schema" to JsonPrimitive(scriptEnv.pack.`$schema`)) + jsonObj))
                     )
 //                    val schemaFile = rootDir.resolve(id).resolve(scriptEnv.pack.`$schema`)
 //                    schemaFile.absoluteFile.parentFile.mkdirs()
@@ -132,7 +134,8 @@ object VoodooMain {
 //                    )
 
                     // load nestedPack
-                    val nestedPack = json.decodeFromString(NestedPack.serializer(), rootDir.resolve(id).resolve("$id.nested.pack.json").readText())
+                    val nestedPack = json.decodeFromString(NestedPack.serializer(),
+                        rootDir.resolve(id).resolve("$id.nested.pack.json").readText())
 
 
                     // TODO: pass extra args object
@@ -219,7 +222,7 @@ object VoodooMain {
             invocations.joinToString("_") { it.joinToString("-") }
         }
         println(stopwatch.toStringPretty())
-        val reportDir= rootDir.resolve("reports").apply { mkdirs() }
+        val reportDir = rootDir.resolve("reports").apply { mkdirs() }
         stopwatch.saveAsSvg(reportDir.resolve("${id}_$reportName.report.svg"))
         stopwatch.saveAsHtml(reportDir.resolve("${id}_$reportName.report.html"))
         val traceEventsReport = stopwatch.asTraceEventsReport()
@@ -236,7 +239,7 @@ object VoodooMain {
         libs: File,
         id: String,
         tomeDir: File,
-        host: BasicJvmScriptingHost
+        host: BasicJvmScriptingHost,
     ): ChangelogBuilder = stopwatch {
         tomeDir.resolve("$id.changelog.kts")
             .also { file -> logger.debug { "trying to load: $file" } }
@@ -269,7 +272,7 @@ object VoodooMain {
         libs: File,
         tomeDir: File,
         docDir: File,
-        host: BasicJvmScriptingHost
+        host: BasicJvmScriptingHost,
     ): TomeEnv = stopwatch {
         val tomeEnv = TomeEnv(docDir)
 

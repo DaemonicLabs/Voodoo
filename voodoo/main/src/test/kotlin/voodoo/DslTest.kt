@@ -14,7 +14,7 @@ import java.io.File
 internal class DslTest {
     @Test
     fun `load pack`() {
-        val rootFolder = File("run").resolve("test").resolve("dslspek").absoluteFile.apply {
+        val rootFolder = File("run").resolve("test").resolve("dsltest").absoluteFile.apply {
             deleteRecursively()
             mkdirs()
         }
