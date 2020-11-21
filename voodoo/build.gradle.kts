@@ -6,8 +6,6 @@ plugins {
 
 dependencies {
     api("com.github.ajalt.clikt:clikt:_")
-//    implementation("com.github.h0tk3y.betterParse:better-parse:_")
-    api("com.github.Ricky12Awesome:json-schema-serialization:_")
     api("com.charleskorn.kaml:kaml:_")
     api(project(":dsl"))
     api(project(":tome"))

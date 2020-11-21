@@ -1,9 +1,9 @@
 package voodoo.script
 
 import mu.KotlinLogging
-import voodoo.GenerateForge
-import voodoo.GenerateMods
-import voodoo.GenerateResourcePacks
+import voodoo.dsl.annotations.GenerateForge
+import voodoo.dsl.annotations.GenerateMods
+import voodoo.dsl.annotations.GenerateResourcePacks
 import voodoo.poet.Poet
 import voodoo.poet.generator.CurseGenerator
 import voodoo.poet.generator.CurseSection

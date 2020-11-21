@@ -80,7 +80,12 @@ object ForgeUtil : KLogging() {
     suspend fun promoMapSanitized(): Map<String, String> {
         val promoData = deferredPromo.await()
         return promoData.promos.mapKeys { (key, version) ->
-            val keyIdentifier = key.replace('-', '_').replace('.', '_')
+            val keyIdentifier = key.replace('-', '_').replace('.', '_').run {
+                if (this.first().isDigit())
+                    "mc$this"
+                else
+                    this
+            }
             keyIdentifier
         }.mapValues { (key, version) ->
             forgeVersions.find {

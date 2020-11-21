@@ -3,7 +3,6 @@ package voodoo.dsl.builder
 import voodoo.data.DependencyType
 import voodoo.data.nested.NestedEntry
 import voodoo.dsl.VoodooDSL
-import voodoo.property
 
 open class EntryBuilder<E: NestedEntry>(
     open val id: String,

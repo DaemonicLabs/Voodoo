@@ -9,6 +9,7 @@ plugins {
 
 dependencies {
     implementation(project(":voodoo"))
+    implementation(project(":dsl"))
 
     // script evaluations
     implementation(kotlin("script-util", "_"))

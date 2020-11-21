@@ -1,4 +1,4 @@
-package voodoo
+package voodoo.dsl.annotations
 
 @Repeatable
 @Target(AnnotationTarget.FILE)

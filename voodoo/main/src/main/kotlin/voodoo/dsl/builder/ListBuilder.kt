@@ -190,7 +190,7 @@ data class ListBuilder<E : NestedEntry>(
     @Deprecated("use `NestedEntry.\$Type {} list {}` instead", level = DeprecationLevel.ERROR)
     inline fun <reified N: NestedEntry> withProvider(
         groupName: String? = null,
-        block: N.( ListBuilder<N>) -> Unit = {}
+        block: N.(ListBuilder<N>) -> Unit = {}
     ): ListBuilder<N> {
         error("use `NestedEntry.\$Type {} list {}` instead")
     }

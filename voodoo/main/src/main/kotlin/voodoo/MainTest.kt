@@ -1,10 +1,7 @@
-import com.charleskorn.kaml.PolymorphismStyle
-import com.charleskorn.kaml.SequenceStyle
-import com.charleskorn.kaml.Yaml
-import com.charleskorn.kaml.YamlConfiguration
+package voodoo
+
 import com.github.ricky12awesome.jss.dsl.ExperimentalJsonSchemaDSL
 import mu.KotlinLogging
-import voodoo.curse.CurseClient
 import voodoo.data.Side
 import voodoo.data.curse.FileType
 import voodoo.data.curse.ProjectID
@@ -12,7 +9,6 @@ import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
 import voodoo.dsl.builder.ModpackBuilder
 import voodoo.fabric.IntermediaryVersion
-import voodoo.forge.ForgeUtil
 import voodoo.util.SharedFolders
 import java.io.File
 

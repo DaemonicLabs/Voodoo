@@ -15,11 +15,15 @@ import java.io.File
 internal class DslTest {
     @Test
     fun `load pack`() {
-        SharedFolders.RootDir.value = File(".").absoluteFile
         val rootFolder = File("run").resolve("test").resolve("dsltest").absoluteFile.apply {
             deleteRecursively()
             mkdirs()
         }
+        SharedFolders.RootDir.value = rootFolder
+        SharedFolders.BuildCache.resolver = { File(".").absoluteFile.resolve("build/.voodoo/") }
+
+        //TODO: remove curseSlugs.json and replace with Autocompletion lookup
+
         val builder = ModpackBuilder(NestedPack.create()).apply {
             mcVersion = "1.12.2"
             version = "1.0"
