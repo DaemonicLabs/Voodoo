@@ -25,6 +25,10 @@ jobs:
        run: |
          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
          echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
+     - name: print env
+       run: |
+         echo "BRANCH=${{ env.BRANCH }}
+         echo "VERSION=${{ env.VERSION }}
      - name: Create prerelease
        uses: meeDamian/github-release@2.0
        with:
