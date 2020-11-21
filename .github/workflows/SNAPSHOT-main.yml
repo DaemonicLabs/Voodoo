@@ -1,0 +1,39 @@
+on:
+  push:
+    branches:
+     - main
+
+name: Create Release Snapshot
+
+jobs:
+  build:
+    name: Create Release Snapshot
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: gradle/wrapper-validation-action@v1
+      - name: Set up JDK 8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 8
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+      - name: Build with Gradle
+        run: ./gradlew build shadowJar
+      - name: Set enviroment for github-release
+        run: |
+          echo ::set-env name=BRANCH::"${GITHUB_REF##*/}"
+        # todo: get version (0.6.0) before release step
+      - uses: meeDamian/github-release@2.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag: snapshot-${{ env.BRANCH }}-${{ env.GITHUB_RUN_NUMBER }}
+          commitish: ${{ env.BRANCH }}
+          name: ${{ env.RELEASE_NAME }}
+          prerelease: true
+          body: Snapshot Release
+          gzip: folders
+          files: >
+            voodoo.jar:voodoo/build.libs/voodoo-0.6.0-all.jar
+            voodoo-with-scripting.jar:voodoo/main/build.libs/voodoo-main-0.6.0-all.jar
