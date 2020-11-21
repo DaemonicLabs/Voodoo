@@ -28,7 +28,8 @@ object Poet : KLogging() {
         generateAll(
             generatedSrcDir = File(args[1]),
             curseGenerators = listOf(CurseGenerator("Mod", CurseSection.MODS, mcVersions = listOf("1.12.2"))),
-            forgeGenerators = listOf(ForgeGenerator("Forge"))
+            forgeGenerators = listOf(ForgeGenerator("Forge")),
+            fabricGenerators = listOf(FabricGenerator("Fabric", stable = true))
         )
     }
 
@@ -63,6 +64,12 @@ object Poet : KLogging() {
                 )
             } + forgeGenerators.map { generator ->
                 Poet.generateForgeKt(
+                    name = generator.name,
+                    mcVersionFilters = generator.mcVersions.toList(), // generator.mcVersions.toList(),
+                    folder = generatedSrcDir
+                )
+            } + fabricGenerators.map { generator ->
+                Poet.generateFabricKt(
                     name = generator.name,
                     mcVersionFilters = generator.mcVersions.toList(), // generator.mcVersions.toList(),
                     folder = generatedSrcDir

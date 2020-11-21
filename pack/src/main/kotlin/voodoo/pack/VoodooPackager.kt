@@ -43,7 +43,7 @@ object VoodooPackager : AbstractPack("voodoo") {
         val directories = Directories.get()
 
         val cacheDir = directories.cacheHome
-        val workspaceDir = modpack.rootFolder.resolve("build").resolve("experimental_workspace").absoluteFile
+        val workspaceDir = modpack.rootFolder.resolve("build").resolve("voodoo_workspace").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.id)
 
         val srcFolder = modpackDir.resolve("src")

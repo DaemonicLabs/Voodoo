@@ -47,7 +47,6 @@ object Maven {
 
 val baseVersion = "0.6.0"
 
-val releaseVersion = properties["version"] as String?
 
 val isCI = System.getenv("CI") != null
 
@@ -57,6 +56,9 @@ val versionSuffix = when {
 }
 
 val fullVersion = "$baseVersion$versionSuffix" // TODO: just use -SNAPSHOT always ?
+
+// specify version as -Pversion=x.y.z in gradle invocation
+val releaseVersion = properties["version"] as String?
 
 group = "moe.nikky.voodoo"
 version = releaseVersion ?: fullVersion
@@ -79,7 +81,7 @@ allprojects {
         maven(url = "https://kotlin.bintray.com/kotlinx") {
             name = "KotlinX"
         }
-        mavenLocal()
+//        mavenLocal()
     }
 
     task<DefaultTask>("depsize") {

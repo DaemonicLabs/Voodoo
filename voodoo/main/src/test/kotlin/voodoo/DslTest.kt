@@ -9,11 +9,13 @@ import voodoo.data.curse.FileType
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
 import voodoo.dsl.builder.ModpackBuilder
+import voodoo.util.SharedFolders
 import java.io.File
 
 internal class DslTest {
     @Test
     fun `load pack`() {
+        SharedFolders.RootDir.value = File(".").absoluteFile
         val rootFolder = File("run").resolve("test").resolve("dsltest").absoluteFile.apply {
             deleteRecursively()
             mkdirs()
