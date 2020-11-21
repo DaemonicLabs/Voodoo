@@ -13,10 +13,7 @@ run/
 /test/
 logs/
 
-_site/
-Gemfile\.lock
-
-dependency-graph\.png
+version.txt
 
 profile/
 

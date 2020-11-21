@@ -47,7 +47,6 @@ object Maven {
 
 val baseVersion = "0.6.0"
 
-
 val isCI = System.getenv("CI") != null
 
 val versionSuffix = when {
@@ -58,7 +57,7 @@ val versionSuffix = when {
 val fullVersion = "$baseVersion$versionSuffix" // TODO: just use -SNAPSHOT always ?
 
 // specify version as -Pversion=x.y.z in gradle invocation
-val releaseVersion = properties["version"] as String?
+val releaseVersion = (properties["version"] as String?)?.takeUnless { it == "unspecified" }
 
 group = "moe.nikky.voodoo"
 version = releaseVersion ?: fullVersion
@@ -69,6 +68,7 @@ task<DefaultTask>("exportVersion") {
     doLast {
 //        val GITHUB_ENV = System.getenv("\$GITHUB_ENV")
 //        file(GITHUB_ENV).appendText("\nVERSION=$version")
+        logger.lifecycle("exporting version $version")
         rootDir.resolve("version.txt").writeText(version.toString())
     }
 }
