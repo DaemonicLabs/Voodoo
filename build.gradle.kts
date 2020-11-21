@@ -67,6 +67,8 @@ task<DefaultTask>("exportVersion") {
     group = "help"
     description = "exports $version to version.txt"
     doLast {
+//        val GITHUB_ENV = System.getenv("\$GITHUB_ENV")
+//        file(GITHUB_ENV).appendText("\nVERSION=$version")
         rootDir.resolve("version.txt").writeText(version.toString())
     }
 }

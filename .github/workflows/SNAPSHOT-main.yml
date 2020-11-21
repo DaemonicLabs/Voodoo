@@ -23,17 +23,18 @@ jobs:
         run: ./gradlew build shadowJar exportVersion
       - name: Set enviroment for github-release
         run: |
-          echo ::set-env name=BRANCH::"${GITHUB_REF##*/}"
-          echo ::set-env name=VERSION::"${cat version.txt}"
-      - uses: meeDamian/github-release@2.0
+          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
+          echo "VERSION=${cat version.txt}" >> $GITHUB_ENV
+      - name: Create prerelease
+        uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          tag: v${{ env.VERSION }}-snapshot-${{ env.BRANCH }}-${{ env.GITHUB_RUN_NUMBER }}
-          commitish: ${{ env.BRANCH }}
+          tag: v${VERSION}-snapshot-${BRANCH}-${{ env.GITHUB_RUN_NUMBER }}
+          commitish: ${BRANCH}
           name: ${{ env.RELEASE_NAME }}
           prerelease: true
-          body: Snapshot Release ${{ env.VERSION }}
+          body: Snapshot Release ${VERSION}
           gzip: folders
           files: >
-            voodoo.jar:voodoo/build.libs/voodoo-${{ env.VERSION }}-all.jar
-            voodoo-with-scripting.jar:voodoo/main/build.libs/voodoo-main-${{ env.VERSION }}-all.jar
+            voodoo.jar:voodoo/build.libs/voodoo-${VERSION}-all.jar
+            voodoo-with-scripting.jar:voodoo/main/build.libs/voodoo-main-${VERSION}-all.jar
