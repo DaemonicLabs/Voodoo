@@ -24,14 +24,14 @@ jobs:
       - name: Set enviroment for github-release
         run: |
           echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
-          echo "VERSION=${cat version.txt}" >> $GITHUB_ENV
+          echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
       - name: Create prerelease
         uses: meeDamian/github-release@2.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           tag: v${VERSION}-snapshot-${BRANCH}-${{ env.GITHUB_RUN_NUMBER }}
           commitish: ${BRANCH}
-          name: ${{ env.RELEASE_NAME }}
+#          name: ${{ env.RELEASE_NAME }}
           prerelease: true
           body: Snapshot Release ${VERSION}
           gzip: folders
