@@ -45,22 +45,21 @@ object Maven {
     val shadowClassifier = "all"
 }
 
-val baseVersion = "0.6.0"
+// specify version as -Pversion=x.y.z in gradle invocation
+val releaseVersion = (properties["version"] as String?)?.takeUnless { it == "unspecified" }
+val defaultVersion = "0.6.0"
 
 val isCI = System.getenv("CI") != null
 
 val versionSuffix = when {
-    isCI -> "-SNAPSHOT"
-    else -> "-local"
+    isCI -> "SNAPSHOT"
+    else -> "local"
 }
 
-val fullVersion = "$baseVersion$versionSuffix" // TODO: just use -SNAPSHOT always ?
-
-// specify version as -Pversion=x.y.z in gradle invocation
-val releaseVersion = (properties["version"] as String?)?.takeUnless { it == "unspecified" }
+val fullVersion = "${releaseVersion ?: defaultVersion}-$versionSuffix" // TODO: just use -SNAPSHOT always ?
 
 group = "moe.nikky.voodoo"
-version = releaseVersion ?: fullVersion
+version = fullVersion
 
 task<DefaultTask>("exportVersion") {
     group = "help"

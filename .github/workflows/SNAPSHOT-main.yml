@@ -11,6 +11,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+     - name: run info
+       run: |
+         echo "run number: $GITHUB_RUN_NUMBER"
      - uses: actions/checkout@v2
      - uses: gradle/wrapper-validation-action@v1
      - name: Set up JDK 8
@@ -27,13 +30,13 @@ jobs:
          echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
      - name: print env
        run: |
-         echo "BRANCH=${{ env.BRANCH }}
-         echo "VERSION=${{ env.VERSION }}
+         echo "BRANCH=${{ env.BRANCH }}"
+         echo "VERSION=${{ env.VERSION }}"
      - name: Create prerelease
        uses: meeDamian/github-release@2.0
        with:
          token: ${{ secrets.GITHUB_TOKEN }}
-         tag: v${{ env.VERSION }}-snapshot-${{ env.BRANCH }}-${{ env.GITHUB_RUN_NUMBER }}
+         tag: ${{ env.VERSION }}-${{ env.BRANCH }}-$GITHUB_RUN_NUMBER
          commitish: ${{ env.GITHUB_SHA }}
 #         name: ${{ env.RELEASE_NAME }}
          prerelease: true
