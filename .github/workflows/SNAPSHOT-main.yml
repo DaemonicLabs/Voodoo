@@ -13,14 +13,6 @@ jobs:
     steps:
      - uses: actions/checkout@v2
      - uses: gradle/wrapper-validation-action@v1
-     - name: Set enviroment for github-release
-       run: |
-         echo "TEST=testvalue" >> $GITHUB_ENV
-     - name: print env
-       run: |
-         env
-         echo "TEST=$TEST"
-         echo "TEST=${{ env.TEST }}"
      - name: Set up JDK 8
        uses: actions/setup-java@v1
        with:
@@ -33,22 +25,15 @@ jobs:
        run: |
          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
          echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
-     - name: print env
-       run: |
-         env
-         echo "BRANCH=$BRANCH"
-         echo "VERSION=$VERSION"
-         echo "BRANCH=${{ env.BRANCH }}"
-         echo "VERSION=${{ env.VERSION }}"
      - name: Create prerelease
        uses: meeDamian/github-release@2.0
        with:
          token: ${{ secrets.GITHUB_TOKEN }}
-         tag: v${VERSION}-snapshot-${BRANCH}-${{ env.GITHUB_RUN_NUMBER }}
+         tag: v${{ env.VERSION }}-snapshot-${{ env.BRANCH }}-${{ env.GITHUB_RUN_NUMBER }}
          commitish: ${{ env.GITHUB_SHA }}
 #         name: ${{ env.RELEASE_NAME }}
          prerelease: true
-         body: Snapshot Release ${VERSION}
+         body: Snapshot Release ${{ env.VERSION }}
          gzip: folders
          files: >
            voodoo.jar:voodoo/build.libs/voodoo-${{ env.VERSION }}-all.jar
