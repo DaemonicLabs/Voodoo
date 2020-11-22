@@ -46,7 +46,7 @@ object VoodooMain {
     }
 
     @JvmStatic
-    fun mainOld(vararg fullArgs: String) {
+    fun oldMain(vararg fullArgs: String) {
 //        val rootLogger = LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME) as Logger
 //        rootLogger.level = Level.INFO // TODO: pass as -Dvoodoo.debug=true ?
         System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
@@ -122,11 +122,11 @@ object VoodooMain {
 //                    val nestedPack = scriptEnv.pack
 
                     // debug
-                    val jsonObj = json.encodeToJsonElement(NestedPack.serializer(), scriptEnv.pack) as JsonObject
-                    rootDir.resolve(id).resolve("$id.nested.pack.json").writeText(
-                        json.encodeToString(JsonObject.serializer(),
-                            JsonObject(mapOf("\$schema" to JsonPrimitive(scriptEnv.pack.`$schema`)) + jsonObj))
-                    )
+//                    val jsonObj = json.encodeToJsonElement(NestedPack.serializer(), scriptEnv.pack) as JsonObject
+//                    rootDir.resolve(id).resolve("$id.nested.pack.json").writeText(
+//                        json.encodeToString(JsonObject.serializer(),
+//                            JsonObject(mapOf("\$schema" to JsonPrimitive(scriptEnv.pack.`$schema`)) + jsonObj))
+//                    )
 //                    val schemaFile = rootDir.resolve(id).resolve(scriptEnv.pack.`$schema`)
 //                    schemaFile.absoluteFile.parentFile.mkdirs()
 //                    schemaFile.writeText(

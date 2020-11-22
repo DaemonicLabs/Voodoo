@@ -3,7 +3,6 @@ package voodoo.config
 import com.github.ricky12awesome.jss.encodeToSchema
 import voodoo.data.nested.NestedPack
 import voodoo.pack.ModpackInput
-import voodoo.pack.OverrideID
 import voodoo.util.json
 
 fun NestedPack.Companion.generateSchema() = json.encodeToSchema(serializer())

@@ -1,6 +1,8 @@
 ch.qos.logback:logback-classic
                ^^^^^^^^^^^^^^^
 
-org.spekframework.spek2:*
-                  ^^^^^
+com.github.Ricky12Awesome:json-schema-serialization
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^
 
+com.github.NikkyAi:json-schema-serialization
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^

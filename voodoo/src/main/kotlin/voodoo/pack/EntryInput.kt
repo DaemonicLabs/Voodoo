@@ -13,7 +13,7 @@ import voodoo.data.flat.Entry
 
 @Serializable
 sealed class EntryInput(
-    @JsonSchema.Definition("entry.applyOverrides")
+//    @JsonSchema.Definition("entry.applyOverrides")
     @JsonSchema.StringEnum(["replace_with_overrides"])
     val applyOverrides: List<String> = listOf(),
     var name: String? = null,

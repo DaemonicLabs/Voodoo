@@ -9,9 +9,7 @@ import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import mu.KotlinLogging
 import voodoo.poet.Poet
-import voodoo.util.SharedFolders
-import voodoo.util.json
-import voodoo.util.toRelativeUnixPath
+import voodoo.util.*
 import java.io.File
 
 object Autocompletions {
@@ -53,40 +51,35 @@ object Autocompletions {
         curseforgeFile.takeIf { it.exists() }?.let {
             json.decodeFromString(serializer, it.readText())
         } ?: runBlocking(MDCContext()) {
-            val generatorsCurse = generatorsMap.filterValues { it is Generator.Curse } as Map<String, Generator.Curse>
-            generateCurse(generatorsCurse)
+            generateCurse(generatorsMap.filterValueIsInstance())
         }
     }
     val forge by lazy {
         forgeFile.takeIf { it.exists() }?.let {
             json.decodeFromString(serializer, it.readText())
         } ?: runBlocking(MDCContext()) {
-            val generatorsForge = generatorsMap.filterValues { it is Generator.Forge } as Map<String, Generator.Forge>
-            generateForge(generatorsForge)
+            generateForge(generatorsMap.filterValueIsInstance())
         }
     }
     val fabricIntermediaries by lazy {
         fabricIntermediariesFile.takeIf { it.exists() }?.let {
             json.decodeFromString(serializer, it.readText())
         } ?: runBlocking(MDCContext()) {
-            val generatorsFabric = generatorsMap.filterValues { it is Generator.Fabric } as Map<String, Generator.Fabric>
-            generateFabricIntermediaries(generatorsFabric)
+            generateFabricIntermediaries(generatorsMap.filterValueIsInstance())
         }
     }
     val fabricInstallers by lazy {
         fabricInstallersFile.takeIf { it.exists() }?.let {
             json.decodeFromString(serializer, it.readText())
         } ?: runBlocking(MDCContext()) {
-            val generatorsFabric = generatorsMap.filterValues { it is Generator.Fabric } as Map<String, Generator.Fabric>
-            generateFabricInstallers(generatorsFabric)
+            generateFabricInstallers(generatorsMap.filterValueIsInstance())
         }
     }
     val fabricLoaders by lazy {
         fabricLoadersFile.takeIf { it.exists() }?.let {
             json.decodeFromString(serializer, it.readText())
         } ?: runBlocking(MDCContext()) {
-            val generatorsFabric = generatorsMap.filterValues { it is Generator.Fabric } as Map<String, Generator.Fabric>
-            generateFabricLoaders(generatorsFabric)
+            generateFabricLoaders(generatorsMap.filterValueIsInstance())
         }
     }
 
@@ -163,9 +156,9 @@ object Autocompletions {
 
         val generatorsMap = config.generators
 
-        val generatorsCurse = generatorsMap.filterValues { it is Generator.Curse } as Map<String, Generator.Curse>
-        val generatorsForge = generatorsMap.filterValues { it is Generator.Forge } as Map<String, Generator.Forge>
-        val generatorsFabric = generatorsMap.filterValues { it is Generator.Fabric } as Map<String, Generator.Fabric>
+        val generatorsCurse = Autocompletions.generatorsMap.filterValueIsInstance<String, Generator.Curse>()
+        val generatorsForge = Autocompletions.generatorsMap.filterValueIsInstance<String, Generator.Forge>()
+        val generatorsFabric = Autocompletions.generatorsMap.filterValueIsInstance<String, Generator.Fabric>()
 
         coroutineScope {
             launch(MDCContext()) {

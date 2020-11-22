@@ -82,6 +82,9 @@ allprojects {
         maven(url = "https://kotlin.bintray.com/kotlinx") {
             name = "KotlinX"
         }
+        maven("https://jitpack.io") {
+            name = "jitpack"
+        }
 //        mavenLocal()
     }
 

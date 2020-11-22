@@ -10,7 +10,6 @@ import java.io.File
 object MainWIP {
     private val logger = KotlinLogging.logger {}
 
-    @OptIn(ExperimentalJsonSchemaDSL::class)
     @JvmStatic
     fun main(args: Array<String>) {
         logger.info { "Hello World" }
@@ -44,7 +43,7 @@ object MainWIP {
 //        logger.info { nestedCfg }
 
         val configFile = rootDir.resolve("config.json")
-        val generatorsWrapper = json.decodeFromString(Configuration.serializer(), configFile.readText() )
+        val config = json.decodeFromString(Configuration.serializer(), configFile.readText() )
 
 
         rootDir.resolve("schema/modpack.schema.json").apply {
@@ -61,12 +60,12 @@ object MainWIP {
 
         rootDir.resolve("schema/modpack.schema.json").apply {
             absoluteFile.parentFile.mkdirs()
-            writeText(ModpackInput.generateSchema(modpackInput.overrides.keys))
+            writeText(ModpackInput.generateSchema(config.overrides.keys))
         }
 
         println("modpackInput: $modpackInput")
 
-        val modpack = modpackInput.flatten(rootDir = rootDir, id = id)
+        val modpack = modpackInput.flatten(rootDir = rootDir, id = id, overrides = config.overrides)
 
         println("modpack: $modpack")
 

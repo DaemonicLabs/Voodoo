@@ -11,6 +11,7 @@ import java.io.File
 
 @Serializable
 data class ModpackInput(
+    @JsonSchema.NoDefinition
     @SerialName("\$schema")
     val schema: String = "./schema/modpack.schema.json",
     val title: String,
@@ -22,10 +23,10 @@ data class ModpackInput(
     @JsonSchema.Description(["url pointing to \$modpackId.package.json", "you need to upload the packaged modpack there"])
     val selfupdateUrl: String,
     var userFiles: FnPatternList = FnPatternList(),
-    val overrides: Map<String, EntryOverride> = mapOf(),
+//    val overrides: Map<String, EntryOverride> = mapOf(),
     val mods: Map<String, EntryInput>
 ) {
-    fun flatten(rootDir: File, id: String): ModPack {
+    fun flatten(rootDir: File, id: String, overrides: Map<String, EntryOverride>): ModPack {
         return ModPack(
             rootFolder = rootDir,
             id = id,

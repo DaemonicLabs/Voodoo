@@ -15,6 +15,7 @@ import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import mu.KotlinLogging
+import voodoo.config.Configuration
 import voodoo.createJvmScriptingHost
 import voodoo.data.nested.NestedPack
 import voodoo.evalScript
@@ -24,6 +25,7 @@ import voodoo.poet.Poet.defaultSlugSanitizer
 import voodoo.script.MainScriptEnv
 import voodoo.util.Directories
 import voodoo.util.SharedFolders
+import voodoo.util.filterValueIsInstance
 import voodoo.util.json
 import java.io.File
 
@@ -67,20 +69,17 @@ class EvalScriptCommand(
         stopwatch {
             val cacheDir = directories.cacheHome
 
+            //TODO: generate shared src in separate command
             //generate src files
 //            val generatedSharedSrcDir = SharedFolders.GeneratedSrcShared.resolver(scriptFile.absoluteFile.parentFile.parentFile)
             SharedFolders.GeneratedSrcShared.resolver = { rootDir -> rootDir.resolve("generated_src") }
             val generatedSharedSrcDir = SharedFolders.GeneratedSrcShared.get()
 
-            // generateCurseforgeMods("FabricMod", "1.15", "1.15.1", "1.15.2", categories = listOf("Fabric"))
-            // generateFabric("Fabric", true)
+            val config = json.decodeFromString(Configuration.serializer(), rootDir.resolve("config.json").readText())
 
-            val generatorsJson = rootDir.resolve("generators.json").readText()
-            val generatorsMap = json.decodeFromString(MapSerializer(String.serializer(), Generator.serializer()), generatorsJson)
-
-            val generatorsCurse = generatorsMap.filterValues { it is Generator.Curse } as Map<String, Generator.Curse>
-            val generatorsForge = generatorsMap.filterValues { it is Generator.Forge } as Map<String, Generator.Forge>
-            val generatorsFabric = generatorsMap.filterValues { it is Generator.Fabric } as Map<String, Generator.Fabric>
+            val generatorsCurse = config.generators.filterValueIsInstance<String, Generator.Curse>()
+            val generatorsForge = config.generators.filterValueIsInstance<String, Generator.Forge>()
+            val generatorsFabric = config.generators.filterValueIsInstance<String, Generator.Fabric>()
 
             runBlocking(MDCContext()) {
                 generatorsCurse.forEach { (name, generator) ->
