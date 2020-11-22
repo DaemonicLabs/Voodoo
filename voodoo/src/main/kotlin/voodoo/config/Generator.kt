@@ -1,4 +1,4 @@
-package voodoo.generator
+package voodoo.config
 
 import com.github.ricky12awesome.jss.JsonSchema
 import kotlinx.serialization.SerialName

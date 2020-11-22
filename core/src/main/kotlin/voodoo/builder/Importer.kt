@@ -12,16 +12,17 @@ object Importer : KLogging() {
         stopwatch: Stopwatch,
         nestedPack: NestedPack,
         id: String,
-        targetFolder: File
+        rootFolder: File
     ): ModPack = stopwatch {
-        targetFolder.walkTopDown().asSequence()
+        require(rootFolder.isAbsolute) { "rootFolder: '$rootFolder' is not absolute" }
+        rootFolder.resolve(id).walkTopDown().asSequence()
             .filter {
                 it.isFile && it.name.endsWith(".entry.json")
             }
             .forEach {
                 it.delete()
             }
-        val modpack = nestedPack.flatten(rootFolder = targetFolder, id = id) //TODO: add stopwatch more levels down
+        val modpack = nestedPack.flatten(rootFolder = rootFolder, id = id) //TODO: add stopwatch more levels down
 //        modpack.entrySet += nestedPack.root.flatten()
         modpack
     }

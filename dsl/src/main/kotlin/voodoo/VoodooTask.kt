@@ -5,14 +5,12 @@ import mu.KotlinLogging
 import voodoo.builder.Builder
 import voodoo.builder.Importer
 import voodoo.changelog.ChangelogBuilder
-import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockPack
 import voodoo.data.nested.NestedPack
 import voodoo.pack.AbstractPack
 import voodoo.tome.TomeEnv
 import voodoo.util.SharedFolders
 import voodoo.dsl.GeneratedConstants
-import voodoo.util.json
 import java.io.File
 
 sealed class VoodooTask(open val key: String) {
@@ -31,7 +29,7 @@ sealed class VoodooTask(open val key: String) {
                 stopwatch = "flatten".watch,
                 nestedPack = nestedPack,
                 id = id,
-                targetFolder = rootFolder
+                rootFolder = rootFolder
             )
             logger.debug { "modpack: $modpack" }
             logger.debug { "entrySet: ${modpack.entrySet}" }

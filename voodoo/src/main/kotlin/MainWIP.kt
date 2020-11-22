@@ -1,21 +1,10 @@
-import com.charleskorn.kaml.PolymorphismStyle
-import com.charleskorn.kaml.SequenceStyle
-import com.charleskorn.kaml.Yaml
-import com.charleskorn.kaml.YamlConfiguration
 import com.github.ricky12awesome.jss.dsl.ExperimentalJsonSchemaDSL
-import com.github.ricky12awesome.jss.encodeToSchema
-import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.builtins.MapSerializer
-import kotlinx.serialization.builtins.serializer
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
-import kotlinx.serialization.json.jsonObject
 import mu.KotlinLogging
-import voodoo.curse.CurseClient
-import voodoo.data.nested.NestedPack
-import voodoo.forge.ForgeUtil
-import voodoo.generator.Generator
+import voodoo.config.Configuration
+import voodoo.config.generateSchema
+import voodoo.pack.ModpackInput
+import voodoo.util.SharedFolders
+import voodoo.util.json
 import java.io.File
 
 object MainWIP {
@@ -27,106 +16,113 @@ object MainWIP {
         logger.info { "Hello World" }
 
         val rootDir = File(".").absoluteFile
+        SharedFolders.RootDir.value = rootDir
+
         val id = "test"
 
-        val json = Json {
-            prettyPrint = true
+//        val json = Json {
+//            prettyPrint = true
+//        }
+//        val nestedPackSchemaFile = rootDir.resolve("schema/nested_modpack.schema.json").also { file ->
+//            file.absoluteFile.parentFile.mkdirs()
+//            file.writeText(
+//                json.encodeToSchema(NestedPack.serializer())
+//            )
+//        }
+
+
+//        val yaml = Yaml (
+//            configuration = YamlConfiguration(
+//                polymorphismStyle = PolymorphismStyle.Tag,
+//                sequenceStyle = SequenceStyle.Flow
+//            )
+//        )
+//        val nestedCfg  = yaml.decodeFromString(
+//            NestedPack.serializer(),
+//            File("nested_test.nested_voodoo.yml").readText()
+//        )
+//        logger.info { nestedCfg }
+
+        val configFile = rootDir.resolve("config.json")
+        val generatorsWrapper = json.decodeFromString(Configuration.serializer(), configFile.readText() )
+
+
+        rootDir.resolve("schema/modpack.schema.json").apply {
+            absoluteFile.parentFile.mkdirs()
+            writeText(ModpackInput.generateSchema(setOf()))
         }
-        val schemaFile = rootDir.resolve("schema/modpack.schema.json")
-        schemaFile.absoluteFile.parentFile.mkdirs()
-        schemaFile.writeText(
-            json.encodeToSchema(ModpackPlain.serializer())
-        )
-        val nestedPackSchemaFile = rootDir.resolve("schema/nested_modpack.schema.json").also { file ->
-            file.absoluteFile.parentFile.mkdirs()
-            file.writeText(
-                json.encodeToSchema(NestedPack.serializer())
-            )
-        }
-
-
-        val yaml = Yaml (
-            configuration = YamlConfiguration(
-                polymorphismStyle = PolymorphismStyle.Tag,
-                sequenceStyle = SequenceStyle.Flow
-            )
-        )
-        val nestedCfg  = yaml.decodeFromString(
-            NestedPack.serializer(),
-            File("nested_test.nested_voodoo.yml").readText()
-        )
-        logger.info { nestedCfg }
-
-        // TODO: generate json later
-        // debug
-
 
         val testFile = File("test.voodoo.json").absoluteFile
 
-        val modpackConfig = json.decodeFromString(
-            ModpackPlain.serializer(),
+        val modpackInput = json.decodeFromString(
+            ModpackInput.serializer(),
             testFile.readText()
         )
-        println("modpack: $modpackConfig")
 
-        modpackConfig.mods.mapValues { (entryId, intitalEntry) ->
-            return@mapValues intitalEntry.apply.fold(intitalEntry) { acc, tagId ->
-                val tag = modpackConfig.tags[tagId] ?: error("$entryId: tag for id $tagId not found")
-                return@fold when {
-                    acc is PlainEntry.Curse && tag is PlainTag.Curse -> acc.applyTag(tag)
-                    acc is PlainEntry.Direct && tag is PlainTag.Direct -> acc.applyTag(tag)
-                    acc is PlainEntry.Jenkins && tag is PlainTag.Jenkins -> acc.applyTag(tag)
-                    acc is PlainEntry.Local && tag is PlainTag.Local -> acc.applyTag(tag)
-                    tag is PlainTag.Common -> acc.applyTag(tag)
-                    else -> intitalEntry
-                }
-            }
+        rootDir.resolve("schema/modpack.schema.json").apply {
+            absoluteFile.parentFile.mkdirs()
+            writeText(ModpackInput.generateSchema(modpackInput.overrides.keys))
         }
 
-        val generatorsCurse = modpackConfig.generators.filterValues { it is Generator.Curse } as Map<String, Generator.Curse>
-        val generatorsForge = modpackConfig.generators.filterValues { it is Generator.Forge } as Map<String, Generator.Forge>
-        val generatorsFabric = modpackConfig.generators.filterValues { it is Generator.Fabric } as Map<String, Generator.Fabric>
+        println("modpackInput: $modpackInput")
 
-        runBlocking {
-            val curseResults = generatorsCurse.mapValues { (generatorId, generator) ->
-                CurseClient.graphQLRequest(
-                    section = generator.section.sectionName,
-                    categories = generator.categories,
-                    gameVersions = generator.mcVersions
-                ).map { (id, slug) ->
-                    slug
-                }
-            }
-            val forgeResults = generatorsForge.mapValues { (generatorId, generator) ->
-                val mcVersions = ForgeUtil.mcVersionsMap(filter = generator.mcVersions)
-                println(json.encodeToString(MapSerializer(String.serializer(), MapSerializer(String.serializer(), String.serializer())), mcVersions))
-                val allVersions = mcVersions.flatMap { it.value.values }
+        val modpack = modpackInput.flatten(rootDir = rootDir, id = id)
 
-                val promos = ForgeUtil.promoMapSanitized()
-                for ((keyIdentifier, version) in promos) {
-                    if (allVersions.contains(version)) {
-                        //TODO: add promo keys
-//                        forgeBuilder.addProperty(buildProperty(keyIdentifier, version))
-                    }
-                }
-            }
+        println("modpack: $modpack")
 
-            //TODO: look up fabric versions from meta.fabricmc.net
+//        val jsonObj = json.parseToJsonElement(testFile.readText()).jsonObject
+//        testFile.writeText(
+//            json.encodeToString(
+//                JsonObject.serializer(),
+//                JsonObject(mapOf("\$schema" to JsonPrimitive(schemaFile.toRelativeString(File(".").absoluteFile))) + jsonObj)
+//            )
+//        )
 
-
-
-            //TODO: write generated constants into enum fields
-            val allSlugs = curseResults.map { (k, v) -> "$k/$v" }
-            schemaFile.writeText(
-                schemaFile.readText()
-                    .replace("\"replace_with_projectnames\"",
-                        allSlugs.joinToString(",") { "\"$it\"" }
-                    )
-                    .replace("\"replace_with_tags\"",
-                        modpackConfig.tags.keys.joinToString(",") { "\"$it\"" }
-                    )
-            )
-        }
+        //TODO generate schema autocompletions later
+//        val generatorsCurse = modpackConfig.generators.filterValues { it is Generator.Curse } as Map<String, Generator.Curse>
+//        val generatorsForge = modpackConfig.generators.filterValues { it is Generator.Forge } as Map<String, Generator.Forge>
+//        val generatorsFabric = modpackConfig.generators.filterValues { it is Generator.Fabric } as Map<String, Generator.Fabric>
+//
+//        runBlocking {
+//            val curseResults = generatorsCurse.mapValues { (generatorId, generator) ->
+//                CurseClient.graphQLRequest(
+//                    section = generator.section.sectionName,
+//                    categories = generator.categories,
+//                    gameVersions = generator.mcVersions
+//                ).map { (id, slug) ->
+//                    slug
+//                }
+//            }
+//            val forgeResults = generatorsForge.mapValues { (generatorId, generator) ->
+//                val mcVersions = ForgeUtil.mcVersionsMap(filter = generator.mcVersions)
+//                println(json.encodeToString(MapSerializer(String.serializer(), MapSerializer(String.serializer(), String.serializer())), mcVersions))
+//                val allVersions = mcVersions.flatMap { it.value.values }
+//
+//                val promos = ForgeUtil.promoMapSanitized()
+//                for ((keyIdentifier, version) in promos) {
+//                    if (allVersions.contains(version)) {
+//                        //TODO: add promo keys
+////                        forgeBuilder.addProperty(buildProperty(keyIdentifier, version))
+//                    }
+//                }
+//            }
+//
+//            //TODO: look up fabric versions from meta.fabricmc.net
+//
+//
+//
+//            //TODO: write generated constants into enum fields
+//            val allSlugs = curseResults.map { (k, v) -> "$k/$v" }
+//            schemaFile.writeText(
+//                schemaFile.readText()
+//                    .replace("\"replace_with_projectnames\"",
+//                        allSlugs.joinToString(",") { "\"$it\"" }
+//                    )
+//                    .replace("\"replace_with_tags\"",
+//                        modpackConfig.tags.keys.joinToString(",") { "\"$it\"" }
+//                    )
+//            )
+//        }
 
 
 //        val allSlugs = runBlocking {
@@ -167,13 +163,6 @@ object MainWIP {
 //                )
 //        )
 
-        val jsonObj = json.parseToJsonElement(testFile.readText()).jsonObject
-        testFile.writeText(
-            json.encodeToString(
-                JsonObject.serializer(),
-                JsonObject(mapOf("\$schema" to JsonPrimitive(schemaFile.toRelativeString(File(".").absoluteFile))) + jsonObj)
-            )
-        )
 
 
 //        val schema = buildJsonSchema {

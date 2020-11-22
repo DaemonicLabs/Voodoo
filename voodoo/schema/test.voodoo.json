@@ -5,83 +5,66 @@
     "authors": [
         "nikky"
     ],
-    "generators": {
-        "fabricMods": {
-            "type": "generator.curse",
-            "section": "MODS",
-            "mcVersions": [
-                "1.16.2"
-            ],
-            "categories": [
-                "Fabric"
-            ]
-        },
-        "forgeVersions": {
-            "type": "generator.forge",
-            "mcVersions": [
-                "1.16.2"
-            ]
-        }
-    },
     "mcVersion": "1.16.2",
-    "selfupdateUrl": "https://yourdomain.com/voodoo/$modpackId.json",
+    "selfupdateUrl": "https://nikky.moe/.mc/experimental/fabricpack.json",
     "modloader": {
         "type": "modloader.fabric",
-        "intermediateMappings": "1.16.2"
+        "intermediateMappings": "Fabric/1.16.2"
     },
     "icon": "icon.png",
-    "tags": {
-        "client": {
-            "type": "common",
-            "side": "CLIENT"
-        },
-        "server": {
-            "type": "common",
-            "side": "SERVER"
-        },
-        "optional": {
-            "type": "common",
-            "optional": {
-                "selected": false
-            }
-        },
-        "optionalDefault": {
-            "type": "common",
-            "optional": {
-                "recommendation": "starred"
-            }
-        },
-        "optionalStarred": {
-            "type": "common",
-            "optional": {
-                "recommendation": "avoid",
-                "files": {
-                    "include": [
-                        "some/file"
-                    ]
-                }
-            }
-        }
-    },
     "mods": {
-        "backpackmod": {
+        "fabric-api": {
             "type": "curse",
-            "projectName": "fabric/backpackmod"
+            "projectName": "FabricMod/fabric-api"
         },
-        "appleskin": {
+        "betternether": {
             "type": "curse",
-            "apply": [
-                "optionalStarred",
-                "client"
-            ],
-            "projectName": "fabric/appleskin"
+            "projectName": "FabricMod/betternether"
+        },
+        "tab-inventory-fabric": {
+            "type": "curse",
+            "projectName": "FabricMod/tab-inventory-fabric"
         },
         "campanion": {
             "type": "curse",
-            "apply": [
+            "projectName": "FabricMod/campanion"
+        },
+        "roughly-enough-items": {
+            "type": "curse",
+            "applyOverrides": [
+                "client"
+            ],
+            "projectName": "FabricMod/roughly-enough-items"
+        },
+        "roughly-enough-resources": {
+            "type": "curse",
+            "applyOverrides": [
+                "client"
+            ],
+            "projectName": "FabricMod/roughly-enough-resources"
+        },
+        "modmenu": {
+            "type": "curse",
+            "applyOverrides": [
+                "client"
+            ],
+            "projectName": "FabricMod/modmenu"
+        },
+        "mouse-wheelie": {
+            "type": "curse",
+            "applyOverrides": [
+                "client",
                 "optionalStarred"
             ],
-            "projectName": "fabric/campanion"
+            "projectName": "FabricMod/mouse-wheelie"
+        },
+        "appleskin": {
+            "type": "curse",
+            "applyOverrides": [
+                "client",
+                "optionalStarred"
+            ],
+            "projectName": "FabricMod/appleskin"
         }
     }
 }

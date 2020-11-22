@@ -27,7 +27,7 @@ sealed class LockEntry : CommonLockModule {
         val common: CommonLockComponent = CommonLockComponent(),
         val projectID: ProjectID = ProjectID.INVALID,
         val fileID: FileID = FileID.INVALID,
-        val useUrlTxt: Boolean = true,
+        val useOriginalUrl: Boolean = true,
         val skipFingerprintCheck: Boolean = false
     ) : LockEntry(), CommonLockModule by common {
         override val provider = CurseProvider.id
@@ -42,7 +42,7 @@ sealed class LockEntry : CommonLockModule {
         @Transient override var _id: String = "",
         val common: CommonLockComponent = CommonLockComponent(),
         val url: String = "",
-        val useUrlTxt: Boolean = true
+        val useOriginalUrl: Boolean = true
     ) : LockEntry(), CommonLockModule by common {
         override val provider = DirectProvider.id
         init {

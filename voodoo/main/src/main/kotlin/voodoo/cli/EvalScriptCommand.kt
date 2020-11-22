@@ -18,7 +18,7 @@ import mu.KotlinLogging
 import voodoo.createJvmScriptingHost
 import voodoo.data.nested.NestedPack
 import voodoo.evalScript
-import voodoo.generator.Generator
+import voodoo.config.Generator
 import voodoo.poet.Poet
 import voodoo.poet.Poet.defaultSlugSanitizer
 import voodoo.script.MainScriptEnv

@@ -36,7 +36,9 @@ data class ModPack(
     var modloader: ModloaderPattern? = null,
     var localDir: String = "local",
     var docDir: String = id,
-    var packOptions: PackOptions = PackOptions()
+    var packOptions: PackOptions = PackOptions(),
+    // we want this to be serialized for debugging purposes ?
+    val entrySet: MutableSet<Entry> = Collections.synchronizedSet(mutableSetOf()),
 ) {
     companion object : KLogging()
 
@@ -46,9 +48,6 @@ data class ModPack(
     @Transient
     val localFolder: File
         get() = rootFolder.resolve(localDir)
-
-    // we want this to be serialized for debugging purposes ?
-    val entrySet: MutableSet<Entry> = Collections.synchronizedSet(mutableSetOf())
 
     @Transient
     val lockEntrySet: MutableSet<LockEntry> = Collections.synchronizedSet(mutableSetOf())

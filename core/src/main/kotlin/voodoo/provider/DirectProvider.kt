@@ -26,7 +26,7 @@ object DirectProvider : ProviderBase("Direct Provider") {
             LockEntry.Direct(
                 common = commonComponent,
                 url = entry.url,
-                useUrlTxt = entry.useUrlTxt
+                useOriginalUrl = entry.useOriginalUrl
             )
         }
     }

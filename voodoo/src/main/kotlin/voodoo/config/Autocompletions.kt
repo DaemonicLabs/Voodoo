@@ -1,4 +1,4 @@
-package voodoo.generator
+package voodoo.config
 
 import com.github.ricky12awesome.jss.encodeToSchema
 import kotlinx.coroutines.coroutineScope
@@ -21,8 +21,8 @@ object Autocompletions {
     val rootDir by lazy {
         SharedFolders.RootDir.get().absoluteFile
     }
-    private val generatorsFile by lazy {
-        rootDir.resolve("generators.json")
+    private val configFile by lazy {
+        rootDir.resolve("config.json")
     }
     private val cacheDir by lazy {
         rootDir.resolve(".completions").apply { mkdirs() }
@@ -35,19 +35,19 @@ object Autocompletions {
     val fabricInstallersFile: File = cacheDir.resolve("fabric_installers.json")
     val fabricLoadersFile: File = cacheDir.resolve("fabric_loaders.json")
 
-    private val generatorsWrapper by lazy {
-        if (generatorsFile.exists()) {
+    private val config by lazy {
+        if (configFile.exists()) {
             json.decodeFromString(
-                Generators.serializer(),
-                generatorsFile.readText()
+                Configuration.serializer(),
+                configFile.readText()
             )
         } else {
-            Generators("", mapOf())
+            Configuration()
         }
     }
 
     private val generatorsMap by lazy {
-        generatorsWrapper.generators
+        config.generators
     }
     val curseforge by lazy {
         curseforgeFile.takeIf { it.exists() }?.let {
@@ -150,18 +150,18 @@ object Autocompletions {
         }
 
 
-    suspend fun generate(generatorsFile: File) {
+    suspend fun generate(configFile: File) {
 
         logger.info { "generating autocompletions into $cacheDir" }
 
-        val generatorsWrapper = if (generatorsFile.exists()) {
+        val config = if (configFile.exists()) {
             json.decodeFromString(
-                Generators.serializer(),
-                generatorsFile.readText()
+                Configuration.serializer(),
+                configFile.readText()
             )
-        } else Generators("", mapOf())
+        } else Configuration()
 
-        val generatorsMap = generatorsWrapper.generators
+        val generatorsMap = config.generators
 
         val generatorsCurse = generatorsMap.filterValues { it is Generator.Curse } as Map<String, Generator.Curse>
         val generatorsForge = generatorsMap.filterValues { it is Generator.Forge } as Map<String, Generator.Forge>
@@ -186,20 +186,20 @@ object Autocompletions {
         }
 
 
-        val generatorsSchemaFile = rootDir.resolve("schema/generators.schema.json").apply {
+        val generatorsSchemaFile = rootDir.resolve("schema/config.schema.json").apply {
             absoluteFile.parentFile.mkdirs()
 
             writeText(
                 json.encodeToSchema(
-                    Generators.serializer()
+                    Configuration.serializer()
                 )
             )
         }
 
-        generatorsFile.writeText(
+        configFile.writeText(
             json.encodeToString(
-                Generators.serializer(),
-                generatorsWrapper.copy(schema = generatorsSchemaFile.toRelativeUnixPath(generatorsFile.parentFile))
+                Configuration.serializer(),
+                config.copy(schema = generatorsSchemaFile.toRelativeUnixPath(configFile.parentFile))
             )
         )
     }

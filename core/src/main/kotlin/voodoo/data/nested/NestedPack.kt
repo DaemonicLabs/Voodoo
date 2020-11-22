@@ -1,5 +1,7 @@
 package voodoo.data.nested
 
+import com.github.ricky12awesome.jss.JsonSchema
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import mu.KLogging
 import mu.KotlinLogging
@@ -14,7 +16,8 @@ import java.io.File
  */
 @Serializable
 data class NestedPack(
-    val `$schema`: String = "./schema/nested.schema.json",
+    @SerialName("\$schema")
+    val schema: String = "./schema/nested.schema.json",
     /**
      * Minecraft Version
      */
@@ -59,9 +62,8 @@ data class NestedPack(
             modloader = modloader,
             localDir = localDir,
             docDir = docDir ?: id,
-            packOptions = packOptions
-        ).also {
-            it.entrySet += root.flatten()
-        }
+            packOptions = packOptions,
+            entrySet = root.flatten().toMutableSet()
+        )
     }
 }

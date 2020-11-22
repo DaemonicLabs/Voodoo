@@ -7,6 +7,6 @@ import moe.nikky.voodoo.format.modpack.Recommendation
 @Serializable
 data class OptionalData(
     var selected: Boolean = false,
-    var skRecommendation: Recommendation? = null,
-    var skFiles: FnPatternList = FnPatternList()
+    var recommendation: Recommendation? = null,
+    var files: FnPatternList = FnPatternList()
 )

@@ -23,16 +23,13 @@ import voodoo.data.ModloaderPattern
 import voodoo.data.curse.ProjectID
 import voodoo.data.nested.NestedEntry
 import voodoo.data.nested.NestedPack
-import voodoo.generator.Autocompletions
+import voodoo.config.Autocompletions
 import voodoo.tome.ModlistGeneratorMarkdown
 import voodoo.tome.TomeEnv
-import voodoo.util.Directories
 import voodoo.util.json
 import java.io.File
 
-class BuildCommand(
-//    private val rootDir: File
-): CliktCommand(
+class BuildCommand(): CliktCommand(
     name = "build",
     help = ""
 ) {

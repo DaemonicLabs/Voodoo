@@ -17,20 +17,20 @@
 About
 -----
 
-Creating Modpacks with Voodoo requires minimal effort, just create one `.kt` definition per modpack
+Creating Modpacks with Voodoo requires minimal effort, just create one `.voodoo.json`  or `.voodoo.kts` definition per modpack
 
 You can Test Any pack in MultiMC, creating a instance and launching it is completely automated, no more clicking than necessary
 
-Modern Minecraft versions (1.6.+) and Forge are supported (older versions do not have mods on curseforge)
+Modern Minecraft versions (1.6.+), Forge and Fabric are supported
 
-packages to [SKCraft Launcher](https://github.com/SKCraft/Launcher#skcraft-launcher) Pack Format
+packages to custom (TODO: add link and readme) Pack Format
 
-**No Rehosting of Mods!** completely automated by preparing `.url.txt` files for SKLauncher
+**No Rehosting of Mods!** completely automated by preparing `.url.txt` files pointing to the original file location
 
-Reproducability: with a modpacks `.lock.hjson` file and `src` folder you can reproduce the modpack on any platform, server install or local testing
-(given that the urls do not get taken down or redirect anywhere else)
+Reproducability: with a modpacks lockfile and `src` folder you can reproduce the modpack on any platform, server install or local testing
+(assuming that the urls do not get taken down or redirect anywhere else)
 
-Minimalistic Packs: on all platforms that support it (SK and the multimc-wrapper) mods will be downloaded by the user from the original location,  
+Minimalistic Packs: on all platforms that support it (currently only the multimc-wrapper) mods will be downloaded by the user from the original location,  
 
 
 Is Voodoo for you?
@@ -62,106 +62,33 @@ and do not want to publish files to curse
 This applies to different modules of voodoo individually.. without a place to host files you can still export
 a pack and upload it to curse, it will just be a much slower process due to approval and waiting time
 
-Wiki
-----
+Downloads
+---------
 
-[https://github.com/DaemonicLabs/Voodoo/wiki](https://github.com/DaemonicLabs/Voodoo/wiki)
+you can grab binaries from the releases: https://github.com/DaemonicLabs/Voodoo/releases
+
+Usage examples
+--------------
+
+```bash
+# generate json schema for autocompletion
+java -jar voodoo.jar generateSchema
+
+# builds a pack based on the recipe / definition
+java -jar voodoo.jar build --id mypack
+
+# packages for upload
+java -jar voodoo.jar pack --id mypack voodoo mmc-voodoo curse
+
+# launches pack in multimc
+java -jar voodoo.jar launch multimc --id mypack
+
+```
 
 Developing
 ----------
 
 [Developer Guide](https://github.com/DaemonicLabs/Voodoo/wiki/Developer-Guide)
-
-Task Shortcuts
---------------
-
-for all tasks shortcuts can be registered in the `build.gradle.kts`
-```kotlin
-voodoo {
-    addTask("rebuildAndTestMMC") {
-        build()
-        test().multimc()
-    }
-    addTask("testMMC") {
-        test().multimc()
-    }
-    addTask("build") {
-        build()
-    }
-    addTask("sk") {
-        pack().sk()
-    }
-    addTask("server") {
-        pack().server()
-    }
-    addTask("buildAndPackAll") {
-        build()
-        pack().server()
-        pack().sk()
-        test().multimcFat()
-    }
-}
-```
-these tasks will be registered for each modpack, eg `cotm_rebuildAndTestMMC` would 
-execute cotm to build the pack and then open the multimc5 test client
-
-Usage examples
---------------
-
-examples based on [Center of the Multiverse](https://github.com/elytra/Center-of-the-Multiverse)
-
-Learn how to define your `$pack.voodoo.kts` in [docs/setup](docs/setup)
-
-other samples: [samples](samples) and [packs](samples/packs)
-
-## Server Deployment
-
-create a server package \
-`./gradlew cotm pack server -o ".server"`
-
-that creates a server *package* in `.server/`
- 1. upload that package to **different** folder on your minecraft server
- 2. stop the minecraft server and
- 3. execute the server installer with the actual location of your minecraft server installation \
-    eg. `java -jar server-installer ../actualServer`
-
-this will:
- - update configs/files
- - install mods
- - install/update forge
- - create `forge.jar`
-
-## MultiMC Integration / Deployment
-
-To run a test instance use \
-`./gradlew $packname --args "test mmc"` 
-or `./gradlew cotm_testMMC` if that task was defined
-
-to compile a minimalistic MMC pack that selfupdates using the skcraft data \
-`./gradlew cotm --args "pack mmc"` \
-this expects a file `multimc/${packname}.url.txt` that points at the previously uploaded skcraft pack \
-more specifically the json file of the pack
-
-Maven
------
-
-Voodoo is available on modmuss50's maven
-(recommended usage is via gradle plugin, see [docs/setup](docs/setup) )
-gradle:
-```kotlin
-repositories {
-    maven(url = "https://maven.modmuss50.me") { name = "modmuss50" }   
-    maven(url = "https://kotlin.bintray.com/kotlinx") { name = "kotlinx" }
-    mavenCentral()
-}
-dependencies {
-    implementation(group = "moe.nikky.voodoo", name = "voodoo", version = "0.4+")
-}
-```
-
-
-for builds not on master add the branch name to the groupId
-eg. `moe.nikky.voodoo-rewrite`
 
 Support
 -------
@@ -175,12 +102,3 @@ How to contribute?
 ------------------
 
 buy me a drink: [![Patreon](https://img.shields.io/badge/Patreon-Nikkyai-red.svg?style=flat-square)](https://www.patreon.com/NikkyAi)
-
-## Improve kotlin scripting
-
-[KT-27815](https://youtrack.jetbrains.com/issue/KT-27815)
-[KT-28916](https://youtrack.jetbrains.com/issue/KT-28916)
-
-## improve kotlin code generation
-
-[kotlinpoet-608](https://github.com/square/kotlinpoet/issues/608)

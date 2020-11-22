@@ -29,6 +29,7 @@ class VoodooCommand : CliktCommand(
         versionOption(GeneratedConstants.FULL_VERSION)
         subcommands(
 //            EvalScriptCommand(),
+            CreateCommand(),
             GenerateSchemaCommand(),
             BuildCommand(),
             ChangelogCommand(),

@@ -45,14 +45,14 @@ data class CurseComponent(
 //    override var projectName: String? = null,
     override var projectID: ProjectID = ProjectID.INVALID,
     override var fileID: FileID = FileID.INVALID,
-    override var useUrlTxt: Boolean = true,
+    override var useOriginalUrl: Boolean = true,
     override var skipFingerprintCheck: Boolean = false
 ) : CurseMutable
 
 @Serializable
 data class DirectComponent(
     override var url: String = "",
-    override var useUrlTxt: Boolean = true
+    override var useOriginalUrl: Boolean = true
 ) : DirectMutable
 
 @Serializable

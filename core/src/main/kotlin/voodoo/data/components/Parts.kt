@@ -66,7 +66,7 @@ interface CurseImmutable {
 //    val projectName: String?
     val projectID: ProjectID
     val fileID: FileID
-    val useUrlTxt: Boolean
+    val useOriginalUrl: Boolean
     val skipFingerprintCheck: Boolean
 }
 interface CurseMutable: CurseImmutable {
@@ -74,17 +74,17 @@ interface CurseMutable: CurseImmutable {
 //    override var projectName: String?
     override var projectID: ProjectID
     override var fileID: FileID
-    override var useUrlTxt: Boolean
+    override var useOriginalUrl: Boolean
     override var skipFingerprintCheck: Boolean
 }
 
 interface DirectImmutable {
     val url: String
-    val useUrlTxt: Boolean
+    val useOriginalUrl: Boolean
 }
 interface DirectMutable: DirectImmutable {
     override var url: String
-    override var useUrlTxt: Boolean
+    override var useOriginalUrl: Boolean
 }
 
 interface JenkinsImmutable {

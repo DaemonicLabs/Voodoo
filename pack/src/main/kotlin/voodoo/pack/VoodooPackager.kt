@@ -106,8 +106,8 @@ object VoodooPackager : AbstractPack("voodoo") {
                                 cacheDir
                             ) ?: return@async null
                             if (url != null
-                                && ((entry is LockEntry.Direct && entry.useUrlTxt) ||
-                                        (entry is LockEntry.Curse && entry.useUrlTxt))
+                                && ((entry is LockEntry.Direct && entry.useOriginalUrl) ||
+                                        (entry is LockEntry.Curse && entry.useOriginalUrl))
                             ) {
                                 val urlTxtFile = targetFolder.resolve(file.name + ".url.txt")
                                 urlTxtFile.writeText(url)

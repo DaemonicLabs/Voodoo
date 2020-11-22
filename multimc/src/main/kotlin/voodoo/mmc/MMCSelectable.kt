@@ -17,7 +17,7 @@ data class MMCSelectable(
                 lockEntry.displayName,
                 lockEntry.description,
                 lockEntry.optionalData?.selected ?: false,
-                lockEntry.optionalData?.skRecommendation
+                lockEntry.optionalData?.recommendation
             )
         }
     }

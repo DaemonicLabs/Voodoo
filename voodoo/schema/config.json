@@ -1,5 +1,5 @@
 {
-    "$schema": "schema/generators.schema.json",
+    "$schema": "schema/config.schema.json",
     "generators": {
         "Mod": {
             "type": "generator.curse",
@@ -36,6 +36,34 @@
         },
         "Fabric": {
             "type": "generator.fabric"
+        }
+    },
+    "overrides": {
+        "client": {
+            "type": "common",
+            "side": "CLIENT"
+        },
+        "server": {
+            "type": "common",
+            "side": "SERVER"
+        },
+        "optional": {
+            "type": "common",
+            "optional": {
+                "selected": false
+            }
+        },
+        "optionalDefault": {
+            "type": "common",
+            "optional": {
+                "selected": true
+            }
+        },
+        "optionalStarred": {
+            "type": "common",
+            "optional": {
+                "recommendation": "starred"
+            }
         }
     }
 }

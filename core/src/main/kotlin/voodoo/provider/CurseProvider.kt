@@ -77,7 +77,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
                 common = commonComponent,
                 projectID = projectID,
                 fileID = fileID,
-                useUrlTxt = entry.useUrlTxt,
+                useOriginalUrl = entry.useOriginalUrl,
                 skipFingerprintCheck = entry.skipFingerprintCheck
             )
         }
