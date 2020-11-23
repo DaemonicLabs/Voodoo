@@ -95,6 +95,7 @@ sealed class Entry: CommonMutable {
             logger.warn { "[$id] optionalData: $optionalData" }
         }
         val commonComponent = CommonLockComponent(
+            path = folder ?: "mods",
             name = name,
             fileName = fileName,
             side = side,
@@ -105,7 +106,6 @@ sealed class Entry: CommonMutable {
         // TODO: fix ugly hacks to make types match
         val lockEntry = block(commonComponent)
         lockEntry.changeId(id)
-        lockEntry.folder = File(folder ?: "mods")
         return lockEntry
     }
 }

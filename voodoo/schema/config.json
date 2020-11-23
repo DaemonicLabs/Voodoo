@@ -1,8 +1,7 @@
 {
-    "$schema": "schema/config.schema.json",
-    "generators": {
+    "$schema": "./schema/config.schema.json",
+    "curseforgeGenerators": {
         "Mod": {
-            "type": "generator.curse",
             "section": "MODS",
             "mcVersions": [
                 "1.12",
@@ -10,8 +9,7 @@
                 "1.12.2"
             ]
         },
-        "FabricMod": {
-            "type": "generator.curse",
+        "Fabric": {
             "section": "MODS",
             "categories": [
                 "Fabric"
@@ -21,21 +19,23 @@
                 "1.15.1",
                 "1.15.2"
             ]
-        },
+        }
+    },
+    "forgeGenerators": {
         "Forge_12_2": {
-            "type": "generator.forge",
             "mcVersions": [
                 "1.12.2"
             ]
         },
         "Forge_15_2": {
-            "type": "generator.forge",
             "mcVersions": [
                 "1.15.2"
             ]
-        },
+        }
+    },
+    "fabricGenerators": {
         "Fabric": {
-            "type": "generator.fabric"
+            "requireStable": true
         }
     },
     "overrides": {

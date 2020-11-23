@@ -1,126 +1,183 @@
 package voodoo.cli
 
-import MutableMDCContext
 import com.eyeem.watchadoin.Stopwatch
 import com.eyeem.watchadoin.saveAsHtml
 import com.eyeem.watchadoin.saveAsSvg
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
-import com.github.ajalt.clikt.core.subcommands
-import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.arguments.convert
-import com.github.ajalt.clikt.parameters.arguments.validate
-import com.github.ajalt.clikt.parameters.options.defaultLazy
-import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.types.file
+import com.github.ajalt.clikt.parameters.options.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
+import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import mu.withLoggingContext
-import org.slf4j.MDC
-import voodoo.VoodooTask
-import voodoo.data.ModloaderPattern
-import voodoo.data.curse.ProjectID
-import voodoo.data.nested.NestedEntry
-import voodoo.data.nested.NestedPack
-import voodoo.config.Autocompletions
-import voodoo.tome.ModlistGeneratorMarkdown
-import voodoo.tome.TomeEnv
+import voodoo.builder.Builder
+import voodoo.config.Configuration
+import voodoo.data.lock.LockPack
+import voodoo.pack.MetaPack
+import voodoo.pack.VersionPack
+import voodoo.util.VersionComparator
 import voodoo.util.json
 import java.io.File
+import java.lang.Exception
 
-class BuildCommand(): CliktCommand(
+class BuildCommand() : CliktCommand(
     name = "build",
     help = ""
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
-    val cliContext by requireObject<CLIContext>()
-    val packFile by argument(
-        "PACK_DEFINITION",
-        "pack .voodoo.json file"
-    ).file(mustExist = true, canBeFile = true, canBeDir = false, mustBeReadable = true, mustBeWritable = false, canBeSymlink = false)
-        .validate { file ->
-            require(file.endsWith(".voodoo.json")) { "filename must end with .voodoo.json" }
-        }
 
-    val idOption by option(
+    val cliContext by requireObject<CLIContext>()
+
+    val id by option(
         "--id",
         help = "pack id"
-    )
-
-    private fun processEntries(entry: NestedEntry) {
-        when(entry) {
-            is NestedEntry.Curse -> {
-                entry.projectName?.let { name ->
-                    val addonid = Autocompletions.curseforge[name]?.toIntOrNull()
-                    require( addonid != null) { "cannot find replacement for $name / ${Autocompletions.curseforge[name]}" }
-                    entry.curse.projectID = ProjectID(addonid)
-                    if(entry.name == null) {
-                        entry.name = name.substringAfterLast('/')
-                    }
-                }
-            }
-            else -> {}
+    ).required()
+        .validate {
+            require(it.isNotBlank()) { "id must not be blank" }
+            require(it.matches("""[\w_]+""".toRegex())) { "modpack id must not contain special characters" }
         }
 
-        entry.entries.forEach { (id, subEntry) ->
-            processEntries(subEntry)
+    val versionOptions by option(
+        "--version",
+        help = "build only specified versions"
+    ).multiple().validate { version ->
+        require(version.all { it.matches("^\\d+(?:\\.\\d+)+$".toRegex()) }) {
+            "all versions must match pattern '^\\d+(\\.\\d+)+\$' eg: 0.1 or 4.11.6 or 1.2.3.4 "
         }
     }
 
-    override fun run() = withLoggingContext("command" to commandName) {
+    val all by option("--all").flag("--newest", "--latest", default = false, defaultForHelp = "only $commandName newest version")
+    val buildMissing by option(
+        "--buildMissing",
+        help = "build old versions when lockfiles are missing"
+    ).flag("--skipMissing", default = true)
+    val rebuildFailing by option(
+        "--rebuildFailing",
+        help = "rebuild versions that failed to parse lockfiles, this might overwrite old files"
+    ).flag(default = false)
+
+    override fun run() = withLoggingContext("command" to commandName, "pack" to id) {
         runBlocking(MDCContext()) {
             val stopwatch = Stopwatch(commandName)
 
             val rootDir = cliContext.rootDir
 
-            val id = idOption ?: packFile.name.substringBeforeLast(".voodoo.json")
             require(id.isNotBlank()) { "id must not be blank" }
 
             stopwatch {
-                //            val id = packFile.name.substringBeforeLast(".voodoo.json")
-                //            val rootDir = packFile.parentFile
-                val nestedPack = json.decodeFromString(NestedPack.serializer(), packFile.readText())
 
-                // replace autocompleted strings
-                nestedPack.modloader.also { modloader ->
-                    nestedPack.modloader = when(modloader) {
-                        is ModloaderPattern.Fabric -> modloader.copy(
-                            intermediateMappingsVersion = Autocompletions.fabricIntermediaries[modloader.intermediateMappingsVersion] ?: modloader.intermediateMappingsVersion,
-                            loaderVersion = Autocompletions.fabricLoaders[modloader.loaderVersion] ?: modloader.loaderVersion,
-                            installerVersion = Autocompletions.fabricInstallers[modloader.installerVersion] ?: modloader.installerVersion
-                        )
-                        is ModloaderPattern.Forge -> modloader.copy(
-                            version = Autocompletions.forge[modloader.version] ?: modloader.version
-                        )
-                        else -> modloader
+                val config = Configuration.parse(rootDir = rootDir)
+
+                val baseDir = rootDir.resolve(id)
+
+//                    .forEach {
+//                        it.delete()
+//                    }
+
+                val metaPackFile = baseDir.resolve(MetaPack.FILENAME)
+                val metaPack = json.decodeFromString(MetaPack.serializer(), metaPackFile.readText())
+
+                val versionPacks = VersionPack.parseAll(baseDir = baseDir)
+                    .sortedWith(compareBy(VersionComparator, VersionPack::version))
+                    .let { versionPacks ->
+                        val latestVersion = versionPacks.last().version
+                        versionPacks.filter { versionPack ->
+                            when {
+                                // versionOptions is set
+                                versionOptions.isNotEmpty() -> {
+                                    // version matches
+                                    versionOptions.any { versionOption ->
+                                        VersionComparator.compare(versionOption, versionPack.version) == 0
+                                    }
+                                }
+                                // --all versions are getting rebuilt
+                                all -> return@filter true
+
+                                // --version is not set and latest version is getting built
+                                versionOptions.isEmpty() && versionPack.version == latestVersion -> return@filter true
+                                else -> {
+                                    val lockPackFile = LockPack.fileForVersion(version = versionPack.version, baseDir = baseDir)
+                                    when {
+                                        // build missing lockfiles
+                                        buildMissing && !lockPackFile.exists() -> true
+                                        // rebuild parse failures
+                                        rebuildFailing && lockPackFile.exists() -> {
+                                            try {
+                                                LockPack.parse(lockPackFile, rootDir)
+                                                // lockpack parsed successfully, can be skipped
+                                                false
+                                            } catch (e: Exception) {
+                                                e.printStackTrace()
+                                                // lockpack failed parsing, it will be rebuilt
+                                                true
+                                            }
+                                        }
+                                        else -> false
+                                    }
+                                }
+                            }
+
+                        }
                     }
+
+
+
+                val lockPacks = versionPacks
+                    .sortedWith(compareBy(VersionComparator, VersionPack::version))
+                    .map { versionPack ->
+                        withLoggingContext("version" to versionPack.version) {
+                            withContext(MDCContext()) {
+                                val modpack = versionPack.flatten(
+                                    rootDir = rootDir,
+                                    id = id,
+                                    overrides = config.overrides,
+                                    metaPack = metaPack
+                                )
+                                logger.debug { "modpack: $modpack" }
+                                logger.debug { "entrySet: ${modpack.entrySet}" }
+
+
+                                val lockPack = Builder.lock("build v${modpack.version}".watch, modpack)
+
+                                lockPack
+                            }
+                        }
+                    }
+
+                lockPacks.forEach { lockPack ->
+                    logger.info { "version: ${lockPack.version}" }
                 }
 
-                processEntries(nestedPack.root)
+//                val tomeEnv = TomeEnv(
+//                    rootDir.resolve("docs")
+//                ).apply {
+//                    add("modlist.md", ModlistGeneratorMarkdown)
+//                }
 
-                logger.info { "entries: ${nestedPack.root}" }
-
-
-                val tomeEnv = TomeEnv(
-                    rootDir.resolve("docs")
-                ).apply {
-                    add("modlist.md", ModlistGeneratorMarkdown)
-                }
-
-
-                VoodooTask.Build.execute(
-                    stopwatch = "buildTask".watch,
-                    id = id,
-                    nestedPack = nestedPack,
-                    tomeEnv = tomeEnv,
-                    rootFolder = rootDir
-                )
+//                    if (tomeEnv != null) {
+//                        val uploadDir = SharedFolders.UploadDir.get(id)
+//                        val rootDir = SharedFolders.RootDir.get().absoluteFile
+//
+//                        // TODO: merge tome into core
+//                        "tome".watch {
+//                            Tome.generate(this, lockPack, tomeEnv, uploadDir)
+//                        }
+//
+//                        // TODO: just generate meta info
+//
+//                        Diff.writeMetaInfo(
+//                            stopwatch = "writeMetaInfo".watch,
+//                            rootDir = rootDir.absoluteFile,
+//                            newPack = lockPack
+//                        )
+//                    }
+                //TODO: fold lockpacks
             }
 
-            val reportDir= File("reports").apply { mkdirs() }
+            val reportDir = File("reports").apply { mkdirs() }
             stopwatch.saveAsSvg(reportDir.resolve("${id}_build.report.svg"))
             stopwatch.saveAsHtml(reportDir.resolve("${id}_build.report.html"))
 

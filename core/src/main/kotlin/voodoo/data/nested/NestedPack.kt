@@ -17,7 +17,7 @@ import java.io.File
 @Serializable
 data class NestedPack(
     @SerialName("\$schema")
-    val schema: String = "./schema/nested.schema.json",
+    val schema: String = "../schema/nested.schema.json",
     /**
      * Minecraft Version
      */
@@ -57,7 +57,7 @@ data class NestedPack(
             mcVersion = mcVersion ?: throw IllegalStateException("mcVersion must be set for pack '$id'"),
             title = title,
             version = version,
-            icon = rootFolder.resolve(icon),
+            icon = icon,
             authors = authors,
             modloader = modloader,
             localDir = localDir,

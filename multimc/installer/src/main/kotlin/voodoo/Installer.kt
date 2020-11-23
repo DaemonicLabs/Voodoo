@@ -279,7 +279,9 @@ object Installer : KLogging() {
 //        }
         logger.info("modloader is ${modpack.modLoader}")
 
-        val json = Json { prettyPrint = true }
+        val json = Json {
+            prettyPrint = true
+        }
         val mapSerializer = MapSerializer(String.serializer(), Boolean.serializer())
         // read user input
         val featureJson = instanceDir.resolve("voodoo.features.json")
@@ -485,7 +487,11 @@ object Installer : KLogging() {
                 important = true
             )
         ) + modloaderComponents + mmcPack.components
-        mmcPackPath.writeText(json.encodeToString(MultiMCPack.serializer(), mmcPack))
+
+        val jsonWithDefaults = Json(json) {
+            encodeDefaults = true
+        }
+        mmcPackPath.writeText(jsonWithDefaults.encodeToString(MultiMCPack.serializer(), mmcPack))
 
         oldpackFile.createNewFile()
         oldpackFile.writeText(json.encodeToString(Manifest.serializer(), modpack))

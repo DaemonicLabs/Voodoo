@@ -74,7 +74,10 @@ Usage examples
 # generate json schema for autocompletion
 java -jar voodoo.jar generateSchema
 
-# builds a pack based on the recipe / definition
+# create a new pack
+java -jar voodoo.jar create pack --id newPack --mcVersion 1.16.2
+
+# builds a pack
 java -jar voodoo.jar build --id mypack
 
 # packages for upload
@@ -84,6 +87,38 @@ java -jar voodoo.jar pack --id mypack voodoo mmc-voodoo curse
 java -jar voodoo.jar launch multimc --id mypack
 
 ```
+
+bash and zsh autocomplete
+
+the autocompletions should be regenerated manually on voodoo update
+
+```
+# creating a alias
+alias voodoo='java -jar voodoo.jar'
+
+# generating autocompletion for bash
+_VOODOO_COMPLETE=bash voodoo > ~/voodoo-completion.sh
+source ~/voodoo-completion.sh
+
+# generating autocompletion for zsh
+_VOODOO_COMPLETE=zsh voodoo > ~/voodoo-completion.sh
+
+# bash example
+alias voodoo='java -jar voodoo.jar'
+_VOODOO_COMPLETE=bash voodoo > voodoo-autocomplete.sh
+source voodoo-autocomplete.sh
+
+```
+
+if you use a different alias then use the correct environment variable to generate completions
+the rules are
+
+- command capitalized
+- `-` replaced with `_`
+- with `_`
+- suffixed with `_COMPLETE`
+
+eg `invoke-voodoo` would be `_INVOKE_VOODOO_COMPLETE`
 
 Developing
 ----------

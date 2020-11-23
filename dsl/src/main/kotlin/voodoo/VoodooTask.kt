@@ -34,7 +34,7 @@ sealed class VoodooTask(open val key: String) {
             logger.debug { "modpack: $modpack" }
             logger.debug { "entrySet: ${modpack.entrySet}" }
 
-            val lockPack = Builder.build("build".watch, modpack, id = id)
+            val lockPack = Builder.lock("build".watch, modpack)
 
             if (tomeEnv != null) {
                 val uploadDir = SharedFolders.UploadDir.get(id)

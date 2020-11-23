@@ -1,0 +1,79 @@
+{
+    "$schema": "../schema/versionPack.schema.json",
+    "version": "0.0.2",
+    "mcVersion": "1.15.2",
+    "modloader": {
+        "type": "modloader.fabric",
+        "intermediateMappings": "1.15.2"
+    },
+    "packageConfiguration": {
+        "voodoo": {
+            "relativeSelfupdateUrl": "fabricPack_0.0.1.json"
+        }
+    },
+    "mods": {
+        "fabric-api": {
+            "type": "curse",
+            "name": "fabric-api",
+            "curseProperties": {
+                "projectID": 306612
+            }
+        },
+        "betternether": {
+            "type": "curse",
+            "name": "betternether",
+            "curseProperties": {
+                "projectID": 311377
+            }
+        },
+        "tab-inventory-fabric": {
+            "type": "curse",
+            "name": "tab-inventory-fabric",
+            "curseProperties": {
+                "projectID": 362943
+            }
+        },
+        "campanion": {
+            "type": "curse",
+            "name": "campanion",
+            "curseProperties": {
+                "projectID": 373138
+            }
+        },
+        "roughly-enough-items": {
+            "type": "curse",
+            "name": "roughly-enough-items",
+            "curseProperties": {
+                "projectID": 310111
+            }
+        },
+        "roughly-enough-resources": {
+            "type": "curse",
+            "name": "roughly-enough-resources",
+            "curseProperties": {
+                "projectID": 325625
+            }
+        },
+        "modmenu": {
+            "type": "curse",
+            "name": "modmenu",
+            "curseProperties": {
+                "projectID": 308702
+            }
+        },
+        "mouse-wheelie": {
+            "type": "curse",
+            "name": "mouse-wheelie",
+            "curseProperties": {
+                "projectID": 317514
+            }
+        },
+        "appleskin": {
+            "type": "curse",
+            "name": "appleskin",
+            "curseProperties": {
+                "projectID": 248787
+            }
+        }
+    }
+}

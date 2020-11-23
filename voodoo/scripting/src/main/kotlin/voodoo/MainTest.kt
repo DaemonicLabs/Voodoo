@@ -59,8 +59,9 @@ object MainTest {
             }
 
             pack {
+                uploadUrl = "https://nikky.moe/.mc/experimental/"
                 multimc {
-                    selfupdateUrl = "https://nikky.moe/.mc/experimental/fabricpack.json"
+                    relativeSelfupdateUrl = "fabricpack.json"
                 }
             }
 

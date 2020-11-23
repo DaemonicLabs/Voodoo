@@ -2,7 +2,7 @@ package voodoo.config
 
 import com.github.ricky12awesome.jss.encodeToSchema
 import voodoo.data.nested.NestedPack
-import voodoo.pack.ModpackInput
+import voodoo.pack.VersionPack
 import voodoo.util.json
 
 fun NestedPack.Companion.generateSchema() = json.encodeToSchema(serializer())
@@ -22,9 +22,9 @@ fun NestedPack.Companion.generateSchema() = json.encodeToSchema(serializer())
         Autocompletions.fabricInstallers.keys.joinToString(",") { "\"$it\"" }
     )
 
-fun ModpackInput.Companion.generateSchema(overrides: Set<String>) = json.encodeToSchema(serializer())
+fun VersionPack.Companion.generateSchema(overridesKeys: Set<String>) = json.encodeToSchema(serializer())
     .replace("\"replace_with_overrides\"",
-        overrides.joinToString(",") { "\"${it}\"" }
+        overridesKeys.joinToString(",") { "\"${it}\"" }
     )
     .replace("\"replace_with_curseforge_projects\"",
         Autocompletions.curseforge.keys.joinToString(",") { "\"$it\"" }

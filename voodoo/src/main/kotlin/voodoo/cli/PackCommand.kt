@@ -8,19 +8,22 @@ import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.arguments.validate
+import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.options.validate
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.file
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.*
 import kotlinx.coroutines.slf4j.MDCContext
-import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import mu.withLoggingContext
 import voodoo.Pack
 import voodoo.data.lock.LockPack
 import voodoo.pack.AbstractPack
+import voodoo.pack.VersionPack
 import voodoo.util.SharedFolders
+import voodoo.util.VersionComparator
 import java.io.File
 
 class PackCommand(): CliktCommand(
@@ -32,22 +35,17 @@ class PackCommand(): CliktCommand(
     }
     val cliContext by requireObject<CLIContext>()
 
-    val idOption by option(
+    val id by option(
         "--id",
         help = "pack id"
-    )
-
-    val lockPackFile by option(
-        "--input",
-        help = ".lock.pack.json file"
-    )
-        .file(mustExist = true, canBeFile = true, canBeDir = false, mustBeReadable = true, mustBeWritable = false, canBeSymlink = false)
-        .validate { file ->
-            require(file.endsWith(".lock.pack.json")) { "filename must end with .lock.pack.json" }
+    ).required()
+        .validate {
+            require(it.isNotBlank()) { "id must not be blank" }
+            require(it.matches("""[\w_]+""".toRegex())) { "modpack id must not contain special characters" }
         }
 
-    val packTargets by argument(
-        "FORMATS"
+    val packTargets by option(
+        "--target", "-t"
     ).choice(Pack.packMap)
         .multiple()
 
@@ -59,23 +57,34 @@ class PackCommand(): CliktCommand(
         runBlocking(MDCContext()) {
             val stopwatch = Stopwatch(commandName)
 
-            val id = idOption ?: lockPackFile?.name?.substringBeforeLast(".lock.pack.json") ?: error("either --id or --input must be set")
-
             val rootDir = cliContext.rootDir
+            val baseDir = rootDir.resolve(id)
 
             stopwatch {
+
+                val uploadDir = uploadDirOption ?: SharedFolders.UploadDir.get(id)
+
                 packTargets.toSet().forEach { packTarget ->
                     withLoggingContext("pack" to packTarget.id) {
                         withContext(MDCContext()) {
-                            val uploadDir = uploadDirOption ?: SharedFolders.UploadDir.get(id)
-                            val lockFile = lockPackFile ?: run {
-                                val lockFileName = "$id.lock.pack.json"
-                                rootDir.resolve(id).resolve(lockFileName)
+
+                            val versionPacks = VersionPack.parseAll(baseDir = baseDir)
+                                .sortedWith(compareBy(VersionComparator, VersionPack::version))
+
+                            coroutineScope {
+                                versionPacks.forEach { versionPack ->
+                                    withLoggingContext("version" to versionPack.version) {
+                                        launch(MDCContext() + CoroutineName("package-version-${versionPack.version}")) {
+                                            val lockFile = LockPack.fileForVersion(version = versionPack.version, baseDir = baseDir)
+
+                                            val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
+                                            // TODO: pass pack method (enum / object)
+                                            Pack.pack("pack-${packTarget.id}".watch, modpack, uploadDir, packTarget)
+                                        }
+                                    }
+                                }
                             }
 
-                            val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
-                            // TODO: pass pack method (enum / object)
-                            Pack.pack("pack-${packTarget.id}".watch, modpack, uploadDir, packTarget)
                         }
                     }
                 }

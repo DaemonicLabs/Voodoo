@@ -29,10 +29,10 @@ import kotlin.system.exitProcess
  * @author Nikky
  */
 object CurseProvider : ProviderBase("Curse Provider") {
-    private val resolved = Collections.synchronizedList(mutableListOf<String>())
+//    private val resolved = Collections.synchronizedList(mutableListOf<String>())
 
     override fun reset() {
-        resolved.clear()
+//        resolved.clear()
     }
 
     override suspend fun resolve(
@@ -43,19 +43,20 @@ object CurseProvider : ProviderBase("Curse Provider") {
         entry as Entry.Curse
         val (projectID, fileID, path) = findFile(entry, mcVersion)
 
-        synchronized(resolved) {
-            logger.info("resolved: ${resolved.count()} unique entries")
-            resolved += entry.id
-        }
+//        synchronized(resolved) {
+//            logger.info("resolved: ${resolved.count()} unique entries")
+//            resolved += entry.id
+//        }
         // TODO: move into appropriate place or remove
         //  this is currently just used to validate that there is no entries getting resolved multiple times
 
-        synchronized(resolved) {
-            val count = resolved.count { entry.id == it }
-            if (count > 1) {
-                throw IllegalStateException("duplicate effort '${entry.id}' entry counted: $count")
-            }
-        }
+        //FIXME: figure out how to detect duplicate work without globals
+//        synchronized(resolved) {
+//            val count = resolved.count { entry.id == it }
+//            if (count > 1) {
+//                throw IllegalStateException("duplicate effort '${entry.id}' entry counted: $count")
+//            }
+//        }
 
         resolveDependencies(projectID, fileID, entry, addEntry)
 

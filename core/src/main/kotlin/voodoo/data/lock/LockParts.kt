@@ -6,6 +6,7 @@ import voodoo.data.OptionalData
 import voodoo.data.Side
 
 interface CommonLockModule {
+    val path: String
     val name: String?
     val fileName: String?
     val side: Side
@@ -16,6 +17,7 @@ interface CommonLockModule {
 
 @Serializable
 data class CommonLockComponent(
+    override val path: String,
     override val name: String? = null,
     override val fileName: String? = null,
     override val side: Side = Side.BOTH,

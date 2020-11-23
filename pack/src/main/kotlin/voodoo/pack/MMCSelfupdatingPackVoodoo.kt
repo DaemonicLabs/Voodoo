@@ -15,7 +15,7 @@ import kotlin.system.exitProcess
 object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
     override val label = "MultiMC Pack"
 
-    override fun File.getOutputFolder(id: String): File = resolve("multimc-voodoo")
+    override fun File.getOutputFolder(id: String, version: String): File = resolve("multimc-voodoo")
 
     override suspend fun pack(
         stopwatch: Stopwatch,
@@ -27,7 +27,7 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
         val directories = Directories.get()
 
         val cacheDir = directories.cacheHome
-        val zipRootDir = cacheDir.resolve("MULTIMC").resolve(modpack.id)
+        val zipRootDir = cacheDir.resolve("MULTIMC").resolve(modpack.id).resolve(modpack.version)
         val instanceDir = zipRootDir.resolve(modpack.id)
         zipRootDir.deleteRecursively()
 
@@ -61,15 +61,10 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
         logger.info("created pack in $minecraftDir")
         logger.info("tmp dir: $instanceDir")
 
-        val selfupdateUrl = modpack.packOptions.multimcOptions.selfupdateUrl
-            ?: run {
-                modpack.packOptions.baseUrl?.let { baseUrl ->
-                    val skOutput = uploadBaseDir.getOutputFolder(modpack.id)
-                    val skPackFile = skOutput.resolve("${modpack.id}.json")
-                    val relativePath = skPackFile.relativeTo(uploadBaseDir).unixPath
-                    URI(baseUrl).resolve(relativePath).toASCIIString()
-                }
-            }
+        val selfupdateUrl = modpack.packOptions.uploadUrl?.let { uploadUrl ->
+            val relativeSelfupdateUrl = (modpack.packOptions.multimcOptions.relativeSelfupdateUrl ?: "${modpack.id}.json")
+            URI(uploadUrl).resolve(relativeSelfupdateUrl).toASCIIString()
+        }
         if (selfupdateUrl == null) {
             logger.error("selfupdateUrl in multimc options is not set")
             exitProcess(3)
@@ -85,7 +80,7 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
         )
 
         output.mkdirs()
-        val instanceZip = output.resolve(modpack.id + ".zip")
+        val instanceZip = output.resolve("${modpack.id}-${modpack.version}.zip")
 
         instanceZip.delete()
         packToZip(zipRootDir, instanceZip)

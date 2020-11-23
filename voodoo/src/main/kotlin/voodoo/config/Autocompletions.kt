@@ -16,7 +16,7 @@ object Autocompletions {
     private val logger = KotlinLogging.logger {}
 
     //    private val rootDir = SharedFolders.RootDir.get()
-    val rootDir by lazy {
+    private val rootDir by lazy {
         SharedFolders.RootDir.get().absoluteFile
     }
     private val configFile by lazy {
@@ -27,11 +27,11 @@ object Autocompletions {
     }
     private val serializer = MapSerializer(String.serializer(), String.serializer())
 
-    val curseforgeFile: File = cacheDir.resolve("curseforge.json")
-    val forgeFile: File = cacheDir.resolve("forge.json")
-    val fabricIntermediariesFile: File = cacheDir.resolve("fabric_intermediaries.json")
-    val fabricInstallersFile: File = cacheDir.resolve("fabric_installers.json")
-    val fabricLoadersFile: File = cacheDir.resolve("fabric_loaders.json")
+    private val curseforgeFile: File = cacheDir.resolve("curseforge.json")
+    private val forgeFile: File = cacheDir.resolve("forge.json")
+    private val fabricIntermediariesFile: File = cacheDir.resolve("fabric_intermediaries.json")
+    private val fabricInstallersFile: File = cacheDir.resolve("fabric_installers.json")
+    private val fabricLoadersFile: File = cacheDir.resolve("fabric_loaders.json")
 
     private val config by lazy {
         if (configFile.exists()) {
@@ -44,42 +44,39 @@ object Autocompletions {
         }
     }
 
-    private val generatorsMap by lazy {
-        config.generators
-    }
     val curseforge by lazy {
         curseforgeFile.takeIf { it.exists() }?.let {
             json.decodeFromString(serializer, it.readText())
         } ?: runBlocking(MDCContext()) {
-            generateCurse(generatorsMap.filterValueIsInstance())
+            generateCurse(config.curseforgeGenerators)
         }
     }
     val forge by lazy {
         forgeFile.takeIf { it.exists() }?.let {
             json.decodeFromString(serializer, it.readText())
         } ?: runBlocking(MDCContext()) {
-            generateForge(generatorsMap.filterValueIsInstance())
+            generateForge(config.forgeGenerators)
         }
     }
     val fabricIntermediaries by lazy {
         fabricIntermediariesFile.takeIf { it.exists() }?.let {
             json.decodeFromString(serializer, it.readText())
         } ?: runBlocking(MDCContext()) {
-            generateFabricIntermediaries(generatorsMap.filterValueIsInstance())
+            generateFabricIntermediaries(config.fabricGenerators)
         }
     }
     val fabricInstallers by lazy {
         fabricInstallersFile.takeIf { it.exists() }?.let {
             json.decodeFromString(serializer, it.readText())
         } ?: runBlocking(MDCContext()) {
-            generateFabricInstallers(generatorsMap.filterValueIsInstance())
+            generateFabricInstallers(config.fabricGenerators)
         }
     }
     val fabricLoaders by lazy {
         fabricLoadersFile.takeIf { it.exists() }?.let {
             json.decodeFromString(serializer, it.readText())
         } ?: runBlocking(MDCContext()) {
-            generateFabricLoaders(generatorsMap.filterValueIsInstance())
+            generateFabricLoaders(config.fabricGenerators)
         }
     }
 
@@ -154,47 +151,23 @@ object Autocompletions {
             )
         } else Configuration()
 
-        val generatorsMap = config.generators
-
-        val generatorsCurse = Autocompletions.generatorsMap.filterValueIsInstance<String, Generator.Curse>()
-        val generatorsForge = Autocompletions.generatorsMap.filterValueIsInstance<String, Generator.Forge>()
-        val generatorsFabric = Autocompletions.generatorsMap.filterValueIsInstance<String, Generator.Fabric>()
-
         coroutineScope {
             launch(MDCContext()) {
-                generateCurse(generatorsCurse)
+                generateCurse(config.curseforgeGenerators)
             }
             launch(MDCContext()) {
-                generateForge(generatorsForge)
+                generateForge(config.forgeGenerators)
             }
             launch(MDCContext()) {
-                generateFabricIntermediaries(generatorsFabric)
+                generateFabricIntermediaries(config.fabricGenerators)
             }
             launch(MDCContext()) {
-                generateFabricInstallers(generatorsFabric)
+                generateFabricInstallers(config.fabricGenerators)
             }
             launch(MDCContext()) {
-                generateFabricLoaders(generatorsFabric)
+                generateFabricLoaders(config.fabricGenerators)
             }
         }
-
-
-        val generatorsSchemaFile = rootDir.resolve("schema/config.schema.json").apply {
-            absoluteFile.parentFile.mkdirs()
-
-            writeText(
-                json.encodeToSchema(
-                    Configuration.serializer()
-                )
-            )
-        }
-
-        configFile.writeText(
-            json.encodeToString(
-                Configuration.serializer(),
-                config.copy(schema = generatorsSchemaFile.toRelativeUnixPath(configFile.parentFile))
-            )
-        )
     }
 
 }

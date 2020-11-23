@@ -2,11 +2,14 @@ package voodoo.cli
 
 import ch.qos.logback.classic.Level
 import com.github.ajalt.clikt.core.CliktCommand
+import com.github.ajalt.clikt.core.context
 import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.versionOption
+import com.github.ajalt.clikt.parameters.types.choice
+import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
 import mu.KotlinLogging
 import mu.withLoggingContext
@@ -16,8 +19,8 @@ import voodoo.util.SharedFolders
 import voodoo.voodoo.GeneratedConstants
 import java.io.File
 
-class VoodooCommand : CliktCommand(
-//    name = "Voodoo",
+class VoodooCommand(invocation: String = "voodoo") : CliktCommand(
+    name = invocation,
     help = "modpack building magic",
 //    allowMultipleSubcommands = true
 //    invokeWithoutSubcommand = true
@@ -49,9 +52,10 @@ class VoodooCommand : CliktCommand(
         "--log",
         help = "set loglevel"
         )
-        .convert {
-            Level.valueOf(it)
-        }
+        .choice(
+            listOf(Level.TRACE, Level.DEBUG, Level.INFO, Level.WARN, Level.ERROR).associateBy { it.levelStr },
+            ignoreCase = true
+        )
         .default(Level.INFO)
 
     val cliContext by lazy {

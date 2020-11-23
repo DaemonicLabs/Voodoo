@@ -1,54 +1,53 @@
 {
-    "$schema": "./schema/modpack.schema.json",
-    "title": "",
-    "version": "1.0.0",
-    "authors": [
-        "nikky"
-    ],
-    "mcVersion": "1.16.2",
-    "selfupdateUrl": "https://nikky.moe/.mc/experimental/fabricpack.json",
+    "$schema": "../schema/versionPack.schema.json",
+    "version": "0.0.1",
+    "mcVersion": "1.15.2",
     "modloader": {
         "type": "modloader.fabric",
-        "intermediateMappings": "Fabric/1.16.2"
+        "intermediateMappings": "Fabric/1.15.2"
     },
-    "icon": "icon.png",
+    "packageConfiguration": {
+        "voodoo": {
+            "relativeSelfupdateUrl": "fabricPack_0.0.1.json"
+        }
+    },
     "mods": {
         "fabric-api": {
             "type": "curse",
-            "projectName": "FabricMod/fabric-api"
+            "projectName": "Fabric/fabric-api"
         },
         "betternether": {
             "type": "curse",
-            "projectName": "FabricMod/betternether"
+            "projectName": "Fabric/betternether"
         },
         "tab-inventory-fabric": {
             "type": "curse",
-            "projectName": "FabricMod/tab-inventory-fabric"
+            "projectName": "Fabric/tab-inventory-fabric"
         },
         "campanion": {
             "type": "curse",
-            "projectName": "FabricMod/campanion"
+            "projectName": "Fabric/campanion"
         },
         "roughly-enough-items": {
             "type": "curse",
             "applyOverrides": [
                 "client"
             ],
-            "projectName": "FabricMod/roughly-enough-items"
+            "projectName": "Fabric/roughly-enough-items"
         },
         "roughly-enough-resources": {
             "type": "curse",
             "applyOverrides": [
                 "client"
             ],
-            "projectName": "FabricMod/roughly-enough-resources"
+            "projectName": "Fabric/roughly-enough-resources"
         },
         "modmenu": {
             "type": "curse",
             "applyOverrides": [
                 "client"
             ],
-            "projectName": "FabricMod/modmenu"
+            "projectName": "Fabric/modmenu"
         },
         "mouse-wheelie": {
             "type": "curse",
@@ -56,7 +55,7 @@
                 "client",
                 "optionalStarred"
             ],
-            "projectName": "FabricMod/mouse-wheelie"
+            "projectName": "Fabric/mouse-wheelie"
         },
         "appleskin": {
             "type": "curse",
@@ -64,7 +63,7 @@
                 "client",
                 "optionalStarred"
             ],
-            "projectName": "FabricMod/appleskin"
+            "projectName": "Fabric/appleskin"
         }
     }
 }

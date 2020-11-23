@@ -18,7 +18,7 @@ object ServerPack : AbstractPack("server") {
     override val label = "Server SK Pack"
 
     // TODO: use different output directory for server, add to plugin
-    override fun File.getOutputFolder(id: String): File = resolve("server").resolve(id)
+    override fun File.getOutputFolder(id: String, version: String): File = resolve("server").resolve("${id}_v$version")
 
     override suspend fun pack(
         stopwatch: Stopwatch,
@@ -42,7 +42,7 @@ object ServerPack : AbstractPack("server") {
             val targetLocalDir = output.resolve("local")
             modpack.localDir = targetLocalDir.toRelativeString(output)
             if (targetLocalDir.exists()) targetLocalDir.deleteRecursively()
-            modpack.entrySet.filterIsInstance(LockEntry.Local::class.java)
+            modpack.entries.filterIsInstance(LockEntry.Local::class.java)
                 .forEach { localEntry ->
                     val src = localDir.resolve(localEntry.fileSrc)
                     val target = targetLocalDir.resolve(localEntry.fileSrc)
@@ -53,7 +53,7 @@ object ServerPack : AbstractPack("server") {
 
         val sourceDir = modpack.sourceFolder // rootFolder.resolve(modpack.rootFolder).resolve(modpack.sourceDir)
         logger.info("mcDir: $sourceDir")
-        val targetSourceDir = output.resolve(modpack.id)
+        val targetSourceDir = output
         if (sourceDir.exists()) {
             if (targetSourceDir.exists()) targetSourceDir.deleteRecursively()
             targetSourceDir.mkdirs()
@@ -76,6 +76,7 @@ object ServerPack : AbstractPack("server") {
         }
 
         val packFile = targetSourceDir.resolve("${modpack.id}.lock.pack.json")
+        packFile.absoluteFile.parentFile.mkdirs()
         packFile.writeText(modpack.toJson(LockPack.serializer()))
 
         val relPackFile = packFile.relativeTo(output).unixPath

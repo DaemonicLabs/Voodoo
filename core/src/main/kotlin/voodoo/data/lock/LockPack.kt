@@ -7,7 +7,6 @@ import mu.KLogging
 import voodoo.data.DependencyType
 import voodoo.data.PackOptions
 import voodoo.data.PackReportData
-import voodoo.data.Side
 import voodoo.util.blankOr
 import voodoo.util.json
 import java.io.File
@@ -20,6 +19,7 @@ import java.io.File
 @Serializable
 data class LockPack(
     val id: String,
+    val srcPath: String,
     val mcVersion: String,
     var modloader: Modloader = Modloader.None,
     val title: String? = null,
@@ -27,16 +27,15 @@ data class LockPack(
     val icon: String = "icon.png",
     val authors: List<String> = emptyList(),
     var localDir: String = "local",
-    var packOptions: PackOptions = PackOptions()
+    var packOptions: PackOptions = PackOptions(),
+    val entries: Set<LockEntry> = setOf(),
 ) {
-
     companion object : KLogging() {
+        const val extension = "lock.pack.json"
 
-        fun parseFiles(srcDir: File) = srcDir.walkTopDown()
-            .filter {
-                it.isFile && it.name.endsWith(".lock.json")
-            }
-            .map { LockEntry.loadEntry(it, srcDir) to it }
+        fun fileForVersion(version: String, baseDir: File): File {
+            return baseDir.resolve("$version.$extension")
+        }
 
         fun parse(packFile: File, rootFolder: File): LockPack {
             if (!rootFolder.isAbsolute) {
@@ -44,90 +43,95 @@ data class LockPack(
             }
             val lockpack: LockPack = json.decodeFromString(LockPack.serializer(), packFile.readText())
             lockpack.rootFolder = rootFolder
-            lockpack.loadEntries()
+//            lockpack.entries.forEach {
+//                it.srcFolder = lockpack.sourceFolder
+//            }
             return lockpack
         }
     }
 
     @Transient
     lateinit var rootFolder: File
-//        private set
+
+    @Transient
+    private val baseFolder: File
+        get() = rootFolder.resolve(id)
 
     @Transient
     val sourceFolder: File
-        get() = rootFolder.resolve(id)
+        get() = baseFolder.resolve(srcPath)
     @Transient
     val localFolder: File
         get() = rootFolder.resolve(localDir)
     @Transient
     val iconFile: File
-        get() = rootFolder.resolve(icon)
+        get() = baseFolder.resolve(icon)
 
-    @Transient
-    val entrySet: MutableSet<LockEntry> = mutableSetOf()
+//    @Transient
+//    val entrySet: MutableSet<LockEntry> = mutableSetOf()
 
-    fun loadEntries(rootFolder: File = this.rootFolder) {
-        this.rootFolder = rootFolder
-        LockPack.parseFiles(sourceFolder)
-            .forEach { (lockEntry, file) ->
-                val relFile = file.relativeTo(sourceFolder)
-                lockEntry.folder = relFile.parentFile
-                lockEntry.parent = this
-                addOrMerge(lockEntry) { _, newEntry -> newEntry }
-            }
-    }
+//    fun loadEntries(rootFolder: File = this.rootFolder) {
+//        this.rootFolder = rootFolder
+//        LockPack.parseFiles(sourceFolder)
+//            .forEach { (lockEntry, file) ->
+//                val relFile = file.relativeTo(sourceFolder)
+//                lockEntry.folder = relFile.parentFile
+//                lockEntry.parent = this
+//                addOrMerge(lockEntry) { _, newEntry -> newEntry }
+//            }
+//    }
 
-    fun writeLockEntries() {
-        entrySet.forEach { lockEntry ->
-            val folder = sourceFolder.resolve(lockEntry.serialFile).absoluteFile.parentFile
-
-            val targetFolder = if (folder.toPath().none { it.toString() == "_CLIENT" || it.toString() == "_SERVER" }) {
-                when (lockEntry.side) {
-                    Side.CLIENT -> {
-                        folder.resolve("_CLIENT")
-                    }
-                    Side.SERVER -> {
-                        folder.resolve("_SERVER")
-                    }
-                    Side.BOTH -> folder
-                }
-            } else folder
-
-            targetFolder.mkdirs()
-            val targetFile = targetFolder.resolve(lockEntry.serialFile.name)
-
-            logger.info("saving: ${lockEntry.id} , file: $targetFile , entry: $lockEntry")
-
-            targetFile.writeText(lockEntry.serialize())
-        }
-    }
+//    fun writeLockEntries() {
+//        entrySet.forEach { lockEntry ->
+//            val folder = sourceFolder.resolve(lockEntry.serialFile).absoluteFile.parentFile
+//
+//            val targetFolder = if (folder.toPath().none { it.toString() == "_CLIENT" || it.toString() == "_SERVER" }) {
+//                when (lockEntry.side) {
+//                    Side.CLIENT -> {
+//                        folder.resolve("_CLIENT")
+//                    }
+//                    Side.SERVER -> {
+//                        folder.resolve("_SERVER")
+//                    }
+//                    Side.BOTH -> folder
+//                }
+//            } else folder
+//
+//            targetFolder.mkdirs()
+//            val targetFile = targetFolder.resolve(lockEntry.serialFile.name)
+//
+//            logger.info("saving: ${lockEntry.id} , file: $targetFile , entry: $lockEntry")
+//
+//            targetFile.writeText(lockEntry.serialize())
+//        }
+//    }
 
     fun title() = title.blankOr ?: id
 
-    fun findEntryById(id: String) = entrySet.find { it.id == id }
+    fun findEntryById(id: String) = entries.find { it.id == id }
 
-    operator fun MutableSet<LockEntry>.set(id: String, entry: LockEntry) {
-        findEntryById(id)?.let {
-            this -= it
-        }
-        this += entry
-    }
+//    operator fun MutableSet<LockEntry>.set(id: String, entry: LockEntry) {
+//        findEntryById(id)?.let {
+//            this -= it
+//        }
+//        this += entry
+//    }
 
-    fun addOrMerge(entry: LockEntry, mergeOp: (LockEntry, LockEntry) -> LockEntry): LockEntry {
-        val result = findEntryById(entry.id)?.let {
-            entrySet -= it
-            mergeOp(it, entry)
-        } ?: entry
-        entrySet += result
-        return result
-    }
+//    fun addOrMerge(entry: LockEntry, mergeOp: (LockEntry, LockEntry) -> LockEntry): LockEntry {
+//        val result = findEntryById(entry.id)?.let {
+//            entries -= it
+//            mergeOp(it, entry)
+//        } ?: entry
+//        entries += result
+//        return result
+//    }
 
     @Transient
     val optionalEntries
-        get() = entrySet.filter { it.optional }
+        get() = entries.filter { it.optional }
 
     fun getDependants(entryId: String, dependencyType: DependencyType): List<LockEntry> {
-        return entrySet.filter { it.dependencies[entryId] == dependencyType }
+        return entries.filter { it.dependencies[entryId] == dependencyType }
     }
 
 //    @Transient

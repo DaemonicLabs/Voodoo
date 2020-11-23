@@ -75,14 +75,10 @@ class EvalScriptCommand(
             SharedFolders.GeneratedSrcShared.resolver = { rootDir -> rootDir.resolve("generated_src") }
             val generatedSharedSrcDir = SharedFolders.GeneratedSrcShared.get()
 
-            val config = json.decodeFromString(Configuration.serializer(), rootDir.resolve("config.json").readText())
-
-            val generatorsCurse = config.generators.filterValueIsInstance<String, Generator.Curse>()
-            val generatorsForge = config.generators.filterValueIsInstance<String, Generator.Forge>()
-            val generatorsFabric = config.generators.filterValueIsInstance<String, Generator.Fabric>()
+            val config = Configuration.parse(rootDir = rootDir)
 
             runBlocking(MDCContext()) {
-                generatorsCurse.forEach { (name, generator) ->
+                config.curseforgeGenerators.forEach { (name, generator) ->
                     val file = Poet.generateCurseforgeKt(
                         name = name,
                         slugIdMap = Poet.requestSlugIdMap(
@@ -98,7 +94,7 @@ class EvalScriptCommand(
                     logger.info { "generated $file" }
                 }
 
-                generatorsForge.forEach { (name, generator) ->
+                config.forgeGenerators.forEach { (name, generator) ->
                     val file = Poet.generateForgeKt(
                         name = name,
                         mcVersionFilters = generator.mcVersions.toList(),
@@ -107,7 +103,7 @@ class EvalScriptCommand(
                     logger.info { "generated $file" }
                 }
 
-                generatorsFabric.forEach { (name, generator) ->
+                config.fabricGenerators.forEach { (name, generator) ->
                     val file = Poet.generateFabricKt(
                         name = name,
                         mcVersionFilters = generator.mcVersions.toList(),

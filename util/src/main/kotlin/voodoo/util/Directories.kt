@@ -96,7 +96,6 @@ interface Directories {
                     MacDirectories(appName.replace('/', '_'))
                 }
                 Platform.isWindows -> {
-                    Thread.dumpStack()
                     logger.info("Using Windows directories")
                     WindowsDirectories(appName.replace('/', '_').replace(" ", ""))
                 }

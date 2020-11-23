@@ -26,7 +26,7 @@ import voodoo.tome.TomeEnv
 import voodoo.util.Directories
 import voodoo.util.SharedFolders
 import voodoo.util.json
-import voodoo.voodoo.main.GeneratedConstants
+import voodoo.voodoo.scripting.GeneratedConstants
 import java.io.File
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.system.exitProcess

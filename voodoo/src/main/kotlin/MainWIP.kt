@@ -1,8 +1,8 @@
-import com.github.ricky12awesome.jss.dsl.ExperimentalJsonSchemaDSL
 import mu.KotlinLogging
 import voodoo.config.Configuration
 import voodoo.config.generateSchema
-import voodoo.pack.ModpackInput
+import voodoo.pack.MetaPack
+import voodoo.pack.VersionPack
 import voodoo.util.SharedFolders
 import voodoo.util.json
 import java.io.File
@@ -19,53 +19,32 @@ object MainWIP {
 
         val id = "test"
 
-//        val json = Json {
-//            prettyPrint = true
-//        }
-//        val nestedPackSchemaFile = rootDir.resolve("schema/nested_modpack.schema.json").also { file ->
-//            file.absoluteFile.parentFile.mkdirs()
-//            file.writeText(
-//                json.encodeToSchema(NestedPack.serializer())
-//            )
-//        }
+        val config = Configuration.parse(rootDir = rootDir)
 
-
-//        val yaml = Yaml (
-//            configuration = YamlConfiguration(
-//                polymorphismStyle = PolymorphismStyle.Tag,
-//                sequenceStyle = SequenceStyle.Flow
-//            )
-//        )
-//        val nestedCfg  = yaml.decodeFromString(
-//            NestedPack.serializer(),
-//            File("nested_test.nested_voodoo.yml").readText()
-//        )
-//        logger.info { nestedCfg }
-
-        val configFile = rootDir.resolve("config.json")
-        val config = json.decodeFromString(Configuration.serializer(), configFile.readText() )
-
+        val baseDir = rootDir.resolve(id)
+        val metaPackFile = baseDir.resolve(MetaPack.FILENAME)
+        val metaPack = json.decodeFromString(MetaPack.serializer(), metaPackFile.readText())
 
         rootDir.resolve("schema/modpack.schema.json").apply {
             absoluteFile.parentFile.mkdirs()
-            writeText(ModpackInput.generateSchema(setOf()))
+            writeText(VersionPack.generateSchema(setOf()))
         }
 
         val testFile = File("test.voodoo.json").absoluteFile
 
-        val modpackInput = json.decodeFromString(
-            ModpackInput.serializer(),
+        val versionPack = json.decodeFromString(
+            VersionPack.serializer(),
             testFile.readText()
         )
 
         rootDir.resolve("schema/modpack.schema.json").apply {
             absoluteFile.parentFile.mkdirs()
-            writeText(ModpackInput.generateSchema(config.overrides.keys))
+            writeText(VersionPack.generateSchema(config.overrides.keys))
         }
 
-        println("modpackInput: $modpackInput")
+        println("modpackInput: $versionPack")
 
-        val modpack = modpackInput.flatten(rootDir = rootDir, id = id, overrides = config.overrides)
+        val modpack = versionPack.flatten(rootDir = rootDir, id = id, overrides = config.overrides, metaPack = metaPack)
 
         println("modpack: $modpack")
 

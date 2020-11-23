@@ -27,17 +27,6 @@ suspend fun resolve(
     modPack: ModPack
 ) = stopwatch {
 
-    val srcDir = modPack.sourceFolder
-
-    // delete all lockfiles
-    srcDir.walkTopDown().asSequence()
-        .filter {
-            it.isFile && it.name.endsWith(".lock.json")
-        }
-        .forEach {
-            it.delete()
-        }
-
     // remove all transient entries
     modPack.lockEntrySet.removeIf { entry ->
         modPack.findEntryById(entry.id)?.transient ?: true

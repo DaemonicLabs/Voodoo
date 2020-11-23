@@ -63,9 +63,6 @@ object MultiMCTester : AbstractTester() {
         }
 
         for (src in minecraftSrcDir.walkTopDown()) {
-            if (src.name.endsWith(".lock.json")) continue
-            if (src.name.endsWith(".entry.json")) continue
-
             val relPath = src.relativeTo(minecraftSrcDir)
             val dstFile = minecraftDir.resolve(relPath)
 
@@ -142,10 +139,10 @@ object MultiMCTester : AbstractTester() {
 
         withPool { pool ->
             coroutineScope {
-                modpack.entrySet.forEach { entry ->
+                modpack.entries.forEach { entry ->
                     if (entry.side == Side.SERVER) return@forEach
                     launch(pool + CoroutineName(entry.id)) {
-                        val folder = minecraftDir.resolve(entry.folder).absoluteFile
+                        val folder = minecraftDir.resolve(entry.path).absoluteFile
 
                         if(modpack.isEntryOptional(entry.id)) {
                             val selectedSelf = optionals[entry.id] ?: true
@@ -187,7 +184,6 @@ object MultiMCTester : AbstractTester() {
         logger.info("clearing serverside files and deleting lockfiles")
         for (file in minecraftDir.walkTopDown()) {
             when {
-                file.name.endsWith(".lock.json") -> file.delete()
                 file.name == "_CLIENT" -> {
                     file.copyRecursively(file.parentFile, overwrite = true)
                     file.deleteRecursively()

@@ -31,7 +31,7 @@ object VoodooPackager : AbstractPack("voodoo") {
 
     override val label = "Voodoo Packager"
 
-    override fun File.getOutputFolder(id: String): File = resolve("voodoo")
+    override fun File.getOutputFolder(id: String, version: String): File = resolve("voodoo")
 
     override suspend fun pack(
         stopwatch: Stopwatch,
@@ -43,7 +43,7 @@ object VoodooPackager : AbstractPack("voodoo") {
         val directories = Directories.get()
 
         val cacheDir = directories.cacheHome
-        val workspaceDir = modpack.rootFolder.resolve("build").resolve("voodoo_workspace").absoluteFile
+        val workspaceDir = modpack.rootFolder.resolve("build").resolve("voodoo_workspace").resolve("${modpack.id}-${modpack.version}").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.id)
 
         val srcFolder = modpackDir.resolve("src")
@@ -58,8 +58,6 @@ object VoodooPackager : AbstractPack("voodoo") {
             logger.debug("cp -r $packSrc $srcFolder")
             packSrc.copyRecursively(srcFolder, overwrite = true)
             srcFolder.walkBottomUp().forEach {
-                if (it.name.endsWith(".entry.json") || it.name.endsWith(".lock.json") || it.name.endsWith(".lock.pack.json"))
-                    it.delete()
                 if (it.isDirectory && it.listFiles().isEmpty()) {
                     it.delete()
                 }
@@ -93,11 +91,11 @@ object VoodooPackager : AbstractPack("voodoo") {
 
                 // download entries
                 val targetFiles = "download entries".watch {
-                    val deferredFiles: List<Deferred<Pair<String, File>?>> = modpack.entrySet.map { entry ->
+                    val deferredFiles: List<Deferred<Pair<String, File>?>> = modpack.entries.map { entry ->
                         async(context = pool + CoroutineName("download-${entry.id}")) {
                             val provider = Providers[entry.provider]
 
-                            val targetFolder = srcFolder.resolve(entry.serialFile).parentFile
+                            val targetFolder = srcFolder.resolve(entry.path)
 
                             val (url, file) = provider.download(
                                 "download-${entry.id}".watch,
@@ -127,7 +125,7 @@ object VoodooPackager : AbstractPack("voodoo") {
                 val features = mutableListOf<ExtendedFeaturePattern>()
 
                 "resolve feature dep".watch {
-                    for (entry in modpack.entrySet) {
+                    for (entry in modpack.entries) {
                         resolveFeatureDependencies(
                             "${entry.id}-resolveFeatureDep".watch,
                             modpack,
@@ -152,7 +150,7 @@ object VoodooPackager : AbstractPack("voodoo") {
                             feature.entries += dependencies.asSequence().filter { entry ->
                                 logger.debug("  testing ${entry.id}")
                                 // find all other entries that depend on this dependency
-                                val dependants = modpack.entrySet.filter { otherEntry ->
+                                val dependants = modpack.entries.filter { otherEntry ->
                                     otherEntry.dependencies.filterValues { it == DependencyType.REQUIRED }.keys.any {
                                         it == entry.id
                                     }
@@ -215,16 +213,17 @@ object VoodooPackager : AbstractPack("voodoo") {
                     deferredPatterns.awaitAll()
                 }
 
-                // load from experimental options
-                val thumb = modpack.packOptions.thumbnail
-                    ?: modpack.packOptions.baseUrl?.let { baseUrl ->
-                        modpack.iconFile.takeIf { it.exists() }?.let { iconFile ->
-                            val targetFile = output.resolve("icon").resolve(iconFile.name)
-                            iconFile.copyTo(targetFile, overwrite = true)
-                            val relativePath = targetFile.relativeTo(uploadBaseDir).unixPath
-                            URI(baseUrl).resolve(relativePath).toASCIIString()
-                        }
-                    }
+                //TODO: redo thumbnail config and add to voodoo format
+//                // load from voodoo options
+//                val thumb = modpack.packOptions.thumbnail
+//                    ?: modpack.packOptions.uploadUrl?.let { baseUrl ->
+//                        modpack.iconFile.takeIf { it.exists() }?.let { iconFile ->
+//                            val targetFile = output.resolve("icon").resolve(iconFile.name)
+//                            iconFile.copyTo(targetFile, overwrite = true)
+//                            val relativePath = targetFile.relativeTo(uploadBaseDir).unixPath
+//                            URI(baseUrl).resolve(relativePath).toASCIIString()
+//                        }
+//                    }
 
                 //TODO: figure out icon url, and server url
 
@@ -254,7 +253,7 @@ object VoodooPackager : AbstractPack("voodoo") {
                     PackageBuilder.build(
                         inputPath = modpackDir,
                         outputPath = output,
-                        modpackId = modpack.id,
+                        modpackId = "${modpack.id}_${modpack.version}",
                         installerLocation = installer.toRelativeString(output).replace('\\', '/'),
                         modpackTitle = modpack.title ?: modpack.id,
                         modpackVersion = uniqueVersion,
@@ -280,7 +279,7 @@ object VoodooPackager : AbstractPack("voodoo") {
                 val packFragment = packages.packages.find { it.name == modpack.id }
                     ?: SkPackageFragment(
                         title = modpack.title.blankOr ?: "",
-                        name = modpack.id,
+                        name = "${modpack.id}_${modpack.version}",
                         version = uniqueVersion,
                         location = "${modpack.id}.json"
                     ).apply { packages.packages += this }

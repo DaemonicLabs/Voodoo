@@ -17,13 +17,18 @@
 
 ## version listing
 
-file in multimc instance to choose version
+`build` command: creates `$version.lock.pack.json` including lock-entries
+`package` picks all `.lock.pack.json` files, sorts by semver
+
+add `packageThis=false` to versions that should be used for changelog purposes but not be published
+configure between `rollingRelease`/`autoUpdate` and ability to choose version in modpack.meta.json
+
+
+voodoo-format needs to handle version listing
+
+marker file in multimc instance to choose version (picked once by user)
 
 popup allows user to pick version
-
-keep track of all versions in the pack src in `versions.json` or similar
-
-tasks to modify versions.json
 
 
 TODO: add changelogs/docs to the format manifest and upload

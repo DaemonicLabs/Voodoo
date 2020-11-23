@@ -137,7 +137,7 @@ data class PackDiff(
         }
 
         fun writeEntryMetaInformation(newMeta: File, pack: LockPack): Map<String, MutableMap<EntryReportData, String>> {
-            val reportMap = pack.entrySet.sortedBy {
+            val reportMap = pack.entries.sortedBy {
                 it.displayName.toLowerCase()
             }.associate { entry ->
                 val provider = Providers[entry.provider]

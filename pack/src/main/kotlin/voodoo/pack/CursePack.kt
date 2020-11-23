@@ -31,7 +31,7 @@ import java.io.File
 object CursePack : AbstractPack("curse") {
     override val label = "Curse Pack"
 
-    override fun File.getOutputFolder(id: String): File = resolve("curse")
+    override fun File.getOutputFolder(id: String, version: String): File = resolve("curse")
 
     override suspend fun pack(
         stopwatch: Stopwatch,
@@ -87,13 +87,13 @@ object CursePack : AbstractPack("curse") {
 //                val curseModsChannel = Channel<CurseFile>(Channel.CONFLATED)
 
                 // download entries
-                for (entry in modpack.entrySet) {
+                for (entry in modpack.entries) {
                     if (entry.side == Side.SERVER) continue
                     if (entry is LockEntry.Noop) continue
                     jobs += "install_${entry.id}" to async<CurseFile?>(context = coroutineContext + CoroutineName("install_${entry.id}") + pool) {
                         "install_${entry.id}".watch {
                             logger.info("starting job: install '${entry.id}' entry: $entry")
-                            val targetFolder = srcFolder.resolve(entry.serialFile).absoluteFile.parentFile
+                            val targetFolder = srcFolder.resolve(entry.path).absoluteFile.parentFile
                             val required = !modpack.isEntryOptional(entry.id)
 
                             logger.debug { "required: $required" }
@@ -149,7 +149,7 @@ object CursePack : AbstractPack("curse") {
                 createHTML().html {
                     body {
                         ul {
-                            for (entry in modpack.entrySet.sortedBy { it.displayName.toLowerCase() }) {
+                            for (entry in modpack.entries.sortedBy { it.displayName.toLowerCase() }) {
                                 val provider = Providers[entry.provider]
                                 if (entry.side == Side.SERVER) {
                                     continue

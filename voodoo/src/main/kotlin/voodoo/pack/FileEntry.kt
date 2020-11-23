@@ -5,14 +5,11 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import voodoo.data.Side
 import voodoo.data.components.*
-import voodoo.data.curse.FileID
-import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
-import voodoo.data.curse.ProjectID
 import voodoo.data.flat.Entry
 
 @Serializable
-sealed class EntryInput(
+sealed class FileEntry(
 //    @JsonSchema.Definition("entry.applyOverrides")
     @JsonSchema.StringEnum(["replace_with_overrides"])
     val applyOverrides: List<String> = listOf(),
@@ -90,7 +87,7 @@ sealed class EntryInput(
         )
     }
 
-    abstract fun applyTag(tag: EntryOverride): EntryInput
+    abstract fun applyTag(tag: EntryOverride): FileEntry
     abstract fun toEntry(id: String): Entry
 
     @Serializable
@@ -100,7 +97,7 @@ sealed class EntryInput(
         val projectName: String? = null,
         @SerialName("curseProperties")
         val curse: CurseComponent = CurseComponent(),
-    ) : EntryInput() {
+    ) : FileEntry() {
         override fun applyTag(tag: EntryOverride): Curse {
             return when(tag) {
                 is EntryOverride.Curse -> copy(
@@ -129,7 +126,7 @@ sealed class EntryInput(
     data class Direct(
         @SerialName("directProperties")
         val direct: DirectComponent = DirectComponent(),
-    ) : EntryInput() {
+    ) : FileEntry() {
         override fun applyTag(tag: EntryOverride): Direct {
             return when(tag) {
                 is EntryOverride.Direct -> copy(
@@ -158,7 +155,7 @@ sealed class EntryInput(
     data class Jenkins(
         @SerialName("jenkinsProperties")
         val jenkins: JenkinsComponent = JenkinsComponent(),
-    ) : EntryInput() {
+    ) : FileEntry() {
         override fun applyTag(tag: EntryOverride): Jenkins {
             return when(tag) {
                 is EntryOverride.Jenkins -> copy(
@@ -187,7 +184,7 @@ sealed class EntryInput(
     data class Local(
         @SerialName("localProperties")
         val local: LocalComponent = LocalComponent(),
-    ) : EntryInput() {
+    ) : FileEntry() {
         override fun applyTag(tag: EntryOverride): Local {
             return when(tag) {
                 is EntryOverride.Local -> copy(
@@ -211,7 +208,7 @@ sealed class EntryInput(
 
     @Serializable
     @SerialName("noop")
-    class Noop() : EntryInput() {
+    class Noop() : FileEntry() {
         override fun applyTag(tag: EntryOverride): Noop {
             return when(tag) {
                 is EntryOverride.Common -> this.apply {

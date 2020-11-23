@@ -232,13 +232,11 @@ object Diff : KLogging() {
         if (ShellUtil.isInPath("diff")) {
             oldSource.walkBottomUp().forEach {
                 when {
-                    it.name.endsWith(".lock.json") -> it.delete()
                     it.name.endsWith(".lock.pack.json") -> it.delete()
                 }
             }
             newSource.walkBottomUp().forEach {
                 when {
-                    it.name.endsWith(".lock.json") -> it.delete()
                     it.name.endsWith(".lock.pack.json") -> it.delete()
                 }
             }

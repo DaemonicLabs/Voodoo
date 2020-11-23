@@ -35,7 +35,7 @@ class ChangelogCommand(
         "pack .voodoo.json file"
     ).file(mustExist = true, canBeFile = true, canBeDir = false, mustBeReadable = true, mustBeWritable = false, canBeSymlink = false)
         .validate { file ->
-            require(file.endsWith(".voodoo.json")) { "filename must end with .voodoo.json" }
+            require(file.name.endsWith(".voodoo.json")) { "filename must end with .voodoo.json" }
         }
 
     val id by option(

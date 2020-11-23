@@ -52,8 +52,6 @@ object Server {
 
             serverDir.walkBottomUp().forEach { file ->
                 when {
-                    file.name.endsWith(".entry.json") -> file.delete()
-                    file.name.endsWith(".lock.json") -> file.delete()
                     file.name.endsWith(".lock.pack.json") -> file.delete()
                     file.isDirectory && file.listFiles()!!.isEmpty() -> file.delete()
                 }
@@ -74,11 +72,11 @@ object Server {
 
         withPool { pool ->
             coroutineScope {
-                for (entry in modpack.entrySet) {
+                for (entry in modpack.entries) {
                     if (entry.side == Side.CLIENT) continue
                     launch(context = pool + CoroutineName("job-${entry.id}")) {
                         val provider = Providers[entry.provider]
-                        val targetFolder = serverDir.resolve(entry.serialFile).absoluteFile.parentFile
+                        val targetFolder = serverDir.resolve(entry.path).absoluteFile
                         logger.info("downloading to - ${targetFolder.path}")
                         provider.download(
                             stopwatch = "download-${entry.id}".watch,

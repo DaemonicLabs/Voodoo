@@ -48,4 +48,4 @@ jobs:
          gzip: folders
          files: >
            voodoo-${{ env.VERSION }}.jar:voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar
-           voodoo-with-scripting-${{ env.VERSION }}.jar:voodoo/main/build/libs/voodoo-main-${{ env.VERSION }}-all.jar
+           voodoo-scripting-${{ env.VERSION }}.jar:voodoo/scripting/build/libs/voodoo-scripting-${{ env.VERSION }}-all.jar

@@ -1,5 +1,6 @@
 package voodoo.mmc.data
 
+import kotlinx.serialization.Required
 import kotlinx.serialization.Serializable
 
 /**

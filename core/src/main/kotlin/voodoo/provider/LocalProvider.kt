@@ -19,7 +19,7 @@ object LocalProvider : ProviderBase("Local Provider") {
         addEntry: SendChannel<Pair<Entry, String>>
     ): LockEntry {
         entry as Entry.Local
-        return entry.lock {commonComponent ->
+        return entry.lock { commonComponent ->
             LockEntry.Local(
                 common = commonComponent,
                 fileSrc = entry.fileSrc

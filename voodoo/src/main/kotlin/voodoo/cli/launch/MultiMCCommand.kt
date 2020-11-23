@@ -22,8 +22,10 @@ import voodoo.VoodooTask
 import voodoo.cli.CLIContext
 import voodoo.data.lock.LockPack
 import voodoo.pack.AbstractPack
+import voodoo.pack.VersionPack
 import voodoo.tester.MultiMCTester
 import voodoo.util.SharedFolders
+import voodoo.util.VersionComparator
 import java.io.File
 
 class MultiMCCommand(): CliktCommand(
@@ -40,6 +42,15 @@ class MultiMCCommand(): CliktCommand(
         help = "pack id"
     ).required()
 
+    val versionOption by option(
+        "--version",
+        help = "build only specified versions"
+    ).validate { version ->
+        require(version.matches("^\\d+(?:\\.\\d+)+$".toRegex())) {
+            "all versions must match pattern '^\\d+(\\.\\d+)+\$' eg: 0.1 or 4.11.6 or 1.2.3.4 "
+        }
+    }
+
     val clean by option("--clean").flag(default = false)
 
     val uploadDirOption by option("--uploadDir")
@@ -51,11 +62,22 @@ class MultiMCCommand(): CliktCommand(
 
             //TODO: look up rootDir based on lockpack input file
             val rootDir = cliContext.rootDir
-            stopwatch {
-                val lockFileName = "$id.lock.pack.json"
-                val lockFile = rootDir.resolve(id).resolve(lockFileName)
+            val baseDir = rootDir.resolve(id)
 
-                val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
+            stopwatch {
+                val versionPacks = VersionPack.parseAll(baseDir = baseDir)
+                    .sortedWith(compareBy(VersionComparator, VersionPack::version))
+
+                val versionOption = versionOption
+                val version = if(versionOption != null) {
+                    versionPacks.firstOrNull { VersionComparator.compare(it.version, versionOption) == 0 }?.version
+                        ?: error("$versionOption is not available, existing versions are: ${versionPacks.map { it.version }}")
+                } else {
+                    versionPacks.last().version
+                }
+
+                val lockFile = LockPack.fileForVersion(version = version, baseDir = baseDir)
+                val modpack = LockPack.parse(lockFile, rootDir)
 
                 MultiMCTester.execute("launch-multimc".watch, modpack = modpack, clean = clean)
             }

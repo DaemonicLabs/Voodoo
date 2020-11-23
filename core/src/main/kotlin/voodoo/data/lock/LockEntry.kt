@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
 import mu.KLogging
+import mu.KotlinLogging
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.provider.*
@@ -24,7 +25,7 @@ sealed class LockEntry : CommonLockModule {
     @SerialName("curse")
     data class Curse(
         @Transient override var _id: String = "",
-        val common: CommonLockComponent = CommonLockComponent(),
+        val common: CommonLockComponent,
         val projectID: ProjectID = ProjectID.INVALID,
         val fileID: FileID = FileID.INVALID,
         val useOriginalUrl: Boolean = true,
@@ -40,7 +41,7 @@ sealed class LockEntry : CommonLockModule {
     @SerialName("direct")
     data class Direct(
         @Transient override var _id: String = "",
-        val common: CommonLockComponent = CommonLockComponent(),
+        val common: CommonLockComponent,
         val url: String = "",
         val useOriginalUrl: Boolean = true
     ) : LockEntry(), CommonLockModule by common {
@@ -54,7 +55,7 @@ sealed class LockEntry : CommonLockModule {
     @SerialName("jenkins")
     data class Jenkins(
         @Transient override var _id: String = "",
-        val common: CommonLockComponent = CommonLockComponent(),
+        val common: CommonLockComponent,
         val jenkinsUrl: String = "",
         val job: String = "",
         val buildNumber: Int = -1,
@@ -70,7 +71,7 @@ sealed class LockEntry : CommonLockModule {
     @SerialName("local")
     data class Local(
         @Transient override var _id: String = "",
-        val common: CommonLockComponent = CommonLockComponent(),
+        val common: CommonLockComponent,
         var fileSrc: String = ""
     ) : LockEntry(), CommonLockModule by common {
         override val provider = LocalProvider.id
@@ -83,7 +84,7 @@ sealed class LockEntry : CommonLockModule {
     @SerialName("noop")
     data class Noop(
         @Transient override var _id: String = "",
-        val common: CommonLockComponent = CommonLockComponent()
+        val common: CommonLockComponent
     ) : LockEntry(), CommonLockModule by common {
         override val provider = NoopProvider.id
         init {
@@ -95,7 +96,7 @@ sealed class LockEntry : CommonLockModule {
 //    @Transient
 //    lateinit var idField: String // id might not always match the filename
 
-    open fun changeId(value: String) {
+    fun changeId(value: String) {
         require(!value.contains("[^\\w-]+".toRegex())) { "id: '$value' is not cleaned up properly, must not contain invalid characters" }
         _id = value
     }
@@ -119,24 +120,19 @@ sealed class LockEntry : CommonLockModule {
     @Transient
     var optional: Boolean = false // optionalData != null
 
-    /**
-     * relative to src folder
-     */
-    @Transient
-    val serialFile: File
-        get() {
-            return folder.resolve("$id.lock.json")
-        }
-    @Transient
-    private lateinit var folderField: File
+//    /**
+//     * relative to src folder
+//     */
+//    @Transient
+//    val serialFile: File
+//        get() {
+//            return folder.resolve("$id.lock.json")
+//        }
 
-    @Transient
-    var folder: File
-        set(value) {
-            require(!value.isRooted) { "folder: $value must be relative" }
-            folderField = value
-        }
-        get() = folderField
+//    @Transient
+//    lateinit var srcFolder: File
+
+//P
 
     fun provider(): ProviderBase = Providers[provider]
 
@@ -162,56 +158,8 @@ sealed class LockEntry : CommonLockModule {
 //
 //    fun isLocal(): Boolean = provider == LocalProvider.id
 
-    fun serialize(): String {
-        val jsonString = json.encodeToString(LockEntry.serializer(), this)
-        logger.debug { "serializing '$this'" }
-        logger.debug { " -> " }
-        logger.debug { "$jsonString" }
-        return jsonString
-    }
-
     //    @Serializer(forClass = LockEntry::class)
-    companion object : KLogging() {
-        fun loadEntry(file: File, srcDir: File): LockEntry {
-            logger.debug("parsing: $file")
-            return try {
-                val lockEntry: LockEntry = json.decodeFromString(LockEntry.serializer(), file.readText())
-                lockEntry.folder = file.parentFile.relativeTo(srcDir)
-                lockEntry.changeId(file.name.substringBefore(".lock.json"))
-                lockEntry
-            } catch (e: SerializationException) {
-                logger.error("cannot read: ${file.path}")
-                logger.error { file.readText() }
-                e.printStackTrace()
-                throw e
-            }
-        }
-
-//        fun install(builder: SerializersModuleBuilder) {
-//            builder.polymorphic<LockEntry> {
-//                subclass(Curse.serializer())
-//                subclass(Direct.serializer())
-//                subclass(Jenkins.serializer())
-//                subclass(Local.serializer())
-//                default {
-//
-//                }
-//            }
-//        }
-    }
-}
-
-object LockEntrySerializer : JsonTransformingSerializer<LockEntry>(LockEntry.serializer()) {
-    override fun transformDeserialize(element: JsonElement): JsonElement {
-        val newType = when(val type = element.jsonObject.getValue("type").jsonPrimitive.content) {
-            "voodoo.data.lock.LockEntry.Curse" -> "curse"
-            "voodoo.data.lock.LockEntry.Direct" -> "direct"
-            "voodoo.data.lock.LockEntry.Jenkins" -> "jenkins"
-            "voodoo.data.lock.LockEntry.Local" -> "local"
-            else -> type
-        }
-        val mutableEntries = element.jsonObject.toMutableMap()
-        mutableEntries["type"] = JsonPrimitive(newType)
-        return JsonObject(element.jsonObject + mutableEntries).also { println(it) }
+    companion object {
+        private val logger = KotlinLogging.logger {}
     }
 }

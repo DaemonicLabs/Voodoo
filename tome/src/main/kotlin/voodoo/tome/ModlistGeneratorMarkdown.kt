@@ -3,7 +3,6 @@ package voodoo.tome
 import com.eyeem.watchadoin.Stopwatch
 import voodoo.Tome
 import voodoo.Tome.report
-import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.markdownTable
@@ -22,7 +21,7 @@ object ModlistGeneratorMarkdown : TomeGenerator() {
             append(lockPack.report(targetFolder))
             append("\n")
 
-            lockPack.entrySet.sortedBy { it.displayName.toLowerCase() }.forEach { entry ->
+            lockPack.entries.sortedBy { it.displayName.toLowerCase() }.forEach { entry ->
                 "${entry.id}-report".watch {
                     val provider = Providers[entry.provider]
                     append("\n\n")

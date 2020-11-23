@@ -49,7 +49,7 @@ rootProject.name = "voodoo-parent"
 
 includeBuild("buildUtil")
 include(":voodoo")
-include(":voodoo:main")
+include(":voodoo:scripting")
 include(":core")
 include(":dsl")
 include(":format", ":format:packager")

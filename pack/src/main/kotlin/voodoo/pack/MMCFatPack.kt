@@ -22,7 +22,7 @@ import java.io.File
 object MMCFatPack : AbstractPack("mmc-fat") {
     override val label = "MultiMC Pack (frozen pack)"
 
-    override fun File.getOutputFolder(id: String): File = resolve("multimc-fat")
+    override fun File.getOutputFolder(id: String, version: String): File = resolve("multimc-fat")
 
     override suspend fun pack(
         stopwatch: Stopwatch,
@@ -34,7 +34,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
         val directories = Directories.get()
 
         val cacheDir = directories.cacheHome
-        val zipRootDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id)
+        val zipRootDir = cacheDir.resolve("MMC_FAT").resolve(modpack.id).resolve(modpack.version)
         val instanceDir = zipRootDir.resolve(modpack.id)
         val title = modpack.title.blankOr ?: modpack.id
         zipRootDir.deleteRecursively()
@@ -108,11 +108,11 @@ object MMCFatPack : AbstractPack("mmc-fat") {
 
         withPool { pool ->
             coroutineScope {
-                for (entry in modpack.entrySet) {
+                for (entry in modpack.entries) {
                     if (entry.side == Side.SERVER) continue
 
                     launch(context = coroutineContext + pool) {
-                        val folder = minecraftDir.resolve(entry.serialFile).absoluteFile.parentFile
+                        val folder = minecraftDir.resolve(entry.path).absoluteFile
 
                         val matchedOptioalsList = if(modpack.isEntryOptional(entry.id)) {
                             val selectedSelf = optionals[entry.id] ?: true
@@ -156,7 +156,6 @@ object MMCFatPack : AbstractPack("mmc-fat") {
         logger.info { "clearing serverside files and deleting lockfiles" }
         for (file in minecraftDir.walkTopDown()) {
             when {
-                file.name.endsWith(".lock.json") -> file.delete()
                 file.name == "_CLIENT" -> {
                     file.copyRecursively(file.parentFile, overwrite = true)
                     file.deleteRecursively()
@@ -168,7 +167,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
         }
 
         output.mkdirs()
-        val instanceZip = output.resolve(modpack.id + ".zip")
+        val instanceZip = output.resolve("${modpack.id}-${modpack.version}.zip")
 
         instanceZip.delete()
         packToZip(zipRootDir, instanceZip)

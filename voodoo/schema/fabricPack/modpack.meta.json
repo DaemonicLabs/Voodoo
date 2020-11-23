@@ -1,0 +1,8 @@
+{
+  "$schema": "../schema/metaPack.schema.json",
+  "authors": [
+    "NikkyAi"
+  ],
+  "icon": "icon_fabricPack.png",
+  "uploadBaseUrl": "https://nikky.moe/.mc/experimental/fabric"
+}

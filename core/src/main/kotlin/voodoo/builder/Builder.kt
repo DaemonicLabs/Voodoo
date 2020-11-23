@@ -20,14 +20,12 @@ object Builder : KLogging() {
      * @param noUpdate
      * @param entriesFilter only updates the entries with the specified ids
      */
-
-    suspend fun build(
+    suspend fun lock(
         stopwatch: Stopwatch,
-        modpack: ModPack,
-        id: String,
-        targetFileName: String = "$id.lock.pack.json",
-        targetFile: File = modpack.sourceFolder.resolve(targetFileName)
+        modpack: ModPack
     ): LockPack = stopwatch {
+        val targetFile = LockPack.fileForVersion(baseDir = modpack.baseFolder, version = modpack.version)
+
         modpack.entrySet.forEach { entry ->
             logger.info("id: ${entry.id} entry: $entry")
         }
@@ -59,9 +57,10 @@ object Builder : KLogging() {
         logger.info("Creating locked pack...")
         val lockedPack = modpack.lock("lock".watch)
 
-        "writeLockEntries".watch {
-            lockedPack.writeLockEntries()
-        }
+        // should now be serialized in lockfile
+//        "writeLockEntries".watch {
+//            lockedPack.writeLockEntries()
+//        }
 
         logger.info("Writing lock file... $targetFile")
         targetFile.parentFile.mkdirs()
