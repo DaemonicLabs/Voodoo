@@ -67,7 +67,7 @@ object Builder : KLogging() {
         }
         logger.info { "copying: ${modpack.iconFile}" }
         modpack.iconFile
-            ?.takeIf { it.exists() }
+            .takeIf { it.exists() }
             ?.copyTo(lockedPack.iconFile, overwrite = true)
 
         lockedPack.localFolder.also { localFolder ->

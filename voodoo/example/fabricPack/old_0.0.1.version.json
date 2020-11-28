@@ -2,6 +2,7 @@
   "$schema": "../schema/versionPack.schema.json",
   "version": "0.0.1",
   "mcVersion": "1.15.2",
+  "srcDir": "src_0.0.1",
   "modloader": {
     "type": "modloader.fabric",
     "intermediateMappings": "Fabric/1.15.2"

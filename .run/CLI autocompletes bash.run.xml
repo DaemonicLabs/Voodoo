@@ -7,7 +7,7 @@
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="PASS_PARENT_ENVS" value="true" />
     <option name="MAIN_CLASS_NAME" value="Main" />
-    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/voodoo/schema" />
+    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/voodoo/example" />
     <envs>
       <env name="_VOODOO_COMPLETE" value="bash" />
     </envs>

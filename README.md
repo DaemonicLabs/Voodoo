@@ -81,7 +81,7 @@ java -jar voodoo.jar create pack --id newPack --mcVersion 1.16.2
 java -jar voodoo.jar build --id mypack
 
 # packages for upload
-java -jar voodoo.jar pack --id mypack voodoo mmc-voodoo curse
+java -jar voodoo.jar package --id mypack -p voodoo -p mmc-voodoo -p curse
 
 # launches pack in multimc
 java -jar voodoo.jar launch multimc --id mypack

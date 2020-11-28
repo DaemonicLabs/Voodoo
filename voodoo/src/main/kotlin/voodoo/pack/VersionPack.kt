@@ -40,19 +40,7 @@ data class VersionPack(
                 packFile.readText()
             ).run {
                 copy(
-                    modloader = when (modloader) {
-                        is Modloader.Fabric -> modloader.copy(
-                            intermediateMappings = Autocompletions.fabricIntermediaries[modloader.intermediateMappings]
-                                ?: modloader.intermediateMappings,
-                            loader = Autocompletions.fabricLoaders[modloader.loader] ?: modloader.loader,
-                            installer = Autocompletions.fabricInstallers[modloader.installer]
-                                ?: modloader.installer
-                        )
-                        is Modloader.Forge -> modloader.copy(
-                            version = Autocompletions.forge[modloader.version] ?: modloader.version
-                        )
-                        else -> modloader
-                    },
+                    modloader = modloader.replaceAutoCompletes(),
                     mods = mods.map { entry ->
                         transformFileEntry(entry)
                     }
