@@ -50,4 +50,8 @@ object NoopProvider : ProviderBase("Noop Provider") {
         entry as LockEntry.Noop
         return super.reportData(entry)
     }
+
+    override fun generateReportTableOverrides(entry: LockEntry): Map<String, Any?> {
+        return mapOf()
+    }
 }

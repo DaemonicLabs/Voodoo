@@ -81,7 +81,7 @@ abstract class ProviderBase(
             EntryReportData.ID to entry.id
         ).also { data ->
             data[EntryReportData.VERSION] = entry.version()
-            data[EntryReportData.PROVIDER] = entry.provider
+            data[EntryReportData.PROVIDER] = entry.providerType
             entry.fileName?.let { fileName ->
                 data[EntryReportData.FILE_NAME] = fileName
             }
@@ -122,4 +122,6 @@ abstract class ProviderBase(
         }
         return true
     }
+
+    abstract fun generateReportTableOverrides(entry: LockEntry): Map<String, Any?>
 }

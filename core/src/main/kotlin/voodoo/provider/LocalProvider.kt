@@ -58,4 +58,12 @@ object LocalProvider : ProviderBase("Local Provider") {
             data[EntryReportData.LOCAL_FILESRC] = entry.fileSrc
         }
     }
+
+    override fun generateReportTableOverrides(entry: LockEntry): Map<String, Any?> {
+        entry as LockEntry.Local
+        return mapOf(
+            "File Name" to (entry.fileName ?: entry.fileSrc.substringAfterLast("/")),
+            "File Src" to entry.fileSrc
+        )
+    }
 }

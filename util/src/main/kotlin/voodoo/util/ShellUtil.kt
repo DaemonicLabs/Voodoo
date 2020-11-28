@@ -92,7 +92,7 @@ object ShellUtil : KLogging() {
 
         override fun accept(t: String) {
             output?.println(t)
-            sb.appendln(t)
+            sb.appendLine(t)
         }
 
         override fun toString(): String {

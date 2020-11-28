@@ -23,7 +23,7 @@ object ModlistGeneratorMarkdown : TomeGenerator() {
 
             lockPack.entries.sortedBy { it.displayName.toLowerCase() }.forEach { entry ->
                 "${entry.id}-report".watch {
-                    val provider = Providers[entry.provider]
+                    val provider = Providers[entry.providerType]
                     append("\n\n")
 
                     fun report(entry: LockEntry): String =

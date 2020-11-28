@@ -17,7 +17,6 @@ import voodoo.provider.Providers
 import voodoo.util.*
 import voodoo.util.maven.MavenUtil
 import java.io.File
-import java.net.URI
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -94,7 +93,7 @@ object VoodooPackager : AbstractPack("voodoo") {
                 val targetFiles = "download entries".watch {
                     val deferredFiles: List<Deferred<Pair<String, File>?>> = modpack.entries.map { entry ->
                         async(context = pool + CoroutineName("download-${entry.id}")) {
-                            val provider = Providers[entry.provider]
+                            val provider = Providers[entry.providerType]
 
                             val targetFolder = srcFolder.resolve(entry.path)
 

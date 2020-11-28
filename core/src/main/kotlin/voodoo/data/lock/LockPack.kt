@@ -7,6 +7,7 @@ import mu.KLogging
 import voodoo.data.DependencyType
 import voodoo.data.PackOptions
 import voodoo.data.PackReportData
+import voodoo.util.VersionComparator
 import voodoo.util.blankOr
 import voodoo.util.json
 import java.io.File
@@ -35,6 +36,8 @@ data class LockPack(
 
         // maybe make this configurable ?
         const val outputFolder = "lock"
+
+        val versionComparator = compareBy(comparator = VersionComparator, LockPack::version)
 
         fun baseFolderForVersion(version: String, baseDir: File): File {
             return baseDir.resolve(outputFolder).resolve(version)
@@ -136,6 +139,7 @@ data class LockPack(
     /***
      * creates a report of key-name-value triples
      */
+    @Deprecated("stop using meta folders, key-value pairs, etc")
     fun report(): Map<PackReportData, String> {
         val reports = mutableListOf(
             PackReportData.ID to id

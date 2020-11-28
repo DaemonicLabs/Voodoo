@@ -297,6 +297,20 @@ object CurseProvider : ProviderBase("Curse Provider") {
         }
     }
 
+    override fun generateReportTableOverrides(entry: LockEntry): Map<String, Any?> {
+        entry as LockEntry.Curse
+        logger.debug("reporting for: $entry")
+        val addon = runBlocking { getAddon(entry.projectID)!! }
+        val addonFile = runBlocking { getAddonFile(entry.projectID, entry.fileID)!! }
+
+        return mapOf(
+            "File Name" to (entry.fileName ?: addonFile.fileName),
+            "Direct URL" to addonFile.downloadUrl,
+            "Release Type" to "${addonFile.releaseType}",
+            "Mod Authors" to addon.authors.sortedBy { it.name.toUpperCase() }
+        )
+    }
+
     override fun validate(lockEntry: LockEntry): Boolean {
         if (lockEntry !is LockEntry.Curse) {
             logger.warn("invalid type for Curse $lockEntry")

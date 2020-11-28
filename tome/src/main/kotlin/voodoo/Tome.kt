@@ -14,9 +14,9 @@ object Tome : KLogging() {
 //        modpack: ModPack,
         lockPack: LockPack,
         tomeEnv: TomeEnv,
-        uploadDir: File
+        docDir: File? = null
     ) = stopwatch {
-        val docDir = tomeEnv.docRoot // .resolve(modpack.docDir)
+        val docDir = docDir ?: tomeEnv.docRoot // .resolve(modpack.docDir)
 
         docDir.deleteRecursively()
         for ((file, generator) in tomeEnv.generators) {
@@ -26,8 +26,6 @@ object Tome : KLogging() {
             val fileContent = "$file - stopwatch".watch {
                 with(generator) {
                     generateHtmlMeasured(
-//                    stopwatch =,
-//                modPack = modpack,
                         lockPack = lockPack,
                         targetFolder = targetFile.parentFile
                     )

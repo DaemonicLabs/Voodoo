@@ -42,7 +42,7 @@ object Builder : KLogging() {
 
         "validate".watch {
             modpack.lockEntrySet.forEach { lockEntry ->
-                val provider = Providers[lockEntry.provider]
+                val provider = Providers[lockEntry.providerType]
                 if (!provider.validate(lockEntry)) {
                     logger.error { lockEntry }
                     throw IllegalStateException("entry did not validate")

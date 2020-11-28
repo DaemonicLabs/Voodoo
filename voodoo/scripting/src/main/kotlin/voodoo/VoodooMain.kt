@@ -158,7 +158,7 @@ object VoodooMain {
                         stopwatch = "initTome".watch, libs = libs, host = host, tomeDir = tomeDir, docDir = docDir
                     )
 
-                    VoodooTask.Changelog.execute(this, id, changelogBuilder, tomeEnv)
+//                    VoodooTask.Changelog.execute(this, id, changelogBuilder, tomeEnv)
                 },
                 VoodooTask.Pack.key to { args ->
                     // TODO: pass pack method

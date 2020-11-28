@@ -129,7 +129,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
                                 )
                             }
                         } else emptyList()
-                        val provider = Providers[entry.provider]
+                        val provider = Providers[entry.providerType]
                         val targetFolder = minecraftDir.resolve(folder)
                         val (_, file) = provider.download(
                             "download-${entry.id}".watch,

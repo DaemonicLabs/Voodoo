@@ -61,4 +61,12 @@ object DirectProvider : ProviderBase("Direct Provider") {
             data[EntryReportData.DIRECT_URL] = entry.url
         }
     }
+
+    override fun generateReportTableOverrides(entry: LockEntry): Map<String, Any?> {
+        entry as LockEntry.Direct
+        return mapOf(
+            "File Name" to (entry.fileName ?: entry.url.substringAfterLast('/')),
+            "Direct URL" to entry.url
+        )
+    }
 }

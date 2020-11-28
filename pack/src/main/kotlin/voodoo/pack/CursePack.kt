@@ -98,7 +98,7 @@ object CursePack : AbstractPack("curse") {
 
                             logger.debug { "required: $required" }
 
-                            val provider = Providers[entry.provider]
+                            val provider = Providers[entry.providerType]
                             if (provider == CurseProvider && entry is LockEntry.Curse) {
                                 return@watch CurseFile(
                                         entry.projectID,
@@ -150,7 +150,7 @@ object CursePack : AbstractPack("curse") {
                     body {
                         ul {
                             for (entry in modpack.entries.sortedBy { it.displayName.toLowerCase() }) {
-                                val provider = Providers[entry.provider]
+                                val provider = Providers[entry.providerType]
                                 if (entry.side == Side.SERVER) {
                                     continue
                                 }

@@ -47,11 +47,11 @@ sealed class VoodooTask(open val key: String) {
 
                 // TODO: just generate meta info
 
-                Diff.writeMetaInfo(
-                    stopwatch = "writeMetaInfo".watch,
-                    rootDir = rootDir.absoluteFile,
-                    newPack = lockPack
-                )
+//                Diff.writeMetaInfo(
+//                    stopwatch = "writeMetaInfo".watch,
+//                    rootDir = rootDir.absoluteFile,
+//                    newPack = lockPack
+//                )
             }
         }
     }
@@ -62,29 +62,30 @@ sealed class VoodooTask(open val key: String) {
             id: String,
             changelogBuilder: ChangelogBuilder,
             tomeEnv: TomeEnv
-        ) = stopwatch {
-                "changelogTask".watch {
-                    val rootDir = SharedFolders.RootDir.get().absoluteFile
-                    val uploadDir = SharedFolders.UploadDir.get(id)
-                    val docDir = SharedFolders.DocDir.get(id)
-
-                    val lockFileName = "$id.lock.pack.json"
-                    val lockFile = rootDir.resolve(id).resolve(lockFileName)
-
-                    val lockPack = LockPack.parse(lockFile.absoluteFile, rootDir)
-
-                    "tome".watch {
-                        Tome.generate(this, lockPack, tomeEnv, uploadDir)
-                    }
-                    Diff.createChangelog(
-                        stopwatch = "createDiff".watch,
-                        docDir = docDir,
-                        rootDir = rootDir.absoluteFile,
-                        currentPack = lockPack,
-                        changelogBuilder = changelogBuilder
-                    )
-                }
-            }
+        ): Nothing = error("code moved to clikt commands")
+//        stopwatch {
+//                "changelogTask".watch {
+//                    val rootDir = SharedFolders.RootDir.get().absoluteFile
+//                    val uploadDir = SharedFolders.UploadDir.get(id)
+//                    val docDir = SharedFolders.DocDir.get(id)
+//
+//                    val lockFileName = "$id.lock.pack.json"
+//                    val lockFile = rootDir.resolve(id).resolve(lockFileName)
+//
+//                    val lockPack = LockPack.parse(lockFile.absoluteFile, rootDir)
+//
+//                    "tome".watch {
+//                        Tome.generate(this, lockPack, tomeEnv, uploadDir)
+//                    }
+//                    Diff.createChangelog(
+//                        stopwatch = "createDiff".watch,
+//                        docDir = docDir,
+//                        rootDir = rootDir.absoluteFile,
+//                        currentPack = lockPack,
+//                        changelogBuilder = changelogBuilder
+//                    )
+//                }
+//            }
     }
 
     object Pack : VoodooTask("pack") {
@@ -92,16 +93,17 @@ sealed class VoodooTask(open val key: String) {
             stopwatch: Stopwatch,
             id: String,
             packer: AbstractPack
-        ) = stopwatch {
-            val rootDir = SharedFolders.RootDir.get().absoluteFile
-            val uploadDir = SharedFolders.UploadDir.get(id)
-            val lockFileName = "$id.lock.pack.json"
-            val lockFile = rootDir.resolve(id).resolve(lockFileName)
-
-            val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
-            // TODO: pass pack method (enum / object)
-            voodoo.Pack.pack("pack".watch, modpack, uploadDir, packer)
-        }
+        ): Nothing = error("code moved to clikt 'package' command")
+//        stopwatch {
+//            val rootDir = SharedFolders.RootDir.get().absoluteFile
+//            val uploadDir = SharedFolders.UploadDir.get(id)
+//            val lockFileName = "$id.lock.pack.json"
+//            val lockFile = rootDir.resolve(id).resolve(lockFileName)
+//
+//            val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
+//            // TODO: pass pack method (enum / object)
+//            voodoo.Pack.pack("pack".watch, modpack, uploadDir, packer)
+//        }
     }
 
     object Test : VoodooTask("test") {
@@ -109,17 +111,18 @@ sealed class VoodooTask(open val key: String) {
             stopwatch: Stopwatch,
             id: String,
             method: TestMethod
-        ) = stopwatch {
-            "testTask".watch {
-                val rootDir = SharedFolders.RootDir.get().absoluteFile
-                val lockFileName = "$id.lock.pack.json"
-                val lockFile = rootDir.resolve(id).resolve(lockFileName)
-
-                val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
-
-                method.tester.execute(stopwatch = "${method.key}-test".watch, modpack = modpack, clean = method.clean)
-            }
-        }
+        ): Nothing = error("code moved to clikt 'launch' command")
+//        = stopwatch {
+//            "testTask".watch {
+//                val rootDir = SharedFolders.RootDir.get().absoluteFile
+//                val lockFileName = "$id.lock.pack.json"
+//                val lockFile = rootDir.resolve(id).resolve(lockFileName)
+//
+//                val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
+//
+//                method.tester.execute(stopwatch = "${method.key}-test".watch, modpack = modpack, clean = method.clean)
+//            }
+//        }
     }
 
     object Version : VoodooTask("version") {

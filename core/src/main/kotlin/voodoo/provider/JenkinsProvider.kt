@@ -170,4 +170,17 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
             data[EntryReportData.JENKINS_BUILD] = "${entry.buildNumber}"
         }
     }
+
+    override fun generateReportTableOverrides(entry: LockEntry): Map<String, Any?> {
+        entry as LockEntry.Jenkins
+        val (url, fileName) = runBlocking {
+            getDownloadUrl(entry)
+        }
+        return mapOf(
+            "File Name" to (entry.fileName ?: fileName),
+            "Direct URL" to url,
+            "Jenkins Job" to entry.job,
+            "Jenkins Build" to entry.buildNumber
+        )
+    }
 }

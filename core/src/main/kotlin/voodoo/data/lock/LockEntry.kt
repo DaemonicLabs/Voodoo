@@ -3,13 +3,10 @@ package voodoo.data.lock
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.*
 import kotlinx.serialization.json.*
-import mu.KLogging
 import mu.KotlinLogging
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.provider.*
-import voodoo.util.json
-import java.io.File
 import java.time.Instant
 
 /**
@@ -19,7 +16,7 @@ import java.time.Instant
 @Serializable
 sealed class LockEntry : CommonLockModule {
     @Transient
-    abstract val provider: String
+    abstract val providerType: String
 
     @Serializable
     @SerialName("curse")
@@ -31,7 +28,7 @@ sealed class LockEntry : CommonLockModule {
         val useOriginalUrl: Boolean = true,
         val skipFingerprintCheck: Boolean = false
     ) : LockEntry(), CommonLockModule by common {
-        override val provider = CurseProvider.id
+        override val providerType = CurseProvider.id
         init {
             optional = optionalData != null
         }
@@ -45,7 +42,7 @@ sealed class LockEntry : CommonLockModule {
         val url: String = "",
         val useOriginalUrl: Boolean = true
     ) : LockEntry(), CommonLockModule by common {
-        override val provider = DirectProvider.id
+        override val providerType = DirectProvider.id
         init {
             optional = optionalData != null
         }
@@ -61,7 +58,7 @@ sealed class LockEntry : CommonLockModule {
         val buildNumber: Int = -1,
         val fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$"
     ) : LockEntry(), CommonLockModule by common {
-        override val provider = JenkinsProvider.id
+        override val providerType = JenkinsProvider.id
         init {
             optional = optionalData != null
         }
@@ -74,7 +71,7 @@ sealed class LockEntry : CommonLockModule {
         val common: CommonLockComponent,
         var fileSrc: String = ""
     ) : LockEntry(), CommonLockModule by common {
-        override val provider = LocalProvider.id
+        override val providerType = LocalProvider.id
         init {
             optional = optionalData != null
         }
@@ -86,7 +83,7 @@ sealed class LockEntry : CommonLockModule {
         @Transient override var _id: String = "",
         val common: CommonLockComponent
     ) : LockEntry(), CommonLockModule by common {
-        override val provider = NoopProvider.id
+        override val providerType = NoopProvider.id
         init {
             optional = optionalData != null
         }
@@ -134,7 +131,7 @@ sealed class LockEntry : CommonLockModule {
 
 //P
 
-    fun provider(): ProviderBase = Providers[provider]
+    fun provider(): ProviderBase = Providers[providerType]
 
     fun version(): String = runBlocking { provider().getVersion(this@LockEntry) }
 
