@@ -118,8 +118,8 @@ object MultiMCTester : AbstractTester() {
             mapOf<String, Boolean>()
         }
         val (optionals, reinstall) = MMCUtil.updateAndSelectFeatures(
-            modpack.optionalEntries.filter { (entryId, entry) -> entry.side != Side.SERVER }.map {(entryId, entry) ->
-                MMCSelectable(entryId, entry)
+            modpack.optionalEntries.filter{ it.side != Side.SERVER }.map {
+                MMCSelectable(it)
             },
             previousSelection,
             name = modpack.title.blankOr ?: modpack.id,
@@ -139,30 +139,30 @@ object MultiMCTester : AbstractTester() {
 
         withPool { pool ->
             coroutineScope {
-                modpack.entries.forEach { (entryId, entry) ->
+                modpack.entries.forEach { entry ->
                     if (entry.side == Side.SERVER) return@forEach
-                    launch(pool + CoroutineName(entryId)) {
+                    launch(pool + CoroutineName(entry.id)) {
                         val folder = minecraftDir.resolve(entry.path).absoluteFile
 
-                        if(modpack.isEntryOptional(entryId)) {
-                            val selectedSelf = optionals[entryId] ?: true
+                        if(modpack.isEntryOptional(entry.id)) {
+                            val selectedSelf = optionals[entry.id] ?: true
                             if (!selectedSelf) {
-                                MMCUtil.logger.info("${entry.displayName(entryId)} is disabled, skipping download")
+                                MMCUtil.logger.info("${entry.displayName} is disabled, skipping download")
                                 return@launch
                             }
-                            val matchedOptioalsList = modpack.optionalEntries.filter { (optionalEntryId, optionalEntry) ->
+                            val matchedOptioalsList = modpack.optionalEntries.filter {
                                 // check if entry is a dependency of any feature
                                 modpack.isDependencyOf(
-                                    entryId = entryId,
-                                    parentId = optionalEntryId,
+                                    entryId = entry.id,
+                                    parentId = it.id,
                                     dependencyType = DependencyType.REQUIRED
                                 )
                             }
-                            logger.debug("${entryId} is a dependency of ${matchedOptioalsList.keys}")
+                            logger.debug("${entry.id} is a dependency of ${matchedOptioalsList.map { it.id }}")
                             if (!matchedOptioalsList.isEmpty()) {
-                                val selected = matchedOptioalsList.any { (optionalEntryId, optionalEntry) -> optionals[optionalEntryId] ?: false }
+                                val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
                                 if (!selected) {
-                                    MMCUtil.logger.info("${matchedOptioalsList.map { (entryId, entry) -> entry.displayName(entryId) } } is disabled, skipping download of ${entryId}")
+                                    MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName } } is disabled, skipping download of ${entry.id}")
                                     return@launch
                                 }
                             }
@@ -171,8 +171,7 @@ object MultiMCTester : AbstractTester() {
                         val provider = entry.provider()
                         val targetFolder = minecraftDir.resolve(folder)
                         provider.download(
-                            "download-${entryId}".watch,
-                            entryId,
+                            "download-${entry.id}".watch,
                             entry,
                             targetFolder,
                             cacheDir

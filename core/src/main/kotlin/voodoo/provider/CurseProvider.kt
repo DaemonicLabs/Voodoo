@@ -39,13 +39,13 @@ object CurseProvider : ProviderBase("Curse Provider") {
         entry: FlatEntry,
         mcVersion: String,
         addEntry: SendChannel<Pair<FlatEntry, String>>
-    ): Pair<String, LockEntry> {
+    ): LockEntry {
         entry as FlatEntry.Curse
         val (projectID, fileID, path) = findFile(entry, mcVersion)
 
 //        synchronized(resolved) {
 //            logger.info("resolved: ${resolved.count()} unique entries")
-//            resolved += entryId
+//            resolved += entry.id
 //        }
         // TODO: move into appropriate place or remove
         //  this is currently just used to validate that there is no entries getting resolved multiple times
@@ -73,24 +73,31 @@ object CurseProvider : ProviderBase("Curse Provider") {
         }
 
         entry.folder = entry.folder ?: path
-        val lock = entry.lock { commonComponent ->
-            LockEntry.Curse(
-                common = commonComponent,
-                projectID = projectID,
-                fileID = fileID,
-                useOriginalUrl = entry.useOriginalUrl,
-                skipFingerprintCheck = entry.skipFingerprintCheck
-            )
-        }
+
+        val common = entry.lockCommon()
+        val lock = LockEntry.Curse(
+            id = common.id,
+            path = common.path,
+            name = common.name,
+            fileName = common.fileName,
+            side = common.side,
+            description = common.description,
+            optionalData = common.optionalData,
+            dependencies = common.dependencies,
+            projectID = projectID,
+            fileID = fileID,
+            useOriginalUrl = entry.useOriginalUrl,
+            skipFingerprintCheck = entry.skipFingerprintCheck
+        )
 
         logger.debug("returning locked entry: $lock")
         return lock
     }
 
-    override suspend fun generateName(entryId: String, entry: LockEntry): String {
+    override suspend fun generateName(entry: LockEntry): String {
         entry as LockEntry.Curse
         val addon = CurseClient.getAddon(entry.projectID)
-        return addon?.name ?: entryId
+        return addon?.name ?: entry.id
     }
 
     override suspend fun getAuthors(entry: LockEntry): List<String> {
@@ -217,7 +224,6 @@ object CurseProvider : ProviderBase("Curse Provider") {
 
     override suspend fun download(
         stopwatch: Stopwatch,
-        entryId: String,
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
@@ -225,7 +231,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
         entry as LockEntry.Curse
         val addonFile = getAddonFile(entry.projectID, entry.fileID)
         if (addonFile == null) {
-            logger.error("cannot download ${entryId} ${entry.projectID}:${entry.fileID}")
+            logger.error("cannot download ${entry.id} ${entry.projectID}:${entry.fileID}")
             exitProcess(3)
         }
         val targetFile = targetFolder.resolve(entry.fileName ?: addonFile.fileName)
@@ -235,7 +241,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
             validator = { bytes, file ->
                 val fileLenghtMatches = addonFile.fileLength == bytes.size.toLong()
                 if(!fileLenghtMatches) {
-                    logger.warn("[${entryId} ${entry.projectID}:${addonFile.id}] file length do not match expected: ${addonFile.fileLength} actual: (${bytes.size})")
+                    logger.warn("[${entry.id} ${entry.projectID}:${addonFile.id}] file length do not match expected: ${addonFile.fileLength} actual: (${bytes.size})")
                 }
                 file.exists() && fileLenghtMatches && if (entry.skipFingerprintCheck) {
                     true
@@ -244,7 +250,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
                     val normalized = computeNormalizedArray(bytes)
                     val fileFingerprint = Murmur2Lib.hash32(normalized, 1)
                     if(addonFile.packageFingerprint.toInt() != fileFingerprint.toLong().toInt()) {
-                        logger.error("[${entryId} ${entry.projectID}:${addonFile.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint) file: $file")
+                        logger.error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint) file: $file")
                         false
                     } else true
                 }
@@ -252,7 +258,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
         )
 
         if(addonFile.fileLength != targetFile.length()) {
-            error("[${entryId} ${entry.projectID}:${addonFile.id}] file length do not match expected: ${addonFile.fileLength} actual: (${targetFile.length()})")
+            error("[${entry.id} ${entry.projectID}:${addonFile.id}] file length do not match expected: ${addonFile.fileLength} actual: (${targetFile.length()})")
         }
 
 
@@ -261,13 +267,13 @@ object CurseProvider : ProviderBase("Curse Provider") {
 //        val fileFingerprint = MurmurHash2.computeFileHash(targetFile.path, true)
 
         if (addonFile.packageFingerprint.toInt() != fileFingerprint.toLong().toInt()) {
-            logger.error("[${entryId} ${entry.projectID}:${addonFile.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
+            logger.error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
             logger.error("curseforge murmur2 fingerprints are unreliable")
             if(!entry.skipFingerprintCheck) {
-                error("[${entryId} ${entry.projectID}:${addonFile.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
+                error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprints do not match expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint)")
             }
         } else {
-            logger.debug { "[${entryId} ${entry.projectID}:${addonFile.id}] file fingerprint matches: ${addonFile.packageFingerprint}" }
+            logger.debug { "[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint matches: ${addonFile.packageFingerprint}" }
         }
 
         return@stopwatch addonFile.downloadUrl to targetFile
@@ -284,12 +290,12 @@ object CurseProvider : ProviderBase("Curse Provider") {
         }
     }
 
-    override fun reportData(entryId: String, entry: LockEntry): MutableMap<EntryReportData, String> {
+    override fun reportData(entry: LockEntry): MutableMap<EntryReportData, String> {
         entry as LockEntry.Curse
         logger.debug("reporting for: $entry")
         val addon = runBlocking { getAddon(entry.projectID)!! }
         val addonFile = runBlocking { getAddonFile(entry.projectID, entry.fileID)!! }
-        return super.reportData(entryId, entry).also { data ->
+        return super.reportData(entry).also { data ->
             data[EntryReportData.FILE_NAME] = entry.fileName ?: addonFile.fileName
             data[EntryReportData.DIRECT_URL] = addonFile.downloadUrl
             data[EntryReportData.CURSE_RELEASE_TYPE] = "${addonFile.releaseType}"
@@ -312,12 +318,12 @@ object CurseProvider : ProviderBase("Curse Provider") {
         )
     }
 
-    override fun validate(entryId: String, lockEntry: LockEntry): Boolean {
+    override fun validate(lockEntry: LockEntry): Boolean {
         if (lockEntry !is LockEntry.Curse) {
             logger.warn("invalid type for Curse $lockEntry")
             return false
         }
-        if (!super.validate(entryId, lockEntry)) {
+        if (!super.validate(lockEntry)) {
             return false
         }
         if (!lockEntry.projectID.valid) {

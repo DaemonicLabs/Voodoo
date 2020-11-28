@@ -91,15 +91,14 @@ object VoodooPackager : AbstractPack("voodoo") {
 
                 // download entries
                 val targetFiles = "download entries".watch {
-                    val deferredFiles: List<Deferred<Pair<String, File>?>> = modpack.entries.map { (entryId,entry) ->
-                        async(context = pool + CoroutineName("download-${entryId}")) {
+                    val deferredFiles: List<Deferred<Pair<String, File>?>> = modpack.entries.map { entry ->
+                        async(context = pool + CoroutineName("download-${entry.id}")) {
                             val provider = Providers[entry.providerType]
 
                             val targetFolder = srcFolder.resolve(entry.path)
 
                             val (url, file) = provider.download(
-                                "download-${entryId}".watch,
-                                entryId,
+                                "download-${entry.id}".watch,
                                 entry,
                                 targetFolder,
                                 cacheDir
@@ -111,10 +110,10 @@ object VoodooPackager : AbstractPack("voodoo") {
                                 val urlTxtFile = targetFolder.resolve(file.name + ".url.txt")
                                 urlTxtFile.writeText(url)
                             }
-                            //                println("done: ${entryId} $file")
-                            entryId to file // serialFile.relativeTo(skSrcFolder
+                            //                println("done: ${entry.id} $file")
+                            entry.id to file // serialFile.relativeTo(skSrcFolder
                         }.also {
-                            logger.info("started job: download '${entryId}'")
+                            logger.info("started job: download '${entry.id}'")
                             delay(10)
                         }
                     }
@@ -126,14 +125,13 @@ object VoodooPackager : AbstractPack("voodoo") {
                 val features = mutableListOf<ExtendedFeaturePattern>()
 
                 "resolve feature dep".watch {
-                    for ((entryId,entry) in modpack.entries) {
+                    for (entry in modpack.entries) {
                         resolveFeatureDependencies(
-                            "${entryId}-resolveFeatureDep".watch,
+                            "${entry.id}-resolveFeatureDep".watch,
                             modpack,
-                            entryId,
                             entry,
-                            modpack.findEntryById(entryId)?.displayName(entryId)
-                                ?: throw NullPointerException("cannot find lockentry for ${entryId}"),
+                            modpack.findEntryById(entry.id)?.displayName
+                                ?: throw NullPointerException("cannot find lockentry for ${entry.id}"),
                             features
                         )
                     }
@@ -149,18 +147,18 @@ object VoodooPackager : AbstractPack("voodoo") {
                             val dependencies = getDependencies(modpack, id)
                             logger.info("required dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.REQUIRED }.keys}")
                             logger.info("optional dependencies of $id: ${featureEntry.dependencies.filterValues { it == DependencyType.OPTIONAL }.keys}")
-                            feature.entries += dependencies.asSequence().filter { (entryId,entry) ->
-                                logger.debug("  testing ${entryId}")
+                            feature.entries += dependencies.asSequence().filter { entry ->
+                                logger.debug("  testing ${entry.id}")
                                 // find all other entries that depend on this dependency
-                                val dependants = modpack.entries.filter { (otherEntryId, otherEntry) ->
+                                val dependants = modpack.entries.filter { otherEntry ->
                                     otherEntry.dependencies.filterValues { it == DependencyType.REQUIRED }.keys.any {
-                                        it == entryId
+                                        it == entry.id
                                     }
                                 }
-                                logger.debug("  dependants to optional of ${entryId}: ${dependants.mapValues { (_, filteredEntry) -> filteredEntry.optional }}")
-                                val allOptionalDependants = dependants.all { (_, filteredEntry) -> filteredEntry.optional }
-                                entry.optional && !feature.entries.contains(entryId) && allOptionalDependants
-                            }.map { (entryId, _) -> entryId }
+                                logger.debug("  dependants to optional of ${entry.id}: ${dependants.associate { it.id to it.optional }}")
+                                val allOptionalDependants = dependants.all { filteredEntry -> filteredEntry.optional }
+                                entry.optional && !feature.entries.contains(entry.id) && allOptionalDependants
+                            }.map { it.id }
                         }
                         logger.info("build entry: ${feature.entries.first()}")
                         val mainEntry = modpack.findEntryById(feature.entries.first())!!
@@ -297,14 +295,13 @@ object VoodooPackager : AbstractPack("voodoo") {
     private fun resolveFeatureDependencies(
         stopwatch: Stopwatch,
         modPack: LockPack,
-        entryId: String,
         entry: LockEntry,
         defaultName: String,
         features: MutableList<ExtendedFeaturePattern>
     ) = stopwatch {
         val entryOptionalData = entry.optionalData ?: return@stopwatch
-        val entryFeature = Feature(entry.displayName(entryId), entryOptionalData.selected, description = entry.description ?: "")
-        val featureName = entry.displayName(entryId).takeIf { it.isNotBlank() } ?: defaultName
+        val entryFeature = Feature(entry.displayName, entryOptionalData.selected, description = entry.description ?: "")
+        val featureName = entry.displayName.takeIf { it.isNotBlank() } ?: defaultName
         // find feature with matching id
         var feature = features.find { f -> f.feature.name == featureName }
 
@@ -313,7 +310,7 @@ object VoodooPackager : AbstractPack("voodoo") {
             var description = entryFeature.description
             if (description.isEmpty()) description = entry.description ?: ""
             feature = ExtendedFeaturePattern(
-                entries = setOf(entryId),
+                entries = setOf(entry.id),
                 files = entryFeature.files,
                 feature = Feature(
                     name = featureName,
@@ -327,7 +324,7 @@ object VoodooPackager : AbstractPack("voodoo") {
             features += feature
             entry.optional = true
         }
-        logger.debug("processed ${entryId}")
+        logger.debug("processed ${entry.id}")
     }
 
     /**
@@ -368,16 +365,16 @@ object VoodooPackager : AbstractPack("voodoo") {
         }
     }
 
-    private fun getDependenciesCall(lockPack: LockPack, entryId: String): List<Pair<String, LockEntry>> {
+    private fun getDependenciesCall(lockPack: LockPack, entryId: String): List<LockEntry> {
         logger.debug("getDependencies of $entryId")
         val entry = lockPack.findEntryById(entryId) ?: return emptyList()
         logger.debug("getting dependencies: ${entry.dependencies}")
-        return entry.dependencies.flatMap { (entryId, depType) ->
-            getDependencies(lockPack, entryId)
+        return entry.dependencies.flatMap { (depName, depType) ->
+            getDependencies(lockPack, depName)
         }
     }
 
-    private val getDependencies: (lockPack: LockPack, entryName: String) -> List<Pair<String, LockEntry>>
+    private val getDependencies: (lockPack: LockPack, entryName: String) -> List<LockEntry>
         get() {
             return ::getDependenciesCall.memoize()
         }

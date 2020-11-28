@@ -15,7 +15,7 @@ object ChangelogHelper : KLogging() {
         docDir: File,
         id: String,
         baseDir: File,
-        changelogBuilder: ChangelogBuilder
+        changelogBuilder: ChangelogBuilder,
     ) = stopwatch {
         val cacheHome = directories.cacheHome.resolve("CHANGELOG").resolve(id)
         cacheHome.mkdirs()
@@ -25,32 +25,33 @@ object ChangelogHelper : KLogging() {
         val lockpacks = LockPack.parseAll(baseFolder = baseDir)
             .sortedWith(LockPack.versionComparator)
 
-        val diffFiles = mutableListOf<File>()
-        val firstChangelog = createChangelogAndDiff(
+        val (firstChangelog, firstDiffFile) = createChangelogAndDiff(
             oldPack = null,
             newPack = lockpacks.first(),
-    //                versionData = versionData,
             docDir = docDir,
             cacheHome = cacheHome,
             changelogBuilder = changelogBuilder,
-            diffWorkingDir = diffWorkingDir,
-            diffFiles = diffFiles
+            diffWorkingDir = diffWorkingDir
         )
-        val changelogs = lockpacks.zipWithNext().map { (oldPack, newPack) ->
-            createChangelogAndDiff(
+        val diffs = lockpacks.zipWithNext().map { (oldPack, newPack) ->
+            val (changelogFile, diffFile) = createChangelogAndDiff(
                 oldPack = oldPack,
                 newPack = newPack,
-        //                versionData = versionData,
                 docDir = docDir,
                 cacheHome = cacheHome,
                 changelogBuilder = changelogBuilder,
-                diffWorkingDir = diffWorkingDir,
-                diffFiles = diffFiles
+                diffWorkingDir = diffWorkingDir
             )
+            diffFile
         }
 
+        val allDiffFiles = listOfNotNull(
+            firstDiffFile,
+            *diffs.toTypedArray()
+        )
+
         docDir.resolve("complete_changes.diff").writeText(
-            diffFiles.joinToString("\n\n") { it.readText() }
+            allDiffFiles.joinToString("\n\n") { it.readText() }
         )
 
         logger.info { "writing full changelog" }
@@ -70,8 +71,7 @@ object ChangelogHelper : KLogging() {
         cacheHome: File,
         changelogBuilder: ChangelogBuilder,
         diffWorkingDir: File,
-        diffFiles: MutableList<File>,
-    ): File {
+    ): Pair<File, File?> {
         logger.info("generating diff ${oldPack?.version} -> ${newPack?.version}")
 
         val newSourceCopy = diffWorkingDir.resolve(newPack.version).apply {
@@ -81,7 +81,7 @@ object ChangelogHelper : KLogging() {
                 ?.copyRecursively(this, overwrite = true)
         }
 
-        val oldSourceCopy = diffWorkingDir.resolve(newPack.version).apply {
+        val oldSourceCopy = diffWorkingDir.resolve(oldPack?.version ?: ".empty").apply {
             deleteRecursively()
             mkdirs()
             oldPack?.sourceFolder?.takeIf { it.exists() }
@@ -98,10 +98,11 @@ object ChangelogHelper : KLogging() {
             docDir = docDir
         )
         if (diffFile != null) {
-            diffFiles += diffFile
+            val targetFile = docDir.resolve(newPack.version).resolve("changes.diff")
+            targetFile.parentFile.mkdirs()
+            diffFile.copyTo(targetFile, overwrite = true)
         }
-        // TODO: find better place to copy to
-        // diffFile?.copyTo(newMetaDataLocation.resolve(newPack.version).resolve(diffFile.name), overwrite = true)
+
 
         val changelogFile = cacheHome.resolve("${newPack.version}_${changelogBuilder.filename}").apply {
             parentFile.mkdirs()
@@ -125,11 +126,17 @@ object ChangelogHelper : KLogging() {
         newSourceCopy.deleteRecursively()
         oldSourceCopy.deleteRecursively()
 
-        return changelogFile
+        return changelogFile to diffFile
     }
 
-    fun writeDiff(rootFolder: File, oldSource: File, newSource: File, diffFile: File, docDir: File): File? {
-        if (ShellUtil.isInPath("diff")) {
+    private fun writeDiff(
+        rootFolder: File,
+        oldSource: File,
+        newSource: File,
+        diffFile: File,
+        docDir: File,
+    ): File? {
+        if (ShellUtil.isInPath("git")) {
             oldSource.walkBottomUp().forEach {
                 when {
                     it.name.endsWith(".lock.pack.json") -> it.delete()
@@ -166,23 +173,4 @@ object ChangelogHelper : KLogging() {
             return null
         }
     }
-
-    fun getMetaDataLocation(rootDir: File, id: String) = rootDir.resolve(".meta").resolve(id.toLowerCase())
-
-    fun readVersionTags(id: String): List<String> {
-        //TODO: get git tags
-        val processResult = ShellUtil.runProcess("git", "tag", wd = SharedFolders.GitRoot.get())
-        val tags = processResult.stdout.lines().filter {
-            it.startsWith(id + "_")
-        }
-        return tags
-    }
-
-//    fun addVersion(rootDir: File, id: String, version: String) {
-//        val versionsFile = getMetaDataLocation(rootDir, id).resolve("versions.txt")
-//        versionsFile.parentFile.mkdirs()
-//        val versions =
-//            (versionsFile.takeIf { it.exists() }?.readLines()?.filter { it.isNotBlank() } ?: listOf()).toSet() + version
-//        versionsFile.writeText(versions.joinToString("\n"))
-//    }
 }

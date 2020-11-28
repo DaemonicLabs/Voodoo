@@ -29,7 +29,7 @@ data class LockPack(
     val authors: List<String> = emptyList(),
     var localDir: String = "local",
     var packOptions: PackOptions = PackOptions(),
-    val entries: Map<String, LockEntry> = mapOf(),
+    val entries: Set<LockEntry> = setOf(),
 ) {
     companion object : KLogging() {
         const val extension = "lock.pack.json"
@@ -73,6 +73,11 @@ data class LockPack(
     }
 
     @Transient
+    val entriesMap by lazy {
+        entries.associateBy { it.id }
+    }
+
+    @Transient
     lateinit var lockBaseFolder: File
 
     @Transient
@@ -89,14 +94,14 @@ data class LockPack(
 
     fun title() = title.blankOr ?: id
 
-    fun findEntryById(id: String) = entries[id]
+    fun findEntryById(id: String) = entries.find { it.id == id }
 
     @Transient
     val optionalEntries
-        get() = entries.filterValues { it.optional }
+        get() = entries.filter { it.optional }
 
-    private fun getDependants(entryId: String, dependencyType: DependencyType): Map<String, LockEntry> {
-        return entries.filterValues { it.dependencies[entryId] == dependencyType }
+    fun getDependants(entryId: String, dependencyType: DependencyType): List<LockEntry> {
+        return entries.filter { it.dependencies[entryId] == dependencyType }
     }
 
     fun isEntryOptional(entryId: String): Boolean {
@@ -104,11 +109,11 @@ data class LockPack(
         val entry = findEntryById(entryId)!!
 
         // find all entries that require this one
-        val dependants = getDependants(entryId, DependencyType.REQUIRED)
-        logger.debug { "isEntryOptional: dependants of $entryId : ${dependants.keys}"}
+        val dependants = getDependants(entry.id, DependencyType.REQUIRED)
+        logger.debug { "isEntryOptional: dependants of $entryId : ${dependants.map { it.id }}"}
 
-        val allOptionalDependants = dependants.all { (id, depEntry) ->
-            isEntryOptional(id)
+        val allOptionalDependants = dependants.all { dep ->
+            isEntryOptional(dep.id)
         }
         logger.debug { "isEntryOptional: ${allOptionalDependants && entry.optional}"}
 
@@ -116,16 +121,16 @@ data class LockPack(
     }
 
     @Transient
-    private val dependencyCache = mutableMapOf<Pair<String, DependencyType>, Map<String, LockEntry>>()
+    private val dependencyCache = mutableMapOf<Pair<String, DependencyType>, List<LockEntry>>()
 
-    fun dependencies(entryId: String, dependencyType: DependencyType): Map<String, LockEntry> {
+    fun dependencies(entryId: String, dependencyType: DependencyType): List<LockEntry> {
         return dependencyCache.computeIfAbsent(entryId to dependencyType) { (entryId, dependencyType) ->
             val entry = findEntryById(entryId)!!
             entry.dependencies
                 .filterValues { it == dependencyType }
                 .keys
-                .associate { depEntryId ->
-                    depEntryId to findEntryById(depEntryId)!!
+                .map { depEntryId ->
+                    findEntryById(depEntryId)!!
                 }
 //            entry.dependencies[dependencyType]?.map { findEntryById(it)!! } ?: listOf()
         }
@@ -133,7 +138,7 @@ data class LockPack(
 
     fun isDependencyOf(entryId: String, parentId: String, dependencyType: DependencyType): Boolean {
         val dependencies = dependencies(parentId, dependencyType)
-        return dependencies.any { (id, entry) -> id == entryId || isDependencyOf(entryId, id, dependencyType) }
+        return dependencies.any { it.id == entryId || isDependencyOf(entryId, it.id, dependencyType) }
     }
 
     /***

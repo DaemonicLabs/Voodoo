@@ -72,22 +72,21 @@ object Server {
 
         withPool { pool ->
             coroutineScope {
-                for ((entryId, entry) in modpack.entries) {
+                for (entry in modpack.entries) {
                     if (entry.side == Side.CLIENT) continue
-                    launch(context = pool + CoroutineName("job-${entryId}")) {
+                    launch(context = pool + CoroutineName("job-${entry.id}")) {
                         val provider = Providers[entry.providerType]
                         val targetFolder = serverDir.resolve(entry.path).absoluteFile
                         logger.info("downloading to - ${targetFolder.path}")
                         provider.download(
-                            stopwatch = "download-${entryId}".watch,
-                            entryId = entryId,
+                            stopwatch = "download-${entry.id}".watch,
                             entry = entry,
                             targetFolder = targetFolder,
                             cacheDir = cacheDir
                         )
                     }
 //                delay(10)
-                    logger.info("started job ${entry.displayName(entryId)}")
+                    logger.info("started job ${entry.displayName}")
                 }
             }
         }

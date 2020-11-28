@@ -81,18 +81,12 @@ sealed class FlatEntry: CommonMutable {
     val serialFilename: String
         get() = "$cleanId.entry.json"
 
-//    @Deprecated("looks suspect")
-//    fun serialize(sourceFolder: File) {
-//        val file = sourceFolder.resolve(folder).resolve("$cleanId.entry.json").absoluteFile
-//        file.absoluteFile.parentFile.mkdirs()
-//        file.writeText(json.encodeToString(Entry.serializer(), this))
-//    }
-
-    inline fun <reified E: LockEntry> lock(block: (CommonLockComponent) -> E): Pair<String, E> {
+    fun lockCommon(): CommonLockComponent {
         if(optionalData != null) {
             logger.warn { "[$id] optionalData: $optionalData" }
         }
-        val commonComponent = CommonLockComponent(
+        return CommonLockComponent(
+            id = id,
             path = folder ?: "mods",
             name = name,
             fileName = fileName,
@@ -101,8 +95,5 @@ sealed class FlatEntry: CommonMutable {
             optionalData = optionalData,
             dependencies = dependencies.toMap()
         )
-        // TODO: fix ugly hacks to make types match
-        val lockEntry = block(commonComponent)
-        return id to lockEntry
     }
 }

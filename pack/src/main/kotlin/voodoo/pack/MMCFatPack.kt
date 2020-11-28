@@ -87,8 +87,8 @@ object MMCFatPack : AbstractPack("mmc-fat") {
             mapOf<String, Boolean>()
         }
         val (optionals, reinstall) = MMCUtil.updateAndSelectFeatures(
-            modpack.optionalEntries.filterValues { it.side != Side.SERVER }.map { (id, entry) ->
-                MMCSelectable(id, entry)
+            modpack.optionalEntries.filter{ it.side != Side.SERVER }.map {
+                MMCSelectable(it)
             },
             previousSelection,
             modpack.title.blankOr
@@ -108,41 +108,40 @@ object MMCFatPack : AbstractPack("mmc-fat") {
 
         withPool { pool ->
             coroutineScope {
-                for ((entryId, entry) in modpack.entries) {
+                for (entry in modpack.entries) {
                     if (entry.side == Side.SERVER) continue
 
                     launch(context = coroutineContext + pool) {
                         val folder = minecraftDir.resolve(entry.path).absoluteFile
 
-                        val matchedOptioalsList = if(modpack.isEntryOptional(entryId)) {
-                            val selectedSelf = optionals[entryId] ?: true
+                        val matchedOptioalsList = if(modpack.isEntryOptional(entry.id)) {
+                            val selectedSelf = optionals[entry.id] ?: true
                             if (!selectedSelf) {
-                                MMCUtil.logger.info("${entry.displayName(entryId)} is disabled, skipping download")
+                                MMCUtil.logger.info("${entry.displayName} is disabled, skipping download")
                                 return@launch
                             }
-                            modpack.optionalEntries.filter { (optionalEntryId, optionalEntry) ->
+                            modpack.optionalEntries.filter {
                                 // check if entry is a dependency of any feature
                                 modpack.isDependencyOf(
-                                    entryId = entryId,
-                                    parentId = optionalEntryId,
+                                    entryId = entry.id,
+                                    parentId = it.id,
                                     dependencyType = DependencyType.REQUIRED
                                 )
                             }
-                        } else emptyMap()
+                        } else emptyList()
                         val provider = Providers[entry.providerType]
                         val targetFolder = minecraftDir.resolve(folder)
                         val (_, file) = provider.download(
-                            "download-${entryId}".watch,
-                            entryId,
+                            "download-${entry.id}".watch,
                             entry,
                             targetFolder,
                             cacheDir
                         ) ?: return@launch
 
                         if (matchedOptioalsList.isNotEmpty()) {
-                            val selected = matchedOptioalsList.any { (id, entry) -> optionals[id] ?: false }
+                            val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
                             if (!selected) {
-                                MMCUtil.logger.info("${matchedOptioalsList.map { (id, entry) -> entry.displayName(id) }} is disabled, disabling $entryId")
+                                MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName }} is disabled, disabling ${entry.id}")
                                 file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
                             }
                         }

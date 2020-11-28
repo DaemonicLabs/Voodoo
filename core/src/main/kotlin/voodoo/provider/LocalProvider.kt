@@ -17,23 +17,28 @@ object LocalProvider : ProviderBase("Local Provider") {
         entry: FlatEntry,
         mcVersion: String,
         addEntry: SendChannel<Pair<FlatEntry, String>>
-    ): Pair<String, LockEntry> {
+    ): LockEntry {
         entry as FlatEntry.Local
-        return entry.lock { commonComponent ->
-            LockEntry.Local(
-                common = commonComponent,
-                fileSrc = entry.fileSrc
-            )
-        }
+        val common = entry.lockCommon()
+        return LockEntry.Local(
+            id = common.id,
+            path = common.path,
+            name = common.name,
+            fileName = common.fileName,
+            side = common.side,
+            description = common.description,
+            optionalData = common.optionalData,
+            dependencies = common.dependencies,
+            fileSrc = entry.fileSrc
+        )
     }
 
     override suspend fun download(
         stopwatch: Stopwatch,
-        entryId: String,
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
-    ): Pair<String?, File>? = stopwatch {
+    ): Pair<String?, File> = stopwatch {
         entry as LockEntry.Local
         val fileSrc = entry.parent.localFolder.resolve(entry.fileSrc)
         val targetFile = targetFolder.resolve(fileSrc.name)
@@ -47,14 +52,14 @@ object LocalProvider : ProviderBase("Local Provider") {
         return entry.fileSrc.substringBeforeLast('.').substringAfterLast('/')
     }
 
-    override suspend fun generateName(entryId: String, entry: LockEntry): String {
+    override suspend fun generateName(entry: LockEntry): String {
         entry as LockEntry.Local
         return entry.fileSrc.substringBeforeLast('/')
     }
 
-    override fun reportData(entryId: String, entry: LockEntry): MutableMap<EntryReportData, String> {
+    override fun reportData(entry: LockEntry): MutableMap<EntryReportData, String> {
         entry as LockEntry.Local
-        return super.reportData(entryId, entry).also { data ->
+        return super.reportData(entry).also { data ->
             data[EntryReportData.FILE_NAME] = entry.fileName ?: entry.fileSrc.substringAfterLast("/")
             data[EntryReportData.LOCAL_FILESRC] = entry.fileSrc
         }

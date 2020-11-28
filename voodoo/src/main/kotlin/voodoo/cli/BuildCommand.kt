@@ -77,7 +77,6 @@ class BuildCommand() : CliktCommand(
                 val versionPacks = VersionPack.parseAll(baseDir = baseDir)
                     .sortedWith(compareBy(VersionComparator, VersionPack::version))
                     .let { versionPacks ->
-                        logger.info { "all versions: ${versionPacks.map { it.version }}" }
                         val latestVersion = versionPacks.last().version
                         versionPacks.filter { versionPack ->
                             when {
@@ -118,8 +117,6 @@ class BuildCommand() : CliktCommand(
                         }
                     }
 
-                logger.info { "building versions: ${versionPacks.map { it.version }}" }
-
                 versionPacks.forEach { pack ->
                     val otherpacks = versionPacks - pack
                     require(
@@ -127,12 +124,10 @@ class BuildCommand() : CliktCommand(
                             pack.version != other.version
                         }
                     ) { "version ${pack.version} is not unique" }
-                    //TODO: uncomment once voodoo format is more evolved and clear
                     require(
-                        pack.packageConfiguration.voodoo.relativeSelfupdateUrl == null
-                                || otherpacks.all { other ->
-                                    pack.packageConfiguration.voodoo.relativeSelfupdateUrl != other.packageConfiguration.voodoo.relativeSelfupdateUrl
-                                }
+                        pack.packageConfiguration.voodoo.relativeSelfupdateUrl == null || otherpacks.all { other ->
+                            pack.packageConfiguration.voodoo.relativeSelfupdateUrl != other.packageConfiguration.voodoo.relativeSelfupdateUrl
+                        }
                     ) { "relativeSelfupdateUrl ${pack.packageConfiguration.voodoo.relativeSelfupdateUrl} is not unique" }
                 }
 

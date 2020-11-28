@@ -87,14 +87,13 @@ object CursePack : AbstractPack("curse") {
 //                val curseModsChannel = Channel<CurseFile>(Channel.CONFLATED)
 
                 // download entries
-                for ((entryId, entry) in modpack.entries) {
+                for (entry in modpack.entries) {
                     if (entry.side == Side.SERVER) continue
-                    if (entry is LockEntry.Noop) continue
-                    jobs += "install_${entryId}" to async<CurseFile?>(context = coroutineContext + CoroutineName("install_${entryId}") + pool) {
-                        "install_${entryId}".watch {
-                            logger.info("starting job: install '${entryId}' entry: $entry")
+                    jobs += "install_${entry.id}" to async<CurseFile?>(context = coroutineContext + CoroutineName("install_${entry.id}") + pool) {
+                        "install_${entry.id}".watch {
+                            logger.info("starting job: install '${entry.id}' entry: $entry")
                             val targetFolder = srcFolder.resolve(entry.path).absoluteFile.parentFile
-                            val required = !modpack.isEntryOptional(entryId)
+                            val required = !modpack.isEntryOptional(entry.id)
 
                             logger.debug { "required: $required" }
 
@@ -109,7 +108,7 @@ object CursePack : AbstractPack("curse") {
                                     }
                             } else {
                                 logger.debug { "is not a curse thing: $entry" }
-                                val (_, file) = provider.download("download_${entryId}".watch, entryId, entry, targetFolder, cacheDir) ?: return@watch null
+                                val (_, file) = provider.download("download_${entry.id}".watch, entry, targetFolder, cacheDir) ?: return@watch null
                                 if (!required) {
                                     val optionalFile = file.parentFile.resolve(file.name + ".disabled")
                                     file.renameTo(optionalFile)
@@ -149,8 +148,7 @@ object CursePack : AbstractPack("curse") {
                 createHTML().html {
                     body {
                         ul {
-                            val sortedEntries = modpack.entries.toSortedMap(compareBy { id -> modpack.entries[id]?.displayName(id)?.toLowerCase() })
-                            for ((entryId, entry) in sortedEntries) {
+                            for (entry in modpack.entries.sortedBy { it.displayName.toLowerCase() }) {
                                 val provider = Providers[entry.providerType]
                                 if (entry.side == Side.SERVER) {
                                     continue
@@ -163,13 +161,13 @@ object CursePack : AbstractPack("curse") {
 
                                 li {
                                     when {
-                                        projectPage.isNotEmpty() -> a(href = projectPage) { +"${entry.displayName(entryId)} $authorString" }
+                                        projectPage.isNotEmpty() -> a(href = projectPage) { +"${entry.displayName} $authorString" }
                                         entry is LockEntry.Direct && entry.url.isNotBlank() -> {
                                             +"direct: "
                                             a(
                                                 href = entry.url,
                                                 target = ATarget.blank
-                                            ) { +"${entry.displayName(entryId)} $authorString" }
+                                            ) { +"${entry.displayName} $authorString" }
                                         }
                                         else -> {
                                             val source = if ( entry is LockEntry.Local && entry.fileSrc.isNotBlank()) {
@@ -177,7 +175,7 @@ object CursePack : AbstractPack("curse") {
                                                 } else {
                                                     "unknown"
                                                 }
-                                            +"${entry.displayName(entryId)} $authorString (source: $source)"
+                                            +"${entry.displayName} $authorString (source: $source)"
                                         }
                                     }
                                 }

@@ -17,19 +17,14 @@ object NoopProvider : ProviderBase("Noop Provider") {
         entry: FlatEntry,
         mcVersion: String,
         addEntry: SendChannel<Pair<FlatEntry, String>>
-    ): Pair<String, LockEntry> {
+    ): LockEntry {
         entry as FlatEntry.Noop
-        return entry.lock { commonComponent ->
-            LockEntry.Noop(
-                common = commonComponent
-            )
-        }
+        error("noop entry should not be resolved")
     }
 
     // TODO: do not download here ?
     override suspend fun download(
         stopwatch: Stopwatch,
-        entryId: String,
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
@@ -38,18 +33,15 @@ object NoopProvider : ProviderBase("Noop Provider") {
     }
 
     override suspend fun getVersion(entry: LockEntry): String {
-        entry as LockEntry.Noop
         return ""
     }
 
-    override suspend fun generateName(entryId: String, entry: LockEntry): String {
-        entry as LockEntry.Noop
-        return entryId
+    override suspend fun generateName(entry: LockEntry): String {
+        return entry.id
     }
 
-    override fun reportData(entryId: String, entry: LockEntry): MutableMap<EntryReportData, String> {
-        entry as LockEntry.Noop
-        return super.reportData(entryId, entry)
+    override fun reportData(entry: LockEntry): MutableMap<EntryReportData, String> {
+        return super.reportData(entry)
     }
 
     override fun generateReportTableOverrides(entry: LockEntry): Map<String, Any?> {
