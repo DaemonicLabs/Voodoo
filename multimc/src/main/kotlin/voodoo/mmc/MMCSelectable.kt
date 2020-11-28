@@ -11,10 +11,10 @@ data class MMCSelectable(
     val recommendation: Recommendation? = null
 ) {
     companion object {
-        operator fun invoke(lockEntry: LockEntry): MMCSelectable {
+        operator fun invoke(id: String, lockEntry: LockEntry): MMCSelectable {
             return MMCSelectable(
-                lockEntry.id,
-                lockEntry.displayName,
+                id,
+                lockEntry.displayName(id),
                 lockEntry.description,
                 lockEntry.optionalData?.selected ?: false,
                 lockEntry.optionalData?.recommendation

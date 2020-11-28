@@ -31,11 +31,11 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         entry: FlatEntry,
         mcVersion: String,
         addEntry: SendChannel<Pair<FlatEntry, String>>
-    ): LockEntry {
+    ): Pair<String, LockEntry> {
         entry as FlatEntry.Jenkins
         require(entry.job.isNotBlank()) { "entry: '${entry.id}' does not have the jenkins job set" }
 //        if (entry.job.isBlank()) {
-//            entry.job = entry.id
+//            entry.job = entryId
 //        }
         val job = job(entry.job, entry.jenkinsUrl)
         val buildNumber = job.lastSuccessfulBuild?.number ?: throw IllegalStateException("buildnumber not set")
@@ -61,14 +61,15 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
 
     override suspend fun download(
         stopwatch: Stopwatch,
+        entryId: String,
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
     ): Pair<String?, File>? = stopwatch {
         entry as LockEntry.Jenkins
-        require(entry.job.isNotBlank()) { "entry: '${entry.id}' does not have the jenkins job set" }
+        require(entry.job.isNotBlank()) { "entry: '${entryId}' does not have the jenkins job set" }
 //        if (entry.job.isBlank()) {
-//            entry.job = entry.id
+//            entry.job = entryId
 //        }
         val (url, fileName) = getDownloadUrl(entry)
 
@@ -77,7 +78,7 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         return@stopwatch url to targetFile
     }
 
-    override suspend fun generateName(entry: LockEntry): String {
+    override suspend fun generateName(entryId: String, entry: LockEntry): String {
         entry as LockEntry.Jenkins
         return "${entry.job} ${entry.buildNumber}"
     }
@@ -157,12 +158,12 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         return JenkinsServer(url)
     }
 
-    override fun reportData(entry: LockEntry): MutableMap<EntryReportData, String> {
+    override fun reportData(entryId: String,entry: LockEntry): MutableMap<EntryReportData, String> {
         entry as LockEntry.Jenkins
         val (url, fileName) = runBlocking {
             getDownloadUrl(entry)
         }
-        return super.reportData(entry).also { data ->
+        return super.reportData(entryId, entry).also { data ->
 //            data["BaseUrl"] = entry.jenkinsUrl // do we need this ?
             data[EntryReportData.FILE_NAME] = entry.fileName ?: fileName
             data[EntryReportData.DIRECT_URL] = url

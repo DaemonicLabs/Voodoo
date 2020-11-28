@@ -4,6 +4,7 @@ import com.eyeem.watchadoin.Stopwatch
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.util.Directories
+import voodoo.util.filterValueIsInstance
 import voodoo.util.maven.MavenUtil
 import voodoo.util.toJson
 import voodoo.util.unixPath
@@ -42,8 +43,8 @@ object ServerPack : AbstractPack("server") {
             val targetLocalDir = output.resolve("local")
             modpack.localDir = targetLocalDir.toRelativeString(output)
             if (targetLocalDir.exists()) targetLocalDir.deleteRecursively()
-            modpack.entries.filterIsInstance(LockEntry.Local::class.java)
-                .forEach { localEntry ->
+            modpack.entries.filterValueIsInstance<String, LockEntry.Local>()
+                .forEach { (id, localEntry) ->
                     val src = localDir.resolve(localEntry.fileSrc)
                     val target = targetLocalDir.resolve(localEntry.fileSrc)
                     target.absoluteFile.parentFile.mkdirs()

@@ -7,7 +7,7 @@ inline fun <K, reified RV> Map<K, *>.filterValueIsInstance(): Map<K, RV> {
     }
 }
 
-inline fun <reified RK: K, reified RV: V, K, V, C : MutableMap<in RK, in RV>> Map<K, V>.filterIstInstance(destination: C): C {
+inline fun <reified RK: K, reified RV: V, K, V, C : MutableMap<in RK, in RV>> Map<K, V>.filterIsInstance(destination: C): C {
     for ((key, value) in this) if (key is RK && value is RV) destination.put(key, value)
     return destination
 }

@@ -17,7 +17,7 @@ object LocalProvider : ProviderBase("Local Provider") {
         entry: FlatEntry,
         mcVersion: String,
         addEntry: SendChannel<Pair<FlatEntry, String>>
-    ): LockEntry {
+    ): Pair<String, LockEntry> {
         entry as FlatEntry.Local
         return entry.lock { commonComponent ->
             LockEntry.Local(
@@ -29,6 +29,7 @@ object LocalProvider : ProviderBase("Local Provider") {
 
     override suspend fun download(
         stopwatch: Stopwatch,
+        entryId: String,
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
@@ -46,14 +47,14 @@ object LocalProvider : ProviderBase("Local Provider") {
         return entry.fileSrc.substringBeforeLast('.').substringAfterLast('/')
     }
 
-    override suspend fun generateName(entry: LockEntry): String {
+    override suspend fun generateName(entryId: String, entry: LockEntry): String {
         entry as LockEntry.Local
         return entry.fileSrc.substringBeforeLast('/')
     }
 
-    override fun reportData(entry: LockEntry): MutableMap<EntryReportData, String> {
+    override fun reportData(entryId: String, entry: LockEntry): MutableMap<EntryReportData, String> {
         entry as LockEntry.Local
-        return super.reportData(entry).also { data ->
+        return super.reportData(entryId, entry).also { data ->
             data[EntryReportData.FILE_NAME] = entry.fileName ?: entry.fileSrc.substringAfterLast("/")
             data[EntryReportData.LOCAL_FILESRC] = entry.fileSrc
         }

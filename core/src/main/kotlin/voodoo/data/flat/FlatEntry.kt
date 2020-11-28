@@ -88,7 +88,7 @@ sealed class FlatEntry: CommonMutable {
 //        file.writeText(json.encodeToString(Entry.serializer(), this))
 //    }
 
-    inline fun <reified E: LockEntry> lock(block: (CommonLockComponent) -> E): E {
+    inline fun <reified E: LockEntry> lock(block: (CommonLockComponent) -> E): Pair<String, E> {
         if(optionalData != null) {
             logger.warn { "[$id] optionalData: $optionalData" }
         }
@@ -103,7 +103,6 @@ sealed class FlatEntry: CommonMutable {
         )
         // TODO: fix ugly hacks to make types match
         val lockEntry = block(commonComponent)
-        lockEntry.changeId(id)
-        return lockEntry
+        return id to lockEntry
     }
 }

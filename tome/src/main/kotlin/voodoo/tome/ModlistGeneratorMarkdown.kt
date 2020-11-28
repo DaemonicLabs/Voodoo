@@ -21,19 +21,20 @@ object ModlistGeneratorMarkdown : TomeGenerator() {
             append(lockPack.report(targetFolder))
             append("\n")
 
-            lockPack.entries.sortedBy { it.displayName.toLowerCase() }.forEach { entry ->
-                "${entry.id}-report".watch {
+            lockPack.entries
+                .toSortedMap(compareBy { id -> lockPack.entries[id]?.displayName(id)?.toLowerCase() })
+                .forEach { (id, entry) -> "${id}-report".watch {
                     val provider = Providers[entry.providerType]
                     append("\n\n")
 
-                    fun report(entry: LockEntry): String =
+                    append(
                         markdownTable(
-                            headers = listOf("Mod", entry.displayName),
-                            content = provider.reportData(entry).map { (reportData, value) ->
+                            headers = listOf("Mod", entry.displayName(id)),
+                            content = provider.reportData(id, entry).map { (reportData, value) ->
                                 listOf(reportData.humanReadable, value)
                             }
                         )
-                    append(report(entry))
+                    )
                 }
             }
         }

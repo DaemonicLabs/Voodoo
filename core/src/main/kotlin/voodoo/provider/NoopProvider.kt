@@ -17,7 +17,7 @@ object NoopProvider : ProviderBase("Noop Provider") {
         entry: FlatEntry,
         mcVersion: String,
         addEntry: SendChannel<Pair<FlatEntry, String>>
-    ): LockEntry {
+    ): Pair<String, LockEntry> {
         entry as FlatEntry.Noop
         return entry.lock { commonComponent ->
             LockEntry.Noop(
@@ -29,6 +29,7 @@ object NoopProvider : ProviderBase("Noop Provider") {
     // TODO: do not download here ?
     override suspend fun download(
         stopwatch: Stopwatch,
+        entryId: String,
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
@@ -41,14 +42,14 @@ object NoopProvider : ProviderBase("Noop Provider") {
         return ""
     }
 
-    override suspend fun generateName(entry: LockEntry): String {
+    override suspend fun generateName(entryId: String, entry: LockEntry): String {
         entry as LockEntry.Noop
-        return entry.id
+        return entryId
     }
 
-    override fun reportData(entry: LockEntry): MutableMap<EntryReportData, String> {
+    override fun reportData(entryId: String, entry: LockEntry): MutableMap<EntryReportData, String> {
         entry as LockEntry.Noop
-        return super.reportData(entry)
+        return super.reportData(entryId, entry)
     }
 
     override fun generateReportTableOverrides(entry: LockEntry): Map<String, Any?> {

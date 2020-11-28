@@ -1,6 +1,6 @@
 {
     "id": "fabricPack",
-    "srcPath": "src",
+    "srcPath": "src_0.0.1",
     "mcVersion": "1.15.2",
     "modloader": {
         "type": "Fabric",
@@ -10,41 +10,23 @@
     },
     "version": "0.0.1",
     "icon": "icon_fabricPack.png",
-    "authors": [
-        "NikkyAi"
-    ],
     "packOptions": {
-        "multimcOptions": {
-            "relativeSelfupdateUrl": "fabricPack.json"
-        },
-        "uploadUrl": "https://nikky.moe/.mc/experimental/fabricPack"
+        "uploadUrl": "https://nikky.moe/.mc/fabricPack"
     },
-    "entries": [
-        {
+    "entries": {
+        "roughly-enough-resources": {
             "type": "curse",
             "common": {
                 "path": "mods",
-                "name": "appleskin",
+                "name": "roughly-enough-resources",
                 "dependencies": {
-                    "fabric-api": "REQUIRED"
+                    "roughly-enough-items": "REQUIRED"
                 }
             },
-            "projectID": 248787,
-            "fileID": 2987254
+            "projectID": 325625,
+            "fileID": 2903947
         },
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "campanion",
-                "dependencies": {
-                    "fabric-api": "REQUIRED"
-                }
-            },
-            "projectID": 373138,
-            "fileID": 2976626
-        },
-        {
+        "betternether": {
             "type": "curse",
             "common": {
                 "path": "mods",
@@ -56,7 +38,31 @@
             "projectID": 311377,
             "fileID": 2983313
         },
-        {
+        "appleskin": {
+            "type": "curse",
+            "common": {
+                "path": "mods",
+                "name": "appleskin",
+                "dependencies": {
+                    "fabric-api": "REQUIRED"
+                }
+            },
+            "projectID": 248787,
+            "fileID": 2987254
+        },
+        "campanion": {
+            "type": "curse",
+            "common": {
+                "path": "mods",
+                "name": "campanion",
+                "dependencies": {
+                    "fabric-api": "REQUIRED"
+                }
+            },
+            "projectID": 373138,
+            "fileID": 2976626
+        },
+        "tab-inventory-fabric": {
             "type": "curse",
             "common": {
                 "path": "mods",
@@ -65,25 +71,7 @@
             "projectID": 362943,
             "fileID": 2886750
         },
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "modmenu"
-            },
-            "projectID": 308702,
-            "fileID": 3121557
-        },
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "fabric-api"
-            },
-            "projectID": 306612,
-            "fileID": 3105065
-        },
-        {
+        "mouse-wheelie": {
             "type": "curse",
             "common": {
                 "path": "mods",
@@ -92,7 +80,25 @@
             "projectID": 317514,
             "fileID": 3109495
         },
-        {
+        "fabric-api": {
+            "type": "curse",
+            "common": {
+                "path": "mods",
+                "name": "fabric-api"
+            },
+            "projectID": 306612,
+            "fileID": 3105065
+        },
+        "modmenu": {
+            "type": "curse",
+            "common": {
+                "path": "mods",
+                "name": "modmenu"
+            },
+            "projectID": 308702,
+            "fileID": 3121557
+        },
+        "roughly-enough-items": {
             "type": "curse",
             "common": {
                 "path": "mods",
@@ -103,18 +109,6 @@
             },
             "projectID": 310111,
             "fileID": 2979221
-        },
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "roughly-enough-resources",
-                "dependencies": {
-                    "roughly-enough-items": "REQUIRED"
-                }
-            },
-            "projectID": 325625,
-            "fileID": 2903947
         }
-    ]
+    }
 }

@@ -19,7 +19,7 @@ object DirectProvider : ProviderBase("Direct Provider") {
         entry: FlatEntry,
         mcVersion: String,
         addEntry: SendChannel<Pair<FlatEntry, String>>
-    ): LockEntry {
+    ): Pair<String, LockEntry> {
         entry as FlatEntry.Direct
         entry.id = entry.id.replace("[^\\w-]".toRegex(), "_")
         return entry.lock {commonComponent ->
@@ -33,6 +33,7 @@ object DirectProvider : ProviderBase("Direct Provider") {
 
     override suspend fun download(
         stopwatch: Stopwatch,
+        entryId: String,
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
@@ -45,8 +46,8 @@ object DirectProvider : ProviderBase("Direct Provider") {
         return@stopwatch Pair(entry.url, targetFile)
     }
 
-    override suspend fun generateName(entry: LockEntry): String {
-        return entry.id
+    override suspend fun generateName(entryId: String, entry: LockEntry): String {
+        return entryId
     }
 
     override suspend fun getVersion(entry: LockEntry): String {
@@ -54,9 +55,9 @@ object DirectProvider : ProviderBase("Direct Provider") {
         return entry.url.substringBeforeLast('.').substringAfterLast('/')
     }
 
-    override fun reportData(entry: LockEntry): MutableMap<EntryReportData, String> {
+    override fun reportData(entryId: String, entry: LockEntry): MutableMap<EntryReportData, String> {
         entry as LockEntry.Direct
-        return super.reportData(entry).also { data ->
+        return super.reportData(entryId, entry).also { data ->
             data[EntryReportData.FILE_NAME] = entry.fileName ?: entry.url.substringAfterLast('/')
             data[EntryReportData.DIRECT_URL] = entry.url
         }

@@ -6,6 +6,7 @@ import voodoo.data.flat.FlatModPack
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.provider.Providers
+import voodoo.util.filterValueIsInstance
 import voodoo.util.toJson
 import kotlin.system.exitProcess
 
@@ -41,9 +42,9 @@ object Builder : KLogging() {
 
 
         "validate".watch {
-            modpack.lockEntrySet.forEach { lockEntry ->
+            modpack.lockEntryMap.forEach { (entryId, lockEntry) ->
                 val provider = Providers[lockEntry.providerType]
-                if (!provider.validate(lockEntry)) {
+                if (!provider.validate(entryId, lockEntry)) {
                     logger.error { lockEntry }
                     throw IllegalStateException("entry did not validate")
                 }
@@ -73,8 +74,8 @@ object Builder : KLogging() {
         lockedPack.localFolder.also { localFolder ->
             localFolder.deleteRecursively()
             localFolder.mkdirs()
-            lockedPack.entries.filterIsInstance<LockEntry.Local>()
-                .forEach { entry ->
+            lockedPack.entries.filterValueIsInstance<String, LockEntry.Local>()
+                .forEach { (entryId, entry) ->
                     val localTargetFile = localFolder.resolve(entry.fileSrc)
                     logger.info { "copying: $targetFile" }
                     localTargetFile.absoluteFile.parentFile.mkdirs()

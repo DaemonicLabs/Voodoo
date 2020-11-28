@@ -21,7 +21,6 @@ sealed class LockEntry : CommonLockModule {
     @Serializable
     @SerialName("curse")
     data class Curse(
-        @Transient override var _id: String = "",
         val common: CommonLockComponent,
         val projectID: ProjectID = ProjectID.INVALID,
         val fileID: FileID = FileID.INVALID,
@@ -37,7 +36,6 @@ sealed class LockEntry : CommonLockModule {
     @Serializable
     @SerialName("direct")
     data class Direct(
-        @Transient override var _id: String = "",
         val common: CommonLockComponent,
         val url: String = "",
         val useOriginalUrl: Boolean = true
@@ -51,7 +49,6 @@ sealed class LockEntry : CommonLockModule {
     @Serializable
     @SerialName("jenkins")
     data class Jenkins(
-        @Transient override var _id: String = "",
         val common: CommonLockComponent,
         val jenkinsUrl: String = "",
         val job: String = "",
@@ -67,7 +64,6 @@ sealed class LockEntry : CommonLockModule {
     @Serializable
     @SerialName("local")
     data class Local(
-        @Transient override var _id: String = "",
         val common: CommonLockComponent,
         var fileSrc: String = ""
     ) : LockEntry(), CommonLockModule by common {
@@ -80,7 +76,6 @@ sealed class LockEntry : CommonLockModule {
     @Serializable
     @SerialName("noop")
     data class Noop(
-        @Transient override var _id: String = "",
         val common: CommonLockComponent
     ) : LockEntry(), CommonLockModule by common {
         override val providerType = NoopProvider.id
@@ -89,27 +84,7 @@ sealed class LockEntry : CommonLockModule {
         }
     }
 
-
-//    @Transient
-//    lateinit var idField: String // id might not always match the filename
-
-    fun changeId(value: String) {
-        require(!value.contains("[^\\w-]+".toRegex())) { "id: '$value' is not cleaned up properly, must not contain invalid characters" }
-        _id = value
-    }
-
-    @Transient
-    protected open var _id: String = ""
-
-    val id: String
-        get() = _id
-
-    @Transient
-    val displayName: String
-        get() = name?.takeIf { it.isNotBlank() } ?: runBlocking { provider().generateName(this@LockEntry) }
-//        set(value) {
-//            nameField = value
-//        }
+    fun displayName(entryId: String): String = name?.takeIf { it.isNotBlank() } ?: runBlocking { provider().generateName(entryId, this@LockEntry) }
 
     @Transient
     lateinit var parent: LockPack

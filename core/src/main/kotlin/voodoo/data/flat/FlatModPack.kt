@@ -10,7 +10,6 @@ import voodoo.data.lock.LockPack
 import voodoo.util.toRelativeUnixPath
 import java.io.File
 import java.util.Collections
-import voodoo.util.unixPath
 
 /**
  * Created by nikky on 28/03/18.
@@ -62,7 +61,7 @@ data class FlatModPack(
         get() = baseFolder.resolve(icon)
 
     @Transient
-    val lockEntrySet: MutableSet<LockEntry> = Collections.synchronizedSet(mutableSetOf())
+    val lockEntryMap: MutableMap<String, LockEntry> = Collections.synchronizedMap(mutableMapOf())
 
     fun addEntry(entry: FlatEntry, dependency: Boolean = false) {
         if (entry.id.isBlank()) {
@@ -110,7 +109,7 @@ data class FlatModPack(
                 modloader = modloader?.lock() ?: Modloader.None,
                 localDir = localDir,
                 packOptions = packOptions,
-                entries = lockEntrySet.toSet()
+                entries = lockEntryMap.toMap()
             ).also {
                 it.lockBaseFolder = targetFolder
             }
@@ -129,22 +128,21 @@ data class FlatModPack(
         }
     }
 
-    fun findLockEntryById(id: String) = lockEntrySet.find { it.id == id }
+    fun findLockEntryById(id: String) = lockEntryMap[id]
 
     // TODO: replace set with actor or similar, avoid synchronized
     fun addOrMerge(
-        entry: LockEntry,
+        id: String,
+        newEntry: LockEntry,
         mergeOp: (new: LockEntry?, old: LockEntry) -> LockEntry = { old, new -> old ?: new }
     ): LockEntry {
-//        logger.debug("waiting on synchrnoized")
-        val result2 = synchronized(lockEntrySet) {
-            //            logger.debug("entering synchronized")
-            val result = lockEntrySet.find { it.id == entry.id }?.let {
-                lockEntrySet -= it
-                mergeOp(it, entry)
-            } ?: mergeOp(null, entry)
-            lockEntrySet += result
-            result
+        val result2 = synchronized(lockEntryMap) {
+            val mergedEntry = lockEntryMap[id]?.let { existingEntry ->
+                lockEntryMap -= id
+                mergeOp(existingEntry, newEntry)
+            }?: mergeOp(null, newEntry)
+            lockEntryMap[id] = mergedEntry
+            mergedEntry
         }
 //        logger.debug("left synchronized")
         return result2

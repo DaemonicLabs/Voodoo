@@ -13,38 +13,8 @@
     "packOptions": {
         "uploadUrl": "https://nikky.moe/.mc/fabricPack"
     },
-    "entries": [
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "modmenu"
-            },
-            "projectID": 308702,
-            "fileID": 3121557
-        },
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "mouse-wheelie"
-            },
-            "projectID": 317514,
-            "fileID": 3109495
-        },
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "campanion",
-                "dependencies": {
-                    "fabric-api": "REQUIRED"
-                }
-            },
-            "projectID": 373138,
-            "fileID": 2976626
-        },
-        {
+    "entries": {
+        "tab-inventory-fabric": {
             "type": "curse",
             "common": {
                 "path": "mods",
@@ -53,19 +23,16 @@
             "projectID": 362943,
             "fileID": 2886750
         },
-        {
+        "fabric-api": {
             "type": "curse",
             "common": {
                 "path": "mods",
-                "name": "appleskin",
-                "dependencies": {
-                    "fabric-api": "REQUIRED"
-                }
+                "name": "fabric-api"
             },
-            "projectID": 248787,
-            "fileID": 2987254
+            "projectID": 306612,
+            "fileID": 3105065
         },
-        {
+        "betternether": {
             "type": "curse",
             "common": {
                 "path": "mods",
@@ -77,16 +44,19 @@
             "projectID": 311377,
             "fileID": 2983313
         },
-        {
+        "campanion": {
             "type": "curse",
             "common": {
                 "path": "mods",
-                "name": "fabric-api"
+                "name": "campanion",
+                "dependencies": {
+                    "fabric-api": "REQUIRED"
+                }
             },
-            "projectID": 306612,
-            "fileID": 3105065
+            "projectID": 373138,
+            "fileID": 2976626
         },
-        {
+        "roughly-enough-resources": {
             "type": "curse",
             "common": {
                 "path": "mods",
@@ -98,7 +68,25 @@
             "projectID": 325625,
             "fileID": 2903947
         },
-        {
+        "modmenu": {
+            "type": "curse",
+            "common": {
+                "path": "mods",
+                "name": "modmenu"
+            },
+            "projectID": 308702,
+            "fileID": 3121557
+        },
+        "mouse-wheelie": {
+            "type": "curse",
+            "common": {
+                "path": "mods",
+                "name": "mouse-wheelie"
+            },
+            "projectID": 317514,
+            "fileID": 3109495
+        },
+        "roughly-enough-items": {
             "type": "curse",
             "common": {
                 "path": "mods",
@@ -109,6 +97,18 @@
             },
             "projectID": 310111,
             "fileID": 2979221
+        },
+        "appleskin": {
+            "type": "curse",
+            "common": {
+                "path": "mods",
+                "name": "appleskin",
+                "dependencies": {
+                    "fabric-api": "REQUIRED"
+                }
+            },
+            "projectID": 248787,
+            "fileID": 2987254
         }
-    ]
+    }
 }

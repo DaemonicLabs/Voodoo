@@ -25,7 +25,7 @@ abstract class ProviderBase(
 
     open fun reset() {}
 
-    open suspend fun resolve(entry: FlatEntry, mcVersion: String, addEntry: SendChannel<Pair<FlatEntry, String>>): LockEntry {
+    open suspend fun resolve(entry: FlatEntry, mcVersion: String, addEntry: SendChannel<Pair<FlatEntry, String>>): Pair<String, LockEntry> {
         logger.info("[$name] resolve ${entry.id}")
         throw NotImplementedError("unable to resolve")
     }
@@ -41,12 +41,13 @@ abstract class ProviderBase(
      */
     abstract suspend fun download(
         stopwatch: Stopwatch,
+        entryId: String,
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
     ): Pair<String?, File>?
 
-    abstract suspend fun generateName(entry: LockEntry): String
+    abstract suspend fun generateName(entryId: String, entry: LockEntry): String
 
     open suspend fun getAuthors(entry: LockEntry): List<String> {
         return emptyList()
@@ -76,9 +77,10 @@ abstract class ProviderBase(
         return null
     }
 
-    open fun reportData(entry: LockEntry): MutableMap<EntryReportData, String> {
+    @Deprecated("replace with new functions")
+    open fun reportData(entryId: String, entry: LockEntry): MutableMap<EntryReportData, String> {
         return mutableMapOf(
-            EntryReportData.ID to entry.id
+            EntryReportData.ID to entryId
         ).also { data ->
             data[EntryReportData.VERSION] = entry.version()
             data[EntryReportData.PROVIDER] = entry.providerType
@@ -115,8 +117,8 @@ abstract class ProviderBase(
         }
     }
 
-    open fun validate(lockEntry: LockEntry): Boolean {
-        if (lockEntry.id.isEmpty()) {
+    open fun validate(entryId: String, lockEntry: LockEntry): Boolean {
+        if (entryId.isEmpty()) {
             logger.error("invalid id of $lockEntry")
             return false
         }

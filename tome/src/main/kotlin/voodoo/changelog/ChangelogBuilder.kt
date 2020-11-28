@@ -151,32 +151,28 @@ open class ChangelogBuilder : KLogging() {
         oldPack: LockPack?,
     ) {
         val newEntries = newPack.entries
-        val oldEntries = oldPack?.entries ?: setOf()
+        val oldEntries = oldPack?.entries ?: mapOf()
 
         val addedEntries = newEntries
-            .filter { newEntry ->
-                !oldEntries.any { oldEntry -> oldEntry.id == newEntry.id }
+            .filterKeys { id ->
+                !oldEntries.containsKey(id)
             }
-            .map { newEntry -> addedEntry(newEntry) }
+            .map { (id, newEntry) -> addedEntry(id, newEntry) }
             .filterNotNull()
         val removedEntries = oldEntries
-            .filter { oldEntry ->
-                !newEntries.any { newEntry -> newEntry.id == oldEntry.id }
+            .filterKeys { id ->
+                !newEntries.containsKey(id)
             }
-            .map { removedOldEntry ->
-                removedEntry(removedOldEntry)
+            .map { (id, removedOldEntry) ->
+                removedEntry(id, removedOldEntry)
             }
             .filterNotNull()
         val changedEntries = newEntries
-            .mapNotNull { newEntry ->
-                oldEntries.find { oldEntry -> oldEntry.id == newEntry.id }?.let { oldEntry ->
-                    oldEntry to newEntry
+            .mapNotNull { (id, newEntry) ->
+                oldEntries[id]?.let { oldEntry ->
+                    updatedEntry(id = id, newEntry = newEntry, oldEntry = oldEntry)
                 }
             }
-            .map { (oldEntry, newEntry) ->
-                updatedEntry(newEntry = newEntry, oldEntry = oldEntry)
-            }
-            .filterNotNull()
 
         if (addedEntries.isNotEmpty() || removedEntries.isNotEmpty() || changedEntries.isNotEmpty()) {
             appendLine()
@@ -218,24 +214,24 @@ open class ChangelogBuilder : KLogging() {
     }
 
     //    open fun addedEntry(id: String, metaInfo: Map<EntryReportData, String>): String? {
-    open fun addedEntry(entry: LockEntry): String? {
-        logger.debug { "added entry: ${entry.id}" }
-        return diffTableEntry(newEntry = entry, oldEntry = null)
+    open fun addedEntry(id: String, entry: LockEntry): String? {
+        logger.debug { "added entry: ${id}" }
+        return diffTableEntry(id = id, newEntry = entry, oldEntry = null)
             ?.let { t ->
                 buildString {
-                    appendLine("added `${entry.id}`")
+                    appendLine("added `${id}`")
                     appendLine()
                     appendLine(t)
                 }
             }
     }
 
-    open fun removedEntry(entry: LockEntry): String? {
-        logger.debug { "removed entry: ${entry.id}" }
-        return diffTableEntry(newEntry = null, oldEntry = entry)
+    open fun removedEntry(id: String, entry: LockEntry): String? {
+        logger.debug { "removed entry: ${id}" }
+        return diffTableEntry(id = id, newEntry = null, oldEntry = entry)
             ?.let { t ->
                 buildString {
-                    appendLine("removed `${entry.id}`")
+                    appendLine("removed `${id}`")
                     appendLine()
                     appendLine(t)
                 }
@@ -243,14 +239,15 @@ open class ChangelogBuilder : KLogging() {
     }
 
     open fun updatedEntry(
+        id: String,
         newEntry: LockEntry,
         oldEntry: LockEntry,
     ): String? {
-        logger.debug { "updated entry: ${newEntry.id}, $oldEntry -> $newEntry" }
-        return diffTableEntry(newEntry = newEntry, oldEntry = oldEntry)
+        logger.debug { "updated entry: ${id}, $oldEntry -> $newEntry" }
+        return diffTableEntry(id = id, newEntry = newEntry, oldEntry = oldEntry)
             ?.let { t ->
                 buildString {
-                    appendLine("updated `${newEntry.id}`")
+                    appendLine("updated `${id}`")
                     appendLine()
                     appendLine(t)
                 }
@@ -261,13 +258,14 @@ open class ChangelogBuilder : KLogging() {
         propHeader: String = "Property",
         oldheader: String = "old value",
         newheader: String = "new value",
+        id: String,
         newEntry: LockEntry?,
         oldEntry: LockEntry?,
     ): String? {
         val tableContent: Map<String, Pair<Any?, Any?>> = listOf(
             "ID"
-                    to oldEntry?.id
-                    to newEntry?.id,
+                    to id
+                    to id,
             "Version"
                     to oldEntry?.version()
                     to newEntry?.version(),

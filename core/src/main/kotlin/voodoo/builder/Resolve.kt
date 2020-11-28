@@ -25,9 +25,11 @@ suspend fun resolve(
     modPack: FlatModPack
 ) = stopwatch {
 
-    // remove all transient entries
-    modPack.lockEntrySet.removeIf { entry ->
-        modPack.findEntryById(entry.id)?.transient ?: true
+    // remove all transient entries and entries that could be found in modpack
+    modPack.lockEntryMap.keys.filter { id ->
+        (modPack.findEntryById(id)?.transient ?: true)
+    }.forEach { removeKey ->
+        modPack.lockEntryMap.remove(removeKey)
     }
 
     // recalculate all dependencies
@@ -52,24 +54,27 @@ suspend fun resolve(
                                         logger.trace { "processing: $entry" }
                                         val provider = voodoo.provider.Providers.forEntry(entry)!!
 
-                                        val lockEntry = provider.resolve(entry, modPack.mcVersion, newEntriesChannel)
+                                        val (lockEntryId, lockEntry) = provider.resolve(entry, modPack.mcVersion, newEntriesChannel)
                                         logger.debug("received locked entry: $lockEntry")
 
                                         logger.debug("validating: $lockEntry")
-                                        if (!provider.validate(lockEntry)) {
+                                        if (!provider.validate(lockEntryId, lockEntry)) {
                                             throw IllegalStateException("did not pass validation")
                                         }
 
                                         logger.debug("trying to merge entry")
-                                        val actualLockEntry = modPack.addOrMerge(lockEntry) { old, new ->
+                                        val mergedLockentry = modPack.addOrMerge(
+                                            id = lockEntryId,
+                                            newEntry = lockEntry
+                                        ) { old, new ->
                                             old ?: new
                                         }
-                                        logger.debug("merged entry: $actualLockEntry")
+                                        logger.debug("merged entry: $mergedLockentry")
 
-                                        logger.debug("validating: actual $actualLockEntry")
-                                        if (!provider.validate(actualLockEntry)) {
-                                            logger.error { actualLockEntry }
-                                            throw IllegalStateException("actual entry did not validate")
+                                        logger.debug("validating: actual $mergedLockentry")
+                                        if (!provider.validate(lockEntryId, mergedLockentry)) {
+                                            logger.error { mergedLockentry }
+                                            throw IllegalStateException("mergedLockentry did not validate")
                                         }
 
 //                    logger.debug("setting display name")
@@ -132,7 +137,7 @@ suspend fun resolve(
 
     val unresolvedIDs = resolved - modPack.entrySet.map { it.id }
     logger.info("unresolved ids: $unresolvedIDs")
-    logger.info("resolved ids: ${modPack.lockEntrySet.map { it.id }}")
+    logger.info("resolved ids: ${modPack.lockEntryMap.keys}")
 
     modPack.entrySet.filter {
         modPack.findLockEntryById(it.id) == null
