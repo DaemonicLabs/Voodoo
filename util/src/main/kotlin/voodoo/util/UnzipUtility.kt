@@ -1,6 +1,7 @@
 package voodoo.util
 
 import mu.KLogging
+import mu.KotlinLogging
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileInputStream
@@ -14,7 +15,9 @@ import java.util.zip.ZipInputStream
  * a destination directory.
  * @author www.codejava.net
  */
-object UnzipUtility : KLogging() {
+object UnzipUtility {
+
+    private val logger = KotlinLogging.logger {}
 
     /**
      * Size of the buffer to read/write data

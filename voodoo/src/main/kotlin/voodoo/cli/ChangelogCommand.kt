@@ -98,7 +98,7 @@ class ChangelogCommand(
                     stopwatch = "createAllChangelogs".watch,
                     docDir = docDir,
                     id = id,
-                    baseDir = baseDir,
+                    lockpacks = lockpacks,
                     changelogBuilder = defaultChangelogBuilder
                 )
 //                Diff.createChangelog(

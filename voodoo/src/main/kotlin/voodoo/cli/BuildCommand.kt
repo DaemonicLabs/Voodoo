@@ -142,7 +142,7 @@ class BuildCommand() : CliktCommand(
                                     overrides = config.overrides,
                                     metaPack = metaPack
                                 )
-                                logger.debug { "modpack: $modpack" }
+//                                logger.debug { "modpack: $modpack" }
                                 logger.debug { "entrySet: ${modpack.entrySet}" }
 
 

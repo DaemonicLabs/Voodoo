@@ -6,6 +6,7 @@ import voodoo.data.flat.FlatModPack
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.provider.Providers
+import voodoo.util.packToZip
 import voodoo.util.toJson
 import kotlin.system.exitProcess
 
@@ -52,6 +53,8 @@ object Builder : KLogging() {
 
         logger.info("Creating locked pack...")
         val lockedPack = modpack.lock("lock".watch, targetFolder)
+        lockedPack.lockBaseFolder.deleteRecursively()
+        lockedPack.lockBaseFolder.mkdirs()
 
         logger.info("Writing lock file... $targetFile")
         targetFile.parentFile.mkdirs()
@@ -60,10 +63,24 @@ object Builder : KLogging() {
         logger.info { "copying input files into output" }
         //FIXME: also include local ?
         logger.info { "copying: ${modpack.sourceFolder}" }
+
+        //TODO: zip src and local
+
+
         lockedPack.sourceFolder.also { sourceFolder ->
             sourceFolder.deleteRecursively()
             sourceFolder.mkdirs()
             modpack.sourceFolder.copyRecursively(sourceFolder, overwrite = true)
+
+            if(sourceFolder.list()?.isNotEmpty() == true) {
+                logger.info { "zipping $sourceFolder" }
+                logger.info { "zipping ${sourceFolder.list()?.joinToString()}" }
+                packToZip(
+                    sourceFolder,
+                    lockedPack.sourceZip
+                )
+            }
+            sourceFolder.deleteRecursively()
         }
         logger.info { "copying: ${modpack.iconFile}" }
         modpack.iconFile
@@ -80,6 +97,16 @@ object Builder : KLogging() {
                     localTargetFile.absoluteFile.parentFile.mkdirs()
                     modpack.localFolder.resolve(entry.fileSrc).copyTo(localTargetFile, overwrite = true)
                 }
+
+            if(localFolder.list()?.isNotEmpty() == true) {
+                logger.info { "zipping $localFolder" }
+                logger.info { "zipping ${localFolder.list()?.joinToString()}" }
+                packToZip(
+                    localFolder,
+                    lockedPack.localZip
+                )
+            }
+//            localFolder.deleteRecursively()
         }
 
         lockedPack

@@ -7,9 +7,7 @@ import mu.KLogging
 import voodoo.data.DependencyType
 import voodoo.data.PackOptions
 import voodoo.data.PackReportData
-import voodoo.util.VersionComparator
-import voodoo.util.blankOr
-import voodoo.util.json
+import voodoo.util.*
 import java.io.File
 
 /**
@@ -20,7 +18,6 @@ import java.io.File
 @Serializable
 data class LockPack(
     val id: String,
-    val srcPath: String,
     val mcVersion: String,
     var modloader: Modloader = Modloader.None,
     val title: String? = null,
@@ -36,6 +33,9 @@ data class LockPack(
 
         // maybe make this configurable ?
         const val outputFolder = "lock"
+
+        private val directories = Directories.get()
+        private val cacheDir = directories.cacheHome.resolve("LOCKPACK")
 
         val versionComparator = compareBy(comparator = VersionComparator, LockPack::version)
 
@@ -59,15 +59,35 @@ data class LockPack(
                 }
         }
 
+
         fun parse(packFile: File, baseFolder: File): LockPack {
             if (!baseFolder.isAbsolute) {
                 throw IllegalStateException("baseFolder: '$baseFolder' is not absolute")
             }
             val lockpack: LockPack = json.decodeFromString(LockPack.serializer(), packFile.readText())
             lockpack.lockBaseFolder = baseFolder
+
+            lockpack.sourceFolder.deleteRecursively()
+            if(lockpack.sourceZip.exists()) {
+                lockpack.sourceFolder.mkdirs()
+                UnzipUtility.unzip(
+                    lockpack.sourceZip,
+                    lockpack.sourceFolder
+                )
+            }
+
+            lockpack.localFolder.deleteRecursively()
+            if(lockpack.localZip.exists()) {
+                lockpack.localFolder.mkdirs()
+                UnzipUtility.unzip(
+                    lockpack.localZip,
+                    lockpack.localFolder
+                )
+            }
 //            lockpack.entries.forEach {
 //                it.srcFolder = lockpack.sourceFolder
 //            }
+            //TODO: unzip src and local and point sourceFolder and localFolder to extracted locations
             return lockpack
         }
     }
@@ -82,11 +102,17 @@ data class LockPack(
 
     @Transient
     val sourceFolder: File
-        get() = lockBaseFolder.resolve(srcPath)
+        get() = cacheDir.resolve(id).resolve(version).resolve("src")
+    @Transient
+    val sourceZip: File
+        get() = lockBaseFolder.resolve("src.zip")
 
     @Transient
     val localFolder: File
-        get() = lockBaseFolder.resolve(localDir)
+        get() = cacheDir.resolve(id).resolve(version).resolve("local")
+    @Transient
+    val localZip: File
+        get() = lockBaseFolder.resolve("local.zip")
 
     @Transient
     val iconFile: File

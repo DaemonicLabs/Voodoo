@@ -101,7 +101,7 @@ data class FlatModPack(
         "creating Lockpack".watch {
             LockPack(
                 id = id,
-                srcPath = sourceFolder.toRelativeUnixPath(baseFolder),
+//                srcPath = "src", //sourceFolder.toRelativeUnixPath(baseFolder),
                 title = title,
                 version = version,
                 icon = iconFile.absoluteFile.toRelativeUnixPath(baseFolder),

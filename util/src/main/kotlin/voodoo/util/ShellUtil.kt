@@ -55,7 +55,7 @@ object ShellUtil : KLogging() {
     ): ProcessResult {
 
         try {
-            logger.debug { "running: ${cmd.joinToString("' '", "['", "']")}" }
+            logger.debug { "running: ${cmd.joinToString("' '", "['", "']")} in ${wd}" }
             // simplify with https://stackoverflow.com/questions/35421699/how-to-invoke-external-command-from-within-kotlin-code
             val proc = ProcessBuilder(cmd.asList())
                 .directory(wd)

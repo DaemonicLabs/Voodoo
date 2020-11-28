@@ -1,6 +1,5 @@
 {
     "id": "fabricPack",
-    "srcPath": "src_0.0.1",
     "mcVersion": "1.15.2",
     "modloader": {
         "type": "Fabric",

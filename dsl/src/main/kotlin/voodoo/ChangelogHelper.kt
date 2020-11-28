@@ -12,9 +12,9 @@ object ChangelogHelper : KLogging() {
 
     fun createAllChangelogs(
         stopwatch: Stopwatch,
+        lockpacks: List<LockPack>,
         docDir: File,
         id: String,
-        baseDir: File,
         changelogBuilder: ChangelogBuilder,
     ) = stopwatch {
         val cacheHome = directories.cacheHome.resolve("CHANGELOG").resolve(id)
@@ -22,10 +22,10 @@ object ChangelogHelper : KLogging() {
 
         val diffWorkingDir = cacheHome.resolve("sources").apply { mkdirs() }
 
-        val lockpacks = LockPack.parseAll(baseFolder = baseDir)
+        val lockpacks = lockpacks
             .sortedWith(LockPack.versionComparator)
 
-        val (firstChangelog, firstDiffFile) = createChangelogAndDiff(
+        val (firstChangelog, firstDiffText) = createChangelogAndDiff(
             oldPack = null,
             newPack = lockpacks.first(),
             docDir = docDir,
@@ -34,7 +34,7 @@ object ChangelogHelper : KLogging() {
             diffWorkingDir = diffWorkingDir
         )
         val diffs = lockpacks.zipWithNext().map { (oldPack, newPack) ->
-            val (changelogFile, diffFile) = createChangelogAndDiff(
+            val (changelogFile, diffText) = createChangelogAndDiff(
                 oldPack = oldPack,
                 newPack = newPack,
                 docDir = docDir,
@@ -42,16 +42,16 @@ object ChangelogHelper : KLogging() {
                 changelogBuilder = changelogBuilder,
                 diffWorkingDir = diffWorkingDir
             )
-            diffFile
+            diffText
         }
 
-        val allDiffFiles = listOfNotNull(
-            firstDiffFile,
+        val addDiffTexts = listOfNotNull(
+            firstDiffText,
             *diffs.toTypedArray()
         )
 
         docDir.resolve("complete_changes.diff").writeText(
-            allDiffFiles.joinToString("\n\n") { it.readText() }
+            addDiffTexts.joinToString("\n\n")
         )
 
         logger.info { "writing full changelog" }
@@ -71,7 +71,7 @@ object ChangelogHelper : KLogging() {
         cacheHome: File,
         changelogBuilder: ChangelogBuilder,
         diffWorkingDir: File,
-    ): Pair<File, File?> {
+    ): Pair<File, String?> {
         logger.info("generating diff ${oldPack?.version} -> ${newPack?.version}")
 
         val newSourceCopy = diffWorkingDir.resolve(newPack.version).apply {
@@ -90,52 +90,43 @@ object ChangelogHelper : KLogging() {
 
         logger.debug("docDir: $docDir")
 
-        val diffFile = writeDiff(
+        val diffText = executeDiff(
             rootFolder = diffWorkingDir,
             oldSource = oldSourceCopy,
             newSource = newSourceCopy,
-            diffFile = cacheHome.resolve("${newPack.version}_changes.diff"),
-            docDir = docDir
         )
-        if (diffFile != null) {
+        if (diffText != null) {
             val targetFile = docDir.resolve(newPack.version).resolve("changes.diff")
             targetFile.parentFile.mkdirs()
-            diffFile.copyTo(targetFile, overwrite = true)
+            targetFile.writeText(diffText)
         }
 
-
-        val changelogFile = cacheHome.resolve("${newPack.version}_${changelogBuilder.filename}").apply {
-            parentFile.mkdirs()
-        }
         val currentChangelogText = buildString {
-            with(receiver = changelogBuilder
-            ) {
+            with(receiver = changelogBuilder) {
                 writeChangelog(
                     oldPack = oldPack,
                     newPack = newPack
                 )
             }
         }
+        val changelogFile = cacheHome.resolve("${newPack.version}_${changelogBuilder.filename}").apply {
+            parentFile.mkdirs()
+        }
         logger.info("writing changelog to ${changelogFile}")
         changelogFile.absoluteFile.parentFile.mkdirs()
         changelogFile.writeText(currentChangelogText)
 
-        docDir.mkdirs()
-        changelogFile.copyTo(docDir.resolve(changelogBuilder.filename), overwrite = true)
-
         newSourceCopy.deleteRecursively()
         oldSourceCopy.deleteRecursively()
 
-        return changelogFile to diffFile
+        return changelogFile to diffText
     }
 
-    private fun writeDiff(
+    private fun executeDiff(
         rootFolder: File,
         oldSource: File,
         newSource: File,
-        diffFile: File,
-        docDir: File,
-    ): File? {
+    ): String? {
         if (ShellUtil.isInPath("git")) {
             oldSource.walkBottomUp().forEach {
                 when {
@@ -157,19 +148,9 @@ object ChangelogHelper : KLogging() {
                 newSource.toRelativeString(rootFolder),
                 wd = rootFolder
             )
-            logger.info("writing '$diffFile'")
-            diffResult.stdout.trim().takeIf { it.isNotBlank() }?.let {
-                diffFile.writeText(it)
-            } ?: run {
-                logger.info("diff result is empty")
-                diffFile.delete()
-                return null
-            }
-
-            diffFile.copyTo(docDir.resolve("changes.diff"), overwrite = true)
-            return diffFile
+            return diffResult.stdout.trim().takeIf { it.isNotBlank() }
         } else {
-            logger.error("please install `diff`")
+            logger.error("please install `git`")
             return null
         }
     }
