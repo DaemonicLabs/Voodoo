@@ -5,9 +5,6 @@ import com.eyeem.watchadoin.saveAsHtml
 import com.eyeem.watchadoin.saveAsSvg
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
-import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.arguments.multiple
-import com.github.ajalt.clikt.parameters.arguments.validate
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
@@ -20,14 +17,12 @@ import mu.KotlinLogging
 import mu.withLoggingContext
 import voodoo.Pack
 import voodoo.data.lock.LockPack
-import voodoo.pack.AbstractPack
-import voodoo.pack.VersionPack
 import voodoo.util.SharedFolders
 import voodoo.util.VersionComparator
 import java.io.File
 
-class PackCommand(): CliktCommand(
-    name = "pack",
+class PackageCommand(): CliktCommand(
+    name = "package",
 //    help = ""
 ) {
     companion object {
@@ -67,31 +62,25 @@ class PackCommand(): CliktCommand(
                 packTargets.toSet().forEach { packTarget ->
                     withLoggingContext("pack" to packTarget.id) {
                         withContext(MDCContext()) {
-
-                            val versionPacks = VersionPack.parseAll(baseDir = baseDir)
-                                .sortedWith(compareBy(VersionComparator, VersionPack::version))
+                            val lockPacks = LockPack.parseAll(baseFolder = baseDir)
+                                .sortedWith(compareBy(VersionComparator, LockPack::version))
 
                             coroutineScope {
-                                versionPacks.forEach { versionPack ->
-                                    withLoggingContext("version" to versionPack.version) {
-                                        launch(MDCContext() + CoroutineName("package-version-${versionPack.version}")) {
-                                            val lockFile = LockPack.fileForVersion(version = versionPack.version, baseDir = baseDir)
-
-                                            val modpack = LockPack.parse(lockFile.absoluteFile, rootDir)
+                                lockPacks.forEach { lockpack ->
+                                    withLoggingContext("version" to lockpack.version) {
+                                        launch(MDCContext() + CoroutineName("package-version-${lockpack.version}")) {
                                             // TODO: pass pack method (enum / object)
-                                            Pack.pack("pack-${packTarget.id}".watch, modpack, uploadDir, packTarget)
+                                            Pack.pack("pack-${packTarget.id}".watch, lockpack, uploadDir, packTarget)
                                         }
                                     }
                                 }
                             }
-
                         }
                     }
                 }
             }
 
-
-            val reportDir= File("reports").apply { mkdirs() }
+            val reportDir = File("reports").apply { mkdirs() }
             stopwatch.saveAsSvg(reportDir.resolve("${id}_build.report.svg"))
             stopwatch.saveAsHtml(reportDir.resolve("${id}_build.report.html"))
         }

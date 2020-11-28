@@ -17,6 +17,22 @@
 
 ## version listing
 
+### reasons for all versions in source
+
+old pack versions will be automagically rebuilt if the format breaks
+
+diffs / changelogs / modlists can be generated
+
+users cna pick from version list
+
+### reasons against
+
+versions will be reset? how is that any useful ?
+
+
+stable format needs to contain all the lock-file and lock-entry information
+
+
 `build` command: creates `$version.lock.pack.json` including lock-entries
 `package` picks all `.lock.pack.json` files, sorts by semver
 

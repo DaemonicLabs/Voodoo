@@ -1,6 +1,6 @@
 {
     "id": "fabricPack",
-    "srcPath": "src_0.0.1",
+    "srcPath": "src",
     "mcVersion": "1.15.2",
     "modloader": {
         "type": "Fabric",
@@ -8,26 +8,20 @@
         "intermediateMappings": "1.15.2",
         "installer": "0.6.1.51"
     },
-    "version": "0.0.1",
-    "icon": "v0.0.1_icon_fabricPack.png",
+    "version": "0.0.2",
+    "icon": "icon_fabricPack.png",
     "packOptions": {
-        "multimcOptions": {
-            "relativeSelfupdateUrl": "fabricPack_0.0.1.json"
-        },
-        "uploadUrl": "https://nikky.moe/.mc/experimental/fabricPack"
+        "uploadUrl": "https://nikky.moe/.mc/fabricPack"
     },
     "entries": [
         {
             "type": "curse",
             "common": {
                 "path": "mods",
-                "name": "appleskin",
-                "dependencies": {
-                    "fabric-api": "REQUIRED"
-                }
+                "name": "modmenu"
             },
-            "projectID": 248787,
-            "fileID": 2987254
+            "projectID": 308702,
+            "fileID": 3121557
         },
         {
             "type": "curse",
@@ -37,27 +31,6 @@
             },
             "projectID": 317514,
             "fileID": 3109495
-        },
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "fabric-api"
-            },
-            "projectID": 306612,
-            "fileID": 3105065
-        },
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "roughly-enough-resources",
-                "dependencies": {
-                    "roughly-enough-items": "REQUIRED"
-                }
-            },
-            "projectID": 325625,
-            "fileID": 2903947
         },
         {
             "type": "curse",
@@ -84,13 +57,13 @@
             "type": "curse",
             "common": {
                 "path": "mods",
-                "name": "roughly-enough-items",
+                "name": "appleskin",
                 "dependencies": {
                     "fabric-api": "REQUIRED"
                 }
             },
-            "projectID": 310111,
-            "fileID": 2979221
+            "projectID": 248787,
+            "fileID": 2987254
         },
         {
             "type": "curse",
@@ -108,10 +81,34 @@
             "type": "curse",
             "common": {
                 "path": "mods",
-                "name": "modmenu"
+                "name": "fabric-api"
             },
-            "projectID": 308702,
-            "fileID": 2902148
+            "projectID": 306612,
+            "fileID": 3105065
+        },
+        {
+            "type": "curse",
+            "common": {
+                "path": "mods",
+                "name": "roughly-enough-resources",
+                "dependencies": {
+                    "roughly-enough-items": "REQUIRED"
+                }
+            },
+            "projectID": 325625,
+            "fileID": 2903947
+        },
+        {
+            "type": "curse",
+            "common": {
+                "path": "mods",
+                "name": "roughly-enough-items",
+                "dependencies": {
+                    "fabric-api": "REQUIRED"
+                }
+            },
+            "projectID": 310111,
+            "fileID": 2979221
         }
     ]
 }

@@ -2,14 +2,11 @@ package voodoo.cli
 
 import ch.qos.logback.classic.Level
 import com.github.ajalt.clikt.core.CliktCommand
-import com.github.ajalt.clikt.core.context
 import com.github.ajalt.clikt.core.subcommands
-import com.github.ajalt.clikt.parameters.options.convert
 import com.github.ajalt.clikt.parameters.options.default
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.versionOption
 import com.github.ajalt.clikt.parameters.types.choice
-import com.github.ajalt.clikt.parameters.types.enum
 import com.github.ajalt.clikt.parameters.types.file
 import mu.KotlinLogging
 import mu.withLoggingContext
@@ -36,7 +33,7 @@ class VoodooCommand(invocation: String = "voodoo") : CliktCommand(
             GenerateSchemaCommand(),
             BuildCommand(),
             ChangelogCommand(),
-            PackCommand(),
+            PackageCommand(),
             LaunchCommand()
         )
     }

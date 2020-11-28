@@ -10,7 +10,7 @@ import voodoo.data.OptionalData
 import voodoo.data.Side
 import voodoo.data.components.*
 import voodoo.data.curse.PackageType
-import voodoo.data.flat.Entry
+import voodoo.data.flat.FlatEntry
 import kotlin.reflect.KMutableProperty
 import kotlin.reflect.full.functions
 import kotlin.reflect.full.memberProperties
@@ -149,7 +149,7 @@ sealed class NestedEntry(
         enabled = enabled
     )
 
-    fun flatten(id: String = "root"): List<Entry> {
+    fun flatten(id: String = "root"): List<FlatEntry> {
         flatten("", id)
 
         // no longer of use because duplicate ids cannot happen
@@ -173,26 +173,26 @@ sealed class NestedEntry(
             logger.trace { "converting to Entry: id=$entryId nestedEntry=$entry" }
             with(entry) {
                 when (this) {
-                    is Common -> Entry.Common(
+                    is Common -> FlatEntry.Common(
                         common = toCommonComponent(entryId)
                     )
-                    is Curse -> Entry.Curse(
+                    is Curse -> FlatEntry.Curse(
                         common = toCommonComponent(entryId),
                         curse = curse.copy()
                     )
-                    is Direct -> Entry.Direct(
+                    is Direct -> FlatEntry.Direct(
                         common = toCommonComponent(entryId),
                         direct = direct.copy()
                     )
-                    is Jenkins -> Entry.Jenkins(
+                    is Jenkins -> FlatEntry.Jenkins(
                         common = toCommonComponent(entryId),
                         jenkins = jenkins.copy()
                     )
-                    is Local -> Entry.Local(
+                    is Local -> FlatEntry.Local(
                         common = toCommonComponent(entryId),
                         local = local.copy()
                     )
-                    is Noop -> Entry.Noop(
+                    is Noop -> FlatEntry.Noop(
                         common = toCommonComponent(entryId)
                     )
                 }

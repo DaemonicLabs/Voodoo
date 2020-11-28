@@ -9,13 +9,10 @@ data class VersionPackageConfig(
     var multimc: MultimcPackageOption = MultimcPackageOption(),
     var userFiles: FnPatternList = FnPatternList()
 ) {
-
     @Serializable
     data class VoodooPackageConfig(
         var relativeSelfupdateUrl: String? = null,
-    ) {
-        fun getRelativeSelfupdateUrl(version: String) = relativeSelfupdateUrl ?: "v$version.json"
-    }
+    )
 
     @Serializable
     data class MultimcPackageOption(

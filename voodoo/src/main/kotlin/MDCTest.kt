@@ -85,7 +85,7 @@ fun CoroutineScope.storeMDC() {
 
 private fun exceptionHandler() = CoroutineExceptionHandler { context, e ->
     logger.error { "handling exception" }
-    GlobalScope.launch(MutableMDCContext(context[MutableMDCContext.Key]?.contextMap) + Dispatchers.Default) {
+    runBlocking(MutableMDCContext(context[MutableMDCContext.Key]?.contextMap) + Dispatchers.Default) {
         logger.error(e) { "unhandled exception" }
     }
 }

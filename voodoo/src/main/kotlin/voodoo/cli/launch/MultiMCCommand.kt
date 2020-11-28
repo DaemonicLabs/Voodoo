@@ -5,26 +5,15 @@ import com.eyeem.watchadoin.saveAsHtml
 import com.eyeem.watchadoin.saveAsSvg
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
-import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.arguments.multiple
-import com.github.ajalt.clikt.parameters.arguments.validate
 import com.github.ajalt.clikt.parameters.options.*
-import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.file
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
-import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import mu.withLoggingContext
-import voodoo.Pack
-import voodoo.TestMethod
-import voodoo.VoodooTask
 import voodoo.cli.CLIContext
 import voodoo.data.lock.LockPack
-import voodoo.pack.AbstractPack
-import voodoo.pack.VersionPack
 import voodoo.tester.MultiMCTester
-import voodoo.util.SharedFolders
 import voodoo.util.VersionComparator
 import java.io.File
 
@@ -44,10 +33,10 @@ class MultiMCCommand(): CliktCommand(
 
     val versionOption by option(
         "--version",
-        help = "build only specified versions"
+        help = "launch a specified version"
     ).validate { version ->
         require(version.matches("^\\d+(?:\\.\\d+)+$".toRegex())) {
-            "all versions must match pattern '^\\d+(\\.\\d+)+\$' eg: 0.1 or 4.11.6 or 1.2.3.4 "
+            "version must match pattern '^\\d+(\\.\\d+)+\$' eg: 0.1 or 4.11.6 or 1.2.3.4 "
         }
     }
 
@@ -65,21 +54,18 @@ class MultiMCCommand(): CliktCommand(
             val baseDir = rootDir.resolve(id)
 
             stopwatch {
-                val versionPacks = VersionPack.parseAll(baseDir = baseDir)
-                    .sortedWith(compareBy(VersionComparator, VersionPack::version))
+                val lockpacks = LockPack.parseAll(baseFolder = baseDir)
+                    .sortedWith(compareBy(VersionComparator, LockPack::version))
 
                 val versionOption = versionOption
-                val version = if(versionOption != null) {
-                    versionPacks.firstOrNull { VersionComparator.compare(it.version, versionOption) == 0 }?.version
-                        ?: error("$versionOption is not available, existing versions are: ${versionPacks.map { it.version }}")
+                val lockpack = if(versionOption != null) {
+                    lockpacks.firstOrNull { VersionComparator.compare(it.version, versionOption) == 0 }
+                        ?: error("$versionOption is not available, existing versions are: ${lockpacks.map { it.version }}")
                 } else {
-                    versionPacks.last().version
+                    lockpacks.last()
                 }
 
-                val lockFile = LockPack.fileForVersion(version = version, baseDir = baseDir)
-                val modpack = LockPack.parse(lockFile, rootDir)
-
-                MultiMCTester.execute("launch-multimc".watch, modpack = modpack, clean = clean)
+                MultiMCTester.execute("launch-multimc".watch, modpack = lockpack, clean = clean)
             }
 
 

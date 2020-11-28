@@ -5,8 +5,6 @@ import mu.KLogging
 import voodoo.data.components.*
 import voodoo.data.lock.CommonLockComponent
 import voodoo.data.lock.LockEntry
-import voodoo.provider.*
-import java.io.File
 
 /**
  * Created by nikky on 28/03/18.
@@ -14,10 +12,10 @@ import java.io.File
  */
 
 
-sealed class Entry: CommonMutable {
+sealed class FlatEntry: CommonMutable {
     data class Common(
         val common: CommonComponent = CommonComponent()
-    ) : Entry(), CommonMutable by common {
+    ) : FlatEntry(), CommonMutable by common {
         init {
             optional = optionalData != null
         }
@@ -26,7 +24,7 @@ sealed class Entry: CommonMutable {
     data class Curse(
         private val common: CommonComponent = CommonComponent(),
         private val curse: CurseComponent = CurseComponent()
-    ) : Entry(), CommonMutable by common, CurseMutable by curse {
+    ) : FlatEntry(), CommonMutable by common, CurseMutable by curse {
         init {
             optional = optionalData != null
         }
@@ -35,7 +33,7 @@ sealed class Entry: CommonMutable {
     data class Direct(
         private val common: CommonComponent = CommonComponent(),
         private val direct: DirectComponent = DirectComponent()
-    ) : Entry(), CommonMutable by common, DirectMutable by direct {
+    ) : FlatEntry(), CommonMutable by common, DirectMutable by direct {
         init {
             optional = optionalData != null
         }
@@ -44,7 +42,7 @@ sealed class Entry: CommonMutable {
     data class Jenkins(
         private val common: CommonComponent = CommonComponent(),
         private val jenkins: JenkinsComponent = JenkinsComponent()
-    ) : Entry(), CommonMutable by common, JenkinsMutable by jenkins {
+    ) : FlatEntry(), CommonMutable by common, JenkinsMutable by jenkins {
         init {
             optional = optionalData != null
         }
@@ -53,7 +51,7 @@ sealed class Entry: CommonMutable {
     data class Local(
         private val common: CommonComponent = CommonComponent(),
         private val local: LocalComponent = LocalComponent()
-    ) : Entry(), CommonMutable by common, LocalMutable by local {
+    ) : FlatEntry(), CommonMutable by common, LocalMutable by local {
         init {
             optional = optionalData != null
         }
@@ -61,7 +59,7 @@ sealed class Entry: CommonMutable {
 
     data class Noop(
         private val common: CommonComponent = CommonComponent()
-    ) : Entry(), CommonMutable by common {
+    ) : FlatEntry(), CommonMutable by common {
         init {
             optional = optionalData != null
         }

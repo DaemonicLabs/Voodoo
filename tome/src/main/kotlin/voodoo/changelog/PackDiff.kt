@@ -15,7 +15,7 @@ import voodoo.data.PackReportData
 val LockPack.authorsString: String
     get() = authors.joinToString(", ")
 val LockPack.iconHtml: String
-    get() = "<img src=\"${iconFile.relativeTo(rootFolder).unixPath}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
+    get() = "<img src=\"${iconFile.relativeTo(lockBaseFolder).unixPath}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
 
 data class PackDiff(
     val newPack: LockPack,

@@ -43,7 +43,8 @@ object VoodooPackager : AbstractPack("voodoo") {
         val directories = Directories.get()
 
         val cacheDir = directories.cacheHome
-        val workspaceDir = modpack.rootFolder.resolve("build").resolve("voodoo_workspace").resolve("${modpack.id}-${modpack.version}").absoluteFile
+        //TODO: use a cache thingy instead ?
+        val workspaceDir = cacheDir.resolve("voodoo_workspace").resolve("${modpack.id}-${modpack.version}").absoluteFile
         val modpackDir = workspaceDir.resolve(modpack.id)
 
         val srcFolder = modpackDir.resolve("src")
@@ -253,7 +254,7 @@ object VoodooPackager : AbstractPack("voodoo") {
                     PackageBuilder.build(
                         inputPath = modpackDir,
                         outputPath = output,
-                        modpackId = "${modpack.id}_${modpack.version}",
+                        modpackId = modpack.id,
                         installerLocation = installer.toRelativeString(output).replace('\\', '/'),
                         modpackTitle = modpack.title ?: modpack.id,
                         modpackVersion = uniqueVersion,

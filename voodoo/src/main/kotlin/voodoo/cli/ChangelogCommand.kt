@@ -17,6 +17,7 @@ import kotlinx.coroutines.slf4j.MDCContext
 import voodoo.VoodooTask
 import voodoo.changelog.ChangelogBuilder
 import voodoo.data.nested.NestedPack
+import voodoo.pack.VersionPack
 import voodoo.tome.ModlistGeneratorMarkdown
 import voodoo.tome.TomeEnv
 import voodoo.util.Directories
@@ -42,7 +43,7 @@ class ChangelogCommand(
         "--id",
         help = "pack id"
     ).defaultLazy {
-        packFile.name.substringBeforeLast(".voodoo.json")
+        packFile.name.substringBeforeLast("." + VersionPack.extension)
     }
 
     override fun run() = runBlocking(MDCContext()) {

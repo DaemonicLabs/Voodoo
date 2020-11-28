@@ -5,7 +5,6 @@ import com.github.ajalt.clikt.core.requireObject
 import com.github.ricky12awesome.jss.encodeToSchema
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
-import kotlinx.serialization.SerializationException
 import mu.KotlinLogging
 import mu.withLoggingContext
 import voodoo.data.nested.NestedPack
@@ -15,8 +14,6 @@ import voodoo.config.generateSchema
 import voodoo.pack.MetaPack
 import voodoo.pack.VersionPack
 import voodoo.util.json
-import voodoo.util.toRelativeUnixPath
-import java.io.File
 import java.io.FileNotFoundException
 
 class GenerateSchemaCommand : CliktCommand(
@@ -62,6 +59,11 @@ class GenerateSchemaCommand : CliktCommand(
 
             Autocompletions.generate(configFile = configFile)
 
+
+//            rootDir.resolve("packId").resolve(Modpack.defaultSchema).apply {
+//                absoluteFile.parentFile.mkdirs()
+//                writeText(Modpack.generateSchema(overridesKeys = config.overrides.keys))
+//            }
 
             rootDir.resolve("packId").resolve(VersionPack.defaultSchema).apply {
                 absoluteFile.parentFile.mkdirs()

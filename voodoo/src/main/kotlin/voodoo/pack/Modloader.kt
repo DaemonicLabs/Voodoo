@@ -3,6 +3,7 @@ package voodoo.pack
 import com.github.ricky12awesome.jss.JsonSchema
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import voodoo.config.Autocompletions
 
 // TODO: is this all we need ?
 // TODO: maybe convert to merged data structure? less typesafety vs control over type variable
@@ -15,7 +16,13 @@ sealed class Modloader {
         // https://files.minecraftforge.net/maven/net/minecraftforge/forge/maven-metadata.xml
         @JsonSchema.StringEnum(["replace_with_forge_versions"])
         val version: String
-    ) : Modloader()
+    ) : Modloader() {
+        override fun replaceAutoCompletes(): Forge {
+            return copy(
+                version = Autocompletions.forge[version] ?: version
+            )
+        }
+    }
 
     // look up versions from https://meta.fabricmc.net/
     @Serializable
@@ -34,8 +41,21 @@ sealed class Modloader {
         @JsonSchema.Description(["find available versions on https://meta.fabricmc.net/v2/versions/installer"])
         @JsonSchema.StringEnum(["replace_with_fabric_installers"])
         val installer: String? = null
-    ) : Modloader()
+    ) : Modloader() {
+        override fun replaceAutoCompletes(): Fabric {
+            return copy(
+                intermediateMappings = Autocompletions.fabricIntermediaries[intermediateMappings] ?: intermediateMappings,
+                loader = Autocompletions.fabricLoaders[loader] ?: loader,
+                installer = Autocompletions.fabricInstallers[installer] ?: installer
+            )
+        }
+    }
 
     @Serializable
     object None : Modloader() // not sure if we want to keep this
+    {
+        override fun replaceAutoCompletes() = this
+    }
+
+    abstract fun replaceAutoCompletes(): Modloader
 }

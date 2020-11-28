@@ -6,20 +6,20 @@ import kotlinx.serialization.Serializable
 import voodoo.data.Side
 import voodoo.data.components.*
 import voodoo.data.curse.PackageType
-import voodoo.data.flat.Entry
+import voodoo.data.flat.FlatEntry
 
 @Serializable
 sealed class FileEntry(
 //    @JsonSchema.Definition("entry.applyOverrides")
     @JsonSchema.StringEnum(["replace_with_overrides"])
     val applyOverrides: List<String> = listOf(),
+    var id: String? = null,
     var name: String? = null,
     var folder: String? = null,
     var description: String? = null,
     var optional: Optional? = null,
     var side: Side = Side.BOTH,
     var websiteUrl: String = "",
-//    var dependencies: MutableMap<String, DependencyType> = mutableMapOf(),
     var packageType: PackageType = PackageType.MOD,
     var transient: Boolean = false, // this entry got added as dependency for something else, only setthis if you know what you are doing
     var version: String = "", // TODO: use regex only ?
@@ -67,9 +67,9 @@ sealed class FileEntry(
         }
     }
 
-    protected fun toCommonComponent(id: String): CommonComponent {
+    protected fun toCommonComponent(): CommonComponent {
         return CommonComponent(
-            id = id,
+            id = id ?: error("$id must be set on $this"),
             name = name,
             folder = folder,
             description = description,
@@ -88,7 +88,7 @@ sealed class FileEntry(
     }
 
     abstract fun applyTag(tag: EntryOverride): FileEntry
-    abstract fun toEntry(id: String): Entry
+    abstract fun toEntry(): FlatEntry
 
     @Serializable
     @SerialName("curse")
@@ -115,8 +115,8 @@ sealed class FileEntry(
             }
         }
 
-        override fun toEntry(id: String): Entry = Entry.Curse (
-            common = toCommonComponent(id),
+        override fun toEntry(): FlatEntry = FlatEntry.Curse (
+            common = toCommonComponent(),
             curse = curse.copy()
         )
     }
@@ -144,8 +144,8 @@ sealed class FileEntry(
             }
         }
 
-        override fun toEntry(id: String): Entry  =Entry.Direct(
-            common = toCommonComponent(id),
+        override fun toEntry(): FlatEntry  =FlatEntry.Direct(
+            common = toCommonComponent(),
             direct = direct.copy()
         )
     }
@@ -173,8 +173,8 @@ sealed class FileEntry(
                 else -> this
             }
         }
-        override fun toEntry(id: String): Entry = Entry.Jenkins(
-            common = toCommonComponent(id),
+        override fun toEntry(): FlatEntry = FlatEntry.Jenkins(
+            common = toCommonComponent(),
             jenkins = jenkins.copy()
         )
     }
@@ -200,8 +200,8 @@ sealed class FileEntry(
                 else -> this
             }
         }
-        override fun toEntry(id: String): Entry = Entry.Local(
-            common = toCommonComponent(id),
+        override fun toEntry(): FlatEntry = FlatEntry.Local(
+            common = toCommonComponent(),
             local = local.copy()
         )
     }
@@ -217,8 +217,8 @@ sealed class FileEntry(
                 else -> this
             }
         }
-        override fun toEntry(id: String): Entry = Entry.Noop(
-            common = toCommonComponent(id)
+        override fun toEntry(): FlatEntry = FlatEntry.Noop(
+            common = toCommonComponent()
         )
     }
 }

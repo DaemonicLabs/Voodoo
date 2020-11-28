@@ -1,13 +1,11 @@
 package voodoo.data.nested
 
-import com.github.ricky12awesome.jss.JsonSchema
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import mu.KLogging
 import mu.KotlinLogging
 import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
-import voodoo.data.flat.ModPack
+import voodoo.data.flat.FlatModPack
 import java.io.File
 
 /**
@@ -47,11 +45,11 @@ data class NestedPack(
     }
 
     // TODO: possibly this flattening step will not be necessary
-    suspend fun flatten(rootFolder: File, id: String): ModPack {
+    suspend fun flatten(rootFolder: File, id: String): FlatModPack {
         if (!rootFolder.isAbsolute) {
             throw IllegalStateException("rootFolder: '$rootFolder' is not absolute")
         }
-        return ModPack(
+        return FlatModPack(
             rootFolder = rootFolder,
             id = id,
             mcVersion = mcVersion ?: throw IllegalStateException("mcVersion must be set for pack '$id'"),

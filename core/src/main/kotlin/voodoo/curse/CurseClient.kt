@@ -23,31 +23,29 @@ import voodoo.data.curse.Addon
 import voodoo.data.curse.AddonFile
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
-import voodoo.data.flat.Entry
+import voodoo.data.flat.FlatEntry
 import voodoo.util.maven.MavenUtil
+import voodoo.util.useClient
 import java.io.IOException
 import java.util.*
-import kotlin.coroutines.CoroutineContext
 
 /**
  * Created by nikky on 30/01/18.
  * @author Nikky
  */
-object CurseClient : KLogging(), CoroutineScope {
-    override val coroutineContext: CoroutineContext = Job()
+object CurseClient : KLogging() {
+//    override val coroutineContext: CoroutineContext = Job()
     private val json = Json { ignoreUnknownKeys = true }
     const val useragent =
         "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36"
     //"voodoo/$VERSION (https://github.com/DaemonicLabs/Voodoo)"
 
-    @OptIn(KtorExperimentalAPI::class)
-    private val client = HttpClient(OkHttp) {
+    private fun createCurseClient() = HttpClient(OkHttp) {
         BrowserUserAgent()
         install(JsonFeature) {
             serializer = KotlinxSerializer()
         }
     }
-
 
     private const val ADDON_API = "https://addons-ecs.forgesvc.net/api/v2"
 
@@ -117,9 +115,12 @@ object CurseClient : KLogging(), CoroutineScope {
         val resultSerializer: KSerializer<GraphQlResult> = GraphQlResult.serializer()
 
         val response = try {
-            client.post<HttpResponse>(url) {
+            useClient(::createCurseClient) { client ->
+                client.post<HttpResponse>(url) {
 //                contentType(ContentType.Application.Json)
-                body = TextContent(json.encodeToString(requestSerializer, requestBody), ContentType.Application.Json)
+                    body =
+                        TextContent(json.encodeToString(requestSerializer, requestBody), ContentType.Application.Json)
+                }
             }
         } catch (e: IOException) {
             logger.error("GetSlugIDPairs")
@@ -164,16 +165,6 @@ object CurseClient : KLogging(), CoroutineScope {
 //        }
     }
 
-    private suspend fun initSlugIdMap(): Map<String, ProjectID> = coroutineScope {
-//        scanAllProjects { addon -> addon.slug to addon.id}.toMap()
-        val grapqhQlResult = graphQLRequest()
-        grapqhQlResult.groupBy(
-            { it.slug },
-            { it.id }).mapValues { (slug, ids) ->
-            ids.first()
-        }
-    }
-
     //    val getAddonFile = ::getAddonFileCall.memoizeSuspend()
     private val getAddonFileCache: MutableMap<Pair<ProjectID, FileID>, AddonFile?> = HashMap(1 shl 0)
 
@@ -190,8 +181,10 @@ object CurseClient : KLogging(), CoroutineScope {
                 logger.debug("get $url")
 
                 val response = try {
-                    client.get<HttpResponse>(url) {
+                    useClient(::createCurseClient) { client ->
+                        client.get<HttpResponse>(url) {
 //                        header(HttpHeaders.UserAgent, useragent)
+                        }
                     }
                 } catch (e: IOException) {
                     logger.error("buildUrl: $url")
@@ -238,14 +231,16 @@ object CurseClient : KLogging(), CoroutineScope {
         getAllFilesForAddonCache.getOrPut(addonId) { getAllFilesForAddonCall(addonId) }
 
     private suspend fun getAllFilesForAddonCall(addonId: ProjectID, retry: Int = 5): List<AddonFile> =
-        withContext(Dispatchers.IO) {
+        withContext(MDCContext() + Dispatchers.IO) {
             val url = "$ADDON_API/addon/$addonId/files"
             for (retries in 0..retry) {
                 logger.debug("get $url")
 
                 val response = try {
-                    client.get<HttpResponse>(url) {
+                    useClient(::createCurseClient) { client ->
+                        client.get<HttpResponse>(url) {
 //                        header(HttpHeaders.UserAgent, useragent)
+                        }
                     }
                 } catch (e: IOException) {
                     logger.error("buildUrl: $url")
@@ -276,14 +271,16 @@ object CurseClient : KLogging(), CoroutineScope {
     }
 
     private suspend fun getAddonCall(addonId: ProjectID, fail: Boolean = true, retry: Int = 5): Addon? =
-        withContext(Dispatchers.IO) {
+        withContext(MDCContext() + Dispatchers.IO) {
             val url = "$ADDON_API/addon/$addonId"
             for (retries in 0..retry) {
                 logger.debug("get $url")
 
                 val response = try {
-                    client.get<HttpResponse>(url) {
+                    useClient(::createCurseClient) { client ->
+                        client.get<HttpResponse>(url) {
 //                        header(HttpHeaders.UserAgent, useragent)
+                        }
                     }
                 } catch (e: IOException) {
                     logger.error(e) { "unable to get Addon from $url" }
@@ -311,15 +308,17 @@ object CurseClient : KLogging(), CoroutineScope {
 
 
     suspend fun getAddons(addonIds: List<Int>, fail: Boolean = true, retry: Int = 5): List<Addon>? =
-        withContext(Dispatchers.IO) {
+        withContext(MDCContext() + Dispatchers.IO) {
             val url = "$ADDON_API/addon/"
             val projectIDLoader: KSerializer<List<Int>> = ListSerializer(Int.serializer())
             val loader: KSerializer<List<Addon>> = ListSerializer(Addon.serializer())
 
             logger.debug("get $url")
             val response = try {
-                client.get<HttpResponse>(url) {
+                useClient(::createCurseClient) { client ->
+                    client.get<HttpResponse>(url) {
 //                header(HttpHeaders.UserAgent, useragent)
+                    }
                 }
             } catch (e: IOException) {
                 logger.error("buildUrl: $url")
@@ -379,8 +378,10 @@ object CurseClient : KLogging(), CoroutineScope {
 
         logger.info("get $url")
         val response = try {
-            client.get<HttpResponse>(url) {
+            useClient(::createCurseClient) { client ->
+                client.get<HttpResponse>(url) {
 //                header(HttpHeaders.UserAgent, useragent)
+                }
             }
         } catch (e: IOException) {
             logger.error("url: $url")
@@ -406,7 +407,7 @@ object CurseClient : KLogging(), CoroutineScope {
     }
 
     suspend fun findFile(
-        entry: Entry.Curse,
+        entry: FlatEntry.Curse,
         mcVersion: String
     ): Triple<ProjectID, FileID, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions

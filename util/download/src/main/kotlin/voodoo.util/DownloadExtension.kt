@@ -1,6 +1,5 @@
 package voodoo.util
 
-import io.ktor.client.HttpClient
 import io.ktor.client.request.header
 import io.ktor.client.request.request
 import io.ktor.client.statement.HttpResponse
@@ -57,7 +56,6 @@ suspend fun File.download(
     url: String,
     cacheDir: File?,
     validator: (bytes: ByteArray, file: File) -> Boolean = { bytes, file -> true },
-    httpClient: HttpClient = client,
     retries: Int = 3
 ) = withContext(Dispatchers.IO) {
     val logger = Downloader.logger
@@ -92,10 +90,13 @@ suspend fun File.download(
             }
         }
         val response = try {
-            httpClient.request<HttpResponse>(url) {
-                method = HttpMethod.Get
-                header(HttpHeaders.UserAgent, useragent)
+            useClient { httpClient ->
+                httpClient.request<HttpResponse>(url) {
+                    method = HttpMethod.Get
+                    header(HttpHeaders.UserAgent, useragent)
+                }
             }
+
         } catch (e: IOException) {
             logger.error(e) { "exception in download for url: $url" }
             delay(1000)

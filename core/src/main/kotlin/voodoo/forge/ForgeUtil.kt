@@ -12,8 +12,9 @@ import voodoo.data.ForgeVersion
 import voodoo.util.Downloader
 import javax.xml.parsers.DocumentBuilderFactory
 import org.w3c.dom.NodeList
-import voodoo.util.client
+
 import voodoo.util.json
+import voodoo.util.useClient
 import java.io.IOException
 
 /**
@@ -21,9 +22,8 @@ import java.io.IOException
  * @author Nikky
  */
 object ForgeUtil : KLogging() {
-
-    private val deferredPromo: Deferred<ForgeData> by lazy {
-        GlobalScope.async { getForgePromoData() }
+    private val forgeData: ForgeData by lazy {
+        runBlocking { getForgePromoData() }
     }
     private val forgeVersions: List<FullVersion> = getForgeVersions()
     private val forgeVersionsMap: Map<String, List<ShortVersion>> = forgeVersions.groupBy(
@@ -78,8 +78,7 @@ object ForgeUtil : KLogging() {
     }
 
     suspend fun promoMapSanitized(): Map<String, String> {
-        val promoData = deferredPromo.await()
-        return promoData.promos.mapKeys { (key, version) ->
+        return forgeData.promos.mapKeys { (key, version) ->
             val keyIdentifier = key.replace('-', '_').replace('.', '_').run {
                 if (this.first().isDigit())
                     "mc$this"
@@ -95,7 +94,7 @@ object ForgeUtil : KLogging() {
     }
 
     suspend fun promoMap(): Map<String, String> {
-        return deferredPromo.await().promos
+        return forgeData.promos
     }
 
     @JvmName("forgeVersionOfNullable")
@@ -162,8 +161,10 @@ object ForgeUtil : KLogging() {
         val url = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json"
 
         val response = try {
-            client.get<HttpResponse>(url) {
-                header("User-Agent", Downloader.useragent)
+            useClient { client ->
+                client.get<HttpResponse>(url) {
+                    header("User-Agent", Downloader.useragent)
+                }
             }
         } catch(e: IOException) {
             logger.error("getForgeData")

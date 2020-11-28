@@ -1,7 +1,7 @@
 package voodoo.provider
 
 import mu.KLogging
-import voodoo.data.flat.Entry
+import voodoo.data.flat.FlatEntry
 import voodoo.data.nested.NestedEntry
 
 object Providers : KLogging() {
@@ -17,14 +17,14 @@ object Providers : KLogging() {
         )
     }
 
-    fun forEntry(entry: Entry) =
+    fun forEntry(entry: FlatEntry) =
         when(entry) {
-            is Entry.Common -> null
-            is Entry.Curse -> CurseProvider
-            is Entry.Jenkins -> JenkinsProvider
-            is Entry.Direct -> DirectProvider
-            is Entry.Local -> LocalProvider
-            is Entry.Noop -> NoopProvider
+            is FlatEntry.Common -> null
+            is FlatEntry.Curse -> CurseProvider
+            is FlatEntry.Jenkins -> JenkinsProvider
+            is FlatEntry.Direct -> DirectProvider
+            is FlatEntry.Local -> LocalProvider
+            is FlatEntry.Noop -> NoopProvider
         }
 
     fun forEntry(entry: NestedEntry) =

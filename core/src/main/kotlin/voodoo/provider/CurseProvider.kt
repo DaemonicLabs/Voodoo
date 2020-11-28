@@ -14,7 +14,7 @@ import voodoo.data.curse.AddOnFileDependency
 import voodoo.data.curse.CurseDependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
-import voodoo.data.flat.Entry
+import voodoo.data.flat.FlatEntry
 import voodoo.data.lock.LockEntry
 import voodoo.memoize
 import voodoo.util.download
@@ -36,11 +36,11 @@ object CurseProvider : ProviderBase("Curse Provider") {
     }
 
     override suspend fun resolve(
-        entry: Entry,
+        entry: FlatEntry,
         mcVersion: String,
-        addEntry: SendChannel<Pair<Entry, String>>
+        addEntry: SendChannel<Pair<FlatEntry, String>>
     ): LockEntry {
-        entry as Entry.Curse
+        entry as FlatEntry.Curse
         val (projectID, fileID, path) = findFile(entry, mcVersion)
 
 //        synchronized(resolved) {
@@ -119,8 +119,8 @@ object CurseProvider : ProviderBase("Curse Provider") {
         return addon?.attachments?.firstOrNull { it.isDefault }?.thumbnailUrl ?: ""
     }
 
-    override suspend fun getThumbnail(entry: Entry): String {
-        entry as Entry.Curse
+    override suspend fun getThumbnail(entry: FlatEntry): String {
+        entry as FlatEntry.Curse
         val addon = CurseClient.getAddon(entry.projectID)
         return addon?.attachments?.firstOrNull { it.isDefault }?.thumbnailUrl ?: ""
     }
@@ -128,8 +128,8 @@ object CurseProvider : ProviderBase("Curse Provider") {
     private suspend fun resolveDependencies(
         addonId: ProjectID,
         fileId: FileID,
-        entry: Entry.Curse,
-        addEntry: SendChannel<Pair<Entry, String>>
+        entry: FlatEntry.Curse,
+        addEntry: SendChannel<Pair<FlatEntry, String>>
     ) {
         val predefinedDependencies = entry.dependencies.map { (slug, depType) ->
             val id = CurseClient.getProjectIdBySlug(slug)
@@ -189,7 +189,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
                     logger.info("set dependency $curseDepType = $dependsSet")
                 }
 
-                val depEntry = Entry.Curse().apply {
+                val depEntry = FlatEntry.Curse().apply {
                     id = depAddon.slug
                     name = entry.name
                     side = entry.side
@@ -208,7 +208,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
         }
     }
 
-    private fun isOptionalCall(entry: Entry): Boolean {
+    private fun isOptionalCall(entry: FlatEntry): Boolean {
         ProviderBase.logger.info("test optional of ${entry.id}")
         return entry.transient || entry.optional
     }

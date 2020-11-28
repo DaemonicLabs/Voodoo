@@ -18,8 +18,6 @@ import voodoo.pack.MetaPack
 import voodoo.pack.VersionPack
 import voodoo.util.VersionComparator
 import voodoo.util.json
-import java.io.File
-import java.lang.Exception
 
 class BuildCommand() : CliktCommand(
     name = "build",
@@ -52,12 +50,12 @@ class BuildCommand() : CliktCommand(
     val all by option("--all").flag("--newest", "--latest", default = false, defaultForHelp = "only $commandName newest version")
     val buildMissing by option(
         "--buildMissing",
-        help = "build old versions when lockfiles are missing"
+        help = "build versions when lockfiles are missing"
     ).flag("--skipMissing", default = true)
-    val rebuildFailing by option(
-        "--rebuildFailing",
-        help = "rebuild versions that failed to parse lockfiles, this might overwrite old files"
-    ).flag(default = false)
+//    val rebuildFailing by option(
+//        "--rebuildFailing",
+//        help = "rebuild versions that failed to parse lockfiles, this might overwrite old files"
+//    ).flag(default = false)
 
     override fun run() = withLoggingContext("command" to commandName, "pack" to id) {
         runBlocking(MDCContext()) {
@@ -72,10 +70,6 @@ class BuildCommand() : CliktCommand(
                 val config = Configuration.parse(rootDir = rootDir)
 
                 val baseDir = rootDir.resolve(id)
-
-//                    .forEach {
-//                        it.delete()
-//                    }
 
                 val metaPackFile = baseDir.resolve(MetaPack.FILENAME)
                 val metaPack = json.decodeFromString(MetaPack.serializer(), metaPackFile.readText())
@@ -103,18 +97,18 @@ class BuildCommand() : CliktCommand(
                                     when {
                                         // build missing lockfiles
                                         buildMissing && !lockPackFile.exists() -> true
-                                        // rebuild parse failures
-                                        rebuildFailing && lockPackFile.exists() -> {
-                                            try {
-                                                LockPack.parse(lockPackFile, rootDir)
-                                                // lockpack parsed successfully, can be skipped
-                                                false
-                                            } catch (e: Exception) {
-                                                e.printStackTrace()
-                                                // lockpack failed parsing, it will be rebuilt
-                                                true
-                                            }
-                                        }
+//                                        // rebuild parse failures for versions in
+//                                        rebuildFailing && lockPackFile.exists() -> {
+//                                            try {
+//                                                LockPack.parse(lockPackFile, rootDir)
+//                                                // lockpack parsed successfully, can be skipped
+//                                                false
+//                                            } catch (e: Exception) {
+//                                                e.printStackTrace()
+//                                                // lockpack failed parsing, it will be rebuilt
+//                                                true
+//                                            }
+//                                        }
                                         else -> false
                                     }
                                 }
@@ -123,7 +117,19 @@ class BuildCommand() : CliktCommand(
                         }
                     }
 
-
+                versionPacks.forEach { pack ->
+                    val otherpacks = versionPacks - pack
+                    require(
+                        otherpacks.all { other ->
+                            pack.version != other.version
+                        }
+                    ) { "version ${pack.version} is not unique" }
+                    require(
+                        otherpacks.all { other ->
+                            pack.packageConfiguration.voodoo.relativeSelfupdateUrl != other.packageConfiguration.voodoo.relativeSelfupdateUrl
+                        }
+                    ) { "relativeSelfupdateUrl ${pack.packageConfiguration.voodoo.relativeSelfupdateUrl} is not unique" }
+                }
 
                 val lockPacks = versionPacks
                     .sortedWith(compareBy(VersionComparator, VersionPack::version))
@@ -147,9 +153,7 @@ class BuildCommand() : CliktCommand(
                         }
                     }
 
-                lockPacks.forEach { lockPack ->
-                    logger.info { "version: ${lockPack.version}" }
-                }
+
 
 //                val tomeEnv = TomeEnv(
 //                    rootDir.resolve("docs")
@@ -177,7 +181,7 @@ class BuildCommand() : CliktCommand(
                 //TODO: fold lockpacks
             }
 
-            val reportDir = File("reports").apply { mkdirs() }
+            val reportDir = rootDir.resolve("reports").apply { mkdirs() }
             stopwatch.saveAsSvg(reportDir.resolve("${id}_build.report.svg"))
             stopwatch.saveAsHtml(reportDir.resolve("${id}_build.report.html"))
 

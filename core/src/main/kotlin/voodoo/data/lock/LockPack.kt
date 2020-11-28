@@ -33,16 +33,35 @@ data class LockPack(
     companion object : KLogging() {
         const val extension = "lock.pack.json"
 
+        // maybe make this configurable ?
+        const val outputFolder = "lock"
+
+        fun baseFolderForVersion(version: String, baseDir: File): File {
+            return baseDir.resolve(outputFolder).resolve(version)
+        }
         fun fileForVersion(version: String, baseDir: File): File {
-            return baseDir.resolve("$version.$extension")
+            return baseFolderForVersion(version, baseDir).resolve(extension)
         }
 
-        fun parse(packFile: File, rootFolder: File): LockPack {
-            if (!rootFolder.isAbsolute) {
-                throw IllegalStateException("rootFolder: '$rootFolder' is not absolute")
+        fun parseAll(baseFolder: File): List<LockPack> {
+            val outputDir = baseFolder.resolve(outputFolder)
+            outputDir.mkdirs()
+            return outputDir
+                .listFiles { folder ->
+                    folder.resolve(extension).exists()
+                }!!
+                .map { lockBaseFolder ->
+                    val lockpackFile = lockBaseFolder.resolve(extension)
+                    parse(lockpackFile, lockBaseFolder)
+                }
+        }
+
+        fun parse(packFile: File, baseFolder: File): LockPack {
+            if (!baseFolder.isAbsolute) {
+                throw IllegalStateException("baseFolder: '$baseFolder' is not absolute")
             }
             val lockpack: LockPack = json.decodeFromString(LockPack.serializer(), packFile.readText())
-            lockpack.rootFolder = rootFolder
+            lockpack.lockBaseFolder = baseFolder
 //            lockpack.entries.forEach {
 //                it.srcFolder = lockpack.sourceFolder
 //            }
@@ -51,80 +70,23 @@ data class LockPack(
     }
 
     @Transient
-    lateinit var rootFolder: File
-
-    @Transient
-    private val baseFolder: File
-        get() = rootFolder.resolve(id)
+    lateinit var lockBaseFolder: File
 
     @Transient
     val sourceFolder: File
-        get() = baseFolder.resolve(srcPath)
+        get() = lockBaseFolder.resolve(srcPath)
+
     @Transient
     val localFolder: File
-        get() = rootFolder.resolve(localDir)
+        get() = lockBaseFolder.resolve(localDir)
+
     @Transient
     val iconFile: File
-        get() = baseFolder.resolve(icon)
-
-//    @Transient
-//    val entrySet: MutableSet<LockEntry> = mutableSetOf()
-
-//    fun loadEntries(rootFolder: File = this.rootFolder) {
-//        this.rootFolder = rootFolder
-//        LockPack.parseFiles(sourceFolder)
-//            .forEach { (lockEntry, file) ->
-//                val relFile = file.relativeTo(sourceFolder)
-//                lockEntry.folder = relFile.parentFile
-//                lockEntry.parent = this
-//                addOrMerge(lockEntry) { _, newEntry -> newEntry }
-//            }
-//    }
-
-//    fun writeLockEntries() {
-//        entrySet.forEach { lockEntry ->
-//            val folder = sourceFolder.resolve(lockEntry.serialFile).absoluteFile.parentFile
-//
-//            val targetFolder = if (folder.toPath().none { it.toString() == "_CLIENT" || it.toString() == "_SERVER" }) {
-//                when (lockEntry.side) {
-//                    Side.CLIENT -> {
-//                        folder.resolve("_CLIENT")
-//                    }
-//                    Side.SERVER -> {
-//                        folder.resolve("_SERVER")
-//                    }
-//                    Side.BOTH -> folder
-//                }
-//            } else folder
-//
-//            targetFolder.mkdirs()
-//            val targetFile = targetFolder.resolve(lockEntry.serialFile.name)
-//
-//            logger.info("saving: ${lockEntry.id} , file: $targetFile , entry: $lockEntry")
-//
-//            targetFile.writeText(lockEntry.serialize())
-//        }
-//    }
+        get() = lockBaseFolder.resolve(icon)
 
     fun title() = title.blankOr ?: id
 
     fun findEntryById(id: String) = entries.find { it.id == id }
-
-//    operator fun MutableSet<LockEntry>.set(id: String, entry: LockEntry) {
-//        findEntryById(id)?.let {
-//            this -= it
-//        }
-//        this += entry
-//    }
-
-//    fun addOrMerge(entry: LockEntry, mergeOp: (LockEntry, LockEntry) -> LockEntry): LockEntry {
-//        val result = findEntryById(entry.id)?.let {
-//            entries -= it
-//            mergeOp(it, entry)
-//        } ?: entry
-//        entries += result
-//        return result
-//    }
 
     @Transient
     val optionalEntries
@@ -134,11 +96,7 @@ data class LockPack(
         return entries.filter { it.dependencies[entryId] == dependencyType }
     }
 
-//    @Transient
-//    private val optionalCache = ConcurrentHashMap<String, Boolean>()
-
     fun isEntryOptional(entryId: String): Boolean {
-//        return optionalCache.computeIfAbsent(entryId) {
         logger.debug { "isEntryOptional: looking up entry for $entryId"}
         val entry = findEntryById(entryId)!!
 
@@ -152,7 +110,6 @@ data class LockPack(
         logger.debug { "isEntryOptional: ${allOptionalDependants && entry.optional}"}
 
         return allOptionalDependants && entry.optional
-//        }
     }
 
     @Transient
@@ -200,9 +157,9 @@ data class LockPack(
             }
         }
         reports += PackReportData.AUTHORS to authors.joinToString(", ")
-        iconFile.takeIf { it.exists() }?.let {
-            reports += PackReportData.ICON_SRC to it.relativeTo(rootFolder).path
-            reports += PackReportData.ICON_HTML to "<img src=\"${it.relativeTo(rootFolder).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
+        iconFile?.takeIf { it.exists() }?.let {
+            reports += PackReportData.ICON_SRC to it.relativeTo(lockBaseFolder).path
+            reports += PackReportData.ICON_HTML to "<img src=\"${it.relativeTo(lockBaseFolder).path}\" alt=\"icon\" style=\"max-height: 128px;\"/>"
         }
 
         return reports.toMap()

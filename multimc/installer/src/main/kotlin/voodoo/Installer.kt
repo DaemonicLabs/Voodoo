@@ -65,13 +65,13 @@ object Installer : KLogging() {
             "post" -> {
                 if (toDeleteFile.exists()) {
                     val success = toDeleteFile.readLines().all { toDelete ->
-                        logger.info {"deleting $toDelete"}
+                        logger.info { "deleting $toDelete" }
                         instanceDir.resolve(toDelete)
                             .takeIf { it.exists() }
                             ?.delete()
                             ?: true
                     }
-                    if(success) {
+                    if (success) {
                         logger.info { "all files sucessfully deleted" }
                         toDeleteFile.delete()
                     }
@@ -88,7 +88,9 @@ object Installer : KLogging() {
 
                 // checking for update
                 logger.info { "downloading sha256 from $installerUrl.sha256" }
-                val newSha256 = client.get<String>(urlString = installerUrl + ".sha256")
+                val newSha256 = useClient { client ->
+                    client.get<String>(urlString = installerUrl + ".sha256")
+                }
 
                 if (currentJarFile.exists() && currentJarFile.sha256Hex().equals(newSha256, ignoreCase = true)) {
                     logger.info { "file exists and sha256 matches" }
@@ -123,10 +125,13 @@ object Installer : KLogging() {
 
         val response = withContext(Dispatchers.IO) {
             try {
-                client.get<HttpResponse> {
-                    url(packUrl)
-                    header(HttpHeaders.UserAgent, useragent)
+                useClient { client ->
+                    client.get<HttpResponse> {
+                        url(packUrl)
+                        header(HttpHeaders.UserAgent, useragent)
+                    }
                 }
+
             } catch (e: IOException) {
                 logger.error("packUrl: $packUrl")
                 logger.error(e) { "unable to get pack from $packUrl" }

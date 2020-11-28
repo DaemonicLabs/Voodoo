@@ -3,7 +3,7 @@ package voodoo.provider
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import voodoo.data.EntryReportData
-import voodoo.data.flat.Entry
+import voodoo.data.flat.FlatEntry
 import voodoo.data.lock.LockEntry
 import java.io.File
 
@@ -14,11 +14,11 @@ import java.io.File
 
 object LocalProvider : ProviderBase("Local Provider") {
     override suspend fun resolve(
-        entry: Entry,
+        entry: FlatEntry,
         mcVersion: String,
-        addEntry: SendChannel<Pair<Entry, String>>
+        addEntry: SendChannel<Pair<FlatEntry, String>>
     ): LockEntry {
-        entry as Entry.Local
+        entry as FlatEntry.Local
         return entry.lock { commonComponent ->
             LockEntry.Local(
                 common = commonComponent,

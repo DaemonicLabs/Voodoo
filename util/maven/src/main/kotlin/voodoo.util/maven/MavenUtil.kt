@@ -12,8 +12,8 @@ import kotlinx.coroutines.withContext
 import mu.KLogging
 import org.w3c.dom.NodeList
 import org.xml.sax.InputSource
-import voodoo.util.client
 import voodoo.util.toHexString
+import voodoo.util.useClient
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.IOException
@@ -79,10 +79,13 @@ object MavenUtil : KLogging() {
             tmpFile.delete()
             val response = withContext(Dispatchers.IO) {
                 try {
-                    client.get<HttpResponse> {
-                        url(artifactUrl)
-    //                header(HttpHeaders.UserAgent, useragent)
+                    useClient { client ->
+                        client.get<HttpResponse> {
+                            url(artifactUrl)
+                            //                header(HttpHeaders.UserAgent, useragent)
+                        }
                     }
+
                 } catch (e: IOException) {
                     logger.error("artifactUrl: $artifactUrl")
                     logger.error(e) { "unable to download jarfile from $artifactUrl" }
@@ -103,9 +106,11 @@ object MavenUtil : KLogging() {
 
             val response = withContext(Dispatchers.IO) {
                 try {
-                    client.get<HttpResponse> {
-                        url(sha1Url)
+                    useClient { client ->
+                        client.get<HttpResponse> {
+                            url(sha1Url)
 //                header(HttpHeaders.UserAgent, useragent)
+                        }
                     }
                 } catch (e: IOException) {
                     logger.error("sha1Url: $sha1Url")
@@ -136,10 +141,13 @@ object MavenUtil : KLogging() {
         val metadataUrl = "$mavenUrl/$groupPath/$artifactId/maven-metadata.xml"
 
         val response = try {
-            client.get<HttpResponse> {
-                url(metadataUrl)
+            useClient { client ->
+                client.get<HttpResponse> {
+                    url(metadataUrl)
 //                header(HttpHeaders.UserAgent, useragent)
+                }
             }
+
         } catch(e: IOException) {
             logger.error("metadataUrl: $metadataUrl")
             logger.error(e) { "unable to download metadata from $metadataUrl"}

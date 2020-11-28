@@ -8,7 +8,7 @@ import voodoo.config.Autocompletions
 import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
 import voodoo.data.curse.ProjectID
-import voodoo.data.flat.ModPack
+import voodoo.data.flat.FlatModPack
 import voodoo.util.json
 import java.io.File
 import java.net.URI
@@ -23,11 +23,12 @@ data class VersionPack(
     val icon: String? = null,
     val authors: List<String> = listOf(),
     val version: String,
+    var srcDir: String = "src",
     val mcVersion: String,
     val modloader: Modloader,
     val packageConfiguration: VersionPackageConfig = VersionPackageConfig(),
 //    val overrides: Map<String, EntryOverride> = mapOf(),
-    val mods: Map<String, FileEntry>,
+    val mods: List<FileEntry>,
 ) {
     companion object {
         const val extension = "voodoo.json"
@@ -52,7 +53,7 @@ data class VersionPack(
                         )
                         else -> modloader
                     },
-                    mods = mods.mapValues { (key, entry) ->
+                    mods = mods.map { entry ->
                         transformFileEntry(entry)
                     }
                 )
@@ -70,38 +71,38 @@ data class VersionPack(
                 }
         }
 
-        private fun transformFileEntry(entry: FileEntry): FileEntry {
-            return when (entry) {
-                is FileEntry.Curse -> {
-                    if (entry.projectName != null) {
-                        val addonid = Autocompletions.curseforge[entry.projectName]?.toIntOrNull()
-                        val newName = entry.projectName.substringAfterLast('/')
-                        require(addonid != null) { "cannot find replacement for ${entry.projectName} / ${Autocompletions.curseforge[entry.projectName]}" }
-                        entry.copy(
-                            projectName = null,
-                            curse = entry.curse.copy(
-                                projectID = ProjectID(addonid)
-                            )
-                        ).apply {
-                            name = entry.name ?: newName
-                        }
-                    } else {
-                        entry
+        private fun transformFileEntry(entry: FileEntry): FileEntry = when (entry) {
+            is FileEntry.Curse -> {
+                if (entry.projectName != null) {
+                    val addonid = Autocompletions.curseforge[entry.projectName]?.toIntOrNull()
+                    val newName = entry.projectName.substringAfterLast('/')
+                    require(addonid != null) { "cannot find replacement for ${entry.projectName} / ${Autocompletions.curseforge[entry.projectName]}" }
+                    entry.copy(
+                        projectName = null,
+                        curse = entry.curse.copy(
+                            projectID = ProjectID(addonid)
+                        )
+                    ).apply {
+                        name = entry.name ?: newName
+                        id = entry.id ?: newName
                     }
+                } else {
+                    entry
                 }
-                else -> entry
             }
+            else -> entry
         }
 
     }
 
-    fun flatten(rootDir: File, id: String, metaPack: MetaPack, overrides: Map<String, EntryOverride>): ModPack {
-        return ModPack(
+    fun flatten(rootDir: File, id: String, metaPack: MetaPack, overrides: Map<String, EntryOverride>): FlatModPack {
+        return FlatModPack(
             rootFolder = rootDir,
             id = id,
             mcVersion = mcVersion,
             title = title,
             version = version,
+            srcDir = srcDir,
             icon = icon ?: metaPack.icon,
             authors = authors,
             modloader = when (modloader) {
@@ -122,13 +123,14 @@ data class VersionPack(
                     instanceCfg = packageConfiguration.multimc.instanceCfg
                 )
             ),
-            entrySet = mods.map { (entryId, intitalEntry) ->
+            entrySet = mods.map { intitalEntry ->
+                val entryId = intitalEntry.id
                 val entry = intitalEntry.applyOverrides.fold(intitalEntry) { acc, overrideId ->
                     val entryOverride =
                         overrides[overrideId] ?: error("$entryId: override for id $overrideId not found")
                     return@fold acc.applyTag(entryOverride)
                 }
-                entry.toEntry(entryId)
+                entry.toEntry()
             }.toMutableSet()
         ).apply {
 

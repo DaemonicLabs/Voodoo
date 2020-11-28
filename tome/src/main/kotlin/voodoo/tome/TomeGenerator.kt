@@ -2,7 +2,6 @@ package voodoo.tome
 
 import com.eyeem.watchadoin.Stopwatch
 import mu.KLogging
-import voodoo.data.flat.ModPack
 import voodoo.data.lock.LockPack
 import java.io.File
 

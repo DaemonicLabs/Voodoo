@@ -2,7 +2,7 @@ package voodoo.builder
 
 import com.eyeem.watchadoin.Stopwatch
 import mu.KLogging
-import voodoo.data.flat.ModPack
+import voodoo.data.flat.FlatModPack
 import voodoo.data.nested.NestedPack
 import java.io.File
 
@@ -13,7 +13,7 @@ object Importer : KLogging() {
         nestedPack: NestedPack,
         id: String,
         rootFolder: File
-    ): ModPack = stopwatch {
+    ): FlatModPack = stopwatch {
         require(rootFolder.isAbsolute) { "rootFolder: '$rootFolder' is not absolute" }
         rootFolder.resolve(id).walkTopDown().asSequence()
             .filter {

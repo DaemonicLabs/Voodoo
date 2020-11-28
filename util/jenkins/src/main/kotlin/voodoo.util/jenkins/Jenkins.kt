@@ -10,18 +10,12 @@ import io.ktor.http.isSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import mu.KLogging
-import voodoo.util.client
+import voodoo.util.useClient
 import java.io.IOException
+import voodoo.util.json
 
 object Jenkins : KLogging()
-
-private val json = Json {
-    encodeDefaults = false
-    ignoreUnknownKeys = true
-}
-private val useragent = "voodoo/${GeneratedConstants.VERSION}"
 
 class JenkinsServer(
     val serverUrl: String
@@ -31,10 +25,13 @@ class JenkinsServer(
     suspend fun getJob(job: String, useragent: String): Job? = withContext(Dispatchers.IO) {
         val requestURL = getUrl(job) + "/api/json"
         val response = try {
-            client.get<HttpResponse> {
-                url(requestURL)
-                header(HttpHeaders.UserAgent, useragent)
+            useClient { client ->
+                client.get<HttpResponse> {
+                    url(requestURL)
+                    header(HttpHeaders.UserAgent, useragent)
+                }
             }
+
         } catch (e: IOException) {
             Jenkins.logger.error("requestURL: $requestURL")
 //            Jenkins.logger.error("response: $response")
@@ -57,10 +54,13 @@ data class Build(
     suspend fun details(useragent: String): BuildWithDetails? = withContext(Dispatchers.IO) {
         val buildUrl = "$url/api/json"
         val response = try {
-            client.get<HttpResponse> {
-                url(buildUrl)
-                header(HttpHeaders.UserAgent, useragent)
+            useClient { client ->
+                client.get<HttpResponse> {
+                    url(buildUrl)
+                    header(HttpHeaders.UserAgent, useragent)
+                }
             }
+
         } catch(e: IOException) {
             Jenkins.logger.error("buildUrl: $buildUrl")
 //            Jenkins.logger.error("response: $response")

@@ -1,6 +1,6 @@
 {
     "id": "fabricPack",
-    "srcPath": "src_0.0.2",
+    "srcPath": "src",
     "mcVersion": "1.15.2",
     "modloader": {
         "type": "Fabric",
@@ -8,66 +8,18 @@
         "intermediateMappings": "1.15.2",
         "installer": "0.6.1.51"
     },
-    "version": "0.0.2",
-    "icon": "v0.0.2_icon_fabricPack.png",
+    "version": "0.0.1",
+    "icon": "icon_fabricPack.png",
+    "authors": [
+        "NikkyAi"
+    ],
     "packOptions": {
         "multimcOptions": {
-            "relativeSelfupdateUrl": "fabricPack_0.0.1.json"
+            "relativeSelfupdateUrl": "fabricPack.json"
         },
         "uploadUrl": "https://nikky.moe/.mc/experimental/fabricPack"
     },
     "entries": [
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "tab-inventory-fabric"
-            },
-            "projectID": 362943,
-            "fileID": 2886750
-        },
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "roughly-enough-resources",
-                "dependencies": {
-                    "roughly-enough-items": "REQUIRED"
-                }
-            },
-            "projectID": 325625,
-            "fileID": 2903947
-        },
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "mouse-wheelie"
-            },
-            "projectID": 317514,
-            "fileID": 3109495
-        },
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "betternether",
-                "dependencies": {
-                    "fabric-api": "REQUIRED"
-                }
-            },
-            "projectID": 311377,
-            "fileID": 2983313
-        },
-        {
-            "type": "curse",
-            "common": {
-                "path": "mods",
-                "name": "modmenu"
-            },
-            "projectID": 308702,
-            "fileID": 2902148
-        },
         {
             "type": "curse",
             "common": {
@@ -96,10 +48,49 @@
             "type": "curse",
             "common": {
                 "path": "mods",
+                "name": "betternether",
+                "dependencies": {
+                    "fabric-api": "REQUIRED"
+                }
+            },
+            "projectID": 311377,
+            "fileID": 2983313
+        },
+        {
+            "type": "curse",
+            "common": {
+                "path": "mods",
+                "name": "tab-inventory-fabric"
+            },
+            "projectID": 362943,
+            "fileID": 2886750
+        },
+        {
+            "type": "curse",
+            "common": {
+                "path": "mods",
+                "name": "modmenu"
+            },
+            "projectID": 308702,
+            "fileID": 3121557
+        },
+        {
+            "type": "curse",
+            "common": {
+                "path": "mods",
                 "name": "fabric-api"
             },
             "projectID": 306612,
             "fileID": 3105065
+        },
+        {
+            "type": "curse",
+            "common": {
+                "path": "mods",
+                "name": "mouse-wheelie"
+            },
+            "projectID": 317514,
+            "fileID": 3109495
         },
         {
             "type": "curse",
@@ -112,6 +103,18 @@
             },
             "projectID": 310111,
             "fileID": 2979221
+        },
+        {
+            "type": "curse",
+            "common": {
+                "path": "mods",
+                "name": "roughly-enough-resources",
+                "dependencies": {
+                    "roughly-enough-items": "REQUIRED"
+                }
+            },
+            "projectID": 325625,
+            "fileID": 2903947
         }
     ]
 }

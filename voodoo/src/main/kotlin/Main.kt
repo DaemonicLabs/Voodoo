@@ -4,11 +4,13 @@ import voodoo.cli.VoodooCommand
 
 object Main {
     @JvmStatic
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun main(args: Array<String>) {
-
-        @OptIn(ExperimentalCoroutinesApi::class)
         DebugProbes.install()
 
         VoodooCommand().main(args)
+
+        DebugProbes.dumpCoroutines(System.out)
+        DebugProbes.uninstall()
     }
 }

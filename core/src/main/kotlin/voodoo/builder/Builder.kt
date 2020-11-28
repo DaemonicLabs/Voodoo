@@ -2,11 +2,11 @@ package voodoo.builder
 
 import com.eyeem.watchadoin.Stopwatch
 import mu.KLogging
-import voodoo.data.flat.ModPack
+import voodoo.data.flat.FlatModPack
+import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.provider.Providers
 import voodoo.util.toJson
-import java.io.File
 import kotlin.system.exitProcess
 
 /**
@@ -15,16 +15,12 @@ import kotlin.system.exitProcess
  */
 
 object Builder : KLogging() {
-
-    /***
-     * @param noUpdate
-     * @param entriesFilter only updates the entries with the specified ids
-     */
     suspend fun lock(
         stopwatch: Stopwatch,
-        modpack: ModPack
+        modpack: FlatModPack
     ): LockPack = stopwatch {
         val targetFile = LockPack.fileForVersion(baseDir = modpack.baseFolder, version = modpack.version)
+        val targetFolder = LockPack.baseFolderForVersion(baseDir = modpack.baseFolder, version = modpack.version)
 
         modpack.entrySet.forEach { entry ->
             logger.info("id: ${entry.id} entry: $entry")
@@ -55,16 +51,36 @@ object Builder : KLogging() {
         }
 
         logger.info("Creating locked pack...")
-        val lockedPack = modpack.lock("lock".watch)
-
-        // should now be serialized in lockfile
-//        "writeLockEntries".watch {
-//            lockedPack.writeLockEntries()
-//        }
+        val lockedPack = modpack.lock("lock".watch, targetFolder)
 
         logger.info("Writing lock file... $targetFile")
         targetFile.parentFile.mkdirs()
         targetFile.writeText(lockedPack.toJson(LockPack.serializer()))
+
+        logger.info { "copying input files into output" }
+        //FIXME: also include local ?
+        logger.info { "copying: ${modpack.sourceFolder}" }
+        lockedPack.sourceFolder.also { sourceFolder ->
+            sourceFolder.deleteRecursively()
+            sourceFolder.mkdirs()
+            modpack.sourceFolder.copyRecursively(sourceFolder, overwrite = true)
+        }
+        logger.info { "copying: ${modpack.iconFile}" }
+        modpack.iconFile
+            ?.takeIf { it.exists() }
+            ?.copyTo(lockedPack.iconFile, overwrite = true)
+
+        lockedPack.localFolder.also { localFolder ->
+            localFolder.deleteRecursively()
+            localFolder.mkdirs()
+            lockedPack.entries.filterIsInstance<LockEntry.Local>()
+                .forEach { entry ->
+                    val localTargetFile = localFolder.resolve(entry.fileSrc)
+                    logger.info { "copying: $targetFile" }
+                    localTargetFile.absoluteFile.parentFile.mkdirs()
+                    modpack.localFolder.resolve(entry.fileSrc).copyTo(localTargetFile, overwrite = true)
+                }
+        }
 
         lockedPack
     }

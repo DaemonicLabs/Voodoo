@@ -1,0 +1,64 @@
+{
+  "$schema": "../schema/versionPack.schema.json",
+  "version": "0.0.1",
+  "mcVersion": "1.15.2",
+  "modloader": {
+    "type": "modloader.fabric",
+    "intermediateMappings": "Fabric/1.15.2"
+  },
+  "mods": [
+    {
+      "type": "curse",
+      "projectName": "Fabric/fabric-api"
+    },
+    {
+      "type": "curse",
+      "projectName": "Fabric/betternether"
+    },
+    {
+      "type": "curse",
+      "projectName": "Fabric/tab-inventory-fabric"
+    },
+    {
+      "type": "curse",
+      "projectName": "Fabric/campanion"
+    },
+    {
+      "type": "curse",
+      "applyOverrides": [
+        "client"
+      ],
+      "projectName": "Fabric/roughly-enough-items"
+    },
+    {
+      "type": "curse",
+      "applyOverrides": [
+        "client"
+      ],
+      "projectName": "Fabric/roughly-enough-resources"
+    },
+    {
+      "type": "curse",
+      "applyOverrides": [
+        "client"
+      ],
+      "projectName": "Fabric/modmenu"
+    },
+    {
+      "type": "curse",
+      "applyOverrides": [
+        "client",
+        "optionalStarred"
+      ],
+      "projectName": "Fabric/mouse-wheelie"
+    },
+    {
+      "type": "curse",
+      "applyOverrides": [
+        "client",
+        "optionalStarred"
+      ],
+      "projectName": "Fabric/appleskin"
+    }
+  ]
+}

@@ -13,12 +13,8 @@ import kotlinx.coroutines.slf4j.MDCContext
 import mu.KotlinLogging
 import mu.withLoggingContext
 import voodoo.cli.CLIContext
-import voodoo.config.Configuration
-import voodoo.data.flat.ModPack
-import voodoo.pack.MetaPack
-import voodoo.pack.Modloader
-import voodoo.pack.VersionPack
-import voodoo.pack.VersionPackageConfig
+import voodoo.data.flat.FlatModPack
+import voodoo.pack.*
 import voodoo.util.json
 import java.io.File
 
@@ -68,7 +64,6 @@ class CreatePackCommand : CliktCommand(
 
             stopwatch {
                 val metaPack = MetaPack(
-                    schema = "./schema/metapack.schema.json",
                     title = title,
                     icon = "icon_$id.png",
                     authors = listOf(
@@ -83,17 +78,19 @@ class CreatePackCommand : CliktCommand(
                     version = packVersion ?: "0.0.1",
                     modloader = Modloader.None,
                     packageConfiguration = VersionPackageConfig(),
-                    mods = mapOf(
+                    mods = listOf(
                         //TODO: add mod samples there
                     )
                 )
+
+                val flatModpack = versionPack.flatten(rootDir, id, metaPack, mapOf())
 
                 // create folders
                 val baseDir = rootDir.resolve(id)
                 require(!baseDir.exists() || (baseDir.isDirectory && baseDir.list()!!.isEmpty())) { "folder $baseDir must not exist or be a empty directory" }
                 baseDir.mkdirs()
 
-                val srcFolder = ModPack.srcFolderForVersion(version = versionPack.version, baseFolder = baseDir)
+                val srcFolder = flatModpack.sourceFolder
                 require(!srcFolder.exists() || (srcFolder.isDirectory && srcFolder.list()!!.isEmpty())) { "folder $srcFolder must not exist or be a empty directory" }
                 srcFolder.mkdirs()
 

@@ -25,10 +25,10 @@ object MainWIP {
         val metaPackFile = baseDir.resolve(MetaPack.FILENAME)
         val metaPack = json.decodeFromString(MetaPack.serializer(), metaPackFile.readText())
 
-        rootDir.resolve("schema/modpack.schema.json").apply {
-            absoluteFile.parentFile.mkdirs()
-            writeText(VersionPack.generateSchema(setOf()))
-        }
+//        rootDir.resolve("schema/modpack.schema.json").apply {
+//            absoluteFile.parentFile.mkdirs()
+//            writeText(Modpack.generateSchema(setOf()))
+//        }
 
         val testFile = File("test.voodoo.json").absoluteFile
 

@@ -18,7 +18,7 @@ import voodoo.util.unixPath
  */
 
 //@Serializable
-data class ModPack(
+data class FlatModPack(
 //    @Serializable(with = FileSerializer::class)
     var rootFolder: File,
     /**
@@ -32,6 +32,7 @@ data class ModPack(
     var title: String? = null,
     var version: String = "1.0",
 //    @Serializable(with = FileSerializer::class)
+    var srcDir: String = "src",
     var icon: String = "icon.png",
     val authors: List<String> = emptyList(),
     var modloader: ModloaderPattern? = null,
@@ -39,11 +40,11 @@ data class ModPack(
     var docDir: String = id,
     var packOptions: PackOptions = PackOptions(),
     // we want this to be serialized for debugging purposes ?
-    val entrySet: MutableSet<Entry> = Collections.synchronizedSet(mutableSetOf()),
+    val entrySet: MutableSet<FlatEntry> = Collections.synchronizedSet(mutableSetOf()),
 ) {
     companion object : KLogging() {
-        fun srcFolderForVersion(version: String, baseFolder: File): File {
-            return baseFolder.resolve("src_$version")
+        fun srcFolder(baseFolder: File): File {
+            return baseFolder.resolve("src")
         }
     }
 
@@ -52,18 +53,18 @@ data class ModPack(
         get() = rootFolder.resolve(id)
     @Transient
     val sourceFolder: File
-        get() = srcFolderForVersion(version = version, baseFolder = baseFolder)
+        get() = baseFolder.resolve(srcDir)
     @Transient
     val localFolder: File
         get() = rootFolder.resolve(localDir)
     @Transient
     val iconFile: File
-        get() = baseFolder.resolve(icon).takeIf { it.exists() } ?: rootFolder.resolve(id).resolve("v${version}_" + icon)
+        get() = baseFolder.resolve(icon)
 
     @Transient
     val lockEntrySet: MutableSet<LockEntry> = Collections.synchronizedSet(mutableSetOf())
 
-    fun addEntry(entry: Entry, dependency: Boolean = false) {
+    fun addEntry(entry: FlatEntry, dependency: Boolean = false) {
         if (entry.id.isBlank()) {
             logger.error("invalid: $entry")
             return
@@ -96,14 +97,14 @@ data class ModPack(
         }
     }
 
-    suspend fun lock(stopwatch: Stopwatch): LockPack = stopwatch {
+    suspend fun lock(stopwatch: Stopwatch, targetFolder: File): LockPack = stopwatch {
         "creating Lockpack".watch {
             LockPack(
                 id = id,
                 srcPath = sourceFolder.toRelativeUnixPath(baseFolder),
                 title = title,
                 version = version,
-                icon = iconFile.absoluteFile.relativeTo(baseFolder).unixPath,
+                icon = iconFile.absoluteFile.toRelativeUnixPath(baseFolder),
                 authors = authors,
                 mcVersion = mcVersion,
                 modloader = modloader?.lock() ?: Modloader.None,
@@ -111,14 +112,13 @@ data class ModPack(
                 packOptions = packOptions,
                 entries = lockEntrySet.toSet()
             ).also {
-                it.rootFolder = rootFolder
+                it.lockBaseFolder = targetFolder
             }
         }
-
     }
 
     fun findEntryById(id: String) = entrySet.find { it.id == id }
-    fun addOrMerge(entry: Entry, mergeOp: (Entry, Entry) -> Entry): Entry {
+    fun addOrMerge(entry: FlatEntry, mergeOp: (FlatEntry, FlatEntry) -> FlatEntry): FlatEntry {
         synchronized(entrySet) {
             val result = entrySet.find { it.id == entry.id }?.let {
                 entrySet -= it

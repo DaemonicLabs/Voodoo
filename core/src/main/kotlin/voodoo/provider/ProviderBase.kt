@@ -5,7 +5,7 @@ import kotlinx.coroutines.channels.SendChannel
 import mu.KLogging
 import voodoo.data.DependencyType
 import voodoo.data.EntryReportData
-import voodoo.data.flat.Entry
+import voodoo.data.flat.FlatEntry
 import voodoo.data.lock.LockEntry
 import java.io.File
 import java.time.Instant
@@ -25,7 +25,7 @@ abstract class ProviderBase(
 
     open fun reset() {}
 
-    open suspend fun resolve(entry: Entry, mcVersion: String, addEntry: SendChannel<Pair<Entry, String>>): LockEntry {
+    open suspend fun resolve(entry: FlatEntry, mcVersion: String, addEntry: SendChannel<Pair<FlatEntry, String>>): LockEntry {
         logger.info("[$name] resolve ${entry.id}")
         throw NotImplementedError("unable to resolve")
     }
@@ -68,7 +68,7 @@ abstract class ProviderBase(
         return ""
     }
 
-    open suspend fun getThumbnail(entry: Entry): String {
+    open suspend fun getThumbnail(entry: FlatEntry): String {
         return ""
     }
 

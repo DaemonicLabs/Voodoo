@@ -7,7 +7,7 @@ import kotlinx.coroutines.runBlocking
 import voodoo.core.GeneratedConstants.VERSION
 import voodoo.data.EntryReportData
 import voodoo.data.Quadruple
-import voodoo.data.flat.Entry
+import voodoo.data.flat.FlatEntry
 import voodoo.data.lock.LockEntry
 import voodoo.memoize
 import voodoo.util.download
@@ -28,11 +28,11 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
     const val useragent = "voodoo/$VERSION (https://github.com/DaemonicLabs/Voodoo)"
 
     override suspend fun resolve(
-        entry: Entry,
+        entry: FlatEntry,
         mcVersion: String,
-        addEntry: SendChannel<Pair<Entry, String>>
+        addEntry: SendChannel<Pair<FlatEntry, String>>
     ): LockEntry {
-        entry as Entry.Jenkins
+        entry as FlatEntry.Jenkins
         require(entry.job.isNotBlank()) { "entry: '${entry.id}' does not have the jenkins job set" }
 //        if (entry.job.isBlank()) {
 //            entry.job = entry.id

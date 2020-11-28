@@ -3,7 +3,7 @@ package voodoo.provider
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import voodoo.data.EntryReportData
-import voodoo.data.flat.Entry
+import voodoo.data.flat.FlatEntry
 import voodoo.data.lock.LockEntry
 import voodoo.util.download
 import java.io.File
@@ -16,11 +16,11 @@ import java.net.URL
 
 object DirectProvider : ProviderBase("Direct Provider") {
     override suspend fun resolve(
-        entry: Entry,
+        entry: FlatEntry,
         mcVersion: String,
-        addEntry: SendChannel<Pair<Entry, String>>
+        addEntry: SendChannel<Pair<FlatEntry, String>>
     ): LockEntry {
-        entry as Entry.Direct
+        entry as FlatEntry.Direct
         entry.id = entry.id.replace("[^\\w-]".toRegex(), "_")
         return entry.lock {commonComponent ->
             LockEntry.Direct(

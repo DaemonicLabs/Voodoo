@@ -8,10 +8,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.slf4j.MDCContext
 import mu.KotlinLogging
 import mu.withLoggingContext
-import org.slf4j.MDC
-import voodoo.data.flat.Entry
-import voodoo.data.flat.ModPack
-import voodoo.provider.Providers
+import voodoo.data.flat.FlatEntry
+import voodoo.data.flat.FlatModPack
 import voodoo.util.withPool
 import java.util.Collections
 
@@ -24,7 +22,7 @@ private val logger = KotlinLogging.logger {}
 
 suspend fun resolve(
     stopwatch: Stopwatch,
-    modPack: ModPack
+    modPack: FlatModPack
 ) = stopwatch {
 
     // remove all transient entries
@@ -33,13 +31,13 @@ suspend fun resolve(
     }
 
     // recalculate all dependencies
-    var unresolved: Set<Entry> = modPack.entrySet.toSet()
+    var unresolved: Set<FlatEntry> = modPack.entrySet.toSet()
     val resolved: MutableSet<String> = Collections.synchronizedSet(mutableSetOf<String>())
 //    val accumulatorContext = newSingleThreadContext("AccumulatorContext")
 
     "resolveLoop".watch {
         do {
-            val newEntriesChannel = Channel<Pair<Entry, String>>(Channel.UNLIMITED)
+            val newEntriesChannel = Channel<Pair<FlatEntry, String>>(Channel.UNLIMITED)
 
             logger.info("unresolved: ${unresolved.map { it.id }}")
 
@@ -101,7 +99,7 @@ suspend fun resolve(
             }
 
             newEntriesChannel.close()
-            val newEntries = mutableSetOf<Entry>()
+            val newEntries = mutableSetOf<FlatEntry>()
             loop@ for ((entry, path) in newEntriesChannel) {
                 logger.info("channel received: ${entry.id}")
 
