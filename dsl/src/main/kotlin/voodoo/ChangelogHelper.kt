@@ -25,20 +25,20 @@ object ChangelogHelper : KLogging() {
         val lockpacks = lockpacks
             .sortedWith(LockPack.versionComparator)
 
-        val (firstChangelog, firstDiffText) = createChangelogAndDiff(
-            oldPack = null,
-            newPack = lockpacks.first(),
-            docDir = docDir,
-            cacheHome = cacheHome,
-            changelogBuilder = changelogBuilder,
-            diffWorkingDir = diffWorkingDir
-        )
+        val (firstChangelog, firstDiffText) = lockpacks.first().let { newPack ->
+            createChangelogAndDiff(
+                oldPack = null,
+                newPack = newPack,
+                docDir = docDir,
+                changelogBuilder = changelogBuilder,
+                diffWorkingDir = diffWorkingDir
+            )
+        }
         val diffs = lockpacks.zipWithNext().map { (oldPack, newPack) ->
             val (changelogFile, diffText) = createChangelogAndDiff(
                 oldPack = oldPack,
                 newPack = newPack,
                 docDir = docDir,
-                cacheHome = cacheHome,
                 changelogBuilder = changelogBuilder,
                 diffWorkingDir = diffWorkingDir
             )
@@ -68,11 +68,10 @@ object ChangelogHelper : KLogging() {
         newPack: LockPack,
         oldPack: LockPack?,
         docDir: File,
-        cacheHome: File,
         changelogBuilder: ChangelogBuilder,
         diffWorkingDir: File,
     ): Pair<File, String?> {
-        logger.info("generating diff ${oldPack?.version} -> ${newPack?.version}")
+        logger.info("generating diff ${oldPack?.version} -> ${newPack.version}")
 
         val newSourceCopy = diffWorkingDir.resolve(newPack.version).apply {
             deleteRecursively()
@@ -109,12 +108,11 @@ object ChangelogHelper : KLogging() {
                 )
             }
         }
-        val changelogFile = cacheHome.resolve("${newPack.version}_${changelogBuilder.filename}").apply {
-            parentFile.mkdirs()
+        val changelogFile = docDir.resolve(newPack.version).resolve(changelogBuilder.filename).apply {
+            logger.info("writing changelog to ${this}")
+            absoluteFile.parentFile.mkdirs()
+            writeText(currentChangelogText)
         }
-        logger.info("writing changelog to ${changelogFile}")
-        changelogFile.absoluteFile.parentFile.mkdirs()
-        changelogFile.writeText(currentChangelogText)
 
         newSourceCopy.deleteRecursively()
         oldSourceCopy.deleteRecursively()

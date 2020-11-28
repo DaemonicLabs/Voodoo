@@ -94,7 +94,6 @@ suspend fun resolve(
                                     logger.info("started job resolve ${entry.id}")
                                 }
                             }
-
                         }
                     }
                 }

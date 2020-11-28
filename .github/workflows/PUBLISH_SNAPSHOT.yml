@@ -49,3 +49,4 @@ jobs:
          files: >
            voodoo-${{ env.VERSION }}.jar:voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar
            voodoo-scripting-${{ env.VERSION }}.jar:voodoo/scripting/build/libs/voodoo-scripting-${{ env.VERSION }}-all.jar
+           server-installer-${{ env.VERSION }}.jar:server-installer/build/libs/server-installer-${{ env.VERSION }}-all.jar

@@ -93,7 +93,7 @@ object Builder : KLogging() {
             lockedPack.entries.filterIsInstance<LockEntry.Local>()
                 .forEach { entry ->
                     val localTargetFile = localFolder.resolve(entry.fileSrc)
-                    logger.info { "copying: $targetFile" }
+                    logger.info { "copying: $localTargetFile" }
                     localTargetFile.absoluteFile.parentFile.mkdirs()
                     modpack.localFolder.resolve(entry.fileSrc).copyTo(localTargetFile, overwrite = true)
                 }

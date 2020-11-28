@@ -3,9 +3,7 @@ package voodoo
 import com.eyeem.watchadoin.Stopwatch
 import mu.KotlinLogging
 import voodoo.builder.Builder
-import voodoo.builder.Importer
 import voodoo.changelog.ChangelogBuilder
-import voodoo.data.lock.LockPack
 import voodoo.data.nested.NestedPack
 import voodoo.pack.AbstractPack
 import voodoo.tome.TomeEnv
@@ -25,12 +23,15 @@ sealed class VoodooTask(open val key: String) {
             rootFolder: File,
             tomeEnv: TomeEnv?
         ) = stopwatch {
-            val modpack = Importer.flatten (
-                stopwatch = "flatten".watch,
-                nestedPack = nestedPack,
-                id = id,
-                rootFolder = rootFolder
-            )
+            require(rootFolder.isAbsolute) { "rootFolder: '$rootFolder' is not absolute" }
+            //        rootFolder.resolve(id).walkTopDown().asSequence()
+            //            .filter {
+            //                it.isFile && it.name.endsWith(".entry.json")
+            //            }
+            //            .forEach {
+            //                it.delete()
+            //            }
+            val modpack = nestedPack.flatten(rootFolder = rootFolder, id = id) //TODO: add stopwatch more levels down
             logger.debug { "modpack: $modpack" }
             logger.debug { "entrySet: ${modpack.entrySet}" }
 

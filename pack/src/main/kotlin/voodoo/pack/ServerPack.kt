@@ -5,6 +5,7 @@ import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.util.Directories
 import voodoo.util.maven.MavenUtil
+import voodoo.util.packToZip
 import voodoo.util.toJson
 import voodoo.util.unixPath
 import java.io.File
@@ -36,53 +37,7 @@ object ServerPack : AbstractPack("server") {
 
         output.mkdirs()
 
-        val localDir = modpack.localFolder
-        logger.info("local: $localDir")
-        if (localDir.exists()) {
-            val targetLocalDir = output.resolve("local")
-            modpack.localDir = targetLocalDir.toRelativeString(output)
-            if (targetLocalDir.exists()) targetLocalDir.deleteRecursively()
-            modpack.entries.filterIsInstance(LockEntry.Local::class.java)
-                .forEach { localEntry ->
-                    val src = localDir.resolve(localEntry.fileSrc)
-                    val target = targetLocalDir.resolve(localEntry.fileSrc)
-                    target.absoluteFile.parentFile.mkdirs()
-                    src.copyTo(target, overwrite = true)
-                }
-        }
-
-        val sourceDir = modpack.sourceFolder // rootFolder.resolve(modpack.rootFolder).resolve(modpack.sourceDir)
-        logger.info("mcDir: $sourceDir")
-        val targetSourceDir = output
-        if (sourceDir.exists()) {
-            if (targetSourceDir.exists()) targetSourceDir.deleteRecursively()
-            targetSourceDir.mkdirs()
-
-            sourceDir.copyRecursively(targetSourceDir, true)
-            targetSourceDir.walkBottomUp().forEach { file ->
-                if (file.name.endsWith(".entry.json"))
-                    file.delete()
-                if (file.isDirectory && file.listFiles().isEmpty()) {
-                    file.delete()
-                }
-                when {
-                    file.name == "_CLIENT" -> file.deleteRecursively()
-                    file.name == "_SERVER" -> {
-                        file.copyRecursively(file.absoluteFile.parentFile, overwrite = true)
-                        file.deleteRecursively()
-                    }
-                }
-            }
-        }
-
-        val packFile = targetSourceDir.resolve("${modpack.id}.lock.pack.json")
-        packFile.absoluteFile.parentFile.mkdirs()
-        packFile.writeText(modpack.toJson(LockPack.serializer()))
-
-        val relPackFile = packFile.relativeTo(output).unixPath
-
-        val packPointer = output.resolve("pack.txt")
-        packPointer.writeText(relPackFile)
+        modpack.lockBaseFolder.copyRecursively(output, overwrite = true)
 
         logger.info("packaging installer jar")
         // TODO: special-case in local dev mode ?
