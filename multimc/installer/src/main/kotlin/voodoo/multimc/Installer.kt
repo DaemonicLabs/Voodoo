@@ -1,8 +1,7 @@
-package voodoo
+package voodoo.multimc
 
 
 import Modloader
-import com.xenomachina.argparser.ArgParser
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -38,19 +37,7 @@ object Installer : KLogging() {
     val cacheHome by lazy { directories.cacheHome }
 //    val kit = Toolkit.getDefaultToolkit()
 
-    @JvmStatic
-    fun main(vararg args: String) = runBlocking {
-        System.setProperty(DEBUG_PROPERTY_NAME, "on")
-
-        val arguments = Arguments(ArgParser(args))
-
-        arguments.run {
-//            selfupdate(instanceDir)
-            install(instanceId, instanceDir, minecraftDir, phase)
-        }
-    }
-
-    private suspend fun selfupdate(instanceDir: File, installerUrl: String, phase: String): File? {
+    private suspend fun selfupdate(instanceDir: File, installerUrl: String, phase: Phase): File? {
         logger.info { "installer url from modpack: $installerUrl" }
         val voodooFolder = instanceDir.resolve(".voodoo").apply { mkdirs() }
         voodooFolder.listFiles().forEach {
@@ -62,7 +49,7 @@ object Installer : KLogging() {
         logger.info { "currentJarFile: ${currentJarFile.toRelativeString(instanceDir)}" }
         logger.info { "sha256: ${currentJarFile.sha256Hex()}" }
         when (phase) {
-            "post" -> {
+            Phase.POST -> {
                 if (toDeleteFile.exists()) {
                     val success = toDeleteFile.readLines().all { toDelete ->
                         logger.info { "deleting $toDelete" }
@@ -81,7 +68,7 @@ object Installer : KLogging() {
                 currentJarFile.copyTo(voodooFolder.resolve("multimc-installer.jar"), overwrite = true)
                 exitProcess(0)
             }
-            "pre" -> {
+            Phase.PRE -> {
                 // always copy current jar to post.jar
                 val postFile = voodooFolder.resolve("post.jar")
                 currentJarFile.copyTo(postFile, overwrite = true)
@@ -112,11 +99,12 @@ object Installer : KLogging() {
         ignoreUnknownKeys = true
         encodeDefaults = true
     }
-    private suspend fun install(
+
+    internal suspend fun install(
         instanceId: String,
         instanceDir: File,
         minecraftDir: File,
-        phase: String
+        phase: Phase
     ) {
         logger.info("installing into $instanceId")
         val urlFile = instanceDir.resolve("voodoo.url.txt")
@@ -184,7 +172,7 @@ object Installer : KLogging() {
             exitProcess(exitStatus)
         }
 
-        if(phase == "post") {
+        if(phase == Phase.POST) {
             return
         }
 
@@ -500,27 +488,5 @@ object Installer : KLogging() {
 
         oldpackFile.createNewFile()
         oldpackFile.writeText(json.encodeToString(Manifest.serializer(), modpack))
-    }
-
-    private class Arguments(parser: ArgParser) {
-        val instanceId by parser.storing(
-            "--id",
-            help = "\$INST_ID - ID of the instance"
-        )
-
-        val instanceDir by parser.storing(
-            "--inst",
-            help = "\$INST_DIR - absolute path of the instance"
-        ) { File(this) }
-
-        val minecraftDir by parser.storing(
-            "--mc",
-            help = "\$INST_MC_DIR - absolute path of minecraft"
-        ) { File(this) }
-
-        val phase by parser.storing(
-            "--phase",
-            help = "loading phase, pre or post"
-        )
     }
 }

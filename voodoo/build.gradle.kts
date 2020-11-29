@@ -6,7 +6,6 @@ plugins {
 
 dependencies {
     api("com.github.ajalt.clikt:clikt:_")
-    api("com.charleskorn.kaml:kaml:_")
     api(project(":dsl"))
     api(project(":tome"))
     api(project(":util:util-download"))
@@ -15,7 +14,7 @@ dependencies {
     api(project(":pack"))
     api(project(":pack:pack-tester"))
 
-    implementation(KotlinX.coroutines.debug)
+//    implementation(KotlinX.coroutines.debug)
 
     implementation(group = "ch.qos.logback", name = "logback-classic", version = "_") {
         exclude(module = "javax.mail")

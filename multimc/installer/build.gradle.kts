@@ -6,9 +6,9 @@ plugins {
 dependencies {
     api(project(":multimc"))
     implementation(project(":util:util-download"))
-    implementation("com.xenomachina:kotlin-argparser:_")
+    implementation("com.github.ajalt.clikt:clikt:_")
 }
 
 application {
-    mainClassName = "voodoo.server.Install"
+    mainClassName = "voodoo.multimc.Main"
 }
