@@ -60,15 +60,16 @@ so greate a `.gitignore` file
 
 (//TODO: make this part of a setup command)
 
-`/.gitignore`
-```gitignore
-.completions
-/_upload/
-reports/
-logs/
-docs/
-schema/
-```
+??? note ".gitignore"
+    ```gitignore
+    .completions
+    /_upload/
+    reports/
+    logs/
+    docs/
+    schema/
+    ```
+    // TODO: use https://facelessuser.github.io/pymdown-extensions/extensions/snippets/ to load actual .gitignore
 
 ### Autocompletion Configuration
 
@@ -133,61 +134,101 @@ try to keep them separate when maintaining multiple versions
 
 by default the modloader is set to `None`
 
-`/magicpack/v0.0.1.voodoo.json`
-```json
-"modloader": {
-    "type": "modloader.none"
-},
-```
+??? note "`/magicpack/v0.0.1.voodoo.json`"
+    ```json hl_lines="6 7 8"
+    {
+      "$schema": "../schema/versionPack.schema.json",
+      "version": "0.0.1",
+      "mcVersion": "1.16.3",
+      "srcDir": "v0.0.1_src",
+      "modloader": {
+          "type": "modloader.none"
+      },
+      "mods": [
+      ]
+    }
+    ```
 
 lets replace with with fabric
 
-`/magicpack/v0.0.1.voodoo.json`
-```json
-"modloader": {
-    "type": "modloader.fabric",
-    "intermediateMappings": "Fabric/1.16.3"
-},
-```
+!!! note "`/magicpack/v0.0.1.voodoo.json`"
+    ```json hl_lines="6 7 8 9"
+    {
+      "$schema": "../schema/versionPack.schema.json",
+      "version": "0.0.1",
+      "mcVersion": "1.16.3",
+      "srcDir": "v0.0.1_src",
+      "modloader": {
+          "type": "modloader.fabric",
+          "intermediateMappings": "Fabric/1.16.3"
+      },
+      "mods": [
+      ]
+    }
+    ```
 
 `Fabric/1.16.3` is from the `fabricGenerator` that was named `Fabric`
 this field has json-schema enum constraint, so autocompletion should be available after running `generateSchema`
 
 ### Add Mods
 
-currently the modlist is empty:
+currently the modlist is empty so lets add some
 
-`/magicpack/v0.0.1.voodoo.json`
-```json
-"mods": [
-]
-```
+there is multiple entry types that you can 
 
-there is multiple types of entries for mods
-- `curse` for curseforge mods
-- `direct` for direct url downloads
-- `jenkins` for things fro ma jenkins CI server
-- `local` for taking mods from `/local/` folder
+=== "curse"
+    
+    Curseforge mods
+    downloads from curse CDN
+    and also resolves dependencies
 
-since we setup mods from curseforge with the name `Fabric` we can use them  
+=== "direct"
+    
+    Direct downloads of URLs
+    can be rehosted or pointing to the original location
+
+=== "jenkins"
+    
+    This is for mods built on Jenkins CI
+
+=== "local"
+    
+    Takes files from `/local/` folder
+
+=== "noop"
+    
+    No-operation
+    Useful for replacing dependencies
+
+
+since we setup mods from curseforge with the name `Fabric` before, we can use them  
 so lets add some mods
 
-`/magicpack/v0.0.1.voodoo.json`
-```json
-"mods": [
+???+ note "`/magicpack/v0.0.1.voodoo.json`"
+    ```json hl_lines="10 11 12 13 14 15 16 17 18 19"
     {
-        "type": "curse",
-        "projectName": "Fabric/appleskin"
-    },
-    {
-        "type": "curse",
-        "projectName": "Fabric/hwyla"
+      "$schema": "../schema/versionPack.schema.json",
+      "version": "0.0.1",
+      "mcVersion": "1.16.3",
+      "srcDir": "v0.0.1_src",
+      "modloader": {
+          "type": "modloader.fabric",
+          "intermediateMappings": "Fabric/1.16.3"
+      },
+      "mods": [
+          {
+              "type": "curse",
+              "projectName": "Fabric/appleskin"
+          },
+          {
+              "type": "curse",
+              "projectName": "Fabric/hwyla"
+          }
+      ]
     }
-]
-```
+    ```
 
 //TODO: add sections about overrides and properties of entries
-
 
 ## Building the pack
 
@@ -207,13 +248,13 @@ before deploying the pack, lets make sure it runs first
 
 before this make sure multimc is in your `PATH`
 
-```
+```bash
 voodoo launch multimc --id magicpack
 ```
 
 ## Packaging and Upload
 
-```
+```bash
 voodoo package --id magicpack --target voodoo --target mmc-voodoo --target server
 ```
 
@@ -225,7 +266,7 @@ upload the content of `/_upload/voodoo/` to `$uploadBaseUrl` (configured in `/ma
 
 make sure to *NOT DELETE* existing files on the fileserver
 
-example: `"uploadBaseUrl": "https://mydomain.com/mc/"`  
+example with `"uploadBaseUrl": "https://mydomain.com/mc/"`  
 `/_upload/voodoo/packages.json` should be accessible from `https://mydomain.com/mc/packages.json`
 
 `/_upload/multimc-voodoo` contains multimc instances that selfupdate (TODO: currently it create a zip for each version, but they all selfupdate?)
@@ -240,22 +281,20 @@ make sure to not update a running server (so either stop it or install into a ne
 assuming your server runs in the folder `/home/user/server/magicpack` on your server
 and you want to use `/home/user/_upload/` as a temporary upload directory
 
-```bash
-# upload
-rsync _upload/server/magicpack_v0.0.1/ user@minecraftserver:/home/user/_upload
-```
+!!! note "upload to server"
+    ```bash
+    rsync _upload/server/magicpack_v0.0.1/ user@minecraftserver:/home/user/_upload
+    ```
 
-```bash
-ssh user@minecraftserver
-
-cd /home/user/_upload/magicpack_v0.0.1/
-
-# doanlods mods, modloader and installs them in the server
-java -jar server-installer.jar /home/user/server/magicpack
-
-# delete the installer
-cd ..
-rm -rf magicpack_v0.0.1/
-```
-
+???+ note "run on server"
+    ```bash
+    cd /home/user/_upload/magicpack_v0.0.1/
+    
+    # doanlods mods, modloader and installs them in the server
+    java -jar server-installer.jar /home/user/server/magicpack
+    
+    # delete the installer
+    cd ..
+    rm -rf magicpack_v0.0.1/
+    ```
 

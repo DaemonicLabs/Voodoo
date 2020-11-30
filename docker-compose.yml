@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+  docs:
+    hostname: localhost
+    image: squidfunk/mkdocs-material:latest
+    volumes:
+      - '.:/docs'
+    ports:
+      - "8000:8000"
