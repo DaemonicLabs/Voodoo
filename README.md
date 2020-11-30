@@ -62,6 +62,11 @@ and do not want to publish files to curse
 This applies to different modules of voodoo individually.. without a place to host files you can still export
 a pack and upload it to curse, it will just be a much slower process due to approval and waiting time
 
+Wiki
+----
+
+https://daemoniclabs.github.io/Voodoo
+
 Downloads
 ---------
 
