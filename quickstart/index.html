@@ -1,538 +1,203 @@
-
-<!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-        <meta name="description" content="Voodoo: Modpack building magic">
-      
-      
-      
-      
-        <meta name="author" content="Nikky Snow">
-      
-      <link rel="shortcut icon" href="../img/favicon.ico">
-      <meta name="generator" content="mkdocs-1.1.2, mkdocs-material-6.1.6">
-    
-    
-      
-        <title>Quickstart - Voodoo</title>
-      
-    
-    
-      <link rel="stylesheet" href="../assets/stylesheets/main.6910b76c.min.css">
-      
-        
-        <link rel="stylesheet" href="../assets/stylesheets/palette.196e0c26.min.css">
-        
-          
-          
-          <meta name="theme-color" content="#546d78">
-        
-      
-    
-    
-    
-      
-        
-        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700%7CRoboto+Mono&display=fallback">
-        <style>body,input{font-family:"Roboto",-apple-system,BlinkMacSystemFont,Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono",SFMono-Regular,Consolas,Menlo,monospace}</style>
-      
-    
-    
-    
-      <link rel="stylesheet" href="../css/extra.css">
-    
-    
-      
-    
-    
-  </head>
-  
-  
-    
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="" data-md-color-primary="blue-grey" data-md-color-accent="indigo">
-      
-  
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
-    <div data-md-component="skip">
-      
-        
-        <a href="#quickstart" class="md-skip">
-          Skip to content
-        </a>
-      
-    </div>
-    <div data-md-component="announce">
-      
-    </div>
-    
-      
-
-<header class="md-header" data-md-component="header">
-  <nav class="md-header-nav md-grid" aria-label="Header">
-    <a href=".." title="Voodoo" class="md-header-nav__button md-logo" aria-label="Voodoo">
-      
-  <img src="../img/VOOO_DOO_cyan.svg" alt="logo">
-
-    </a>
-    <label class="md-header-nav__button md-icon" for="__drawer">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2z"/></svg>
-    </label>
-    <div class="md-header-nav__title" data-md-component="header-title">
-      
-        <div class="md-header-nav__ellipsis">
-          <span class="md-header-nav__topic md-ellipsis">
-            Voodoo
-          </span>
-          <span class="md-header-nav__topic md-ellipsis">
-            
-              Quickstart
-            
-          </span>
-        </div>
-      
-    </div>
-    
-      <label class="md-header-nav__button md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
-      </label>
-      
-<div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" data-md-state="active" required>
-      <label class="md-search__icon md-icon" for="__search">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0116 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 019.5 16 6.5 6.5 0 013 9.5 6.5 6.5 0 019.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5z"/></svg>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
-      </label>
-      <button type="reset" class="md-search__icon md-icon" aria-label="Clear" data-md-component="search-reset" tabindex="-1">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/></svg>
-      </button>
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
-          </div>
-          <ol class="md-search-result__list"></ol>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-    
-    
-      <div class="md-header-nav__source">
-        
-<a href="https://github.com/DaemonicLabs/Voodoo/" title="Go to repository" class="md-source">
-  <div class="md-source__icon md-icon">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
-  </div>
-  <div class="md-source__repository">
-    Voodoo
-  </div>
-</a>
-      </div>
-    
-  </nav>
-</header>
-    
-    <div class="md-container" data-md-component="container">
-      
-      
-        
-      
-      <main class="md-main" data-md-component="main">
-        <div class="md-main__inner md-grid">
-          
-            
-              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href=".." title="Voodoo" class="md-nav__button md-logo" aria-label="Voodoo">
-      
-  <img src="../img/VOOO_DOO_cyan.svg" alt="logo">
-
-    </a>
-    Voodoo
-  </label>
-  
-    <div class="md-nav__source">
-      
-<a href="https://github.com/DaemonicLabs/Voodoo/" title="Go to repository" class="md-source">
-  <div class="md-source__icon md-icon">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6zm-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3zm44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9zM244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8zM97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1zm-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7zm32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1zm-11.4-14.7c-1.6 1-1.6 3.6 0 5.9 1.6 2.3 4.3 3.3 5.6 2.3 1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2z"/></svg>
-  </div>
-  <div class="md-source__repository">
-    Voodoo
-  </div>
-</a>
-    </div>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-      
-
-
-  <li class="md-nav__item md-nav__item--nested">
-    
-    <input class="md-nav__toggle md-toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" >
-    <label class="md-nav__link" for="nav-1">
-      Quickstart
-      <span class="md-nav__icon md-icon"></span>
-    </label>
-    <nav class="md-nav" aria-label="Quickstart" data-md-level="1">
-      <label class="md-nav__title" for="nav-1">
-        <span class="md-nav__icon md-icon"></span>
-        Quickstart
-      </label>
-      <ul class="md-nav__list" data-md-scrollfix>
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
         
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="./" class="md-nav__link">
-      Basic Concepts
-    </a>
-  </li>
-
         
-          
-          
-          
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Quickstart - My Docs</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
 
+        <script src="../js/jquery-1.10.2.min.js" defer></script>
+        <script src="../js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
 
-  <li class="md-nav__item">
-    <a href="#downloading-voodoo" class="md-nav__link">
-      Downloading Voodoo
-    </a>
-  </li>
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href="..">My Docs</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
 
-        
-          
-          
-          
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Voodoo</a>
+                            </li>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">Quickstart</a>
+                            </li>
+                        </ul>
 
-
-  <li class="md-nav__item">
-    <a href="#setup-modpack-repository" class="md-nav__link">
-      Setup Modpack Repository
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="#create-a-modpack" class="md-nav__link">
-      Create a Modpack
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="#building-the-pack" class="md-nav__link">
-      Building the pack
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="#testing-in-multimc" class="md-nav__link">
-      Testing in MultiMC
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
-    <a href="#packaging-and-upload" class="md-nav__link">
-      Packaging and Upload
-    </a>
-  </li>
-
-        
-      </ul>
-    </nav>
-  </li>
-
-    
-  </ul>
-</nav>
-                  </div>
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href=".." class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" class="nav-link disabled">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
                 </div>
-              </div>
-            
-            
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
     
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#basic-concepts" class="md-nav__link">
-    Basic Concepts
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#downloading-voodoo" class="md-nav__link">
-    Downloading Voodoo
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#setup-modpack-repository" class="md-nav__link">
-    Setup Modpack Repository
-  </a>
-  
-    <nav class="md-nav" aria-label="Setup Modpack Repository">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#gitignore" class="md-nav__link">
-    gitignore
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#autocompletion-configuration" class="md-nav__link">
-    Autocompletion Configuration
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#create-a-modpack" class="md-nav__link">
-    Create a Modpack
-  </a>
-  
-    <nav class="md-nav" aria-label="Create a Modpack">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#set-modloader" class="md-nav__link">
-    Set Modloader
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#add-mods" class="md-nav__link">
-    Add Mods
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#building-the-pack" class="md-nav__link">
-    Building the pack
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#testing-in-multimc" class="md-nav__link">
-    Testing in MultiMC
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#packaging-and-upload" class="md-nav__link">
-    Packaging and Upload
-  </a>
-  
-    <nav class="md-nav" aria-label="Packaging and Upload">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#upload-selfupdating-pack" class="md-nav__link">
-    upload selfupdating pack
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#deploy-server" class="md-nav__link">
-    Deploy server
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
             
-          
-          <div class="md-content">
-            <article class="md-content__inner md-typeset">
-              
-                
-                  <a href="https://github.com/DaemonicLabs/Voodoo/edit/master/docs/quickstart.md" title="Edit this page" class="md-content__button md-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25z"/></svg>
-                  </a>
-                
-                
-                <h1 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h1>
+            <li class="nav-item" data-level="1"><a href="#quickstart" class="nav-link">Quickstart</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#basic-concepts" class="nav-link">Basic Concepts</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#downloading-voodoo" class="nav-link">Downloading Voodoo</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#setup-modpack-repository" class="nav-link">Setup Modpack Repository</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#create-a-modpack" class="nav-link">Create a Modpack</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#building-the-pack" class="nav-link">Building the pack</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#testing-in-multimc" class="nav-link">Testing in MultiMC</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#packaging-and-upload" class="nav-link">Packaging and Upload</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="quickstart">Quickstart</h1>
 <p>How to create a pack from scratch</p>
-<h2 id="basic-concepts">Basic Concepts<a class="headerlink" href="#basic-concepts" title="Permanent link">&para;</a></h2>
+<h2 id="basic-concepts">Basic Concepts</h2>
 <p>Voodoo Packs are recipes for Voodoo to figure out all mods and dependencies</p>
 <p>this creates <code>lockpacks</code>, where voodoo pinned all versions and copied input files intoa archine</p>
 <p>voodoo packages using the <code>lockpacks</code> as inputs, providing reproducable deployments</p>
-<h2 id="downloading-voodoo">Downloading Voodoo<a class="headerlink" href="#downloading-voodoo" title="Permanent link">&para;</a></h2>
+<h2 id="downloading-voodoo">Downloading Voodoo</h2>
 <p>grab yourself a voodoo jar from the <a href="https://github.com/DaemonicLabs/Voodoo/releases">releases</a></p>
-<div class="highlight"><pre><span></span><code><span class="c1"># verify voodoo version</span>
+<pre><code class="language-bash"># verify voodoo version
 java -jar voodoo.jar
 
-<span class="c1"># optional</span>
-<span class="c1"># setup alias for the rest of the tutorial</span>
-<span class="nb">alias</span> <span class="nv">voodoo</span><span class="o">=</span><span class="s2">&quot;java -jar </span><span class="k">$(</span>readlink -f voodoo-0.6.0-SNAPSHOT.jar<span class="k">)</span><span class="s2">&quot;</span>
+# optional
+# setup alias for the rest of the tutorial
+alias voodoo=&quot;java -jar $(readlink -f voodoo-0.6.0-SNAPSHOT.jar)&quot;
 
-<span class="c1"># optional</span>
-<span class="c1"># setup bash autocomplete</span>
-<span class="nv">_VOODOO_COMPLETE</span><span class="o">=</span>bash voodoo &gt; voodoo-autocomplete.sh
-<span class="nb">source</span> voodoo-autocomplete.sh
-</code></pre></div>
-<h2 id="setup-modpack-repository">Setup Modpack Repository<a class="headerlink" href="#setup-modpack-repository" title="Permanent link">&para;</a></h2>
+# optional
+# setup bash autocomplete
+_VOODOO_COMPLETE=bash voodoo &gt; voodoo-autocomplete.sh
+source voodoo-autocomplete.sh
+</code></pre>
+<h2 id="setup-modpack-repository">Setup Modpack Repository</h2>
 <p>run the <code>generateSchema</code> command once to make it generate a <code>config.json</code></p>
-<div class="highlight"><pre><span></span><code>voodoo generateSchema
-</code></pre></div>
+<pre><code>voodoo generateSchema
+</code></pre>
 <p>now you should see <code>config.json</code></p>
-<p><code>/config.json</code>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-    <span class="nt">&quot;$schema&quot;</span><span class="p">:</span> <span class="s2">&quot;./schema/config.schema.json&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;curseforgeGenerators&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="p">},</span>
-    <span class="nt">&quot;forgeGenerators&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="p">},</span>
-    <span class="nt">&quot;fabricGenerators&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="p">},</span>
-    <span class="nt">&quot;overrides&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></p>
-<h3 id="gitignore">gitignore<a class="headerlink" href="#gitignore" title="Permanent link">&para;</a></h3>
+<p><code>/config.json</code></p>
+<pre><code class="language-json">{
+    &quot;$schema&quot;: &quot;./schema/config.schema.json&quot;,
+    &quot;curseforgeGenerators&quot;: {
+    },
+    &quot;forgeGenerators&quot;: {
+    },
+    &quot;fabricGenerators&quot;: {
+    },
+    &quot;overrides&quot;: {
+    }
+}
+</code></pre>
+<h3 id="gitignore">gitignore</h3>
 <p>these folders should probably be gitignored because they contain autogenerated content (lots of it)
 so greate a <code>.gitignore</code> file </p>
 <p>(//TODO: make this part of a setup command)</p>
-<p><code>/.gitignore</code>
-<div class="highlight"><pre><span></span><code>.completions
+<p><code>/.gitignore</code></p>
+<pre><code class="language-gitignore">.completions
 /_upload/
 reports/
 logs/
 docs/
 schema/
-</code></pre></div></p>
-<h3 id="autocompletion-configuration">Autocompletion Configuration<a class="headerlink" href="#autocompletion-configuration" title="Permanent link">&para;</a></h3>
+</code></pre>
+<h3 id="autocompletion-configuration">Autocompletion Configuration</h3>
 <p>we are interested in fabric and fabric mods on curseforge</p>
-<p><code>/config.json</code>
-<div class="highlight"><pre><span></span><code><span class="p">{</span>
-    <span class="nt">&quot;$schema&quot;</span><span class="p">:</span> <span class="s2">&quot;./schema/config.schema.json&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;curseforgeGenerators&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;Fabric&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="nt">&quot;section&quot;</span><span class="p">:</span> <span class="s2">&quot;MODS&quot;</span><span class="p">,</span>
-            <span class="nt">&quot;categories&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s2">&quot;Fabric&quot;</span>
-            <span class="p">],</span>
-            <span class="nt">&quot;mcVersions&quot;</span><span class="p">:</span> <span class="p">[</span>
-                <span class="s2">&quot;1.16&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;1.16.1&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;1.16.2&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;1.16.3&quot;</span>
-            <span class="p">]</span>
-        <span class="p">}</span>
-    <span class="p">},</span>
-    <span class="nt">&quot;forgeGenerators&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="p">},</span>
-    <span class="nt">&quot;fabricGenerators&quot;</span><span class="p">:</span> <span class="p">{</span>
-        <span class="nt">&quot;Fabric&quot;</span><span class="p">:</span> <span class="p">{</span>
-            <span class="nt">&quot;requireStable&quot;</span><span class="p">:</span> <span class="kc">true</span>
-        <span class="p">}</span>
-    <span class="p">},</span>
-    <span class="nt">&quot;overrides&quot;</span><span class="p">:</span> <span class="p">{</span>
-    <span class="p">}</span>
-<span class="p">}</span>
-</code></pre></div></p>
+<p><code>/config.json</code></p>
+<pre><code class="language-json">{
+    &quot;$schema&quot;: &quot;./schema/config.schema.json&quot;,
+    &quot;curseforgeGenerators&quot;: {
+        &quot;Fabric&quot;: {
+            &quot;section&quot;: &quot;MODS&quot;,
+            &quot;categories&quot;: [
+                &quot;Fabric&quot;
+            ],
+            &quot;mcVersions&quot;: [
+                &quot;1.16&quot;,
+                &quot;1.16.1&quot;,
+                &quot;1.16.2&quot;,
+                &quot;1.16.3&quot;
+            ]
+        }
+    },
+    &quot;forgeGenerators&quot;: {
+    },
+    &quot;fabricGenerators&quot;: {
+        &quot;Fabric&quot;: {
+            &quot;requireStable&quot;: true
+        }
+    },
+    &quot;overrides&quot;: {
+    }
+}
+</code></pre>
 <p>after running <code>generateSchema</code> again these will be available via json-schema for autocompletions</p>
-<h2 id="create-a-modpack">Create a Modpack<a class="headerlink" href="#create-a-modpack" title="Permanent link">&para;</a></h2>
+<h2 id="create-a-modpack">Create a Modpack</h2>
 <p>we are going to create modpack with the id <code>magicpack</code> 
 for Minecraft version 1.16.3 (but this is just for the first version of the pack)</p>
-<div class="highlight"><pre><span></span><code>voodoo create pack --id magicpack --mcVersion <span class="m">1</span>.16.3
-</code></pre></div>
+<pre><code class="language-bash">voodoo create pack --id magicpack --mcVersion 1.16.3
+</code></pre>
 <p>you should now see a new folder <code>magicpack/</code> containing several files</p>
 <p><code>/magicpack/modpack.meta.json</code> 
 contains general pack information as well as where you will upload your modpack (fileserver or similar)</p>
@@ -543,28 +208,28 @@ the filename does not matter as long as the extension matches <code>.voodoo.json
 is the folder for all configuration file and related things, this is going to be <code>minecraft/</code> folder<br />
 the version specific <code>.voodoo.json</code> contains a reference to the folder name, 
 try to keep them separate when maintaining multiple versions</p>
-<h3 id="set-modloader">Set Modloader<a class="headerlink" href="#set-modloader" title="Permanent link">&para;</a></h3>
+<h3 id="set-modloader">Set Modloader</h3>
 <p>by default the modloader is set to <code>None</code></p>
-<p><code>/magicpack/v0.0.1.voodoo.json</code>
-<div class="highlight"><pre><span></span><code><span class="s2">&quot;modloader&quot;</span><span class="err">:</span> <span class="p">{</span>
-    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;modloader.none&quot;</span>
-<span class="p">}</span><span class="err">,</span>
-</code></pre></div></p>
+<p><code>/magicpack/v0.0.1.voodoo.json</code></p>
+<pre><code class="language-json">&quot;modloader&quot;: {
+    &quot;type&quot;: &quot;modloader.none&quot;
+},
+</code></pre>
 <p>lets replace with with fabric</p>
-<p><code>/magicpack/v0.0.1.voodoo.json</code>
-<div class="highlight"><pre><span></span><code><span class="s2">&quot;modloader&quot;</span><span class="err">:</span> <span class="p">{</span>
-    <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;modloader.fabric&quot;</span><span class="p">,</span>
-    <span class="nt">&quot;intermediateMappings&quot;</span><span class="p">:</span> <span class="s2">&quot;Fabric/1.16.3&quot;</span>
-<span class="p">}</span><span class="err">,</span>
-</code></pre></div></p>
+<p><code>/magicpack/v0.0.1.voodoo.json</code></p>
+<pre><code class="language-json">&quot;modloader&quot;: {
+    &quot;type&quot;: &quot;modloader.fabric&quot;,
+    &quot;intermediateMappings&quot;: &quot;Fabric/1.16.3&quot;
+},
+</code></pre>
 <p><code>Fabric/1.16.3</code> is from the <code>fabricGenerator</code> that was named <code>Fabric</code>
 this field has json-schema enum constraint, so autocompletion should be available after running <code>generateSchema</code></p>
-<h3 id="add-mods">Add Mods<a class="headerlink" href="#add-mods" title="Permanent link">&para;</a></h3>
+<h3 id="add-mods">Add Mods</h3>
 <p>currently the modlist is empty:</p>
-<p><code>/magicpack/v0.0.1.voodoo.json</code>
-<div class="highlight"><pre><span></span><code><span class="s2">&quot;mods&quot;</span><span class="err">:</span> <span class="p">[</span>
-<span class="p">]</span>
-</code></pre></div></p>
+<p><code>/magicpack/v0.0.1.voodoo.json</code></p>
+<pre><code class="language-json">&quot;mods&quot;: [
+]
+</code></pre>
 <p>there is multiple types of entries for mods
 - <code>curse</code> for curseforge mods
 - <code>direct</code> for direct url downloads
@@ -572,109 +237,138 @@ this field has json-schema enum constraint, so autocompletion should be availabl
 - <code>local</code> for taking mods from <code>/local/</code> folder</p>
 <p>since we setup mods from curseforge with the name <code>Fabric</code> we can use them<br />
 so lets add some mods</p>
-<p><code>/magicpack/v0.0.1.voodoo.json</code>
-<div class="highlight"><pre><span></span><code><span class="s2">&quot;mods&quot;</span><span class="err">:</span> <span class="p">[</span>
-    <span class="p">{</span>
-        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;curse&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;projectName&quot;</span><span class="p">:</span> <span class="s2">&quot;Fabric/appleskin&quot;</span>
-    <span class="p">},</span>
-    <span class="p">{</span>
-        <span class="nt">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;curse&quot;</span><span class="p">,</span>
-        <span class="nt">&quot;projectName&quot;</span><span class="p">:</span> <span class="s2">&quot;Fabric/hwyla&quot;</span>
-    <span class="p">}</span>
-<span class="p">]</span>
-</code></pre></div></p>
+<p><code>/magicpack/v0.0.1.voodoo.json</code></p>
+<pre><code class="language-json">&quot;mods&quot;: [
+    {
+        &quot;type&quot;: &quot;curse&quot;,
+        &quot;projectName&quot;: &quot;Fabric/appleskin&quot;
+    },
+    {
+        &quot;type&quot;: &quot;curse&quot;,
+        &quot;projectName&quot;: &quot;Fabric/hwyla&quot;
+    }
+]
+</code></pre>
 <p>//TODO: add sections about overrides and properties of entries</p>
-<h2 id="building-the-pack">Building the pack<a class="headerlink" href="#building-the-pack" title="Permanent link">&para;</a></h2>
+<h2 id="building-the-pack">Building the pack</h2>
 <p><code>building</code> the pack does resolve all dependencies of entries and pins versions</p>
-<div class="highlight"><pre><span></span><code>voodoo build --id magicpack
-</code></pre></div>
+<pre><code class="language-bash">voodoo build --id magicpack
+</code></pre>
 <p>this created <code>/magicpack/lock/</code> folder cotnaining the output artifacts
 <em>DO NOT DELETE</em> this folder unless you know what you are doing
 this folder contains the inputs for all tasks (except <code>build</code>)</p>
-<h2 id="testing-in-multimc">Testing in MultiMC<a class="headerlink" href="#testing-in-multimc" title="Permanent link">&para;</a></h2>
+<h2 id="testing-in-multimc">Testing in MultiMC</h2>
 <p>before deploying the pack, lets make sure it runs first</p>
 <p>before this make sure multimc is in your <code>PATH</code></p>
-<div class="highlight"><pre><span></span><code>voodoo launch multimc --id magicpack
-</code></pre></div>
-<h2 id="packaging-and-upload">Packaging and Upload<a class="headerlink" href="#packaging-and-upload" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>voodoo package --id magicpack --target voodoo --target mmc-voodoo --target server
-</code></pre></div>
+<pre><code>voodoo launch multimc --id magicpack
+</code></pre>
+<h2 id="packaging-and-upload">Packaging and Upload</h2>
+<pre><code>voodoo package --id magicpack --target voodoo --target mmc-voodoo --target server
+</code></pre>
 <p>this created <code>/_upload/voodoo/</code>, <code>/_upload/multimc-voodoo</code> and <code>/_upload/server/</code></p>
-<h3 id="upload-selfupdating-pack">upload selfupdating pack<a class="headerlink" href="#upload-selfupdating-pack" title="Permanent link">&para;</a></h3>
+<h3 id="upload-selfupdating-pack">upload selfupdating pack</h3>
 <p>upload the content of <code>/_upload/voodoo/</code> to <code>$uploadBaseUrl</code> (configured in <code>/magicpack/modpack.meta.json</code>)</p>
 <p>make sure to <em>NOT DELETE</em> existing files on the fileserver</p>
 <p>example: <code>"uploadBaseUrl": "https://mydomain.com/mc/"</code><br />
 <code>/_upload/voodoo/packages.json</code> should be accessible from <code>https://mydomain.com/mc/packages.json</code></p>
 <p><code>/_upload/multimc-voodoo</code> contains multimc instances that selfupdate (TODO: currently it create a zip for each version, but they all selfupdate?)</p>
-<h3 id="deploy-server">Deploy server<a class="headerlink" href="#deploy-server" title="Permanent link">&para;</a></h3>
+<h3 id="deploy-server">Deploy server</h3>
 <p>upload <code>/_upload/server/magicpack_v0.0.1/</code> to your server
 and run the <code>server-installer.jar</code> on the server to download mods and modloader installer directly</p>
 <p>make sure to not update a running server (so either stop it or install into a new directory and then transfer worlds and configs)</p>
 <p>assuming your server runs in the folder <code>/home/user/server/magicpack</code> on your server
 and you want to use <code>/home/user/_upload/</code> as a temporary upload directory</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># upload</span>
+<pre><code class="language-bash"># upload
 rsync _upload/server/magicpack_v0.0.1/ user@minecraftserver:/home/user/_upload
-</code></pre></div>
-<div class="highlight"><pre><span></span><code>ssh user@minecraftserver
+</code></pre>
+<pre><code class="language-bash">ssh user@minecraftserver
 
-<span class="nb">cd</span> /home/user/_upload/magicpack_v0.0.1/
+cd /home/user/_upload/magicpack_v0.0.1/
 
-<span class="c1"># doanlods mods, modloader and installs them in the server</span>
+# doanlods mods, modloader and installs them in the server
 java -jar server-installer.jar /home/user/server/magicpack
 
-<span class="c1"># delete the installer</span>
-<span class="nb">cd</span> ..
+# delete the installer
+cd ..
 rm -rf magicpack_v0.0.1/
 </code></pre></div>
-                
-              
-              
-                
-
-
-              
-            </article>
-          </div>
+            </div>
         </div>
-      </main>
-      
-        
-<footer class="md-footer">
-  
-  <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-footer-copyright">
-        
-          <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2020 Nikky Snow
-          </div>
-        
-        Made with
-        <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
-          Material for MkDocs
-        </a>
-      </div>
-      
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js" defer></script>
+        <script src="../search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
     </div>
-  </div>
-</footer>
-      
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
     </div>
-    
-      <script src="../assets/javascripts/vendor.fd16492e.min.js"></script>
-      <script src="../assets/javascripts/bundle.7836ba4d.min.js"></script><script id="__lang" type="application/json">{"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing"}</script>
-      
-      <script>
-        app = initialize({
-          base: "..",
-          features: [],
-          search: Object.assign({
-            worker: "../assets/javascripts/worker/search.4ac00218.min.js"
-          }, typeof search !== "undefined" && search)
-        })
-      </script>
-      
-    
-  </body>
+</div>
+
+    </body>
 </html>

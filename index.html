@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="None">
+        
+        
+        <link rel="shortcut icon" href="img/favicon.ico">
+        <title>My Docs</title>
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <link href="css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css">
+
+        <script src="js/jquery-1.10.2.min.js" defer></script>
+        <script src="js/bootstrap.min.js" defer></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script> 
+    </head>
+
+    <body class="homepage">
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-primary">
+            <div class="container">
+                <a class="navbar-brand" href=".">My Docs</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem active">
+                                <a href="." class="nav-link">Voodoo</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="quickstart/" class="nav-link">Quickstart</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" class="nav-link disabled">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="quickstart/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#voodoo" class="nav-link">Voodoo</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#about" class="nav-link">About</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#is-voodoo-for-you" class="nav-link">Is Voodoo for you?</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#wiki" class="nav-link">Wiki</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#downloads" class="nav-link">Downloads</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#usage-examples" class="nav-link">Usage examples</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#developing" class="nav-link">Developing</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#support" class="nav-link">Support</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            
+            <li class="nav-item" data-level="1"><a href="#how-to-contribute" class="nav-link">How to contribute?</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="voodoo">Voodoo</h1>
+<h2 id="about">About</h2>
+<p>Creating Modpacks with Voodoo requires minimal effort, just create one <code>.voodoo.json</code>  or <code>.voodoo.kts</code> definition per modpack</p>
+<p>You can Test Any pack in MultiMC, creating a instance and launching it is completely automated, no more clicking than necessary</p>
+<p>Modern Minecraft versions (1.6.+), Forge and Fabric are supported</p>
+<p>packages to custom (TODO: add link and readme) Pack Format</p>
+<p><strong>No Rehosting of Mods!</strong> completely automated by preparing <code>.url.txt</code> files pointing to the original file location</p>
+<p>Reproducability: with a modpacks lockfile and <code>src</code> folder you can reproduce the modpack on any platform, server install or local testing
+(assuming that the urls do not get taken down or redirect anywhere else)</p>
+<p>Minimalistic Packs: on all platforms that support it (currently only the multimc-wrapper) mods will be downloaded by the user from the original location,  </p>
+<h1 id="is-voodoo-for-you">Is Voodoo for you?</h1>
+<p>Want to make a modpack ? quickly test locally and then make it available on multiple platforms for users ?</p>
+<p>voodoo is a set of tools to quickly prepare, build, test and deploy modpacks to users and servers</p>
+<p>Voodoo might be for you if: </p>
+<p>:heavy_check_mark: You want a fast and mostly automated process<br />
+:heavy_check_mark: You want to be able to update the modpack whenever you want<br />
+:heavy_check_mark: You don't want to depend on anyone else  </p>
+<p>or</p>
+<p>:heavy_check_mark: You already used SKCraft Launcher  </p>
+<h3 id="cons">Cons</h3>
+<p>It may not be for you if:</p>
+<p>:small_orange_diamond: You do not feel comfortable using a shell<br />
+:small_orange_diamond: You do not feel comfortable using a IDE or text editor with syntax highlighting<br />
+:small_orange_diamond: You don't have a website or place for people to download files from 
+and do not want to publish files to curse<br />
+:small_orange_diamond: You don't want anything to do with distributing the launcher or pack  </p>
+<p>This applies to different modules of voodoo individually.. without a place to host files you can still export
+a pack and upload it to curse, it will just be a much slower process due to approval and waiting time</p>
+<h1 id="wiki">Wiki</h1>
+<p>https://daemoniclabs.github.io/Voodoo</p>
+<h1 id="downloads">Downloads</h1>
+<p>you can grab binaries from the releases: https://github.com/DaemonicLabs/Voodoo/releases</p>
+<h1 id="usage-examples">Usage examples</h1>
+<pre><code class="language-bash"># generate json schema for autocompletion
+java -jar voodoo.jar generateSchema
+
+# create a new pack
+java -jar voodoo.jar create pack --id newPack --mcVersion 1.16.2
+
+# builds a pack
+java -jar voodoo.jar build --id mypack
+
+# packages for upload
+java -jar voodoo.jar package --id mypack -p voodoo -p mmc-voodoo -p curse
+
+# launches pack in multimc
+java -jar voodoo.jar launch multimc --id mypack
+
+</code></pre>
+<p>bash and zsh autocomplete</p>
+<p>the autocompletions should be regenerated manually on voodoo update</p>
+<pre><code># creating a alias
+alias voodoo='java -jar voodoo.jar'
+
+# generating autocompletion for bash
+_VOODOO_COMPLETE=bash voodoo &gt; ~/voodoo-completion.sh
+source ~/voodoo-completion.sh
+
+# generating autocompletion for zsh
+_VOODOO_COMPLETE=zsh voodoo &gt; ~/voodoo-completion.sh
+
+# bash example
+alias voodoo='java -jar voodoo.jar'
+_VOODOO_COMPLETE=bash voodoo &gt; voodoo-autocomplete.sh
+source voodoo-autocomplete.sh
+
+</code></pre>
+<p>if you use a different alias then use the correct environment variable to generate completions
+the rules are</p>
+<ul>
+<li>command capitalized</li>
+<li><code>-</code> replaced with <code>_</code></li>
+<li>with <code>_</code></li>
+<li>suffixed with <code>_COMPLETE</code></li>
+</ul>
+<p>eg <code>invoke-voodoo</code> would be <code>_INVOKE_VOODOO_COMPLETE</code></p>
+<h1 id="developing">Developing</h1>
+<p><a href="https://github.com/DaemonicLabs/Voodoo/wiki/Developer-Guide">Developer Guide</a></p>
+<h1 id="support">Support</h1>
+<p>Feel welcome to post ideas and suggestions to our <a href="https://github.com/DaemonicLabs/Voodoo/issues">tracker</a>.</p>
+<p>contact me directly in chat <a href="https://discord.gg/SRFkHfp"><img alt="Discord" src="https://img.shields.io/discord/342696338556977153.svg?style=flat-square&amp;label=%23ai-lab&amp;logo=discord" /></a> <br />
+or on irc <code>#unascribed</code> @ <code>irc.esper.net</code></p>
+<h1 id="how-to-contribute">How to contribute?</h1>
+<p>buy me a drink: <a href="https://www.patreon.com/NikkyAi"><img alt="Patreon" src="https://img.shields.io/badge/Patreon-Nikkyai-red.svg?style=flat-square" /></a></p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script>
+            var base_url = ".",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="js/base.js" defer></script>
+        <script src="search/main.js" defer></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    From here you can search these documents. Enter
+                    your search terms below.
+                </p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
+
+<!--
+MkDocs version : 1.1.2
+Build Date UTC : 2020-11-30 19:46:42.840913+00:00
+-->
