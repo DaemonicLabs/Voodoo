@@ -52,6 +52,7 @@ sealed class Modloader {
     }
 
     @Serializable
+    @SerialName("modloader.none")
     object None : Modloader() // not sure if we want to keep this
     {
         override fun replaceAutoCompletes() = this

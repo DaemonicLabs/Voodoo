@@ -13,7 +13,6 @@ import kotlinx.coroutines.slf4j.MDCContext
 import mu.KotlinLogging
 import mu.withLoggingContext
 import voodoo.cli.CLIContext
-import voodoo.data.flat.FlatModPack
 import voodoo.pack.*
 import voodoo.util.json
 import java.io.File
@@ -76,6 +75,7 @@ class CreatePackCommand : CliktCommand(
                     mcVersion = mcVersion,
                     title = title,
                     version = packVersion ?: "0.0.1",
+                    srcDir = "v${packVersion ?: "0.0.1"}_src",
                     modloader = Modloader.None,
                     packageConfiguration = VersionPackageConfig(),
                     mods = listOf(
@@ -100,7 +100,9 @@ class CreatePackCommand : CliktCommand(
                 metapackFile.writeText(json.encodeToString(MetaPack.serializer(), metaPack))
 
                 // write versionPack
-                versionPack.save(baseDir = baseDir)
+                baseDir.resolve("v${versionPack.version}.${VersionPack.extension}").also { file ->
+                    file.writeText(json.encodeToString(VersionPack.serializer(), versionPack))
+                }
 
                 logger.info { "created pack $savedTo" }
             }

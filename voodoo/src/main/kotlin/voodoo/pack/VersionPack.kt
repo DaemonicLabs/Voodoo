@@ -133,9 +133,4 @@ data class VersionPack(
         }
     }
 
-    fun save(baseDir: File): File {
-        return baseDir.resolve("v_${version}.$extension").also { file ->
-            file.writeText(json.encodeToString(serializer(), this))
-        }
-    }
 }

@@ -61,7 +61,7 @@ object SharedFolders {
 
     object UploadDir : SystemProperty {
         override val key = "voodoo.uploadDir"
-        var resolver: (rootDir: File, id: String) -> File = { rootDir, id -> rootDir.resolve("build").resolve("_upload") }
+        var resolver: (rootDir: File, id: String) -> File = { rootDir, id -> rootDir.resolve("_upload") }
         fun get(id: String): File = System.getProperty(key)?.asFile ?: resolver(RootDir.get(), id)
     }
 

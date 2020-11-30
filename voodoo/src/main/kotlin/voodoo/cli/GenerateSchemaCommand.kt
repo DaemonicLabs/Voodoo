@@ -69,11 +69,6 @@ class GenerateSchemaCommand : CliktCommand(
                 absoluteFile.parentFile.mkdirs()
                 writeText(VersionPack.generateSchema(overridesKeys = config.overrides.keys))
             }
-
-            rootDir.resolve("schema/nested_modpack.schema.json").apply {
-                absoluteFile.parentFile.mkdirs()
-                writeText(NestedPack.generateSchema())
-            }
         }
     }
 }

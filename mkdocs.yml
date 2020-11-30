@@ -1,0 +1,49 @@
+site_name: Voodoo
+repo_name: Voodoo
+repo_url: https://github.com/DaemonicLabs/Voodoo
+site_description: "Voodoo: Modpack building magic"
+site_author: Nikky Snow
+remote_branch: gh-pages
+
+copyright: 'Copyright &copy; 2020 Nikky Snow'
+
+theme:
+  name: 'material'
+  logo: img/wordmark_small.svg
+  favicon: img/favicon.ico
+  palette:
+    primary: 'blue grey'
+    accent: 'indigo'
+  icon:
+    repo: fontawesome/brands/github
+
+extra_css:
+  - 'css/extra.css'
+
+markdown_extensions:
+  - smarty
+  - codehilite:
+      guess_lang: false
+  - footnotes
+  - meta
+  - toc:
+      permalink: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - tables
+
+nav:
+  - 'Quickstart':
+      - 'Basic Concepts': quickstart/
+      - 'Downloading Voodoo': quickstart/#downloading-voodoo
+      - 'Setup Modpack Repository': quickstart/#setup-modpack-repository
+      - 'Create a Modpack': quickstart/#create-a-modpack
+      - 'Building the pack': quickstart/#building-the-pack
+      - 'Testing in MultiMC': quickstart/#testing-in-multimc
+      - 'Packaging and Upload': quickstart/#packaging-and-upload
