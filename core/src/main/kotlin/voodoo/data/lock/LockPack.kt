@@ -26,7 +26,7 @@ data class LockPack(
     val authors: List<String> = emptyList(),
     var localDir: String = "local",
     var packOptions: PackOptions = PackOptions(),
-    val entries: Set<LockEntry> = setOf(),
+    val entries: List<LockEntry> = listOf(),
 ) {
     companion object : KLogging() {
         const val extension = "lock.pack.json"

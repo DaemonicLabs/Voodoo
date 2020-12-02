@@ -120,7 +120,7 @@ the rules are
 
 - command capitalized
 - `-` replaced with `_`
-- with `_`
+- prefixed with `_`
 - suffixed with `_COMPLETE`
 
 eg `invoke-voodoo` would be `_INVOKE_VOODOO_COMPLETE`

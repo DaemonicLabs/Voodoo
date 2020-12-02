@@ -27,30 +27,6 @@ object Builder : KLogging() {
             logger.info("id: ${entry.id} entry: $entry")
         }
 
-        "resolve". watch {
-            try {
-                resolve(
-                    this,
-                    modpack
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-//                coroutineContext.cancel()
-                exitProcess(1)
-            }
-        }
-
-
-        "validate".watch {
-            modpack.lockEntrySet.forEach { lockEntry ->
-                val provider = Providers[lockEntry.providerType]
-                if (!provider.validate(lockEntry)) {
-                    logger.error { lockEntry }
-                    throw IllegalStateException("entry did not validate")
-                }
-            }
-        }
-
         logger.info("Creating locked pack...")
         val lockedPack = modpack.lock("lock".watch, targetFolder)
         lockedPack.lockBaseFolder.deleteRecursively()
@@ -61,20 +37,13 @@ object Builder : KLogging() {
         targetFile.writeText(lockedPack.toJson(LockPack.serializer()))
 
         logger.info { "copying input files into output" }
-        //FIXME: also include local ?
-        logger.info { "copying: ${modpack.sourceFolder}" }
-
-        //TODO: zip src and local
-
-
+        logger.info { "copying from ${modpack.sourceFolder}" }
         lockedPack.sourceFolder.also { sourceFolder ->
             sourceFolder.deleteRecursively()
             sourceFolder.mkdirs()
             modpack.sourceFolder.copyRecursively(sourceFolder, overwrite = true)
 
             if(sourceFolder.list()?.isNotEmpty() == true) {
-                logger.info { "zipping $sourceFolder" }
-                logger.info { "zipping ${sourceFolder.list()?.joinToString()}" }
                 packToZip(
                     sourceFolder,
                     lockedPack.sourceZip
@@ -87,6 +56,7 @@ object Builder : KLogging() {
             .takeIf { it.exists() }
             ?.copyTo(lockedPack.iconFile, overwrite = true)
 
+        logger.info { "copying from ${modpack.localFolder}" }
         lockedPack.localFolder.also { localFolder ->
             localFolder.deleteRecursively()
             localFolder.mkdirs()
@@ -99,14 +69,12 @@ object Builder : KLogging() {
                 }
 
             if(localFolder.list()?.isNotEmpty() == true) {
-                logger.info { "zipping $localFolder" }
-                logger.info { "zipping ${localFolder.list()?.joinToString()}" }
                 packToZip(
                     localFolder,
                     lockedPack.localZip
                 )
             }
-//            localFolder.deleteRecursively()
+            localFolder.deleteRecursively()
         }
 
         lockedPack
