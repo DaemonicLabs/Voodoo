@@ -26,7 +26,7 @@ suspend fun resolve(
     modPack: FlatModPack,
 ): Set<LockEntry> = stopwatch {
 
-    val mutableEntryMap = modPack.entrySet.associateBy { it.id }
+    val mutableEntryMap = modPack.entrySet.associateBy { it.id }.toMutableMap()
 
     fun addOrMerge(entry: FlatEntry, mergeOp: (FlatEntry, FlatEntry) -> FlatEntry): FlatEntry {
         val result = mutableEntryMap[entry.id]?.let { existing ->
