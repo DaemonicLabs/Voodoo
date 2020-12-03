@@ -74,12 +74,11 @@ data class FlatModPack(
         )
 
         "validate".watch {
-            resolvedEntries.forEach { (id, lockEntry) ->
-                require(id == lockEntry.id) { "'$id' and '${lockEntry.id}' do not match" }
+            resolvedEntries.forEach { lockEntry ->
                 val provider = Providers[lockEntry.providerType]
                 if (!provider.validate(lockEntry)) {
                     Builder.logger.error { lockEntry }
-                    throw IllegalStateException("entry '$id' did not validate")
+                    throw IllegalStateException("entry '${lockEntry.id}' did not validate")
                 }
             }
         }
@@ -96,7 +95,7 @@ data class FlatModPack(
                 modloader = modloader?.lock() ?: Modloader.None,
                 localDir = localDir,
                 packOptions = packOptions,
-                entries = resolvedEntries.values.sortedBy { it.id }
+                entries = resolvedEntries.sortedBy { it.id }
             ).also {
                 it.lockBaseFolder = targetFolder
             }

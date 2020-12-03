@@ -17,7 +17,7 @@ import java.time.Instant
  * @author Nikky
  */
 @Serializable
-sealed class LockEntry() : CommonLockModule {
+sealed class LockEntry() : CommonLockModule, Comparable<LockEntry> {
     @Transient
     abstract val providerType: String
 
@@ -142,4 +142,6 @@ sealed class LockEntry() : CommonLockModule {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
+
+    override fun compareTo(other: LockEntry) = id.compareTo(other.id)
 }
