@@ -24,9 +24,9 @@ private val logger = KotlinLogging.logger {}
 suspend fun resolve(
     stopwatch: Stopwatch,
     modPack: FlatModPack,
-): Map<String, LockEntry> = stopwatch {
+): Set<LockEntry> = stopwatch {
 
-    val mutableEntryMap = ConcurrentHashMap<String, FlatEntry>()
+    val mutableEntryMap = modPack.entrySet.associateBy { it.id }
 
     fun addOrMerge(entry: FlatEntry, mergeOp: (FlatEntry, FlatEntry) -> FlatEntry): FlatEntry {
         val result = mutableEntryMap[entry.id]?.let { existing ->
@@ -38,7 +38,7 @@ suspend fun resolve(
         return result
     }
 
-    val mutableLockEntryMap = ConcurrentHashMap<String, LockEntry>()
+    val mutableLockEntryMap = mutableMapOf<String, LockEntry>()
 
     fun addOrMerge(
         entry: LockEntry,
@@ -61,7 +61,7 @@ suspend fun resolve(
         }
 
         addOrMerge(entry) { existingEntry, newEntry ->
-            if (newEntry != existingEntry) {
+            if (!(newEntry === existingEntry)) {
                 logger.info("duplicate entry $newEntry")
                 logger.info("old entry $existingEntry")
 
@@ -180,5 +180,5 @@ suspend fun resolve(
         } while (unresolvedEntries.isNotEmpty())
     }
 
-    mutableLockEntryMap.toMap()
+    mutableLockEntryMap.values.toSet()
 }
