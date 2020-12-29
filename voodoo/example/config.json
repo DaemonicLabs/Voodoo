@@ -19,6 +19,17 @@
                 "1.15.1",
                 "1.15.2"
             ]
+        },
+        "Forge": {
+            "section": "MODS",
+            "categories": [
+
+            ],
+            "mcVersions": [
+                "1.12",
+                "1.12.1",
+                "1.12.2"
+            ]
         }
     },
     "forgeGenerators": {
