@@ -93,7 +93,8 @@ java -jar voodoo.jar launch multimc --id mypack
 
 ```
 
-bash and zsh autocomplete
+bash, zsh and fish Autocomplete
+------------
 
 the autocompletions should be regenerated manually on voodoo update
 
@@ -108,10 +109,8 @@ source ~/voodoo-completion.sh
 # generating autocompletion for zsh
 _VOODOO_COMPLETE=zsh voodoo > ~/voodoo-completion.sh
 
-# bash example
-alias voodoo='java -jar voodoo.jar'
-_VOODOO_COMPLETE=bash voodoo > voodoo-autocomplete.sh
-source voodoo-autocomplete.sh
+# generating autocompletion for fish
+_VOODOO_COMPLETE=fish voodoo > ~/.config/fish/voodoo-completion.fish
 
 ```
 
