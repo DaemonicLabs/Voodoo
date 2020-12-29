@@ -52,7 +52,7 @@ val defaultVersion = "0.6.0"
 val isCI = System.getenv("CI") != null
 
 val versionSuffix = when {
-    isCI -> "SNAPSHOT"
+    isCI -> "SNAPSHOT-${System.getenv("GITHUB_RUN_NUMBER")}"
     else -> "local"
 }
 
