@@ -52,7 +52,7 @@ class GenerateSchemaCommand : CliktCommand(
                 writeText(json.encodeToSchema(Configuration.serializer()))
             }
 
-            rootDir.resolve("packId").resolve(MetaPack.defaultSchema).apply {
+            rootDir.resolve("packIdPlaceholder").resolve(MetaPack.defaultSchema).normalize().apply {
                 absoluteFile.parentFile.mkdirs()
                 writeText(json.encodeToSchema(MetaPack.serializer()))
             }
@@ -60,12 +60,12 @@ class GenerateSchemaCommand : CliktCommand(
             Autocompletions.generate(configFile = configFile)
 
 
-//            rootDir.resolve("packId").resolve(Modpack.defaultSchema).apply {
+//            rootDir.resolve("packIdPlaceholder").resolve(Modpack.defaultSchema).apply {
 //                absoluteFile.parentFile.mkdirs()
 //                writeText(Modpack.generateSchema(overridesKeys = config.overrides.keys))
 //            }
 
-            rootDir.resolve("packId").resolve(VersionPack.defaultSchema).apply {
+            rootDir.resolve("packIdPlaceholder").resolve(VersionPack.defaultSchema).normalize().apply {
                 absoluteFile.parentFile.mkdirs()
                 writeText(VersionPack.generateSchema(overridesKeys = config.overrides.keys))
             }
