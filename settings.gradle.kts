@@ -48,6 +48,9 @@ gradleEnterprise {
 rootProject.name = "voodoo-parent"
 
 includeBuild("buildUtil")
+include(":bootstrap")
+include(":bootstrap:multimc-installer")
+include(":bootstrap:voodoo")
 include(":voodoo")
 include(":voodoo:scripting")
 include(":core")
