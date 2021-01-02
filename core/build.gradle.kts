@@ -23,6 +23,6 @@ dependencies {
     // jenkins provider
     implementation(project(":util:util-jenkins"))
 
-    implementation("org.apache.commons:commons-compress:_")
+//    implementation("org.apache.commons:commons-compress:_")
 
 }
