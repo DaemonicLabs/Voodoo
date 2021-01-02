@@ -26,6 +26,8 @@ fun packToZip(sourceDir: File, zipFile: File, preserveTimestamps: Boolean = true
                 val zipEntry = ZipEntry(file.toRelativeUnixPath(sourceDir))
                 if(!preserveTimestamps) {
                     zipEntry.time = 0
+                } else {
+                    zipEntry.time = file.lastModified()
                 }
                 stream.putNextEntry(zipEntry)
                 stream.write(file.readBytes())

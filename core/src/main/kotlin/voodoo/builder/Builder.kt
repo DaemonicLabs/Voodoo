@@ -41,12 +41,16 @@ object Builder : KLogging() {
             sourceFolder.deleteRecursively()
             sourceFolder.mkdirs()
             modpack.sourceFolder.copyRecursively(sourceFolder, overwrite = true)
+            modpack.sourceFolder.walkTopDown().filter { it.isFile }.forEach { file ->
+                val relative = file.relativeTo(modpack.sourceFolder)
+                sourceFolder.resolve(relative).setLastModified(file.lastModified())
+            }
 
             if(sourceFolder.list()?.isNotEmpty() == true) {
                 packToZip(
-                    sourceDir = sourceFolder,
+                    sourceDir = modpack.sourceFolder,
                     zipFile = lockedPack.sourceZip,
-                    preserveTimestamps = false
+//                    preserveTimestamps = false
                 )
             }
             sourceFolder.deleteRecursively()
@@ -66,13 +70,14 @@ object Builder : KLogging() {
                     logger.info { "copying: $localTargetFile" }
                     localTargetFile.absoluteFile.parentFile.mkdirs()
                     modpack.localFolder.resolve(entry.fileSrc).copyTo(localTargetFile, overwrite = true)
+                    localTargetFile.setLastModified(modpack.localFolder.resolve(entry.fileSrc).lastModified())
                 }
 
             if(localFolder.list()?.isNotEmpty() == true) {
                 packToZip(
                     sourceDir = localFolder,
                     zipFile = lockedPack.localZip,
-                    preserveTimestamps = false
+//                    preserveTimestamps = false
                 )
             }
             localFolder.deleteRecursively()
