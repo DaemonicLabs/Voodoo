@@ -8,7 +8,6 @@ import voodoo.data.lock.LockPack
 import voodoo.provider.Providers
 import voodoo.util.packToZip
 import voodoo.util.toJson
-import kotlin.system.exitProcess
 
 /**
  * Created by nikky on 28/03/18.
@@ -45,8 +44,9 @@ object Builder : KLogging() {
 
             if(sourceFolder.list()?.isNotEmpty() == true) {
                 packToZip(
-                    sourceFolder,
-                    lockedPack.sourceZip
+                    sourceDir = sourceFolder,
+                    zipFile = lockedPack.sourceZip,
+                    preserveTimestamps = false
                 )
             }
             sourceFolder.deleteRecursively()
@@ -70,8 +70,9 @@ object Builder : KLogging() {
 
             if(localFolder.list()?.isNotEmpty() == true) {
                 packToZip(
-                    localFolder,
-                    lockedPack.localZip
+                    sourceDir = localFolder,
+                    zipFile = lockedPack.localZip,
+                    preserveTimestamps = false
                 )
             }
             localFolder.deleteRecursively()

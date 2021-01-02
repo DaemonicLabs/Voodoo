@@ -278,17 +278,6 @@ subprojects {
                     }
                 }
             }
-//            repositories {
-//                maven(url = "http://mavenupload.modmuss50.me/") {
-//                    val mavenPass: String? = project.properties["mavenPass"] as String?
-//                    mavenPass?.let {
-//                        credentials {
-//                            username = "buildslave"
-//                            password = mavenPass
-//                        }
-//                    }
-//                }
-//            }
         }
         apply(from = "${rootDir.path}/mavenPom.gradle.kts")
 

@@ -27,7 +27,6 @@ data class FileInstall(
     // userFiels are files that ca be modified by users and will not be downloaded when the hash changes
     var userFile: Boolean = false,
 
-//    var manifest: Manifest? = null,
     @SerialName("when")
     var condition: Condition? = null
 ) {

@@ -23,48 +23,20 @@ class Condition(
         }
         else -> false
     }
-//        when(ifSwitch) {
-//            "requireAny" -> {
-//                for (feature in features) {
-//                    val isEnabled = enabledFeatures[feature]
-//                    if(isEnabled == null) {
-//                        continue
-//                    }
-//                    if (isEnabled) {
-//                        return true
-//                    }
-//                }
-//                return false
-//            }
-//            "requireAll" -> {
-//                for (feature in features) {
-//                    val isEnabled = enabledFeatures[feature]
-//                    if(isEnabled == null) {
-//                        continue
-//                    }
-//                    if (!isEnabled) {
-//                        return false
-//                    }
-//                }
-//                return true
-//            }
-//            else -> return false
-//        }
 
-    @Serializer(forClass = Condition::class)
-    companion object : KSerializer<Condition> {
+    companion object {
         fun requireAny(features: MutableList<Feature> = ArrayList()) =
             Condition("requireAny", features.map { feature -> feature.name })
 
         fun requireAll(features: MutableList<Feature> = ArrayList()) =
             Condition("requireAll", features.map { feature -> feature.name })
 
-        override fun serialize(encoder: Encoder, value: Condition) {
-            val elemOutput = encoder.beginStructure(descriptor)
-            elemOutput.encodeStringElement(descriptor, 0, value.ifSwitch)
-            elemOutput.encodeSerializableElement(descriptor, 1, ListSerializer(String.serializer()), value.features)
-            elemOutput.endStructure(descriptor)
-        }
+//        override fun serialize(encoder: Encoder, value: Condition) {
+//            val elemOutput = encoder.beginStructure(descriptor)
+//            elemOutput.encodeStringElement(descriptor, 0, value.ifSwitch)
+//            elemOutput.encodeSerializableElement(descriptor, 1, ListSerializer(String.serializer()), value.features)
+//            elemOutput.endStructure(descriptor)
+//        }
 
 //        override fun deserialize(input: Decoder): Condition {
 //            val inputElem = input.readBegin(descriptor)
@@ -74,7 +46,6 @@ class Condition(
 //                "requireAll" -> RequireAll::class.serializer().load(input)
 //                else -> throw IllegalStateException("if switch has unexpected value")
 //            }
-//
 //        }
     }
 }
