@@ -94,12 +94,12 @@ public class Wrapper {
         File workingDir = new File(System.getProperty("user.dir"));
 
         String[] systemPropertyArgs;
-        for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
-            Object key = entry.getKey();
-            Object value = entry.getValue();
-            System.out.println(key + ": " + value);
-            //TODO: systemPropertyArgs += "-D${key}=${value}"
-        }
+//        for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
+//            Object key = entry.getKey();
+//            Object value = entry.getValue();
+//            System.out.println(key + ": " + value);
+//            //TODO: systemPropertyArgs += "-D${key}=${value}"
+//        }
         if(System.getProperty("kotlinx.coroutines.debug") != null) {
             systemPropertyArgs = new String[]{"-Dkotlinx.coroutines.debug"};
         } else {
