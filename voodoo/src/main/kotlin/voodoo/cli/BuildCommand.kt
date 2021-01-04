@@ -136,6 +136,11 @@ class BuildCommand() : CliktCommand(
                     .map { versionPack ->
                         withLoggingContext("version" to versionPack.version) {
                             withContext(MDCContext()) {
+//                                logger.info { "flattening: $versionPack" }
+//                                logger.info { "flattening mods:" }
+//                                versionPack.mods.forEach {
+//                                    logger.info { "$it" }
+//                                }
                                 val modpack = versionPack.flatten(
                                     rootDir = rootDir,
                                     id = id,

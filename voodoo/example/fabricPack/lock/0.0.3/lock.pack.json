@@ -1,13 +1,13 @@
 {
     "id": "fabricPack",
-    "mcVersion": "1.15.2",
+    "mcVersion": "1.16.4",
     "modloader": {
         "type": "Fabric",
         "loader": "0.10.8",
-        "intermediateMappings": "1.15.2",
+        "intermediateMappings": "1.16.4",
         "installer": "0.6.1.51"
     },
-    "version": "0.0.2",
+    "version": "0.0.3",
     "icon": "icon_fabricPack.png",
     "packOptions": {
         "uploadUrl": "https://nikky.moe/.mc/fabricPack"
@@ -22,11 +22,8 @@
             "optionalData": {
                 "recommendation": "starred"
             },
-            "dependencies": {
-                "fabric-api": "REQUIRED"
-            },
             "projectID": 248787,
-            "fileID": 2987254
+            "fileID": 3035787
         },
         {
             "type": "curse",
@@ -37,7 +34,7 @@
                 "fabric-api": "REQUIRED"
             },
             "projectID": 311377,
-            "fileID": 2983313
+            "fileID": 3133763
         },
         {
             "type": "curse",
@@ -48,7 +45,7 @@
                 "fabric-api": "REQUIRED"
             },
             "projectID": 373138,
-            "fileID": 2976626
+            "fileID": 3139044
         },
         {
             "type": "curse",
@@ -56,7 +53,7 @@
             "path": "mods",
             "name": "fabric-api",
             "projectID": 306612,
-            "fileID": 3147516
+            "fileID": 3157289
         },
         {
             "type": "curse",
@@ -67,7 +64,7 @@
                 "fabric-api": "REQUIRED"
             },
             "projectID": 253449,
-            "fileID": 2931299
+            "fileID": 3033613
         },
         {
             "type": "curse",
@@ -76,7 +73,7 @@
             "name": "modmenu",
             "side": "CLIENT",
             "projectID": 308702,
-            "fileID": 3121557
+            "fileID": 3121655
         },
         {
             "type": "curse",
@@ -88,7 +85,7 @@
                 "recommendation": "starred"
             },
             "projectID": 317514,
-            "fileID": 3150474
+            "fileID": 3150472
         },
         {
             "type": "curse",
@@ -100,7 +97,7 @@
                 "fabric-api": "REQUIRED"
             },
             "projectID": 310111,
-            "fileID": 2979221
+            "fileID": 3142186
         },
         {
             "type": "curse",
@@ -112,7 +109,7 @@
                 "roughly-enough-items": "REQUIRED"
             },
             "projectID": 325625,
-            "fileID": 2903947
+            "fileID": 3138173
         },
         {
             "type": "curse",
@@ -120,7 +117,7 @@
             "path": "mods",
             "name": "tab-inventory-fabric",
             "projectID": 362943,
-            "fileID": 2886750
+            "fileID": 2988339
         }
     ]
 }

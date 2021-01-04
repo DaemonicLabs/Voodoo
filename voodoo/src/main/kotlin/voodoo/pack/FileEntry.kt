@@ -12,7 +12,7 @@ import voodoo.data.flat.FlatEntry
 sealed class FileEntry(
 //    @JsonSchema.Definition("entry.applyOverrides")
     @JsonSchema.StringEnum(["replace_with_overrides"])
-    val applyOverrides: List<String> = listOf(),
+    var applyOverrides: List<String> = listOf(),
     var id: String? = null,
     var name: String? = null,
     var folder: String? = null,
@@ -27,7 +27,7 @@ sealed class FileEntry(
     var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
     var validMcVersions: Set<String> = setOf(),
     var invalidMcVersions: Set<String> = setOf(),
-    val enabled: Boolean = true
+    var enabled: Boolean = true
 ) {
     protected fun applyCommonOverride(tag: EntryOverride) {
         tag.folder?.let {
@@ -98,6 +98,7 @@ sealed class FileEntry(
         @SerialName("curseProperties")
         val curse: CurseComponent = CurseComponent(),
     ) : FileEntry() {
+
         override fun applyTag(tag: EntryOverride): Curse {
             return when(tag) {
                 is EntryOverride.Curse -> copy(
@@ -118,7 +119,13 @@ sealed class FileEntry(
         override fun toEntry(): FlatEntry = FlatEntry.Curse (
             common = toCommonComponent(),
             curse = curse.copy()
-        )
+        ).apply {
+
+        }
+
+        override fun toString(): String {
+            return "FileEntry.Curse(projectName=$projectName,curse=$curse,validMcVersion=$validMcVersions})"
+        }
     }
 
     @Serializable

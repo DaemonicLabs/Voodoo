@@ -9,7 +9,7 @@
                 "1.12.2"
             ]
         },
-        "Fabric": {
+        "Fabric15": {
             "section": "MODS",
             "categories": [
                 "Fabric"
@@ -18,6 +18,19 @@
                 "1.15",
                 "1.15.1",
                 "1.15.2"
+            ]
+        },
+        "Fabric16": {
+            "section": "MODS",
+            "categories": [
+                "Fabric"
+            ],
+            "mcVersions": [
+                "1.16",
+                "1.16.1",
+                "1.16.2",
+                "1.16.3",
+                "1.16.4"
             ]
         },
         "Forge": {
@@ -75,6 +88,10 @@
             "optional": {
                 "recommendation": "starred"
             }
+        },
+        "163Mod": {
+            "type": "common",
+            "validMcVersions": ["1.16.3"]
         }
     }
 }

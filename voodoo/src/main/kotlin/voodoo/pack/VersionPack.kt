@@ -4,6 +4,7 @@ import com.github.ricky12awesome.jss.JsonSchema
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import mu.KotlinLogging
 import voodoo.config.Autocompletions
 import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
@@ -31,10 +32,11 @@ data class VersionPack(
     val mods: List<FileEntry>,
 ) {
     companion object {
+        private val logger = KotlinLogging.logger {}
         const val extension = "voodoo.json"
         const val defaultSchema = "../schema/versionPack.schema.json"
 
-        fun parse(packFile: File) : VersionPack {
+        fun parse(packFile: File): VersionPack {
             return json.decodeFromString(
                 VersionPack.serializer(),
                 packFile.readText()
@@ -47,7 +49,8 @@ data class VersionPack(
                 )
             }
         }
-        fun parseAll(baseDir: File) : List<VersionPack> {
+
+        fun parseAll(baseDir: File): List<VersionPack> {
             return baseDir
                 .list { dir, name ->
                     name.endsWith(".$extension")
@@ -65,14 +68,30 @@ data class VersionPack(
                     val addonid = Autocompletions.curseforge[entry.projectName]?.toIntOrNull()
                     val newName = entry.projectName.substringAfterLast('/')
                     require(addonid != null) { "cannot find replacement for ${entry.projectName} / ${Autocompletions.curseforge[entry.projectName]}" }
+                    logger.trace { "before transform: ${entry.validMcVersions}" }
                     entry.copy(
                         projectName = null,
                         curse = entry.curse.copy(
                             projectID = ProjectID(addonid)
                         )
                     ).apply {
-                        name = entry.name ?: newName
+                        applyOverrides = entry.applyOverrides
                         id = entry.id ?: newName
+                        name = entry.name ?: newName
+                        folder = entry.folder
+                        description = entry.description
+                        optional = entry.optional
+                        side = entry.side
+                        websiteUrl = entry.websiteUrl
+                        packageType = entry.packageType
+                        transient = entry.transient
+                        version = entry.version
+                        fileName = entry.fileName
+                        fileNameRegex = entry.fileNameRegex
+                        validMcVersions = entry.validMcVersions
+                        invalidMcVersions = entry.invalidMcVersions
+                        enabled = entry.enabled
+                        logger.trace { "after transform: $validMcVersions" }
                     }
                 } else {
                     entry
@@ -118,7 +137,9 @@ data class VersionPack(
                         overrides[overrideId] ?: error("$entryId: override for id $overrideId not found")
                     return@fold acc.applyTag(entryOverride)
                 }
-                entry.toEntry()
+                entry.toEntry().also {
+                    logger.trace { "toEntry() ${it.id} ${entry.validMcVersions} -> $it" }
+                }
             }.toMutableSet()
         ).apply {
 

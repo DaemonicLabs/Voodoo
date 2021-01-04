@@ -18,6 +18,10 @@
             "id": "appleskin",
             "path": "mods",
             "name": "appleskin",
+            "side": "CLIENT",
+            "optionalData": {
+                "recommendation": "starred"
+            },
             "dependencies": {
                 "fabric-api": "REQUIRED"
             },
@@ -59,6 +63,7 @@
             "id": "modmenu",
             "path": "mods",
             "name": "modmenu",
+            "side": "CLIENT",
             "projectID": 308702,
             "fileID": 3121557
         },
@@ -67,6 +72,10 @@
             "id": "mouse-wheelie",
             "path": "mods",
             "name": "mouse-wheelie",
+            "side": "CLIENT",
+            "optionalData": {
+                "recommendation": "starred"
+            },
             "projectID": 317514,
             "fileID": 3150474
         },
@@ -75,6 +84,7 @@
             "id": "roughly-enough-items",
             "path": "mods",
             "name": "roughly-enough-items",
+            "side": "CLIENT",
             "dependencies": {
                 "fabric-api": "REQUIRED"
             },
@@ -86,6 +96,7 @@
             "id": "roughly-enough-resources",
             "path": "mods",
             "name": "roughly-enough-resources",
+            "side": "CLIENT",
             "dependencies": {
                 "roughly-enough-items": "REQUIRED"
             },

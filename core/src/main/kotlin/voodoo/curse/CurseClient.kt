@@ -462,7 +462,7 @@ object CurseClient : KLogging() {
 
             if (files.isEmpty()) {
                 logger.error("validMcVersions: $mcVersion + ${entry.validMcVersions}")
-                logger.error("filtered files did not match mcVersions: $mcVersions $oldFiles")
+                logger.error("filtered files did not match mcVersions: $mcVersions + ${entry.validMcVersions} $oldFiles")
             }
             oldFiles = files
         }
