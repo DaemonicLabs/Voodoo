@@ -8,5 +8,5 @@ application {
 }
 
 dependencies {
-    implementation(project(":bootstrap"))
+    implementation(project(":wrapper"))
 }

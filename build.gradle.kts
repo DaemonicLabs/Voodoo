@@ -203,14 +203,11 @@ subprojects {
         }
     }
 
-
     idea {
         module {
             excludeDirs.add(file("run"))
         }
     }
-
-
 
 //    val genResourceFolder = project.buildDir.resolve("generated-resource")
 //    sourceSets {

@@ -1,13 +1,7 @@
 package voodoo;
 
-import org.w3c.dom.Document;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathFactory;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -16,32 +10,39 @@ import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-public class Bootstrap {
-    private static final File binariesDir = new File("../.voodoo/");
-    private static final File lastFile = new File(binariesDir, "newest.jar");
-    private static final Properties props = new Properties();
+public class Wrapper {
 
-    static {
-        try {
-            props.load(Bootstrap.class.getResourceAsStream("/maven.properties"));
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static void main(String[] args) throws URISyntaxException {
+        Properties props = new Properties();
+        File propertiesFile = new File(new File(Wrapper.class.getProtectionDomain().getCodeSource().getLocation().toURI()), "wrapper.properties");
+        if(!propertiesFile.exists()) {
+            System.err.println("cannot open file " + propertiesFile.getPath());
             System.exit(-1);
         }
-    }
 
-    private static final String mavenUrl = props.getProperty("url");
-    private static final String group = props.getProperty("group");
-    private static final String artifact = props.getProperty("name");
-    private static final String classifier = props.getProperty("classifier");
+        String distributionUrl = props.getProperty("distributionUrl", null);
 
-    public static void main(String[] args) {
+        if(distributionUrl == null) {
+            System.err.println("missing key 'distributionUrl' in file " + propertiesFile.getPath());
+            System.exit(-1);
+        }
+
+        String distributionPath = props.getProperty("distributionPath", null);;
+
+        if(distributionPath == null) {
+            System.err.println("missing key 'distributionPath' in file " + propertiesFile.getPath());
+            System.exit(-1);
+        }
+
+        File binariesDir = new File(distributionPath);
+
         try {
-            cleanup();
-            launch(args);
+            cleanup(binariesDir);
+            launch(distributionUrl, binariesDir, args);
         } catch(Throwable t) {
             t.printStackTrace();
             System.err.println("Error: " + t.getLocalizedMessage());
@@ -49,7 +50,7 @@ public class Bootstrap {
         }
     }
 
-    private static void cleanup() {
+    private static void cleanup(File binariesDir) {
         binariesDir.mkdirs();
         File[] files = binariesDir.listFiles((pathname -> pathname.getName().endsWith(".tmp")));
         for (File file : files) {
@@ -58,18 +59,38 @@ public class Bootstrap {
     }
 
 
-    private static void launch(String[] originalArgs) throws Throwable {
+    private static void launch(String distributionUrl, File binariesDir, String[] originalArgs) throws Throwable {
+        Properties props = new Properties();
+        File propertiesFile = new File(new File(Wrapper.class.getProtectionDomain().getCodeSource().getLocation()
+                .toURI()), ".properties");
+        if(!propertiesFile.exists()) {
+            System.err.println("cannot open file " + propertiesFile.getPath());
+            System.exit(-1);
+        }
+        try {
+            try(FileReader reader = new FileReader(propertiesFile)) {
+                props.load(reader);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.exit(-1);
+        }
+
+        String artifact = distributionUrl.substring(distributionUrl.lastIndexOf('/'));
+
         System.out.printf("Downloading the %s binary...%n", artifact);
+
+        File lastFile = new File(binariesDir, artifact + ".last.jar");
 
         File file;
         try {
-            file = download();
+            file = download(distributionUrl, binariesDir, artifact);
             if(!file.exists()) {
                 throw new IllegalStateException("downloaded file does not seem to exist");
             }
         } catch(IOException e) {
             e.printStackTrace();
-            System.err.printf("cannot download %s from %s, trying to reuse last binary%n", artifact, mavenUrl);
+            System.err.printf("cannot download %s from %s, trying to reuse last binary%n", artifact, distributionUrl);
             file = lastFile;
         }
 
@@ -80,16 +101,22 @@ public class Bootstrap {
         String java = Paths.get(System.getProperty("java.home"), "bin", "java").toFile().getPath();
         File workingDir = new File(System.getProperty("user.dir"));
 
-        String[] debugArgs;
+        String[] systemPropertyArgs;
+        for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+            System.out.println(key + ": " + value);
+            //TODO: systemPropertyArgs += "-D${key}=${value}"
+        }
         if(System.getProperty("kotlinx.coroutines.debug") != null) {
-            debugArgs = new String[]{"-Dkotlinx.coroutines.debug"};
+            systemPropertyArgs = new String[]{"-Dkotlinx.coroutines.debug"};
         } else {
-            debugArgs = new String[0];
+            systemPropertyArgs = new String[0];
         }
 
         ArrayList<String> argsList = new ArrayList<>();
         argsList.add(java);
-        argsList.addAll(Arrays.asList(debugArgs));
+        argsList.addAll(Arrays.asList(systemPropertyArgs));
         argsList.add("-jar");
         argsList.add(file.getPath());
         argsList.addAll(Arrays.asList(originalArgs));
@@ -104,19 +131,6 @@ public class Bootstrap {
                 .start()
                 .waitFor();
         System.exit(exitStatus);
-    }
-
-    private static File download() throws Exception {
-        String groupPath = group.replace( '.', '/');
-        String mavenMetadataUrl = mavenUrl + '/' + groupPath + '/' + artifact + "/maven-metadata.xml";
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.parse((new URL(mavenMetadataUrl)).openStream());
-        XPathFactory xpFactory = XPathFactory.newInstance();
-        XPath xPath = xpFactory.newXPath();
-        String xpath = "/metadata/versioning/release/text()";
-        String releaseVersion = (String) xPath.evaluate(xpath, doc, XPathConstants.STRING);
-        return downloadArtifact(mavenUrl, group, artifact, releaseVersion, classifier, "jar", binariesDir);
     }
 
     public static byte[] createMD5(File file) throws Exception {
@@ -145,29 +159,16 @@ public class Bootstrap {
         return sb.toString();
     }
 
-    public static  File downloadArtifact(String mavenUrl,
-                                         String group,
-                                         String artifactId,
-                                         String version,
-                                         String classifier,
-                                         String extension,
-                                         File outputDir
+    public static File download(
+            String distributionUrl,
+            File outputDir,
+            String artifact
     ) throws Exception {
-        String groupPath;
-        String classifierSuffix;
-        groupPath = group.replace('.', '/');
-        if (classifier != null) {
-            classifierSuffix = '-' + classifier;
-        } else {
-            classifierSuffix = "";
-        }
-
-        String artifactUrl = mavenUrl + '/' + groupPath + '/' + artifactId + '/' + version + '/' + artifactId + '-' + version + classifierSuffix + '.' + extension;
-        File tmpFile = new File(outputDir, artifactId + '-' + version + classifierSuffix + '.' + extension + ".tmp");
-        File targetFile = new File(outputDir, artifactId + '-' + version + classifierSuffix + '.' + extension);
+        File targetFile = new File(outputDir, artifact + ".jar");
+        File tmpFile = new File(targetFile.getParent(), targetFile.getName() + ".tmp");
 
         String md5;
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(artifactUrl + ".md5").openStream(), StandardCharsets.UTF_8))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(distributionUrl + ".md5").openStream(), StandardCharsets.UTF_8))) {
             md5 = reader.lines().collect(Collectors.joining(System.lineSeparator()));
         }
 
@@ -180,7 +181,7 @@ public class Bootstrap {
             }
         }
 
-        try (BufferedInputStream in = new BufferedInputStream(new URL(artifactUrl).openStream());
+        try (BufferedInputStream in = new BufferedInputStream(new URL(distributionUrl).openStream());
              FileOutputStream fileOutputStream = new FileOutputStream(tmpFile)) {
             byte[] dataBuffer = new byte[1024];
             int bytesRead;
@@ -192,7 +193,7 @@ public class Bootstrap {
         {
             String fileMd5 = toHexString(createMD5(tmpFile));
             if(!fileMd5.equalsIgnoreCase(md5)) {
-                throw new IllegalArgumentException(String.format("%s did not match md5 hash: '%s' file: %s", artifactUrl, md5, fileMd5));
+                throw new IllegalArgumentException(String.format("%s did not match md5 hash: '%s' file: %s", distributionUrl, md5, fileMd5));
             }
         }
 
