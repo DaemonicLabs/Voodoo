@@ -53,7 +53,7 @@ jobs:
          body: Snapshot Release ${{ env.VERSION }}
          gzip: folders
          files: >
-           wrapper.jar:wrapper/voodoo/build/libs/wrapper-${{ env.VERSION }}-all.jar
+           wrapper.jar:wrapper/build/libs/wrapper-${{ env.VERSION }}-all.jar
            voodoo-${{ env.VERSION }}.jar:voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar
            voodoo-${{ env.VERSION }}.jar.md5:voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar.md5
            multimc-installer-${{ env.VERSION }}.jar:multimc/installer/build/libs/multimc-installer-${{ env.VERSION }}-all.jar
