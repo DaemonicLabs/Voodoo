@@ -41,7 +41,7 @@ jobs:
          echo "RELEASE_TAG=${{ env.RELEASE_TAG }}"
      - name: generate checksum
        run: |
-         md5sum "voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar" > "voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar.md5"
+         md5sum "voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar" |cut -f 1 -d " " > "voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar.md5"
      - name: Create prerelease
        uses: meeDamian/github-release@2.0
        with:

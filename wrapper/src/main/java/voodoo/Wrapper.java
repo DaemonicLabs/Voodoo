@@ -18,9 +18,17 @@ public class Wrapper {
 
     public static void main(String[] args) throws URISyntaxException {
         Properties props = new Properties();
-        File propertiesFile = new File(new File(Wrapper.class.getProtectionDomain().getCodeSource().getLocation().toURI()), "wrapper.properties");
+        File propertiesFile = new File(new File(Wrapper.class.getProtectionDomain().getCodeSource().getLocation().toURI()), "../wrapper.properties");
         if(!propertiesFile.exists()) {
             System.err.println("cannot open file " + propertiesFile.getPath());
+            System.exit(-1);
+        }
+        try {
+            try(FileReader reader = new FileReader(propertiesFile)) {
+                props.load(reader);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
             System.exit(-1);
         }
 
@@ -60,22 +68,6 @@ public class Wrapper {
 
 
     private static void launch(String distributionUrl, File binariesDir, String[] originalArgs) throws Throwable {
-        Properties props = new Properties();
-        File propertiesFile = new File(new File(Wrapper.class.getProtectionDomain().getCodeSource().getLocation()
-                .toURI()), ".properties");
-        if(!propertiesFile.exists()) {
-            System.err.println("cannot open file " + propertiesFile.getPath());
-            System.exit(-1);
-        }
-        try {
-            try(FileReader reader = new FileReader(propertiesFile)) {
-                props.load(reader);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.exit(-1);
-        }
-
         String artifact = distributionUrl.substring(distributionUrl.lastIndexOf('/'));
 
         System.out.printf("Downloading the %s binary...%n", artifact);
@@ -151,7 +143,7 @@ public class Wrapper {
         return complete.digest();
     }
 
-    private static final String toHexString(byte[] bytes) {
+    private static String toHexString(byte[] bytes) {
         StringBuilder sb = new StringBuilder();
         for (byte b : bytes) {
             sb.append(String.format("%02x", b));
@@ -193,7 +185,7 @@ public class Wrapper {
         {
             String fileMd5 = toHexString(createMD5(tmpFile));
             if(!fileMd5.equalsIgnoreCase(md5)) {
-                throw new IllegalArgumentException(String.format("%s did not match md5 hash: '%s' file: %s", distributionUrl, md5, fileMd5));
+                throw new IllegalArgumentException(String.format("%s did not match md5 hash: '%s' fileHash: %s", distributionUrl, md5, fileMd5));
             }
         }
 
