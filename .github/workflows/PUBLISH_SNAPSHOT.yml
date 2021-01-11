@@ -22,11 +22,11 @@ jobs:
          java-version: 8
      - name: Grant execute permission for gradlew
        run: chmod +x gradlew
-     - name: Build and bintrayUpload
+     - name: Build and upload
        env:
-         BINTRAY_USER: ${{ secrets.BINTRAY_USER }}
-         BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-       run: ./gradlew build shadowJar exportVersion bintrayUpload -Pnodryrun
+         MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+         MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+       run: ./gradlew build shadowJar exportVersion publishAllPublicationsToNikkyMavenRepository -Pnodryrun
      - name: Set enviroment for github-release
        run: |
          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV

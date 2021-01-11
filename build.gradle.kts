@@ -15,7 +15,6 @@ plugins {
     id("moe.nikky.plugin.constants") apply false
     id("com.github.johnrengelman.shadow") apply false
 //    id("org.jmailen.kotlinter") apply false
-    id("com.jfrog.bintray") apply false
     id("com.vanniktech.dependency.graph.generator")
 }
 
@@ -116,17 +115,6 @@ allprojects {
 }
 
 subprojects {
-//    if(!project.build.exists() && !) {
-//        return@subprojects
-//    }
-//    configurations.all {
-//        resolutionStrategy.eachDependency {
-//            if (requested.group == "org.jetbrains.kotlin") {
-//                useVersion(Constants.Kotlin.version)
-//                because("We use kotlin version ${Constants.Kotlin.version}")
-//            }
-//        }
-//    }
 
     group = rootProject.group
     version = rootProject.version
@@ -148,12 +136,6 @@ subprojects {
 //                "-XXLanguage:+InlineClasses",
 //                "-progressive"
                 )
-            }
-        }
-        configure<org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension> {
-            experimental {
-//                newInference = "enable" //1.3
-//                contracts = "enable" //1.3
             }
         }
         configure<JavaPluginExtension> {
@@ -178,12 +160,10 @@ subprojects {
                         pkg = folder.joinToString("."),
                         className = "GeneratedConstants"
                     ) {
-                        field("GRADLE_VERSION") value gradle.gradleVersion
-                        field("KOTLIN_VERSION") value versionsProps.getProperty("version.kotlin")
                         field("BUILD") value versionSuffix
                         field("VERSION") value fullVersion
                         field("FULL_VERSION") value fullVersion
-                        field("MAVEN_URL") value Maven.url
+                        field("MAVEN_URL") value "https://nikky.moe/maven"
                         field("MAVEN_GROUP") value group.toString()
                         field("MAVEN_ARTIFACT") value project.name
                         field("MAVEN_SHADOW_CLASSIFIER") value Maven.shadowClassifier
@@ -208,11 +188,6 @@ subprojects {
             excludeDirs.add(file("run"))
         }
     }
-
-//    val genResourceFolder = project.buildDir.resolve("generated-resource")
-//    sourceSets {
-//        main.get().resources.srcDir(genResourceFolder)
-//    }
 
     afterEvaluate {
         if(pluginManager.hasPlugin("application")) {
@@ -275,47 +250,21 @@ subprojects {
                     }
                 }
             }
+            repositories {
+                maven("https://nikky.moe/mavenupload") {
+                    name = "nikkyMaven"
+                    val mavenUsername: String? = System.getenv("MAVEN_USERNAME")
+                    val mavenPass: String? = System.getenv("MAVEN_PASSWORD")
+                    if(mavenUsername != null && mavenPass != null) {
+                        credentials {
+                            username = mavenUsername
+                            password = mavenPass
+                        }
+                    }
+                }
+            }
         }
         apply(from = "${rootDir.path}/mavenPom.gradle.kts")
-
-        val markerPublicationNames = if (pluginManager.hasPlugin("org.gradle.java-gradle-plugin")) {
-            val pluginNames = the<GradlePluginDevelopmentExtension>().plugins.names
-            logger.lifecycle("pluginNames: $pluginNames")
-            val markerPublicationNames = pluginNames.map { pluginName ->
-                "${pluginName}PluginMarkerMaven"
-            }.toTypedArray()
-            logger.lifecycle("markerPublicationNames: ${markerPublicationNames.joinToString()}")
-            markerPublicationNames
-        } else {
-            arrayOf()
-        }
-        val publicationNames = the<PublishingExtension>().publications.names.toTypedArray()
-        if (bintrayOrg != null && bintrayApiKey != null) {
-            project.apply(plugin = "com.jfrog.bintray")
-            configure<com.jfrog.bintray.gradle.BintrayExtension> {
-                user = bintrayOrg
-                key = bintrayApiKey
-                publish = true
-                override = true
-                dryRun = !properties.containsKey("nodryrun")
-                setPublications(*publicationNames, *markerPublicationNames)
-                pkg(delegateClosureOf<com.jfrog.bintray.gradle.BintrayExtension.PackageConfig> {
-                    repo = bintrayRepository
-                    name = bintrayPackage
-                    userOrg = bintrayOrg
-                    version = VersionConfig().apply {
-                        // do not put commit hashes in vcs tag
-//                    if (!isSnapshot) {
-//                        vcsTag = extra["vcsTag"] as String
-//                    }
-                        name = project.version as String
-//                    githubReleaseNotesFile = "RELEASE_NOTES.md"
-                    }
-                })
-            }
-        } else {
-//            logger.error("bintray credentials not configured properly")
-        }
     }
 }
 

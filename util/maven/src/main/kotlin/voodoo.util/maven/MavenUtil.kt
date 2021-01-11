@@ -1,10 +1,15 @@
 package voodoo.util.maven
 
-import io.ktor.client.request.get
-import io.ktor.client.request.url
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.features.*
+import io.ktor.client.features.cookies.*
+import io.ktor.client.features.json.*
+import io.ktor.client.features.json.serializer.*
+import io.ktor.client.request.*
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
-import io.ktor.http.isSuccess
+import io.ktor.http.*
 import io.ktor.util.cio.writeChannel
 import io.ktor.utils.io.copyAndClose
 import kotlinx.coroutines.Dispatchers
@@ -14,6 +19,7 @@ import org.w3c.dom.NodeList
 import org.xml.sax.InputSource
 import voodoo.util.toHexString
 import voodoo.util.useClient
+import voodoo.util.useragent
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.IOException
@@ -72,6 +78,7 @@ object MavenUtil : KLogging() {
         val groupPath = group.replace('.','/')
 
         val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$version$classifierSuffix.$extension"
+        logger.trace { "downloading: $artifactUrl" }
         val tmpFile = File(outputDir, "$artifactId-$version$classifierSuffix.$extension.tmp")
         val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
         targetFile.absoluteFile.parentFile.mkdirs()
@@ -82,7 +89,6 @@ object MavenUtil : KLogging() {
                     useClient { client ->
                         client.get<HttpResponse> {
                             url(artifactUrl)
-                            //                header(HttpHeaders.UserAgent, useragent)
                         }
                     }
 
@@ -129,6 +135,7 @@ object MavenUtil : KLogging() {
 
         tmpFile.copyTo(targetFile, overwrite = true)
         tmpFile.delete()
+        logger.trace { "downloaded to: $targetFile" }
         return targetFile.absoluteFile
     }
 
