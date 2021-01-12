@@ -42,13 +42,13 @@ jobs:
      - name: test
        run: |
          pwd
-         cd empty_project && pwd
+         mkdir empty && cd empty && pwd
          pwd
      - name: Generate wrappers
        run: |
          mkdir empty_voodoo_project
          java -jar voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar --rootDir empty_voodoo_project generateWrapper
-         zip -r ../empty_voodoo_project.zip ./empty_voodoo_project
+         zip -r empty_voodoo_project.zip ./empty_voodoo_project
      - name: Create prerelease
        uses: meeDamian/github-release@2.0
        with:
