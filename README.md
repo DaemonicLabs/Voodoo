@@ -76,14 +76,14 @@ Usage examples
 --------------
 
 ```bash
-# generate  wrapper and shell scripts
-java -jar voodoo.jar generateWrapper
+# setup wrapper/shell scripts and gitignore
+java -jar voodoo.jar init project
 
 # generate json schema for autocompletion
 ./voodoo generateSchema
 
 # create a new pack
-./voodoo create pack --id newPack --mcVersion 1.16.2
+./voodoo init pack --id newPack --mcVersion 1.16.2
 
 # builds a pack
 ./voodoo build --id mypack

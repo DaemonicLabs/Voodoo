@@ -23,9 +23,7 @@ class BuildCommand() : CliktCommand(
     name = "build",
     help = ""
 ) {
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+    private val logger = KotlinLogging.logger {}
 
     val cliContext by requireObject<CLIContext>()
 

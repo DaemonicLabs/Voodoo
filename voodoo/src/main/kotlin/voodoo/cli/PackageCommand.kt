@@ -25,9 +25,7 @@ class PackageCommand(): CliktCommand(
     name = "package",
 //    help = ""
 ) {
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+    private val logger = KotlinLogging.logger {}
     val cliContext by requireObject<CLIContext>()
 
     val id by option(

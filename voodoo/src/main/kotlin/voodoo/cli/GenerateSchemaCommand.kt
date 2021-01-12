@@ -7,7 +7,6 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
 import mu.KotlinLogging
 import mu.withLoggingContext
-import voodoo.data.nested.NestedPack
 import voodoo.config.Autocompletions
 import voodoo.config.Configuration
 import voodoo.config.generateSchema
@@ -20,9 +19,7 @@ class GenerateSchemaCommand : CliktCommand(
     name = "generateSchema",
     help = "generates json schema"
 ) {
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+    private val logger = KotlinLogging.logger {}
     val cliContext by requireObject<CLIContext>()
 
 

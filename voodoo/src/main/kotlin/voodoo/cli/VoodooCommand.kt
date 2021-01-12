@@ -12,6 +12,8 @@ import mu.KotlinLogging
 import mu.withLoggingContext
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import voodoo.cli.init.InitCommand
+import voodoo.cli.launch.LaunchCommand
 import voodoo.util.SharedFolders
 import voodoo.voodoo.GeneratedConstants
 import java.io.File
@@ -22,20 +24,16 @@ class VoodooCommand(invocation: String = "voodoo") : CliktCommand(
 //    allowMultipleSubcommands = true
 //    invokeWithoutSubcommand = true
 ) {
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+    private val logger = KotlinLogging.logger {}
     init {
         versionOption(GeneratedConstants.FULL_VERSION)
         subcommands(
-//            EvalScriptCommand(),
-            CreateCommand(),
+            InitCommand(),
             BuildCommand(),
             ChangelogCommand(),
             PackageCommand(),
             LaunchCommand(),
             GenerateSchemaCommand(),
-            GenerateWrapperCommand(),
         )
     }
 

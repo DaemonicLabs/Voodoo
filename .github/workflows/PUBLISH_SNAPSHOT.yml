@@ -42,7 +42,7 @@ jobs:
      - name: Generate wrappers
        run: |
          mkdir empty_voodoo_project
-         java -jar voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar --rootDir empty_voodoo_project generateWrapper
+         java -jar voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar --rootDir empty_voodoo_project init project
          cd empty_voodoo_project && zip -r ../empty_voodoo_project.zip ./*
      - name: Create prerelease
        uses: meeDamian/github-release@2.0

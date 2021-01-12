@@ -1,24 +1,25 @@
-package voodoo.cli
+package voodoo.cli.init
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
+import com.github.ajalt.clikt.core.subcommands
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
 import mu.KotlinLogging
 import mu.withLoggingContext
+import voodoo.cli.CLIContext
 import voodoo.util.maven.MavenUtil
 import voodoo.voodoo.GeneratedConstants
-import java.io.File
 import java.io.StringWriter
 import java.util.*
 
-class GenerateWrapperCommand : CliktCommand(
-    name = "generateWrapper",
-    help = "generates wrapper and scripts for voodoo"
+class InitProjectCommand : CliktCommand(
+    name = "workingdir",
+    help = "intializes the working directory",
+    invokeWithoutSubcommand = true
 ) {
     private val logger = KotlinLogging.logger {}
     val cliContext by requireObject<CLIContext>()
-
 
     override fun run(): Unit = withLoggingContext("command" to commandName) {
         val rootDir = cliContext.rootDir
@@ -68,7 +69,7 @@ class GenerateWrapperCommand : CliktCommand(
                 logger.info { "generated $batFile" }
             }
 
-            rootDir.resolve("voodoo.bash").let { bashFile ->
+            rootDir.resolve("voodoo").let { bashFile ->
                 if(bashFile.exists()) {
                     logger.info { "$bashFile already exists, not overwriting" }
                     return@let
@@ -82,6 +83,25 @@ class GenerateWrapperCommand : CliktCommand(
                 """.trimIndent())
                 bashFile.setExecutable(true)
                 logger.info { "generated $bashFile" }
+            }
+
+            //TODO: move to setup command
+            rootDir.resolve(".gitignore").let { gitignoreFile ->
+                if(gitignoreFile.exists()) {
+                    logger.info { "$gitignoreFile already exists, not overwriting" }
+                    return@let
+                }
+
+                gitignoreFile.writeText("""
+                    /.completions/
+                    /_upload/
+                    /reports/
+                    /logs/
+                    /docs/
+                    /schema/
+                    /wrapper/bin/
+                """.trimIndent())
+                logger.info { "generated $gitignoreFile" }
             }
         }
     }

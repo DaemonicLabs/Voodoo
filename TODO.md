@@ -9,7 +9,7 @@
 ## another rewrite
 
 - use ONE version (0.6.0-SNAPSHOT)
-- publish to bintray (try out overwrite=1 with -SNAPSHOT versions)
+- publish to ~~bintray~~ own maven
 - use github actions
 - add github action TESTS with java version matrix
 - add script-less entry point

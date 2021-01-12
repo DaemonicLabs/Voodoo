@@ -17,13 +17,11 @@ import voodoo.tester.MultiMCTester
 import voodoo.util.VersionComparator
 import java.io.File
 
-class MultiMCCommand(): CliktCommand(
+class LaunchMultiMCCommand(): CliktCommand(
     name = "multimc",
 //    help = ""
 ) {
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+    private val logger = KotlinLogging.logger {}
     val cliContext by requireObject<CLIContext>()
 
     val id by option(

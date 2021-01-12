@@ -1,4 +1,4 @@
-package voodoo.cli.create
+package voodoo.cli.init
 
 import com.eyeem.watchadoin.Stopwatch
 import com.eyeem.watchadoin.saveAsHtml
@@ -17,14 +17,11 @@ import voodoo.pack.*
 import voodoo.util.json
 import java.io.File
 
-class CreatePackCommand : CliktCommand(
+class InitPackCommand : CliktCommand(
     name = "pack",
     help = "create a new pack"
 ) {
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
-
+    private val logger = KotlinLogging.logger {}
     val cliContext by requireObject<CLIContext>()
 
     val id by option(

@@ -27,9 +27,7 @@ class ChangelogCommand(
     name = "changelog",
     help = ""
 ) {
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+    private val logger = KotlinLogging.logger {}
     val cliContext by requireObject<CLIContext>()
 //    val packFile by argument(
 //        "pack",
