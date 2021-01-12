@@ -21,7 +21,10 @@ class InitCommand : CliktCommand(
     val cliContext by requireObject<CLIContext>()
 
     init {
-        subcommands(InitPackCommand())
+        subcommands(
+            InitPackCommand(),
+            InitProjectCommand()
+        )
     }
 
     override fun run(): Unit = withLoggingContext("command" to commandName) {

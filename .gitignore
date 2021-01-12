@@ -20,3 +20,5 @@ dependency-graph\.svg
 
 mavenUrls\.txt
 *.hprof
+
+site/
