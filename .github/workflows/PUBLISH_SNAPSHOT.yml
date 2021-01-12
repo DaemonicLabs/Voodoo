@@ -39,16 +39,11 @@ jobs:
          echo "BRANCH=${{ env.BRANCH }}"
          echo "VERSION=${{ env.VERSION }}"
          echo "RELEASE_TAG=${{ env.RELEASE_TAG }}"
-     - name: test
-       run: |
-         pwd
-         mkdir empty && cd empty && pwd
-         pwd
      - name: Generate wrappers
        run: |
          mkdir empty_voodoo_project
          java -jar voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar --rootDir empty_voodoo_project generateWrapper
-         zip -r empty_voodoo_project.zip ./empty_voodoo_project
+         cd empty_voodoo_project && zip -r ../empty_voodoo_project.zip ./*
      - name: Create prerelease
        uses: meeDamian/github-release@2.0
        with:

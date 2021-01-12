@@ -10,7 +10,6 @@ import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -18,7 +17,8 @@ public class Wrapper {
 
     public static void main(String[] args) throws URISyntaxException {
         Properties props = new Properties();
-        File propertiesFile = new File(new File(Wrapper.class.getProtectionDomain().getCodeSource().getLocation().toURI()), "../wrapper.properties");
+        File propertiesFile = new File(new File(Wrapper.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile(), "wrapper.properties");
+        System.out.printf("loading wrapper properties from %s%n", propertiesFile.getPath());
         if(!propertiesFile.exists()) {
             System.err.println("cannot open file " + propertiesFile.getPath());
             System.exit(-1);
