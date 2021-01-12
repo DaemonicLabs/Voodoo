@@ -37,7 +37,8 @@ class GenerateWrapperCommand : CliktCommand(
             )
 
             // create wrapper.properties
-            val propertiesFile = wrapperFile.resolve("../wrapper.properties")
+            val propertiesFile = rootDir.resolve("wrapper/wrapper.properties")
+            propertiesFile.absoluteFile.parentFile.mkdirs()
             val properties = Properties().also { prop ->
                 val groupPath = GeneratedConstants.MAVEN_GROUP.replace('.','/')
                 val version = if(GeneratedConstants.FULL_VERSION.endsWith("-local")) {
