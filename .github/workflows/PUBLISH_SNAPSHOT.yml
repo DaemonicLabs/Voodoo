@@ -33,7 +33,7 @@ jobs:
          echo "VERSION=$(cat version.txt)" >> $GITHUB_ENV
      - name: Set enviroment RELEASE_TAG
        run: |
-         echo "RELEASE_TAG=snapshot/${{ env.VERSION }}-${{ env.BRANCH }}-$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
+         echo "RELEASE_TAG=snapshot/${{ env.VERSION }}-${{ env.BRANCH }}" >> $GITHUB_ENV
      - name: print env
        run: |
          echo "BRANCH=${{ env.BRANCH }}"
