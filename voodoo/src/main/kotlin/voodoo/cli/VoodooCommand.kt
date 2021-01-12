@@ -30,11 +30,12 @@ class VoodooCommand(invocation: String = "voodoo") : CliktCommand(
         subcommands(
 //            EvalScriptCommand(),
             CreateCommand(),
-            GenerateSchemaCommand(),
             BuildCommand(),
             ChangelogCommand(),
             PackageCommand(),
-            LaunchCommand()
+            LaunchCommand(),
+            GenerateSchemaCommand(),
+            GenerateWrapperCommand(),
         )
     }
 

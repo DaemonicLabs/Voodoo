@@ -69,10 +69,11 @@ public class Wrapper {
 
     private static void launch(String distributionUrl, File binariesDir, String[] originalArgs) throws Throwable {
         String artifact = distributionUrl.substring(distributionUrl.lastIndexOf('/'));
+        artifact = artifact.substring(0, artifact.lastIndexOf(".jar"));
 
         System.out.printf("Downloading the %s binary...%n", artifact);
 
-        File lastFile = new File(binariesDir, artifact + ".last.jar");
+//        File lastFile = new File(binariesDir, artifact + ".last.jar");
 
         File file;
         try {
@@ -82,13 +83,16 @@ public class Wrapper {
             }
         } catch(IOException e) {
             e.printStackTrace();
-            System.err.printf("cannot download %s from %s, trying to reuse last binary%n", artifact, distributionUrl);
-            file = lastFile;
+            System.err.printf("cannot download %s from %s%n", artifact, distributionUrl);
+//            file = lastFile;
+            System.exit(-1);
+            return;
         }
 
         if(!file.exists()) {
             throw new IllegalStateException(String.format("binary %s does not exist", file.getPath()));
         }
+//        Files.copy(file.toPath(), lastFile.toPath());
         System.out.printf("Loaded %s%n", file.getPath());
         String java = Paths.get(System.getProperty("java.home"), "bin", "java").toFile().getPath();
         File workingDir = new File(System.getProperty("user.dir"));

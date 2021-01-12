@@ -20,7 +20,7 @@ jobs:
        uses: actions/setup-java@v1
        with:
          java-version: 8
-     - name: Grant execute permission for gradlew
+     - name: Grant execute permission to gradlew
        run: chmod +x gradlew
      - name: Build and upload
        env:
@@ -39,9 +39,16 @@ jobs:
          echo "BRANCH=${{ env.BRANCH }}"
          echo "VERSION=${{ env.VERSION }}"
          echo "RELEASE_TAG=${{ env.RELEASE_TAG }}"
-     - name: generate checksum
+     - name: Generate wrappers
        run: |
-         md5sum "voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar" |cut -f 1 -d " " > "voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar.md5"
+         mkdir empty_project
+         java -jar voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar --rootDir empty_project generateWrapper
+         cd empty_project && zip -r ../empty_project.zip ./*
+     - name: test
+       run: |
+         pwd
+         cd empty_project && pwd
+         pwd
      - name: Create prerelease
        uses: meeDamian/github-release@2.0
        with:
@@ -49,13 +56,12 @@ jobs:
          tag: ${{ env.RELEASE_TAG }}
          commitish: ${{ env.GITHUB_SHA }}
          name: ${{ env.VERSION }}
-         prerelease: true
+         prerelease: false
          body: Snapshot Release ${{ env.VERSION }}
          gzip: folders
          files: >
            wrapper.jar:wrapper/build/libs/wrapper-${{ env.VERSION }}-all.jar
            voodoo-${{ env.VERSION }}.jar:voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar
-           voodoo-${{ env.VERSION }}.jar.md5:voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar.md5
            multimc-installer-${{ env.VERSION }}.jar:multimc/installer/build/libs/multimc-installer-${{ env.VERSION }}-all.jar
            server-installer-${{ env.VERSION }}.jar:server-installer/build/libs/server-installer-${{ env.VERSION }}-all.jar
-           voodoo-scripting-${{ env.VERSION }}.jar:voodoo/scripting/build/libs/voodoo-scripting-${{ env.VERSION }}-all.jar
+           empty_project.zip:empty_project.zip

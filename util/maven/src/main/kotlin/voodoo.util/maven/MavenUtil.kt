@@ -59,6 +59,8 @@ object MavenUtil : KLogging() {
     ): File {
         val classifierSuffix = classifier?.let { "-$it"} ?: ""
 
+        var version = version
+
         if(version.endsWith("-local") && group == "moe.nikky.voodoo") {
             val file = localMavenFile(
                 group = group,
@@ -67,12 +69,19 @@ object MavenUtil : KLogging() {
                 classifier = classifier,
                 extension = extension
             )
-            val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
-            targetFile.absoluteFile.parentFile.mkdirs()
-            file.copyTo(targetFile, true)
+            if(file.exists()) {
+                val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
+                targetFile.absoluteFile.parentFile.mkdirs()
+                file.copyTo(targetFile, true)
 
-            return targetFile.absoluteFile
+                return targetFile.absoluteFile
+            } else {
+                version = getLatestVersionFromMavenMetadata(
+                    mavenUrl, group, artifactId
+                )
+            }
         }
+
 
 
         val groupPath = group.replace('.','/')

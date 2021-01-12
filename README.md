@@ -76,20 +76,23 @@ Usage examples
 --------------
 
 ```bash
+# generate  wrapper and shell scripts
+java -jar voodoo.jar generateWrapper
+
 # generate json schema for autocompletion
-java -jar voodoo.jar generateSchema
+./voodoo generateSchema
 
 # create a new pack
-java -jar voodoo.jar create pack --id newPack --mcVersion 1.16.2
+./voodoo create pack --id newPack --mcVersion 1.16.2
 
 # builds a pack
-java -jar voodoo.jar build --id mypack
+./voodoo build --id mypack
 
 # packages for upload
-java -jar voodoo.jar package --id mypack -p voodoo -p mmc-voodoo -p curse
+./voodoo package --id mypack -p voodoo -p mmc-voodoo -p curse
 
 # launches pack in multimc
-java -jar voodoo.jar launch multimc --id mypack
+./voodoo launch multimc --id mypack
 
 ```
 
@@ -99,18 +102,18 @@ bash, zsh and fish Autocomplete
 the autocompletions should be regenerated manually on voodoo update
 
 ```
-# creating a alias
-alias voodoo='java -jar voodoo.jar'
+# generate  wrapper and shell scripts
+java -jar voodoo.jar generateWrapper
 
 # generating autocompletion for bash
-_VOODOO_COMPLETE=bash voodoo > ~/voodoo-completion.sh
+_VOODOO_COMPLETE=bash ./voodoo > ~/voodoo-completion.sh
 source ~/voodoo-completion.sh
 
 # generating autocompletion for zsh
-_VOODOO_COMPLETE=zsh voodoo > ~/voodoo-completion.sh
+_VOODOO_COMPLETE=zsh ./voodoo > ~/voodoo-completion.sh
 
 # generating autocompletion for fish
-_VOODOO_COMPLETE=fish voodoo > ~/.config/fish/voodoo-completion.fish
+_VOODOO_COMPLETE=fish ./voodoo > ~/.config/fish/voodoo-completion.fish
 
 ```
 

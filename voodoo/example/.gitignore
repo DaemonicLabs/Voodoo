@@ -6,3 +6,6 @@ reports
 logs
 docs
 schema/
+/wrapper/wrapper.jar
+/wrapper/bin
+
