@@ -14,8 +14,8 @@ import java.io.StringWriter
 import java.util.*
 
 class InitProjectCommand : CliktCommand(
-    name = "workingdir",
-    help = "intializes the working directory",
+    name = "project",
+    help = "intializes project in the working directory",
     invokeWithoutSubcommand = true
 ) {
     private val logger = KotlinLogging.logger {}
