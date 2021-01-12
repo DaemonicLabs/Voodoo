@@ -35,7 +35,8 @@ class InitProjectCommand : CliktCommand(
                 "wrapper",
                 GeneratedConstants.FULL_VERSION,
                 outputFile = wrapperFile,
-                outputDir = wrapperFile.absoluteFile.parentFile
+                outputDir = wrapperFile.absoluteFile.parentFile,
+                classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER
             )
 
             // create wrapper.properties
