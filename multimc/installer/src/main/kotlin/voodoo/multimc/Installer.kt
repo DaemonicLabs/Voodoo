@@ -12,18 +12,21 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
+import moe.nikky.voodoo.format.VersionsList
 import moe.nikky.voodoo.format.modpack.Manifest
 import moe.nikky.voodoo.format.modpack.Recommendation
 import moe.nikky.voodoo.format.modpack.entry.FileInstall
 import moe.nikky.voodoo.format.modpack.entry.Side
 import mu.KLogging
 import voodoo.mmc.MMCSelectable
+import voodoo.mmc.MMCUtil
 import voodoo.mmc.MMCUtil.updateAndSelectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.*
 import java.io.File
 import java.io.IOException
+import java.net.URI
 import java.nio.file.Paths
 import kotlin.system.exitProcess
 
@@ -111,29 +114,70 @@ object Installer : KLogging() {
         val packUrl = urlFile.readText().trim()
         logger.info("pack url: $packUrl")
 
-        val response = withContext(Dispatchers.IO) {
+        val versionListing = withContext(Dispatchers.IO) {
             try {
                 useClient { client ->
                     client.get<HttpResponse> {
                         url(packUrl)
                         header(HttpHeaders.UserAgent, useragent)
                     }
-                }
+                }.let { response ->
+                    if (!response.status.isSuccess()) {
+                        logger.error { "$packUrl returned ${response.status}" }
+                        error("failed with ${response.status}")
+                    }
 
+                    val jsonString = response.readText()
+
+                    json.decodeFromString(VersionsList.serializer(), jsonString)
+                }
             } catch (e: IOException) {
                 logger.error("packUrl: $packUrl")
                 logger.error(e) { "unable to get pack from $packUrl" }
                 error("failed to get $packUrl")
             }
         }
-        if (!response.status.isSuccess()) {
-            logger.error { "$packUrl returned ${response.status}" }
-            error("failed with ${response.status}")
+
+        // TODO: pick version or update channel
+        //TODO: load last version or pick
+        val versionChoiceFile = instanceDir.resolve("voodoo.version.txt")
+        var selectedVersionKey = if(versionChoiceFile.exists()) {
+            versionChoiceFile.readLines().first()
+        } else null
+
+        if(selectedVersionKey == null || selectedVersionKey !in versionListing.versions) {
+            selectedVersionKey = MMCUtil.selectVersion(
+                versions = versionListing.versions
+            )
         }
+        val selectedVersion = versionListing.versions.getValue(selectedVersionKey)
 
-        val jsonString = response.readText()
+        val manifestUrl = URI(packUrl).resolve(selectedVersion.location).toURL()
 
-        val modpack = json.decodeFromString(Manifest.serializer(), jsonString)
+        val modpack = withContext(Dispatchers.IO) {
+            try {
+                useClient { client ->
+                    client.get<HttpResponse> {
+
+                        url(manifestUrl)
+                        header(HttpHeaders.UserAgent, useragent)
+                    }
+                }.let { response ->
+                    if (!response.status.isSuccess()) {
+                        logger.error { "$packUrl returned ${response.status}" }
+                        error("failed with ${response.status}")
+                    }
+
+                    val jsonString = response.readText()
+
+                    json.decodeFromString(Manifest.serializer(), jsonString)
+                }
+            } catch (e: IOException) {
+                logger.error("packUrl: $packUrl")
+                logger.error(e) { "unable to get pack from $packUrl" }
+                error("failed to get $packUrl")
+            }
+        }
         val newJar = selfupdate(instanceDir, packUrl.substringBeforeLast('/') + "/" + modpack.installerLocation, phase)
         if (newJar != null) {
             val java = Paths.get(System.getProperty("java.home"), "bin", "java").toFile().path

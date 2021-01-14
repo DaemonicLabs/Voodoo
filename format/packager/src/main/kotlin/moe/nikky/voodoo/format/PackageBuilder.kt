@@ -1,16 +1,18 @@
 package moe.nikky.voodoo.format
 
+import Modloader
 import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
-import mu.KLogging
 import moe.nikky.voodoo.format.builder.PropertiesApplicator
 import moe.nikky.voodoo.format.modpack.Manifest
 import moe.nikky.voodoo.format.modpack.entry.FileInstall
 import moe.nikky.voodoo.format.modpack.entry.Side
-import Modloader
-import voodoo.format.packager.GeneratedConstants
+import mu.KLogging
+import voodoo.util.toRelativeUnixPath
 import java.io.File
 import java.security.MessageDigest
+import java.time.Instant
+import java.time.ZoneOffset
+import java.time.format.DateTimeFormatter
 
 object PackageBuilder : KLogging() {
 
@@ -19,7 +21,7 @@ object PackageBuilder : KLogging() {
      * @param outputPath target folder for output, will not delete existing files
      * @param modpackId ascii identifier for the modpack, used in filenames
      * @param modpackTitle Human readable Title
-     * @param modpackVersion semver or similar version string, has to differ from all previously used versions
+     * @param modpackUniqueVersion semver or similar version string, has to differ from all previously used versions
      * @param gameVersion minecraft version
      * @param modLoader modloader to use, fabric/forge
      * @param userFiles pattern to include / exclude userFiles
@@ -40,7 +42,14 @@ object PackageBuilder : KLogging() {
         features: List<FeatureWithPattern> = listOf(),
         prettyPrint: Boolean = true
     ) {
-        val manifestDest: File = outputPath.resolve("$modpackId.json")
+        val manifestDest: File = outputPath.resolve("${modpackId}_${modpackVersion}.json")
+        val versionlistingFile: File = outputPath.resolve("$modpackId.json")
+
+
+        val uniqueVersion = "$modpackVersion." + DateTimeFormatter
+            .ofPattern("yyyyMMddHHmm")
+            .withZone(ZoneOffset.UTC)
+            .format(Instant.now())
 
         // TODO verify gameVersion
         // TODO regex check modpackId
@@ -103,12 +112,12 @@ object PackageBuilder : KLogging() {
         //    !gameVersion.isNullOoEmpty
         // takes features from applicator.featuresInUse (see scan step?)
         // serialize manifest to $manfiestDest
-        logger.info {""}
+        logger.info { "" }
         logger.info { "--- Writing Manifest... ---" }
         val manifest = Manifest(
             installerLocation = installerLocation,
             title = modpackTitle,
-            version = modpackVersion,
+            version = uniqueVersion,
             id = modpackId,
             objectsLocation = objectsLocation,
             gameVersion = gameVersion,
@@ -120,7 +129,32 @@ object PackageBuilder : KLogging() {
         manifestDest.absoluteFile.parentFile.mkdirs()
         manifestDest.writeText(json.encodeToString(Manifest.serializer(), manifest))
 
-        logger.info {""}
+        val versionsListing = if (versionlistingFile.exists()) {
+            voodoo.util.json.decodeFromString(VersionsList.serializer(), versionlistingFile.readText())
+        } else {
+            VersionsList(mapOf())
+        }
+
+        val versionEntry = VersionEntry(
+            version = modpackVersion,
+            title = "$modpackTitle $modpackVersion",
+            location = manifestDest.toRelativeUnixPath(versionlistingFile)
+        )
+
+        //TODO: add updateChannels to version listing
+
+        val newVersionListing = versionsListing.copy(
+            versions = versionsListing.versions + (modpackVersion to versionEntry)
+        )
+
+        versionlistingFile.writeText(
+            voodoo.util.json.encodeToString(
+                VersionsList.serializer(),
+                newVersionListing
+            )
+        )
+
+        logger.info { "" }
         logger.info { "--- Done ---" }
         // done
         logger.info { "Now upload the contents of $outputPath to your web server or CDN!" }
@@ -131,7 +165,7 @@ object PackageBuilder : KLogging() {
         destDir: File,
         onEntry: (FileInstall) -> Unit
     ): List<FileInstall> {
-        logger.info {""}
+        logger.info { "" }
         logger.info { "--- Adding files to modpack... ---" }
         val entries = filesDir.walkBottomUp().filterNot { file ->
             // conditions to skip files / folders

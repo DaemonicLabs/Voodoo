@@ -17,6 +17,9 @@
 
 ## version listing
 
+- [ ] add Tabs or dropdown in MULTIMC installer
+- [x] change uploaded (voodoo) format
+
 ### reasons for all versions in source
 
 old pack versions will be automagically rebuilt if the format breaks

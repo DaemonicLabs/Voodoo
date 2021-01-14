@@ -2,17 +2,13 @@ package voodoo.pack
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.*
-import moe.nikky.voodoo.format.Feature
-import moe.nikky.voodoo.format.FeatureWithPattern
-import moe.nikky.voodoo.format.PackageBuilder
+import moe.nikky.voodoo.format.*
 import moe.nikky.voodoo.format.builder.ExtendedFeaturePattern
 import moe.nikky.voodoo.format.modpack.entry.Side
 import voodoo.data.DependencyType
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.memoize
-import voodoo.pack.sk.SKPackages
-import voodoo.pack.sk.SkPackageFragment
 import voodoo.provider.Providers
 import voodoo.util.*
 import voodoo.util.maven.MavenUtil
@@ -241,11 +237,6 @@ object VoodooPackager : AbstractPack("voodoo") {
                 }
                 installer.parentFile.resolve(installer.name + ".sha256").writeText(installer.sha256Hex())
 
-                val uniqueVersion = "${modpack.version}." + DateTimeFormatter
-                    .ofPattern("yyyyMMddHHmm")
-                    .withZone(ZoneOffset.UTC)
-                    .format(Instant.now())
-
                 // TODO verify modloader
                 val modloader = modpack.modloader ?: error("no modloader defined")
 
@@ -256,7 +247,7 @@ object VoodooPackager : AbstractPack("voodoo") {
                         modpackId = modpack.id,
                         installerLocation = installer.toRelativeString(output).replace('\\', '/'),
                         modpackTitle = modpack.title ?: modpack.id,
-                        modpackVersion = uniqueVersion,
+                        modpackVersion = modpack.version,
                         gameVersion = modpack.mcVersion,
 //                        thumb = thumb, // TODO:
                         modLoader = modloader,
@@ -266,6 +257,7 @@ object VoodooPackager : AbstractPack("voodoo") {
                     )
                 }
 
+/*
                 // TODO: do we keep track of all uploaded packages ?
                 // TODO: move to PackageBuilder
                 // regenerate packages.json
@@ -285,6 +277,7 @@ object VoodooPackager : AbstractPack("voodoo") {
                     ).apply { packages.packages += this }
                 packFragment.version = uniqueVersion
                 packagesFile.writeText(json.encodeToString(SKPackages.serializer(), packages))
+*/
 
                 logger.info("finished")
             }

@@ -3,6 +3,7 @@ package voodoo.mmc
 import Modloader
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
+import moe.nikky.voodoo.format.VersionEntry
 import moe.nikky.voodoo.format.modpack.Recommendation
 import mu.KLogging
 import voodoo.mmc.data.MultiMCPack
@@ -581,5 +582,83 @@ object MMCUtil : KLogging() {
             reinstall = reinstall,
             skipUpdate = skipUpdate
         )
+    }
+
+    fun selectVersion(
+        versions: Map<String, VersionEntry>
+    ): String {
+
+        UIManager.setLookAndFeel(
+            UIManager.getSystemLookAndFeelClassName()
+        )
+
+        var result: String? = null
+
+        val windowTitle = "Select version"
+        val dialog = object : JDialog(null as Dialog?, windowTitle, true) {
+            init {
+                modalityType = Dialog.ModalityType.APPLICATION_MODAL
+
+                val panel = JPanel()
+                panel.layout = GridBagLayout()
+
+                var row = 0
+                versions.forEach { (key, version) ->
+                    val button = JButton(version.title).apply {
+                        addActionListener {
+                            result = key
+
+                            isVisible = false
+                            dispose()
+                        }
+                    }
+
+                    panel.add(
+                        button,
+                        GridBagConstraints().apply {
+                            gridx = 0
+                            gridy = row
+                            weightx = 0.001
+                            weighty = 1.0
+                            anchor = GridBagConstraints.LINE_START
+                            fill = GridBagConstraints.BOTH
+                            ipady = 4
+                        }
+                    )
+                    row++
+                }
+
+                val scrollPane = JScrollPane(panel)
+                add(scrollPane, BorderLayout.CENTER)
+
+                defaultCloseOperation = DISPOSE_ON_CLOSE
+                addWindowListener(
+                    object : WindowAdapter() {
+                        override fun windowClosed(e: WindowEvent) {
+                            logger.info("closing dialog")
+                            if (result == null) exitProcess(1)
+                        }
+                    }
+                )
+                pack()
+                setLocationRelativeTo(null)
+            }
+
+            override fun setVisible(visible: Boolean) {
+                super.setVisible(visible)
+                if (!visible) {
+                    (parent as? JFrame)?.dispose()
+                }
+            }
+        }
+
+
+        logger.info("created dialog")
+
+        dialog.setLocationRelativeTo(null)
+        dialog.isVisible = true
+        dialog.dispose()
+
+        return result!!
     }
 }
