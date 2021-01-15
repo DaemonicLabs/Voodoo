@@ -45,7 +45,6 @@ object PackageBuilder : KLogging() {
         val manifestDest: File = outputPath.resolve("${modpackId}_${modpackVersion}.json")
         val versionlistingFile: File = outputPath.resolve("$modpackId.json")
 
-
         val uniqueVersion = "$modpackVersion." + DateTimeFormatter
             .ofPattern("yyyyMMddHHmm")
             .withZone(ZoneOffset.UTC)
@@ -132,13 +131,16 @@ object PackageBuilder : KLogging() {
         val versionsListing = if (versionlistingFile.exists()) {
             voodoo.util.json.decodeFromString(VersionsList.serializer(), versionlistingFile.readText())
         } else {
-            VersionsList(mapOf())
+            VersionsList(
+                installerLocation = installerLocation,
+                versions = mapOf()
+            )
         }
 
         val versionEntry = VersionEntry(
             version = modpackVersion,
             title = "$modpackTitle $modpackVersion",
-            location = manifestDest.toRelativeUnixPath(versionlistingFile)
+            location = manifestDest.toRelativeUnixPath(versionlistingFile.absoluteFile.parentFile)
         )
 
         //TODO: add updateChannels to version listing
@@ -215,8 +217,7 @@ object PackageBuilder : KLogging() {
 
             val sha2 = MessageDigest.getInstance("SHA-256")
             val hash = sha2.digest(file.readBytes()).toHexString()
-            val to =
-                relPath.toString().replace('\\', '/') //FilenameUtils.separatorsToUnix(FilenameUtils.normalize(relPath))
+            val to = relPath.toString().replace('\\', '/')
             val urlFile = file.parentFile.resolve(file.name + URL_FILE_SUFFIX)
             val (location, copy) = if (urlFile.exists()) {
                 // TODO: validate urlFile by downloading ?

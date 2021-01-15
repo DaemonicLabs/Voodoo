@@ -1,0 +1,24 @@
+{
+    "id": "forgepack",
+    "mcVersion": "1.12.2",
+    "modloader": {
+        "type": "Forge",
+        "mcVersion": "1.12.2",
+        "forgeVersion": "14.23.5.2854"
+    },
+    "version": "0.0.1",
+    "icon": "icon_forgePack.png",
+    "packOptions": {
+        "uploadUrl": "https://mydomain.com/mc/forgepack"
+    },
+    "entries": [
+        {
+            "type": "curse",
+            "id": "foamfix-optimization-mod",
+            "path": "mods",
+            "name": "foamfix-optimization-mod",
+            "projectID": 278494,
+            "fileID": 3137883
+        }
+    ]
+}

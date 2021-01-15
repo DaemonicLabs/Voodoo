@@ -10,6 +10,7 @@ import kotlinx.html.li
 import kotlinx.html.stream.createHTML
 import kotlinx.html.ul
 import Modloader
+import mu.KotlinLogging
 import voodoo.data.Side
 import voodoo.data.curse.CurseFile
 import voodoo.data.curse.CurseManifest
@@ -29,6 +30,7 @@ import java.io.File
  */
 
 object CursePack : AbstractPack("curse") {
+    private val logger = KotlinLogging.logger {}
     override val label = "Curse Pack"
 
     override fun File.getOutputFolder(id: String, version: String): File = resolve("curse")

@@ -57,7 +57,7 @@ object MultiMCTester : AbstractTester() {
         modsDir.deleteRecursively()
 
         val minecraftSrcDir = modpack.sourceFolder
-        Downloader.logger.info("copying files into minecraft dir ('$minecraftSrcDir' => '$minecraftDir')")
+        Downloader.logger.info { "copying files into minecraft dir ('$minecraftSrcDir' => '$minecraftDir')" }
         if (minecraftSrcDir.exists()) {
             minecraftSrcDir.copyRecursively(minecraftDir, overwrite = true)
         }
@@ -128,7 +128,7 @@ object MultiMCTester : AbstractTester() {
             installing = !featureJson.exists(),
             updateRequired = true
         )
-        logger.debug("result: optionals: $optionals")
+        logger.debug { "result: optionals: $optionals" }
         if (optionals.isNotEmpty()) {
             featureJson.createNewFile()
             featureJson.writeText(json.encodeToString(featureSerializer, optionals))
@@ -147,7 +147,7 @@ object MultiMCTester : AbstractTester() {
                         if(modpack.isEntryOptional(entry.id)) {
                             val selectedSelf = optionals[entry.id] ?: true
                             if (!selectedSelf) {
-                                MMCUtil.logger.info("${entry.displayName} is disabled, skipping download")
+                                logger.info { "${entry.displayName} is disabled, skipping download" }
                                 return@launch
                             }
                             val matchedOptioalsList = modpack.optionalEntries.filter {
@@ -162,7 +162,7 @@ object MultiMCTester : AbstractTester() {
                             if (!matchedOptioalsList.isEmpty()) {
                                 val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
                                 if (!selected) {
-                                    MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName } } is disabled, skipping download of ${entry.id}")
+                                    logger.info { "${matchedOptioalsList.map { it.displayName } } is disabled, skipping download of ${entry.id}" }
                                     return@launch
                                 }
                             }
@@ -181,7 +181,7 @@ object MultiMCTester : AbstractTester() {
             }
         }
 
-        logger.info("clearing serverside files and deleting lockfiles")
+        logger.info { "clearing serverside files and deleting lockfiles" }
         for (file in minecraftDir.walkTopDown()) {
             when {
                 file.name == "_CLIENT" -> {

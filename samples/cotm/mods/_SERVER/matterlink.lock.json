@@ -1,9 +1,0 @@
-{
-    "type": "jenkins",
-    "common": {
-        "side": "SERVER"
-    },
-    "jenkinsUrl": "https://ci.elytradev.com",
-    "job": "elytra/MatterLink/master",
-    "buildNumber": 184
-}

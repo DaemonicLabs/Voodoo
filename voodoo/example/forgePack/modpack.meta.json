@@ -1,8 +1,0 @@
-{
-    "$schema": "../schema/metaPack.schema.json",
-    "authors": [
-        "nikky"
-    ],
-    "icon": "icon_forgePack.png",
-    "uploadBaseUrl": "https://mydomain.com/mc/"
-}

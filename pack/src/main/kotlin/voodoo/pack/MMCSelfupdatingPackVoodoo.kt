@@ -1,6 +1,7 @@
 package voodoo.pack
 
 import com.eyeem.watchadoin.Stopwatch
+import mu.KotlinLogging
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCUtil
 import voodoo.util.Directories
@@ -13,6 +14,7 @@ import java.net.URI
 import kotlin.system.exitProcess
 
 object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
+    private val logger = KotlinLogging.logger {}
     override val label = "MultiMC Pack"
 
     override fun File.getOutputFolder(id: String, version: String): File = resolve("multimc-voodoo")
@@ -58,15 +60,14 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
             postExitCommand = postExitCommand
         )
 
-        logger.info("created pack in $minecraftDir")
-        logger.info("tmp dir: $instanceDir")
-
+        logger.info { "created pack in $minecraftDir" }
+        logger.info { "tmp dir: $instanceDir" }
         val selfupdateUrl = modpack.packOptions.uploadUrl?.let { uploadUrl ->
             val relativeSelfupdateUrl = (modpack.packOptions.multimcOptions.relativeSelfupdateUrl ?: "${modpack.id}.json")
             URI(uploadUrl).resolve(relativeSelfupdateUrl).toASCIIString()
         }
         if (selfupdateUrl == null) {
-            logger.error("selfupdateUrl in multimc options is not set")
+            logger.error { "selfupdateUrl in multimc options is not set" }
             exitProcess(3)
         }
         val urlFile = instanceDir.resolve("voodoo.url.txt")
@@ -80,10 +81,16 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
         )
 
         output.mkdirs()
-        val instanceZip = output.resolve("${modpack.id}-${modpack.version}.zip")
+        val instanceZipVersioned = output.resolve("${modpack.id}-${modpack.version}.zip")
+        val instanceZip = output.resolve("${modpack.id}.zip")
 
         instanceZip.delete()
         packToZip(zipRootDir, instanceZip)
-        logger.info("created mmc pack $instanceZip")
+
+        instanceDir.resolve("voodoo.version.txt").writeText(modpack.version)
+
+        instanceZipVersioned.delete()
+        packToZip(zipRootDir, instanceZipVersioned)
+        logger.info { "created mmc pack $instanceZip" }
     }
 }

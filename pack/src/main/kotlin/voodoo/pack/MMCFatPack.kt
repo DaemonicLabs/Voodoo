@@ -7,6 +7,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
+import mu.KotlinLogging
 import voodoo.data.DependencyType
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
@@ -20,6 +21,7 @@ import voodoo.util.withPool
 import java.io.File
 
 object MMCFatPack : AbstractPack("mmc-fat") {
+    private val logger = KotlinLogging.logger {}
     override val label = "MultiMC Pack (frozen pack)"
 
     override fun File.getOutputFolder(id: String, version: String): File = resolve("multimc-fat")
@@ -117,7 +119,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
                         val matchedOptioalsList = if(modpack.isEntryOptional(entry.id)) {
                             val selectedSelf = optionals[entry.id] ?: true
                             if (!selectedSelf) {
-                                MMCUtil.logger.info("${entry.displayName} is disabled, skipping download")
+                                logger.info { "${entry.displayName} is disabled, skipping download" }
                                 return@launch
                             }
                             modpack.optionalEntries.filter {
@@ -141,7 +143,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
                         if (matchedOptioalsList.isNotEmpty()) {
                             val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
                             if (!selected) {
-                                MMCUtil.logger.info("${matchedOptioalsList.map { it.displayName }} is disabled, disabling ${entry.id}")
+                                logger.info {"${matchedOptioalsList.map { it.displayName }} is disabled, disabling ${entry.id}" }
                                 file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
                             }
                         }
@@ -149,7 +151,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
                 }
 
                 delay(10)
-                CursePack.logger.info("waiting for jobs to finish")
+                logger.info { "waiting for jobs to finish" }
             }
         }
 
@@ -171,6 +173,6 @@ object MMCFatPack : AbstractPack("mmc-fat") {
 
         instanceZip.delete()
         packToZip(zipRootDir, instanceZip)
-        logger.info("created mmc pack $instanceZip")
+        logger.info { "created mmc pack $instanceZip" }
     }
 }

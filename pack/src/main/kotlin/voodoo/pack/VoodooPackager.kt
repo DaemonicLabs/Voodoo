@@ -5,6 +5,7 @@ import kotlinx.coroutines.*
 import moe.nikky.voodoo.format.*
 import moe.nikky.voodoo.format.builder.ExtendedFeaturePattern
 import moe.nikky.voodoo.format.modpack.entry.Side
+import mu.KotlinLogging
 import voodoo.data.DependencyType
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
@@ -23,6 +24,7 @@ import java.time.format.DateTimeFormatter
  */
 
 object VoodooPackager : AbstractPack("voodoo") {
+    private val logger = KotlinLogging.logger {}
 
     override val label = "Voodoo Packager"
 
@@ -43,15 +45,15 @@ object VoodooPackager : AbstractPack("voodoo") {
         val modpackDir = workspaceDir.resolve(modpack.id)
 
         val srcFolder = modpackDir.resolve("src")
-        logger.info("cleaning modpack directory $srcFolder")
+        logger.info {"cleaning modpack directory $srcFolder" }
         srcFolder.deleteRecursively()
-        logger.info("copying files into src ${modpack.sourceFolder}")
+        logger.info {"copying files into src ${modpack.sourceFolder}" }
         val packSrc = modpack.sourceFolder
         if (srcFolder.startsWith(packSrc)) {
             throw IllegalStateException("cannot copy parent rootFolder '$packSrc' into subfolder '$srcFolder'")
         }
         if (packSrc.exists()) {
-            logger.debug("cp -r $packSrc $srcFolder")
+            logger.debug {"cp -r $packSrc $srcFolder" }
             packSrc.copyRecursively(srcFolder, overwrite = true)
             srcFolder.walkBottomUp().forEach {
                 if (it.isDirectory && it.listFiles().isEmpty()) {
@@ -59,7 +61,7 @@ object VoodooPackager : AbstractPack("voodoo") {
                 }
             }
         } else {
-            logger.warn("minecraft directory $packSrc does not exist")
+            logger.warn {"minecraft directory $packSrc does not exist" }
         }
 
 //        for (file in skSrcFolder.walkTopDown()) {
@@ -82,7 +84,7 @@ object VoodooPackager : AbstractPack("voodoo") {
 //                    forgeFile.download(forgeUrl, cacheDir.resolve("FORGE").resolve(forgeVersion))
 //                } ?: logger.warn { "no forge configured" }
                 val modsFolder = srcFolder.resolve("mods")
-                logger.info("cleaning mods $modsFolder")
+                logger.info { "cleaning mods $modsFolder" }
                 modsFolder.deleteRecursively()
 
                 // download entries
@@ -279,7 +281,7 @@ object VoodooPackager : AbstractPack("voodoo") {
                 packagesFile.writeText(json.encodeToString(SKPackages.serializer(), packages))
 */
 
-                logger.info("finished")
+                logger.info {"finished" }
             }
         }
     }

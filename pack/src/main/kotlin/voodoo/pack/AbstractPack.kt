@@ -11,7 +11,7 @@ import java.io.File
  * @author Nikky
  */
 
-abstract class AbstractPack(open val id: String) : KLogging() {
+abstract class AbstractPack(open val id: String) {
     abstract val label: String
     abstract fun File.getOutputFolder(id: String, version: String): File
 

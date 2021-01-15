@@ -1,0 +1,7 @@
+{
+    "yaml.schemas": {
+        "./schema/modpack.schema.json": ".voodoo.yml",
+        "./schema/nested_modpack.schema.json": ".nested_voodoo.yml"
+    },
+    "files.autoSave": "afterDelay"
+}

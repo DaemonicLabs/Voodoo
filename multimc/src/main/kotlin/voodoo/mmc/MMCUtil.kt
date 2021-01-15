@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 import moe.nikky.voodoo.format.VersionEntry
 import moe.nikky.voodoo.format.modpack.Recommendation
 import mu.KLogging
+import mu.KotlinLogging
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
 import voodoo.util.Directories
@@ -22,7 +23,8 @@ import javax.swing.*
 import kotlin.system.exitProcess
 
 
-object MMCUtil : KLogging() {
+object MMCUtil {
+    private val logger = KotlinLogging.logger {}
     private val directories = Directories.get(moduleName = "multimc")
     private val cacheHome = directories.cacheHome
     private val configHome = directories.configHome

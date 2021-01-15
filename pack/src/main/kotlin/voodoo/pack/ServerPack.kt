@@ -1,6 +1,7 @@
 package voodoo.pack
 
 import com.eyeem.watchadoin.Stopwatch
+import mu.KotlinLogging
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.util.Directories
@@ -16,6 +17,7 @@ import java.io.File
  */
 
 object ServerPack : AbstractPack("server") {
+    private val logger = KotlinLogging.logger {}
     override val label = "Server SK Pack"
 
     // TODO: use different output directory for server, add to plugin
@@ -31,7 +33,7 @@ object ServerPack : AbstractPack("server") {
         val directories = Directories.get()
 
         if (clean) {
-            logger.info("cleaning server directory $output")
+            logger.info {"cleaning server directory $output" }
             output.deleteRecursively()
         }
 
@@ -57,6 +59,6 @@ object ServerPack : AbstractPack("server") {
         val serverInstaller = output.resolve("server-installer.jar")
         installer.copyTo(serverInstaller)
 
-        logger.info("server package ready: ${output.absolutePath}")
+        logger.info {"server package ready: ${output.absolutePath}" }
     }
 }

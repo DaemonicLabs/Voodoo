@@ -1,6 +1,5 @@
 package voodoo.multimc
 
-
 import Modloader
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -109,10 +108,10 @@ object Installer : KLogging() {
         minecraftDir: File,
         phase: Phase
     ) {
-        logger.info("installing into $instanceId")
+        logger.info { "installing into $instanceId" }
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         val packUrl = urlFile.readText().trim()
-        logger.info("pack url: $packUrl")
+        logger.info { "pack url: $packUrl" }
 
         val versionListing = withContext(Dispatchers.IO) {
             try {
@@ -132,7 +131,7 @@ object Installer : KLogging() {
                     json.decodeFromString(VersionsList.serializer(), jsonString)
                 }
             } catch (e: IOException) {
-                logger.error("packUrl: $packUrl")
+                logger.error { "packUrl: $packUrl" }
                 logger.error(e) { "unable to get pack from $packUrl" }
                 error("failed to get $packUrl")
             }
@@ -145,10 +144,13 @@ object Installer : KLogging() {
             versionChoiceFile.readLines().first()
         } else null
 
-        if(selectedVersionKey == null || selectedVersionKey !in versionListing.versions) {
+        if(selectedVersionKey == null && versionListing.versions.keys.size == 1) {
+            selectedVersionKey = versionListing.versions.keys.first()
+        } else if(selectedVersionKey == null || selectedVersionKey !in versionListing.versions) {
             selectedVersionKey = MMCUtil.selectVersion(
-                versions = versionListing.versions
+                versions = versionListing.versions.toSortedMap()
             )
+            versionChoiceFile.writeText(selectedVersionKey)
         }
         val selectedVersion = versionListing.versions.getValue(selectedVersionKey)
 
@@ -202,7 +204,7 @@ object Installer : KLogging() {
                 "--mc",
                 minecraftDir.path,
                 "--phase",
-                "reboot"
+                phase.name
             )
 
             logger.info { "Executing ${args.joinToString()}" }
