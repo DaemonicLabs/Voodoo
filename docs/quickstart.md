@@ -228,17 +228,17 @@ so lets add some mods
 
 //TODO: add sections about overrides and properties of entries
 
-## Building the pack
+## Compiling the pack
 
-`building` the pack does resolve all dependencies of entries and pins versions
+`compiling` the pack does resolve all dependencies of entries and pins versions
 
 ```bash
-voodoo build --id magicpack
+voodoo compile magicpack/v0.0.1.voodoo.json
 ```
 
-this created `/magicpack/lock/` folder cotnaining the output artifacts
+this created `/magicpack/lock/` folder containing the output artifacts
 *DO NOT DELETE* this folder unless you know what you are doing
-this folder contains the inputs for all tasks (except `build`)
+this folder contains the inputs for all tasks (except `compile`)
 
 ## Testing in MultiMC
 

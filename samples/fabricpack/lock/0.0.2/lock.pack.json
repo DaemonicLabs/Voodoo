@@ -3,7 +3,7 @@
     "mcVersion": "1.15.2",
     "modloader": {
         "type": "Fabric",
-        "loader": "0.11.0",
+        "loader": "0.11.1",
         "intermediateMappings": "1.15.2",
         "installer": "0.6.1.51"
     },
@@ -56,7 +56,7 @@
             "path": "mods",
             "name": "fabric-api",
             "projectID": 306612,
-            "fileID": 3147516
+            "fileID": 3174096
         },
         {
             "type": "curse",

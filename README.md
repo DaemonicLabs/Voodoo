@@ -86,7 +86,7 @@ java -jar voodoo.jar init project
 ./voodoo init pack --id newPack --mcVersion 1.16.2
 
 # builds a pack
-./voodoo build --id mypack
+./voodoo compile newPack/v0.0.1.voodoo.json
 
 # packages for upload
 ./voodoo package --id mypack -p voodoo -p mmc-voodoo -p curse

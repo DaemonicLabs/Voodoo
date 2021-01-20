@@ -62,20 +62,23 @@ Usage examples
 ==============
 
 ```bash
+# setup wrapper/shell scripts and gitignore
+java -jar voodoo.jar init project
+
 # generate json schema for autocompletion
-java -jar voodoo.jar generateSchema
+./voodoo generateSchema
 
 # create a new pack
-java -jar voodoo.jar create pack --id newPack --mcVersion 1.16.2
+./voodoo init pack --id newPack --mcVersion 1.16.2
 
 # builds a pack
-java -jar voodoo.jar build --id mypack
+./voodoo compile newPack/v0.0.1.voodoo.json
 
 # packages for upload
-java -jar voodoo.jar package --id mypack -p voodoo -p mmc-voodoo -p curse
+./voodoo package --id mypack -p voodoo -p mmc-voodoo -p curse
 
 # launches pack in multimc
-java -jar voodoo.jar launch multimc --id mypack
+./voodoo launch multimc --id mypack
 
 ```
 

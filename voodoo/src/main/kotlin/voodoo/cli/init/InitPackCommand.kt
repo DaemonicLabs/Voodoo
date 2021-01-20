@@ -68,6 +68,8 @@ class InitPackCommand : CliktCommand(
                     uploadBaseUrl = "https://mydomain.com/mc/",
                 )
 
+                val baseDir = rootDir.resolve(id)
+
                 val versionPack = VersionPack(
                     mcVersion = mcVersion,
                     title = title,
@@ -78,12 +80,13 @@ class InitPackCommand : CliktCommand(
                     mods = listOf(
                         //TODO: add mod samples there
                     )
-                )
+                ).apply {
+                    this.baseDir = baseDir
+                }
 
                 val flatModpack = versionPack.flatten(rootDir, id, metaPack, mapOf())
 
                 // create folders
-                val baseDir = rootDir.resolve(id)
                 require(!baseDir.exists() || (baseDir.isDirectory && baseDir.list()!!.isEmpty())) { "folder $baseDir must not exist or be a empty directory" }
                 baseDir.mkdirs()
 

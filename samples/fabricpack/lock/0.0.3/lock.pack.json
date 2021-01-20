@@ -3,7 +3,7 @@
     "mcVersion": "1.16.4",
     "modloader": {
         "type": "Fabric",
-        "loader": "0.11.0",
+        "loader": "0.11.1",
         "intermediateMappings": "1.16.4",
         "installer": "0.6.1.51"
     },

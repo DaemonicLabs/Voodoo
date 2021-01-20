@@ -29,7 +29,7 @@ class VoodooCommand(invocation: String = "voodoo") : CliktCommand(
         versionOption(GeneratedConstants.FULL_VERSION)
         subcommands(
             InitCommand(),
-            BuildCommand(),
+            CompileCommand(),
             ChangelogCommand(),
             PackageCommand(),
             LaunchCommand(),

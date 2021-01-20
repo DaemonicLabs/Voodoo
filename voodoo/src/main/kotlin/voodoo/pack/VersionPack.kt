@@ -4,6 +4,7 @@ import com.github.ricky12awesome.jss.JsonSchema
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.Transient
 import mu.KotlinLogging
 import voodoo.config.Autocompletions
 import voodoo.data.ModloaderPattern
@@ -31,6 +32,9 @@ data class VersionPack(
 //    val overrides: Map<String, EntryOverride> = mapOf(),
     val mods: List<FileEntry>,
 ) {
+    @Transient
+    lateinit var baseDir: File
+
     companion object {
         private val logger = KotlinLogging.logger {}
         const val extension = "voodoo.json"
@@ -47,6 +51,8 @@ data class VersionPack(
                         transformFileEntry(entry)
                     }
                 )
+            }.apply {
+                baseDir = packFile.absoluteFile.parentFile
             }
         }
 
