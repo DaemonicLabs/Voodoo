@@ -11,7 +11,6 @@ import kotlinx.serialization.json.Json
 val json = Json {
     prettyPrint = true
     encodeDefaults = false
-    this.classDiscriminator
 }
 
 inline fun <reified T : Any> T.toJson(serializer: SerializationStrategy<T>): String = json.encodeToString(serializer, this)

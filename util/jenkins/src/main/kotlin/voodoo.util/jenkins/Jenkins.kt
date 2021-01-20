@@ -10,12 +10,19 @@ import io.ktor.http.isSuccess
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
 import mu.KLogging
+import mu.KotlinLogging
 import voodoo.util.useClient
 import java.io.IOException
 import voodoo.util.json
 
-object Jenkins : KLogging()
+
+private val logger = KotlinLogging.logger{}
+
+private val jenkinsJson = Json(json) {
+    ignoreUnknownKeys = true
+}
 
 class JenkinsServer(
     val serverUrl: String
@@ -33,16 +40,16 @@ class JenkinsServer(
             }
 
         } catch (e: IOException) {
-            Jenkins.logger.error("requestURL: $requestURL")
+            logger.error("requestURL: $requestURL")
 //            Jenkins.logger.error("response: $response")
-            Jenkins.logger.error(e) { "unable to get job from $requestURL" }
+            logger.error(e) { "unable to get job from $requestURL" }
             return@withContext null
         }
         if (!response.status.isSuccess()) {
-            Jenkins.logger.error { "$requestURL returned ${response.status}" }
+            logger.error { "$requestURL returned ${response.status}" }
             return@withContext null
         }
-        return@withContext json.decodeFromString(Job.serializer(), response.readText())
+        return@withContext jenkinsJson.decodeFromString(Job.serializer(), response.readText())
     }
 }
 
@@ -62,17 +69,17 @@ data class Build(
             }
 
         } catch(e: IOException) {
-            Jenkins.logger.error("buildUrl: $buildUrl")
+            logger.error("buildUrl: $buildUrl")
 //            Jenkins.logger.error("response: $response")
-            Jenkins.logger.error(e) { "unable to get build from $buildUrl" }
+            logger.error(e) { "unable to get build from $buildUrl" }
             return@withContext null
         }
         if(!response.status.isSuccess()) {
-            Jenkins.logger.error { "$buildUrl returned ${response.status}" }
+            logger.error { "$buildUrl returned ${response.status}" }
             return@withContext null
         }
 
-        return@withContext json.decodeFromString(BuildWithDetails.serializer(), response.readText())
+        return@withContext jenkinsJson.decodeFromString(BuildWithDetails.serializer(), response.readText())
     }
 }
 
