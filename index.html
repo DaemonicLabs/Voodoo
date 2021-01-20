@@ -358,20 +358,23 @@ a pack and upload it to curse, it will just be a much slower process due to appr
 <h1 id="downloads">Downloads<a class="headerlink" href="#downloads" title="Permanent link">&para;</a></h1>
 <p>you can grab binaries from the releases: <a href="https://github.com/DaemonicLabs/Voodoo/releases">https://github.com/DaemonicLabs/Voodoo/releases</a></p>
 <h1 id="usage-examples">Usage examples<a class="headerlink" href="#usage-examples" title="Permanent link">&para;</a></h1>
-<div class="highlight"><pre><span></span><code><span class="c1"># generate json schema for autocompletion</span>
-java -jar voodoo.jar generateSchema
+<div class="highlight"><pre><span></span><code><span class="c1"># setup wrapper/shell scripts and gitignore</span>
+java -jar voodoo.jar init project
+
+<span class="c1"># generate json schema for autocompletion</span>
+./voodoo generateSchema
 
 <span class="c1"># create a new pack</span>
-java -jar voodoo.jar create pack --id newPack --mcVersion <span class="m">1</span>.16.2
+./voodoo init pack --id newPack --mcVersion <span class="m">1</span>.16.2
 
 <span class="c1"># builds a pack</span>
-java -jar voodoo.jar build --id mypack
+./voodoo compile newPack/v0.0.1.voodoo.json
 
 <span class="c1"># packages for upload</span>
-java -jar voodoo.jar package --id mypack -p voodoo -p mmc-voodoo -p curse
+./voodoo package --id mypack -p voodoo -p mmc-voodoo -p curse
 
 <span class="c1"># launches pack in multimc</span>
-java -jar voodoo.jar launch multimc --id mypack
+./voodoo launch multimc --id mypack
 </code></pre></div>
 <p>bash and zsh autocomplete</p>
 <p>the autocompletions should be regenerated manually on voodoo update</p>

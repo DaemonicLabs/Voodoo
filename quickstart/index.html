@@ -392,8 +392,8 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#building-the-pack" class="md-nav__link">
-    Building the pack
+  <a href="#compiling-the-pack" class="md-nav__link">
+    Compiling the pack
   </a>
   
 </li>
@@ -627,13 +627,13 @@ so lets add some mods</p>
 </code></pre></div>
 </details>
 <p>//TODO: add sections about overrides and properties of entries</p>
-<h2 id="building-the-pack">Building the pack<a class="headerlink" href="#building-the-pack" title="Permanent link">&para;</a></h2>
-<p><code>building</code> the pack does resolve all dependencies of entries and pins versions</p>
-<div class="highlight"><pre><span></span><code>voodoo build --id magicpack
+<h2 id="compiling-the-pack">Compiling the pack<a class="headerlink" href="#compiling-the-pack" title="Permanent link">&para;</a></h2>
+<p><code>compiling</code> the pack does resolve all dependencies of entries and pins versions</p>
+<div class="highlight"><pre><span></span><code>voodoo compile magicpack/v0.0.1.voodoo.json
 </code></pre></div>
-<p>this created <code>/magicpack/lock/</code> folder cotnaining the output artifacts
+<p>this created <code>/magicpack/lock/</code> folder containing the output artifacts
 <em>DO NOT DELETE</em> this folder unless you know what you are doing
-this folder contains the inputs for all tasks (except <code>build</code>)</p>
+this folder contains the inputs for all tasks (except <code>compile</code>)</p>
 <h2 id="testing-in-multimc">Testing in MultiMC<a class="headerlink" href="#testing-in-multimc" title="Permanent link">&para;</a></h2>
 <p>before deploying the pack, lets make sure it runs first</p>
 <p>before this make sure multimc is in your <code>PATH</code></p>
