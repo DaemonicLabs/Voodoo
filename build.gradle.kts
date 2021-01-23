@@ -64,8 +64,6 @@ task<DefaultTask>("exportVersion") {
     group = "help"
     description = "exports $version to version.txt"
     doLast {
-//        val GITHUB_ENV = System.getenv("\$GITHUB_ENV")
-//        file(GITHUB_ENV).appendText("\nVERSION=$version")
         logger.lifecycle("exporting version $version")
         rootDir.resolve("version.txt").writeText(version.toString())
     }
@@ -246,6 +244,23 @@ subprojects {
                 }
                 if (pluginManager.hasPlugin("com.github.johnrengelman.shadow")) {
                     create("shadow", MavenPublication::class.java) {
+                        (project.extensions.getByName("shadow") as ShadowExtension).component(this)
+                    }
+                }
+                create<MavenPublication>("snapshot") {
+                    this as org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
+                    version = defaultVersion + "-SNAPSHOT"
+                    isAlias = true
+                    from(components["java"])
+                    artifact(sourcesJar.get())
+                    artifact(javadocJar.get())
+                    artifactId = project.name.toLowerCase()
+                }
+                if (pluginManager.hasPlugin("com.github.johnrengelman.shadow")) {
+                    create("shadow-snapshot", MavenPublication::class.java) {
+                        this as org.gradle.api.publish.maven.internal.publication.MavenPublicationInternal
+                        version = defaultVersion + "-SNAPSHOT"
+                        isAlias = true
                         (project.extensions.getByName("shadow") as ShadowExtension).component(this)
                     }
                 }
