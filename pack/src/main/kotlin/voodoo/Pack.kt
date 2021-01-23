@@ -20,13 +20,14 @@ object Pack : KLogging() {
         CursePack
     ).associateBy { it.id }
 
-    suspend fun pack(stopwatch: Stopwatch, modpack: LockPack, uploadBaseDir: File, packer: AbstractPack) = stopwatch {
+    suspend fun pack(stopwatch: Stopwatch, modpack: LockPack, config: PackConfig, uploadBaseDir: File, packer: AbstractPack) = stopwatch {
         val output = with(packer) { uploadBaseDir.getOutputFolder(id = modpack.id, version = modpack.version) }
         output.mkdirs()
 
         packer.pack(
             stopwatch = "${packer.label}-timer".watch,
             modpack = modpack,
+            config = config,
             output = output,
             uploadBaseDir = uploadBaseDir,
             clean = true

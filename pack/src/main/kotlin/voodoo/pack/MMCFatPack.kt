@@ -29,6 +29,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
     override suspend fun pack(
         stopwatch: Stopwatch,
         modpack: LockPack,
+        config: PackConfig,
         output: File,
         uploadBaseDir: File,
         clean: Boolean

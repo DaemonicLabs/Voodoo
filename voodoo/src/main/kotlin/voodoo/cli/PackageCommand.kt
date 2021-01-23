@@ -5,6 +5,9 @@ import com.eyeem.watchadoin.saveAsHtml
 import com.eyeem.watchadoin.saveAsSvg
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
+import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.multiple
+import com.github.ajalt.clikt.parameters.arguments.validate
 import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
@@ -17,8 +20,11 @@ import mu.KotlinLogging
 import mu.withLoggingContext
 import voodoo.Pack
 import voodoo.data.lock.LockPack
+import voodoo.pack.MetaPack
+import voodoo.pack.VersionPack
 import voodoo.util.SharedFolders
 import voodoo.util.VersionComparator
+import voodoo.util.json
 import java.io.File
 
 class PackageCommand(): CliktCommand(
@@ -28,17 +34,27 @@ class PackageCommand(): CliktCommand(
     private val logger = KotlinLogging.logger {}
     val cliContext by requireObject<CLIContext>()
 
-    val id by option(
-        "--id",
-        help = "pack id"
-    ).required()
-        .validate {
-            require(it.isNotBlank()) { "id must not be blank" }
-            require(it.matches("""[\w_]+""".toRegex())) { "modpack id must not contain special characters" }
+    val metaPackFile by argument(
+        "META_FILE",
+        "path to ${MetaPack.FILENAME} file"
+    ).file(mustExist = true, canBeFile = true, canBeDir = false)
+        .validate { file ->
+            require(file.name == MetaPack.FILENAME) {
+                "file $file does not end with ${VersionPack.extension}"
+            }
         }
 
-    val packTargets by option(
-        "--target", "-t"
+//    val id by option(
+//        "--id",
+//        help = "pack id"
+//    ).required()
+//        .validate {
+//            require(it.isNotBlank()) { "id must not be blank" }
+//            require(it.matches("""[\w_]+""".toRegex())) { "modpack id must not contain special characters" }
+//        }
+
+    val packTargets by argument(
+        "TARGET", "pack targets"
     ).choice(Pack.packMap)
         .multiple()
 
@@ -51,10 +67,13 @@ class PackageCommand(): CliktCommand(
             val stopwatch = Stopwatch(commandName)
 
             val rootDir = cliContext.rootDir
-            val baseDir = rootDir.resolve(id)
+//            val baseDir = rootDir.resolve(id)
+
+            val baseDir = metaPackFile.absoluteFile.parentFile
+            val id = baseDir.name
 
             stopwatch {
-
+                val metaPack = json.decodeFromString(MetaPack.serializer(), metaPackFile.readText())
                 val uploadDir = uploadDirOption ?: SharedFolders.UploadDir.get(id)
 
                 packTargets.toSet().forEach { packTarget ->
@@ -68,7 +87,7 @@ class PackageCommand(): CliktCommand(
                                     withLoggingContext("version" to lockpack.version) {
                                         launch(MDCContext() + CoroutineName("package-version-${lockpack.version}")) {
                                             // TODO: pass pack method (enum / object)
-                                            Pack.pack("pack-${packTarget.id}".watch, lockpack, uploadDir, packTarget)
+                                            Pack.pack("pack-${packTarget.id}".watch, lockpack, metaPack.packConfig, uploadDir, packTarget)
                                         }
                                     }
                                 }

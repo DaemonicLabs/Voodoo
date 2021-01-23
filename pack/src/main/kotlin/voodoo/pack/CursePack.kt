@@ -38,6 +38,7 @@ object CursePack : AbstractPack("curse") {
     override suspend fun pack(
         stopwatch: Stopwatch,
         modpack: LockPack,
+        config: PackConfig,
         output: File,
         uploadBaseDir: File,
         clean: Boolean

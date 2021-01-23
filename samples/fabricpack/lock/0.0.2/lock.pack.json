@@ -8,7 +8,7 @@
         "installer": "0.6.1.51"
     },
     "version": "0.0.2",
-    "icon": "icon_fabricPack.png",
+    "icon": "../local/256.png",
     "packOptions": {
         "uploadUrl": "https://nikky.moe/.mc/voodoo/fabricPack"
     },

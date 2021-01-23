@@ -8,7 +8,6 @@ import voodoo.util.Directories
 import voodoo.util.blankOr
 import voodoo.util.maven.MavenUtil
 import voodoo.util.packToZip
-import voodoo.util.unixPath
 import java.io.File
 import java.net.URI
 import kotlin.system.exitProcess
@@ -22,6 +21,7 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
     override suspend fun pack(
         stopwatch: Stopwatch,
         modpack: LockPack,
+        config: PackConfig,
         output: File,
         uploadBaseDir: File,
         clean: Boolean

@@ -2,13 +2,9 @@ package voodoo.pack
 
 import com.eyeem.watchadoin.Stopwatch
 import mu.KotlinLogging
-import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
 import voodoo.util.Directories
 import voodoo.util.maven.MavenUtil
-import voodoo.util.packToZip
-import voodoo.util.toJson
-import voodoo.util.unixPath
 import java.io.File
 
 /**
@@ -26,6 +22,7 @@ object ServerPack : AbstractPack("server") {
     override suspend fun pack(
         stopwatch: Stopwatch,
         modpack: LockPack,
+        config: PackConfig,
         output: File,
         uploadBaseDir: File,
         clean: Boolean

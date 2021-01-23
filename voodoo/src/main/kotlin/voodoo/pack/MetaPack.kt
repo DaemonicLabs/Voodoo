@@ -17,6 +17,7 @@ data class MetaPack (
     val title: String? = null,
     val authors: List<String> = listOf(),
     val icon: String = "icon.png",
+    val packConfig: PackConfig = PackConfig(),
     // upload location //TODO: ensure this upload path is unique (or append $id), maybe grab baseUrl from config.json ?
     var uploadBaseUrl: String,
 ) {

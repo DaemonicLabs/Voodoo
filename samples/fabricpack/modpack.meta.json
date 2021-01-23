@@ -1,9 +1,14 @@
 {
   "$schema": "../schema/metaPack.schema.json",
   "title": "FabricPack Test",
-  "icon": "icon_fabricPack.png",
+  "icon": "../local/256.png",
   "authors": [
     "nikky"
   ],
+  "packConfig": {
+    "versionAlias": {
+      "latest": "0.0.3"
+    }
+  },
   "uploadBaseUrl": "https://nikky.moe/.mc/voodoo/"
 }

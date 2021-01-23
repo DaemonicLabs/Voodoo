@@ -14,9 +14,6 @@ import voodoo.provider.Providers
 import voodoo.util.*
 import voodoo.util.maven.MavenUtil
 import java.io.File
-import java.time.Instant
-import java.time.ZoneOffset
-import java.time.format.DateTimeFormatter
 
 /**
  * Created by nikky on 30/03/18.
@@ -33,6 +30,7 @@ object VoodooPackager : AbstractPack("voodoo") {
     override suspend fun pack(
         stopwatch: Stopwatch,
         modpack: LockPack,
+        config: PackConfig,
         output: File,
         uploadBaseDir: File,
         clean: Boolean
@@ -250,6 +248,7 @@ object VoodooPackager : AbstractPack("voodoo") {
                         installerLocation = installer.toRelativeString(output).replace('\\', '/'),
                         modpackTitle = modpack.title ?: modpack.id,
                         modpackVersion = modpack.version,
+                        versionAlias = config.versionAlias,
                         gameVersion = modpack.mcVersion,
 //                        thumb = thumb, // TODO:
                         modLoader = modloader,

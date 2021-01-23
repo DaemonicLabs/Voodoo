@@ -253,7 +253,7 @@ voodoo launch multimc magicpack/v0.0.1.voodoo.json
 ## Packaging and Upload
 
 ```bash
-voodoo package --id magicpack --target voodoo --target mmc-voodoo --target server
+voodoo package magicpack/modpack/meta.json voodoo mmc-voodoo server
 ```
 
 this created `/_upload/voodoo/`, `/_upload/multimc-voodoo` and `/_upload/server/`
@@ -265,9 +265,9 @@ upload the content of `/_upload/voodoo/` to `$uploadBaseUrl` (configured in `/ma
 make sure to *NOT DELETE* existing files on the fileserver
 
 example with `"uploadBaseUrl": "https://mydomain.com/mc/"`  
-`/_upload/voodoo/packages.json` should be accessible from `https://mydomain.com/mc/packages.json`
+`/_upload/voodoo/magicpack.json` should be accessible from `https://mydomain.com/mc/magicpack.json`
 
-`/_upload/multimc-voodoo` contains multimc instances that selfupdate (TODO: currently it create a zip for each version, but they all selfupdate?)
+`/_upload/multimc-voodoo` contains multimc instances that selfupdate
 
 ### Deploy server
 

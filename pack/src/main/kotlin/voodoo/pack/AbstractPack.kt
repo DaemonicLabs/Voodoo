@@ -1,9 +1,7 @@
 package voodoo.pack
 
 import com.eyeem.watchadoin.Stopwatch
-import mu.KLogging
 import voodoo.data.lock.LockPack
-import voodoo.util.Directories
 import java.io.File
 
 /**
@@ -23,6 +21,7 @@ abstract class AbstractPack(open val id: String) {
     abstract suspend fun pack(
         stopwatch: Stopwatch,
         modpack: LockPack,
+        config: PackConfig,
         output: File,
         uploadBaseDir: File,
         clean: Boolean = true

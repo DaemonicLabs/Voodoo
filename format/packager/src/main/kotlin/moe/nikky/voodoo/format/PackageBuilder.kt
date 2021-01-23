@@ -35,12 +35,13 @@ object PackageBuilder : KLogging() {
         installerLocation: String,
         modpackTitle: String = modpackId,
         modpackVersion: String,
+        versionAlias: Map<String, String> = mapOf(),
         gameVersion: String,
         modLoader: Modloader,
         objectsLocation: String = "objects",
         userFiles: FnPatternList = FnPatternList(),
         features: List<FeatureWithPattern> = listOf(),
-        prettyPrint: Boolean = true
+        prettyPrint: Boolean = true,
     ) {
         val manifestDest: File = outputPath.resolve("${modpackId}_${modpackVersion}.json")
         val versionlistingFile: File = outputPath.resolve("$modpackId.json")
@@ -143,10 +144,14 @@ object PackageBuilder : KLogging() {
             location = manifestDest.toRelativeUnixPath(versionlistingFile.absoluteFile.parentFile)
         )
 
-        //TODO: add updateChannels to version listing
+        // add aliases / updateChannels to version listing
+
+        val aliasEntries = versionAlias
+            .filterValues { version -> version == modpackVersion }.keys
+            .map { alias -> alias to versionEntry }
 
         val newVersionListing = versionsListing.copy(
-            versions = versionsListing.versions + (modpackVersion to versionEntry)
+            versions = versionsListing.versions + (modpackVersion to versionEntry) + aliasEntries
         )
 
         versionlistingFile.writeText(
