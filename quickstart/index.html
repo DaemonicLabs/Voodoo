@@ -640,15 +640,15 @@ this folder contains the inputs for all tasks (except <code>compile</code>)</p>
 <div class="highlight"><pre><span></span><code>voodoo launch multimc magicpack/v0.0.1.voodoo.json
 </code></pre></div>
 <h2 id="packaging-and-upload">Packaging and Upload<a class="headerlink" href="#packaging-and-upload" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code>voodoo package --id magicpack --target voodoo --target mmc-voodoo --target server
+<div class="highlight"><pre><span></span><code>voodoo package magicpack/modpack/meta.json voodoo mmc-voodoo server
 </code></pre></div>
 <p>this created <code>/_upload/voodoo/</code>, <code>/_upload/multimc-voodoo</code> and <code>/_upload/server/</code></p>
 <h3 id="upload-selfupdating-pack">upload selfupdating pack<a class="headerlink" href="#upload-selfupdating-pack" title="Permanent link">&para;</a></h3>
 <p>upload the content of <code>/_upload/voodoo/</code> to <code>$uploadBaseUrl</code> (configured in <code>/magicpack/modpack.meta.json</code>)</p>
 <p>make sure to <em>NOT DELETE</em> existing files on the fileserver</p>
 <p>example with <code>"uploadBaseUrl": "https://mydomain.com/mc/"</code><br />
-<code>/_upload/voodoo/packages.json</code> should be accessible from <code>https://mydomain.com/mc/packages.json</code></p>
-<p><code>/_upload/multimc-voodoo</code> contains multimc instances that selfupdate (TODO: currently it create a zip for each version, but they all selfupdate?)</p>
+<code>/_upload/voodoo/magicpack.json</code> should be accessible from <code>https://mydomain.com/mc/magicpack.json</code></p>
+<p><code>/_upload/multimc-voodoo</code> contains multimc instances that selfupdate</p>
 <h3 id="deploy-server">Deploy server<a class="headerlink" href="#deploy-server" title="Permanent link">&para;</a></h3>
 <p>upload <code>/_upload/server/magicpack_v0.0.1/</code> to your server
 and run the <code>server-installer.jar</code> on the server to download mods and modloader installer directly</p>
