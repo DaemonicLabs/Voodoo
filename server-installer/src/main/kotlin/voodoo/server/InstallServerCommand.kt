@@ -29,14 +29,14 @@ class InstallServerCommand: CliktCommand() {
         help = "lockpack or folder containing lockpack"
     ).file(mustExist = true, canBeFile = true, canBeDir = true)
         .defaultLazy {
-            parentFolder.resolve(LockPack.extension).takeIf { it.exists() }
-                ?: File(LockPack.extension)
+            parentFolder.resolve(LockPack.FILENAME).takeIf { it.exists() }
+                ?: File(LockPack.FILENAME)
         }
         .validate { packFile ->
             require(packFile.exists()) { "$packFile does not exist" }
-            require(packFile.isFile && packFile.name.endsWith(LockPack.extension)
-                    || packFile.isDirectory && packFile.resolve(LockPack.extension).exists()) {
-                "$packFile must either be a ${LockPack.extension} file or a directoy containing ${LockPack.extension}"
+            require(packFile.isFile && packFile.name.endsWith(LockPack.FILENAME)
+                    || packFile.isDirectory && packFile.resolve(LockPack.FILENAME).exists()) {
+                "$packFile must either be a ${LockPack.FILENAME} file or a directoy containing ${LockPack.FILENAME}"
             }
         }
 
@@ -71,8 +71,8 @@ class InstallServerCommand: CliktCommand() {
             val stopwatch = Stopwatch(commandName)
             stopwatch {
                 val packFile = when {
-                    packFile.exists() && packFile.isFile && packFile.name.endsWith(LockPack.extension) -> packFile
-                    packFile.exists() && packFile.isDirectory && packFile.resolve(LockPack.extension).exists() -> packFile.resolve(LockPack.extension)
+                    packFile.exists() && packFile.isFile && packFile.name.endsWith(LockPack.FILENAME) -> packFile
+                    packFile.exists() && packFile.isDirectory && packFile.resolve(LockPack.FILENAME).exists() -> packFile.resolve(LockPack.FILENAME)
                     else ->error("cannot find $packFile")
                 }
 

@@ -67,9 +67,9 @@ sealed class FileEntry(
         }
     }
 
-    protected fun toCommonComponent(): CommonComponent {
+    protected fun toCommonComponent(defaultId: String? = null): CommonComponent {
         return CommonComponent(
-            id = id ?: error("$id must be set on $this"),
+            id = id ?: defaultId ?: error("id must be set on $this"),
             name = name,
             folder = folder,
             description = description,
@@ -181,7 +181,7 @@ sealed class FileEntry(
             }
         }
         override fun toEntry(): FlatEntry = FlatEntry.Jenkins(
-            common = toCommonComponent(),
+            common = toCommonComponent(jenkins.job),
             jenkins = jenkins.copy()
         )
     }
@@ -208,7 +208,7 @@ sealed class FileEntry(
             }
         }
         override fun toEntry(): FlatEntry = FlatEntry.Local(
-            common = toCommonComponent(),
+            common = toCommonComponent(local.fileSrc),
             local = local.copy()
         )
     }

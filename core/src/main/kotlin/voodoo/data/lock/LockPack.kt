@@ -29,7 +29,7 @@ data class LockPack(
     val entries: List<LockEntry> = listOf(),
 ) {
     companion object : KLogging() {
-        const val extension = "lock.pack.json"
+        const val FILENAME = "lock.pack.json"
 
         // maybe make this configurable ?
         const val outputFolder = "lock"
@@ -43,7 +43,7 @@ data class LockPack(
             return baseDir.resolve(outputFolder).resolve(version)
         }
         fun fileForVersion(version: String, baseDir: File): File {
-            return baseFolderForVersion(version, baseDir).resolve(extension)
+            return baseFolderForVersion(version, baseDir).resolve(FILENAME)
         }
 
         fun parseAll(baseFolder: File): List<LockPack> {
@@ -51,10 +51,10 @@ data class LockPack(
             outputDir.mkdirs()
             return outputDir
                 .listFiles { folder ->
-                    folder.resolve(extension).exists()
+                    folder.resolve(FILENAME).exists()
                 }!!
                 .map { lockBaseFolder ->
-                    val lockpackFile = lockBaseFolder.resolve(extension)
+                    val lockpackFile = lockBaseFolder.resolve(FILENAME)
                     parse(lockpackFile, lockBaseFolder)
                 }
         }
@@ -65,7 +65,7 @@ data class LockPack(
                 throw IllegalStateException("baseFolder: '$baseFolder' is not absolute")
             }
             val lockpack: LockPack = json.decodeFromString(LockPack.serializer(), packFile.readText())
-            lockpack.lockBaseFolder = baseFolder
+            lockpack.lockBaseFolder = packFile.absoluteFile.parentFile
 
             lockpack.sourceFolder.deleteRecursively()
             if(lockpack.sourceZip.exists()) {
@@ -84,10 +84,9 @@ data class LockPack(
                     lockpack.localFolder
                 )
             }
-//            lockpack.entries.forEach {
-//                it.srcFolder = lockpack.sourceFolder
-//            }
-            //TODO: unzip src and local and point sourceFolder and localFolder to extracted locations
+            lockpack.entries.forEach {
+                it.parent = lockpack
+            }
             return lockpack
         }
     }

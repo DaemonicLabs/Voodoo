@@ -247,7 +247,7 @@ before deploying the pack, lets make sure it runs first
 before this make sure multimc is in your `PATH`
 
 ```bash
-voodoo launch multimc --id magicpack
+voodoo launch multimc magicpack/v0.0.1.voodoo.json
 ```
 
 ## Packaging and Upload

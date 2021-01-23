@@ -41,8 +41,8 @@ object LocalProvider : ProviderBase("Local Provider") {
     ): Pair<String?, File> = stopwatch {
         entry as LockEntry.Local
         val fileSrc = entry.parent.localFolder.resolve(entry.fileSrc)
-        val targetFile = targetFolder.resolve(fileSrc.name)
-        logger.info(fileSrc.absolutePath)
+        val targetFile = targetFolder.resolve(entry.fileName ?: fileSrc.name)
+        logger.info { "copying ${fileSrc.absolutePath} -> ${targetFile.absolutePath}" }
         fileSrc.copyTo(targetFile, overwrite = true)
         return Pair(null, targetFile)
     }

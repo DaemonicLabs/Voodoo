@@ -48,8 +48,6 @@ class CompileCommand() : CliktCommand(
 
             val rootDir = cliContext.rootDir
 
-//            require(id.isNotBlank()) { "id must not be blank" }
-
             stopwatch {
 
                 val config = Configuration.parse(rootDir = rootDir)

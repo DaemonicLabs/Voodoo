@@ -66,6 +66,14 @@
       "type": "curse",
       "projectName": "Fabric16/hwyla",
       "validMcVersions": ["1.16.3"]
+    },
+    {
+      "type": "local",
+      "folder": "",
+      "fileName": "_icon.png",
+      "localProperties": {
+        "fileSrc": "256.png"
+      }
     }
   ]
 }

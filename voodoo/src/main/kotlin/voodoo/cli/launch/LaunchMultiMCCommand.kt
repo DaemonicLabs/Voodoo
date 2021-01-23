@@ -5,6 +5,9 @@ import com.eyeem.watchadoin.saveAsHtml
 import com.eyeem.watchadoin.saveAsSvg
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
+import com.github.ajalt.clikt.parameters.arguments.argument
+import com.github.ajalt.clikt.parameters.arguments.multiple
+import com.github.ajalt.clikt.parameters.arguments.validate
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.file
 import kotlinx.coroutines.runBlocking
@@ -13,8 +16,11 @@ import mu.KotlinLogging
 import mu.withLoggingContext
 import voodoo.cli.CLIContext
 import voodoo.data.lock.LockPack
+import voodoo.pack.MetaPack
+import voodoo.pack.VersionPack
 import voodoo.tester.MultiMCTester
 import voodoo.util.VersionComparator
+import voodoo.util.json
 import java.io.File
 
 class LaunchMultiMCCommand(): CliktCommand(
@@ -24,24 +30,17 @@ class LaunchMultiMCCommand(): CliktCommand(
     private val logger = KotlinLogging.logger {}
     val cliContext by requireObject<CLIContext>()
 
-    val id by option(
-        "--id",
-        help = "pack id"
-    ).required()
-
-    val versionOption by option(
-        "--version",
-        help = "launch a specified version"
-    ).validate { version ->
-        require(version.matches("^\\d+(?:\\.\\d+)+$".toRegex())) {
-            "version must match pattern '^\\d+(\\.\\d+)+\$' eg: 0.1 or 4.11.6 or 1.2.3.4 "
+    val packFile by argument(
+        "PACK_FILE",
+        "path to .voodoo.json file"
+    ).file(mustExist = true, canBeFile = true, canBeDir = false)
+        .validate { file ->
+            require(file.name.endsWith("." + VersionPack.extension)) {
+                "file $file does not end with ${VersionPack.extension}"
+            }
         }
-    }
 
     val clean by option("--clean").flag(default = false)
-
-    val uploadDirOption by option("--uploadDir")
-        .file(canBeDir = true, mustBeWritable = true)
 
     override fun run(): Unit = withLoggingContext("command" to commandName) {
         runBlocking(MDCContext()) {
@@ -49,19 +48,17 @@ class LaunchMultiMCCommand(): CliktCommand(
 
             //TODO: look up rootDir based on lockpack input file
             val rootDir = cliContext.rootDir
-            val baseDir = rootDir.resolve(id)
 
+            val baseDir = packFile.absoluteFile.parentFile
+            val id = baseDir.name
             stopwatch {
-                val lockpacks = LockPack.parseAll(baseFolder = baseDir)
-                    .sortedWith(compareBy(VersionComparator, LockPack::version))
+                val metaPackFile = baseDir.resolve(MetaPack.FILENAME)
+                val versionPack = VersionPack.parse(packFile = packFile)
 
-                val versionOption = versionOption
-                val lockpack = if(versionOption != null) {
-                    lockpacks.firstOrNull { VersionComparator.compare(it.version, versionOption) == 0 }
-                        ?: error("$versionOption is not available, existing versions are: ${lockpacks.map { it.version }}")
-                } else {
-                    lockpacks.last()
-                }
+                val lockpack = LockPack.parse(
+                    LockPack.fileForVersion(versionPack.version, baseDir),
+                    baseDir.absoluteFile
+                )
 
                 MultiMCTester.execute("launch-multimc".watch, modpack = lockpack, clean = clean)
             }

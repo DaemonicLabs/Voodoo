@@ -33,7 +33,7 @@ object UnzipUtility {
      */
     @Throws(IOException::class)
     fun unzip(zipFile: File, destDir: File) {
-        logger.info("unzipping: $zipFile into $destDir")
+        logger.info("unzipping: $zipFile -> $destDir")
         require(zipFile.exists()) { "$zipFile does not exist" }
         require(zipFile.isFile) { "$zipFile not not a file" }
         val destDir = destDir.absoluteFile
