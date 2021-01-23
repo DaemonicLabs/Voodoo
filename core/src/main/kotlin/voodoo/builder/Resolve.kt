@@ -2,8 +2,8 @@ package voodoo.builder
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.toList
+import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.slf4j.MDCContext
 import mu.KotlinLogging
 import mu.withLoggingContext
@@ -11,8 +11,6 @@ import voodoo.data.flat.FlatEntry
 import voodoo.data.flat.FlatModPack
 import voodoo.data.lock.LockEntry
 import voodoo.util.withPool
-import java.util.Collections
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Created by nikky on 28/03/18.
@@ -91,54 +89,56 @@ suspend fun resolve(
 
     "resolveLoop".watch {
         do {
-            val newEntriesChannel = Channel<Pair<FlatEntry, String>>(Channel.UNLIMITED)
+            val unresolvedEntries = mutableEntryMap.filterKeys { id -> !mutableLockEntryMap.containsKey(id) }
+            coroutineScope {
+                val newEntriesFlow = channelFlow<FlatEntry> {
+                    val addEntries: SendChannel<FlatEntry> = channel
 
-            val unresolvedEntries = modPack.entrySet.filterNot { entry -> mutableLockEntryMap.containsKey(entry.id) }
+                    logger.info("unresolved: ${unresolvedEntries.keys}")
 
-            logger.info("unresolved: ${unresolvedEntries.map { it.id }}")
+                    val resolved: List<LockEntry> = withPool { pool ->
+                        "loop unresolved".watch {
+                            coroutineScope {
+                                unresolvedEntries.map { (id, entry) ->
+                                    withLoggingContext("entry-id" to entry.id) {
+                                        async(MDCContext() + CoroutineName("job-${entry.id}") + pool) {
+                                            "job-${entry.id}".watch {
+                                                logger.info { "resolving: ${entry.id}" }
+                                                logger.trace { "processing: $entry" }
+                                                val provider = voodoo.provider.Providers.forEntry(entry)!!
 
-            val resolved: List<LockEntry> = withPool { pool ->
-                "loop unresolved".watch {
-                    coroutineScope {
-                        unresolvedEntries.map { entry ->
-                            withLoggingContext("entry-id" to entry.id) {
-                                async(MDCContext() + CoroutineName("job-${entry.id}") + pool) {
-                                    "job-${entry.id}".watch {
-                                        logger.info { "resolving: ${entry.id}" }
-                                        logger.trace { "processing: $entry" }
-                                        val provider = voodoo.provider.Providers.forEntry(entry)!!
+                                                entry.takeUnless { it is FlatEntry.Noop }?.let { entry ->
+                                                    val lockEntry = provider.resolve(entry, modPack.mcVersion, addEntries)
+                                                    logger.debug("received locked entry: $lockEntry")
 
-                                        entry.takeUnless { it is FlatEntry.Noop }?.let { entry ->
-                                            val lockEntry = provider.resolve(entry, modPack.mcVersion, newEntriesChannel)
-                                            logger.debug("received locked entry: $lockEntry")
-
-                                            logger.debug("validating: $lockEntry")
-                                            if (!provider.validate(lockEntry)) {
-                                                throw IllegalStateException("did not pass validation")
-                                            }
+                                                    logger.debug("validating: $lockEntry")
+                                                    if (!provider.validate(lockEntry)) {
+                                                        throw IllegalStateException("did not pass validation")
+                                                    }
 
 //                                            logger.debug("setting display name")
 //                                            actualLockEntry.name = actualLockEntry.name()
 
-                                            lockEntry
+                                                    lockEntry
+                                                }
+                                            }
+                                        }.also {
+                                            logger.info("started job resolve ${entry.id}")
                                         }
                                     }
-                                }.also {
-                                    logger.info("started job resolve ${entry.id}")
-                                }
+                                }.awaitAll()
+                                    .filterNotNull()
+                            }.also {
+                                logger.trace { "unresolved-loop finished" }
                             }
-                        }.awaitAll()
-                            .filterNotNull()
+                        }
                     }
-                }
-            }
-
-            resolved.forEach { lockEntry ->
-                // inserts already ?
-                val actualLockEntry: LockEntry = addOrMerge(lockEntry) { old, new ->
-                    old ?: new
-                }
-                logger.debug("merged entry: $actualLockEntry")
+                    resolved.forEach { lockEntry ->
+                        // inserts already ?
+                        val actualLockEntry: LockEntry = addOrMerge(lockEntry) { old, new ->
+                            old ?: new
+                        }
+                        logger.debug("merged entry: $actualLockEntry")
 
 //                logger.debug("validating: actual $actualLockEntry")
 //                val provider = voodoo.provider.Providers.forEntry(entry)!!
@@ -146,36 +146,38 @@ suspend fun resolve(
 //                    logger.error { actualLockEntry }
 //                    throw IllegalStateException("actual entry did not validate")
 //                }
-            }
-
-            newEntriesChannel.close()
-            val newEntries = mutableSetOf<FlatEntry>()
-            for ((entry, path) in newEntriesChannel) {
-                logger.debug { "new entry received: ${entry.id}" }
-
-                when {
-                    mutableLockEntryMap.containsKey(entry.id) -> {
-                        logger.info { "entry already resolved ${entry.id}" }
-                        continue
                     }
-                    mutableEntryMap.any { (id, entry) -> id == entry.id } -> {
-                        logger.info { "entry already added ${entry.id}" }
-                        continue
-                    }
+                }
+
+                val newEntries = newEntriesFlow.filter { entry ->
+                    logger.debug { "new entry received: ${entry.id}" }
+
+                    when {
+                        mutableLockEntryMap.containsKey(entry.id) -> {
+                            logger.info { "entry already resolved ${entry.id}" }
+                            return@filter false
+                        }
+                        mutableEntryMap.containsKey(entry.id) -> {
+                            logger.info { "entry already added ${entry.id} : ${mutableEntryMap[entry.id]}" }
+                            return@filter false
+                        }
 //                    newEntries.any { it.id == entry.id } -> {
 //                        logger.info("entry already in queue ${entry.id}")
 //                        continue
 //                    }
-                }
+                    }
 
-                addEntry(entry, dependency = true)
+                    addEntry(entry, dependency = true)
 
-                logger.info { "added entry ${entry.id}" }
-                newEntries += entry
+                    logger.info { "added entry ${entry.id}" }
+                    true
+                }.toList()
+
+                logger.info { "added last step: ${newEntries.map { it.id }}" }
+
+                logger.info { "resolved last step: ${unresolvedEntries.keys}" }
             }
-            logger.info { "added last step: ${newEntries.map { it.id }}" }
 
-            logger.info { "resolved last step: ${unresolvedEntries.map { it.id }}" }
 
         } while (unresolvedEntries.isNotEmpty())
     }

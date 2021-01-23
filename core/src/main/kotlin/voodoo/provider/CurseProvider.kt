@@ -2,6 +2,7 @@ package voodoo.provider
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.runBlocking
 import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
@@ -38,7 +39,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
     override suspend fun resolve(
         entry: FlatEntry,
         mcVersion: String,
-        addEntry: SendChannel<Pair<FlatEntry, String>>
+        addEntry: SendChannel<FlatEntry>
     ): LockEntry {
         entry as FlatEntry.Curse
         val (projectID, fileID, path) = findFile(entry, mcVersion)
@@ -136,7 +137,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
         addonId: ProjectID,
         fileId: FileID,
         entry: FlatEntry.Curse,
-        addEntry: SendChannel<Pair<FlatEntry, String>>
+        addEntry: SendChannel<FlatEntry>
     ) {
         val predefinedDependencies = entry.dependencies.map { (slug, depType) ->
             val id = CurseClient.getProjectIdBySlug(slug)
@@ -204,9 +205,10 @@ object CurseProvider : ProviderBase("Curse Provider") {
                     releaseTypes = entry.releaseTypes
                     validMcVersions = entry.validMcVersions
                     projectID = depAddon.id
+                    folder = depAddon.categorySection.path
                 }
                 logger.debug("adding dependency: $depEntry")
-                addEntry.send(depEntry to depAddon.categorySection.path)
+                addEntry.send(depEntry)
                 logger.debug("added dependency: $depEntry")
                 logger.info("added $curseDepType dependency ${depAddon.name} of ${addon.name}")
             } else {

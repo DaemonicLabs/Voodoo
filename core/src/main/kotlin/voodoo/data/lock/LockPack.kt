@@ -155,7 +155,7 @@ data class LockPack(
                 .filterValues { it == dependencyType }
                 .keys
                 .map { depEntryId ->
-                    findEntryById(depEntryId)!!
+                    findEntryById(depEntryId) ?: error("cannot find entry $depEntryId")
                 }
 //            entry.dependencies[dependencyType]?.map { findEntryById(it)!! } ?: listOf()
         }

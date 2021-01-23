@@ -73,6 +73,10 @@ data class FlatModPack(
             this@FlatModPack
         )
 
+        resolvedEntries.forEach { entry ->
+            logger.info { "RESOLVED: ${entry.id} $entry" }
+        }
+
         "validate".watch {
             resolvedEntries.forEach { lockEntry ->
                 val provider = Providers[lockEntry.providerType]

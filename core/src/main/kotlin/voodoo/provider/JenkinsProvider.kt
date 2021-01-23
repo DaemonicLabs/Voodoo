@@ -3,6 +3,7 @@ package voodoo.provider
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.runBlocking
 import voodoo.core.GeneratedConstants.VERSION
 import voodoo.data.EntryReportData
@@ -30,7 +31,7 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
     override suspend fun resolve(
         entry: FlatEntry,
         mcVersion: String,
-        addEntry: SendChannel<Pair<FlatEntry, String>>
+        addEntry: SendChannel<FlatEntry>
     ): LockEntry {
         entry as FlatEntry.Jenkins
         require(entry.job.isNotBlank()) { "entry: '${entry.id}' does not have the jenkins job set" }
