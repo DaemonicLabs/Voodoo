@@ -157,10 +157,11 @@ suspend fun resolve(
                             logger.info { "entry already resolved ${entry.id}" }
                             return@filter false
                         }
-                        mutableEntryMap.containsKey(entry.id) -> {
-                            logger.info { "entry already added ${entry.id} : ${mutableEntryMap[entry.id]}" }
-                            return@filter false
-                        }
+//                        mutableEntryMap.containsKey(entry.id) -> {
+//                            logger.info { "entry already added ${entry.id} : ${mutableEntryMap[entry.id]}" }
+//                            return@filter false
+//                        }
+
 //                    newEntries.any { it.id == entry.id } -> {
 //                        logger.info("entry already in queue ${entry.id}")
 //                        continue

@@ -41,6 +41,7 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         val job = job(entry.job, entry.jenkinsUrl)
         val buildNumber = job.lastSuccessfulBuild?.number ?: throw IllegalStateException("buildnumber not set")
         val common = entry.lockCommon()
+        val artifact = artifact(entry.job, entry.jenkinsUrl, buildNumber, entry.fileNameRegex)
         return LockEntry.Jenkins(
             id = common.id,
             path = common.path,
@@ -53,7 +54,9 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
             jenkinsUrl = entry.jenkinsUrl,
             job = entry.job,
             buildNumber = buildNumber,
-            fileNameRegex = entry.fileNameRegex
+            fileNameRegex = entry.fileNameRegex,
+            artifactRelativePath = artifact.relativePath,
+            artifactFileName = artifact.fileName
         )
     }
 
@@ -61,9 +64,9 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         entry: LockEntry.Jenkins
     ): Pair<String, String> {
         val build = build(entry.job, entry.jenkinsUrl, entry.buildNumber)
-        val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)
-        val url = build.url + "artifact/" + artifact.relativePath
-        return url to artifact.fileName
+//        val artifact = artifact(entry.job, entry.jenkinsUrl, entry.buildNumber, entry.fileNameRegex)
+        val url = build.url + "artifact/" + entry.artifactRelativePath
+        return url to entry.artifactFileName
     }
 
     override suspend fun download(
@@ -71,7 +74,7 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         entry: LockEntry,
         targetFolder: File,
         cacheDir: File
-    ): Pair<String?, File>? = stopwatch {
+    ): Pair<String?, File> = stopwatch {
         entry as LockEntry.Jenkins
         require(entry.job.isNotBlank()) { "entry: '${entry.id}' does not have the jenkins job set" }
 //        if (entry.job.isBlank()) {
