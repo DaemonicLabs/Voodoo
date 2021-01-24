@@ -53,7 +53,7 @@ class CompileCommand() : CliktCommand(
                 val config = Configuration.parse(rootDir = rootDir)
 
                 val packs: Map<Pair<String, MetaPack>, List<VersionPack>> = packFiles.map { packFile ->
-                    val baseDir = packFile.absoluteFile.parentFile
+                    val baseDir = rootDir.resolve(packFile.absoluteFile.parentFile)
                     val id = baseDir.name
                     val metaPackFile = baseDir.resolve(MetaPack.FILENAME)
                     val versionPack = VersionPack.parse(packFile = packFile)

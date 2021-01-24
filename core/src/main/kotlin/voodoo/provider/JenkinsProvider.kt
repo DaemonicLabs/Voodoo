@@ -5,7 +5,7 @@ import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.runBlocking
-import voodoo.core.GeneratedConstants.VERSION
+import voodoo.core.GeneratedConstants
 import voodoo.data.EntryReportData
 import voodoo.data.Quadruple
 import voodoo.data.flat.FlatEntry
@@ -26,7 +26,7 @@ import java.util.*
  */
 
 object JenkinsProvider : ProviderBase("Jenkins Provider") {
-    const val useragent = "voodoo/$VERSION (https://github.com/DaemonicLabs/Voodoo)"
+    const val useragent = "voodoo/${GeneratedConstants.FULL_VERSION} (https://github.com/DaemonicLabs/Voodoo)"
 
     override suspend fun resolve(
         entry: FlatEntry,

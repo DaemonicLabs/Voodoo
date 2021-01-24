@@ -49,7 +49,7 @@ class LaunchMultiMCCommand(): CliktCommand(
             //TODO: look up rootDir based on lockpack input file
             val rootDir = cliContext.rootDir
 
-            val baseDir = packFile.absoluteFile.parentFile
+            val baseDir = rootDir.resolve(packFile.absoluteFile.parentFile)
             val id = baseDir.name
             stopwatch {
                 val metaPackFile = baseDir.resolve(MetaPack.FILENAME)

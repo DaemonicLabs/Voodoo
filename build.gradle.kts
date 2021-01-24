@@ -159,7 +159,7 @@ subprojects {
                         className = "GeneratedConstants"
                     ) {
                         field("BUILD") value versionSuffix
-                        field("VERSION") value fullVersion
+                        field("VERSION") value fullVersion.substringBefore('-')
                         field("FULL_VERSION") value fullVersion
                         field("MAVEN_URL") value "https://nikky.moe/maven"
                         field("MAVEN_GROUP") value group.toString()
