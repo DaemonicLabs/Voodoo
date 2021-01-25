@@ -35,10 +35,10 @@ run the `generateSchema` command once to make it generate a `config.json` and `.
 ./voodoo generateSchema
 ```
 
-now you should see `config.json`
+now you should see `config.json5`
 
-`/config.json`
-```json
+`/config.json5`
+```json5
 {
     "$schema": "./schema/config.schema.json",
     "curseforgeGenerators": {
@@ -73,8 +73,8 @@ so `init` created a gitignore file
 
 we are interested in fabric and fabric mods on curseforge
 
-`/config.json`
-```json
+`/config.json5`
+```json5
 {
     "$schema": "./schema/config.schema.json",
     "curseforgeGenerators": {
@@ -132,8 +132,8 @@ try to keep them separate when maintaining multiple versions
 
 by default the modloader is set to `None`
 
-??? note "`/magicpack/v0.0.1.voodoo.json`"
-    ```json hl_lines="6 7 8"
+??? note "`/magicpack/v0.0.1.voodoo.json5`"
+    ```json5 hl_lines="6 7 8"
     {
       "$schema": "../schema/versionPack.schema.json",
       "version": "0.0.1",
@@ -149,8 +149,8 @@ by default the modloader is set to `None`
 
 lets replace with with fabric
 
-!!! note "`/magicpack/v0.0.1.voodoo.json`"
-    ```json hl_lines="6 7 8 9"
+!!! note "`/magicpack/v0.0.1.voodoo.json5`"
+    ```json5 hl_lines="6 7 8 9"
     {
       "$schema": "../schema/versionPack.schema.json",
       "version": "0.0.1",
@@ -202,8 +202,8 @@ there is multiple entry types that you can
 since we setup mods from curseforge with the name `Fabric` before, we can use them  
 so lets add some mods
 
-???+ note "`/magicpack/v0.0.1.voodoo.json`"
-    ```json hl_lines="10 11 12 13 14 15 16 17 18 19"
+???+ note "`/magicpack/v0.0.1.voodoo.json5`"
+    ```json5 hl_lines="10 11 12 13 14 15 16 17 18 19"
     {
       "$schema": "../schema/versionPack.schema.json",
       "version": "0.0.1",
@@ -233,7 +233,7 @@ so lets add some mods
 `compiling` the pack does resolve all dependencies of entries and pins versions
 
 ```bash
-voodoo compile magicpack/v0.0.1.voodoo.json
+voodoo compile magicpack/v0.0.1.voodoo.json5
 ```
 
 this created `/magicpack/lock/` folder containing the output artifacts
@@ -247,13 +247,13 @@ before deploying the pack, lets make sure it runs first
 before this make sure multimc is in your `PATH`
 
 ```bash
-voodoo launch multimc magicpack/v0.0.1.voodoo.json
+voodoo launch multimc magicpack/v0.0.1.voodoo.json5
 ```
 
 ## Packaging and Upload
 
 ```bash
-voodoo package magicpack/modpack/meta.json voodoo mmc-voodoo server
+voodoo package magicpack/modpack/meta.json5 voodoo mmc-voodoo server
 ```
 
 this created `/_upload/voodoo/`, `/_upload/multimc-voodoo` and `/_upload/server/`

@@ -41,12 +41,12 @@ class EvalScriptCommand(
     val rootDir by requireObject<File>()
     val scriptFile by argument(
         "script",
-        "pack .voodoo.json file"
+        "pack .voodoo.json5 file"
     ).file(mustExist = true, canBeFile = true, canBeDir = false, mustBeReadable = true, mustBeWritable = false, canBeSymlink = false)
 
     val outputFile by argument(
         "output",
-        "output pack .voodoo.json file"
+        "output pack .voodoo.json5 file"
     ).file(mustExist = false, canBeFile = true, canBeDir = false, mustBeReadable = false, mustBeWritable = true, canBeSymlink = false)
         .validate { file ->
             require(file.name.endsWith(".voodoo.json")) { "output file must be of type '.voodoo.json'" }

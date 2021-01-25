@@ -54,7 +54,7 @@ class GenerateSchemaCommand : CliktCommand(
                 writeText(json.encodeToSchema(MetaPack.serializer()))
             }
 
-            Autocompletions.generate(configFile = configFile)
+            Autocompletions.generate(config = config)
 
 
 //            rootDir.resolve("packIdPlaceholder").resolve(Modpack.defaultSchema).apply {

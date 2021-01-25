@@ -2,7 +2,7 @@
   <configuration default="false" name="CLI compile fabricPack" type="JetRunConfigurationType">
     <module name="voodoo-parent.voodoo.main" />
     <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="--log TRACE compile fabricPack/152Version.voodoo.json fabricPack/164Version.voodoo.json" />
+    <option name="PROGRAM_PARAMETERS" value="--log TRACE compile fabricPack/152Version.voodoo.json5 fabricPack/164Version.voodoo.json5" />
     <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
     <option name="ALTERNATIVE_JRE_PATH" />
     <option name="PASS_PARENT_ENVS" value="true" />

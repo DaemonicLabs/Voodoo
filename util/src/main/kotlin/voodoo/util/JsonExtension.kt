@@ -12,5 +12,12 @@ val json = Json {
     prettyPrint = true
     encodeDefaults = false
 }
+val lenientJson = Json {
+    prettyPrint = true
+    encodeDefaults = false
+    isLenient = true
+//    allowSpecialFloatingPointValues = true
+
+}
 
 inline fun <reified T : Any> T.toJson(serializer: SerializationStrategy<T>): String = json.encodeToString(serializer, this)

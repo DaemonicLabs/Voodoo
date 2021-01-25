@@ -31,7 +31,7 @@ class CompileCommand() : CliktCommand(
 
     val packFiles by argument(
         "PACK_FILE",
-        "path to .voodoo.json file"
+        "path to .${VersionPack.extension} file"
     ).file(mustExist = true, canBeFile = true, canBeDir = false)
         .multiple()
         .validate { files ->
@@ -55,10 +55,9 @@ class CompileCommand() : CliktCommand(
                 val packs: Map<Pair<String, MetaPack>, List<VersionPack>> = packFiles.map { packFile ->
                     val baseDir = rootDir.resolve(packFile.absoluteFile.parentFile)
                     val id = baseDir.name
-                    val metaPackFile = baseDir.resolve(MetaPack.FILENAME)
                     val versionPack = VersionPack.parse(packFile = packFile)
 
-                    val metaPack = json.decodeFromString(MetaPack.serializer(), metaPackFile.readText())
+                    val metaPack = MetaPack.parse(baseDir.resolve(MetaPack.FILENAME))
                     Triple(id, metaPack, versionPack)
                 }
                     .groupBy(

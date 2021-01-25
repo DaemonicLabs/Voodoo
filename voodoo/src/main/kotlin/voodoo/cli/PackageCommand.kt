@@ -44,15 +44,6 @@ class PackageCommand(): CliktCommand(
             }
         }
 
-//    val id by option(
-//        "--id",
-//        help = "pack id"
-//    ).required()
-//        .validate {
-//            require(it.isNotBlank()) { "id must not be blank" }
-//            require(it.matches("""[\w_]+""".toRegex())) { "modpack id must not contain special characters" }
-//        }
-
     val packTargets by argument(
         "TARGET", "pack targets"
     ).choice(Pack.packMap)
@@ -73,7 +64,7 @@ class PackageCommand(): CliktCommand(
             val id = baseDir.name
 
             stopwatch {
-                val metaPack = json.decodeFromString(MetaPack.serializer(), metaPackFile.readText())
+                val metaPack = MetaPack.parse(metaPackFile)
                 val uploadDir = uploadDirOption ?: SharedFolders.UploadDir.get(id)
 
                 packTargets.toSet().forEach { packTarget ->

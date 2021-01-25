@@ -1,6 +1,5 @@
 package voodoo.config
 
-import com.github.ricky12awesome.jss.encodeToSchema
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -19,9 +18,6 @@ object Autocompletions {
     private val rootDir by lazy {
         SharedFolders.RootDir.get().absoluteFile
     }
-    private val configFile by lazy {
-        rootDir.resolve("config.json")
-    }
     private val cacheDir by lazy {
         rootDir.resolve(".completions").apply { mkdirs() }
     }
@@ -34,12 +30,7 @@ object Autocompletions {
     private val fabricLoadersFile: File = cacheDir.resolve("fabric_loaders.json")
 
     private val config by lazy {
-        if (configFile.exists()) {
-            json.decodeFromString(
-                Configuration.serializer(),
-                configFile.readText()
-            )
-        } else {
+        Configuration.parseOrDefault(rootDir) {
             Configuration()
         }
     }
@@ -140,16 +131,9 @@ object Autocompletions {
         }
 
 
-    suspend fun generate(configFile: File) {
+    suspend fun generate(config: Configuration) {
 
         logger.info { "generating autocompletions into $cacheDir" }
-
-        val config = if (configFile.exists()) {
-            json.decodeFromString(
-                Configuration.serializer(),
-                configFile.readText()
-            )
-        } else Configuration()
 
         coroutineScope {
             launch(MDCContext()) {

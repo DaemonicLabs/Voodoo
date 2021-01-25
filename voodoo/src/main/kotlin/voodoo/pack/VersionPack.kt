@@ -1,5 +1,6 @@
 package voodoo.pack
 
+import blue.endless.jankson.Jankson
 import com.github.ricky12awesome.jss.JsonSchema
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
@@ -25,7 +26,7 @@ data class VersionPack(
     @Required
     @SerialName("\$schema")
     @JsonSchema.NoDefinition
-    val schema: String = "../schema/versionPack.schema.json",
+    val schema: String = defaultSchema,
     val title: String? = null,
     val icon: String? = null,
     val authors: List<String> = listOf(),
@@ -45,7 +46,7 @@ data class VersionPack(
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        const val extension = "voodoo.json"
+        const val extension = "voodoo.json5"
         const val defaultSchema = "../schema/versionPack.schema.json"
 
         fun parseEntry(jsonElement: JsonElement): FileEntry {
@@ -89,9 +90,16 @@ data class VersionPack(
         }
 
         fun parse(packFile: File): VersionPack {
+            val cleanedString = Jankson
+                .builder()
+                .build()
+                .load(packFile.readText()).let { jsonObject ->
+                    jsonObject.toJson(false, true);
+                }
+
             return json.decodeFromString(
                 VersionPack.serializer(),
-                packFile.readText()
+                cleanedString
             ).run {
                 copy(
                     modloader = modloader.replaceAutoCompletes(),

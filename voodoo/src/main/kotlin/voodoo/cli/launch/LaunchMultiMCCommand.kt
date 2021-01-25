@@ -32,7 +32,7 @@ class LaunchMultiMCCommand(): CliktCommand(
 
     val packFile by argument(
         "PACK_FILE",
-        "path to .voodoo.json file"
+        "path to .${VersionPack.extension} file"
     ).file(mustExist = true, canBeFile = true, canBeDir = false)
         .validate { file ->
             require(file.name.endsWith("." + VersionPack.extension)) {

@@ -1,5 +1,6 @@
 package voodoo.pack
 
+import blue.endless.jankson.Jankson
 import com.github.ricky12awesome.jss.JsonSchema
 import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
@@ -22,8 +23,20 @@ data class MetaPack (
     var uploadBaseUrl: String,
 ) {
     companion object {
-        const val FILENAME: String = "modpack.meta.json"
+        const val FILENAME: String = "modpack.meta.json5"
         const val defaultSchema = "../schema/metaPack.schema.json"
+
+        fun parse(metaPackFile: File): MetaPack {
+
+            val cleanedString = Jankson
+                .builder()
+                .build()
+                .load(metaPackFile.readText()).let { jsonObject ->
+                    jsonObject.toJson(false, true);
+                }
+
+            return json.decodeFromString(MetaPack.serializer(), cleanedString)
+        }
     }
 
     fun save(baseDir: File): File {

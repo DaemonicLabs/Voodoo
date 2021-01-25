@@ -11,6 +11,7 @@
     "curse=Fabric16/fabric-api",
     "curse=Fabric16/betternether",
     "curse=Fabric16/betternether",
+    // comment
     {
       "type": "curse",
       "projectName": "Fabric16/tab-inventory-fabric",

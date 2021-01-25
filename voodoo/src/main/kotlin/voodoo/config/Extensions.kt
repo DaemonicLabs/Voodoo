@@ -3,10 +3,13 @@ package voodoo.config
 import com.github.ricky12awesome.jss.buildJsonSchema
 import com.github.ricky12awesome.jss.encodeToSchema
 import kotlinx.serialization.json.*
+import mu.KotlinLogging
 import voodoo.data.nested.NestedPack
 import voodoo.pack.FileEntry
 import voodoo.pack.VersionPack
 import voodoo.util.json
+
+private val logger = KotlinLogging.logger {}
 
 fun NestedPack.Companion.generateSchema() = json.encodeToSchema(serializer())
     .replace("\"replace_with_curseforge_projects\"",

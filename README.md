@@ -86,7 +86,7 @@ java -jar voodoo.jar init project
 ./voodoo init pack --id newPack --mcVersion 1.16.2
 
 # builds a pack
-./voodoo compile newPack/v0.0.1.voodoo.json
+./voodoo compile newPack/v0.0.1.voodoo.json5
 
 # packages for upload
 ./voodoo package --id mypack -p voodoo -p mmc-voodoo -p curse
@@ -135,10 +135,9 @@ Developing
 Support
 -------
 
-Feel welcome to post ideas and suggestions to our [tracker](https://github.com/DaemonicLabs/Voodoo/issues).
+Feel welcome to post ideas and suggestions to our [issue tracker](https://github.com/DaemonicLabs/Voodoo/issues).
 
-contact me directly in chat [![Discord](https://img.shields.io/discord/342696338556977153.svg?style=flat-square&label=%23ai-lab&logo=discord)](https://discord.gg/SRFkHfp)   
-or on irc `#unascribed` @ `irc.esper.net`
+contact me directly in chat [![Discord](https://img.shields.io/discord/342696338556977153.svg?style=flat-square&label=%23ai-lab&logo=discord)](https://discord.gg/SRFkHfp)
 
 How to contribute?
 ------------------

@@ -6,7 +6,7 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
 
-val logger = KotlinLogging.logger{}
+private val logger = KotlinLogging.logger {}
 
 fun packToZip(sourceDir: File, zipFile: File, preserveTimestamps: Boolean = true) {
     zipFile.let { if (it.exists()) it.delete() }
