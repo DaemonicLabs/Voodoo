@@ -52,7 +52,7 @@
                 "fabric-api": "REQUIRED"
             },
             "projectID": 373138,
-            "fileID": 3139044
+            "fileID": 3179423
         },
         {
             "type": "curse",
@@ -93,14 +93,6 @@
             },
             "projectID": 317514,
             "fileID": 3174695
-        },
-        {
-            "type": "jenkins",
-            "id": "opencomputers",
-            "path": "mods",
-            "jenkinsUrl": "https://ci.cil.li/",
-            "job": "OpenComputers-MC1.12",
-            "buildNumber": 213
         },
         {
             "type": "curse",

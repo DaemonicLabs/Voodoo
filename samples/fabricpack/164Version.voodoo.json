@@ -8,14 +8,9 @@
     "intermediateMappings": "Fabric/1.16.4"
   },
   "mods": [
-    {
-      "type": "curse",
-      "projectName": "Fabric16/fabric-api"
-    },
-    {
-      "type": "curse",
-      "projectName": "Fabric16/betternether"
-    },
+    "curse=Fabric16/fabric-api",
+    "curse=Fabric16/betternether",
+    "curse=Fabric16/betternether",
     {
       "type": "curse",
       "projectName": "Fabric16/tab-inventory-fabric",
@@ -23,45 +18,13 @@
     },
     {
       "type": "curse",
-      "projectName": "Fabric16/campanion"
+      "projectName": "Fabric16/campanion",
     },
-    {
-      "type": "curse",
-      "applyOverrides": [
-        "client"
-      ],
-      "projectName": "Fabric16/roughly-enough-items"
-    },
-    {
-      "type": "curse",
-      "applyOverrides": [
-        "client"
-      ],
-      "projectName": "Fabric16/roughly-enough-resources"
-    },
-    {
-      "type": "curse",
-      "applyOverrides": [
-        "client"
-      ],
-      "projectName": "Fabric16/modmenu"
-    },
-    {
-      "type": "curse",
-      "applyOverrides": [
-        "client",
-        "optionalStarred"
-      ],
-      "projectName": "Fabric16/mouse-wheelie"
-    },
-    {
-      "type": "curse",
-      "applyOverrides": [
-        "client",
-        "optionalStarred"
-      ],
-      "projectName": "Fabric16/appleskin"
-    },
+    "curse:client=Fabric16/roughly-enough-items",
+    "curse:client=Fabric16/roughly-enough-resources",
+    "curse:client=Fabric16/modmenu",
+    "curse:client,optionalStarred=Fabric16/mouse-wheelie",
+    "curse:client,optionalStarred=Fabric16/appleskin",
     {
       "type": "curse",
       "projectName": "Fabric16/hwyla",

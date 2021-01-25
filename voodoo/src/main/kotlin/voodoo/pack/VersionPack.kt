@@ -5,10 +5,15 @@ import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
 import mu.KotlinLogging
 import voodoo.config.Autocompletions
 import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
+import voodoo.data.components.DirectComponent
+import voodoo.data.components.JenkinsComponent
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.FlatModPack
 import voodoo.util.json
@@ -30,15 +35,58 @@ data class VersionPack(
     val modloader: Modloader,
     val packageConfiguration: VersionPackageConfig = VersionPackageConfig(),
 //    val overrides: Map<String, EntryOverride> = mapOf(),
-    val mods: List<FileEntry>,
+    @JsonSchema.Definition("FileEntryList")
+    val mods: List<JsonElement>,
 ) {
     @Transient
     lateinit var baseDir: File
+    @Transient
+    lateinit var modEntries: List<FileEntry>
 
     companion object {
         private val logger = KotlinLogging.logger {}
         const val extension = "voodoo.json"
         const val defaultSchema = "../schema/versionPack.schema.json"
+
+        fun parseEntry(jsonElement: JsonElement): FileEntry {
+            return when(jsonElement) {
+                is JsonPrimitive -> {
+                    require(jsonElement.isString) { "element $jsonElement is not a string" }
+                    val str = jsonElement.content
+                    val overrides = str.substringBefore("=").takeIf { it.contains(":") }?.substringAfter(":")?.split(",") ?: listOf()
+                    when {
+                        str.startsWith("curse") -> {
+                            FileEntry.Curse(
+                                projectName = str.substringAfter(":").substringAfter("=")
+                            )
+                        }
+                        str.startsWith("jenkins:") -> {
+                            FileEntry.Jenkins(
+                                jenkins = JenkinsComponent(
+                                    job = str.substringAfter(":").substringAfter("=")
+                                )
+                            )
+                        }
+                        str.startsWith("direct:") -> {
+                            FileEntry.Direct(
+                                direct = DirectComponent(
+                                    url = str.substringAfter(":").substringAfter("=")
+                                )
+                            )
+                        }
+                        else -> error("unknown prefix: ${str.substringBefore(":")}")
+                    }.apply {
+                        applyOverrides = overrides
+                    }
+                }
+                is JsonObject -> {
+                    json.decodeFromJsonElement(FileEntry.serializer(), jsonElement)
+                }
+                else -> {
+                    error("element $jsonElement needs to be a object or string")
+                }
+            }
+        }
 
         fun parse(packFile: File): VersionPack {
             return json.decodeFromString(
@@ -47,10 +95,13 @@ data class VersionPack(
             ).run {
                 copy(
                     modloader = modloader.replaceAutoCompletes(),
-                    mods = mods.map { entry ->
+                ).apply {
+                    modEntries = mods.map { element ->
+                        parseEntry(element)
+                    }.map { entry ->
                         transformFileEntry(entry)
                     }
-                )
+                }
             }.apply {
                 baseDir = packFile.absoluteFile.parentFile
             }
@@ -136,7 +187,7 @@ data class VersionPack(
                     instanceCfg = packageConfiguration.multimc.instanceCfg
                 )
             ),
-            entrySet = mods.map { intitalEntry ->
+            entrySet = modEntries.map { intitalEntry ->
                 val entryId = intitalEntry.id
                 val entry = intitalEntry.applyOverrides.fold(intitalEntry) { acc, overrideId ->
                     val entryOverride =

@@ -100,7 +100,7 @@ sealed class FileEntry(
     ) : FileEntry() {
 
         override fun applyTag(tag: EntryOverride): Curse {
-            return when(tag) {
+            return when (tag) {
                 is EntryOverride.Curse -> copy(
                     curse = curse.copy(
                         useOriginalUrl = tag.useOriginalUrl ?: curse.useOriginalUrl,
@@ -116,7 +116,7 @@ sealed class FileEntry(
             }
         }
 
-        override fun toEntry(): FlatEntry = FlatEntry.Curse (
+        override fun toEntry(): FlatEntry = FlatEntry.Curse(
             common = toCommonComponent(),
             curse = curse.copy()
         ).apply {
@@ -135,7 +135,7 @@ sealed class FileEntry(
         val direct: DirectComponent = DirectComponent(),
     ) : FileEntry() {
         override fun applyTag(tag: EntryOverride): Direct {
-            return when(tag) {
+            return when (tag) {
                 is EntryOverride.Direct -> copy(
                     direct = direct.copy(
                         url = tag.url ?: direct.url,
@@ -151,8 +151,8 @@ sealed class FileEntry(
             }
         }
 
-        override fun toEntry(): FlatEntry  =FlatEntry.Direct(
-            common = toCommonComponent(),
+        override fun toEntry(): FlatEntry = FlatEntry.Direct(
+            common = toCommonComponent(direct.url.split(":|&|=".toRegex()).joinToString("_")),
             direct = direct.copy()
         )
     }
@@ -164,7 +164,7 @@ sealed class FileEntry(
         val jenkins: JenkinsComponent = JenkinsComponent(),
     ) : FileEntry() {
         override fun applyTag(tag: EntryOverride): Jenkins {
-            return when(tag) {
+            return when (tag) {
                 is EntryOverride.Jenkins -> copy(
                     jenkins = jenkins.copy(
                         jenkinsUrl = tag.jenkinsUrl ?: jenkins.jenkinsUrl,
@@ -180,6 +180,7 @@ sealed class FileEntry(
                 else -> this
             }
         }
+
         override fun toEntry(): FlatEntry = FlatEntry.Jenkins(
             common = toCommonComponent(jenkins.job),
             jenkins = jenkins.copy()
@@ -193,7 +194,7 @@ sealed class FileEntry(
         val local: LocalComponent = LocalComponent(),
     ) : FileEntry() {
         override fun applyTag(tag: EntryOverride): Local {
-            return when(tag) {
+            return when (tag) {
                 is EntryOverride.Local -> copy(
                     local = local.copy(
                         fileSrc = tag.fileSrc ?: local.fileSrc
@@ -207,6 +208,7 @@ sealed class FileEntry(
                 else -> this
             }
         }
+
         override fun toEntry(): FlatEntry = FlatEntry.Local(
             common = toCommonComponent(local.fileSrc),
             local = local.copy()
@@ -217,13 +219,14 @@ sealed class FileEntry(
     @SerialName("noop")
     class Noop() : FileEntry() {
         override fun applyTag(tag: EntryOverride): Noop {
-            return when(tag) {
+            return when (tag) {
                 is EntryOverride.Common -> this.apply {
                     applyCommonOverride(tag)
                 }
                 else -> this
             }
         }
+
         override fun toEntry(): FlatEntry = FlatEntry.Noop(
             common = toCommonComponent()
         )
