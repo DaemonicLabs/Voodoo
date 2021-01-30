@@ -71,18 +71,16 @@ class InitPackCommand : CliktCommand(
                 val baseDir = rootDir.resolve(id)
 
                 val versionPack = VersionPack(
-                    mcVersion = mcVersion,
-                    title = title,
-                    version = packVersion ?: "0.0.1",
-                    srcDir = "v${packVersion ?: "0.0.1"}_src",
-                    modloader = Modloader.None,
-                    packageConfiguration = VersionPackageConfig(),
-                    mods = listOf(
-                        //TODO: add mod samples there
-                    )
-                ).apply {
-                    this.baseDir = baseDir
-                }
+                        mcVersion = mcVersion,
+                        title = title,
+                        version = packVersion ?: "0.0.1",
+                        srcDir = "v${packVersion ?: "0.0.1"}_src",
+                        modloader = Modloader.None,
+                        packageConfiguration = VersionPackageConfig(),
+                        mods = listOf(
+                            //TODO: add mod samples there
+                        )
+                    ).postParse(baseDir = baseDir)
 
                 val flatModpack = versionPack.flatten(rootDir, id, metaPack, mapOf())
 

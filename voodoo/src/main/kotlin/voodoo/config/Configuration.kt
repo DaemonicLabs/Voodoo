@@ -28,7 +28,7 @@ data class Configuration(
     companion object {
         private val logger = KotlinLogging.logger {}
         const val defaultSchema = "./schema/config.schema.json"
-        private const val CONFIG_PATH = "config.json5"
+        const val CONFIG_PATH = "config.json5"
         fun parse(rootDir: File): Configuration {
             val configFile = rootDir.resolve(CONFIG_PATH)
 

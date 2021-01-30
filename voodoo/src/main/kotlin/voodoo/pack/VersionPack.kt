@@ -100,19 +100,7 @@ data class VersionPack(
             return json.decodeFromString(
                 VersionPack.serializer(),
                 cleanedString
-            ).run {
-                copy(
-                    modloader = modloader.replaceAutoCompletes(),
-                ).apply {
-                    modEntries = mods.map { element ->
-                        parseEntry(element)
-                    }.map { entry ->
-                        transformFileEntry(entry)
-                    }
-                }
-            }.apply {
-                baseDir = packFile.absoluteFile.parentFile
-            }
+            ).postParse(packFile.absoluteFile.parentFile)
         }
 
         fun parseAll(baseDir: File): List<VersionPack> {
@@ -165,6 +153,22 @@ data class VersionPack(
             else -> entry
         }
 
+    }
+
+    fun postParse(baseDir: File): VersionPack {
+        return this.run {
+            copy(
+                modloader = modloader.replaceAutoCompletes(),
+            ).apply {
+                modEntries = mods.map { element ->
+                    parseEntry(element)
+                }.map { entry ->
+                    transformFileEntry(entry)
+                }
+            }
+        }.apply {
+            this.baseDir = baseDir
+        }
     }
 
     fun flatten(rootDir: File, id: String, metaPack: MetaPack, overrides: Map<String, EntryOverride>): FlatModPack {

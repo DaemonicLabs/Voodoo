@@ -106,7 +106,7 @@ object CurseClient : KLogging() {
                     |}""".trimMargin().replace("\n", ""),
             operationName = "GetSlugIDPairs"
         )
-        logger.debug("requestBody: $requestBody")
+        logger.debug { "requestBody: $requestBody" }
 //        val response = client.post<GraphQlResult>(urlString = url) {
 //            body = TextContent(json.encodeToString(GraphQLRequest.serializer(), requestBody), ContentType.Application.Json)
 //        }

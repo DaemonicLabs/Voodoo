@@ -27,7 +27,7 @@ class GenerateSchemaCommand : CliktCommand(
         val rootDir = cliContext.rootDir
 
         runBlocking(MDCContext()) {
-            val configFile = rootDir.resolve("config.json")
+            val configFile = rootDir.resolve(Configuration.CONFIG_PATH)
             //TODO: turn into library function on Configuration
 
             val config = try {

@@ -6,8 +6,15 @@
             "mcVersions": [
                 "1.12",
                 "1.12.1",
-                "1.12.2"
+                "1.12.2",
+                "1.15.2",
+                "1.16.4",
+                "1.16.5"
             ]
+        },
+        "Resource": {
+            "section": "RESOURCE_PACKS",
+            "mcVersions": []
         },
         "Fabric15": {
             "section": "MODS",
@@ -32,20 +39,17 @@
                 "1.16.3",
                 "1.16.4"
             ]
-        },
-        "Forge": {
-            "section": "MODS",
-            "categories": [
-
-            ],
-            "mcVersions": [
-                "1.12",
-                "1.12.1",
-                "1.12.2"
-            ]
         }
     },
     "forgeGenerators": {
+        "Forge": {
+            "mcVersions": [
+                "1.12.2",
+                "1.15.2",
+                "1.16.4",
+                "1.16.5"
+            ]
+        },
         "Forge_12_2": {
             "mcVersions": [
                 "1.12.2"
