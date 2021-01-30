@@ -2,11 +2,11 @@ package voodoo.provider
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.flow.FlowCollector
 import mu.KLogging
 import voodoo.data.DependencyType
 import voodoo.data.EntryReportData
 import voodoo.data.flat.FlatEntry
+import voodoo.data.flat.FlatModPack
 import voodoo.data.lock.LockEntry
 import java.io.File
 import java.time.Instant
@@ -26,7 +26,11 @@ abstract class ProviderBase(
 
     open fun reset() {}
 
-    open suspend fun resolve(entry: FlatEntry, mcVersion: String, addEntry: SendChannel<FlatEntry>): LockEntry {
+    open suspend fun resolve(
+        entry: FlatEntry,
+        modPack: FlatModPack,
+        addEntry: SendChannel<FlatEntry>
+    ): LockEntry {
         logger.info("[$name] resolve ${entry.id}")
         throw NotImplementedError("unable to resolve")
     }

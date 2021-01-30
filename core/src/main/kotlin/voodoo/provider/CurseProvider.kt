@@ -2,7 +2,6 @@ package voodoo.provider
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.flow.FlowCollector
 import kotlinx.coroutines.runBlocking
 import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
@@ -16,6 +15,7 @@ import voodoo.data.curse.CurseDependencyType
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.FlatEntry
+import voodoo.data.flat.FlatModPack
 import voodoo.data.lock.LockEntry
 import voodoo.memoize
 import voodoo.util.download
@@ -38,11 +38,11 @@ object CurseProvider : ProviderBase("Curse Provider") {
 
     override suspend fun resolve(
         entry: FlatEntry,
-        mcVersion: String,
+        modPack: FlatModPack,
         addEntry: SendChannel<FlatEntry>
     ): LockEntry {
         entry as FlatEntry.Curse
-        val (projectID, fileID, path) = findFile(entry, mcVersion)
+        val (projectID, fileID, path) = findFile(entry, modPack.mcVersion, modPack.modloader)
 
 //        synchronized(resolved) {
 //            logger.info("resolved: ${resolved.count()} unique entries")

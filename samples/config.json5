@@ -16,50 +16,17 @@
             "section": "RESOURCE_PACKS",
             "mcVersions": []
         },
-        "Fabric15": {
+        "Fabric": {
             "section": "MODS",
             "categories": [
                 "Fabric"
             ],
             "mcVersions": [
-                "1.15",
-                "1.15.1",
-                "1.15.2"
-            ]
-        },
-        "Fabric16": {
-            "section": "MODS",
-            "categories": [
-                "Fabric"
-            ],
-            "mcVersions": [
-                "1.16",
-                "1.16.1",
-                "1.16.2",
-                "1.16.3",
-                "1.16.4"
             ]
         }
     },
     "forgeGenerators": {
-        "Forge": {
-            "mcVersions": [
-                "1.12.2",
-                "1.15.2",
-                "1.16.4",
-                "1.16.5"
-            ]
-        },
-        "Forge_12_2": {
-            "mcVersions": [
-                "1.12.2"
-            ]
-        },
-        "Forge_15_2": {
-            "mcVersions": [
-                "1.15.2"
-            ]
-        }
+        "Forge": {},
     },
     "fabricGenerators": {
         "Fabric": {

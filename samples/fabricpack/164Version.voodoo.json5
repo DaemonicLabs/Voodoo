@@ -8,27 +8,27 @@
     "intermediateMappings": "Fabric/1.16.4"
   },
   "mods": [
-    "curse=Fabric16/fabric-api",
-    "curse=Fabric16/betternether",
-    "curse=Fabric16/betternether",
+    "curse=Fabric/fabric-api",
+    "curse=Fabric/betternether",
+    "curse=Fabric/betternether",
     // comment
     {
       "type": "curse",
-      "projectName": "Fabric16/tab-inventory-fabric",
+      "projectName": "Fabric/tab-inventory-fabric",
       "validMcVersions": ["1.16", "1.16.1", "1.16.2", "1.16.3"]
     },
     {
       "type": "curse",
-      "projectName": "Fabric16/campanion",
+      "projectName": "Fabric/campanion",
     },
-    "curse:client=Fabric16/roughly-enough-items",
-    "curse:client=Fabric16/roughly-enough-resources",
-    "curse:client=Fabric16/modmenu",
-    "curse:client,optionalStarred=Fabric16/mouse-wheelie",
-    "curse:client,optionalStarred=Fabric16/appleskin",
+    "curse:client=Fabric/roughly-enough-items",
+    "curse:client=Fabric/roughly-enough-resources",
+    "curse:client=Fabric/modmenu",
+    "curse:client,optionalStarred=Fabric/mouse-wheelie",
+    "curse:client,optionalStarred=Fabric/appleskin",
     {
       "type": "curse",
-      "projectName": "Fabric16/hwyla",
+      "projectName": "Fabric/hwyla",
       "validMcVersions": ["1.16.3"]
     },
     {

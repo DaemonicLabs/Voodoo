@@ -108,7 +108,7 @@ suspend fun resolve(
                                                 val provider = voodoo.provider.Providers.forEntry(entry)!!
 
                                                 entry.takeUnless { it is FlatEntry.Noop }?.let { entry ->
-                                                    val lockEntry = provider.resolve(entry, modPack.mcVersion, addEntries)
+                                                    val lockEntry = provider.resolve(entry, modPack, addEntries)
                                                     logger.debug("received locked entry: $lockEntry")
 
                                                     logger.debug("validating: $lockEntry")

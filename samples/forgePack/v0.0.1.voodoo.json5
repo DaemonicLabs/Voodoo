@@ -5,12 +5,12 @@
     "mcVersion": "1.12.2",
     "modloader": {
         "type": "modloader.forge",
-        "version": "Forge_12_2/1.12.2/14.23.5.2854"
+        "version": "Forge/1.12.2/14.23.5.2854"
     },
     "mods": [
         {
             "type": "curse",
-            "projectName": "Forge/foamfix-optimization-mod"
+            "projectName": "Mod/foamfix-optimization-mod"
         }
     ]
 }

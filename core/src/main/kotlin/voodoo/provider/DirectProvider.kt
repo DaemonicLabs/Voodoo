@@ -2,9 +2,9 @@ package voodoo.provider
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.flow.FlowCollector
 import voodoo.data.EntryReportData
 import voodoo.data.flat.FlatEntry
+import voodoo.data.flat.FlatModPack
 import voodoo.data.lock.LockEntry
 import voodoo.util.download
 import java.io.File
@@ -18,7 +18,7 @@ import java.net.URL
 object DirectProvider : ProviderBase("Direct Provider") {
     override suspend fun resolve(
         entry: FlatEntry,
-        mcVersion: String,
+        modPack: FlatModPack,
         addEntry: SendChannel<FlatEntry>
     ): LockEntry {
         entry as FlatEntry.Direct

@@ -19,6 +19,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import mu.KLogging
+import voodoo.data.ModloaderPattern
 import voodoo.data.curse.Addon
 import voodoo.data.curse.AddonFile
 import voodoo.data.curse.FileID
@@ -96,7 +97,7 @@ object CurseClient : KLogging() {
         slug?.let {
             filters += "slug: \"$it\""
         }
-        logger.info("post $url $filters")
+        logger.info { "post $url $filters" }
         val requestBody = GraphQLRequest(
             query = """{
                     |  addons(${filters.joinToString(", ")}) {
@@ -266,7 +267,7 @@ object CurseClient : KLogging() {
     private val getAddonCache: MutableMap<ProjectID, Addon?> = HashMap(1 shl 0)
 
     suspend fun getAddon(addonId: ProjectID, fail: Boolean = true): Addon? {
-        if (!addonId.valid) throw IllegalStateException("invalid project id")
+        if (!addonId.valid) throw IllegalStateException("invalid project id: $addonId")
         return getAddonCache.getOrPut(addonId) { getAddonCall(addonId, fail) }
     }
 
@@ -408,7 +409,8 @@ object CurseClient : KLogging() {
 
     suspend fun findFile(
         entry: FlatEntry.Curse,
-        mcVersion: String
+        mcVersion: String,
+        modloader: ModloaderPattern?
     ): Triple<ProjectID, FileID, String> {
         val mcVersions = listOf(mcVersion) + entry.validMcVersions
         val slug = entry.id // TODO: maybe make into separate property
@@ -416,6 +418,13 @@ object CurseClient : KLogging() {
         val releaseTypes = entry.releaseTypes
         var addonId = entry.projectID
         val fileNameRegex = entry.fileNameRegex
+
+        if(modloader is ModloaderPattern.Forge) {
+            entry.invalidMcVersions += "Fabric"
+        }
+        if(modloader is ModloaderPattern.Fabric) {
+            entry.invalidMcVersions += "Forge"
+        }
 
         val addon = if (!addonId.valid) {
 //            slug.takeUnless { it.isBlank() }

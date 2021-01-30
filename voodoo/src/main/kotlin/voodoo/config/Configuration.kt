@@ -7,6 +7,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import mu.KotlinLogging
 import voodoo.pack.EntryOverride
+import voodoo.poet.generator.CurseSection
 import voodoo.util.json
 import java.io.File
 
@@ -17,11 +18,24 @@ data class Configuration(
     @JsonSchema.NoDefinition
     val schema: String = defaultSchema,
     @Required
-    val curseforgeGenerators: Map<String, Generator.Curse> = mapOf(),
+    val curseforgeGenerators: Map<String, Generator.Curse> = mapOf(
+        "Mods" to Generator.Curse(
+            section = CurseSection.MODS
+        ),
+        "ResourcePacks" to Generator.Curse(
+            section = CurseSection.RESOURCE_PACKS
+        )
+    ),
     @Required
-    val forgeGenerators: Map<String, Generator.Forge> = mapOf(),
+    val forgeGenerators: Map<String, Generator.Forge> = mapOf(
+        "Forge" to Generator.Forge()
+    ),
     @Required
-    val fabricGenerators: Map<String, Generator.Fabric> = mapOf(),
+    val fabricGenerators: Map<String, Generator.Fabric> = mapOf(
+        "Fabric" to Generator.Fabric(
+            requireStable = true
+        )
+    ),
     @Required
     val overrides: Map<String, EntryOverride> = mapOf()
 ) {

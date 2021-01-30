@@ -2,9 +2,9 @@ package voodoo.provider
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
-import kotlinx.coroutines.flow.FlowCollector
 import voodoo.data.EntryReportData
 import voodoo.data.flat.FlatEntry
+import voodoo.data.flat.FlatModPack
 import voodoo.data.lock.LockEntry
 import java.io.File
 
@@ -16,7 +16,7 @@ import java.io.File
 object NoopProvider : ProviderBase("Noop Provider") {
     override suspend fun resolve(
         entry: FlatEntry,
-        mcVersion: String,
+        modPack: FlatModPack,
         addEntry: SendChannel<FlatEntry>
     ): LockEntry {
         entry as FlatEntry.Noop

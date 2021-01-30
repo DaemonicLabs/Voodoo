@@ -34,7 +34,8 @@ class VoodooCommand(invocation: String = "voodoo") : CliktCommand(
             PackageCommand(),
             LaunchCommand(),
             GenerateSchemaCommand(),
-            UpdateCommand()
+            UpdateCommand(),
+            ImportCurseCommand()
         )
     }
 

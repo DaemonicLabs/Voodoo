@@ -10,40 +10,40 @@
   "mods": [
     {
       "type": "curse",
-      "projectName": "Fabric15/fabric-api"
+      "projectName": "Fabric/fabric-api"
     },
     {
       "type": "curse",
-      "projectName": "Fabric15/betternether"
+      "projectName": "Fabric/betternether"
     },
     {
       "type": "curse",
-      "projectName": "Fabric15/tab-inventory-fabric"
+      "projectName": "Fabric/tab-inventory-fabric"
     },
     {
       "type": "curse",
-      "projectName": "Fabric15/campanion"
-    },
-    {
-      "type": "curse",
-      "applyOverrides": [
-        "client"
-      ],
-      "projectName": "Fabric15/roughly-enough-items"
+      "projectName": "Fabric/campanion"
     },
     {
       "type": "curse",
       "applyOverrides": [
         "client"
       ],
-      "projectName": "Fabric15/roughly-enough-resources"
+      "projectName": "Fabric/roughly-enough-items"
     },
     {
       "type": "curse",
       "applyOverrides": [
         "client"
       ],
-      "projectName": "Fabric15/modmenu"
+      "projectName": "Fabric/roughly-enough-resources"
+    },
+    {
+      "type": "curse",
+      "applyOverrides": [
+        "client"
+      ],
+      "projectName": "Fabric/modmenu"
     },
     {
       "type": "curse",
@@ -51,7 +51,7 @@
         "client",
         "optionalStarred"
       ],
-      "projectName": "Fabric15/mouse-wheelie"
+      "projectName": "Fabric/mouse-wheelie"
     },
     {
       "type": "curse",
@@ -59,7 +59,7 @@
         "client",
         "optionalStarred"
       ],
-      "projectName": "Fabric15/appleskin"
+      "projectName": "Fabric/appleskin"
     }
   ]
 }
