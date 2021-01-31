@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import mu.withLoggingContext
 import voodoo.builder.Builder
+import voodoo.builder.compile
 import voodoo.config.Configuration
 import voodoo.pack.MetaPack
 import voodoo.pack.VersionPack
@@ -106,7 +107,7 @@ class CompileCommand() : CliktCommand(
                                     logger.debug { "entrySet: ${modpack.entrySet}" }
 
 
-                                    val lockPack = Builder.lock("build v${modpack.version}".watch, modpack)
+                                    val lockPack = modpack.compile("build v${modpack.version}".watch)
 
                                     lockPack
                                 }
