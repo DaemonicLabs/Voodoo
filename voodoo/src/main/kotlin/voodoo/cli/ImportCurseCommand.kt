@@ -6,28 +6,22 @@ import com.eyeem.watchadoin.saveAsSvg
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.arguments.multiple
-import com.github.ajalt.clikt.parameters.arguments.validate
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.options.validate
-import com.github.ajalt.clikt.parameters.types.file
 import kotlinx.coroutines.*
 import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import mu.withLoggingContext
-import voodoo.builder.Builder
 import voodoo.config.Autocompletions
 import voodoo.config.Configuration
 import voodoo.curse.CurseClient
-import voodoo.data.components.CurseComponent
 import voodoo.data.curse.CurseFile
 import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.FileType
-import voodoo.data.curse.ProjectID
 import voodoo.pack.*
 import voodoo.poet.generator.CurseSection
 import voodoo.util.*
@@ -163,7 +157,7 @@ class ImportCurseCommand() : CliktCommand(
                             var hasCustomProperties = false
 
                             var entry = FileEntry.Curse(
-                                projectName = projectName,
+                                curse_projectName = projectName,
                             )
 
 //                            // TODO: handle this properly
@@ -172,18 +166,14 @@ class ImportCurseCommand() : CliktCommand(
 
                             if(pinFiles) {
                                 entry = entry.copy(
-                                    curse = entry.curse.copy(
-                                        fileID = curseFileEntry.fileID
-                                    )
+                                    curse_fileID = curseFileEntry.fileID
                                 )
                                 hasCustomProperties = true
                             }
 
                             if(addonFile.releaseType != FileType.Release) {
                                 entry = entry.copy(
-                                    curse = entry.curse.copy(
-                                        releaseTypes = entry.curse.releaseTypes + addonFile.releaseType
-                                    )
+                                    curse_releaseTypes = entry.curse_releaseTypes + addonFile.releaseType
                                 )
                                 hasCustomProperties = true
                             }
@@ -206,7 +196,7 @@ class ImportCurseCommand() : CliktCommand(
 //                                fileNameRegex = "\\Q${addonFile.fileName}\\E"
 
                             if(!hasCustomProperties) {
-                                val entryString = "curse=${entry.projectName}"
+                                val entryString = "curse=${entry.curse_projectName}"
                                 jsonPretty.encodeToJsonElement(
                                     String.serializer(),
                                     entryString
@@ -230,7 +220,7 @@ class ImportCurseCommand() : CliktCommand(
                     srcDir = srcFolder.toRelativeUnixPath(baseDir),
                     mcVersion = manifest.minecraft.version,
                     modloader = modloader,
-                    mods = mods
+                    mods = mapOf("" to mods)
                 ).postParse(baseDir = baseDir)
 
                 if(!metaPackFile.exists()) {

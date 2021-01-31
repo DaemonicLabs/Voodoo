@@ -8,48 +8,105 @@ import voodoo.data.curse.PackageType
 
 @Serializable
 sealed class EntryOverride(
-    val folder: String? = null,
-    val description: String? = null,
-    val optional: OptionalOverride? = null,
-    val side: Side? = null,
-    val websiteUrl: String? = null,
-    val packageType: PackageType? = null,
-    val version: String? = null,
-    val fileName: String? = null,
-    val fileNameRegex: String? = null,
-    val validMcVersions: Set<String>? = null,
-    val invalidMcVersions: Set<String>? = null
+    var folder: String? = null,
+    var description: String? = null,
+    var optional: OptionalOverride? = null,
+    var side: Side? = null,
+    var websiteUrl: String? = null,
+    var packageType: PackageType? = null,
+    var version: String? = null,
+    var fileName: String? = null,
+    var fileNameRegex: String? = null,
+    var validMcVersions: Set<String>? = null,
+    var invalidMcVersions: Set<String>? = null
 ) {
+    protected fun plusCommon(other: EntryOverride) {
+        folder = folder ?: other.folder
+        description = description ?: other.description
+        optional = optional ?: other.optional
+        side = side ?: other.side
+        websiteUrl = websiteUrl ?: other.websiteUrl
+        packageType = packageType ?: other.packageType
+        version = version ?: other.version
+        fileName = fileName ?: other.fileName
+        fileNameRegex = fileNameRegex ?: other.fileNameRegex
+        validMcVersions = validMcVersions ?: other.validMcVersions
+        invalidMcVersions = invalidMcVersions ?: other.invalidMcVersions
+    }
+
     @Serializable
     @SerialName("common")
-    open class Common: EntryOverride()
+    open class Common: EntryOverride() {
+        operator fun plus(other: Common): Common {
+            return apply {
+                plusCommon(other)
+            }
+        }
+    }
 
     @Serializable
     @SerialName("curse")
     data class Curse(
-        val releaseTypes: Set<FileType>? = null,
-        val useOriginalUrl: Boolean? = null,
-        val skipFingerprintCheck: Boolean? = null,
-    ) : EntryOverride()
+        val curse_releaseTypes: Set<FileType>? = null,
+        val curse_useOriginalUrl: Boolean? = null,
+        val curse_skipFingerprintCheck: Boolean? = null,
+    ) : EntryOverride() {
+        operator fun plus(other: Curse): Curse {
+            return copy(
+                curse_releaseTypes = curse_releaseTypes ?: other.curse_releaseTypes,
+                        curse_useOriginalUrl = curse_useOriginalUrl ?: other.curse_useOriginalUrl,
+                        curse_skipFingerprintCheck = curse_skipFingerprintCheck ?: other.curse_skipFingerprintCheck,
+            ).apply {
+                plusCommon(other)
+            }
+        }
+    }
 
     @Serializable
     @SerialName("direct")
     data class Direct(
-        val url: String? = null,
-        val useOriginalUrl: Boolean? = null,
-    ) : EntryOverride()
+//        val url: String? = null,
+        val direct_useOriginalUrl: Boolean? = null,
+    ) : EntryOverride() {
+        operator fun plus(other: Direct): Direct {
+            return copy(
+//                url = url ?: other.url,
+                direct_useOriginalUrl = direct_useOriginalUrl ?: other.direct_useOriginalUrl,
+            ).apply {
+                plusCommon(other)
+            }
+        }
+    }
 
     @Serializable
     @SerialName("jenkins")
     data class Jenkins(
-        val jenkinsUrl: String? = null,
-        val job: String? = null,
-        val buildNumber: Int? = null
-    ) : EntryOverride()
+        val jenkins_jenkinsUrl: String? = null,
+//        val job: String? = null,
+//        val buildNumber: Int? = null
+    ) : EntryOverride() {
+        operator fun plus(other: Jenkins): Jenkins {
+            return copy(
+                jenkins_jenkinsUrl = jenkins_jenkinsUrl ?: other.jenkins_jenkinsUrl,
+//                job = job ?: other.job,
+//                buildNumber = buildNumber ?: other.buildNumber,
+            ).apply {
+                plusCommon(other)
+            }
+        }
+    }
 
     @Serializable
     @SerialName("local")
     data class Local(
-        val fileSrc: String? = null
-    ) : EntryOverride()
+        val local_fileSrc: String? = null
+    ) : EntryOverride() {
+        operator fun plus(other: Local): Local {
+            return copy(
+                local_fileSrc = local_fileSrc ?: other.local_fileSrc,
+            ).apply {
+                plusCommon(other)
+            }
+        }
+    }
 }

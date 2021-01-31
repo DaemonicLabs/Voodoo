@@ -1,13 +1,10 @@
 package voodoo.config
 
 import com.github.ricky12awesome.jss.buildJsonSchema
-import com.github.ricky12awesome.jss.encodeToSchema
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
-import voodoo.data.nested.NestedPack
 import voodoo.pack.FileEntry
 import voodoo.pack.VersionPack
-import voodoo.util.json
 
 private val logger = KotlinLogging.logger {}
 //
@@ -36,8 +33,22 @@ fun VersionPack.Companion.generateSchema(overridesKeys: Set<String>): String {
 
     val schema = buildJsonSchema(serializer(), generateDefinitions = true).toMutableMap()
     val definitions = schema["definitions"]!!.jsonObject.toMutableMap()
-    val fileEntryOrStringId = definitions["FileEntryList"]!!.jsonObject["items"]!!.jsonObject["\$ref"]!!.jsonPrimitive
+    val oldFileEntriesMap = definitions["FileEntryList"]!!.jsonObject
+    val fileEntryArrayId = definitions["FileEntryList"]!!.jsonObject["additionalProperties"]!!.jsonObject["\$ref"]!!.jsonPrimitive
         .content.substringAfter("#/definitions/")
+    val fileEntryOrStringId = definitions[fileEntryArrayId]!!.jsonObject["items"]!!.jsonObject["\$ref"]!!.jsonPrimitive
+        .content.substringAfter("#/definitions/")
+
+    definitions["FileEntryList"] = buildJsonObject {
+        put("type", "object")
+        putJsonObject("properties") {
+            //TODO: add all ovverride keys here
+            overridesKeys.forEach { key ->
+                put(key, oldFileEntriesMap["additionalProperties"]!!.jsonObject)
+            }
+        }
+        put("additionalProperties", false)
+    }
 
     definitions[fileEntryOrStringId] = buildJsonObject {
         putJsonArray("oneOf") {
@@ -68,7 +79,7 @@ fun VersionPack.Companion.generateSchema(overridesKeys: Set<String>): String {
 
     schema["definitions"] = JsonObject(definitions)
 
-    return json.encodeToString(JsonObject.serializer(), JsonObject(schema))
+    return voodoo.util.json.encodeToString(JsonObject.serializer(), JsonObject(schema))
         .replace("\"replace_with_overrides\"",
             overridesKeys.joinToString(",") { "\"${it}\"" }
         )

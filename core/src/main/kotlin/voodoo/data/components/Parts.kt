@@ -1,6 +1,5 @@
 package voodoo.data.components
 
-import kotlinx.serialization.Transient
 import voodoo.data.DependencyType
 import voodoo.data.OptionalData
 import voodoo.data.Side
@@ -8,7 +7,6 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
 import voodoo.data.curse.ProjectID
-import voodoo.data.nested.NestedEntry
 import voodoo.data.provider.UpdateChannel
 
 interface Common {
@@ -51,14 +49,16 @@ interface CommonMutable : CommonImmutable {
     override var invalidMcVersions: Set<String>
     override var enabled: Boolean
 
+/*
     /**
      * utility function to configure optionalData
      */
-    fun optional(configureOptional: OptionalData.() -> Unit) {
-        val optionalData = optionalData?.copy() ?: OptionalData()
-        optionalData.configureOptional()
-        this.optionalData = optionalData
+    fun optional(transform: (optionalData: OptionalData) -> OptionalData): OptionalData {
+        return transform(
+            optionalData?.copy() ?: OptionalData()
+        )
     }
+*/
 }
 
 interface CurseImmutable {

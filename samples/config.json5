@@ -1,68 +1,53 @@
 {
-    "$schema": "./schema/config.schema.json",
-    "curseforgeGenerators": {
-        "Mod": {
-            "section": "MODS",
-            "mcVersions": [
-                "1.12",
-                "1.12.1",
-                "1.12.2",
-                "1.15.2",
-                "1.16.4",
-                "1.16.5"
-            ]
-        },
-        "Resource": {
-            "section": "RESOURCE_PACKS",
-            "mcVersions": []
-        },
-        "Fabric": {
-            "section": "MODS",
-            "categories": [
-                "Fabric"
-            ],
-            "mcVersions": [
-            ]
-        }
+  "$schema": "./schema/config.schema.json",
+  "curseforgeGenerators": {
+    "Mod": {
+      "section": "MODS"
     },
-    "forgeGenerators": {
-        "Forge": {},
+    "Resource": {
+      "section": "RESOURCE_PACKS"
     },
-    "fabricGenerators": {
-        "Fabric": {
-            "requireStable": true
-        }
-    },
-    "overrides": {
-        "client": {
-            "type": "common",
-            "side": "CLIENT"
-        },
-        "server": {
-            "type": "common",
-            "side": "SERVER"
-        },
-        "optional": {
-            "type": "common",
-            "optional": {
-                "selected": false
-            }
-        },
-        "optionalDefault": {
-            "type": "common",
-            "optional": {
-                "selected": true
-            }
-        },
-        "optionalStarred": {
-            "type": "common",
-            "optional": {
-                "recommendation": "starred"
-            }
-        },
-        "163Mod": {
-            "type": "common",
-            "validMcVersions": ["1.16.3"]
-        }
+    "Fabric": {
+      "section": "MODS",
+      "categories": [
+        "Fabric"
+      ]
     }
+  },
+  "forgeGenerators": {
+    "Forge": {},
+  },
+  "fabricGenerators": {
+    "Fabric": {
+      "requireStable": true
+    }
+  },
+  "overrides": {
+    "side_client": {
+      "type": "common",
+      "side": "CLIENT"
+    },
+    "side_server": {
+      "type": "common",
+      "side": "SERVER"
+    },
+    "optional": {
+      "type": "common",
+      "optional": {
+        "selected": false
+      }
+    },
+    "optional_default": {
+      "type": "common",
+      "optional": {
+        "selected": true
+      }
+    },
+    "optional_starred": {
+      "type": "common",
+      "optional": {
+        "recommendation": "starred"
+      }
+    },
+  }
 }

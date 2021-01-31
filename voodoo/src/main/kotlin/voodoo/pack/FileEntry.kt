@@ -3,73 +3,42 @@ package voodoo.pack
 import com.github.ricky12awesome.jss.JsonSchema
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import mu.KotlinLogging
+import voodoo.config.Autocompletions
 import voodoo.data.Side
 import voodoo.data.components.*
+import voodoo.data.curse.FileID
+import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
+import voodoo.data.curse.ProjectID
 import voodoo.data.flat.FlatEntry
 
 @Serializable
 sealed class FileEntry(
-//    @JsonSchema.Definition("entry.applyOverrides")
-    @JsonSchema.StringEnum(["replace_with_overrides"])
-    var applyOverrides: List<String> = listOf(),
-    var id: String? = null,
-    var name: String? = null,
-    var folder: String? = null,
-    var description: String? = null,
-    var optional: Optional? = null,
-    var side: Side = Side.BOTH,
-    var websiteUrl: String = "",
-    var packageType: PackageType = PackageType.MOD,
-    var transient: Boolean = false, // this entry got added as dependency for something else, only setthis if you know what you are doing
-    var version: String = "", // TODO: use regex only ?
-    var fileName: String? = null,
-    var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
-    var validMcVersions: Set<String> = setOf(),
-    var invalidMcVersions: Set<String> = setOf(),
-    var enabled: Boolean = true
 ) {
-    protected fun applyCommonOverride(tag: EntryOverride) {
-        tag.folder?.let {
-            folder = it
-        }
-        tag.description?.let {
-            description = it
-        }
-        tag.optional?.let { optionalOverride ->
-            val opt = this.optional ?: Optional()
-            opt.applyOverride(optionalOverride)
-            optional = opt
-        }
-        tag.side?.let {
-            side = it
-        }
-        tag.websiteUrl?.let {
-            websiteUrl = it
-        }
-        tag.packageType?.let {
-            packageType = it
-        }
-        tag.version?.let {
-            version = it
-        }
-        tag.fileName?.let {
-            fileName = it
-        }
-        tag.fileNameRegex?.let {
-            fileNameRegex = it
-        }
-        tag.validMcVersions?.let {
-            validMcVersions += it
-        }
-        tag.invalidMcVersions?.let {
-            invalidMcVersions += it
-        }
-    }
+    interface Common {
+        val applyOverrides: List<String>
+        var id: String?
+        var name: String?
+        var folder: String?
+        var description: String?
+        var optional: Optional?
+        var side: Side
+        var websiteUrl: String
+        var packageType: PackageType
+        // this entry got added as dependency for something else, only setthis if you know what you are doing
+        var version: String // TODO: use regex only ?
+        var transient: Boolean
+        var fileName: String?
+        var fileNameRegex: String
+        var validMcVersions: Set<String>
+        var invalidMcVersions: Set<String>
 
-    protected fun toCommonComponent(defaultId: String? = null): CommonComponent {
-        return CommonComponent(
-            id = id ?: defaultId ?: error("id must be set on $this"),
+        fun id(): String?
+        fun applyOverride(override: EntryOverride): Common
+
+        fun toCommonComponent(defaultId: String? = null): CommonComponent = CommonComponent(
+            id = id.takeUnless { it.isNullOrBlank() } ?: defaultId ?: error("id must be set on $this"),
             name = name,
             folder = folder,
             description = description,
@@ -85,150 +54,425 @@ sealed class FileEntry(
             validMcVersions = validMcVersions,
             invalidMcVersions = invalidMcVersions
         )
+
+        fun applyCommonOverride(override: EntryOverride) {
+            override.folder?.let { folder = it }
+            override.description?.let { description = it }
+            override.optional?.let { optionalOverride ->
+                val opt = this.optional ?: Optional()
+                opt.applyOverride(optionalOverride)
+                optional = opt
+            }
+            override.side?.let { side = it }
+            override.websiteUrl?.let { websiteUrl = it }
+            override.packageType?.let { packageType = it }
+            override.version?.let { version = it }
+            override.fileName?.let { fileName = it }
+            override.fileNameRegex?.let { fileNameRegex = it }
+            override.validMcVersions?.let { validMcVersions += it }
+            override.invalidMcVersions?.let { invalidMcVersions += it }
+        }
+
+        fun <E: Common> foldOverrides(overrides: Map<String, EntryOverride>): E {
+            val intitalEntry = this as E
+            val entryId = intitalEntry.id() ?: "null"
+            val entry = intitalEntry.applyOverrides.fold(intitalEntry) { acc: E, overrideId ->
+                val entryOverride =
+                    overrides[overrideId] ?: error("$entryId: override for id $overrideId not found")
+                return@fold acc.applyOverride(entryOverride) as E
+            }
+            return entry as E
+        }
     }
 
-    abstract fun applyTag(tag: EntryOverride): FileEntry
-    abstract fun toEntry(): FlatEntry
+
+    val logger = KotlinLogging.logger{}
+    fun postParse(overrideKey: String): FileEntry = when (this) {
+        is Curse -> {
+            if (curse_projectName != null) {
+                val addonid = Autocompletions.curseforge[curse_projectName]?.toIntOrNull()
+                val newName = curse_projectName.substringAfterLast('/')
+                require(addonid != null) { "cannot find replacement for $curse_projectName / ${Autocompletions.curseforge[curse_projectName]}" }
+//                logger.trace { "before transform: $validMcVersions" }
+                copy(
+//                    curse_projectName = null,
+                    applyOverrides = listOfNotNull(overrideKey.takeUnless { it.isBlank() }) + applyOverrides,
+                    curse_projectID = ProjectID(addonid),
+                    id = id.takeUnless { it.isNullOrBlank() } ?: newName,
+                    name = name ?: newName
+                )
+            } else {
+                this
+            }.copy(
+                applyOverrides = listOfNotNull(overrideKey.takeUnless { it.isBlank() }) + applyOverrides,
+            )
+        }
+        is Direct -> copy(
+            applyOverrides = listOfNotNull(overrideKey.takeUnless { it.isBlank() }) + applyOverrides,
+        )
+        is Jenkins -> copy(
+            applyOverrides = listOfNotNull(overrideKey.takeUnless { it.isBlank() }) + applyOverrides,
+        )
+        is Local -> copy(
+            applyOverrides = listOfNotNull(overrideKey.takeUnless { it.isBlank() }) + applyOverrides,
+        )
+        is Noop -> copy(
+            applyOverrides = listOfNotNull(overrideKey.takeUnless { it.isBlank() }) + applyOverrides,
+        )
+    }
+
+    abstract fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry
 
     @Serializable
     @SerialName("curse")
     data class Curse(
         @JsonSchema.StringEnum(["replace_with_curseforge_projects"])
-        val projectName: String? = null,
-        @SerialName("curseProperties")
-        val curse: CurseComponent = CurseComponent(),
-    ) : FileEntry() {
+        val curse_projectName: String? = null,
+        val curse_releaseTypes: Set<FileType> = setOf(
+            FileType.Release,
+            FileType.Beta
+        ),
+        val curse_projectID: ProjectID = ProjectID.INVALID,
+        val curse_fileID: FileID = FileID.INVALID,
+        val curse_useOriginalUrl: Boolean = true,
+        val curse_skipFingerprintCheck: Boolean = false,
 
-        override fun applyTag(tag: EntryOverride): Curse {
-            return when (tag) {
+        @JsonSchema.Definition("entry.overridesList")
+        @JsonSchema.StringEnum(["replace_with_overrides"])
+        override val applyOverrides: List<String> = listOf(),
+
+        override var id: String? = CommonComponent.DEFAULT.id,
+        override var name: String? = CommonComponent.DEFAULT.name,
+        override var folder: String? = CommonComponent.DEFAULT.folder,
+        override var description: String? = CommonComponent.DEFAULT.description,
+        override var optional: Optional? = null,
+        override var side: Side = CommonComponent.DEFAULT.side,
+        override var websiteUrl: String = CommonComponent.DEFAULT.websiteUrl,
+        override var packageType: PackageType = CommonComponent.DEFAULT.packageType,
+        override var transient: Boolean = CommonComponent.DEFAULT.transient,
+        override var version: String = CommonComponent.DEFAULT.version,
+        override var fileName: String? = CommonComponent.DEFAULT.fileName,
+        override var fileNameRegex: String =CommonComponent.DEFAULT.fileNameRegex,
+        override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
+        override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
+    ) : Common, FileEntry() {
+        override fun id() = id.takeUnless { it.isNullOrBlank() } ?: curse_projectName?.substringAfterLast('/')
+        override fun applyOverride(override: EntryOverride): Curse {
+            return when (override) {
                 is EntryOverride.Curse -> copy(
-                    curse = curse.copy(
-                        useOriginalUrl = tag.useOriginalUrl ?: curse.useOriginalUrl,
-                        skipFingerprintCheck = tag.skipFingerprintCheck ?: curse.skipFingerprintCheck,
-                    )
+                    curse_useOriginalUrl = override.curse_useOriginalUrl ?: curse_useOriginalUrl,
+                    curse_skipFingerprintCheck = override.curse_skipFingerprintCheck ?: curse_skipFingerprintCheck,
                 ).apply {
-                    applyCommonOverride(tag)
+                    applyCommonOverride(override)
                 }
-                is EntryOverride.Common -> this.apply {
-                    applyCommonOverride(tag)
+                is EntryOverride.Common -> apply {
+                    applyCommonOverride(override)
                 }
                 else -> this
             }
         }
 
-        override fun toEntry(): FlatEntry = FlatEntry.Curse(
-            common = toCommonComponent(),
-            curse = curse.copy()
-        ).apply {
+        override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
+            (foldOverrides(overrides) as Curse).let {
+                FlatEntry.Curse(
+                    common = it.toCommonComponent(it.curse_projectName?.substringAfterLast('/')),
+                    curse = it.toCurseComponent()
+                )
+            }
 
-        }
+        private fun toCurseComponent() = CurseComponent(
+            releaseTypes = curse_releaseTypes,
+            projectID = curse_projectID,
+            fileID = curse_fileID,
+            useOriginalUrl = curse_useOriginalUrl,
+            skipFingerprintCheck = curse_skipFingerprintCheck
+        )
 
-        override fun toString(): String {
-            return "FileEntry.Curse(projectName=$projectName,curse=$curse,validMcVersion=$validMcVersions})"
-        }
+//        override fun toString(): String {
+//            return "FileEntry.Curse(projectName=$projectName,curse=$curse,validMcVersion=${common.validMcVersions})"
+//        }
     }
 
     @Serializable
     @SerialName("direct")
     data class Direct(
-        @SerialName("directProperties")
-        val direct: DirectComponent = DirectComponent(),
-    ) : FileEntry() {
-        override fun applyTag(tag: EntryOverride): Direct {
-            return when (tag) {
+        val direct_url: String, // = "",
+        val direct_useOriginalUrl: Boolean = true,
+
+        @JsonSchema.Definition("entry.overridesList")
+        @JsonSchema.StringEnum(["replace_with_overrides"])
+        override val applyOverrides: List<String> = listOf(),
+
+        override var id: String? = CommonComponent.DEFAULT.id,
+        override var name: String? = CommonComponent.DEFAULT.name,
+        override var folder: String? = CommonComponent.DEFAULT.folder,
+        override var description: String? = CommonComponent.DEFAULT.description,
+        override var optional: Optional? = null,
+        override var side: Side = CommonComponent.DEFAULT.side,
+        override var websiteUrl: String = CommonComponent.DEFAULT.websiteUrl,
+        override var packageType: PackageType = CommonComponent.DEFAULT.packageType,
+        override var transient: Boolean = CommonComponent.DEFAULT.transient,
+        override var version: String = CommonComponent.DEFAULT.version,
+        override var fileName: String? = CommonComponent.DEFAULT.fileName,
+        override var fileNameRegex: String =CommonComponent.DEFAULT.fileNameRegex,
+        override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
+        override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
+    ) : Common, FileEntry() {
+        override fun id() = id.takeUnless { it.isNullOrBlank() }  ?: direct_url.split(":|&|=".toRegex()).joinToString("_")
+        override fun applyOverride(override: EntryOverride): Direct {
+            return when (override) {
                 is EntryOverride.Direct -> copy(
-                    direct = direct.copy(
-                        url = tag.url ?: direct.url,
-                        useOriginalUrl = tag.useOriginalUrl ?: direct.useOriginalUrl
-                    )
+//                    direct_url = override.url ?: direct_url,
+                    direct_useOriginalUrl = override.direct_useOriginalUrl ?: direct_useOriginalUrl
                 ).apply {
-                    applyCommonOverride(tag)
+                    applyCommonOverride(override)
                 }
-                is EntryOverride.Common -> this.apply {
-                    applyCommonOverride(tag)
+                is EntryOverride.Common -> apply {
+                    applyCommonOverride(override)
                 }
                 else -> this
             }
         }
 
-        override fun toEntry(): FlatEntry = FlatEntry.Direct(
-            common = toCommonComponent(direct.url.split(":|&|=".toRegex()).joinToString("_")),
-            direct = direct.copy()
+        override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
+            (foldOverrides(overrides) as Direct).let {
+                FlatEntry.Direct(
+                    common = it.toCommonComponent(it.id()),
+                    direct = it.toDirectComponent()
+                )
+            }
+
+        private fun toDirectComponent() = DirectComponent(
+            url = direct_url,
+            useOriginalUrl = direct_useOriginalUrl,
         )
     }
 
     @Serializable
     @SerialName("jenkins")
     data class Jenkins(
-        @SerialName("jenkinsProperties")
-        val jenkins: JenkinsComponent = JenkinsComponent(),
-    ) : FileEntry() {
-        override fun applyTag(tag: EntryOverride): Jenkins {
-            return when (tag) {
+        val jenkins_jenkinsUrl: String = "",
+        val jenkins_job: String, // = "",
+        val jenkins_buildNumber: Int = -1,
+
+        @JsonSchema.Definition("entry.overridesList")
+        @JsonSchema.StringEnum(["replace_with_overrides"])
+        override val applyOverrides: List<String> = listOf(),
+
+        override var id: String? = CommonComponent.DEFAULT.id,
+        override var name: String? = CommonComponent.DEFAULT.name,
+        override var folder: String? = CommonComponent.DEFAULT.folder,
+        override var description: String? = CommonComponent.DEFAULT.description,
+        override var optional: Optional? = null,
+        override var side: Side = CommonComponent.DEFAULT.side,
+        override var websiteUrl: String = CommonComponent.DEFAULT.websiteUrl,
+        override var packageType: PackageType = CommonComponent.DEFAULT.packageType,
+        override var transient: Boolean = CommonComponent.DEFAULT.transient,
+        override var version: String = CommonComponent.DEFAULT.version,
+        override var fileName: String? = CommonComponent.DEFAULT.fileName,
+        override var fileNameRegex: String =CommonComponent.DEFAULT.fileNameRegex,
+        override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
+        override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
+    ) : Common, FileEntry() {
+        override fun id() = id.takeUnless { it.isNullOrBlank() }  ?: jenkins_job
+        override fun applyOverride(override: EntryOverride): Jenkins {
+            return when (override) {
                 is EntryOverride.Jenkins -> copy(
-                    jenkins = jenkins.copy(
-                        jenkinsUrl = tag.jenkinsUrl ?: jenkins.jenkinsUrl,
-                        job = tag.job ?: jenkins.job,
-                        buildNumber = tag.buildNumber ?: jenkins.buildNumber
-                    )
+                    jenkins_jenkinsUrl = override.jenkins_jenkinsUrl ?: jenkins_jenkinsUrl,
+//                    jenkins_job = override.job ?: jenkins_job,
+//                    jenkins_buildNumber = override.buildNumber ?: jenkins_buildNumber
                 ).apply {
-                    applyCommonOverride(tag)
+                    applyCommonOverride(override)
                 }
-                is EntryOverride.Common -> this.apply {
-                    applyCommonOverride(tag)
+                is EntryOverride.Common -> apply {
+                    applyCommonOverride(override)
                 }
                 else -> this
             }
         }
 
-        override fun toEntry(): FlatEntry = FlatEntry.Jenkins(
-            common = toCommonComponent(jenkins.job),
-            jenkins = jenkins.copy()
+        override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
+            (foldOverrides(overrides) as Jenkins).let {
+                FlatEntry.Jenkins(
+                    common = it.toCommonComponent(it.id()),
+                    jenkins = it.toJenkinsComponent()
+                )
+            }
+
+        private fun toJenkinsComponent() = JenkinsComponent(
+            jenkinsUrl = jenkins_jenkinsUrl,
+            job = jenkins_job,
+            buildNumber = jenkins_buildNumber
         )
+
     }
 
     @Serializable
     @SerialName("local")
     data class Local(
-        @SerialName("localProperties")
-        val local: LocalComponent = LocalComponent(),
-    ) : FileEntry() {
-        override fun applyTag(tag: EntryOverride): Local {
-            return when (tag) {
+        val local_fileSrc: String, // = "",
+
+        @JsonSchema.Definition("entry.overridesList")
+        @JsonSchema.StringEnum(["replace_with_overrides"])
+        override val applyOverrides: List<String> = listOf(),
+
+        override var id: String? = CommonComponent.DEFAULT.id,
+        override var name: String? = CommonComponent.DEFAULT.name,
+        override var folder: String? = CommonComponent.DEFAULT.folder,
+        override var description: String? = CommonComponent.DEFAULT.description,
+        override var optional: Optional? = null,
+        override var side: Side = CommonComponent.DEFAULT.side,
+        override var websiteUrl: String = CommonComponent.DEFAULT.websiteUrl,
+        override var packageType: PackageType = CommonComponent.DEFAULT.packageType,
+        override var transient: Boolean = CommonComponent.DEFAULT.transient,
+        override var version: String = CommonComponent.DEFAULT.version,
+        override var fileName: String? = CommonComponent.DEFAULT.fileName,
+        override var fileNameRegex: String =CommonComponent.DEFAULT.fileNameRegex,
+        override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
+        override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
+    ) : Common, FileEntry() {
+        override fun id() = id.takeUnless { it.isNullOrBlank() } ?: local_fileSrc
+        override fun applyOverride(override: EntryOverride): Local {
+            return when (override) {
                 is EntryOverride.Local -> copy(
-                    local = local.copy(
-                        fileSrc = tag.fileSrc ?: local.fileSrc
-                    )
+                    local_fileSrc = override.local_fileSrc ?: local_fileSrc,
                 ).apply {
-                    applyCommonOverride(tag)
+                    applyCommonOverride(override)
                 }
-                is EntryOverride.Common -> this.apply {
-                    applyCommonOverride(tag)
+                is EntryOverride.Common -> apply {
+                    applyCommonOverride(override)
                 }
                 else -> this
             }
         }
 
-        override fun toEntry(): FlatEntry = FlatEntry.Local(
-            common = toCommonComponent(local.fileSrc),
-            local = local.copy()
+        override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
+            (foldOverrides(overrides) as Local).let {
+                FlatEntry.Local(
+                    common = it.toCommonComponent(it.id()),
+                    local = it.toLocalComponent()
+                )
+            }
+
+        private fun toLocalComponent() = LocalComponent(
+            fileSrc = local_fileSrc
         )
+
     }
 
     @Serializable
     @SerialName("noop")
-    class Noop() : FileEntry() {
-        override fun applyTag(tag: EntryOverride): Noop {
-            return when (tag) {
-                is EntryOverride.Common -> this.apply {
-                    applyCommonOverride(tag)
+    data class Noop(
+        @JsonSchema.Definition("entry.overridesList")
+        @JsonSchema.StringEnum(["replace_with_overrides"])
+        override val applyOverrides: List<String> = listOf(),
+
+        override var id: String? = CommonComponent.DEFAULT.id,
+        override var name: String? = CommonComponent.DEFAULT.name,
+        override var folder: String? = CommonComponent.DEFAULT.folder,
+        override var description: String? = CommonComponent.DEFAULT.description,
+        override var optional: Optional? = null,
+        override var side: Side = CommonComponent.DEFAULT.side,
+        override var websiteUrl: String = CommonComponent.DEFAULT.websiteUrl,
+        override var packageType: PackageType = CommonComponent.DEFAULT.packageType,
+        override var transient: Boolean = CommonComponent.DEFAULT.transient,
+        override var version: String = CommonComponent.DEFAULT.version,
+        override var fileName: String? = CommonComponent.DEFAULT.fileName,
+        override var fileNameRegex: String =CommonComponent.DEFAULT.fileNameRegex,
+        override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
+        override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
+    ) : Common, FileEntry() {
+        override fun id() = id
+        override fun applyOverride(override: EntryOverride): Noop {
+            return when (override) {
+                is EntryOverride.Common -> apply {
+                    applyCommonOverride(override)
                 }
                 else -> this
             }
         }
 
-        override fun toEntry(): FlatEntry = FlatEntry.Noop(
-            common = toCommonComponent()
-        )
+        override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
+            (foldOverrides(overrides) as Noop).let {
+                FlatEntry.Noop(
+                    common = it.toCommonComponent(it.id()),
+                )
+            }
+
     }
+
+//    @Serializable
+//    @SerialName("nested")
+//    data class Nested(
+//        @SerialName("commonOverrides")
+//        val common: EntryOverride.Common? = null,
+//        @SerialName("curseOverrides")
+//        val curse: EntryOverride.Curse? = null,
+//        @SerialName("directOverrides")
+//        val direct: EntryOverride.Direct? = null,
+//        @SerialName("jenkinsOverrides")
+//        val jenkins: EntryOverride.Jenkins? = null,
+//        @SerialName("localOverrides")
+//        val local: EntryOverride.Local? = null,
+//        @JsonSchema.Definition("FileEntryList")
+//        val mods: List<JsonElement>
+//    ) : FileEntry() {
+//        override fun getId(): String {
+//            return "nested_$this"
+//        }
+//        override fun applyOverride(override: EntryOverride): Nested {
+//            // combine with existing overrides
+//
+//            return when (override) {
+//                is EntryOverride.Curse -> {
+//                    if(curse == null)
+//                        copy(curse = override)
+//                    else
+//                        copy(curse = curse + override)
+//                }
+//                is EntryOverride.Jenkins -> {
+//                    if(jenkins == null)
+//                        copy(jenkins = override)
+//                    else
+//                        copy(jenkins = jenkins + override)
+//                }
+//                is EntryOverride.Direct -> {
+//                    if(direct == null)
+//                        copy(direct = override)
+//                    else
+//                        copy(direct = direct + override)
+//                }
+//                is EntryOverride.Local -> {
+//                    if(local == null)
+//                        copy(local = override)
+//                    else
+//                        copy(local = local + override)
+//                }
+//                is EntryOverride.Common -> {
+//                    if(common == null)
+//                        copy(common = override)
+//                    else
+//                        copy(
+//                            common = common + override
+//                        )
+//                }
+//                else -> error("unhanndled override type: $override")
+//            }
+//        }
+//
+//        //TODO: return multiple entries
+//        override fun toEntry(overrides: Map<String, EntryOverride>): List<FlatEntry> = mods.flatMap { jsonElement ->
+//            //TODO: apply common settings to subEntry
+//
+//            var subEntry = VersionPack.parseEntry(jsonElement).postParse()
+//
+//            curse?.also { subEntry = subEntry.applyOverride(it) }
+//            jenkins?.also { subEntry = subEntry.applyOverride(it) }
+//            direct?.also { subEntry = subEntry.applyOverride(it) }
+//            local?.also { subEntry = subEntry.applyOverride(it) }
+//            common?.also { subEntry = subEntry.applyOverride(it) }
+//
+//            subEntry.toEntry(overrides)
+//        }
+//    }
 }

@@ -7,37 +7,55 @@
     "type": "modloader.fabric",
     "intermediateMappings": "Fabric/1.16.4"
   },
-  "mods": [
-    "curse=Fabric/fabric-api",
-    "curse=Fabric/betternether",
-    "curse=Fabric/betternether",
-    // comment
-    {
-      "type": "curse",
-      "projectName": "Fabric/tab-inventory-fabric",
-      "validMcVersions": ["1.16", "1.16.1", "1.16.2", "1.16.3"]
-    },
-    {
-      "type": "curse",
-      "projectName": "Fabric/campanion",
-    },
-    "curse:client=Fabric/roughly-enough-items",
-    "curse:client=Fabric/roughly-enough-resources",
-    "curse:client=Fabric/modmenu",
-    "curse:client,optionalStarred=Fabric/mouse-wheelie",
-    "curse:client,optionalStarred=Fabric/appleskin",
-    {
-      "type": "curse",
-      "projectName": "Fabric/hwyla",
-      "validMcVersions": ["1.16.3"]
-    },
-    {
-      "type": "local",
-      "folder": "",
-      "fileName": "_icon.png",
-      "localProperties": {
-        "fileSrc": "256.png"
+  "mods": {
+    "": [
+      "curse=Fabric/fabric-api",
+      "curse=Fabric/betternether",
+      "curse=Fabric/betternether",
+      // comment
+      {
+        "type": "curse",
+        "curse_projectName": "Fabric/tab-inventory-fabric",
+        "validMcVersions": [
+          "1.16",
+          "1.16.1",
+          "1.16.2",
+          "1.16.3"
+        ]
+      },
+      {
+        "type": "curse",
+        "curse_projectName": "Fabric/campanion",
+      },
+
+      {
+        "type": "curse",
+        "curse_projectName": "Fabric/hwyla",
+        "validMcVersions": [
+          "1.16.3"
+        ]
+      },
+      {
+        "type": "local",
+        "folder": "",
+        "fileName": "_icon.png"
+        "local_fileSrc": "256.png"
       }
-    }
-  ]
+    ],
+    "side_client": [
+      //    "curse:client=Fabric/roughly-enough-items",
+      {
+        "type": "curse",
+        "curse_projectName": "Fabric/roughly-enough-items"
+      },
+      //    "curse:client=Fabric/roughly-enough-resources",
+      {
+        "type": "curse",
+        "curse_projectName": "Fabric/roughly-enough-resources"
+      },
+      "curse=Fabric/modmenu",
+      "curse:optional_starred=Fabric/mouse-wheelie",
+      "curse:optional_starred=Fabric/appleskin"
+    ]
+  }
 }

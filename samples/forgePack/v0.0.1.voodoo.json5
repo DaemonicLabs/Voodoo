@@ -1,16 +1,19 @@
 {
-    "$schema": "../schema/versionPack.schema.json",
-    "version": "0.0.1",
-    "srcDir": "v0.0.1_src",
-    "mcVersion": "1.12.2",
-    "modloader": {
-        "type": "modloader.forge",
-        "version": "Forge/1.12.2/14.23.5.2854"
-    },
-    "mods": [
-        {
-            "type": "curse",
-            "projectName": "Mod/foamfix-optimization-mod"
-        }
+  "$schema": "../schema/versionPack.schema.json",
+  "version": "0.0.1",
+  "srcDir": "v0.0.1_src",
+  "mcVersion": "1.12.2",
+  "modloader": {
+    "type": "modloader.forge",
+    "version": "Forge/1.12.2/14.23.5.2854"
+  },
+  "mods": {
+    "": [
+      {
+        "type": "curse",
+        "curse_projectName": "Mod/foamfix-optimization-mod"
+      }
     ]
+  }
+}
 }

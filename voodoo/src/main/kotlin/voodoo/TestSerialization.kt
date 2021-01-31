@@ -46,7 +46,7 @@ fun main(args: Array<String>) {
       "validMcVersions": ["1.16", "1.16.1", "1.16.2", "1.16.3"]
     }
         """.trimIndent()
-        )
+        ) as FileEntry.Curse
 
     require(decoded.validMcVersions.isNotEmpty()) {
         "decoding failed"

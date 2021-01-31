@@ -64,7 +64,7 @@ class GenerateSchemaCommand : CliktCommand(
 
             rootDir.resolve("packIdPlaceholder").resolve(VersionPack.defaultSchema).normalize().apply {
                 absoluteFile.parentFile.mkdirs()
-                writeText(VersionPack.generateSchema(overridesKeys = config.overrides.keys))
+                writeText(VersionPack.generateSchema(overridesKeys = setOf("") + config.overrides.keys))
             }
         }
     }

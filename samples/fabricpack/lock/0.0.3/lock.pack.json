@@ -29,8 +29,11 @@
             "optionalData": {
                 "recommendation": "starred"
             },
+            "dependencies": {
+                "fabric-api": "REQUIRED"
+            },
             "projectID": 248787,
-            "fileID": 3035787
+            "fileID": 2987255
         },
         {
             "type": "curse",

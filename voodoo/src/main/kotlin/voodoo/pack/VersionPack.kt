@@ -10,12 +10,8 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import mu.KotlinLogging
-import voodoo.config.Autocompletions
 import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
-import voodoo.data.components.DirectComponent
-import voodoo.data.components.JenkinsComponent
-import voodoo.data.curse.ProjectID
 import voodoo.data.flat.FlatModPack
 import voodoo.util.json
 import java.io.File
@@ -35,12 +31,14 @@ data class VersionPack(
     val mcVersion: String,
     val modloader: Modloader,
     val packageConfiguration: VersionPackageConfig = VersionPackageConfig(),
-//    val overrides: Map<String, EntryOverride> = mapOf(),
     @JsonSchema.Definition("FileEntryList")
-    val mods: List<JsonElement>,
+    val mods: Map<String, List<JsonElement>>,
+//    @JsonSchema.Definition("FileEntryList")
+//    val mods: List<JsonElement>,
 ) {
     @Transient
     lateinit var baseDir: File
+
     @Transient
     lateinit var modEntries: List<FileEntry>
 
@@ -50,34 +48,33 @@ data class VersionPack(
         const val defaultSchema = "../schema/versionPack.schema.json"
 
         fun parseEntry(jsonElement: JsonElement): FileEntry {
-            return when(jsonElement) {
+            return when (jsonElement) {
                 is JsonPrimitive -> {
                     require(jsonElement.isString) { "element $jsonElement is not a string" }
                     val str = jsonElement.content
-                    val overrides = str.substringBefore("=").takeIf { it.contains(":") }?.substringAfter(":")?.split(",") ?: listOf()
+                    val overrides =
+                        str.substringBefore("=").takeIf { it.contains(":") }?.substringAfter(":")?.split(",")
+                            ?: listOf()
                     when {
                         str.startsWith("curse") -> {
                             FileEntry.Curse(
-                                projectName = str.substringAfter(":").substringAfter("=")
+                                applyOverrides = overrides,
+                                curse_projectName = str.substringAfter(":").substringAfter("=")
                             )
                         }
                         str.startsWith("jenkins:") -> {
                             FileEntry.Jenkins(
-                                jenkins = JenkinsComponent(
-                                    job = str.substringAfter(":").substringAfter("=")
-                                )
+                                applyOverrides = overrides,
+                                jenkins_job = str.substringAfter(":").substringAfter("=")
                             )
                         }
                         str.startsWith("direct:") -> {
                             FileEntry.Direct(
-                                direct = DirectComponent(
-                                    url = str.substringAfter(":").substringAfter("=")
-                                )
+                                applyOverrides = overrides,
+                                direct_url = str.substringAfter(":").substringAfter("=")
                             )
                         }
                         else -> error("unknown prefix: ${str.substringBefore(":")}")
-                    }.apply {
-                        applyOverrides = overrides
                     }
                 }
                 is JsonObject -> {
@@ -115,43 +112,6 @@ data class VersionPack(
                 }
         }
 
-        private fun transformFileEntry(entry: FileEntry): FileEntry = when (entry) {
-            is FileEntry.Curse -> {
-                if (entry.projectName != null) {
-                    val addonid = Autocompletions.curseforge[entry.projectName]?.toIntOrNull()
-                    val newName = entry.projectName.substringAfterLast('/')
-                    require(addonid != null) { "cannot find replacement for ${entry.projectName} / ${Autocompletions.curseforge[entry.projectName]}" }
-                    logger.trace { "before transform: ${entry.validMcVersions}" }
-                    entry.copy(
-                        projectName = null,
-                        curse = entry.curse.copy(
-                            projectID = ProjectID(addonid)
-                        )
-                    ).apply {
-                        applyOverrides = entry.applyOverrides
-                        id = entry.id ?: newName
-                        name = entry.name ?: newName
-                        folder = entry.folder
-                        description = entry.description
-                        optional = entry.optional
-                        side = entry.side
-                        websiteUrl = entry.websiteUrl
-                        packageType = entry.packageType
-                        transient = entry.transient
-                        version = entry.version
-                        fileName = entry.fileName
-                        fileNameRegex = entry.fileNameRegex
-                        validMcVersions = entry.validMcVersions
-                        invalidMcVersions = entry.invalidMcVersions
-                        enabled = entry.enabled
-                        logger.trace { "after transform: $validMcVersions" }
-                    }
-                } else {
-                    entry
-                }
-            }
-            else -> entry
-        }
 
     }
 
@@ -160,10 +120,12 @@ data class VersionPack(
             copy(
                 modloader = modloader.replaceAutoCompletes(),
             ).apply {
-                modEntries = mods.map { element ->
-                    parseEntry(element)
-                }.map { entry ->
-                    transformFileEntry(entry)
+                modEntries = mods.flatMap { (overrideKey, modsList) ->
+                    modsList.map { element ->
+                        parseEntry(element)
+                    }.map { entry ->
+                        entry.postParse(overrideKey)
+                    }
                 }
             }
         }.apply {
@@ -200,15 +162,7 @@ data class VersionPack(
                 )
             ),
             entrySet = modEntries.map { intitalEntry ->
-                val entryId = intitalEntry.id
-                val entry = intitalEntry.applyOverrides.fold(intitalEntry) { acc, overrideId ->
-                    val entryOverride =
-                        overrides[overrideId] ?: error("$entryId: override for id $overrideId not found")
-                    return@fold acc.applyTag(entryOverride)
-                }
-                entry.toEntry().also {
-                    logger.trace { "toEntry() ${it.id} ${entry.validMcVersions} -> $it" }
-                }
+                intitalEntry.toEntry(overrides)
             }.toMutableSet()
         ).apply {
 

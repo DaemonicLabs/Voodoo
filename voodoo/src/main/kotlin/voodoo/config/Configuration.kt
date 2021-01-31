@@ -6,6 +6,7 @@ import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import mu.KotlinLogging
+import voodoo.data.Side
 import voodoo.pack.EntryOverride
 import voodoo.poet.generator.CurseSection
 import voodoo.util.json
@@ -37,7 +38,14 @@ data class Configuration(
         )
     ),
     @Required
-    val overrides: Map<String, EntryOverride> = mapOf()
+    val overrides: Map<String, EntryOverride> = mapOf(
+        "side_client" to EntryOverride.Common().apply {
+            side = Side.CLIENT
+        },
+        "side_server" to EntryOverride.Common().apply {
+            side = Side.SERVER
+        }
+    )
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}

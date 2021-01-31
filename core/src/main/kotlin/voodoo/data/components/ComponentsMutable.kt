@@ -34,7 +34,11 @@ data class CommonComponent(
     override var validMcVersions: Set<String> = setOf(),
     override var invalidMcVersions: Set<String> = setOf(),
     override var enabled: Boolean = true
-) : CommonMutable
+) : CommonMutable {
+    companion object {
+        val DEFAULT = CommonComponent()
+    }
+}
 
 @Serializable
 data class CurseComponent(

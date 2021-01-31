@@ -77,7 +77,7 @@ class InitPackCommand : CliktCommand(
                         srcDir = "v${packVersion ?: "0.0.1"}_src",
                         modloader = Modloader.None,
                         packageConfiguration = VersionPackageConfig(),
-                        mods = listOf(
+                        mods = mapOf(
                             //TODO: add mod samples there
                         )
                     ).postParse(baseDir = baseDir)
