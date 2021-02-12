@@ -40,7 +40,7 @@ class PackageCommand(): CliktCommand(
     ).file(mustExist = true, canBeFile = true, canBeDir = false)
         .validate { file ->
             require(file.name == MetaPack.FILENAME) {
-                "file $file does not end with ${VersionPack.extension}"
+                "file name $file does not match ${MetaPack.FILENAME}"
             }
         }
 
