@@ -16,6 +16,10 @@ import voodoo.data.flat.FlatEntry
 @Serializable
 sealed class FileEntry(
 ) {
+    companion object {
+        private val logger = KotlinLogging.logger{}
+    }
+
     interface Common {
         val applyOverrides: List<String>
         var id: String?
@@ -85,8 +89,6 @@ sealed class FileEntry(
         }
     }
 
-
-    val logger = KotlinLogging.logger{}
     fun postParse(overrideKey: String): FileEntry = when (this) {
         is Curse -> {
             if (curse_projectName != null) {
@@ -156,6 +158,8 @@ sealed class FileEntry(
         override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
         override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : Common, FileEntry() {
+        @JsonSchema.StringEnum(["curse"])
+        private val type = "curse"
         override fun id() = id.takeUnless { it.isNullOrBlank() } ?: curse_projectName?.substringAfterLast('/')
         override fun applyOverride(override: EntryOverride): Curse {
             return when (override) {
@@ -218,6 +222,8 @@ sealed class FileEntry(
         override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
         override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : Common, FileEntry() {
+        @JsonSchema.StringEnum(["direct"])
+        private val type = "direct"
         override fun id() = id.takeUnless { it.isNullOrBlank() }  ?: direct_url.split(":|&|=".toRegex()).joinToString("_")
         override fun applyOverride(override: EntryOverride): Direct {
             return when (override) {
@@ -274,6 +280,8 @@ sealed class FileEntry(
         override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
         override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : Common, FileEntry() {
+        @JsonSchema.StringEnum(["jenkins"])
+        private val type = "jenkins"
         override fun id() = id.takeUnless { it.isNullOrBlank() }  ?: jenkins_job
         override fun applyOverride(override: EntryOverride): Jenkins {
             return when (override) {
@@ -331,6 +339,8 @@ sealed class FileEntry(
         override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
         override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : Common, FileEntry() {
+        @JsonSchema.StringEnum(["local"])
+        private val type = "local"
         override fun id() = id.takeUnless { it.isNullOrBlank() } ?: local_fileSrc
         override fun applyOverride(override: EntryOverride): Local {
             return when (override) {
@@ -382,6 +392,8 @@ sealed class FileEntry(
         override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
         override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : Common, FileEntry() {
+        @JsonSchema.StringEnum(["noop"])
+        private val type = "noop"
         override fun id() = id
         override fun applyOverride(override: EntryOverride): Noop {
             return when (override) {
