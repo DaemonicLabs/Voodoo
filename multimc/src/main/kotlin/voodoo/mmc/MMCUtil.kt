@@ -144,7 +144,7 @@ object MMCUtil {
         icon: File? = null,
         mcVersion: String? = null,
         modloader: Modloader?,
-        extraCfg: List<Pair<String, String>> = listOf(),
+        extraCfg: Map<String, String> = emptyMap(),
         instanceDir: File = with(findDir()) {
             this.resolve(
                 readCfg(this.resolve("multimc.cfg"))["InstanceDir"] ?: "instances"

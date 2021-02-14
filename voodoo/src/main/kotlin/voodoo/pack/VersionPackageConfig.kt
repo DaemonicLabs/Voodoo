@@ -2,6 +2,7 @@ package voodoo.pack
 
 import kotlinx.serialization.Serializable
 import moe.nikky.voodoo.format.FnPatternList
+import java.util.*
 
 @Serializable
 data class VersionPackageConfig(
@@ -16,6 +17,6 @@ data class VersionPackageConfig(
 
     @Serializable
     data class MultimcPackageOption(
-        var instanceCfg: List<Pair<String, String>> = listOf()
+        var instanceCfg: Map<String, String> = emptyMap()
     )
 }

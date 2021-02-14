@@ -18,6 +18,6 @@ data class PackOptions(
     @Serializable
     data class MultiMC(
         var relativeSelfupdateUrl: String? = null,
-        var instanceCfg: List<Pair<String, String>> = listOf()
+        var instanceCfg: Map<String, String> = emptyMap()
     )
 }
