@@ -42,9 +42,10 @@ object Installer : KLogging() {
     private suspend fun selfupdate(instanceDir: File, installerUrl: String, phase: Phase): File? {
         logger.info { "installer url from modpack: $installerUrl" }
         val voodooFolder = instanceDir.resolve(".voodoo").apply { mkdirs() }
-        voodooFolder.listFiles().forEach {
-            it.delete()
-        }
+        // TODO: cleanup old files smarter
+//        voodooFolder.listFiles().forEach {
+//            it.delete()
+//        }
         val toDeleteFile = voodooFolder.resolve("to-delete.txt")
         toDeleteFile.parentFile.mkdirs()
         val currentJarFile = File(Installer::class.java.protectionDomain.codeSource.location.toURI())
