@@ -48,14 +48,29 @@ object Server {
         val srcDir = modpack.sourceFolder
         logger.info("copying files into server dir $srcDir -> $serverDir")
         if (srcDir.exists()) {
-            srcDir.copyRecursively(serverDir, overwrite = true)
-
-            serverDir.walkBottomUp().forEach { file ->
+            srcDir.walkTopDown().filter { file->
                 when {
-                    file.name.endsWith(".lock.pack.json") -> file.delete()
-                    file.isDirectory && file.listFiles()!!.isEmpty() -> file.delete()
+                    file.name.endsWith(".lock.pack.json") -> false
+                    file.isDirectory -> false
+                    else -> true
+                }
+            }.forEach { file ->
+                val relativepath = file.relativeTo(srcDir)
+                val targetFile = serverDir.resolve(relativepath)
+                targetFile.parentFile.mkdirs()
+                val success = file.copyTo(targetFile, overwrite = true)
+                if(!success) {
+                    logger.error { "failed to copy $file to $targetFile" }
                 }
             }
+//            srcDir.copyRecursively(serverDir, overwrite = true)
+//
+//            serverDir.walkBottomUp().forEach { file ->
+//                when {
+//                    file.name.endsWith(".lock.pack.json") -> file.delete()
+//                    file.isDirectory && file.listFiles()!!.isEmpty() -> file.delete()
+//                }
+//            }
         } else {
             logger.warn("minecraft directory $srcDir does not exist")
         }
