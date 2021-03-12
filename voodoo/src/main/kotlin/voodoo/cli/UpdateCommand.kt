@@ -31,7 +31,7 @@ class UpdateCommand : CliktCommand(
                 }
             }
 
-            val version = MavenUtil.getLatestVersionFromMavenMetadata(
+            val version = MavenUtil.getReleaseVersionFromMavenMetadata(
                 GeneratedConstants.MAVEN_URL,
                 GeneratedConstants.MAVEN_GROUP,
                 "voodoo"

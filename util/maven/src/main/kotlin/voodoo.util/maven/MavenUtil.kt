@@ -197,6 +197,27 @@ object MavenUtil : KLogging() {
         return latest
     }
 
+    suspend fun getReleaseVersionFromMavenMetadata(
+        mavenUrl: String,
+        group: String,
+        artifactId: String
+    ): String {
+        val metadataXml = getMavenMetadata(mavenUrl, group, artifactId)
+
+        val dbFactory = DocumentBuilderFactory.newInstance()
+        val dBuilder = dbFactory.newDocumentBuilder()
+        val xmlInput = metadataXml
+        val doc = dBuilder.parse(InputSource(ByteArrayInputStream(xmlInput.toByteArray(Charsets.UTF_8))))
+
+        val xpFactory = XPathFactory.newInstance()
+        val xPath = xpFactory.newXPath()
+
+        val xPathExpression = "metadata/versioning/release/text()"
+
+        val latest = xPath.evaluate(xPathExpression, doc, XPathConstants.STRING) as String
+        return latest
+    }
+
     suspend fun getALlVersionFromMavenMetadata(
         mavenUrl: String,
         group: String,
