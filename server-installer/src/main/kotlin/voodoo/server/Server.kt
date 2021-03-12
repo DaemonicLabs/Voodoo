@@ -58,10 +58,11 @@ object Server {
                 val relativepath = file.relativeTo(srcDir)
                 val targetFile = serverDir.resolve(relativepath)
                 targetFile.parentFile.mkdirs()
-                val success = file.copyTo(targetFile, overwrite = true)
-                if(!success) {
-                    logger.error { "failed to copy $file to $targetFile" }
+                val success = targetFile.delete()
+                if(success) {
+                    logger.error { "failed to delete/overwrite $targetFile" }
                 }
+                file.copyTo(targetFile, overwrite = true)
             }
 //            srcDir.copyRecursively(serverDir, overwrite = true)
 //
