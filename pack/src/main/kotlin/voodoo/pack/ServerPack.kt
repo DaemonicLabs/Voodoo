@@ -28,7 +28,8 @@ object ServerPack : AbstractPack("server") {
         clean: Boolean,
         versionAlias: String?
     ) = stopwatch {
-        val directories = Directories.get()
+        val directories = Directories.get(moduleName = "SERVER")
+        val cacheHome = directories.cacheHome.resolve("${modpack.id}-${versionAlias ?: modpack.version}")
 
         if (clean) {
             logger.info {"cleaning server directory $output" }
@@ -50,7 +51,7 @@ object ServerPack : AbstractPack("server") {
                 artifactId = "server-installer",
                 version = GeneratedConstants.FULL_VERSION,
                 classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
-                outputDir = directories.cacheHome
+                outputDir = cacheHome
             )
         }
 

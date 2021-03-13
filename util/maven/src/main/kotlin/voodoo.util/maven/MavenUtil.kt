@@ -13,10 +13,12 @@ import io.ktor.http.*
 import io.ktor.util.cio.writeChannel
 import io.ktor.utils.io.copyAndClose
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import mu.KLogging
 import org.w3c.dom.NodeList
 import org.xml.sax.InputSource
+import voodoo.util.download
 import voodoo.util.toHexString
 import voodoo.util.useClient
 import voodoo.util.useragent
@@ -91,60 +93,35 @@ object MavenUtil : KLogging() {
         val tmpFile = File(outputDir, "$artifactId-$version$classifierSuffix.$extension.tmp")
         val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
         targetFile.absoluteFile.parentFile.mkdirs()
-        run {
-            tmpFile.delete()
-            val response = withContext(Dispatchers.IO) {
-                try {
-                    useClient { client ->
-                        client.get<HttpResponse> {
-                            url(artifactUrl)
+        targetFile.download(
+            url = artifactUrl,
+            cacheDir = outputDir,
+            validator = { bytes, file ->
+                if(verifyChecksum) {
+                    // TODO: use whatever checksum thing it finds
+                    val sha1Url = "$artifactUrl.sha1"
+
+                    val sha1 = runBlocking {
+                        try {
+                            useClient { client ->
+                                client.get<String>(sha1Url)
+                            }
+                        } catch (e: IOException) {
+                            logger.error("sha1Url: $sha1Url")
+                            logger.error(e) { "unable to download SHA-1 hash from $sha1Url" }
+                            throw e
                         }
                     }
 
-                } catch (e: IOException) {
-                    logger.error("artifactUrl: $artifactUrl")
-                    logger.error(e) { "unable to download jarfile from $artifactUrl" }
-                    throw e
+                    val fileSha1 = MessageDigest.getInstance("SHA-1").digest(tmpFile.readBytes()).toHexString()
+//                    require(fileSha1 == sha1) { "$artifactUrl did not match SHA-1 hash: '$sha1'" }
+                    fileSha1 == sha1
+                } else {
+                    true
                 }
             }
-            if(!response.status.isSuccess()) {
-                logger.error { "$artifactUrl returned ${response.status}" }
-                error("unable to download jarfile from $artifactUrl")
-            }
-            response.content.copyAndClose(tmpFile.writeChannel())
-        }
+        )
 
-
-        if(verifyChecksum) {
-            // TODO: use whatever checksum thing it finds
-            val sha1Url = "$artifactUrl.sha1"
-
-            val response = withContext(Dispatchers.IO) {
-                try {
-                    useClient { client ->
-                        client.get<HttpResponse> {
-                            url(sha1Url)
-//                header(HttpHeaders.UserAgent, useragent)
-                        }
-                    }
-                } catch (e: IOException) {
-                    logger.error("sha1Url: $sha1Url")
-                    logger.error(e) { "unable to download SHA-1 hash from $sha1Url" }
-                    throw e
-                }
-            }
-            if(!response.status.isSuccess()) {
-                logger.error { "$sha1Url returned ${response.status}" }
-                error("unable to download SHA-1 hash from $sha1Url")
-            }
-            val sha1 = response.readText()
-            val fileSha1 = MessageDigest.getInstance("SHA-1").digest(tmpFile.readBytes()).toHexString()
-            require(fileSha1 == sha1) { "$artifactUrl did not match SHA-1 hash: '$sha1'" }
-        }
-
-        tmpFile.copyTo(targetFile, overwrite = true)
-        tmpFile.delete()
-        logger.trace { "downloaded to: $targetFile" }
         return targetFile.absoluteFile
     }
 
