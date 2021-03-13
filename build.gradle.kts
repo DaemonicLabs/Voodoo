@@ -71,11 +71,7 @@ task<DefaultTask>("exportVersion") {
 
 allprojects {
     repositories {
-        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap/") {
-            name = "Kotlin EAP"
-        }
         mavenCentral()
-        jcenter()
         maven(url = "https://kotlin.bintray.com/kotlinx") {
             name = "KotlinX"
         }
