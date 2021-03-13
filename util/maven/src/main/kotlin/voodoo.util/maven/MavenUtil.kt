@@ -90,7 +90,6 @@ object MavenUtil : KLogging() {
 
         val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$version$classifierSuffix.$extension"
         logger.trace { "downloading: $artifactUrl" }
-        val tmpFile = File(outputDir, "$artifactId-$version$classifierSuffix.$extension.tmp")
         val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
         targetFile.absoluteFile.parentFile.mkdirs()
         targetFile.download(
@@ -113,7 +112,7 @@ object MavenUtil : KLogging() {
                         }
                     }
 
-                    val fileSha1 = MessageDigest.getInstance("SHA-1").digest(tmpFile.readBytes()).toHexString()
+                    val fileSha1 = MessageDigest.getInstance("SHA-1").digest(bytes).toHexString()
 //                    require(fileSha1 == sha1) { "$artifactUrl did not match SHA-1 hash: '$sha1'" }
                     fileSha1 == sha1
                 } else {
