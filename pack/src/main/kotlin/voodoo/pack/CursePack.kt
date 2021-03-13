@@ -41,13 +41,14 @@ object CursePack : AbstractPack("curse") {
         config: PackConfig,
         output: File,
         uploadBaseDir: File,
-        clean: Boolean
+        clean: Boolean,
+        versionAlias: String?
     ) = stopwatch {
         val directories = Directories.get()
 
         val cacheDir = directories.cacheHome
         val workspaceDir = directories.cacheHome.resolve("curse-workspace")
-        val modpackDir = workspaceDir.resolve(with(modpack) { "$id-$version" })
+        val modpackDir = workspaceDir.resolve(with(modpack) { "$id-${versionAlias ?: version}" })
         val srcFolder = modpackDir.resolve("overrides")
 
         if (clean) {
@@ -194,7 +195,7 @@ object CursePack : AbstractPack("curse") {
 
             val curseManifest = CurseManifest(
                 name = modpack.title.blankOr ?: modpack.id,
-                version = modpack.version,
+                version = versionAlias ?: modpack.version,
                 author = modpack.authors.joinToString(", "),
                 minecraft = CurseMinecraft(
                     version = modpack.mcVersion,
@@ -215,7 +216,7 @@ object CursePack : AbstractPack("curse") {
             val manifestFile = modpackDir.resolve("manifest.json")
             manifestFile.writeText(json.encodeToString(CurseManifest.serializer(), curseManifest))
 
-            val cursePackFile = output.resolve(with(modpack) { "$id-$version.zip" })
+            val cursePackFile = output.resolve(with(modpack) { "$id-${versionAlias ?: version}.zip" })
 
             packToZip(modpackDir, cursePackFile)
 

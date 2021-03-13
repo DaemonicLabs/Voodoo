@@ -32,7 +32,8 @@ object MMCFatPack : AbstractPack("mmc-fat") {
         config: PackConfig,
         output: File,
         uploadBaseDir: File,
-        clean: Boolean
+        clean: Boolean,
+        versionAlias: String?
     ) = stopwatch {
         val directories = Directories.get()
 
@@ -94,8 +95,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
                 MMCSelectable(it)
             },
             previousSelection,
-            modpack.title.blankOr
-                ?: modpack.id, modpack.version,
+            modpack.title.blankOr ?: modpack.id, modpack.version,
             enableTimeout = false,
             installing = true,
             updateRequired = true
@@ -170,7 +170,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
         }
 
         output.mkdirs()
-        val instanceZip = output.resolve("${modpack.id}-${modpack.version}.zip")
+        val instanceZip = output.resolve("${modpack.id}-${versionAlias ?: modpack.version}.zip")
 
         instanceZip.delete()
         packToZip(zipRootDir, instanceZip)

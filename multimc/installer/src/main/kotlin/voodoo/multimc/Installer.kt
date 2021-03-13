@@ -74,6 +74,9 @@ object Installer : KLogging() {
             Phase.PRE -> {
                 // always copy current jar to post.jar
                 val postFile = voodooFolder.resolve("post.jar")
+                if(postFile.exists()) {
+                    postFile.delete()
+                }
                 currentJarFile.copyTo(postFile, overwrite = true)
 
                 // checking for update

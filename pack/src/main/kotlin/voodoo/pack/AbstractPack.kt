@@ -24,6 +24,7 @@ abstract class AbstractPack(open val id: String) {
         config: PackConfig,
         output: File,
         uploadBaseDir: File,
-        clean: Boolean = true
+        clean: Boolean = true,
+        versionAlias: String?
     )
 }

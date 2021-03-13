@@ -8,10 +8,7 @@ import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.arguments.validate
-import com.github.ajalt.clikt.parameters.options.multiple
 import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.options.required
-import com.github.ajalt.clikt.parameters.options.validate
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.file
 import kotlinx.coroutines.*
@@ -21,10 +18,8 @@ import mu.withLoggingContext
 import voodoo.Pack
 import voodoo.data.lock.LockPack
 import voodoo.pack.MetaPack
-import voodoo.pack.VersionPack
 import voodoo.util.SharedFolders
 import voodoo.util.VersionComparator
-import voodoo.util.json
 import java.io.File
 
 class PackageCommand(): CliktCommand(
@@ -77,8 +72,23 @@ class PackageCommand(): CliktCommand(
                                 lockPacks.forEach { lockpack ->
                                     withLoggingContext("version" to lockpack.version) {
                                         launch(MDCContext() + CoroutineName("package-version-${lockpack.version}")) {
-                                            // TODO: pass pack method (enum / object)
-                                            Pack.pack("pack-${packTarget.id}".watch, lockpack, metaPack.packConfig, uploadDir, packTarget)
+                                            Pack.pack(
+                                                "pack-${packTarget.id}".watch,
+                                                lockpack,
+                                                metaPack.packConfig,
+                                                uploadDir,
+                                                packTarget
+                                            )
+                                        }
+                                    }
+                                }
+
+                                // packaging aliases
+                                metaPack.packConfig.versionAlias.forEach { (alias, version) ->
+                                    val lockpack = lockPacks.first { it.version == version }
+                                    withLoggingContext("alias" to alias,"version" to lockpack.version) {
+                                        launch(MDCContext() + CoroutineName("package-version-${lockpack.version}")) {
+                                            Pack.pack("pack-${packTarget.id}".watch, lockpack, metaPack.packConfig, uploadDir, packTarget, versionAlias = alias)
                                         }
                                     }
                                 }

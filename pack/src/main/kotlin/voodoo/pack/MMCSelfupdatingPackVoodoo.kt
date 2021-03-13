@@ -24,12 +24,13 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
         config: PackConfig,
         output: File,
         uploadBaseDir: File,
-        clean: Boolean
+        clean: Boolean,
+        versionAlias: String?
     ) = stopwatch {
         val directories = Directories.get()
 
         val cacheDir = directories.cacheHome
-        val zipRootDir = cacheDir.resolve("MULTIMC").resolve(modpack.id).resolve(modpack.version)
+        val zipRootDir = cacheDir.resolve("MULTIMC").resolve(modpack.id).resolve(versionAlias ?: modpack.version)
         val instanceDir = zipRootDir.resolve(modpack.id)
         zipRootDir.deleteRecursively()
 
@@ -81,13 +82,13 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
         )
 
         output.mkdirs()
-        val instanceZipVersioned = output.resolve("${modpack.id}-${modpack.version}.zip")
+        val instanceZipVersioned = output.resolve("${modpack.id}-${versionAlias ?: modpack.version}.zip")
         val instanceZip = output.resolve("${modpack.id}.zip")
 
         instanceZip.delete()
         packToZip(zipRootDir, instanceZip)
 
-        instanceDir.resolve("voodoo.version.txt").writeText(modpack.version)
+        instanceDir.resolve("voodoo.version.txt").writeText(versionAlias ?: modpack.version)
 
         instanceZipVersioned.delete()
         packToZip(zipRootDir, instanceZipVersioned)

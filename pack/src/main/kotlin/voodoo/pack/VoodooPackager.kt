@@ -33,8 +33,13 @@ object VoodooPackager : AbstractPack("voodoo") {
         config: PackConfig,
         output: File,
         uploadBaseDir: File,
-        clean: Boolean
+        clean: Boolean,
+        versionAlias: String?
     ) = stopwatch {
+        if(versionAlias != null) {
+            logger.info { "not building voodoo pack for aliases" }
+            return@stopwatch
+        }
         val directories = Directories.get()
 
         val cacheDir = directories.cacheHome

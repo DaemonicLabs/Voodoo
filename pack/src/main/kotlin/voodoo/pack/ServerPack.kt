@@ -17,7 +17,7 @@ object ServerPack : AbstractPack("server") {
     override val label = "Server SK Pack"
 
     // TODO: use different output directory for server, add to plugin
-    override fun File.getOutputFolder(id: String, version: String): File = resolve("server").resolve("${id}_v$version")
+    override fun File.getOutputFolder(id: String, version: String): File = resolve("server").resolve("${id}_$version")
 
     override suspend fun pack(
         stopwatch: Stopwatch,
@@ -25,7 +25,8 @@ object ServerPack : AbstractPack("server") {
         config: PackConfig,
         output: File,
         uploadBaseDir: File,
-        clean: Boolean
+        clean: Boolean,
+        versionAlias: String?
     ) = stopwatch {
         val directories = Directories.get()
 

@@ -20,8 +20,15 @@ object Pack : KLogging() {
         CursePack
     ).associateBy { it.id }
 
-    suspend fun pack(stopwatch: Stopwatch, modpack: LockPack, config: PackConfig, uploadBaseDir: File, packer: AbstractPack) = stopwatch {
-        val output = with(packer) { uploadBaseDir.getOutputFolder(id = modpack.id, version = modpack.version) }
+    suspend fun pack(
+        stopwatch: Stopwatch,
+        modpack: LockPack,
+        config: PackConfig,
+        uploadBaseDir: File,
+        packer: AbstractPack,
+        versionAlias: String? = null,
+    ) = stopwatch {
+        val output = with(packer) { uploadBaseDir.getOutputFolder(id = modpack.id, version = versionAlias ?: modpack.version) }
         output.mkdirs()
 
         packer.pack(
@@ -30,7 +37,8 @@ object Pack : KLogging() {
             config = config,
             output = output,
             uploadBaseDir = uploadBaseDir,
-            clean = true
+            clean = true,
+            versionAlias = versionAlias
         )
         logger.info("finished packaging")
     }
