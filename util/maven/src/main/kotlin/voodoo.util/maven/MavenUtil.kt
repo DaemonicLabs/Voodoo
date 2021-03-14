@@ -78,7 +78,7 @@ object MavenUtil : KLogging() {
 
                 return targetFile.absoluteFile
             } else {
-                version = getLatestVersionFromMavenMetadata(
+                version = getReleaseVersionFromMavenMetadata(
                     mavenUrl, group, artifactId
                 )
             }

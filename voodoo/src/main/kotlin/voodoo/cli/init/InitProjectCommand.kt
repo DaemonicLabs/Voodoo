@@ -45,7 +45,7 @@ class InitProjectCommand : CliktCommand(
             val properties = Properties().also { prop ->
                 val groupPath = GeneratedConstants.MAVEN_GROUP.replace('.','/')
                 val version = if(GeneratedConstants.FULL_VERSION.endsWith("-local")) {
-                    MavenUtil.getLatestVersionFromMavenMetadata(GeneratedConstants.MAVEN_URL, GeneratedConstants.MAVEN_GROUP, "voodoo")
+                    MavenUtil.getReleaseVersionFromMavenMetadata(GeneratedConstants.MAVEN_URL, GeneratedConstants.MAVEN_GROUP, "voodoo")
                 } else GeneratedConstants.FULL_VERSION
                 prop["distributionUrl"] = "${GeneratedConstants.MAVEN_URL}/$groupPath/voodoo/$version/voodoo-$version-${GeneratedConstants.MAVEN_SHADOW_CLASSIFIER}.jar"
                 prop["distributionPath"] = "wrapper/bin"
@@ -86,31 +86,47 @@ class InitProjectCommand : CliktCommand(
                 logger.info { "generated $bashFile" }
             }
 
-            rootDir.resolve("shell_completion").let { bashFile ->
-                if(bashFile.exists()) {
-                    logger.error { "$bashFile already exists, not overwriting" }
+            rootDir.resolve("completion.bash").let { shellFile ->
+                if(shellFile.exists()) {
+                    logger.error { "$shellFile already exists, not overwriting" }
                     return@let
                 }
 
-                bashFile.writeText("""
+                shellFile.writeText("""
                     #!/usr/bin/env bash
                     
-                    DIR="${'$'}( cd "${'$'}( dirname "${'$'}{BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-                    
-                    case ${'$'}(basename ${'$'}(readlink -f "/proc/${'$'}PPID/exe")) in
-                      bash)
-                        source <(${'$'}DIR/voodoo --generate-completion=bash)
-                        ;;
-                      fish)
-                        ${'$'}DIR/voodoo --generate-completion=fish | source
-                        ;;
-                      zsh)
-                        source <(${'$'}DIR/voodoo --generate-completion=zsh)
-                        ;;
-                    esac
+                    source <(./voodoo --generate-completion=bash
                 """.trimIndent())
-                bashFile.setExecutable(true)
-                logger.info { "generated $bashFile" }
+                shellFile.setExecutable(true)
+                logger.info { "generated $shellFile" }
+            }
+            rootDir.resolve("completion.zsh").let { shellFile ->
+                if(shellFile.exists()) {
+                    logger.error { "$shellFile already exists, not overwriting" }
+                    return@let
+                }
+
+                shellFile.writeText("""
+                    #!/usr/bin/env bash
+                    
+                    source <(./voodoo --generate-completion=zsh
+                """.trimIndent())
+                shellFile.setExecutable(true)
+                logger.info { "generated $shellFile" }
+            }
+            rootDir.resolve("completion.fish").let { shellFile ->
+                if(shellFile.exists()) {
+                    logger.error { "$shellFile already exists, not overwriting" }
+                    return@let
+                }
+
+                shellFile.writeText("""
+                    #!/usr/bin/env fish
+                    
+                    ./voodoo --generate-completion=fish | source
+                """.trimIndent())
+                shellFile.setExecutable(true)
+                logger.info { "generated $shellFile" }
             }
 
             //TODO: move to setup command
