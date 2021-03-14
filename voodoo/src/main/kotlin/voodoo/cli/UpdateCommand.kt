@@ -55,6 +55,7 @@ class UpdateCommand : CliktCommand(
 
             // validate the file exists and matches checksum
             val tmpFile = cacheHome.resolve(distributionUrl.substringAfterLast("/"))
+            tmpFile.delete()
             tmpFile.download(distributionUrl, cacheDir = cacheHome)
             useClient { client ->
                 val md5 = client.get<String>(distributionUrl + ".md5")
@@ -71,19 +72,19 @@ class UpdateCommand : CliktCommand(
             }
 
             //TODO: figure out how to update the wrapper.jar
-//            //  download wrapper -> wrapper/wrapper.jar
-//            val wrapperFile = rootDir.resolve("wrapper/wrapper.jar")
-//            wrapperFile.absoluteFile.parentFile.mkdirs()
-//
-//            MavenUtil.downloadArtifact(
-//                GeneratedConstants.MAVEN_URL,
-//                GeneratedConstants.MAVEN_GROUP,
-//                "wrapper",
-//                GeneratedConstants.FULL_VERSION,
-//                outputFile = wrapperFile,
-//                outputDir = wrapperFile.absoluteFile.parentFile,
-//                classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER
-//            )
+            //  download wrapper -> wrapper/wrapper.jar
+            val wrapperFile = rootDir.resolve("wrapper/wrapper.jar")
+            wrapperFile.absoluteFile.parentFile.mkdirs()
+
+            MavenUtil.downloadArtifact(
+                GeneratedConstants.MAVEN_URL,
+                GeneratedConstants.MAVEN_GROUP,
+                "wrapper",
+                GeneratedConstants.FULL_VERSION,
+                outputFile = wrapperFile,
+                outputDir = wrapperFile.absoluteFile.parentFile,
+                classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER
+            )
         }
     }
 
