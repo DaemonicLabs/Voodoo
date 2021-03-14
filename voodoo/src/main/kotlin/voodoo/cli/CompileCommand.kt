@@ -16,6 +16,7 @@ import mu.KotlinLogging
 import mu.withLoggingContext
 import voodoo.builder.Builder
 import voodoo.builder.compile
+import voodoo.config.Autocompletions
 import voodoo.config.Configuration
 import voodoo.pack.MetaPack
 import voodoo.pack.VersionPack
@@ -52,6 +53,7 @@ class CompileCommand() : CliktCommand(
             stopwatch {
 
                 val config = Configuration.parse(rootDir = rootDir)
+                Autocompletions.generate(config)
 
                 val packs: Map<Pair<String, MetaPack>, List<VersionPack>> = packFiles.map { packFile ->
                     val baseDir = rootDir.resolve(packFile.absoluteFile.parentFile)

@@ -10,6 +10,8 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import mu.KotlinLogging
+import voodoo.config.Autocompletions
+import voodoo.config.Configuration
 import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
 import voodoo.data.flat.FlatModPack

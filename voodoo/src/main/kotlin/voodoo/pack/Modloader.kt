@@ -19,7 +19,7 @@ sealed class Modloader {
     ) : Modloader() {
         override fun replaceAutoCompletes(): Forge {
             return copy(
-                version = Autocompletions.forge[version] ?: version
+                version = Autocompletions.forge[version] ?: error("cannot look up forge version: $version")
             )
         }
     }
@@ -44,9 +44,9 @@ sealed class Modloader {
     ) : Modloader() {
         override fun replaceAutoCompletes(): Fabric {
             return copy(
-                intermediateMappings = Autocompletions.fabricIntermediaries[intermediateMappings] ?: intermediateMappings,
-                loader = Autocompletions.fabricLoaders[loader] ?: loader,
-                installer = Autocompletions.fabricInstallers[installer] ?: installer
+                intermediateMappings = Autocompletions.fabricIntermediaries[intermediateMappings] ?: error("cannot look up intermediate mapping $intermediateMappings"),
+                loader = Autocompletions.fabricLoaders[loader] ?: error("cannot look up loader $loader"),
+                installer = Autocompletions.fabricInstallers[installer] ?: error("cannot look up installer $installer"),
             )
         }
     }

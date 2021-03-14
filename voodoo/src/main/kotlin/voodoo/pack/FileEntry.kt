@@ -14,8 +14,7 @@ import voodoo.data.curse.ProjectID
 import voodoo.data.flat.FlatEntry
 
 @Serializable
-sealed class FileEntry(
-) {
+sealed class FileEntry {
     private val logger = KotlinLogging.logger{}
 
     interface Common {
