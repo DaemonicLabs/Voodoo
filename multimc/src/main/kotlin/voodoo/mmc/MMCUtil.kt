@@ -606,7 +606,12 @@ object MMCUtil {
 
                 var row = 0
                 versions.forEach { (key, version) ->
-                    val button = JButton(version.title).apply {
+                    val buttonText = if(key == version.version) {
+                        version.title
+                    } else {
+                        "$key (${version.title})"
+                    }
+                    val button = JButton(buttonText).apply {
                         addActionListener {
                             result = key
 
