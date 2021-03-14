@@ -101,7 +101,7 @@ class InitProjectCommand : CliktCommand(
                 shellFile.writeText("""
                     #!/usr/bin/env bash
                     
-                    source <(./voodoo --generate-completion=bash
+                    source <(./voodoo --generate-completion=bash)
                 """.trimIndent())
                 shellFile.setExecutable(true)
                 logger.info { "generated $shellFile" }
@@ -115,7 +115,7 @@ class InitProjectCommand : CliktCommand(
                 shellFile.writeText("""
                     #!/usr/bin/env zsh
                     
-                    source <(./voodoo --generate-completion=zsh
+                    source <(./voodoo --generate-completion=zsh)
                 """.trimIndent())
                 shellFile.setExecutable(true)
                 logger.info { "generated $shellFile" }
