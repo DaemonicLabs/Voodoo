@@ -4,7 +4,6 @@ import com.eyeem.watchadoin.Stopwatch
 import kotlinx.serialization.Transient
 import mu.KLogging
 import mu.KotlinLogging
-import voodoo.builder.Builder
 import voodoo.builder.resolve
 import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
@@ -77,7 +76,7 @@ data class FlatModPack(
             resolvedEntries.forEach { lockEntry ->
                 val provider = Providers[lockEntry.providerType]
                 if (!provider.validate(lockEntry)) {
-                    Builder.logger.error { lockEntry }
+                    logger.error { lockEntry }
                     throw IllegalStateException("entry '${lockEntry.id}' did not validate")
                 }
             }

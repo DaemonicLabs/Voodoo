@@ -1,11 +1,10 @@
 package voodoo.builder
 
 import com.eyeem.watchadoin.Stopwatch
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.data.flat.FlatModPack
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
-import voodoo.provider.Providers
 import voodoo.util.packToZip
 import voodoo.util.toJson
 
@@ -14,28 +13,46 @@ import voodoo.util.toJson
  * @author Nikky
  */
 
+private val logger = KotlinLogging.logger { }
 suspend fun FlatModPack.compile(
-    stopwatch: Stopwatch
+    stopwatch: Stopwatch,
+    noModUpdates: Boolean = false
 ): LockPack = stopwatch {
     val modpack = this@compile
     val targetFile = LockPack.fileForVersion(baseDir = modpack.baseFolder, version = modpack.version)
     val targetFolder = LockPack.baseFolderForVersion(baseDir = modpack.baseFolder, version = modpack.version)
 
     modpack.entrySet.forEach { entry ->
-        Builder.logger.info("id: ${entry.id} entry: $entry")
+        logger.info("id: ${entry.id} entry: $entry")
     }
 
-    Builder.logger.info("Creating locked pack...")
-    val lockedPack = modpack.lock("lock".watch, targetFolder)
+    val prevLockpack = try {
+        if (targetFile.exists()) {
+            LockPack.parse(targetFile, baseFolder)
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        logger.error(e) { "failed to parse old pack" }
+        null
+    }
+
+    logger.info("Creating locked pack...")
+    val lockedPack = if (noModUpdates) {
+        requireNotNull(prevLockpack) { "failed to parse old lockpack: $targetFile" }
+        prevLockpack
+    } else {
+        modpack.lock("lock".watch, targetFolder)
+    }
     lockedPack.lockBaseFolder.deleteRecursively()
     lockedPack.lockBaseFolder.mkdirs()
 
-    Builder.logger.info("Writing lock file... $targetFile")
+    logger.info("Writing lock file... $targetFile")
     targetFile.parentFile.mkdirs()
     targetFile.writeText(lockedPack.toJson(LockPack.serializer()))
 
-    Builder.logger.info { "copying input files into output" }
-    Builder.logger.info { "copying from ${modpack.sourceFolder}" }
+    logger.info { "copying input files into output" }
+    logger.info { "copying from ${modpack.sourceFolder}" }
     lockedPack.sourceFolder.also { sourceFolder ->
         sourceFolder.deleteRecursively()
         sourceFolder.mkdirs()
@@ -45,7 +62,7 @@ suspend fun FlatModPack.compile(
             sourceFolder.resolve(relative).setLastModified(file.lastModified())
         }
 
-        if(sourceFolder.list()?.isNotEmpty() == true) {
+        if (sourceFolder.list()?.isNotEmpty() == true) {
             packToZip(
                 sourceDir = modpack.sourceFolder,
                 zipFile = lockedPack.sourceZip,
@@ -54,25 +71,25 @@ suspend fun FlatModPack.compile(
         }
         sourceFolder.deleteRecursively()
     }
-    Builder.logger.info { "copying: ${modpack.iconFile}" }
+    logger.info { "copying: ${modpack.iconFile}" }
     modpack.iconFile
         .takeIf { it.exists() }
         ?.copyTo(lockedPack.iconFile, overwrite = true)
 
-    Builder.logger.info { "copying from ${modpack.localFolder}" }
+    logger.info { "copying from ${modpack.localFolder}" }
     lockedPack.localFolder.also { localFolder ->
         localFolder.deleteRecursively()
         localFolder.mkdirs()
         lockedPack.entries.filterIsInstance<LockEntry.Local>()
             .forEach { entry ->
                 val localTargetFile = localFolder.resolve(entry.fileSrc)
-                Builder.logger.info { "copying: $localTargetFile" }
+                logger.info { "copying: $localTargetFile" }
                 localTargetFile.absoluteFile.parentFile.mkdirs()
                 modpack.localFolder.resolve(entry.fileSrc).copyTo(localTargetFile, overwrite = true)
                 localTargetFile.setLastModified(modpack.localFolder.resolve(entry.fileSrc).lastModified())
             }
 
-        if(localFolder.list()?.isNotEmpty() == true) {
+        if (localFolder.list()?.isNotEmpty() == true) {
             packToZip(
                 sourceDir = localFolder,
                 zipFile = lockedPack.localZip,
@@ -83,12 +100,4 @@ suspend fun FlatModPack.compile(
     }
 
     lockedPack
-}
-
-object Builder : KLogging() {
-    @Deprecated("use compile", ReplaceWith("modpack.compile(stopwatch)"))
-    suspend fun lock(
-        stopwatch: Stopwatch,
-        modpack: FlatModPack
-    ): LockPack = modpack.compile(stopwatch)
 }

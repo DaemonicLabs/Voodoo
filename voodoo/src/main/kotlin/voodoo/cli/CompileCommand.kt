@@ -9,21 +9,22 @@ import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.arguments.validate
+import com.github.ajalt.clikt.parameters.options.flag
+import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.file
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.coroutines.withContext
 import mu.KotlinLogging
 import mu.withLoggingContext
-import voodoo.builder.Builder
 import voodoo.builder.compile
 import voodoo.config.Autocompletions
 import voodoo.config.Configuration
+import voodoo.data.lock.LockPack
 import voodoo.pack.MetaPack
 import voodoo.pack.VersionPack
 import voodoo.util.VersionComparator
-import voodoo.util.json
-import voodoo.util.toRelativeUnixPath
+import java.lang.Exception
 
 class CompileCommand() : CliktCommand(
     name = "compile",
@@ -47,6 +48,13 @@ class CompileCommand() : CliktCommand(
             }
         }
 
+    val noModUpdates by option(
+        "--no-mod-updates",
+        help = "skips updating mods",
+    ).flag(
+        default = false
+    )
+
     override fun run() = withLoggingContext("command" to commandName, "packs" to packFiles.joinToString { it.path }) {
         runBlocking(MDCContext()) {
             val stopwatch = Stopwatch(commandName)
@@ -56,7 +64,9 @@ class CompileCommand() : CliktCommand(
             stopwatch {
 
                 val config = Configuration.parse(rootDir = rootDir)
-                Autocompletions.generate(config)
+                if(!noModUpdates) {
+                    Autocompletions.generate(config)
+                }
 
                 val packs: Map<Pair<String, MetaPack>, List<VersionPack>> = packFiles.map { packFile ->
                     val baseDir = rootDir.resolve(packFile.absoluteFile.parentFile)
@@ -97,11 +107,6 @@ class CompileCommand() : CliktCommand(
                         .map { versionPack ->
                             withLoggingContext("version" to versionPack.version) {
                                 withContext(MDCContext()) {
-//                                logger.info { "flattening: $versionPack" }
-//                                logger.info { "flattening mods:" }
-//                                versionPack.mods.forEach {
-//                                    logger.info { "$it" }
-//                                }
                                     val modpack = versionPack.flatten(
                                         rootDir = rootDir,
                                         id = id,
@@ -111,8 +116,7 @@ class CompileCommand() : CliktCommand(
 //                                logger.debug { "modpack: $modpack" }
                                     logger.debug { "entrySet: ${modpack.entrySet}" }
 
-
-                                    val lockPack = modpack.compile("build v${modpack.version}".watch)
+                                    val lockPack = modpack.compile("build ${modpack.version}".watch, noModUpdates = noModUpdates)
 
                                     lockPack
                                 }

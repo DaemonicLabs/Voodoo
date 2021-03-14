@@ -45,8 +45,8 @@ sealed class Modloader {
         override fun replaceAutoCompletes(): Fabric {
             return copy(
                 intermediateMappings = Autocompletions.fabricIntermediaries[intermediateMappings] ?: error("cannot look up intermediate mapping $intermediateMappings"),
-                loader = Autocompletions.fabricLoaders[loader] ?: error("cannot look up loader $loader"),
-                installer = Autocompletions.fabricInstallers[installer] ?: error("cannot look up installer $installer"),
+                loader = loader?.let { loader -> Autocompletions.fabricLoaders[loader] ?: error("cannot look up loader $loader") },
+                installer = installer?.let { installer -> Autocompletions.fabricInstallers[installer] ?: error("cannot look up installer $installer") },
             )
         }
     }
