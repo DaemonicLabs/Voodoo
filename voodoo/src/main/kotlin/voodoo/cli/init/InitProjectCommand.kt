@@ -25,9 +25,10 @@ class InitProjectCommand : CliktCommand(
         val rootDir = cliContext.rootDir
 
         runBlocking(MDCContext()) {
-            //  download wrapper -> wrapper/wrapper.jar
-            val wrapperFile = rootDir.resolve("wrapper/wrapper.jar")
+            // download wrapper -> wrapper/wrapper.jar
+            val wrapperFile = rootDir.resolve("wrapper/new.jar")
             wrapperFile.absoluteFile.parentFile.mkdirs()
+            wrapperFile.delete()
 
             MavenUtil.downloadArtifact(
                 GeneratedConstants.MAVEN_URL,
@@ -66,6 +67,7 @@ class InitProjectCommand : CliktCommand(
 
                 batFile.writeText("""
                     java -jar wrapper\wrapper.jar %*
+                    IF EXIST wrapper\new.jar MOVE wrapper\new.jar wrapper\wrapper.jar
                 """.trimIndent())
                 logger.info { "generated $batFile" }
             }
@@ -81,6 +83,10 @@ class InitProjectCommand : CliktCommand(
 
                     DIR="${'$'}( cd "${'$'}( dirname "${'$'}{BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
                     java -jar ${'$'}DIR/wrapper/wrapper.jar ${'$'}@
+                    
+                    if test -f "${'$'}DIR/wrapper/new.jar"; then
+                        mv ${'$'}DIR/wrapper/new.jar ${'$'}DIR/wrapper/wrapper.jar
+                    fi
                 """.trimIndent())
                 bashFile.setExecutable(true)
                 logger.info { "generated $bashFile" }
@@ -147,6 +153,8 @@ class InitProjectCommand : CliktCommand(
                 """.trimIndent())
                 logger.info { "generated $gitignoreFile" }
             }
+
+
         }
     }
 }
