@@ -70,19 +70,20 @@ class UpdateCommand : CliktCommand(
                 propertiesFile.writeText(it.toString())
             }
 
-            //  download wrapper -> wrapper/wrapper.jar
-            val wrapperFile = rootDir.resolve("wrapper/wrapper.jar")
-            wrapperFile.absoluteFile.parentFile.mkdirs()
-
-            MavenUtil.downloadArtifact(
-                GeneratedConstants.MAVEN_URL,
-                GeneratedConstants.MAVEN_GROUP,
-                "wrapper",
-                GeneratedConstants.FULL_VERSION,
-                outputFile = wrapperFile,
-                outputDir = wrapperFile.absoluteFile.parentFile,
-                classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER
-            )
+            //TODO: figure out how to update the wrapper.jar
+//            //  download wrapper -> wrapper/wrapper.jar
+//            val wrapperFile = rootDir.resolve("wrapper/wrapper.jar")
+//            wrapperFile.absoluteFile.parentFile.mkdirs()
+//
+//            MavenUtil.downloadArtifact(
+//                GeneratedConstants.MAVEN_URL,
+//                GeneratedConstants.MAVEN_GROUP,
+//                "wrapper",
+//                GeneratedConstants.FULL_VERSION,
+//                outputFile = wrapperFile,
+//                outputDir = wrapperFile.absoluteFile.parentFile,
+//                classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER
+//            )
         }
     }
 
