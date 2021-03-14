@@ -47,7 +47,6 @@ class PackageCommand(): CliktCommand(
     ).choice(Pack.packMap)
         .multiple()
 
-
     val uploadDirOption by option("--uploadDir")
         .file(canBeFile = false, canBeDir = true, canBeSymlink = false, mustBeWritable = true)
 
@@ -88,7 +87,7 @@ class PackageCommand(): CliktCommand(
 
                                 // packaging aliases
                                 metaPack.packConfig.versionAlias.forEach { (alias, version) ->
-                                    val lockpack = lockPacks.first { it.version == version }
+                                    val lockpack = lockPacks.firstOrNull() { it.version == version } ?: error("no version matching $version found for alias $alias")
                                     withLoggingContext("alias" to alias,"version" to lockpack.version) {
                                         launch(MDCContext() + CoroutineName("package-version-${lockpack.version}")) {
                                             Pack.pack("pack-${packTarget.id}".watch, lockpack, metaPack.packConfig, uploadDir, packTarget, versionAlias = alias)
