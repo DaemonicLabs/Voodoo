@@ -3,6 +3,7 @@ package voodoo.cli.launch
 import com.eyeem.watchadoin.Stopwatch
 import com.eyeem.watchadoin.saveAsHtml
 import com.eyeem.watchadoin.saveAsSvg
+import com.github.ajalt.clikt.completion.CompletionCandidates
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
@@ -32,7 +33,8 @@ class LaunchMultiMCCommand(): CliktCommand(
 
     val packFile by argument(
         "PACK_FILE",
-        "path to .${VersionPack.extension} file"
+        "path to .${VersionPack.extension} file",
+        completionCandidates = CompletionCandidates.Custom.fromStdout("find **/*${VersionPack.extension}")
     ).file(mustExist = true, canBeFile = true, canBeDir = false)
         .validate { file ->
             require(file.name.endsWith("." + VersionPack.extension)) {

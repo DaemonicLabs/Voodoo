@@ -3,6 +3,7 @@ package voodoo.cli
 import com.eyeem.watchadoin.Stopwatch
 import com.eyeem.watchadoin.saveAsHtml
 import com.eyeem.watchadoin.saveAsSvg
+import com.github.ajalt.clikt.completion.CompletionCandidates
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
@@ -18,6 +19,7 @@ import mu.withLoggingContext
 import voodoo.Pack
 import voodoo.data.lock.LockPack
 import voodoo.pack.MetaPack
+import voodoo.pack.VersionPack
 import voodoo.util.SharedFolders
 import voodoo.util.VersionComparator
 import java.io.File
@@ -31,7 +33,8 @@ class PackageCommand(): CliktCommand(
 
     val metaPackFile by argument(
         "META_FILE",
-        "path to ${MetaPack.FILENAME} file"
+        "path to ${MetaPack.FILENAME} file",
+        completionCandidates = CompletionCandidates.Custom.fromStdout("find **/${MetaPack.FILENAME}")
     ).file(mustExist = true, canBeFile = true, canBeDir = false)
         .validate { file ->
             require(file.name == MetaPack.FILENAME) {

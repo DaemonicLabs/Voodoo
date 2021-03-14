@@ -3,6 +3,7 @@ package voodoo.cli
 import com.eyeem.watchadoin.Stopwatch
 import com.eyeem.watchadoin.saveAsHtml
 import com.eyeem.watchadoin.saveAsSvg
+import com.github.ajalt.clikt.completion.CompletionCandidates
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
@@ -22,6 +23,7 @@ import voodoo.pack.MetaPack
 import voodoo.pack.VersionPack
 import voodoo.util.VersionComparator
 import voodoo.util.json
+import voodoo.util.toRelativeUnixPath
 
 class CompileCommand() : CliktCommand(
     name = "compile",
@@ -33,7 +35,8 @@ class CompileCommand() : CliktCommand(
 
     val packFiles by argument(
         "PACK_FILE",
-        "path to .${VersionPack.extension} file"
+        "path to .${VersionPack.extension} file",
+        completionCandidates = CompletionCandidates.Custom.fromStdout("find **/*.${VersionPack.extension}")
     ).file(mustExist = true, canBeFile = true, canBeDir = false)
         .multiple()
         .validate { files ->

@@ -1,6 +1,8 @@
 package voodoo.cli
 
 import ch.qos.logback.classic.Level
+import com.github.ajalt.clikt.completion.CompletionCommand
+import com.github.ajalt.clikt.completion.completionOption
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands
 import com.github.ajalt.clikt.parameters.options.default
@@ -18,7 +20,7 @@ import voodoo.util.SharedFolders
 import voodoo.voodoo.GeneratedConstants
 import java.io.File
 
-class VoodooCommand(invocation: String = "voodoo") : CliktCommand(
+class VoodooCommand(invocation: String) : CliktCommand(
     name = invocation,
     help = "modpack building magic",
 //    allowMultipleSubcommands = true
@@ -26,6 +28,7 @@ class VoodooCommand(invocation: String = "voodoo") : CliktCommand(
 ) {
     private val logger = KotlinLogging.logger {}
     init {
+        completionOption()
         versionOption(GeneratedConstants.FULL_VERSION)
         subcommands(
             InitCommand(),
@@ -35,7 +38,7 @@ class VoodooCommand(invocation: String = "voodoo") : CliktCommand(
             LaunchCommand(),
             GenerateSchemaCommand(),
             UpdateCommand(),
-            ImportCurseCommand()
+            ImportCurseCommand(),
         )
     }
 

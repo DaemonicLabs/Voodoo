@@ -17,16 +17,9 @@ import java.util.stream.Collectors;
 public class Wrapper {
 
     public static void main(String[] args) throws URISyntaxException {
-        boolean isAutocomplete = false;
-        for(String key : System.getenv().keySet()) {
-            if(key.startsWith("_") && key.endsWith("_COMPLETE")) {
-                isAutocomplete = true;
-                break;
-            }
-        }
         Properties props = new Properties();
         File propertiesFile = new File(new File(Wrapper.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile(), "wrapper.properties");
-        if (!isAutocomplete) System.out.printf("loading wrapper properties from %s%n", propertiesFile.getPath());
+        System.err.printf("loading wrapper properties from %s%n", propertiesFile.getPath());
         if (!propertiesFile.exists()) {
             System.err.println("cannot open file " + propertiesFile.getPath());
             System.exit(-1);
@@ -59,7 +52,7 @@ public class Wrapper {
 
         try {
             cleanup(binariesDir);
-            launch(distributionUrl, binariesDir, args, isAutocomplete);
+            launch(distributionUrl, binariesDir, args);
         } catch (Throwable t) {
             t.printStackTrace();
             System.err.println("Error: " + t.getLocalizedMessage());
@@ -79,19 +72,18 @@ public class Wrapper {
     private static void launch(
             String distributionUrl,
             File binariesDir,
-            String[] originalArgs,
-            boolean isAutocomplete
+            String[] originalArgs
     ) throws Throwable {
         String artifact = distributionUrl.substring(distributionUrl.lastIndexOf('/'));
         artifact = artifact.substring(0, artifact.lastIndexOf(".jar"));
 
-        if(!isAutocomplete) System.out.printf("Downloading the %s binary...%n", artifact);
+        System.err.printf("Downloading the %s binary...%n", artifact);
 
 //        File lastFile = new File(binariesDir, artifact + ".last.jar");
 
         File file;
         try {
-            file = download(distributionUrl, binariesDir, artifact, isAutocomplete);
+            file = download(distributionUrl, binariesDir, artifact);
             if (!file.exists()) {
                 throw new IllegalStateException("downloaded file does not seem to exist");
             }
@@ -107,7 +99,7 @@ public class Wrapper {
             throw new IllegalStateException(String.format("binary %s does not exist", file.getPath()));
         }
 //        Files.copy(file.toPath(), lastFile.toPath());
-        if(!isAutocomplete) System.out.printf("Loaded %s%n", file.getPath());
+        System.err.printf("Loaded %s%n", file.getPath());
         String java = Paths.get(System.getProperty("java.home"), "bin", "java").toFile().getPath();
         File workingDir = new File(System.getProperty("user.dir"));
 
@@ -115,11 +107,11 @@ public class Wrapper {
 //        for (Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
 //            Object key = entry.getKey();
 //            Object value = entry.getValue();
-//            System.out.println(key + ": " + value);
+//            System.err.println(key + ": " + value);
 //            //TODO: systemPropertyArgs += "-D${key}=${value}"
 //        }
-        if (System.getProperty("kotlinx.coroutines.debug") != null) {
-            systemPropertyArgs = new String[]{"-Dkotlinx.coroutines.debug"};
+        if (System.getProperty("kotlinx.corerrines.debug") != null) {
+            systemPropertyArgs = new String[]{"-Dkotlinx.corerrines.debug"};
         } else {
             systemPropertyArgs = new String[0];
         }
@@ -133,7 +125,7 @@ public class Wrapper {
 
         String[] args = argsList.toArray(new String[0]);
 
-        if(!isAutocomplete) System.out.printf("Executing %s", argsList.toString());
+        System.err.printf("Executing %s", argsList.toString());
         int exitStatus = new ProcessBuilder(args)
                 .directory(workingDir)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
@@ -171,11 +163,10 @@ public class Wrapper {
 
     public static File download(
             String distributionUrl,
-            File outputDir,
-            String artifact,
-            boolean isAutocomplete
+            File errputDir,
+            String artifact
     ) throws Exception {
-        File targetFile = new File(outputDir, artifact + ".jar");
+        File targetFile = new File(errputDir, artifact + ".jar");
         File tmpFile = new File(targetFile.getParent(), targetFile.getName() + ".tmp");
 
         String md5;
@@ -187,7 +178,7 @@ public class Wrapper {
             String fileMd5 = toHexString(createMD5(targetFile));
 
             if (fileMd5.equalsIgnoreCase(md5)) {
-                if(!isAutocomplete) System.out.println("cached file matched md5 hash");
+                System.err.println("cached file matched md5 hash");
                 return targetFile;
             }
         }

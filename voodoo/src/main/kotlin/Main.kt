@@ -10,7 +10,10 @@ object Main {
         System.setProperty(DEBUG_PROPERTY_NAME, DEBUG_PROPERTY_VALUE_ON)
 //        DebugProbes.install()
 
-        VoodooCommand().main(args)
+//        System.getenv().forEach { (k, v) -> System.err.println("$k: $v") }
+
+        val voodooCommandName = System.getenv("VOODOO_COMMAND") ?: "voodoo"
+        VoodooCommand(voodooCommandName).main(args)
 
 //        DebugProbes.dumpCoroutines(System.out)
 //        DebugProbes.uninstall()

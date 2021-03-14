@@ -87,21 +87,20 @@ bash and zsh autocomplete
 the autocompletions should be regenerated manually on voodoo update
 
 ```
-# creating a alias
-alias voodoo='java -jar voodoo.jar'
+# generate wrapper and shell scripts
+java -jar voodoo.jar init project
 
 # generating autocompletion for bash
-_VOODOO_COMPLETE=bash voodoo > ~/voodoo-completion.sh
-source ~/voodoo-completion.sh
+source <(./voodoo --generate-completion=bash)
 
 # generating autocompletion for zsh
-_VOODOO_COMPLETE=zsh voodoo > ~/voodoo-completion.sh
+source <(./voodoo --generate-completion=zsh)
 
-# bash example
-alias voodoo='java -jar voodoo.jar'
-_VOODOO_COMPLETE=bash voodoo > voodoo-autocomplete.sh
-source voodoo-autocomplete.sh
+# generating autocompletion for fish
+./voodoo --generate-completion=fish | source
 
+# generating for a custom shell script name
+VOODOO_COMMAND=voodoo-dev ./voodoo-dev --generate-completion=fish | source
 ```
 
 if you use a different alias then use the correct environment variable to generate completions

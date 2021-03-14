@@ -60,7 +60,7 @@ class InitProjectCommand : CliktCommand(
 
             rootDir.resolve("voodoo.bat").let { batFile ->
                 if(batFile.exists()) {
-                    logger.info { "$batFile already exists, not overwriting" }
+                    logger.error { "$batFile already exists, not overwriting" }
                     return@let
                 }
 
@@ -72,7 +72,7 @@ class InitProjectCommand : CliktCommand(
 
             rootDir.resolve("voodoo").let { bashFile ->
                 if(bashFile.exists()) {
-                    logger.info { "$bashFile already exists, not overwriting" }
+                    logger.error { "$bashFile already exists, not overwriting" }
                     return@let
                 }
 
@@ -86,10 +86,37 @@ class InitProjectCommand : CliktCommand(
                 logger.info { "generated $bashFile" }
             }
 
+            rootDir.resolve("shell_completion").let { bashFile ->
+                if(bashFile.exists()) {
+                    logger.error { "$bashFile already exists, not overwriting" }
+                    return@let
+                }
+
+                bashFile.writeText("""
+                    #!/usr/bin/env bash
+                    
+                    DIR="${'$'}( cd "${'$'}( dirname "${'$'}{BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+                    
+                    case ${'$'}(basename ${'$'}(readlink -f "/proc/${'$'}PPID/exe")) in
+                      bash)
+                        source <(${'$'}DIR/voodoo --generate-completion=bash)
+                        ;;
+                      fish)
+                        ${'$'}DIR/voodoo --generate-completion=fish | source
+                        ;;
+                      zsh)
+                        source <(${'$'}DIR/voodoo --generate-completion=zsh)
+                        ;;
+                    esac
+                """.trimIndent())
+                bashFile.setExecutable(true)
+                logger.info { "generated $bashFile" }
+            }
+
             //TODO: move to setup command
             rootDir.resolve(".gitignore").let { gitignoreFile ->
                 if(gitignoreFile.exists()) {
-                    logger.info { "$gitignoreFile already exists, not overwriting" }
+                    logger.error { "$gitignoreFile already exists, not overwriting" }
                     return@let
                 }
 

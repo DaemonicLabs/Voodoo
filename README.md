@@ -102,18 +102,20 @@ bash, zsh and fish Autocomplete
 the autocompletions should be regenerated manually on voodoo update
 
 ```
-# generate  wrapper and shell scripts
-java -jar voodoo.jar generateWrapper
+# generate wrapper and shell scripts
+java -jar voodoo.jar init project
 
 # generating autocompletion for bash
-_VOODOO_COMPLETE=bash ./voodoo > ~/voodoo-completion.sh
-source ~/voodoo-completion.sh
+source <(./voodoo --generate-completion=bash)
 
 # generating autocompletion for zsh
-_VOODOO_COMPLETE=zsh ./voodoo > ~/voodoo-completion.sh
+source <(./voodoo --generate-completion=zsh)
 
 # generating autocompletion for fish
-_VOODOO_COMPLETE=fish ./voodoo > ~/.config/fish/voodoo-completion.fish
+./voodoo --generate-completion=fish | source
+
+# generating for a custom shell script name
+VOODOO_COMMAND=voodoo-dev ./voodoo-dev --generate-completion=fish | source
 
 ```
 

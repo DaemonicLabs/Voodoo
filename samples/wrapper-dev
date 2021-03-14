@@ -2,4 +2,4 @@
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 cp -f $DIR/../wrapper/build/libs/wrapper-0.6.0-local-all.jar $DIR/wrapper/wrapper-dev.jar
-java -jar $DIR/wrapper/wrapper-dev.jar $@
+VOODOO_COMMAND='wrapper-dev' java -jar $DIR/wrapper/wrapper-dev.jar $@
