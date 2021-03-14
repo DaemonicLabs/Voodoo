@@ -378,20 +378,20 @@ java -jar voodoo.jar init project
 </code></pre></div>
 <p>bash and zsh autocomplete</p>
 <p>the autocompletions should be regenerated manually on voodoo update</p>
-<div class="highlight"><pre><span></span><code># creating a alias
-alias voodoo=&#39;java -jar voodoo.jar&#39;
+<div class="highlight"><pre><span></span><code># generate wrapper and shell scripts
+java -jar voodoo.jar init project
 
 # generating autocompletion for bash
-_VOODOO_COMPLETE=bash voodoo &gt; ~/voodoo-completion.sh
-source ~/voodoo-completion.sh
+source &lt;(./voodoo --generate-completion=bash)
 
 # generating autocompletion for zsh
-_VOODOO_COMPLETE=zsh voodoo &gt; ~/voodoo-completion.sh
+source &lt;(./voodoo --generate-completion=zsh)
 
-# bash example
-alias voodoo=&#39;java -jar voodoo.jar&#39;
-_VOODOO_COMPLETE=bash voodoo &gt; voodoo-autocomplete.sh
-source voodoo-autocomplete.sh
+# generating autocompletion for fish
+./voodoo --generate-completion=fish | source
+
+# generating for a custom shell script name
+VOODOO_COMMAND=voodoo-dev ./voodoo-dev --generate-completion=fish | source
 </code></pre></div>
 <p>if you use a different alias then use the correct environment variable to generate completions
 the rules are</p>
