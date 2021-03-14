@@ -67,7 +67,7 @@ class InitProjectCommand : CliktCommand(
 
                 batFile.writeText("""
                     java -jar wrapper\wrapper.jar %*
-                    IF EXIST wrapper\new.jar MOVE wrapper\new.jar wrapper\wrapper.jar
+                    IF EXIST wrapper\new.jar MOVE /Y wrapper\new.jar wrapper\wrapper.jar
                 """.trimIndent())
                 logger.info { "generated $batFile" }
             }
@@ -85,7 +85,7 @@ class InitProjectCommand : CliktCommand(
                     java -jar ${'$'}DIR/wrapper/wrapper.jar ${'$'}@
                     
                     if test -f "${'$'}DIR/wrapper/new.jar"; then
-                        mv ${'$'}DIR/wrapper/new.jar ${'$'}DIR/wrapper/wrapper.jar
+                        mv -f ${'$'}DIR/wrapper/new.jar ${'$'}DIR/wrapper/wrapper.jar
                     fi
                 """.trimIndent())
                 bashFile.setExecutable(true)
@@ -113,7 +113,7 @@ class InitProjectCommand : CliktCommand(
                 }
 
                 shellFile.writeText("""
-                    #!/usr/bin/env bash
+                    #!/usr/bin/env zsh
                     
                     source <(./voodoo --generate-completion=zsh
                 """.trimIndent())
