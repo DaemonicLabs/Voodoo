@@ -103,7 +103,9 @@ object Installer : KLogging() {
                 } else {
                     postFile.download(installerUrl, cacheHome)
                 }
-                return postFile
+                val newFile = cacheHome.resolve("tmp.jar")
+                postFile.copyTo(newFile, overwrite = true)
+                return newFile
             }
             else -> {
                 return null
