@@ -54,6 +54,12 @@ class LaunchMultiMCCommand(): CliktCommand(
             val baseDir = rootDir.resolve(packFile.absoluteFile.parentFile)
             val id = baseDir.name
             stopwatch {
+
+                // TODO: package `voodoo` for modpack
+                // TODO: create mmc-voodoo package with file: path and version selected
+
+                // TODO: launch multimc with pack id ?
+
                 val metaPackFile = baseDir.resolve(MetaPack.FILENAME)
                 val versionPack = VersionPack.parse(packFile = packFile)
 

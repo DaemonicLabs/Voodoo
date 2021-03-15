@@ -66,7 +66,12 @@ data class FlatModPack(
     val iconFile: File
         get() = baseFolder.resolve(icon)
 
-    suspend fun lock(stopwatch: Stopwatch, targetFolder: File): LockPack = stopwatch {
+    suspend fun lock(
+        stopwatch: Stopwatch,
+        targetFolder: File,
+        noModUpdates: Boolean,
+        previousLockpack: LockPack? = null
+    ): LockPack = stopwatch {
         val resolvedEntries = resolve(
             "resolve".watch,
             this@FlatModPack
@@ -94,7 +99,12 @@ data class FlatModPack(
                 modloader = modloader?.lock() ?: Modloader.None,
                 localDir = localDir,
                 packOptions = packOptions,
-                entries = resolvedEntries.sortedBy { it.id }
+                entries = if (noModUpdates) {
+                    requireNotNull(previousLockpack) { "failed to get entries from old lockpack" }
+                    previousLockpack.entries.sortedBy { it.id }
+                } else {
+                    resolvedEntries.sortedBy { it.id }
+                }
             ).also {
                 it.lockBaseFolder = targetFolder
             }

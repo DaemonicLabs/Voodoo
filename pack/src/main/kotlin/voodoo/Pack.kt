@@ -15,6 +15,7 @@ object Pack : KLogging() {
     val packMap = listOf(
         VoodooPackager,
         MMCSelfupdatingPackVoodoo,
+        MMCLocalPackVoodoo,
         MMCFatPack,
         ServerPack,
         CursePack

@@ -80,9 +80,15 @@ object Installer : KLogging() {
                 currentJarFile.copyTo(postFile, overwrite = true)
 
                 // checking for update
-                logger.info { "downloading sha256 from $installerUrl.sha256" }
-                val newSha256 = useClient { client ->
-                    client.get<String>(urlString = installerUrl + ".sha256")
+                val checksumUrl = installerUrl + ".sha256"
+                logger.info { "downloading sha256 from $checksumUrl" }
+                val newSha256 = if(installerUrl.startsWith("file:")) {
+                    val sourceFile = File(checksumUrl.substringAfter("file:"))
+                    sourceFile.readText()
+                } else {
+                    useClient { client ->
+                        client.get<String>(urlString = checksumUrl)
+                    }
                 }
 
                 if (currentJarFile.exists() && currentJarFile.sha256Hex().equals(newSha256, ignoreCase = true)) {
@@ -91,7 +97,12 @@ object Installer : KLogging() {
                 }
 
                 logger.info { "downloading $installerUrl" }
-                postFile.download(installerUrl, cacheHome)
+                if(installerUrl.startsWith("file:")) {
+                    val sourceFile = File(installerUrl.substringAfter("file:"))
+                    sourceFile.copyTo(postFile, overwrite = true)
+                } else {
+                    postFile.download(installerUrl, cacheHome)
+                }
                 return postFile
             }
             else -> {
@@ -117,13 +128,13 @@ object Installer : KLogging() {
         val packUrl = urlFile.readText().trim()
         logger.info { "pack url: $packUrl" }
 
-        val versionListing = withContext(Dispatchers.IO) {
+        val versionListing = withContext(Dispatchers.IO) versionListing@{
             try {
+                if(packUrl.startsWith("file:")) {
+                    return@versionListing json.decodeFromString(VersionsList.serializer(), File(packUrl.substringAfter("file:")).readText())
+                }
                 useClient { client ->
-                    client.get<HttpResponse> {
-                        url(packUrl)
-                        header(HttpHeaders.UserAgent, useragent)
-                    }
+                    client.get<HttpResponse>(packUrl)
                 }.let { response ->
                     if (!response.status.isSuccess()) {
                         logger.error { "$packUrl returned ${response.status}" }
@@ -158,16 +169,16 @@ object Installer : KLogging() {
         }
         val selectedVersion = versionListing.versions.getValue(selectedVersionKey)
 
-        val manifestUrl = URI(packUrl).resolve(selectedVersion.location).toURL()
 
-        val modpack = withContext(Dispatchers.IO) {
+        val modpack = withContext(Dispatchers.IO) modpack@{
             try {
+                if(packUrl.startsWith("file:")) {
+                    val manifestFile = File(packUrl.substringAfter("file:")).parentFile.resolve(selectedVersion.location)
+                    return@modpack json.decodeFromString(Manifest.serializer(), manifestFile.readText())
+                }
+                val manifestUrl = URI(packUrl).resolve(selectedVersion.location).toURL()
                 useClient { client ->
-                    client.get<HttpResponse> {
-
-                        url(manifestUrl)
-                        header(HttpHeaders.UserAgent, useragent)
-                    }
+                    client.get<HttpResponse>(manifestUrl)
                 }.let { response ->
                     if (!response.status.isSuccess()) {
                         logger.error { "$packUrl returned ${response.status}" }
@@ -184,7 +195,11 @@ object Installer : KLogging() {
                 error("failed to get $packUrl")
             }
         }
-        val newJar = selfupdate(instanceDir, packUrl.substringBeforeLast('/') + "/" + modpack.installerLocation, phase)
+        val newJar = selfupdate(
+            instanceDir,
+            packUrl.substringBeforeLast('/') + "/" + modpack.installerLocation,
+            phase
+        )
         if (newJar != null) {
             val java = Paths.get(System.getProperty("java.home"), "bin", "java").toFile().path
             val workingDir = File(System.getProperty("user.dir"))
@@ -225,44 +240,6 @@ object Installer : KLogging() {
         if(phase == Phase.POST) {
             return
         }
-
-        // TODO: implement version listing later
-//        try {
-//            try {
-//                // look up versions from a listing
-//                val versionListing = json.decodeFromString(MapSerializer(String.serializer(), String.serializer()), jsonString)
-//                val targetVersion = instanceDir.resolve("channel.txt").takeIf { it.exists() }?.readText()?.trim() ?: "latest"
-//                val versionPointer = versionListing[targetVersion]
-//
-//                val packUrl = packUrl.substringBeforeLast('/') + "/" + versionPointer
-//                val response = withContext(Dispatchers.IO) {
-//                    try {
-//                        client.get<HttpResponse> {
-//                            url(packUrl)
-//                            header(HttpHeaders.UserAgent, useragent)
-//                        }
-//                    } catch (e: IOException) {
-//                        logger.error("packUrl: $packUrl")
-//                        logger.error(e) { "unable to get pack from $packUrl" }
-//                        error("failed to get $packUrl")
-//                    }
-//                }
-//                if (!response.status.isSuccess()) {
-//                    logger.error { "$packUrl returned ${response.status}" }
-//                    error("failed with ${response.status}")
-//                }
-//                json.decodeFromString(Manifest.serializer(), response.readText())
-//            } catch (e: SerializationException) {
-//                json.decodeFromString(Manifest.serializer(), jsonString)
-//            }
-//        } catch (e: SerializationException) {
-//            return SKHandler.install(
-//                json.decodeFromString(com.skcraft.launcher.model.modpack.Manifest.serializer(), jsonString),
-//                instanceId,
-//                instanceDir,
-//                minecraftDir
-//            )
-//        }
 
         val oldpackFile = instanceDir.resolve("voodoo.modpack.json")
         val oldpack: Manifest? = oldpackFile.takeIf { it.exists() }
@@ -307,19 +284,6 @@ object Installer : KLogging() {
             logger.info("no old pack found")
         }
 
-//        val fabricPrefix = "net.fabricmc.fabric-loader"
-//        val forgePrefix = "net.minecraftforge:forge:"
-//        var (_, _, forgeVersion) = modpack.versionManifest?.libraries?.find {
-//            it.name.startsWith(forgePrefix)
-//        }?.name.let { it ?: "::" }.split(':')
-//        if (forgeVersion.isBlank()) {
-//            // TODO: also look for fabric version
-//            logger.error("could not parse forge version in modpack")
-//            exitProcess(2)
-//        }
-//        while (forgeVersion.count { it == '-' } > 1) {
-//            forgeVersion = forgeVersion.substringBeforeLast("-")
-//        }
         logger.info("modloader is ${modpack.modLoader}")
 
         val json = Json {
@@ -426,6 +390,32 @@ object Installer : KLogging() {
                                     }
                                     target.delete()
                                     target.parentFile.mkdirs()
+                                    if(url.startsWith("file:")) {
+                                        val sourceFile = File(url.substringAfter("file:"))
+                                        sourceFile.copyTo(target, overwrite = true)
+                                    } else {
+                                        target.download(
+                                            url = url,
+                                            cacheDir = cacheFolder,
+                                            validator = { bytes, file ->
+                                                val sha256 = bytes.sha256Hex()
+                                                logger.info("comparing $sha256 == ${task.hash} of file: $file")
+                                                sha256 == task.hash.substringAfter(':')
+                                            }
+                                        )
+                                    }
+
+                                }
+                            } else {
+                                // file exists but was not in the last version.. reset to make sure
+                                logger.info("task ${task.to} exists but was not in the last version.. reset to make sure")
+                                target.delete()
+                                target.parentFile.mkdirs()
+
+                                if(url.startsWith("file:")) {
+                                    val sourceFile = File(url.substringAfter("file:"))
+                                    sourceFile.copyTo(target, overwrite = true)
+                                } else {
                                     target.download(
                                         url = url,
                                         cacheDir = cacheFolder,
@@ -436,27 +426,18 @@ object Installer : KLogging() {
                                         }
                                     )
                                 }
-                            } else {
-                                // file exists but was not in the last version.. reset to make sure
-                                logger.info("task ${task.to} exists but was not in the last version.. reset to make sure")
-                                target.delete()
-                                target.parentFile.mkdirs()
-
-                                target.download(
-                                    url = url,
-                                    cacheDir = cacheFolder,
-                                    validator = { bytes, file ->
-                                        val sha256 = bytes.sha256Hex()
-                                        logger.info("comparing $sha256 == ${task.hash} of file: $file")
-                                        sha256 == task.hash.substringAfter(':')
-                                    }
-                                )
                             }
                         } else {
                             // new file
                             logger.info("task ${task.to} creating new file")
                             target.parentFile.mkdirs()
-                            target.download(url, cacheFolder)
+
+                            if(url.startsWith("file:")) {
+                                val sourceFile = File(url.substringAfter("file:"))
+                                sourceFile.copyTo(target, overwrite = true)
+                            } else {
+                                target.download(url, cacheFolder)
+                            }
 
                             oldTask?.let {
                                 uptodateTasks.send(it)
@@ -480,7 +461,8 @@ object Installer : KLogging() {
         }
 
         uptodateTasks.close()
-        val toRemove = (oldpack?.tasks?.filterNot { it.side == Side.SERVER } ?: listOf()) - uptodateTasks.toList()
+        val newTargets = uptodateTasks.toList().map { it.to }
+        val toRemove = oldTaskList.filter { it.side != Side.SERVER }.filter { it.to !in  newTargets}
         logger.info("files to delete: ${toRemove.map { it.to }}")
 
         // iterate old and delete

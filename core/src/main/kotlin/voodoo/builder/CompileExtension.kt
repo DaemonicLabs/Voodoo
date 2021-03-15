@@ -38,12 +38,7 @@ suspend fun FlatModPack.compile(
     }
 
     logger.info("Creating locked pack...")
-    val lockedPack = if (noModUpdates) {
-        requireNotNull(prevLockpack) { "failed to parse old lockpack: $targetFile" }
-        prevLockpack
-    } else {
-        modpack.lock("lock".watch, targetFolder)
-    }
+    val lockedPack = modpack.lock("lock".watch, targetFolder, noModUpdates, prevLockpack)
     lockedPack.lockBaseFolder.deleteRecursively()
     lockedPack.lockBaseFolder.mkdirs()
 
