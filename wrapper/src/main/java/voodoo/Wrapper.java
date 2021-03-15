@@ -17,9 +17,29 @@ import java.util.stream.Collectors;
 public class Wrapper {
 
     public static void main(String[] args) throws URISyntaxException {
+        boolean generateCompletion = false;
+        for(String key : System.getenv().keySet()) {
+            if(key.startsWith("_") && key.endsWith("_COMPLETE")) {
+                generateCompletion = true;
+                break;
+            }
+        }
+        if(Arrays.stream(args).anyMatch((e) -> e.startsWith("--generate-completion="))) {
+            generateCompletion = true;
+        }
+        if(generateCompletion) {
+            System.setOut(new PrintStream(new OutputStream() {
+                @Override
+                public void write(int arg0) {}
+            }));
+            System.setErr(new PrintStream(new OutputStream() {
+                @Override
+                public void write(int arg0) {}
+            }));
+        }
         Properties props = new Properties();
         File propertiesFile = new File(new File(Wrapper.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getParentFile(), "wrapper.properties");
-        System.err.printf("loading wrapper properties from %s%n", propertiesFile.getPath());
+        System.out.printf("loading wrapper properties from %s%n", propertiesFile.getPath());
         if (!propertiesFile.exists()) {
             System.err.println("cannot open file " + propertiesFile.getPath());
             System.exit(-1);
@@ -77,7 +97,7 @@ public class Wrapper {
         String artifact = distributionUrl.substring(distributionUrl.lastIndexOf('/'));
         artifact = artifact.substring(0, artifact.lastIndexOf(".jar"));
 
-        System.err.printf("Downloading the %s binary...%n", artifact);
+        System.out.printf("Downloading the %s binary...%n", artifact);
 
 //        File lastFile = new File(binariesDir, artifact + ".last.jar");
 
@@ -99,7 +119,7 @@ public class Wrapper {
             throw new IllegalStateException(String.format("binary %s does not exist", file.getPath()));
         }
 //        Files.copy(file.toPath(), lastFile.toPath());
-        System.err.printf("Loaded %s%n", file.getPath());
+        System.out.printf("Loaded %s%n", file.getPath());
         String java = Paths.get(System.getProperty("java.home"), "bin", "java").toFile().getPath();
         File workingDir = new File(System.getProperty("user.dir"));
 
@@ -125,7 +145,7 @@ public class Wrapper {
 
         String[] args = argsList.toArray(new String[0]);
 
-        System.err.printf("Executing %s", argsList.toString());
+        System.out.printf("Executing %s", argsList.toString());
         int exitStatus = new ProcessBuilder(args)
                 .directory(workingDir)
                 .redirectOutput(ProcessBuilder.Redirect.INHERIT)
@@ -178,7 +198,7 @@ public class Wrapper {
             String fileMd5 = toHexString(createMD5(targetFile));
 
             if (fileMd5.equalsIgnoreCase(md5)) {
-                System.err.println("cached file matched md5 hash");
+                System.out.println("cached file matched md5 hash");
                 return targetFile;
             }
         }
