@@ -130,6 +130,7 @@ subprojects {
 //                "-XXLanguage:+InlineClasses",
 //                "-progressive"
                 )
+//                useIR = true
             }
         }
         configure<JavaPluginExtension> {
