@@ -22,6 +22,7 @@ import voodoo.mmc.MMCUtil
 import voodoo.mmc.MMCUtil.updateAndSelectFeatures
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent
+import voodoo.multimc.installer.GeneratedConstants
 import voodoo.util.*
 import java.io.File
 import java.io.IOException
@@ -49,6 +50,7 @@ object Installer : KLogging() {
         val toDeleteFile = voodooFolder.resolve("to-delete.txt")
         toDeleteFile.parentFile.mkdirs()
         val currentJarFile = File(Installer::class.java.protectionDomain.codeSource.location.toURI())
+        logger.info { "version: ${GeneratedConstants.FULL_VERSION}" }
         logger.info { "currentJarFile: ${currentJarFile.toRelativeString(instanceDir)}" }
         logger.info { "sha256: ${currentJarFile.sha256Hex()}" }
         when (phase) {
