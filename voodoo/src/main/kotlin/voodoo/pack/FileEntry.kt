@@ -76,7 +76,7 @@ sealed class FileEntry {
 
         fun <E: Common> foldOverrides(overrides: Map<String, EntryOverride>): E {
             val intitalEntry = this as E
-            val entryId = intitalEntry.id() ?: "null"
+            val entryId = intitalEntry.id().takeUnless { it.isNullOrBlank() } ?: error("missing entry id for entry: ")
             val entry = intitalEntry.applyOverrides.fold(intitalEntry) { acc: E, overrideId ->
                 val entryOverride =
                     overrides[overrideId] ?: error("$entryId: override for id $overrideId not found")
@@ -140,7 +140,7 @@ sealed class FileEntry {
         @JsonSchema.StringEnum(["replace_with_overrides"])
         override val applyOverrides: List<String> = listOf(),
 
-        override var id: String? = CommonComponent.DEFAULT.id,
+        override var id: String? = null,
         override var name: String? = CommonComponent.DEFAULT.name,
         override var folder: String? = CommonComponent.DEFAULT.folder,
         override var description: String? = CommonComponent.DEFAULT.description,
@@ -202,7 +202,7 @@ sealed class FileEntry {
         @JsonSchema.StringEnum(["replace_with_overrides"])
         override val applyOverrides: List<String> = listOf(),
 
-        override var id: String? = CommonComponent.DEFAULT.id,
+        override var id: String? = null,
         override var name: String? = CommonComponent.DEFAULT.name,
         override var folder: String? = CommonComponent.DEFAULT.folder,
         override var description: String? = CommonComponent.DEFAULT.description,
@@ -217,7 +217,7 @@ sealed class FileEntry {
         override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
         override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : Common, FileEntry() {
-        override fun id() = id.takeUnless { it.isNullOrBlank() }  ?: direct_url.split(":|&|=".toRegex()).joinToString("_")
+        override fun id() = id.takeUnless { it.isNullOrBlank() } ?: direct_url.split(":|&|=".toRegex()).joinToString("_")
         override fun applyOverride(override: EntryOverride): Direct {
             return when (override) {
                 is EntryOverride.Direct -> copy(
@@ -259,7 +259,7 @@ sealed class FileEntry {
         @JsonSchema.StringEnum(["replace_with_overrides"])
         override val applyOverrides: List<String> = listOf(),
 
-        override var id: String? = CommonComponent.DEFAULT.id,
+        override var id: String? = null,
         override var name: String? = CommonComponent.DEFAULT.name,
         override var folder: String? = CommonComponent.DEFAULT.folder,
         override var description: String? = CommonComponent.DEFAULT.description,
@@ -274,7 +274,7 @@ sealed class FileEntry {
         override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
         override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : Common, FileEntry() {
-        override fun id() = id.takeUnless { it.isNullOrBlank() }  ?: jenkins_job
+        override fun id() = id.takeUnless { it.isNullOrBlank() } ?: jenkins_job
         override fun applyOverride(override: EntryOverride): Jenkins {
             return when (override) {
                 is EntryOverride.Jenkins -> copy(
@@ -318,7 +318,7 @@ sealed class FileEntry {
         @JsonSchema.StringEnum(["replace_with_overrides"])
         override val applyOverrides: List<String> = listOf(),
 
-        override var id: String? = CommonComponent.DEFAULT.id,
+        override var id: String? = null,
         override var name: String? = CommonComponent.DEFAULT.name,
         override var folder: String? = CommonComponent.DEFAULT.folder,
         override var description: String? = CommonComponent.DEFAULT.description,
@@ -369,7 +369,7 @@ sealed class FileEntry {
         @JsonSchema.StringEnum(["replace_with_overrides"])
         override val applyOverrides: List<String> = listOf(),
 
-        override var id: String? = CommonComponent.DEFAULT.id,
+        override var id: String? = null,
         override var name: String? = CommonComponent.DEFAULT.name,
         override var folder: String? = CommonComponent.DEFAULT.folder,
         override var description: String? = CommonComponent.DEFAULT.description,
@@ -384,8 +384,6 @@ sealed class FileEntry {
         override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
         override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : Common, FileEntry() {
-        @JsonSchema.StringEnum(["noop"])
-        private val type = "noop"
         override fun id() = id
         override fun applyOverride(override: EntryOverride): Noop {
             return when (override) {

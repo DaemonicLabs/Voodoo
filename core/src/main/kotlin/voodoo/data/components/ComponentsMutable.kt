@@ -36,7 +36,7 @@ data class CommonComponent(
     override var enabled: Boolean = true
 ) : CommonMutable {
     companion object {
-        val DEFAULT = CommonComponent()
+        val DEFAULT = CommonComponent(id = "")
     }
 }
 

@@ -53,7 +53,7 @@ suspend fun resolve(
 
 
     fun addEntry(entry: FlatEntry, dependency: Boolean = false) {
-        if (entry.id.isBlank()) {
+        if (entry.id.isNullOrBlank()) {
             logger.error("invalid: $entry")
             return
         }
