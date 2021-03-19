@@ -63,7 +63,8 @@ data class DirectComponent(
 data class JenkinsComponent(
     override var jenkinsUrl: String = "",
     override var job: String = "",
-    override var buildNumber: Int = -1
+    override var buildNumber: Int = -1,
+    override var useOriginalUrl: Boolean = true
 ) : JenkinsMutable
 
 @Serializable

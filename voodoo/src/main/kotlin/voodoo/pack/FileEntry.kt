@@ -253,6 +253,7 @@ sealed class FileEntry {
         val jenkins_jenkinsUrl: String = "",
         val jenkins_job: String, // = "",
         val jenkins_buildNumber: Int = -1,
+        val jenkins_useOriginalUrl: Boolean = true,
 
         @JsonSchema.Definition("entry.overridesList")
         @JsonSchema.StringEnum(["replace_with_overrides"])
@@ -280,6 +281,7 @@ sealed class FileEntry {
                     jenkins_jenkinsUrl = override.jenkins_jenkinsUrl ?: jenkins_jenkinsUrl,
 //                    jenkins_job = override.job ?: jenkins_job,
 //                    jenkins_buildNumber = override.buildNumber ?: jenkins_buildNumber
+                    jenkins_useOriginalUrl = override.jenkins_useOriginalUrl ?: jenkins_useOriginalUrl
                 ).apply {
                     applyCommonOverride(override)
                 }
@@ -301,7 +303,8 @@ sealed class FileEntry {
         private fun toJenkinsComponent() = JenkinsComponent(
             jenkinsUrl = jenkins_jenkinsUrl,
             job = jenkins_job,
-            buildNumber = jenkins_buildNumber
+            buildNumber = jenkins_buildNumber,
+            useOriginalUrl = jenkins_useOriginalUrl,
         )
 
     }

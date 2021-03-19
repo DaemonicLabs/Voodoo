@@ -84,12 +84,14 @@ sealed class EntryOverride(
         val jenkins_jenkinsUrl: String? = null,
 //        val job: String? = null,
 //        val buildNumber: Int? = null
+        val jenkins_useOriginalUrl: Boolean? = null
     ) : EntryOverride() {
         operator fun plus(other: Jenkins): Jenkins {
             return copy(
                 jenkins_jenkinsUrl = jenkins_jenkinsUrl ?: other.jenkins_jenkinsUrl,
 //                job = job ?: other.job,
 //                buildNumber = buildNumber ?: other.buildNumber,
+                jenkins_useOriginalUrl = jenkins_useOriginalUrl ?: other.jenkins_useOriginalUrl
             ).apply {
                 plusCommon(other)
             }

@@ -34,11 +34,6 @@ val noConstants: List<Project> = listOf(
 val noKotlin: List<Project> = listOf(
 )
 
-val bintrayOrg: String? = System.getenv("BINTRAY_USER")
-val bintrayApiKey: String? = System.getenv("BINTRAY_API_KEY")
-val bintrayRepository = "github"
-val bintrayPackage = "voodoo"
-
 object Maven {
     val url = "https://dl.bintray.com/nikkyai/github"
     val shadowClassifier = "all"

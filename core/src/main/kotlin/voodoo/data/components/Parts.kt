@@ -91,11 +91,13 @@ interface JenkinsImmutable {
     val jenkinsUrl: String
     val job: String
     val buildNumber: Int
+    val useOriginalUrl: Boolean
 }
 interface JenkinsMutable: JenkinsImmutable {
     override var jenkinsUrl: String
     override var job: String
     override var buildNumber: Int
+    override var useOriginalUrl: Boolean
 }
 
 

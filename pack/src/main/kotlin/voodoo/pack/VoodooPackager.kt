@@ -106,7 +106,8 @@ object VoodooPackager : AbstractPack("voodoo") {
                             ) ?: return@async null
                             if (url != null
                                 && ((entry is LockEntry.Direct && entry.useOriginalUrl) ||
-                                        (entry is LockEntry.Curse && entry.useOriginalUrl))
+                                        (entry is LockEntry.Curse && entry.useOriginalUrl) ||
+                                        (entry is LockEntry.Jenkins && entry.useOriginalUrl))
                             ) {
                                 val urlTxtFile = targetFolder.resolve(file.name + ".url.txt")
                                 urlTxtFile.writeText(url)

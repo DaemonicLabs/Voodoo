@@ -79,7 +79,8 @@ sealed class LockEntry() : CommonLockModule, Comparable<LockEntry> {
         val buildNumber: Int = -1,
         val artifactRelativePath: String,
         val artifactFileName: String,
-        val fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$"
+        val fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
+        val useOriginalUrl: Boolean = true,
     ) : LockEntry() {
         override val providerType = JenkinsProvider.id
         init {

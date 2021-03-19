@@ -56,7 +56,8 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
             buildNumber = buildNumber,
             fileNameRegex = entry.fileNameRegex,
             artifactRelativePath = artifact.relativePath,
-            artifactFileName = artifact.fileName
+            artifactFileName = artifact.fileName,
+            useOriginalUrl = entry.useOriginalUrl
         )
     }
 
