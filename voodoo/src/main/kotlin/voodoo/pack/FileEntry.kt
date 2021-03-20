@@ -15,75 +15,77 @@ import voodoo.data.flat.FlatEntry
 
 @Serializable
 sealed class FileEntry {
-    private val logger = KotlinLogging.logger{}
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
-    interface Common {
-        val applyOverrides: List<String>
-        var id: String?
-        var name: String?
-        var folder: String?
-        var description: String?
-        var optional: Optional?
-        var side: Side
-        var websiteUrl: String
-        var packageType: PackageType
-        // this entry got added as dependency for something else, only setthis if you know what you are doing
-        var version: String // TODO: use regex only ?
-        var transient: Boolean
-        var fileName: String?
-        var fileNameRegex: String
-        var validMcVersions: Set<String>
-        var invalidMcVersions: Set<String>
+    abstract val applyOverrides: List<String>
+    abstract var id: String?
+    abstract var name: String?
+    abstract var folder: String?
+    abstract var description: String?
+    abstract var optional: Optional?
+    abstract var side: Side
+    abstract var websiteUrl: String
+    abstract var packageType: PackageType
 
-        fun id(): String?
-        fun applyOverride(override: EntryOverride): Common
+    // this entry got added as dependency for something else, only setthis if you know what you are doing
+    abstract var version: String // TODO: use regex only ?
+    abstract var transient: Boolean
+    abstract var fileName: String?
+    abstract var fileNameRegex: String
+    abstract var validMcVersions: Set<String>
+    abstract var invalidMcVersions: Set<String>
 
-        fun toCommonComponent(defaultId: String? = null): CommonComponent = CommonComponent(
-            id = id.takeUnless { it.isNullOrBlank() } ?: defaultId ?: error("id must be set on $this"),
-            name = name,
-            folder = folder,
-            description = description,
-            optionalData = optional?.toOptionalData(),
-            side = side,
-            websiteUrl = websiteUrl,
-            dependencies = mutableMapOf(),
-            packageType = packageType,
-            transient = transient,
-            version = version,
-            fileName = fileName,
-            fileNameRegex = fileNameRegex,
-            validMcVersions = validMcVersions,
-            invalidMcVersions = invalidMcVersions
-        )
+    abstract fun id(): String?
+    abstract fun applyOverride(override: EntryOverride): FileEntry
+    abstract fun copyCommon(): FileEntry
 
-        fun applyCommonOverride(override: EntryOverride) {
-            override.folder?.let { folder = it }
-            override.description?.let { description = it }
-            override.optional?.let { optionalOverride ->
-                val opt = this.optional ?: Optional()
-                opt.applyOverride(optionalOverride)
-                optional = opt
-            }
-            override.side?.let { side = it }
-            override.websiteUrl?.let { websiteUrl = it }
-            override.packageType?.let { packageType = it }
-            override.version?.let { version = it }
-            override.fileName?.let { fileName = it }
-            override.fileNameRegex?.let { fileNameRegex = it }
-            override.validMcVersions?.let { validMcVersions += it }
-            override.invalidMcVersions?.let { invalidMcVersions += it }
+    fun toCommonComponent(defaultId: String? = null): CommonComponent = CommonComponent(
+        id = id.takeUnless { it.isNullOrBlank() } ?: defaultId ?: error("id must be set on $this"),
+        name = name,
+        folder = folder,
+        description = description,
+        optionalData = optional?.toOptionalData(),
+        side = side,
+        websiteUrl = websiteUrl,
+        dependencies = mutableMapOf(),
+        packageType = packageType,
+        transient = transient,
+        version = version,
+        fileName = fileName,
+        fileNameRegex = fileNameRegex,
+        validMcVersions = validMcVersions,
+        invalidMcVersions = invalidMcVersions
+    )
+
+    fun applyCommonOverride(override: EntryOverride) {
+        override.folder?.let { folder = it }
+        override.description?.let { description = it }
+        override.optional?.let { optionalOverride ->
+            val opt = this.optional ?: Optional()
+            opt.applyOverride(optionalOverride)
+            optional = opt
         }
+        override.side?.let { side = it }
+        override.websiteUrl?.let { websiteUrl = it }
+        override.packageType?.let { packageType = it }
+        override.version?.let { version = it }
+        override.fileName?.let { fileName = it }
+        override.fileNameRegex?.let { fileNameRegex = it }
+        override.validMcVersions?.let { validMcVersions += it }
+        override.invalidMcVersions?.let { invalidMcVersions += it }
+    }
 
-        fun <E: Common> foldOverrides(overrides: Map<String, EntryOverride>): E {
-            val intitalEntry = this as E
-            val entryId = intitalEntry.id().takeUnless { it.isNullOrBlank() } ?: error("missing entry id for entry: ")
-            val entry = intitalEntry.applyOverrides.fold(intitalEntry) { acc: E, overrideId ->
-                val entryOverride =
-                    overrides[overrideId] ?: error("$entryId: override for id $overrideId not found")
-                return@fold acc.applyOverride(entryOverride) as E
-            }
-            return entry as E
+    fun <E : FileEntry> foldOverrides(overrides: Map<String, EntryOverride>): E {
+        val intitalEntry = this as E
+        val entryId = intitalEntry.id().takeUnless { it.isNullOrBlank() } ?: error("missing entry id for entry: ")
+        val entry = intitalEntry.applyOverrides.fold(intitalEntry) { acc: E, overrideId ->
+            val entryOverride =
+                overrides[overrideId] ?: error("$entryId: override for id $overrideId not found")
+            return@fold acc.applyOverride(entryOverride) as E
         }
+        return entry as E
     }
 
     fun postParse(overrideKey: String): FileEntry = when (this) {
@@ -97,7 +99,7 @@ sealed class FileEntry {
 //                    curse_projectName = null,
                     applyOverrides = listOfNotNull(overrideKey.takeUnless { it.isBlank() }) + applyOverrides,
                     curse_projectID = ProjectID(addonid),
-                    id = id.takeUnless { it.isNullOrBlank() } ?: newName,
+//                    id = id.takeUnless { it.isNullOrBlank() } ?: newName,
                     name = name ?: newName
                 )
             } else {
@@ -151,10 +153,10 @@ sealed class FileEntry {
         override var transient: Boolean = CommonComponent.DEFAULT.transient,
         override var version: String = CommonComponent.DEFAULT.version,
         override var fileName: String? = CommonComponent.DEFAULT.fileName,
-        override var fileNameRegex: String =CommonComponent.DEFAULT.fileNameRegex,
+        override var fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
         override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
         override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
-    ) : Common, FileEntry() {
+    ) : FileEntry() {
         override fun id() = id.takeUnless { it.isNullOrBlank() } ?: curse_projectName?.substringAfterLast('/')
         override fun applyOverride(override: EntryOverride): Curse {
             return when (override) {
@@ -169,6 +171,10 @@ sealed class FileEntry {
                 }
                 else -> this
             }
+        }
+
+        override fun copyCommon(): FileEntry {
+            return copy()
         }
 
         override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
@@ -213,11 +219,13 @@ sealed class FileEntry {
         override var transient: Boolean = CommonComponent.DEFAULT.transient,
         override var version: String = CommonComponent.DEFAULT.version,
         override var fileName: String? = CommonComponent.DEFAULT.fileName,
-        override var fileNameRegex: String =CommonComponent.DEFAULT.fileNameRegex,
+        override var fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
         override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
         override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
-    ) : Common, FileEntry() {
-        override fun id() = id.takeUnless { it.isNullOrBlank() } ?: direct_url.split(":|&|=".toRegex()).joinToString("_")
+    ) : FileEntry() {
+        override fun id() =
+            id.takeUnless { it.isNullOrBlank() } ?: direct_url.split(":|&|=".toRegex()).joinToString("_")
+
         override fun applyOverride(override: EntryOverride): Direct {
             return when (override) {
                 is EntryOverride.Direct -> copy(
@@ -231,6 +239,10 @@ sealed class FileEntry {
                 }
                 else -> this
             }
+        }
+
+        override fun copyCommon(): FileEntry {
+            return copy()
         }
 
         override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
@@ -270,10 +282,10 @@ sealed class FileEntry {
         override var transient: Boolean = CommonComponent.DEFAULT.transient,
         override var version: String = CommonComponent.DEFAULT.version,
         override var fileName: String? = CommonComponent.DEFAULT.fileName,
-        override var fileNameRegex: String =CommonComponent.DEFAULT.fileNameRegex,
+        override var fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
         override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
         override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
-    ) : Common, FileEntry() {
+    ) : FileEntry() {
         override fun id() = id.takeUnless { it.isNullOrBlank() } ?: jenkins_job
         override fun applyOverride(override: EntryOverride): Jenkins {
             return when (override) {
@@ -290,6 +302,10 @@ sealed class FileEntry {
                 }
                 else -> this
             }
+        }
+
+        override fun copyCommon(): FileEntry {
+            return copy()
         }
 
         override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
@@ -329,10 +345,10 @@ sealed class FileEntry {
         override var transient: Boolean = CommonComponent.DEFAULT.transient,
         override var version: String = CommonComponent.DEFAULT.version,
         override var fileName: String? = CommonComponent.DEFAULT.fileName,
-        override var fileNameRegex: String =CommonComponent.DEFAULT.fileNameRegex,
+        override var fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
         override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
         override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
-    ) : Common, FileEntry() {
+    ) : FileEntry() {
         override fun id() = id.takeUnless { it.isNullOrBlank() } ?: local_fileSrc
         override fun applyOverride(override: EntryOverride): Local {
             return when (override) {
@@ -346,6 +362,10 @@ sealed class FileEntry {
                 }
                 else -> this
             }
+        }
+
+        override fun copyCommon(): FileEntry {
+            return copy()
         }
 
         override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
@@ -380,10 +400,10 @@ sealed class FileEntry {
         override var transient: Boolean = CommonComponent.DEFAULT.transient,
         override var version: String = CommonComponent.DEFAULT.version,
         override var fileName: String? = CommonComponent.DEFAULT.fileName,
-        override var fileNameRegex: String =CommonComponent.DEFAULT.fileNameRegex,
+        override var fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
         override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
         override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
-    ) : Common, FileEntry() {
+    ) : FileEntry() {
         override fun id() = id
         override fun applyOverride(override: EntryOverride): Noop {
             return when (override) {
@@ -392,6 +412,10 @@ sealed class FileEntry {
                 }
                 else -> this
             }
+        }
+
+        override fun copyCommon(): FileEntry {
+            return copy()
         }
 
         override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =

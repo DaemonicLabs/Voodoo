@@ -6,12 +6,11 @@ import kotlinx.serialization.Required
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.MapSerializer
+import kotlinx.serialization.builtins.serializer
+import kotlinx.serialization.json.*
 import mu.KotlinLogging
-import voodoo.config.Autocompletions
-import voodoo.config.Configuration
 import voodoo.data.ModloaderPattern
 import voodoo.data.PackOptions
 import voodoo.data.flat.FlatModPack
@@ -34,15 +33,10 @@ data class VersionPack(
     val modloader: Modloader,
     val packageConfiguration: VersionPackageConfig = VersionPackageConfig(),
     @JsonSchema.Definition("FileEntryList")
-    val mods: Map<String, List<JsonElement>>,
-//    @JsonSchema.Definition("FileEntryList")
-//    val mods: List<JsonElement>,
+    val mods: Map<String, List<FileEntry>>,
 ) {
     @Transient
     lateinit var baseDir: File
-
-    @Transient
-    lateinit var modEntries: List<FileEntry>
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -96,9 +90,30 @@ data class VersionPack(
                     jsonObject.toJson(false, true);
                 }
 
-            return json.decodeFromString(
+            val jsonObject = json.decodeFromString(
+                JsonObject.serializer(), cleanedString
+            )
+
+            val mods: Map<String, List<FileEntry>> = jsonObject["mods"]!!.jsonObject.mapValues { (_, list) ->
+                list.jsonArray.map {
+                    parseEntry(it)
+                }
+            }
+
+            val modsObj = json.encodeToJsonElement(
+                MapSerializer(String.serializer(), ListSerializer(FileEntry.serializer())),
+                mods
+            )
+
+            val fixedObject = JsonObject(
+                jsonObject.toMap() +
+                        ("mods" to modsObj)
+            )
+            //TODO: process string entries here
+
+            return json.decodeFromJsonElement(
                 VersionPack.serializer(),
-                cleanedString
+                fixedObject
             ).postParse(packFile.absoluteFile.parentFile)
         }
 
@@ -118,18 +133,16 @@ data class VersionPack(
     }
 
     fun postParse(baseDir: File): VersionPack {
-        return this.run {
+        return run {
             copy(
                 modloader = modloader.replaceAutoCompletes(),
-            ).apply {
+            )/*.apply {
                 modEntries = mods.flatMap { (overrideKey, modsList) ->
-                    modsList.map { element ->
-                        parseEntry(element)
-                    }.map { entry ->
+                    modsList.map { entry ->
                         entry.postParse(overrideKey)
                     }
                 }
-            }
+            }*/
         }.apply {
             this.baseDir = baseDir
         }
@@ -163,7 +176,11 @@ data class VersionPack(
                     instanceCfg = packageConfiguration.multimc.instanceCfg
                 )
             ),
-            entrySet = modEntries.map { intitalEntry ->
+            entrySet = mods.flatMap { (overrideKey, modsList) ->
+                modsList.map { entry ->
+                    entry.postParse(overrideKey)
+                }
+            }.map { intitalEntry ->
                 intitalEntry.toEntry(overrides)
             }.toMutableSet()
         ).apply {

@@ -196,16 +196,11 @@ class ImportCurseCommand() : CliktCommand(
 //                                fileNameRegex = "\\Q${addonFile.fileName}\\E"
 
                             if(!hasCustomProperties) {
-                                val entryString = "curse=${entry.curse_projectName}"
-                                jsonPretty.encodeToJsonElement(
-                                    String.serializer(),
-                                    entryString
+                                FileEntry.Curse(
+                                    curse_projectName = entry.curse_projectName
                                 )
                             } else {
-                                jsonPretty.encodeToJsonElement(
-                                    FileEntry.serializer(),
-                                    entry
-                                )
+                                entry
                             }
                         }
                     }.awaitAll()
