@@ -19,27 +19,60 @@ sealed class FileEntry {
         private val logger = KotlinLogging.logger {}
     }
 
-    abstract val applyOverrides: List<String>
-    abstract var id: String?
-    abstract var name: String?
-    abstract var folder: String?
-    abstract var description: String?
-    abstract var optional: Optional?
-    abstract var side: Side
-    abstract var websiteUrl: String
-    abstract var packageType: PackageType
+    data class CommonBlob(
+        val applyOverrides: List<String>,
+        val id: String?,
+        val name: String?,
+        val folder: String?,
+        val description: String?,
+        val optional: Optional?,
+        val side: Side,
+        val websiteUrl: String?,
+        val packageType: PackageType,
+        val version: String?,
+        val transient: Boolean,
+        val fileName: String?,
+        val fileNameRegex: String,
+        val validMcVersions: Set<String>,
+        val invalidMcVersions: Set<String>,
+    )
 
-    // this entry got added as dependency for something else, only setthis if you know what you are doing
-    abstract var version: String // TODO: use regex only ?
-    abstract var transient: Boolean
-    abstract var fileName: String?
-    abstract var fileNameRegex: String
-    abstract var validMcVersions: Set<String>
-    abstract var invalidMcVersions: Set<String>
+    abstract val applyOverrides: List<String>
+    abstract val id: String?
+    abstract val name: String?
+    abstract val folder: String?
+    abstract val description: String?
+    abstract val optional: Optional?
+    abstract val side: Side
+    abstract val websiteUrl: String?
+    abstract val packageType: PackageType
+    abstract val version: String?
+    abstract val transient: Boolean
+    abstract val fileName: String?
+    abstract val fileNameRegex: String
+    abstract val validMcVersions: Set<String>
+    abstract val invalidMcVersions: Set<String>
+
+    val common: CommonBlob get() = CommonBlob(
+        applyOverrides = applyOverrides,
+        id  = id,
+        name  = name,
+        folder  = folder,
+        description  = description,
+        optional  = optional,
+        side =  side,
+        websiteUrl =  websiteUrl,
+        packageType =  packageType,
+        transient =  transient,
+        version =  version,
+        fileName  = fileName,
+        fileNameRegex =  fileNameRegex,
+        validMcVersions =  validMcVersions,
+        invalidMcVersions =  invalidMcVersions,
+    )
 
     abstract fun id(): String?
     abstract fun applyOverride(override: EntryOverride): FileEntry
-    abstract fun copyCommon(): FileEntry
 
     fun toCommonComponent(defaultId: String? = null): CommonComponent = CommonComponent(
         id = id.takeUnless { it.isNullOrBlank() } ?: defaultId ?: error("id must be set on $this"),
@@ -59,22 +92,27 @@ sealed class FileEntry {
         invalidMcVersions = invalidMcVersions
     )
 
-    fun applyCommonOverride(override: EntryOverride) {
-        override.folder?.let { folder = it }
-        override.description?.let { description = it }
+    abstract fun <E : FileEntry> assignCommonValues(commonBlob: CommonBlob): E
+
+    protected fun <E : FileEntry> applyCommonOverride(override: EntryOverride): E {
+        var c = common
+
+        override.folder?.let { c = c.copy(folder = it) }
+        override.description?.let { c = c.copy(description = it) }
         override.optional?.let { optionalOverride ->
             val opt = this.optional ?: Optional()
             opt.applyOverride(optionalOverride)
-            optional = opt
+            c = c.copy(optional = opt)
         }
-        override.side?.let { side = it }
-        override.websiteUrl?.let { websiteUrl = it }
-        override.packageType?.let { packageType = it }
-        override.version?.let { version = it }
-        override.fileName?.let { fileName = it }
-        override.fileNameRegex?.let { fileNameRegex = it }
-        override.validMcVersions?.let { validMcVersions += it }
-        override.invalidMcVersions?.let { invalidMcVersions += it }
+        override.side?.let { c = c.copy(side = it) }
+        override.websiteUrl?.let { c = c.copy(websiteUrl = it) }
+        override.packageType?.let { c = c.copy(packageType = it) }
+        override.version?.let { c = c.copy(version = it) }
+        override.fileName?.let { c = c.copy(fileName = it) }
+        override.fileNameRegex?.let { c = c.copy(fileNameRegex = it) }
+        override.validMcVersions?.let { c = c.copy(validMcVersions = c.validMcVersions + it) }
+        override.invalidMcVersions?.let { c = c.copy(invalidMcVersions = c.invalidMcVersions + it) }
+        return assignCommonValues(c)
     }
 
     fun <E : FileEntry> foldOverrides(overrides: Map<String, EntryOverride>): E {
@@ -142,20 +180,20 @@ sealed class FileEntry {
         @JsonSchema.StringEnum(["replace_with_overrides"])
         override val applyOverrides: List<String> = listOf(),
 
-        override var id: String? = null,
-        override var name: String? = CommonComponent.DEFAULT.name,
-        override var folder: String? = CommonComponent.DEFAULT.folder,
-        override var description: String? = CommonComponent.DEFAULT.description,
-        override var optional: Optional? = null,
-        override var side: Side = CommonComponent.DEFAULT.side,
-        override var websiteUrl: String = CommonComponent.DEFAULT.websiteUrl,
-        override var packageType: PackageType = CommonComponent.DEFAULT.packageType,
-        override var transient: Boolean = CommonComponent.DEFAULT.transient,
-        override var version: String = CommonComponent.DEFAULT.version,
-        override var fileName: String? = CommonComponent.DEFAULT.fileName,
-        override var fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
-        override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
-        override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
+        override val id: String? = null,
+        override val name: String? = CommonComponent.DEFAULT.name,
+        override val folder: String? = CommonComponent.DEFAULT.folder,
+        override val description: String? = CommonComponent.DEFAULT.description,
+        override val optional: Optional? = null,
+        override val side: Side = CommonComponent.DEFAULT.side,
+        override val websiteUrl: String? = CommonComponent.DEFAULT.websiteUrl,
+        override val packageType: PackageType = CommonComponent.DEFAULT.packageType,
+        override val transient: Boolean = CommonComponent.DEFAULT.transient,
+        override val version: String? = CommonComponent.DEFAULT.version,
+        override val fileName: String? = CommonComponent.DEFAULT.fileName,
+        override val fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
+        override val validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
+        override val invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : FileEntry() {
         override fun id() = id.takeUnless { it.isNullOrBlank() } ?: curse_projectName?.substringAfterLast('/')
         override fun applyOverride(override: EntryOverride): Curse {
@@ -163,18 +201,33 @@ sealed class FileEntry {
                 is EntryOverride.Curse -> copy(
                     curse_useOriginalUrl = override.curse_useOriginalUrl ?: curse_useOriginalUrl,
                     curse_skipFingerprintCheck = override.curse_skipFingerprintCheck ?: curse_skipFingerprintCheck,
-                ).apply {
-                    applyCommonOverride(override)
+                ).run {
+                    assignCommonValues(applyCommonOverride(override))
                 }
-                is EntryOverride.Common -> apply {
-                    applyCommonOverride(override)
+                is EntryOverride.Common -> run {
+                    applyCommonOverride(override) as Curse
                 }
                 else -> this
             }
         }
 
-        override fun copyCommon(): FileEntry {
-            return copy()
+        override fun <E : FileEntry> assignCommonValues(commonBlob: CommonBlob): E {
+            return copy(
+                id = commonBlob.id,
+                name = commonBlob.name,
+                folder = commonBlob.folder,
+                description = commonBlob.description,
+                optional = commonBlob.optional,
+                side = commonBlob.side,
+                websiteUrl = commonBlob.websiteUrl,
+                packageType = commonBlob.packageType,
+                transient = commonBlob.transient,
+                version = commonBlob.version,
+                fileName = commonBlob.fileName,
+                fileNameRegex = commonBlob.fileNameRegex,
+                validMcVersions = commonBlob.validMcVersions,
+                invalidMcVersions = commonBlob.invalidMcVersions,
+            ) as E
         }
 
         override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
@@ -208,20 +261,20 @@ sealed class FileEntry {
         @JsonSchema.StringEnum(["replace_with_overrides"])
         override val applyOverrides: List<String> = listOf(),
 
-        override var id: String? = null,
-        override var name: String? = CommonComponent.DEFAULT.name,
-        override var folder: String? = CommonComponent.DEFAULT.folder,
-        override var description: String? = CommonComponent.DEFAULT.description,
-        override var optional: Optional? = null,
-        override var side: Side = CommonComponent.DEFAULT.side,
-        override var websiteUrl: String = CommonComponent.DEFAULT.websiteUrl,
-        override var packageType: PackageType = CommonComponent.DEFAULT.packageType,
-        override var transient: Boolean = CommonComponent.DEFAULT.transient,
-        override var version: String = CommonComponent.DEFAULT.version,
-        override var fileName: String? = CommonComponent.DEFAULT.fileName,
-        override var fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
-        override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
-        override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
+        override val id: String? = null,
+        override val name: String? = CommonComponent.DEFAULT.name,
+        override val folder: String? = CommonComponent.DEFAULT.folder,
+        override val description: String? = CommonComponent.DEFAULT.description,
+        override val optional: Optional? = null,
+        override val side: Side = CommonComponent.DEFAULT.side,
+        override val websiteUrl: String? = CommonComponent.DEFAULT.websiteUrl,
+        override val packageType: PackageType = CommonComponent.DEFAULT.packageType,
+        override val transient: Boolean = CommonComponent.DEFAULT.transient,
+        override val version: String? = CommonComponent.DEFAULT.version,
+        override val fileName: String? = CommonComponent.DEFAULT.fileName,
+        override val fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
+        override val validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
+        override val invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : FileEntry() {
         override fun id() =
             id.takeUnless { it.isNullOrBlank() } ?: direct_url.split(":|&|=".toRegex()).joinToString("_")
@@ -231,18 +284,33 @@ sealed class FileEntry {
                 is EntryOverride.Direct -> copy(
 //                    direct_url = override.url ?: direct_url,
                     direct_useOriginalUrl = override.direct_useOriginalUrl ?: direct_useOriginalUrl
-                ).apply {
+                ).run {
                     applyCommonOverride(override)
                 }
-                is EntryOverride.Common -> apply {
+                is EntryOverride.Common -> run {
                     applyCommonOverride(override)
                 }
                 else -> this
             }
         }
 
-        override fun copyCommon(): FileEntry {
-            return copy()
+        override fun <E : FileEntry> assignCommonValues(commonBlob: CommonBlob): E {
+            return copy(
+                id = commonBlob.id,
+                name = commonBlob.name,
+                folder = commonBlob.folder,
+                description = commonBlob.description,
+                optional = commonBlob.optional,
+                side = commonBlob.side,
+                websiteUrl = commonBlob.websiteUrl,
+                packageType = commonBlob.packageType,
+                transient = commonBlob.transient,
+                version = commonBlob.version,
+                fileName = commonBlob.fileName,
+                fileNameRegex = commonBlob.fileNameRegex,
+                validMcVersions = commonBlob.validMcVersions,
+                invalidMcVersions = commonBlob.invalidMcVersions,
+            ) as E
         }
 
         override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
@@ -262,29 +330,29 @@ sealed class FileEntry {
     @Serializable
     @SerialName("jenkins")
     data class Jenkins(
-        val jenkins_jenkinsUrl: String = "",
-        val jenkins_job: String, // = "",
-        val jenkins_buildNumber: Int = -1,
+        val jenkins_jenkinsUrl: String? = null,
+        val jenkins_job: String,
+        val jenkins_buildNumber: Int? = null,
         val jenkins_useOriginalUrl: Boolean = true,
 
         @JsonSchema.Definition("entry.overridesList")
         @JsonSchema.StringEnum(["replace_with_overrides"])
         override val applyOverrides: List<String> = listOf(),
 
-        override var id: String? = null,
-        override var name: String? = CommonComponent.DEFAULT.name,
-        override var folder: String? = CommonComponent.DEFAULT.folder,
-        override var description: String? = CommonComponent.DEFAULT.description,
-        override var optional: Optional? = null,
-        override var side: Side = CommonComponent.DEFAULT.side,
-        override var websiteUrl: String = CommonComponent.DEFAULT.websiteUrl,
-        override var packageType: PackageType = CommonComponent.DEFAULT.packageType,
-        override var transient: Boolean = CommonComponent.DEFAULT.transient,
-        override var version: String = CommonComponent.DEFAULT.version,
-        override var fileName: String? = CommonComponent.DEFAULT.fileName,
-        override var fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
-        override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
-        override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
+        override val id: String? = null,
+        override val name: String? = CommonComponent.DEFAULT.name,
+        override val folder: String? = CommonComponent.DEFAULT.folder,
+        override val description: String? = CommonComponent.DEFAULT.description,
+        override val optional: Optional? = null,
+        override val side: Side = CommonComponent.DEFAULT.side,
+        override val websiteUrl: String? = CommonComponent.DEFAULT.websiteUrl,
+        override val packageType: PackageType = CommonComponent.DEFAULT.packageType,
+        override val transient: Boolean = CommonComponent.DEFAULT.transient,
+        override val version: String? = CommonComponent.DEFAULT.version,
+        override val fileName: String? = CommonComponent.DEFAULT.fileName,
+        override val fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
+        override val validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
+        override val invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : FileEntry() {
         override fun id() = id.takeUnless { it.isNullOrBlank() } ?: jenkins_job
         override fun applyOverride(override: EntryOverride): Jenkins {
@@ -294,18 +362,33 @@ sealed class FileEntry {
 //                    jenkins_job = override.job ?: jenkins_job,
 //                    jenkins_buildNumber = override.buildNumber ?: jenkins_buildNumber
                     jenkins_useOriginalUrl = override.jenkins_useOriginalUrl ?: jenkins_useOriginalUrl
-                ).apply {
+                ).run {
                     applyCommonOverride(override)
                 }
-                is EntryOverride.Common -> apply {
+                is EntryOverride.Common -> run {
                     applyCommonOverride(override)
                 }
                 else -> this
             }
         }
 
-        override fun copyCommon(): FileEntry {
-            return copy()
+        override fun <E : FileEntry> assignCommonValues(commonBlob: CommonBlob): E {
+            return copy(
+                id = commonBlob.id,
+                name = commonBlob.name,
+                folder = commonBlob.folder,
+                description = commonBlob.description,
+                optional = commonBlob.optional,
+                side = commonBlob.side,
+                websiteUrl = commonBlob.websiteUrl,
+                packageType = commonBlob.packageType,
+                transient = commonBlob.transient,
+                version = commonBlob.version,
+                fileName = commonBlob.fileName,
+                fileNameRegex = commonBlob.fileNameRegex,
+                validMcVersions = commonBlob.validMcVersions,
+                invalidMcVersions = commonBlob.invalidMcVersions,
+            ) as E
         }
 
         override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
@@ -334,38 +417,53 @@ sealed class FileEntry {
         @JsonSchema.StringEnum(["replace_with_overrides"])
         override val applyOverrides: List<String> = listOf(),
 
-        override var id: String? = null,
-        override var name: String? = CommonComponent.DEFAULT.name,
-        override var folder: String? = CommonComponent.DEFAULT.folder,
-        override var description: String? = CommonComponent.DEFAULT.description,
-        override var optional: Optional? = null,
-        override var side: Side = CommonComponent.DEFAULT.side,
-        override var websiteUrl: String = CommonComponent.DEFAULT.websiteUrl,
-        override var packageType: PackageType = CommonComponent.DEFAULT.packageType,
-        override var transient: Boolean = CommonComponent.DEFAULT.transient,
-        override var version: String = CommonComponent.DEFAULT.version,
-        override var fileName: String? = CommonComponent.DEFAULT.fileName,
-        override var fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
-        override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
-        override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
+        override val id: String? = null,
+        override val name: String? = CommonComponent.DEFAULT.name,
+        override val folder: String? = CommonComponent.DEFAULT.folder,
+        override val description: String? = CommonComponent.DEFAULT.description,
+        override val optional: Optional? = null,
+        override val side: Side = CommonComponent.DEFAULT.side,
+        override val websiteUrl: String? = CommonComponent.DEFAULT.websiteUrl,
+        override val packageType: PackageType = CommonComponent.DEFAULT.packageType,
+        override val transient: Boolean = CommonComponent.DEFAULT.transient,
+        override val version: String? = CommonComponent.DEFAULT.version,
+        override val fileName: String? = CommonComponent.DEFAULT.fileName,
+        override val fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
+        override val validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
+        override val invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : FileEntry() {
         override fun id() = id.takeUnless { it.isNullOrBlank() } ?: local_fileSrc
         override fun applyOverride(override: EntryOverride): Local {
             return when (override) {
                 is EntryOverride.Local -> copy(
                     local_fileSrc = override.local_fileSrc ?: local_fileSrc,
-                ).apply {
+                ).run {
                     applyCommonOverride(override)
                 }
-                is EntryOverride.Common -> apply {
+                is EntryOverride.Common -> run {
                     applyCommonOverride(override)
                 }
                 else -> this
             }
         }
 
-        override fun copyCommon(): FileEntry {
-            return copy()
+        override fun <E : FileEntry> assignCommonValues(commonBlob: CommonBlob): E {
+            return copy(
+                id = commonBlob.id,
+                name = commonBlob.name,
+                folder = commonBlob.folder,
+                description = commonBlob.description,
+                optional = commonBlob.optional,
+                side = commonBlob.side,
+                websiteUrl = commonBlob.websiteUrl,
+                packageType = commonBlob.packageType,
+                transient = commonBlob.transient,
+                version = commonBlob.version,
+                fileName = commonBlob.fileName,
+                fileNameRegex = commonBlob.fileNameRegex,
+                validMcVersions = commonBlob.validMcVersions,
+                invalidMcVersions = commonBlob.invalidMcVersions,
+            ) as E
         }
 
         override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
@@ -389,33 +487,48 @@ sealed class FileEntry {
         @JsonSchema.StringEnum(["replace_with_overrides"])
         override val applyOverrides: List<String> = listOf(),
 
-        override var id: String? = null,
-        override var name: String? = CommonComponent.DEFAULT.name,
-        override var folder: String? = CommonComponent.DEFAULT.folder,
-        override var description: String? = CommonComponent.DEFAULT.description,
-        override var optional: Optional? = null,
-        override var side: Side = CommonComponent.DEFAULT.side,
-        override var websiteUrl: String = CommonComponent.DEFAULT.websiteUrl,
-        override var packageType: PackageType = CommonComponent.DEFAULT.packageType,
-        override var transient: Boolean = CommonComponent.DEFAULT.transient,
-        override var version: String = CommonComponent.DEFAULT.version,
-        override var fileName: String? = CommonComponent.DEFAULT.fileName,
-        override var fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
-        override var validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
-        override var invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
+        override val id: String? = null,
+        override val name: String? = CommonComponent.DEFAULT.name,
+        override val folder: String? = CommonComponent.DEFAULT.folder,
+        override val description: String? = CommonComponent.DEFAULT.description,
+        override val optional: Optional? = null,
+        override val side: Side = CommonComponent.DEFAULT.side,
+        override val websiteUrl: String? = CommonComponent.DEFAULT.websiteUrl,
+        override val packageType: PackageType = CommonComponent.DEFAULT.packageType,
+        override val transient: Boolean = CommonComponent.DEFAULT.transient,
+        override val version: String? = CommonComponent.DEFAULT.version,
+        override val fileName: String? = CommonComponent.DEFAULT.fileName,
+        override val fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
+        override val validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
+        override val invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : FileEntry() {
         override fun id() = id
         override fun applyOverride(override: EntryOverride): Noop {
             return when (override) {
-                is EntryOverride.Common -> apply {
+                is EntryOverride.Common -> run {
                     applyCommonOverride(override)
                 }
                 else -> this
             }
         }
 
-        override fun copyCommon(): FileEntry {
-            return copy()
+        override fun <E : FileEntry> assignCommonValues(commonBlob: CommonBlob): E {
+            return copy(
+                id = commonBlob.id,
+                name = commonBlob.name,
+                folder = commonBlob.folder,
+                description = commonBlob.description,
+                optional = commonBlob.optional,
+                side = commonBlob.side,
+                websiteUrl = commonBlob.websiteUrl,
+                packageType = commonBlob.packageType,
+                transient = commonBlob.transient,
+                version = commonBlob.version,
+                fileName = commonBlob.fileName,
+                fileNameRegex = commonBlob.fileNameRegex,
+                validMcVersions = commonBlob.validMcVersions,
+                invalidMcVersions = commonBlob.invalidMcVersions,
+            ) as E
         }
 
         override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =

@@ -178,15 +178,21 @@ class ImportCurseCommand() : CliktCommand(
                                 hasCustomProperties = true
                             }
                             if(!addonFile.gameVersion.contains(manifest.minecraft.version)) {
-                                entry.validMcVersions = addonFile.gameVersion.toSet() - "Forge"
+                                entry = entry.copy(
+                                    validMcVersions = addonFile.gameVersion.toSet() - "Forge"
+                                )
                                 hasCustomProperties = true
                             }
                             when (addon.categorySection.name) {
                                 CurseSection.MODS.sectionName -> {
-//                                    folder = "mods"
+//                                    entry = entry.copy(
+//                                        folder = "mods"
+//                                    )
                                 }
                                 CurseSection.RESOURCE_PACKS.sectionName -> {
-                                    entry.folder = "resourcepacks"
+                                    entry = entry.copy(
+                                        folder = "resourcepacks"
+                                    )
                                     hasCustomProperties = true
                                 }
                                 else -> {
@@ -196,6 +202,8 @@ class ImportCurseCommand() : CliktCommand(
 //                                fileNameRegex = "\\Q${addonFile.fileName}\\E"
 
                             if(!hasCustomProperties) {
+                                // had single line string declaration herei n the past
+                                // wo probbably can drop hasCustomProperties flag
                                 FileEntry.Curse(
                                     curse_projectName = entry.curse_projectName
                                 )

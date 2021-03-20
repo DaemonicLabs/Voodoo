@@ -135,7 +135,7 @@ data class VersionPack(
     fun postParse(baseDir: File): VersionPack {
         return run {
             copy(
-                modloader = modloader.replaceAutoCompletes(),
+//                modloader = modloader.replaceAutoCompletes(),
             )/*.apply {
                 modEntries = mods.flatMap { (overrideKey, modsList) ->
                     modsList.map { entry ->
@@ -158,16 +158,18 @@ data class VersionPack(
             srcDir = srcDir,
             icon = icon ?: metaPack.icon,
             authors = authors,
-            modloader = when (modloader) {
-                is Modloader.Forge -> ModloaderPattern.Forge(
-                    version = modloader.version
-                )
-                is Modloader.Fabric -> ModloaderPattern.Fabric(
-                    intermediateMappingsVersion = modloader.intermediateMappings,
-                    loaderVersion = modloader.loader,
-                    installerVersion = modloader.installer
-                )
-                is Modloader.None -> ModloaderPattern.None
+            modloader = modloader.replaceAutoCompletes().let { modloader ->
+                when (modloader) {
+                    is Modloader.Forge -> ModloaderPattern.Forge(
+                        version = modloader.version
+                    )
+                    is Modloader.Fabric -> ModloaderPattern.Fabric(
+                        intermediateMappingsVersion = modloader.intermediateMappings,
+                        loaderVersion = modloader.loader,
+                        installerVersion = modloader.installer
+                    )
+                    is Modloader.None -> ModloaderPattern.None
+                }
             },
             packOptions = PackOptions(
                 uploadUrl = URI(metaPack.uploadBaseUrl).resolve(id).toASCIIString(),

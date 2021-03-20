@@ -23,12 +23,12 @@ data class CommonComponent(
     override var description: String? = null,
     override var optionalData: OptionalData? = null,
     override var side: Side = Side.BOTH,
-    override var websiteUrl: String = "",
+    override var websiteUrl: String? = null,
     override var dependencies: MutableMap<String, DependencyType> = mutableMapOf(),
 //    override var replaceDependencies: Map<ProjectID, ProjectID> = mapOf(),
     override var packageType: PackageType = PackageType.MOD,
     override var transient: Boolean = false, // this entry got added as dependency for something else
-    override var version: String = "", // TODO: use regex only ?
+    override var version: String? = null, // TODO: use regex only ?
     override var fileName: String? = null,
     override var fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
     override var validMcVersions: Set<String> = setOf(),
@@ -61,9 +61,9 @@ data class DirectComponent(
 
 @Serializable
 data class JenkinsComponent(
-    override var jenkinsUrl: String = "",
+    override var jenkinsUrl: String? = null,
     override var job: String = "",
-    override var buildNumber: Int = -1,
+    override var buildNumber: Int? = null,
     override var useOriginalUrl: Boolean = true
 ) : JenkinsMutable
 

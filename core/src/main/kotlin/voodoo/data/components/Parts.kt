@@ -15,11 +15,11 @@ interface Common {
     val description: String?
     val optionalData: OptionalData?
     val side: Side
-    val websiteUrl: String
+    val websiteUrl: String?
     val dependencies: MutableMap<String, DependencyType>
     val packageType: PackageType
     val transient: Boolean // this entry got added as dependency for somethin
-    val version: String // TODO: use regex only ?
+    val version: String? // TODO: use regex only ?
     val fileName: String?
     val fileNameRegex: String
     val validMcVersions: Set<String>
@@ -37,12 +37,12 @@ interface CommonMutable : CommonImmutable {
     override var description: String?
     override var optionalData: OptionalData?
     override var side: Side
-    override var websiteUrl: String
+    override var websiteUrl: String?
     override var dependencies: MutableMap<String, DependencyType>
 //    override var replaceDependencies: Map<ProjectID, ProjectID>
     override var packageType: PackageType
     override var transient: Boolean // this entry got added as dependency for somethin
-    override var version: String // TODO: use regex only ?
+    override var version: String? // TODO: use regex only ?
     override var fileName: String?
     override var fileNameRegex: String
     override var validMcVersions: Set<String>
@@ -88,15 +88,15 @@ interface DirectMutable: DirectImmutable {
 }
 
 interface JenkinsImmutable {
-    val jenkinsUrl: String
+    val jenkinsUrl: String?
     val job: String
-    val buildNumber: Int
+    val buildNumber: Int?
     val useOriginalUrl: Boolean
 }
 interface JenkinsMutable: JenkinsImmutable {
-    override var jenkinsUrl: String
+    override var jenkinsUrl: String?
     override var job: String
-    override var buildNumber: Int
+    override var buildNumber: Int?
     override var useOriginalUrl: Boolean
 }
 

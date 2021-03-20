@@ -454,7 +454,7 @@ object CurseClient : KLogging() {
 
         var oldFiles = files
 
-        if (version.isNotBlank()) {
+        if (version != null && version.isNotBlank()) {
             files = files.filter { f ->
                 (f.fileName.contains(version.toRegex()) || f.fileName == version)
             }

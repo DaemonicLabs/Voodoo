@@ -38,10 +38,11 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
 //        if (entry.job.isBlank()) {
 //            entry.job = entry.id
 //        }
-        val job = job(entry.job, entry.jenkinsUrl)
-        val buildNumber = job.lastSuccessfulBuild?.number ?: throw IllegalStateException("buildnumber not set")
+        val jenkinsUrl = entry.jenkinsUrl ?: error("jenkins url unset on entry '${entry.id}'")
+        val job = job(entry.job, jenkinsUrl)
+        val buildNumber = entry.buildNumber ?: job.lastSuccessfulBuild?.number ?: throw IllegalStateException("buildnumber not set")
         val common = entry.lockCommon()
-        val artifact = artifact(entry.job, entry.jenkinsUrl, buildNumber, entry.fileNameRegex)
+        val artifact = artifact(entry.job, jenkinsUrl, buildNumber, entry.fileNameRegex)
         return LockEntry.Jenkins(
             id = common.id,
             path = common.path,
@@ -51,7 +52,7 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
             description = common.description,
             optionalData = common.optionalData,
             dependencies = common.dependencies,
-            jenkinsUrl = entry.jenkinsUrl,
+            jenkinsUrl = jenkinsUrl,
             job = entry.job,
             buildNumber = buildNumber,
             fileNameRegex = entry.fileNameRegex,
