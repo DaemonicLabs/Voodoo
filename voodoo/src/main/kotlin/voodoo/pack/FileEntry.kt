@@ -117,12 +117,18 @@ sealed class FileEntry {
     }
 
     fun <E : FileEntry> foldOverrides(overrides: Map<String, EntryOverride>): E {
-        var inititalEntry = this as E
+        val inititalEntry = this as E
         val entryId = inititalEntry.id().takeUnless { it.isNullOrBlank() } ?: error("missing entry id for entry: ")
-        overrides[""]?.let { defaultOverride ->
-            inititalEntry = inititalEntry.applyOverride(defaultOverride) as E
+        val defaultEntryOverrides = listOf(
+            "", "@common", "@" + inititalEntry.typeKey()
+        ).mapNotNull { key ->
+            overrides[key]
         }
-        val entry = inititalEntry.applyOverrides.fold(inititalEntry) { acc: E, overrideId ->
+        val entryWithDefaultOverrides = defaultEntryOverrides.fold(inititalEntry) { e, entryOverride ->
+            e.applyOverride(entryOverride) as E
+        }
+
+        val entry = inititalEntry.applyOverrides.fold(entryWithDefaultOverrides) { acc: E, overrideId ->
             val overrideKeys = listOf(
                 overrideId,
                 overrideId + "@common",
