@@ -4,16 +4,11 @@ import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.HttpHeaders
-import io.ktor.http.HttpMethod
 import io.ktor.http.isSuccess
 import io.ktor.util.InternalAPI
 import io.ktor.util.cio.*
-import io.ktor.util.toByteArray
 import io.ktor.utils.io.*
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.TimeoutCancellationException
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import mu.KotlinLogging
 import java.io.File
 import java.io.IOException
@@ -62,29 +57,26 @@ suspend fun File.download(
                 httpClient.get<HttpStatement>(url) {
                     header(HttpHeaders.UserAgent, useragent)
                 }.execute { response: HttpResponse ->
-
                     if (!response.status.isSuccess()) {
                         logger.error("invalid statusCode {} from {}", response.status, url.encoded)
-                        logger.error("connection url: ${url}")
+                        logger.error("connection url: $url")
                         logger.error("response: $response")
                         logger.error("status: {}", response.status)
-                        logger.error("waiting for {} ms", retryDelay)
-                        delay(retryDelay)
-                        error("SHOULD RETRY HERE")
+                        throw IOException("unexpected status: ${response.status}")
                     }
 
-                    // Response is not downloaded here.
+                    // Response content is streamed
                     val channel = response.receive<ByteReadChannel>()
-                    val bytes = channel.copyAndClose(thisFile.writeChannel())
+                    val contentLength = channel.copyAndClose(thisFile.writeChannel())
 
-                    val contentLength = response.headers["content-length"]!!.toLong()
-                    require(bytes == contentLength) {
-                        "received bytes != contentLength: $bytes != $contentLength"
+                    val headerContentLength = response.headers["content-length"]!!.toLong()
+                    require(contentLength == headerContentLength) {
+                        "received bytes != contentLength: $contentLength != $headerContentLength"
                     }
                 }
             }
         } catch (e: IOException) {
-            logger.error(e) { "exception in download for url: '$url'" }
+            logger.error(e) { "io exception in download for url: '$url'" }
             logger.error("waiting for {} ms", retryDelay)
             delay(retryDelay)
             continue
