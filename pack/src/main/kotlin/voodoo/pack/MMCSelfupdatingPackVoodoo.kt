@@ -47,9 +47,9 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
         }
         val installerFilename = installer.toRelativeString(instanceDir).replace('\\', '/')
         val preLaunchCommand =
-            "\"\$INST_JAVA\" -jar \"\$INST_DIR/$installerFilename\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\" --phase pre"
+            "\"\$INST_JAVA\" -jar \"\$INST_DIR/$installerFilename\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\" --phase PRE"
         val postExitCommand =
-            "\"\$INST_JAVA\" -jar \"\$INST_DIR/.voodoo/post.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\" --phase post"
+            "\"\$INST_JAVA\" -jar \"\$INST_DIR/.voodoo/post.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\" --phase POST"
         val minecraftDir = MMCUtil.installEmptyPack(
             modpack.title.blankOr,
             modpack.id,
