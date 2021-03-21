@@ -72,6 +72,7 @@ sealed class FileEntry {
     )
 
     abstract fun id(): String?
+    abstract fun typeKey(): String
     abstract fun applyOverride(override: EntryOverride): FileEntry
 
     fun toCommonComponent(defaultId: String? = null): CommonComponent = CommonComponent(
@@ -116,12 +117,26 @@ sealed class FileEntry {
     }
 
     fun <E : FileEntry> foldOverrides(overrides: Map<String, EntryOverride>): E {
-        val intitalEntry = this as E
-        val entryId = intitalEntry.id().takeUnless { it.isNullOrBlank() } ?: error("missing entry id for entry: ")
-        val entry = intitalEntry.applyOverrides.fold(intitalEntry) { acc: E, overrideId ->
-            val entryOverride =
-                overrides[overrideId] ?: error("$entryId: override for id $overrideId not found")
-            return@fold acc.applyOverride(entryOverride) as E
+        var inititalEntry = this as E
+        val entryId = inititalEntry.id().takeUnless { it.isNullOrBlank() } ?: error("missing entry id for entry: ")
+        overrides[""]?.let { defaultOverride ->
+            inititalEntry = inititalEntry.applyOverride(defaultOverride) as E
+        }
+        val entry = inititalEntry.applyOverrides.fold(inititalEntry) { acc: E, overrideId ->
+            val overrideKeys = listOf(
+                overrideId,
+                overrideId + "@common",
+                overrideId + "@" + acc.typeKey()
+            )
+            val entryOverrides = overrideKeys.mapNotNull { key ->
+                overrides[key]
+            }
+            if(entryOverrides.isEmpty()) {
+                error("$entryId: override for ids $overrideKeys not found")
+            }
+            return@fold entryOverrides.fold(acc) { e, entryOverride ->
+                e.applyOverride(entryOverride) as E
+            }
         }
         return entry as E
     }
@@ -196,6 +211,7 @@ sealed class FileEntry {
         override val invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : FileEntry() {
         override fun id() = id.takeUnless { it.isNullOrBlank() } ?: curse_projectName?.substringAfterLast('/')
+        override fun typeKey(): String = "curse"
         override fun applyOverride(override: EntryOverride): Curse {
             return when (override) {
                 is EntryOverride.Curse -> copy(
@@ -278,6 +294,7 @@ sealed class FileEntry {
     ) : FileEntry() {
         override fun id() =
             id.takeUnless { it.isNullOrBlank() } ?: direct_url.split(":|&|=".toRegex()).joinToString("_")
+        override fun typeKey(): String = "direct"
 
         override fun applyOverride(override: EntryOverride): Direct {
             return when (override) {
@@ -355,6 +372,7 @@ sealed class FileEntry {
         override val invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : FileEntry() {
         override fun id() = id.takeUnless { it.isNullOrBlank() } ?: jenkins_job
+        override fun typeKey(): String = "jenkins"
         override fun applyOverride(override: EntryOverride): Jenkins {
             return when (override) {
                 is EntryOverride.Jenkins -> copy(
@@ -433,6 +451,7 @@ sealed class FileEntry {
         override val invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : FileEntry() {
         override fun id() = id.takeUnless { it.isNullOrBlank() } ?: local_fileSrc
+        override fun typeKey(): String = "local"
         override fun applyOverride(override: EntryOverride): Local {
             return when (override) {
                 is EntryOverride.Local -> copy(
@@ -503,6 +522,7 @@ sealed class FileEntry {
         override val invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
     ) : FileEntry() {
         override fun id() = id
+        override fun typeKey(): String = "none"
         override fun applyOverride(override: EntryOverride): Noop {
             return when (override) {
                 is EntryOverride.Common -> run {
