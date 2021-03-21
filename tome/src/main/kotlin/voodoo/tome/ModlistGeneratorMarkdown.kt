@@ -1,6 +1,7 @@
 package voodoo.tome
 
 import com.eyeem.watchadoin.Stopwatch
+import mu.KotlinLogging
 import voodoo.Tome
 import voodoo.Tome.report
 import voodoo.data.lock.LockEntry
@@ -10,13 +11,14 @@ import voodoo.provider.Providers
 import java.io.File
 
 object ModlistGeneratorMarkdown : TomeGenerator() {
+    private val logger = KotlinLogging.logger {}
     override suspend fun Stopwatch.generateHtmlMeasured(
         lockPack: LockPack,
         targetFolder: File
     ): String {
         // generate modlist
 
-        Tome.logger.info("writing modlist")
+        logger.info("writing modlist")
         return buildString {
             append(lockPack.report(targetFolder))
             append("\n")

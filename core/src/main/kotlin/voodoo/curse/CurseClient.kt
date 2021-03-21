@@ -18,7 +18,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.data.ModloaderPattern
 import voodoo.data.curse.Addon
 import voodoo.data.curse.AddonFile
@@ -34,7 +34,8 @@ import java.util.*
  * Created by nikky on 30/01/18.
  * @author Nikky
  */
-object CurseClient : KLogging() {
+object CurseClient {
+    private val logger = KotlinLogging.logger {}
 //    override val coroutineContext: CoroutineContext = Job()
     private val json = Json { ignoreUnknownKeys = true }
     const val useragent =
@@ -136,7 +137,7 @@ object CurseClient : KLogging() {
         }
         if (!response.status.isSuccess()) {
             logger.error("GetSlugIDPairs")
-            MavenUtil.logger.error { "$url returned ${response.status}" }
+            logger.error { "$url returned ${response.status}" }
             error("could not request slug-id pairs $url")
         }
         return@withContext json.decodeFromString(resultSerializer, response.readText()).data.addons!!

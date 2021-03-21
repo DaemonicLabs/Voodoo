@@ -9,7 +9,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.builtins.ListSerializer
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.fabric.meta.FabricInstaller
 import voodoo.fabric.meta.FabricIntermediary
 import voodoo.fabric.meta.FabricLoader
@@ -19,7 +19,8 @@ import voodoo.util.json
 import voodoo.util.useClient
 import java.io.IOException
 
-object FabricUtil : KLogging() {
+object FabricUtil {
+    private val logger = KotlinLogging.logger {}
 
     // https://meta.fabricmc.net/v2/versions/loader
     suspend fun getLoaders(): List<FabricLoader> = withContext(MDCContext() + Dispatchers.IO) {

@@ -1,66 +1,36 @@
 package voodoo.util
 
-import io.ktor.client.request.header
-import io.ktor.client.request.request
-import io.ktor.client.statement.HttpResponse
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.isSuccess
 import io.ktor.util.InternalAPI
+import io.ktor.util.cio.*
 import io.ktor.util.toByteArray
+import io.ktor.utils.io.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
-import mu.KLogging
+import mu.KotlinLogging
 import java.io.File
 import java.io.IOException
 
-/**
- * Created by nikky on 30/03/18.
- * @author Nikky
- */
-object Downloader : KLogging() {
-    const val useragent =
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36" // ""voodoo/$VERSION (https://github.com/elytra/Voodoo)"
-}
-
-//fun File.safeCopyTo(otherFile: File, overwrite: Boolean = true, failAllowed: Boolean = false): Boolean {
-//    val logger = Downloader.logger
-//    logger.debug("copying $this -> $otherFile")
-//    try {
-//        this.parentFile.mkdirs()
-//        this.copyTo(otherFile, overwrite = overwrite)
-//        return true
-//    } catch (e: FileAlreadyExistsException) {
-//        e.printStackTrace()
-//        val fileIsLocked = !this.renameTo(this)
-//        logger.error("failed to copy file $this to $otherFile .. file is locked ? $fileIsLocked")
-//        val delete = otherFile.delete()
-//        if (!delete) {
-//            if (failAllowed) return false
-//            // TODO: run handle ${this.name}
-////                runProcess("handle ${this.name}")
-//            error("failed to delete $otherFile")
-//        } else {
-//            logger.info { "deleted $otherFile and trying again" }
-//            return this.safeCopyTo(otherFile, overwrite = overwrite)
-//        }
-////            if (!fileIsLocked)
-////                this.safeCopyTo(otherFile, overwrite = overwrite)
-//    }
-//}
+private val logger = KotlinLogging.logger {}
 
 @OptIn(InternalAPI::class)
 suspend fun File.download(
     url: String,
     cacheDir: File?,
-    validator: (bytes: ByteArray, file: File) -> Boolean = { bytes, file -> true },
-    retries: Int = 3
+    validator: (file: File) -> Boolean = { file -> true },
+    retries: Int = 3,
+    useragent: String = voodoo.util.useragent
 ) = withContext(Dispatchers.IO) {
-    val logger = Downloader.logger
     val thisFile = this@download
     for (retry in (0..retries)) {
+        val retryDelay = (retry * 1000L)
         if (cacheDir != null) {
             val cacheFile = cacheDir.resolve(thisFile.name)
             logger.info("downloading $url -> ${thisFile}")
@@ -68,19 +38,17 @@ suspend fun File.download(
             if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
 
             logger.debug("validating $cacheFile existence and hash")
-            if (cacheFile.exists() && cacheFile.isFile && validator(cacheFile.readBytes(), cacheFile)) {
+            if (cacheFile.exists() && cacheFile.isFile && validator(cacheFile)) {
                 logger.info("file: $cacheFile exists and can skip download")
                 thisFile.parentFile.mkdirs()
-//                thisFile.createNewFile()
-//                thisFile.writeBytes(thisFile.readBytes())
                 cacheFile.copyTo(thisFile, overwrite = true)
-//                cacheFile.safeCopyTo(thisFile, overwrite = true)
                 delay(100)
 
-                if (!validator(thisFile.readBytes(), thisFile)) {
+                if (!validator(thisFile)) {
                     logger.error("$thisFile did not pass validation")
                     cacheFile.delete()
-                    delay(1000)
+                    logger.error("waiting for {} ms", retryDelay)
+                    delay(retryDelay)
                     continue
                 }
 
@@ -89,66 +57,64 @@ suspend fun File.download(
                 return@withContext
             }
         }
-        val response = try {
+        try {
             useClient { httpClient ->
-                httpClient.request<HttpResponse>(url) {
-                    method = HttpMethod.Get
+                httpClient.get<HttpStatement>(url) {
                     header(HttpHeaders.UserAgent, useragent)
+                }.execute { response: HttpResponse ->
+
+                    if (!response.status.isSuccess()) {
+                        logger.error("invalid statusCode {} from {}", response.status, url.encoded)
+                        logger.error("connection url: ${url}")
+                        logger.error("response: $response")
+                        logger.error("status: {}", response.status)
+                        logger.error("waiting for {} ms", retryDelay)
+                        delay(retryDelay)
+                        error("SHOULD RETRY HERE")
+                    }
+
+                    // Response is not downloaded here.
+                    val channel = response.receive<ByteReadChannel>()
+                    val bytes = channel.copyAndClose(thisFile.writeChannel())
+
+                    val contentLength = response.headers["content-length"]!!.toLong()
+                    require(bytes == contentLength) {
+                        "received bytes != contentLength: $bytes != $contentLength"
+                    }
                 }
             }
-
         } catch (e: IOException) {
-            logger.error(e) { "exception in download for url: $url" }
-            delay(1000)
+            logger.error(e) { "exception in download for url: '$url'" }
+            logger.error("waiting for {} ms", retryDelay)
+            delay(retryDelay)
             continue
         } catch (e: TimeoutCancellationException) {
-            logger.error(e) { "download timed out for url: $url" }
-            delay(1000)
+            logger.error(e) { "download timed out for url: '$url'" }
+            logger.error("waiting for {} ms", retryDelay)
+            delay(retryDelay)
             continue
         }
-        if (!response.status.isSuccess()) {
-            logger.error("invalid statusCode {} from {}", response.status, url.encoded)
-            logger.error("connection url: ${url}")
-            logger.error("response: $response")
-            logger.error("status: {}", response.status)
-            delay(1000)
-            continue
-        }
-
-        logger.debug("saving $url -> $thisFile")
-        thisFile.parentFile.mkdirs()
-        thisFile.createNewFile()
-
-        val content = response.content.toByteArray()
-        thisFile.writeBytes(content)
-//            thisFile.writeChannel().use {
-//                response.content.copyTo(this)
-//            }
-//            cacheFile.writeChannel().use {
-//                response.content.copyAndClose(this)
-//            }
-
 
         delay(100)
 
         val cacheFile = cacheDir?.resolve(thisFile.name)
 
         logger.debug("running validator on $thisFile")
-        if (!validator(content, thisFile)) {
+        if (!validator(thisFile)) {
             logger.error("$thisFile did not pass validation")
             cacheFile?.delete()
-            delay(1000)
+            logger.error("waiting for {} ms", retryDelay)
+            delay(retryDelay)
             continue
         }
 
         if (cacheFile != null) {
             logger.debug("saving to cache $url -> $cacheFile")
             cacheFile.parentFile.mkdirs()
-            cacheFile.createNewFile()
-            cacheFile.writeBytes(content)
+            thisFile.copyTo(cacheFile, overwrite = true)
 
             logger.debug("running validator on $cacheFile")
-            if (!validator(content, cacheFile)) {
+            if (!validator(cacheFile)) {
                 logger.error { "cachefile copied incorrectly" }
                 error("cachefile does not validate after copy $cacheFile")
             }
@@ -157,18 +123,6 @@ suspend fun File.download(
         logger.debug("done downloading $url -> $thisFile")
         delay(100)
         return@withContext
-
-
-//        logger.debug("saving $url -> $thisFile")
-//        try {
-//            this@download.parentFile.mkdirs()
-//            cacheFile.copyTo(this@download, overwrite = true)
-//        } catch (e: FileAlreadyExistsException) {
-//            val fileIsLocked = !this@download.renameTo(this@download)
-//            logger.error("failed to copy file $cacheFile to $this .. file is locked ? $fileIsLocked")
-//            if (!fileIsLocked)
-//                cacheFile.copyTo(this@download, overwrite = true)
-//        }
     }
     error("failed to download $url after $retries attempts")
 }

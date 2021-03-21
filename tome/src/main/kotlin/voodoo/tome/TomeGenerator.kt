@@ -1,11 +1,12 @@
 package voodoo.tome
 
 import com.eyeem.watchadoin.Stopwatch
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.data.lock.LockPack
 import java.io.File
 
-abstract class TomeGenerator : KLogging() {
+abstract class TomeGenerator {
+    private val logger = KotlinLogging.logger {}
     open suspend fun Stopwatch.generateHtmlMeasured(
         lockPack: LockPack,
         targetFolder: File

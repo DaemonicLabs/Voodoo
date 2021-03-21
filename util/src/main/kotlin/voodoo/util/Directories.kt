@@ -1,6 +1,6 @@
 package voodoo.util
 
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.util.dir.BareDirectories
 import voodoo.util.dir.MacDirectories
 import voodoo.util.dir.WindowsDirectories
@@ -46,7 +46,8 @@ interface Directories {
      */
     val runtimeDir: File
 
-    companion object : KLogging() {
+    companion object {
+        private val logger = KotlinLogging.logger {}
 
         fun File.deleteDirectoryOnExit() {
             Runtime.getRuntime().addShutdownHook(Thread({

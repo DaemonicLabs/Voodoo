@@ -2,7 +2,7 @@ package voodoo.provider
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.data.DependencyType
 import voodoo.data.EntryReportData
 import voodoo.data.flat.FlatEntry
@@ -35,7 +35,9 @@ abstract class ProviderBase(
         throw NotImplementedError("unable to resolve")
     }
 
-    companion object : KLogging()
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     /**
      * downloads a entry

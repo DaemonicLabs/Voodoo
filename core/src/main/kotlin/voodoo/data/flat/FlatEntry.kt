@@ -1,10 +1,9 @@
 package voodoo.data.flat
 
 import kotlinx.serialization.Transient
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.data.components.*
 import voodoo.data.lock.CommonLockComponent
-import voodoo.data.lock.LockEntry
 
 /**
  * Created by nikky on 28/03/18.
@@ -65,7 +64,9 @@ sealed class FlatEntry: CommonMutable {
         }
     }
 
-    companion object : KLogging()
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     @Transient
     var optional: Boolean = false// = optionalData != null

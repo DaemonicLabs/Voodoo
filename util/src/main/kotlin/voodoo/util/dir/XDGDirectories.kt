@@ -1,6 +1,6 @@
 package voodoo.util.dir
 
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.util.Directories
 
 import java.io.File
@@ -14,7 +14,9 @@ import java.nio.file.attribute.PosixFilePermissions
  */
 class XDGDirectories(private val appName: String) : Directories {
 
-    companion object : KLogging()
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     /**
      * @return The single base directory relative to which user-specific

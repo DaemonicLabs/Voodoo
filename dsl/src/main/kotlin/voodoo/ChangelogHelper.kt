@@ -1,13 +1,14 @@
 package voodoo
 
 import com.eyeem.watchadoin.Stopwatch
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.changelog.ChangelogBuilder
 import voodoo.data.lock.LockPack
 import voodoo.util.*
 import java.io.File
 
-object ChangelogHelper : KLogging() {
+object ChangelogHelper {
+    private val logger = KotlinLogging.logger {}
     private val directories = Directories.get(moduleName = "diff")
 
     fun createAllChangelogs(

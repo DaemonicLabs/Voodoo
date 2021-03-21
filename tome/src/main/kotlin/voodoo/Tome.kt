@@ -1,13 +1,14 @@
 package voodoo
 
 import com.eyeem.watchadoin.Stopwatch
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.data.lock.LockPack
 import voodoo.tome.TomeEnv
 import voodoo.util.unixPath
 import java.io.File
 
-object Tome : KLogging() {
+object Tome {
+    private val logger = KotlinLogging.logger {}
 
     suspend fun generate(
         stopwatch: Stopwatch,

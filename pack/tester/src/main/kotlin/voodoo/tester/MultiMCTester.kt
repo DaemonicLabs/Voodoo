@@ -7,12 +7,12 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
+import mu.KotlinLogging
 import voodoo.data.DependencyType
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil
-import voodoo.util.Downloader
 import voodoo.util.blankOr
 import voodoo.util.withPool
 import java.io.IOException
@@ -23,6 +23,7 @@ import java.io.IOException
  */
 
 object MultiMCTester : AbstractTester() {
+    private val logger = KotlinLogging.logger {}
     override val label = "MultiMC Tester"
 
     override suspend fun execute(
@@ -57,7 +58,7 @@ object MultiMCTester : AbstractTester() {
         modsDir.deleteRecursively()
 
         val minecraftSrcDir = modpack.sourceFolder
-        Downloader.logger.info { "copying files into minecraft dir ('$minecraftSrcDir' -> '$minecraftDir')" }
+        logger.info { "copying files into minecraft dir ('$minecraftSrcDir' -> '$minecraftDir')" }
         if (minecraftSrcDir.exists()) {
             minecraftSrcDir.copyRecursively(minecraftDir, overwrite = true)
         }

@@ -1,7 +1,7 @@
 package voodoo
 
 import com.eyeem.watchadoin.Stopwatch
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.data.lock.LockPack
 import voodoo.pack.*
 import java.io.File
@@ -11,7 +11,8 @@ import java.io.File
  * @author Nikky
  */
 
-object Pack : KLogging() {
+object Pack {
+    private val logger = KotlinLogging.logger {}
     val packMap = listOf(
         VoodooPackager,
         MMCSelfupdatingPackVoodoo,

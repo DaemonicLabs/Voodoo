@@ -1,9 +1,10 @@
 package voodoo.provider
 
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.data.flat.FlatEntry
 
-object Providers : KLogging() {
+object Providers {
+    private val logger = KotlinLogging.logger {}
     private val providers = hashMapOf<String, ProviderBase>()
 
     init {

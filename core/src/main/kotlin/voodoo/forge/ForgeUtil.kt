@@ -7,11 +7,11 @@ import io.ktor.client.statement.readText
 import io.ktor.http.isSuccess
 import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.data.ForgeVersion
-import voodoo.util.Downloader
 import javax.xml.parsers.DocumentBuilderFactory
 import org.w3c.dom.NodeList
+import voodoo.util.browserUserAgent
 
 import voodoo.util.json
 import voodoo.util.useClient
@@ -21,7 +21,8 @@ import java.io.IOException
  * Created by nikky on 30/12/17.
  * @author Nikky
  */
-object ForgeUtil : KLogging() {
+object ForgeUtil {
+    private val logger = KotlinLogging.logger {}
     private val forgeData: ForgeData by lazy {
         runBlocking { getForgePromoData() }
     }
@@ -163,7 +164,7 @@ object ForgeUtil : KLogging() {
         val response = try {
             useClient { client ->
                 client.get<HttpResponse>(url) {
-                    header("User-Agent", Downloader.useragent)
+                    header("User-Agent", browserUserAgent)
                 }
             }
         } catch(e: IOException) {

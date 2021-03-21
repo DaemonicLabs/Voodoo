@@ -2,6 +2,7 @@ package voodoo.provider
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
+import mu.KotlinLogging
 import voodoo.data.EntryReportData
 import voodoo.data.flat.FlatEntry
 import voodoo.data.flat.FlatModPack
@@ -14,6 +15,7 @@ import java.io.File
  */
 
 object LocalProvider : ProviderBase("Local Provider") {
+    private val logger = KotlinLogging.logger {}
     override suspend fun resolve(
         entry: FlatEntry,
         modPack: FlatModPack,

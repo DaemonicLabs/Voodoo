@@ -6,7 +6,7 @@ import java.lang.IllegalArgumentException
 import kotlin.coroutines.AbstractCoroutineContextElement
 import kotlin.coroutines.CoroutineContext
 
-val logger = KotlinLogging.logger {}
+private val logger = KotlinLogging.logger {}
 
 fun main() {
     runBlocking(MutableMDCContext()) {

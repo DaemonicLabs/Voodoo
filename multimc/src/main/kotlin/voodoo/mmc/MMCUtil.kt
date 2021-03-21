@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import moe.nikky.voodoo.format.VersionEntry
 import moe.nikky.voodoo.format.modpack.Recommendation
-import mu.KLogging
 import mu.KotlinLogging
 import voodoo.mmc.data.MultiMCPack
 import voodoo.mmc.data.PackComponent

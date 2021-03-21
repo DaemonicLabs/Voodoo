@@ -4,13 +4,14 @@ import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
-import voodoo.core.GeneratedConstants
+import mu.KotlinLogging
 import voodoo.data.EntryReportData
 import voodoo.data.Quadruple
 import voodoo.data.flat.FlatEntry
 import voodoo.data.flat.FlatModPack
 import voodoo.data.lock.LockEntry
 import voodoo.memoize
+import voodoo.util.browserUserAgent
 import voodoo.util.download
 import voodoo.util.jenkins.Artifact
 import voodoo.util.jenkins.BuildWithDetails
@@ -26,8 +27,7 @@ import java.util.*
  */
 
 object JenkinsProvider : ProviderBase("Jenkins Provider") {
-    const val useragent = "voodoo/${GeneratedConstants.FULL_VERSION} (https://github.com/DaemonicLabs/Voodoo)"
-
+    private val logger = KotlinLogging.logger {}
     override suspend fun resolve(
         entry: FlatEntry,
         modPack: FlatModPack,
@@ -85,7 +85,11 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         val (url, fileName) = getDownloadUrl(entry)
 
         val targetFile = targetFolder.resolve(entry.fileName ?: fileName)
-        targetFile.download(url, cacheDir.resolve("JENKINS").resolve(entry.job).resolve(entry.buildNumber.toString()))
+        targetFile.download(
+            url = url,
+            cacheDir = cacheDir.resolve("JENKINS").resolve(entry.job).resolve(entry.buildNumber.toString()),
+            retries = 10
+        )
         return@stopwatch url to targetFile
     }
 
@@ -148,7 +152,7 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
     private suspend fun buildCall(jobName: String, url: String, buildNumber: Int): BuildWithDetails {
         logger.info("get build $buildNumber")
         delay(20)
-        return job(jobName, url).getBuildByNumber(buildNumber, useragent)!!
+        return job(jobName, url).getBuildByNumber(buildNumber, browserUserAgent)!!
     }
 
     private val jobCache: MutableMap<Pair<String, String>, Job> = Collections.synchronizedMap(hashMapOf())
@@ -160,7 +164,7 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
     private suspend fun jobCall(jobName: String, url: String): Job {
         val server = server(url)
         logger.info("get jenkins job $jobName")
-        return server.getJob(jobName, useragent) ?: throw Exception("no such job: '$jobName' on $url")
+        return server.getJob(jobName, browserUserAgent) ?: throw Exception("no such job: '$jobName' on $url")
     }
 
     val server = ::serverCall.memoize()

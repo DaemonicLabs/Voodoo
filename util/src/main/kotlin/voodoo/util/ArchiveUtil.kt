@@ -1,9 +1,10 @@
 package voodoo.util
 
-import mu.KLogging
+import mu.KotlinLogging
 import java.io.File
 
-object ArchiveUtil : KLogging() {
+object ArchiveUtil {
+    private val logger = KotlinLogging.logger {}
     private val directories = Directories.get(moduleName = "git-archive")
 
     fun archiveLast(directory: File = File("."), identifier: String = directory.name): Pair<String, File>? {

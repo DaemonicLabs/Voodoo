@@ -3,6 +3,7 @@ package voodoo.provider
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
+import mu.KotlinLogging
 import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
 import voodoo.curse.CurseClient.getAddon
@@ -18,6 +19,7 @@ import voodoo.data.flat.FlatEntry
 import voodoo.data.flat.FlatModPack
 import voodoo.data.lock.LockEntry
 import voodoo.memoize
+import voodoo.util.browserUserAgent
 import voodoo.util.download
 import java.io.File
 import java.time.Instant
@@ -30,6 +32,7 @@ import kotlin.system.exitProcess
  * @author Nikky
  */
 object CurseProvider : ProviderBase("Curse Provider") {
+    private val logger = KotlinLogging.logger {}
 //    private val resolved = Collections.synchronizedList(mutableListOf<String>())
 
     override fun reset() {
@@ -218,7 +221,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
     }
 
     private fun isOptionalCall(entry: FlatEntry): Boolean {
-        ProviderBase.logger.info("test optional of ${entry.id}")
+        logger.info("test optional of ${entry.id}")
         return entry.transient || entry.optional
     }
 
@@ -240,7 +243,8 @@ object CurseProvider : ProviderBase("Curse Provider") {
         targetFile.download(
             url = addonFile.downloadUrl,
             cacheDir = cacheDir.resolve("CURSE").resolve(entry.projectID.toString()).resolve(entry.fileID.toString()),
-            validator = { bytes, file ->
+            validator = { file ->
+                val bytes = file.readBytes()
                 val fileLenghtMatches = addonFile.fileLength == bytes.size.toLong()
                 if(!fileLenghtMatches) {
                     logger.warn("[${entry.id} ${entry.projectID}:${addonFile.id}] file length do not match expected: ${addonFile.fileLength} actual: (${bytes.size})")
@@ -256,7 +260,9 @@ object CurseProvider : ProviderBase("Curse Provider") {
                         false
                     } else true
                 }
-            }
+            },
+            retries = 5,
+            useragent = browserUserAgent,
         )
 
         if(addonFile.fileLength != targetFile.length()) {

@@ -16,7 +16,7 @@ import moe.nikky.voodoo.format.modpack.Manifest
 import moe.nikky.voodoo.format.modpack.Recommendation
 import moe.nikky.voodoo.format.modpack.entry.FileInstall
 import moe.nikky.voodoo.format.modpack.entry.Side
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.mmc.MMCSelectable
 import voodoo.mmc.MMCUtil
 import voodoo.mmc.MMCUtil.updateAndSelectFeatures
@@ -35,7 +35,8 @@ import kotlin.system.exitProcess
  * @author Nikky
  */
 
-object Installer : KLogging() {
+object Installer {
+    private val logger = KotlinLogging.logger {}
     private val directories = Directories.get(moduleName = "MULTIMC")
     val cacheHome by lazy { directories.cacheHome }
 //    val kit = Toolkit.getDefaultToolkit()
@@ -401,8 +402,8 @@ object Installer : KLogging() {
                                         target.download(
                                             url = url,
                                             cacheDir = cacheFolder,
-                                            validator = { bytes, file ->
-                                                val sha256 = bytes.sha256Hex()
+                                            validator = { file ->
+                                                val sha256 = file.sha256Hex()
                                                 logger.info("comparing $sha256 == ${task.hash} of file: $file")
                                                 sha256 == task.hash.substringAfter(':')
                                             }
@@ -423,8 +424,8 @@ object Installer : KLogging() {
                                     target.download(
                                         url = url,
                                         cacheDir = cacheFolder,
-                                        validator = { bytes, file ->
-                                            val sha256 = bytes.sha256Hex()
+                                        validator = { file ->
+                                            val sha256 = file.sha256Hex()
                                             logger.info("comparing $sha256 == ${task.hash} of file: $file")
                                             sha256 == task.hash.substringAfter(':')
                                         }

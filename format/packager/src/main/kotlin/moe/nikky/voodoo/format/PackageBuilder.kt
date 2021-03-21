@@ -6,7 +6,7 @@ import moe.nikky.voodoo.format.builder.PropertiesApplicator
 import moe.nikky.voodoo.format.modpack.Manifest
 import moe.nikky.voodoo.format.modpack.entry.FileInstall
 import moe.nikky.voodoo.format.modpack.entry.Side
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.util.toRelativeUnixPath
 import java.io.File
 import java.security.MessageDigest
@@ -14,7 +14,8 @@ import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
-object PackageBuilder : KLogging() {
+object PackageBuilder {
+    private val logger = KotlinLogging.logger {}
 
     /***
      * @param inputPath folder with modpack source

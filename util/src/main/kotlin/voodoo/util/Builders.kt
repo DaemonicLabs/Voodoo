@@ -3,8 +3,10 @@ package voodoo.util
 import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.newFixedThreadPoolContext
+import mu.KotlinLogging
 
-// object ExceptionHelper : KLogging() {
+// object ExceptionHelper {
+// private val logger = KotlinLogging.logger {}
 //     val context = CoroutineExceptionHandler { context, exception ->
 //         logger.error(exception.message)
 //         logger.error { exception }

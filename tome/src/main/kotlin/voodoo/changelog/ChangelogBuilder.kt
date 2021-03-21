@@ -1,7 +1,7 @@
 package voodoo.changelog
 
 import Modloader
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.data.DependencyType
 import voodoo.data.lock.LockEntry
 import voodoo.data.lock.LockPack
@@ -9,7 +9,8 @@ import voodoo.markdownTable
 import voodoo.util.blankOr
 import voodoo.util.toRelativeUnixPath
 
-open class ChangelogBuilder : KLogging() {
+open class ChangelogBuilder {
+    private val logger = KotlinLogging.logger {}
     open val filename: String = "changelog.md"
     open val fullFilename: String = "complete_changelog.md"
 

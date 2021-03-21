@@ -2,7 +2,6 @@ package voodoo.data.flat
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.serialization.Transient
-import mu.KLogging
 import mu.KotlinLogging
 import voodoo.builder.resolve
 import voodoo.data.ModloaderPattern

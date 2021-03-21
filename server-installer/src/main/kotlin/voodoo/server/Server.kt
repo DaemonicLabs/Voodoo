@@ -5,13 +5,13 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import Modloader
+import mu.KotlinLogging
 import voodoo.data.Side
 import voodoo.data.lock.LockPack
 import voodoo.fabric.FabricUtil
 import voodoo.forge.ForgeUtil
 import voodoo.provider.Providers
 import voodoo.util.Directories
-import voodoo.util.Downloader.logger
 import voodoo.util.download
 import voodoo.util.withPool
 import java.io.File
@@ -22,6 +22,7 @@ import java.io.File
  */
 
 object Server {
+    private val logger = KotlinLogging.logger {}
     private val directories = Directories.get(moduleName = "server")
 
     suspend fun install(

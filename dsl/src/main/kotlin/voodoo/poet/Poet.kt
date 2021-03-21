@@ -4,7 +4,7 @@ import com.squareup.kotlinpoet.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.curse.CurseClient
 import voodoo.data.curse.ProjectID
 import voodoo.fabric.InstallerVersion
@@ -20,7 +20,8 @@ import voodoo.util.SharedFolders
 import voodoo.util.json
 import java.io.File
 
-object Poet : KLogging() {
+object Poet {
+    private val logger = KotlinLogging.logger {}
     // for generating code for tests only
     @JvmStatic
     fun main(vararg args: String) {

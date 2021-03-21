@@ -14,14 +14,12 @@ import io.ktor.util.cio.writeChannel
 import io.ktor.utils.io.copyAndClose
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
-import mu.KLogging
+import mu.KotlinLogging
 import org.w3c.dom.NodeList
 import org.xml.sax.InputSource
 import voodoo.util.download
 import voodoo.util.toHexString
 import voodoo.util.useClient
-import voodoo.util.useragent
 import java.io.ByteArrayInputStream
 import java.io.File
 import java.io.IOException
@@ -30,7 +28,8 @@ import javax.xml.parsers.DocumentBuilderFactory
 import javax.xml.xpath.XPathConstants
 import javax.xml.xpath.XPathFactory
 
-object MavenUtil : KLogging() {
+object MavenUtil {
+    private val logger = KotlinLogging.logger {}
     val mavenLocalFolder = File(System.getProperty("user.home")).resolve(".m2").resolve("repository")
     fun localMavenFile(
         group: String,
@@ -95,7 +94,7 @@ object MavenUtil : KLogging() {
         targetFile.download(
             url = artifactUrl,
             cacheDir = outputDir,
-            validator = { bytes, file ->
+            validator = { file ->
                 if(verifyChecksum) {
                     // TODO: use whatever checksum thing it finds
                     val sha1Url = "$artifactUrl.sha1"
@@ -112,7 +111,7 @@ object MavenUtil : KLogging() {
                         }
                     }
 
-                    val fileSha1 = MessageDigest.getInstance("SHA-1").digest(bytes).toHexString()
+                    val fileSha1 = MessageDigest.getInstance("SHA-1").digest(file.readBytes()).toHexString()
 //                    require(fileSha1 == sha1) { "$artifactUrl did not match SHA-1 hash: '$sha1'" }
                     fileSha1 == sha1
                 } else {

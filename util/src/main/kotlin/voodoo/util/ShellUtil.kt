@@ -1,6 +1,6 @@
 package voodoo.util
 
-import mu.KLogging
+import mu.KotlinLogging
 import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
@@ -10,7 +10,8 @@ import java.io.PrintStream
 import java.nio.file.Files
 import java.util.function.Consumer
 
-object ShellUtil : KLogging() {
+object ShellUtil {
+    private val logger = KotlinLogging.logger {}
     fun isInPath(tool: String) = when {
         Platform.isLinux || Platform.isMac -> evalBash("which $tool").stdout.trim().isNotBlank()
         Platform.isWindows -> runProcess("where", tool).stdout.trim().takeIf { !it.contains("INFO: Could not find files for the given pattern(s).") }?.isNotBlank() ?: false

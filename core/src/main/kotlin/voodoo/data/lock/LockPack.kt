@@ -3,7 +3,7 @@ package voodoo.data.lock
 import Modloader
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
-import mu.KLogging
+import mu.KotlinLogging
 import voodoo.data.DependencyType
 import voodoo.data.PackOptions
 import voodoo.data.PackReportData
@@ -29,7 +29,8 @@ data class LockPack(
     var packOptions: PackOptions = PackOptions(),
     val entries: List<LockEntry> = listOf(),
 ) {
-    companion object : KLogging() {
+    companion object {
+        private val logger = KotlinLogging.logger {}
         const val FILENAME = "lock.pack.json"
 
         // maybe make this configurable ?
