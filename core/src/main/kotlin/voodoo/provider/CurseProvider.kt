@@ -209,6 +209,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
                     validMcVersions = entry.validMcVersions
                     projectID = depAddon.id
                     folder = depAddon.categorySection.path
+                    useOriginalUrl = entry.useOriginalUrl
                 }
                 logger.debug("adding dependency: $depEntry")
                 addEntry.send(depEntry)
