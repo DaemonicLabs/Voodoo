@@ -56,7 +56,7 @@ class UpdateCommand : CliktCommand(
             // validate the file exists and matches checksum
             val tmpFile = cacheHome.resolve(distributionUrl.substringAfterLast("/"))
             tmpFile.delete()
-            tmpFile.download(distributionUrl, cacheDir = cacheHome)
+            tmpFile.download(distributionUrl, cacheDir = null)
             useClient { client ->
                 val md5 = client.get<String>(distributionUrl + ".md5")
                 val fileMd5 = createMD5(tmpFile).toHexString()
