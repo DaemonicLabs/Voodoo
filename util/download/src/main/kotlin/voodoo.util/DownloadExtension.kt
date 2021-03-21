@@ -23,31 +23,31 @@ suspend fun File.download(
     retries: Int = 3,
     useragent: String = voodoo.util.useragent
 ) = withContext(Dispatchers.IO) {
-    val thisFile = this@download
+    val targetFile = this@download
     for (retry in (0..retries)) {
         val retryDelay = (retry * 1000L)
         if (cacheDir != null) {
-            val cacheFile = cacheDir.resolve(thisFile.name)
-            logger.info("downloading $url -> ${thisFile}")
+            val cacheFile = cacheDir.resolve(targetFile.name)
+            logger.info("downloading $url -> ${targetFile}")
             logger.debug("cacheFile $cacheFile")
             if (cacheFile.exists() && !cacheFile.isFile) cacheFile.deleteRecursively()
 
             logger.debug("validating $cacheFile existence and hash")
             if (cacheFile.exists() && cacheFile.isFile && validator(cacheFile)) {
                 logger.info("file: $cacheFile exists and can skip download")
-                thisFile.parentFile.mkdirs()
-                cacheFile.copyTo(thisFile, overwrite = true)
+                targetFile.parentFile.mkdirs()
+                cacheFile.copyTo(targetFile, overwrite = true)
                 delay(100)
 
-                if (!validator(thisFile)) {
-                    logger.error("$thisFile did not pass validation")
+                if (!validator(targetFile)) {
+                    logger.error("$targetFile did not pass validation")
                     cacheFile.delete()
                     logger.error("waiting for {} ms", retryDelay)
                     delay(retryDelay)
                     continue
                 }
 
-                logger.debug("done downloading $url -> $thisFile")
+                logger.debug("done downloading $url -> $targetFile")
                 delay(100)
                 return@withContext
             }
@@ -65,9 +65,10 @@ suspend fun File.download(
                         throw IOException("unexpected status: ${response.status}")
                     }
 
+                    targetFile.absoluteFile.parentFile.mkdirs()
                     // Response content is streamed
                     val channel = response.receive<ByteReadChannel>()
-                    val contentLength = channel.copyAndClose(thisFile.writeChannel())
+                    val contentLength = channel.copyAndClose(targetFile.writeChannel())
 
                     val headerContentLength = response.headers["content-length"]!!.toLong()
                     require(contentLength == headerContentLength) {
@@ -88,12 +89,18 @@ suspend fun File.download(
         }
 
         delay(100)
+        if(!targetFile.exists()) {
+            logger.error { "$targetFile does not exist" }
+            logger.error("waiting for {} ms", retryDelay)
+            delay(retryDelay)
+            continue
+        }
 
-        val cacheFile = cacheDir?.resolve(thisFile.name)
+        val cacheFile = cacheDir?.resolve(targetFile.name)
 
-        logger.debug("running validator on $thisFile")
-        if (!validator(thisFile)) {
-            logger.error("$thisFile did not pass validation")
+        logger.debug("running validator on $targetFile")
+        if (!validator(targetFile)) {
+            logger.error("$targetFile did not pass validation")
             cacheFile?.delete()
             logger.error("waiting for {} ms", retryDelay)
             delay(retryDelay)
@@ -103,7 +110,7 @@ suspend fun File.download(
         if (cacheFile != null) {
             logger.debug("saving to cache $url -> $cacheFile")
             cacheFile.parentFile.mkdirs()
-            thisFile.copyTo(cacheFile, overwrite = true)
+            targetFile.copyTo(cacheFile, overwrite = true)
 
             logger.debug("running validator on $cacheFile")
             if (!validator(cacheFile)) {
@@ -112,7 +119,7 @@ suspend fun File.download(
             }
         }
 
-        logger.debug("done downloading $url -> $thisFile")
+        logger.debug("done downloading $url -> $targetFile")
         delay(100)
         return@withContext
     }
