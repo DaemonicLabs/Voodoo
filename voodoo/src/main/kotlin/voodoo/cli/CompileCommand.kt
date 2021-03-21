@@ -110,7 +110,7 @@ class CompileCommand() : CliktCommand(
                                     val modpack = versionPack.flatten(
                                         rootDir = rootDir,
                                         id = id,
-                                        overrides = config.overrides,
+                                        configOverrides = config.overrides,
                                         metaPack = metaPack
                                     )
 //                                logger.debug { "modpack: $modpack" }

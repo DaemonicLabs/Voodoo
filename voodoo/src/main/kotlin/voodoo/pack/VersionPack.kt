@@ -32,6 +32,7 @@ data class VersionPack(
     val mcVersion: String,
     val modloader: Modloader,
     val packageConfiguration: VersionPackageConfig = VersionPackageConfig(),
+    val overrides: Map<String, EntryOverride> = mapOf(),
     @JsonSchema.Definition("FileEntryList")
     val mods: Map<String, List<FileEntry>>,
 ) {
@@ -148,7 +149,7 @@ data class VersionPack(
         }
     }
 
-    fun flatten(rootDir: File, id: String, metaPack: MetaPack, overrides: Map<String, EntryOverride>): FlatModPack {
+    fun flatten(rootDir: File, id: String, metaPack: MetaPack, configOverrides: Map<String, EntryOverride>): FlatModPack {
         return FlatModPack(
             rootFolder = rootDir,
             id = id,
@@ -183,7 +184,7 @@ data class VersionPack(
                     entry.postParse(overrideKey)
                 }
             }.map { intitalEntry ->
-                intitalEntry.toEntry(overrides)
+                intitalEntry.toEntry(configOverrides + overrides)
             }.toMutableSet()
         ).apply {
 

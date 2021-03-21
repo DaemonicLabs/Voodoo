@@ -224,7 +224,7 @@ sealed class FileEntry {
                     curse_useOriginalUrl = override.curse_useOriginalUrl ?: curse_useOriginalUrl,
                     curse_skipFingerprintCheck = override.curse_skipFingerprintCheck ?: curse_skipFingerprintCheck,
                 ).run {
-                    assignCommonValues(applyCommonOverride(override))
+                    applyCommonOverride(override)
                 }
                 is EntryOverride.Common -> run {
                     applyCommonOverride(override) as Curse
