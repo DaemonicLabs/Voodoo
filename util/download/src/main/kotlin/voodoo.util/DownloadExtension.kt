@@ -78,9 +78,14 @@ suspend fun File.download(
 
                         val headerContentLength = response.headers["content-length"]?.toLong()
                         if (headerContentLength != null) {
-                            require(contentLength == headerContentLength) {
-                                "received bytes != contentLength: $contentLength != $headerContentLength"
+                            if(contentLength != headerContentLength) {
+                                logger.error { "received bytes != contentLength: $contentLength != $headerContentLength" }
+                                logger.error("waiting for {} ms", retryDelay)
+                                delay(retryDelay)
+                                throw IOException("incorrect response length")
                             }
+                        } else {
+                            logger.warn { "content-length header missing ?" }
                         }
                     }
                 }
