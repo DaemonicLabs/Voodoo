@@ -17,6 +17,7 @@ import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import org.w3c.dom.NodeList
 import org.xml.sax.InputSource
+import voodoo.util.Directories
 import voodoo.util.download
 import voodoo.util.toHexString
 import voodoo.util.useClient
@@ -30,6 +31,8 @@ import javax.xml.xpath.XPathFactory
 
 object MavenUtil {
     private val logger = KotlinLogging.logger {}
+    private val directories = Directories.get(moduleName = "MAVEN")
+    private val cacheHome = directories.cacheHome
     val mavenLocalFolder = File(System.getProperty("user.home")).resolve(".m2").resolve("repository")
     fun localMavenFile(
         group: String,
@@ -93,7 +96,7 @@ object MavenUtil {
         targetFile.absoluteFile.parentFile.mkdirs()
         targetFile.download(
             url = artifactUrl,
-            cacheDir = outputDir,
+            cacheDir = cacheHome.resolve(group).resolve(artifactId).resolve(version),
             validator = { file ->
                 if(verifyChecksum) {
                     // TODO: use whatever checksum thing it finds
