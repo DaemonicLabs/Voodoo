@@ -2,6 +2,7 @@ package voodoo.mmc
 
 import Modloader
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 import moe.nikky.voodoo.format.VersionEntry
 import moe.nikky.voodoo.format.modpack.Recommendation
@@ -42,15 +43,20 @@ object MMCUtil {
             encodeDefaults = true
         }
         val mmcConfigurationFile = configHome.resolve("multimc.json")
-        logger.info("loading multimc config $mmcConfigurationFile")
-        mmcConfig = when {
-            mmcConfigurationFile.exists() -> jsonWithDefaults.decodeFromString(
-                MMCConfiguration.serializer(),
-                mmcConfigurationFile.readText()
-            )
-            else -> MMCConfiguration()
+        logger.info { "loading multimc config $mmcConfigurationFile" }
+        mmcConfig = try {
+            when {
+                mmcConfigurationFile.exists() -> jsonWithDefaults.decodeFromString(
+                    MMCConfiguration.serializer(),
+                    mmcConfigurationFile.readText()
+                )
+                else -> MMCConfiguration()
+            }
+        } catch (e: SerializationException) {
+            logger.error(e) { "failed to decode: $mmcConfigurationFile" }
+            MMCConfiguration()
         }
-        logger.info("loaded config: $mmcConfig")
+        logger.info { "loaded config: $mmcConfig" }
 
         mmcConfigurationFile.parentFile.mkdirs()
         mmcConfigurationFile.writeText(jsonWithDefaults.encodeToString(MMCConfiguration.serializer(), mmcConfig))
@@ -62,9 +68,9 @@ object MMCUtil {
             .redirectError(ProcessBuilder.Redirect.INHERIT)
             .start()
 
-        logger.info("started multimc instance $name $process")
+        logger.info { "started multimc instance $name $process" }
         val status = process.waitFor()
-        logger.info("multimc instance exited with code $status")
+        logger.info { "multimc instance exited with code $status" }
     }
 
     var dir: File? = null
@@ -82,15 +88,16 @@ object MMCUtil {
                 logger.debug("output: $location")
                 val multimcFile = File(location)
                 multimcFile.parentFile ?: run {
-                    logger.error("multimcFile: '$multimcFile'")
-                    logger.error("Cannot find MultiMC on PATH")
-                    logger.error("make sure to add the multimc install location to the PATH")
-                    logger.error(
+                    logger.error { "multimcFile: '$multimcFile'" }
+                    logger.error { "Cannot find MultiMC on PATH" }
+                    logger.error { "make sure to add the multimc install location to the PATH" }
+                    logger.error {
                         "go to `Control Panel\\All Control Panel Items\\System`" +
                                 " >> Advanced system settings" +
                                 " >> Environment Variables"
-                    )
-                    logger.info("once added restart the shell and try to execute `multimc`")
+                    }
+                    logger.info("once added, restart the shell and try to execute `multimc`")
+                    "rundll32.exe sysdm.cpl,EditEnvironmentVariables".runCommand()
                     exitProcess(1)
                 }
             }
@@ -154,7 +161,7 @@ object MMCUtil {
     ): File {
         instanceDir.mkdirs()
 
-        logger.info("instance dir: '$instanceDir'")
+        logger.info { "instance dir: '$instanceDir'" }
 
         val minecraftDir = instanceDir.resolve(".minecraft")
         minecraftDir.mkdirs()
@@ -295,7 +302,8 @@ object MMCUtil {
             "Features" + if (name.isBlank()) "" else " - $name" + if (version.isBlank()) "" else " - $version"
         val dialog = object : JDialog(null as Dialog?, windowTitle, true), Runnable {
             private var seconds = 0
-//            private val thread: Thread = Thread(this)
+
+            //            private val thread: Thread = Thread(this)
             private val max = 10 //max number of seconds
 
             init {
@@ -520,7 +528,7 @@ object MMCUtil {
                 addWindowListener(
                     object : WindowAdapter() {
                         override fun windowClosed(e: WindowEvent) {
-                            logger.info("closing dialog")
+                            logger.info { "closing dialog" }
                             if (!success)
                                 exitProcess(1)
                         }
@@ -528,7 +536,7 @@ object MMCUtil {
                 )
                 pack()
                 setLocationRelativeTo(null)
-                if(enableTimeout) {
+                if (enableTimeout) {
                     Thread(this).start()
                 }
             }
@@ -546,9 +554,10 @@ object MMCUtil {
                     title = "${max - seconds} s - $windowTitle"
                     try {
                         Thread.sleep(1000);
-                    } catch (exc: InterruptedException) { }
+                    } catch (exc: InterruptedException) {
+                    }
                 }
-                if(!userInteraction) {
+                if (!userInteraction) {
                     success = true
                     isVisible = false
                 } else {
@@ -605,7 +614,7 @@ object MMCUtil {
 
                 var row = 0
                 versions.forEach { (key, version) ->
-                    val buttonText = if(key == version.version) {
+                    val buttonText = if (key == version.version) {
                         version.title
                     } else {
                         "$key (${version.title})"
@@ -641,7 +650,7 @@ object MMCUtil {
                 addWindowListener(
                     object : WindowAdapter() {
                         override fun windowClosed(e: WindowEvent) {
-                            logger.info("closing dialog")
+                            logger.info { "closing dialog" }
                             if (result == null) exitProcess(1)
                         }
                     }
@@ -659,7 +668,7 @@ object MMCUtil {
         }
 
 
-        logger.info("created dialog")
+        logger.info { "created dialog" }
 
         dialog.setLocationRelativeTo(null)
         dialog.isVisible = true
