@@ -35,16 +35,14 @@ object MMCUtil {
         @Serializable(with = FileSerializer::class) val path: File = File(System.getProperty("user.home") + "/.local/share/multimc")
     )
 
-    val mmcConfig: MMCConfiguration
-
-    init {
+    val mmcConfig: MMCConfiguration by lazy {
         val jsonWithDefaults = Json {
             prettyPrint = true
             encodeDefaults = true
         }
         val mmcConfigurationFile = configHome.resolve("multimc.json")
         logger.info { "loading multimc config $mmcConfigurationFile" }
-        mmcConfig = try {
+        try {
             when {
                 mmcConfigurationFile.exists() -> jsonWithDefaults.decodeFromString(
                     MMCConfiguration.serializer(),
@@ -55,11 +53,12 @@ object MMCUtil {
         } catch (e: SerializationException) {
             logger.error(e) { "failed to decode: $mmcConfigurationFile" }
             MMCConfiguration()
-        }
-        logger.info { "loaded config: $mmcConfig" }
+        }.also {
+            logger.info { "loaded config: $it" }
 
-        mmcConfigurationFile.parentFile.mkdirs()
-        mmcConfigurationFile.writeText(jsonWithDefaults.encodeToString(MMCConfiguration.serializer(), mmcConfig))
+            mmcConfigurationFile.parentFile.mkdirs()
+            mmcConfigurationFile.writeText(jsonWithDefaults.encodeToString(MMCConfiguration.serializer(), mmcConfig))
+        }
     }
 
     fun startInstance(name: String) {
@@ -103,7 +102,7 @@ object MMCUtil {
             }
             Platform.isLinux -> File(System.getProperty("user.home")).resolve(mmcConfig.path)
             else -> {
-                logger.warn("unsupported platform, on OSX please contact NikkyAi to implement this OR make a PR")
+                logger.warn { "unsupported platform, please contact NikkyAi to implement this OR fix it yourself: https://github.com/DaemonicLabs/Voodoo" }
                 File(System.getProperty("user.home")).resolve(mmcConfig.path)
             }
         }
