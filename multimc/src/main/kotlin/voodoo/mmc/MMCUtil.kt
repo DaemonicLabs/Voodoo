@@ -53,8 +53,8 @@ object MMCUtil {
         } catch (e: SerializationException) {
             logger.error(e) { "failed to decode: $mmcConfigurationFile" }
             MMCConfiguration()
-        }.also {
-            logger.info { "loaded config: $it" }
+        }.also { mmcConfig ->
+            logger.info { "loaded config: $mmcConfig" }
 
             mmcConfigurationFile.parentFile.mkdirs()
             mmcConfigurationFile.writeText(jsonWithDefaults.encodeToString(MMCConfiguration.serializer(), mmcConfig))
