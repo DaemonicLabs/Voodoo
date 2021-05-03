@@ -1,5 +1,5 @@
 {
-    "id": "forgepack",
+    "id": "forgePack",
     "mcVersion": "1.12.2",
     "modloader": {
         "type": "Forge",
@@ -9,7 +9,7 @@
     "version": "0.0.1",
     "icon": "icon_forgePack.png",
     "packOptions": {
-        "uploadUrl": "https://mydomain.com/mc/forgepack"
+        "uploadUrl": "https://mydomain.com/mc/forgePack"
     },
     "entries": [
         {

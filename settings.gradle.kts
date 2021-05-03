@@ -7,9 +7,6 @@ pluginManagement {
         maven(url = "https://kotlin.bintray.com/kotlinx") {
             name = "kotlinx"
         }
-        maven(url = "http://maven.modmuss50.me") {
-            name = "modmuss50"
-        }
         mavenCentral()
         gradlePluginPortal()
         mavenLocal()

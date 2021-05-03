@@ -28,14 +28,7 @@ println(
     """.trimIndent()
 )
 
-val noConstants: List<Project> = listOf(
-//    project("skcraft")
-)
-val noKotlin: List<Project> = listOf(
-)
-
 object Maven {
-    val url = "https://dl.bintray.com/nikkyai/github"
     val shadowClassifier = "all"
 }
 
@@ -67,9 +60,6 @@ task<DefaultTask>("exportVersion") {
 allprojects {
     repositories {
         mavenCentral()
-        maven(url = "https://kotlin.bintray.com/kotlinx") {
-            name = "KotlinX"
-        }
         maven("https://jitpack.io") {
             name = "jitpack"
         }
@@ -139,38 +129,37 @@ subprojects {
             archiveVersion.set("")
         }
 
-        if (project !in noConstants) {
-            apply(plugin ="moe.nikky.plugin.constants")
+        apply(plugin = "moe.nikky.plugin.constants")
 
-            val folder = listOf("voodoo") + project.name.split('-')
-            afterEvaluate {
-                val versionsProps = loadProperties(rootProject.file("versions.properties").path)
-                configure<ConstantsExtension> {
-                    constantsObject(
-                        pkg = folder.joinToString("."),
-                        className = "GeneratedConstants"
-                    ) {
-                        field("BUILD") value versionSuffix
-                        field("VERSION") value fullVersion.substringBefore('-')
-                        field("FULL_VERSION") value fullVersion
-                        field("MAVEN_URL") value "https://nikky.moe/maven"
-                        field("MAVEN_GROUP") value group.toString()
-                        field("MAVEN_ARTIFACT") value project.name
-                        field("MAVEN_SHADOW_CLASSIFIER") value Maven.shadowClassifier
-                    }
+        val folder = listOf("voodoo") + project.name.split('-')
+        afterEvaluate {
+            val versionsProps = loadProperties(rootProject.file("versions.properties").path)
+            configure<ConstantsExtension> {
+                constantsObject(
+                    pkg = folder.joinToString("."),
+                    className = "GeneratedConstants"
+                ) {
+                    field("BUILD") value versionSuffix
+                    field("VERSION") value fullVersion.substringBefore('-')
+                    field("FULL_VERSION") value fullVersion
+                    field("MAVEN_URL") value "https://nikky.moe/maven"
+                    field("MAVEN_GROUP") value group.toString()
+                    field("MAVEN_ARTIFACT") value project.name
+                    field("MAVEN_SHADOW_CLASSIFIER") value Maven.shadowClassifier
                 }
             }
-
-            val generateConstants by tasks.getting(GenerateConstantsTask::class) {
-                outputs.upToDateWhen { false }
-                kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
-            }
-
-            // TODO depend on kotlin tasks in the plugin too ?
-            tasks.withType<KotlinCompile> {
-                dependsOn(generateConstants)
-            }
         }
+
+        val generateConstants by tasks.getting(GenerateConstantsTask::class) {
+            outputs.upToDateWhen { false }
+            kotlin.sourceSets["main"].kotlin.srcDir(outputFolder)
+        }
+
+        // TODO depend on kotlin tasks in the plugin too ?
+        tasks.withType<KotlinCompile> {
+            dependsOn(generateConstants)
+        }
+
     }
 
     idea {
@@ -180,7 +169,7 @@ subprojects {
     }
 
     afterEvaluate {
-        if(pluginManager.hasPlugin("application")) {
+        if (pluginManager.hasPlugin("application")) {
             logger.lifecycle("apply shadowJar")
             apply(plugin = "com.github.johnrengelman.shadow")
 
@@ -262,7 +251,7 @@ subprojects {
                     name = "nikkyMaven"
                     val mavenUsername: String? = System.getenv("MAVEN_USERNAME")
                     val mavenPass: String? = System.getenv("MAVEN_PASSWORD")
-                    if(mavenUsername != null && mavenPass != null) {
+                    if (mavenUsername != null && mavenPass != null) {
                         credentials {
                             username = mavenUsername
                             password = mavenPass
