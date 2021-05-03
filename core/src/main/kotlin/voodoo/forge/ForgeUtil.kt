@@ -22,6 +22,8 @@ import java.io.IOException
  * @author Nikky
  */
 object ForgeUtil {
+    const val FORGE_MAVEN = "https://maven.minecraftforge.net"
+    const val PACKAGE_PATH = "net/minecraftforge/forge"
     private val logger = KotlinLogging.logger {}
     private val forgeData: ForgeData by lazy {
         runBlocking { getForgePromoData() }
@@ -111,8 +113,7 @@ object ForgeUtil {
         return forgeVersionOf(version)
     }
     fun forgeVersionOf(modloader: Modloader.Forge): ForgeVersion {
-        // https://files.minecraftforge.net/maven/net/minecraftforge/forge
-        val webpath = "https://files.minecraftforge.net/maven/net/minecraftforge/forge"
+        val webpath = "$FORGE_MAVEN/$PACKAGE_PATH"
 
         val version = "${modloader.mcVersion}-${modloader.forgeVersion}" + (modloader.branch ?.let { "-$it" } ?: "")
 
@@ -127,8 +128,7 @@ object ForgeUtil {
         )
     }
     fun forgeVersionOf(fullVersion: FullVersion): ForgeVersion {
-        // https://files.minecraftforge.net/maven/net/minecraftforge/forge
-        val webpath = "https://files.minecraftforge.net/maven/net/minecraftforge/forge"
+        val webpath = "$FORGE_MAVEN/$PACKAGE_PATH"
 
         val fileName = "forge-${fullVersion.version}-installer.jar" // "forge-mcversion-$forgeVersion(-$branch)/installer.jar"
         val url = "$webpath/${fullVersion.version}/$fileName"
@@ -142,7 +142,7 @@ object ForgeUtil {
     }
 
     private fun getForgeVersions(): List<FullVersion> {
-        val url = "https://files.minecraftforge.net/maven/net/minecraftforge/forge/maven-metadata.xml"
+        val url = "$FORGE_MAVEN/$PACKAGE_PATH/maven-metadata.xml"
 
         val factory = DocumentBuilderFactory.newInstance()
         val builder = factory.newDocumentBuilder()
@@ -159,7 +159,7 @@ object ForgeUtil {
     }
 
     private suspend fun getForgePromoData(): ForgeData = withContext(Dispatchers.IO) {
-        val url = "http://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json"
+        val url = "https://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json"
 
         val response = try {
             useClient { client ->
