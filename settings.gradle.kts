@@ -1,15 +1,7 @@
-import de.fayard.refreshVersions.bootstrapRefreshVersions
 pluginManagement {
     repositories {
-        maven(url = "https://dl.bintray.com/kotlin/kotlin-eap") {
-            name = "Kotlin EAP"
-        }
-        maven(url = "https://kotlin.bintray.com/kotlinx") {
-            name = "kotlinx"
-        }
         mavenCentral()
         gradlePluginPortal()
-        mavenLocal()
     }
 //    resolutionStrategy {
 //        eachPlugin {
@@ -19,26 +11,28 @@ pluginManagement {
 //        }
 //    }
 }
-buildscript {
-    repositories {
-        gradlePluginPortal()
-    }
-    dependencies.classpath("de.fayard.refreshVersions:refreshVersions:0.9.7")
-}
 
-bootstrapRefreshVersions(
-    listOf(rootDir.resolve("dependencies-rules.txt").readText())
-)
 
 plugins {
-    id("com.gradle.enterprise").version("3.6")
+    id("com.gradle.enterprise") version "3.6"
+
+
+////                        # available:"3.6.1"
+    id("de.fayard.refreshVersions") version "0.10.0"
+}
+
+refreshVersions {
+    extraArtifactVersionKeyRules(file("dependencies-rules.txt"))
 }
 
 gradleEnterprise {
     buildScan {
+//        publishAlwaysIf(true)
         termsOfServiceUrl = "https://gradle.com/terms-of-service"
         termsOfServiceAgree = "yes"
-//        publishAlwaysIf(true)
+        buildScanPublished {
+            file("buildscan.log").appendText("${java.util.Date()} - $buildScanUri\n")
+        }
     }
 }
 

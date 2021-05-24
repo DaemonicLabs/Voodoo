@@ -13,6 +13,7 @@ logs/
 /run/
 
 version.txt
+buildscan.log
 
 profile/
 
