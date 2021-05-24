@@ -82,10 +82,10 @@ class InitProjectCommand : CliktCommand(
                     #!/usr/bin/env bash
 
                     DIR="${'$'}( cd "${'$'}( dirname "${'$'}{BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-                    java -jar ${'$'}DIR/wrapper/wrapper.jar ${'$'}@
+                    java -jar "${'$'}DIR/wrapper/wrapper.jar" ${'$'}@
                     
                     if test -f "${'$'}DIR/wrapper/new.jar"; then
-                        mv -f ${'$'}DIR/wrapper/new.jar ${'$'}DIR/wrapper/wrapper.jar
+                        mv -f "${'$'}DIR/wrapper/new.jar" "${'$'}DIR/wrapper/wrapper.jar"
                     fi
                 """.trimIndent())
                 bashFile.setExecutable(true)
