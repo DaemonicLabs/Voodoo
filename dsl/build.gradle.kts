@@ -9,5 +9,4 @@ dependencies {
     api(project(":tome"))
     api(project(":pack:pack-tester"))
 
-    implementation("com.squareup:kotlinpoet:_")
 }

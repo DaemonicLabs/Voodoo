@@ -3,14 +3,13 @@
     "mcVersion": "1.15.2",
     "modloader": {
         "type": "Fabric",
-        "loader": "0.11.1",
+        "loader": "0.11.6",
         "intermediateMappings": "1.15.2",
-        "installer": "0.6.1.51"
+        "installer": "0.7.4"
     },
-    "version": "0.0.2",
-    "icon": "../local/256.png",
+    "version": "0.0.1",
     "packOptions": {
-        "uploadUrl": "https://nikky.moe/.mc/voodoo/fabricPack"
+        "uploadUrl": "https://mydomain.com/mc/fabricPack"
     },
     "entries": [
         {
@@ -76,7 +75,7 @@
             "name": "modmenu",
             "side": "CLIENT",
             "projectID": 308702,
-            "fileID": 3121557
+            "fileID": 3271693
         },
         {
             "type": "curse",
@@ -88,7 +87,7 @@
                 "recommendation": "starred"
             },
             "projectID": 317514,
-            "fileID": 3174699
+            "fileID": 3372018
         },
         {
             "type": "curse",

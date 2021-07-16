@@ -1,7 +1,6 @@
 package voodoo.cli
 
 import ch.qos.logback.classic.Level
-import com.github.ajalt.clikt.completion.CompletionCommand
 import com.github.ajalt.clikt.completion.completionOption
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.subcommands

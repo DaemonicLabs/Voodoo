@@ -7,7 +7,7 @@ import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.serialization.builtins.MapSerializer
 import kotlinx.serialization.builtins.serializer
 import mu.KotlinLogging
-import voodoo.poet.Poet
+import voodoo.autocomplete.Autocomplete
 import voodoo.util.*
 import java.io.File
 
@@ -73,7 +73,7 @@ object Autocompletions {
 
     private suspend fun generateCurse(generatorsCurse: Map<String, Generator.Curse>): Map<String, String> =
         generatorsCurse.entries.fold(mapOf<String, String>()) { acc, (name, generator) ->
-            acc + Poet.generateCurseforgeAutocomplete(
+            acc + Autocomplete.generateCurseforgeAutocomplete(
                 section = generator.section,
                 mcVersions = generator.mcVersions.toList()
             ).mapKeys { (key, _) ->
@@ -85,7 +85,7 @@ object Autocompletions {
 
     private suspend fun generateForge(generatorsForge: Map<String, Generator.Forge>): Map<String, String> =
         generatorsForge.entries.fold(mapOf<String, String>()) { acc, (name, generator) ->
-            acc + Poet.generateForgeAutocomplete(
+            acc + Autocomplete.generateForgeAutocomplete(
                 mcVersionFilter = generator.mcVersions.toList()
             ).mapKeys { (key, _) ->
                 "$name/$key"
@@ -97,7 +97,7 @@ object Autocompletions {
 
     private suspend fun generateFabricIntermediaries(generatorsFabric: Map<String, Generator.Fabric>): Map<String, String>  =
         generatorsFabric.entries.fold(mapOf<String, String>()) { acc, (name, generator) ->
-            acc + Poet.generateFabricIntermediariesAutocomplete(
+            acc + Autocomplete.generateFabricIntermediariesAutocomplete(
                 versionsFilter = generator.mcVersions.toList(),
                 requireStable = generator.requireStable
             ).mapKeys { (key, _) ->
@@ -109,7 +109,7 @@ object Autocompletions {
 
     private suspend fun generateFabricLoaders(generatorsFabric: Map<String, Generator.Fabric>): Map<String, String>  =
         generatorsFabric.entries.fold(mapOf<String, String>()) { acc, (name, generator) ->
-            acc + Poet.generateFabricLoadersAutocomplete(
+            acc + Autocomplete.generateFabricLoadersAutocomplete(
                 requireStable = generator.requireStable
             ).mapKeys { (key, _) ->
                 "$name/$key"
@@ -121,7 +121,7 @@ object Autocompletions {
 
     private suspend fun generateFabricInstallers(generatorsFabric: Map<String, Generator.Fabric>): Map<String, String> =
         generatorsFabric.entries.fold(mapOf<String, String>()) { acc, (name, generator) ->
-            acc + Poet.generateFabricInstallersAutocomplete(
+            acc + Autocomplete.generateFabricInstallersAutocomplete(
                 requireStable = generator.requireStable
             ).mapKeys { (key, _) ->
                 "$name/$key"

@@ -1,3 +1,6 @@
 [submodule "wiki"]
 	path = wiki
 	url = https://github.com/DaemonicLabs/Voodoo.wiki.git
+[submodule "json-schema-serialization"]
+	path = json-schema-serialization
+	url = https://github.com/NikkyAI/json-schema-serialization.git

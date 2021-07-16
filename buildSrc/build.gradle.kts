@@ -1,7 +1,6 @@
 plugins {
-    `java-gradle-plugin`
     `kotlin-dsl`
-    idea
+    `java-gradle-plugin`
 }
 
 repositories {
@@ -9,7 +8,8 @@ repositories {
 }
 
 dependencies {
-    implementation(group = "com.squareup", name = "kotlinpoet", version = "1.6.0")
+    compileOnly(gradleKotlinDsl())
+    implementation("com.squareup:kotlinpoet:_")
 }
 
 configure<GradlePluginDevelopmentExtension> {

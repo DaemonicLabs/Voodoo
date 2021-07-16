@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 import mu.KotlinLogging
 import voodoo.data.Side
 import voodoo.pack.EntryOverride
-import voodoo.poet.generator.CurseSection
+import voodoo.autocomplete.CurseSection
 import voodoo.util.json
 import java.io.File
 

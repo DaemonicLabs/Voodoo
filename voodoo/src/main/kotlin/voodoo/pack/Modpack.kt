@@ -19,20 +19,23 @@ import java.io.File
 import java.net.URI
 
 @Serializable
-data class VersionPack(
+data class Modpack(
     @Required
     @SerialName("\$schema")
     @JsonSchema.NoDefinition
     val schema: String = defaultSchema,
     val title: String? = null,
-    val icon: String? = null,
+    val id: String,
     val authors: List<String> = listOf(),
-    val version: String,
+    val icon: String? = "icon.png",
+    val packConfig: PackConfig = PackConfig(),
     var srcDir: String = "src",
     val mcVersion: String,
     val modloader: Modloader,
     val packageConfiguration: VersionPackageConfig = VersionPackageConfig(),
     val overrides: Map<String, EntryOverride> = mapOf(),
+    // upload location //TODO: ensure this upload path is unique (or append $id), maybe grab baseUrl from config.json ?
+    var uploadBaseUrl: String,
     @JsonSchema.Definition("FileEntryList")
     val mods: Map<String, List<FileEntry>>,
 ) {
@@ -42,7 +45,8 @@ data class VersionPack(
     companion object {
         private val logger = KotlinLogging.logger {}
         const val extension = "voodoo.json5"
-        const val defaultSchema = "../schema/versionPack.schema.json"
+        const val FILENAME: String = "modpack.$extension"
+        const val defaultSchema = "../schema/modpack.schema.json"
 
         fun parseEntry(jsonElement: JsonElement): FileEntry {
             return when (jsonElement) {
@@ -83,7 +87,7 @@ data class VersionPack(
             }
         }
 
-        fun parse(packFile: File): VersionPack {
+        fun parse(packFile: File): Modpack {
             val cleanedString = Jankson
                 .builder()
                 .build()
@@ -110,15 +114,14 @@ data class VersionPack(
                 jsonObject.toMap() +
                         ("mods" to modsObj)
             )
-            //TODO: process string entries here
 
             return json.decodeFromJsonElement(
-                VersionPack.serializer(),
+                Modpack.serializer(),
                 fixedObject
             ).postParse(packFile.absoluteFile.parentFile)
         }
 
-        fun parseAll(baseDir: File): List<VersionPack> {
+        fun parseAll(baseDir: File): List<Modpack> {
             return baseDir
                 .list { dir, name ->
                     name.endsWith(".$extension")
@@ -133,7 +136,7 @@ data class VersionPack(
 
     }
 
-    fun postParse(baseDir: File): VersionPack {
+    fun postParse(baseDir: File): Modpack {
         return run {
             copy(
 //                modloader = modloader.replaceAutoCompletes(),
@@ -149,7 +152,11 @@ data class VersionPack(
         }
     }
 
-    fun flatten(rootDir: File, id: String, metaPack: MetaPack, configOverrides: Map<String, EntryOverride>): FlatModPack {
+    fun flatten(
+        rootDir: File,
+        version: String,
+        configOverrides: Map<String, EntryOverride>
+    ): FlatModPack {
         return FlatModPack(
             rootFolder = rootDir,
             id = id,
@@ -157,7 +164,7 @@ data class VersionPack(
             title = title,
             version = version,
             srcDir = srcDir,
-            icon = icon ?: metaPack.icon,
+            icon = icon ?: "icon.png",
             authors = authors,
             modloader = modloader.replaceAutoCompletes().let { modloader ->
                 when (modloader) {
@@ -173,7 +180,7 @@ data class VersionPack(
                 }
             },
             packOptions = PackOptions(
-                uploadUrl = URI(metaPack.uploadBaseUrl).resolve(id).toASCIIString(),
+                uploadUrl = URI(uploadBaseUrl).resolve(id).toASCIIString(),
                 multimcOptions = PackOptions.MultiMC(
                     relativeSelfupdateUrl = packageConfiguration.voodoo.relativeSelfupdateUrl,
                     instanceCfg = packageConfiguration.multimc.instanceCfg

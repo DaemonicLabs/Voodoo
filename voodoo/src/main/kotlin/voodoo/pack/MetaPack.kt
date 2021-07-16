@@ -10,6 +10,7 @@ import voodoo.util.json
 import java.io.File
 
 @Serializable
+@Deprecated("use Modpack")
 data class MetaPack (
     @Required
     @SerialName("\$schema")

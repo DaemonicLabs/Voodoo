@@ -1,12 +1,13 @@
 {
-  "$schema": "../schema/versionPack.schema.json",
-  "version": "0.0.1",
+  "$schema": "schema/modpack.schema.json",
+  "id": "fabricPack",
   "mcVersion": "1.15.2",
-  "srcDir": "src_0.0.1",
+  "srcDir": "src_0.0.2",
   "modloader": {
     "type": "modloader.fabric",
     "intermediateMappings": "Fabric/1.15.2"
   },
+  "uploadBaseUrl": "https://mydomain.com/mc/",
   "mods": {
     "": [
       {
@@ -61,8 +62,11 @@
           "optional_starred"
         ],
         "curse_projectName": "Fabric/appleskin"
+      },
+      {
+        "type": "curse",
+        "curse_projectName": "Fabric/hwyla"
       }
     ],
   }
-}
 }

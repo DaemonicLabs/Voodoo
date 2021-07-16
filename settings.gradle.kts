@@ -14,11 +14,8 @@ pluginManagement {
 
 
 plugins {
-    id("com.gradle.enterprise") version "3.6"
-
-
-////                        # available:"3.6.1"
-    id("de.fayard.refreshVersions") version "0.10.0"
+    id("com.gradle.enterprise") version "3.6.3"
+    id("de.fayard.refreshVersions") version "0.10.1"
 }
 
 refreshVersions {
@@ -38,7 +35,7 @@ gradleEnterprise {
 
 rootProject.name = "voodoo-parent"
 
-includeBuild("buildUtil")
+includeBuild("json-schema-serialization")
 include(":wrapper")
 include(":voodoo")
 include(":core")

@@ -1,0 +1,53 @@
+{
+  "$schema": "./schema/config.schema.json",
+  "curseforgeGenerators": {
+    "Mod": {
+      "section": "MODS"
+    },
+    "Resource": {
+      "section": "RESOURCE_PACKS"
+    },
+    "Fabric": {
+      "section": "MODS",
+      "categories": [
+        "Fabric"
+      ]
+    }
+  },
+  "forgeGenerators": {
+    "Forge": {},
+  },
+  "fabricGenerators": {
+    "Fabric": {
+      "requireStable": true
+    }
+  },
+  "overrides": {
+    "side_client": {
+      "type": "common",
+      "side": "CLIENT"
+    },
+    "side_server": {
+      "type": "common",
+      "side": "SERVER"
+    },
+    "optional": {
+      "type": "common",
+      "optional": {
+        "selected": false
+      }
+    },
+    "optional_default": {
+      "type": "common",
+      "optional": {
+        "selected": true
+      }
+    },
+    "optional_starred": {
+      "type": "common",
+      "optional": {
+        "recommendation": "starred"
+      }
+    },
+  }
+}

@@ -3,15 +3,14 @@ package voodoo.cli
 import com.eyeem.watchadoin.Stopwatch
 import com.eyeem.watchadoin.saveAsHtml
 import com.eyeem.watchadoin.saveAsSvg
-import com.github.ajalt.clikt.completion.CompletionCandidates
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
-import com.github.ajalt.clikt.parameters.arguments.validate
+import com.github.ajalt.clikt.parameters.arguments.optional
 import com.github.ajalt.clikt.parameters.options.flag
 import com.github.ajalt.clikt.parameters.options.option
-import com.github.ajalt.clikt.parameters.types.file
+import com.github.ajalt.clikt.parameters.options.required
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
 import kotlinx.coroutines.withContext
@@ -20,11 +19,7 @@ import mu.withLoggingContext
 import voodoo.builder.compile
 import voodoo.config.Autocompletions
 import voodoo.config.Configuration
-import voodoo.data.lock.LockPack
-import voodoo.pack.MetaPack
-import voodoo.pack.VersionPack
-import voodoo.util.VersionComparator
-import java.lang.Exception
+import voodoo.pack.Modpack
 
 class CompileCommand() : CliktCommand(
     name = "compile",
@@ -34,19 +29,33 @@ class CompileCommand() : CliktCommand(
 
     val cliContext by requireObject<CLIContext>()
 
-    val packFiles by argument(
-        "PACK_FILE",
-        "path to .${VersionPack.extension} file",
-        completionCandidates = CompletionCandidates.Custom.fromStdout("find **/*.${VersionPack.extension}")
-    ).file(mustExist = true, canBeFile = true, canBeDir = false)
+//    val packFiles by argument(
+//        "PACK_FILE",
+//        "path to .${VersionPack.extension} file",
+//        completionCandidates = CompletionCandidates.Custom.fromStdout("find **/*.${VersionPack.extension}")
+//    ).file(mustExist = true, canBeFile = true, canBeDir = false)
+//        .multiple()
+//        .validate { files ->
+//            files.forEach { file ->
+//                require(file.name.endsWith("." + VersionPack.extension)) {
+//                    "file $file does not end with ${VersionPack.extension}"
+//                }
+//            }
+//        }
+
+    //TODO: autocomplete to entries that are in the pack
+    val entries by argument(
+        "ENTRIES",
+        help = "entries that should be updated",
+//        completionCandidates = CompletionCandidates.Custom.fromStdout("cat entries.txt")
+    )
         .multiple()
-        .validate { files ->
-            files.forEach { file ->
-                require(file.name.endsWith("." + VersionPack.extension)) {
-                    "file $file does not end with ${VersionPack.extension}"
-                }
-            }
-        }
+        .optional()
+
+    val all by option(
+        "--all", "-A",
+        help = "updates all entries"
+    ).flag()
 
     val noModUpdates by option(
         "--no-mod-updates",
@@ -55,8 +64,14 @@ class CompileCommand() : CliktCommand(
         default = false
     )
 
-    override fun run() = withLoggingContext("command" to commandName, "packs" to packFiles.joinToString { it.path }) {
+    val version by option(
+        "--version",
+        help = "modpack version"
+    ).required()
+
+    override fun run() = withLoggingContext("command" to commandName) {
         runBlocking(MDCContext()) {
+            val packFile = cliContext.rootDir.resolve(Modpack.FILENAME)
             val stopwatch = Stopwatch(commandName)
 
             val rootDir = cliContext.rootDir
@@ -64,67 +79,30 @@ class CompileCommand() : CliktCommand(
             stopwatch {
 
                 val config = Configuration.parse(rootDir = rootDir)
-                if(!noModUpdates) {
+                if (!noModUpdates) {
                     Autocompletions.generate(config)
                 }
 
-                val packs: Map<Pair<String, MetaPack>, List<VersionPack>> = packFiles.map { packFile ->
-                    val baseDir = rootDir.resolve(packFile.absoluteFile.parentFile)
-                    val id = baseDir.name
-                    val versionPack = VersionPack.parse(packFile = packFile)
+                val baseDir = cliContext.rootDir
+                val versionPack = Modpack.parse(packFile = packFile)
 
-                    val metaPack = MetaPack.parse(baseDir.resolve(MetaPack.FILENAME))
-                    Triple(id, metaPack, versionPack)
-                }
-                    .groupBy(
-                        { it.first to it.second },
-                        { it.third }
-                    )
-                    .mapValues { (_, second) ->
-                        second.sortedWith(compareBy(VersionComparator, VersionPack::version))
+                val lockPack = withLoggingContext("version" to version) {
+                    withContext(MDCContext()) {
+                        val modpack = versionPack.flatten(
+                            rootDir = rootDir,
+                            version = version,
+                            configOverrides = config.overrides,
+                        )
+//                        logger.debug { "modpack: $modpack" }
+                        logger.debug { "entrySet: ${modpack.entrySet}" }
+
+                        //TODO: pass entries that should be updated (or all)
+                        //      or pass lambda to decide when to update
+                        val lockPack = modpack.compile("build ${version}".watch, noModUpdates = noModUpdates)
+
+                        lockPack
                     }
-
-                packs.forEach { (key, versionPacks) ->
-                    val (id, metaPack) = key
-
-                    //TODO: ensure checks are run on all version packs
-                    versionPacks.forEach { pack ->
-                        val otherpacks = versionPacks - pack
-                        require(
-                            otherpacks.all { other ->
-                                pack.version != other.version
-                            }
-                        ) { "version ${pack.version} is not unique" }
-                        require(
-                            pack.packageConfiguration.voodoo.relativeSelfupdateUrl == null || otherpacks.all { other ->
-                                pack.packageConfiguration.voodoo.relativeSelfupdateUrl != other.packageConfiguration.voodoo.relativeSelfupdateUrl
-                            }
-                        ) { "relativeSelfupdateUrl ${pack.packageConfiguration.voodoo.relativeSelfupdateUrl} is not unique" }
-                    }
-
-                    val lockPacks = versionPacks
-//                        .sortedWith(compareBy(VersionComparator, VersionPack::version))
-                        .map { versionPack ->
-                            withLoggingContext("version" to versionPack.version) {
-                                withContext(MDCContext()) {
-                                    val modpack = versionPack.flatten(
-                                        rootDir = rootDir,
-                                        id = id,
-                                        configOverrides = config.overrides,
-                                        metaPack = metaPack
-                                    )
-//                                logger.debug { "modpack: $modpack" }
-                                    logger.debug { "entrySet: ${modpack.entrySet}" }
-
-                                    val lockPack = modpack.compile("build ${modpack.version}".watch, noModUpdates = noModUpdates)
-
-                                    lockPack
-                                }
-                            }
-                        }
                 }
-//                    .sortedWith(compareBy(VersionComparator, VersionPack::version))
-
 
 //                val tomeEnv = TomeEnv(
 //                    rootDir.resolve("docs")
@@ -153,8 +131,8 @@ class CompileCommand() : CliktCommand(
             }
 
             val reportDir = rootDir.resolve("reports").apply { mkdirs() }
-            stopwatch.saveAsSvg(reportDir.resolve("compile.report.svg"))
-            stopwatch.saveAsHtml(reportDir.resolve("compile.report.html"))
+            stopwatch.saveAsSvg(reportDir.resolve("$commandName.report.svg"))
+            stopwatch.saveAsHtml(reportDir.resolve("$commandName.report.html"))
 
         }
     }

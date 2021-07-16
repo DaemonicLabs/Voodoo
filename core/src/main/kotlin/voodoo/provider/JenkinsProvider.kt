@@ -31,7 +31,7 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
     override suspend fun resolve(
         entry: FlatEntry,
         modPack: FlatModPack,
-        addEntry: SendChannel<FlatEntry>
+        addEntry: suspend (FlatEntry) -> Unit
     ): LockEntry {
         entry as FlatEntry.Jenkins
         require(entry.job.isNotBlank()) { "entry: '${entry.id}' does not have the jenkins job set" }

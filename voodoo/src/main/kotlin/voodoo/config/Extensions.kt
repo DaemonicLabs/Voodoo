@@ -4,7 +4,7 @@ import com.github.ricky12awesome.jss.buildJsonSchema
 import kotlinx.serialization.json.*
 import mu.KotlinLogging
 import voodoo.pack.FileEntry
-import voodoo.pack.VersionPack
+import voodoo.pack.Modpack
 
 private val logger = KotlinLogging.logger {}
 //
@@ -25,7 +25,7 @@ private val logger = KotlinLogging.logger {}
 //        Autocompletions.fabricInstallers.keys.joinToString(",") { "\"$it\"" }
 //    )
 
-fun VersionPack.Companion.generateSchema(overridesKeys: Set<String>): String {
+fun Modpack.Companion.generateSchema(overridesKeys: Set<String>): String {
     val fileEntrySchemaObject = buildJsonSchema(FileEntry.serializer(), generateDefinitions = true)
 
     val fileEntryRef: String = fileEntrySchemaObject["\$ref"]!!.jsonPrimitive.content

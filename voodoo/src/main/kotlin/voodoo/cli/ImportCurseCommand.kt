@@ -12,7 +12,6 @@ import com.github.ajalt.clikt.parameters.options.required
 import com.github.ajalt.clikt.parameters.options.validate
 import kotlinx.coroutines.*
 import kotlinx.coroutines.slf4j.MDCContext
-import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import mu.KotlinLogging
 import mu.withLoggingContext
@@ -23,7 +22,7 @@ import voodoo.data.curse.CurseFile
 import voodoo.data.curse.CurseManifest
 import voodoo.data.curse.FileType
 import voodoo.pack.*
-import voodoo.poet.generator.CurseSection
+import voodoo.autocomplete.CurseSection
 import voodoo.util.*
 import java.io.File
 
@@ -95,20 +94,6 @@ class ImportCurseCommand() : CliktCommand(
                 logger.info { jsonPretty.encodeToString(CurseManifest.serializer(), manifest) }
 
                 val baseDir = rootDir.resolve(id)
-
-                // convert to meta pack
-                val metaPackFile = baseDir.resolve(MetaPack.FILENAME)
-                metaPackFile.absoluteFile.parentFile.mkdirs()
-                val metaPack = MetaPack(
-                    title = manifest.name,
-                    authors = listOf(manifest.author).filter { it.isNotBlank() },
-//                        authors = modpackAddon.authors.map { author ->
-//                            author.name
-//                        },
-//                        icon = "icon.png",
-                    uploadBaseUrl = "https://mydomain.com/mc/",
-                )
-
 
                 // convert to version pack
                 val version = manifest.version
@@ -216,24 +201,20 @@ class ImportCurseCommand() : CliktCommand(
 
                 val targetIconFile = srcFolder.resolve("icon.png")
 
-                val versionPack = VersionPack(
+                val modpack = Modpack(
                     title = manifest.name + " v" + version,
+                    id = id,
                     icon = if(iconFile.exists()) targetIconFile.toRelativeUnixPath(baseDir) else null,
-                    version = version,
+                    authors = listOf(manifest.author).filter { it.isNotBlank() },
                     srcDir = srcFolder.toRelativeUnixPath(baseDir),
                     mcVersion = manifest.minecraft.version,
                     modloader = modloader,
-                    mods = mapOf("" to mods)
+                    uploadBaseUrl = "https://mydomain.com/mc/", // TODO: query user for input
+                    mods = mapOf("" to mods),
                 ).postParse(baseDir = baseDir)
 
-                if(!metaPackFile.exists()) {
-                    metaPackFile.writeText(
-                        jsonPretty.encodeToString(MetaPack.serializer(), metaPack)
-                    )
-                }
-
                 versionPackFile.writeText(
-                    jsonPretty.encodeToString(VersionPack.serializer(), versionPack)
+                    jsonPretty.encodeToString(Modpack.serializer(), modpack)
                 )
 
                 // copy configs into src and local

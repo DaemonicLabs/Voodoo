@@ -19,7 +19,7 @@ object DirectProvider : ProviderBase("Direct Provider") {
     override suspend fun resolve(
         entry: FlatEntry,
         modPack: FlatModPack,
-        addEntry: SendChannel<FlatEntry>
+        addEntry: suspend (FlatEntry) -> Unit
     ): LockEntry {
         entry as FlatEntry.Direct
         entry.id = entry.id.replace("[^\\w-]".toRegex(), "_")

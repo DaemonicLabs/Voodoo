@@ -159,7 +159,7 @@ object ForgeUtil {
     }
 
     private suspend fun getForgePromoData(): ForgeData = withContext(Dispatchers.IO) {
-        val url = "https://files.minecraftforge.net/maven/net/minecraftforge/forge/promotions_slim.json"
+        val url = "https://files.minecraftforge.net/net/minecraftforge/forge/promotions_slim.json"
 
         val response = try {
             useClient { client ->

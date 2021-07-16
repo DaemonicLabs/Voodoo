@@ -19,12 +19,10 @@ import mu.withLoggingContext
 import voodoo.Pack
 import voodoo.data.lock.LockPack
 import voodoo.pack.MetaPack
-import voodoo.pack.VersionPack
 import voodoo.util.SharedFolders
-import voodoo.util.VersionComparator
 import java.io.File
 
-class PackageCommand(): CliktCommand(
+class PackageCommand() : CliktCommand(
     name = "package",
 //    help = ""
 ) {
@@ -67,31 +65,19 @@ class PackageCommand(): CliktCommand(
                 packTargets.toSet().forEach { packTarget ->
                     withLoggingContext("pack" to packTarget.id) {
                         withContext(MDCContext()) {
-                            val lockPacks = LockPack.parseAll(baseFolder = baseDir)
-                                .sortedWith(compareBy(VersionComparator, LockPack::version))
+                            val lockpack =
+                                LockPack.parse(packFile = baseDir.resolve(LockPack.FILENAME), baseFolder = baseDir)
 
                             coroutineScope {
-                                lockPacks.forEach { lockpack ->
-                                    withLoggingContext("version" to lockpack.version) {
-                                        launch(MDCContext() + CoroutineName("package-version-${lockpack.version}")) {
-                                            Pack.pack(
-                                                "pack-${packTarget.id}".watch,
-                                                lockpack,
-                                                metaPack.packConfig,
-                                                uploadDir,
-                                                packTarget
-                                            )
-                                        }
-                                    }
-                                }
-
-                                // packaging aliases
-                                metaPack.packConfig.versionAlias.forEach { (alias, version) ->
-                                    val lockpack = lockPacks.firstOrNull() { it.version == version } ?: error("no version matching $version found for alias $alias")
-                                    withLoggingContext("alias" to alias,"version" to lockpack.version) {
-                                        launch(MDCContext() + CoroutineName("package-version-${lockpack.version}")) {
-                                            Pack.pack("pack-${packTarget.id}".watch, lockpack, metaPack.packConfig, uploadDir, packTarget, versionAlias = alias)
-                                        }
+                                withLoggingContext("version" to lockpack.version) {
+                                    launch(MDCContext() + CoroutineName("package-version-${lockpack.version}")) {
+                                        Pack.pack(
+                                            "pack-${packTarget.id}".watch,
+                                            lockpack,
+                                            metaPack.packConfig,
+                                            uploadDir,
+                                            packTarget
+                                        )
                                     }
                                 }
                             }

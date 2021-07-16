@@ -8,6 +8,7 @@ import voodoo.curse.CurseClient
 import voodoo.curse.CurseClient.findFile
 import voodoo.curse.CurseClient.getAddon
 import voodoo.curse.CurseClient.getAddonFile
+import voodoo.curse.hash.Murmur2
 import voodoo.curse.hash.Murmur2Lib
 import voodoo.curse.hash.computeNormalizedArray
 import voodoo.data.EntryReportData
@@ -42,7 +43,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
     override suspend fun resolve(
         entry: FlatEntry,
         modPack: FlatModPack,
-        addEntry: SendChannel<FlatEntry>
+        addEntry: suspend (FlatEntry) -> Unit
     ): LockEntry {
         entry as FlatEntry.Curse
         val (projectID, fileID, path) = findFile(entry, modPack.mcVersion, modPack.modloader)
@@ -140,7 +141,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
         addonId: ProjectID,
         fileId: FileID,
         entry: FlatEntry.Curse,
-        addEntry: SendChannel<FlatEntry>
+        addEntry: suspend (FlatEntry) -> Unit
     ) {
         val predefinedDependencies = entry.dependencies.map { (slug, depType) ->
             val id = CurseClient.getProjectIdBySlug(slug)
@@ -212,7 +213,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
                     useOriginalUrl = entry.useOriginalUrl
                 }
                 logger.debug("adding dependency: $depEntry")
-                addEntry.send(depEntry)
+                addEntry(depEntry)
                 logger.debug("added dependency: $depEntry")
                 logger.info("added $curseDepType dependency ${depAddon.name} of ${addon.name}")
             } else {
@@ -253,9 +254,12 @@ object CurseProvider : ProviderBase("Curse Provider") {
                 file.exists() && fileLenghtMatches && if (entry.skipFingerprintCheck) {
                     true
                 } else {
-//                    val normalized = computeNormalizedArray(file.readBytes())
                     val normalized = computeNormalizedArray(bytes)
-                    val fileFingerprint = Murmur2Lib.hash32(normalized, 1)
+                    val fileFingerprint = Murmur2.hash32(normalized, seed = 1)
+                    val fileFingerprintOld = Murmur2Lib.hash32(normalized)
+                    if(fileFingerprint != fileFingerprintOld) {
+                        logger.error { "file fingerprint differs: $fileFingerprint != $fileFingerprintOld" }
+                    }
                     if(addonFile.packageFingerprint.toInt() != fileFingerprint.toLong().toInt()) {
                         logger.error("[${entry.id} ${entry.projectID}:${addonFile.id}] file fingerprint does not match - expected: ${addonFile.packageFingerprint} actual: ($fileFingerprint) file: $file")
                         false
@@ -269,10 +273,13 @@ object CurseProvider : ProviderBase("Curse Provider") {
         if(addonFile.fileLength != targetFile.length()) {
             error("[${entry.id} ${entry.projectID}:${addonFile.id}] file length do not match expected: ${addonFile.fileLength} actual: (${targetFile.length()})")
         }
-
-
         val normalized = computeNormalizedArray(targetFile.readBytes())
-        val fileFingerprint = Murmur2Lib.hash32(normalized, 1)
+        val fileFingerprint = Murmur2.hash32(normalized, seed = 1)
+        val fileFingerprintOld = Murmur2Lib.hash32(normalized)
+
+        if(fileFingerprint != fileFingerprintOld) {
+            logger.error { "file fingerprint differs: $fileFingerprint != $fileFingerprintOld" }
+        }
 //        val fileFingerprint = MurmurHash2.computeFileHash(targetFile.path, true)
 
         if (addonFile.packageFingerprint.toInt() != fileFingerprint.toLong().toInt()) {

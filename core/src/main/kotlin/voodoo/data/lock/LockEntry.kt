@@ -107,7 +107,6 @@ sealed class LockEntry() : CommonLockModule, Comparable<LockEntry> {
         }
     }
 
-    @Transient
     val displayName: String
         get() = name?.takeIf { it.isNotBlank() } ?: runBlocking { provider().generateName(this@LockEntry) }
 

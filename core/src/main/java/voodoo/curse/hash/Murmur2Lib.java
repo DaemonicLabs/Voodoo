@@ -29,7 +29,7 @@ public class Murmur2Lib {
   // Constants for 64-bit variant
   private static final long M_64 = 0xc6a4a7935bd1e995L;
   private static final int R_64 = 47;
-  private static final int DEFAULT_SEED = 0;
+  private static final int DEFAULT_SEED = 1;
 
   /**
    * Murmur2 32-bit variant.

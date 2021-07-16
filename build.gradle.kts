@@ -10,7 +10,6 @@ plugins {
 //    `maven-publish`
     `project-report`
     kotlin("jvm")
-    kotlin("plugin.scripting") apply false
     kotlin("plugin.serialization") apply false
     id("moe.nikky.plugin.constants") apply false
     id("com.github.johnrengelman.shadow") apply false
@@ -34,7 +33,7 @@ object Maven {
 
 // specify version as -Pversion=x.y.z in gradle invocation
 val releaseVersion = (properties["version"] as String?)?.takeUnless { it == "unspecified" }
-val defaultVersion = "0.6.0"
+val defaultVersion = "0.7.0"
 
 val isCI = System.getenv("CI") != null
 
@@ -60,9 +59,9 @@ task<DefaultTask>("exportVersion") {
 allprojects {
     repositories {
         mavenCentral()
-        maven("https://jitpack.io") {
-            name = "jitpack"
-        }
+//        maven("https://jitpack.io") {
+//            name = "jitpack"
+//        }
 //        mavenLocal()
     }
 
@@ -108,8 +107,8 @@ subprojects {
     pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
         tasks.withType<KotlinCompile> {
             kotlinOptions {
-                apiVersion = "1.4"
-                languageVersion = "1.4"
+//                apiVersion = "1.5"
+//                languageVersion = "1.5"
                 jvmTarget = "1.8"
                 freeCompilerArgs += listOf(
 //                "-XXLanguage:+InlineClasses",
@@ -207,6 +206,7 @@ subprojects {
         val sourcesJar by tasks.registering(Jar::class) {
             archiveClassifier.set("sources")
             from(sourceSets["main"].allSource)
+            duplicatesStrategy = DuplicatesStrategy.INCLUDE
         }
 
         val javadoc by tasks.getting(Javadoc::class) {}

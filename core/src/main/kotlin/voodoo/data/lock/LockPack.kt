@@ -22,7 +22,7 @@ data class LockPack(
     val mcVersion: String,
     var modloader: Modloader = Modloader.None,
     val title: String? = null,
-    val version: String = "1.0",
+    val version: String,
     val icon: String = "icon.png",
     val authors: List<String> = emptyList(),
     var localDir: String = "local",
@@ -34,31 +34,28 @@ data class LockPack(
         const val FILENAME = "lock.pack.json"
 
         // maybe make this configurable ?
-        const val outputFolder = "lock"
+        @Deprecated("no version subfolders anymore")
+        val outputFolder: String get() = TODO("remove this") // "lock"
 
         private val directories = Directories.get()
         private val cacheDir = directories.cacheHome.resolve("LOCKPACK")
 
         val versionComparator = compareBy(comparator = VersionComparator, LockPack::version)
 
+        @Deprecated("no version subfolders anymore")
         fun baseFolderForVersion(version: String, baseDir: File): File {
+            TODO("remove this")
             return baseDir.resolve(outputFolder).resolve(version)
         }
+        @Deprecated("no version subfolders anymore")
         fun fileForVersion(version: String, baseDir: File): File {
+            TODO("remove this")
             return baseFolderForVersion(version, baseDir).resolve(FILENAME)
         }
 
+        @Deprecated("no version subfolders anymore")
         fun parseAll(baseFolder: File): List<LockPack> {
-            val outputDir = baseFolder.resolve(outputFolder)
-            outputDir.mkdirs()
-            return outputDir
-                .listFiles { folder ->
-                    folder.resolve(FILENAME).exists()
-                }!!
-                .map { lockBaseFolder ->
-                    val lockpackFile = lockBaseFolder.resolve(FILENAME)
-                    parse(lockpackFile, lockBaseFolder)
-                }
+            TODO("remove this")
         }
 
 
@@ -93,7 +90,6 @@ data class LockPack(
         }
     }
 
-    @Transient
     val entriesMap by lazy {
         entries.associateBy { it.id }
     }
@@ -101,21 +97,16 @@ data class LockPack(
     @Transient
     lateinit var lockBaseFolder: File
 
-    @Transient
     val sourceFolder: File
         get() = cacheDir.resolve(id).resolve(version).resolve("src")
-    @Transient
     val sourceZip: File
         get() = lockBaseFolder.resolve("src.zip")
 
-    @Transient
     val localFolder: File
         get() = cacheDir.resolve(id).resolve(version).resolve("local")
-    @Transient
     val localZip: File
         get() = lockBaseFolder.resolve("local.zip")
 
-    @Transient
     val iconFile: File
         get() = lockBaseFolder.resolve(icon)
 
@@ -123,7 +114,6 @@ data class LockPack(
 
     fun findEntryById(id: String) = entries.find { it.id == id }
 
-    @Transient
     val optionalEntries
         get() = entries.filter { it.optional }
 

@@ -11,7 +11,7 @@ import voodoo.config.Autocompletions
 import voodoo.config.Configuration
 import voodoo.config.generateSchema
 import voodoo.pack.MetaPack
-import voodoo.pack.VersionPack
+import voodoo.pack.Modpack
 import voodoo.util.json
 import java.io.FileNotFoundException
 
@@ -26,7 +26,7 @@ class GenerateSchemaCommand : CliktCommand(
     override fun run(): Unit = withLoggingContext("command" to commandName) {
         val rootDir = cliContext.rootDir
 
-        runBlocking(MDCContext()) {
+//        runBlocking(MDCContext()) {
             val configFile = rootDir.resolve(Configuration.CONFIG_PATH)
             //TODO: turn into library function on Configuration
 
@@ -49,22 +49,17 @@ class GenerateSchemaCommand : CliktCommand(
                 writeText(json.encodeToSchema(Configuration.serializer()))
             }
 
-            rootDir.resolve("packIdPlaceholder").resolve(MetaPack.defaultSchema).normalize().apply {
-                absoluteFile.parentFile.mkdirs()
-                writeText(json.encodeToSchema(MetaPack.serializer()))
-            }
-
+        runBlocking(MDCContext()) {
             Autocompletions.generate(config = config)
-
 
 //            rootDir.resolve("packIdPlaceholder").resolve(Modpack.defaultSchema).apply {
 //                absoluteFile.parentFile.mkdirs()
 //                writeText(Modpack.generateSchema(overridesKeys = config.overrides.keys))
 //            }
 
-            rootDir.resolve("packIdPlaceholder").resolve(VersionPack.defaultSchema).normalize().apply {
+            rootDir.resolve("packIdPlaceholder").resolve(Modpack.defaultSchema).normalize().apply {
                 absoluteFile.parentFile.mkdirs()
-                writeText(VersionPack.generateSchema(overridesKeys = setOf("") + config.overrides.keys))
+                writeText(Modpack.generateSchema(overridesKeys = setOf("") + config.overrides.keys))
             }
         }
     }

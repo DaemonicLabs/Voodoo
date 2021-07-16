@@ -7,7 +7,6 @@ import com.github.ajalt.clikt.completion.CompletionCandidates
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
-import com.github.ajalt.clikt.parameters.arguments.multiple
 import com.github.ajalt.clikt.parameters.arguments.validate
 import com.github.ajalt.clikt.parameters.options.*
 import com.github.ajalt.clikt.parameters.types.file
@@ -18,10 +17,8 @@ import mu.withLoggingContext
 import voodoo.cli.CLIContext
 import voodoo.data.lock.LockPack
 import voodoo.pack.MetaPack
-import voodoo.pack.VersionPack
+import voodoo.pack.Modpack
 import voodoo.tester.MultiMCTester
-import voodoo.util.VersionComparator
-import voodoo.util.json
 import java.io.File
 
 class LaunchMultiMCCommand(): CliktCommand(
@@ -31,16 +28,16 @@ class LaunchMultiMCCommand(): CliktCommand(
     private val logger = KotlinLogging.logger {}
     val cliContext by requireObject<CLIContext>()
 
-    val packFile by argument(
-        "PACK_FILE",
-        "path to .${VersionPack.extension} file",
-        completionCandidates = CompletionCandidates.Custom.fromStdout("find **/*${VersionPack.extension}")
-    ).file(mustExist = true, canBeFile = true, canBeDir = false)
-        .validate { file ->
-            require(file.name.endsWith("." + VersionPack.extension)) {
-                "file $file does not end with ${VersionPack.extension}"
-            }
-        }
+//    val packFile by argument(
+//        "PACK_FILE",
+//        "path to .${Modpack.extension} file",
+//        completionCandidates = CompletionCandidates.Custom.fromStdout("find **/*${Modpack.extension}")
+//    ).file(mustExist = true, canBeFile = true, canBeDir = false)
+//        .validate { file ->
+//            require(file.name.endsWith("." + Modpack.extension)) {
+//                "file $file does not end with ${Modpack.extension}"
+//            }
+//        }
 
     val clean by option("--clean").flag(default = false)
 
@@ -51,8 +48,7 @@ class LaunchMultiMCCommand(): CliktCommand(
             //TODO: look up rootDir based on lockpack input file
             val rootDir = cliContext.rootDir
 
-            val baseDir = rootDir.resolve(packFile.absoluteFile.parentFile)
-            val id = baseDir.name
+//            val id = baseDir.name
             stopwatch {
 
                 // TODO: package `voodoo` for modpack
@@ -60,12 +56,12 @@ class LaunchMultiMCCommand(): CliktCommand(
 
                 // TODO: launch multimc with pack id ?
 
-                val metaPackFile = baseDir.resolve(MetaPack.FILENAME)
-                val versionPack = VersionPack.parse(packFile = packFile)
+//                val metaPackFile = baseDir.resolve(MetaPack.FILENAME)
+//                val versionPack = Modpack.parse(packFile = packFile)
 
                 val lockpack = LockPack.parse(
-                    LockPack.fileForVersion(versionPack.version, baseDir),
-                    baseDir.absoluteFile
+                    rootDir.resolve(LockPack.FILENAME),
+                    rootDir
                 )
 
                 MultiMCTester.execute("launch-multimc".watch, modpack = lockpack, clean = clean)
@@ -73,8 +69,8 @@ class LaunchMultiMCCommand(): CliktCommand(
 
 
             val reportDir= File("reports").apply { mkdirs() }
-            stopwatch.saveAsSvg(reportDir.resolve("${id}_build.report.svg"))
-            stopwatch.saveAsHtml(reportDir.resolve("${id}_build.report.html"))
+            stopwatch.saveAsSvg(reportDir.resolve("$commandName.report.svg"))
+            stopwatch.saveAsHtml(reportDir.resolve("$commandName.report.html"))
         }
     }
 }

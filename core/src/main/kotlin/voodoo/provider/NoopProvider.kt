@@ -17,7 +17,7 @@ object NoopProvider : ProviderBase("Noop Provider") {
     override suspend fun resolve(
         entry: FlatEntry,
         modPack: FlatModPack,
-        addEntry: SendChannel<FlatEntry>
+        addEntry: suspend (FlatEntry) -> Unit
     ): LockEntry {
         entry as FlatEntry.Noop
         error("noop entry should not be resolved")

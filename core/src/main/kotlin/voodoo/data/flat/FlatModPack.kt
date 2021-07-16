@@ -33,7 +33,7 @@ data class FlatModPack(
      */
     var mcVersion: String,
     var title: String? = null,
-    var version: String = "1.0",
+    var version: String,
 //    @Serializable(with = FileSerializer::class)
     var srcDir: String = "src",
     var icon: String = "icon.png",
@@ -54,7 +54,7 @@ data class FlatModPack(
 
     @Transient
     val baseFolder: File
-        get() = rootFolder.resolve(id)
+        get() = rootFolder // .resolve(id)
     @Transient
     val sourceFolder: File
         get() = baseFolder.resolve(srcDir)

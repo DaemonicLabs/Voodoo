@@ -6,6 +6,8 @@ plugins {
 
 dependencies {
     api("com.github.ajalt.clikt:clikt:_")
+    api("com.github.ajalt.mordant:mordant:_")
+
     api(project(":dsl"))
     api(project(":tome"))
     api(project(":util:util-download"))
@@ -29,5 +31,5 @@ dependencies {
 }
 
 application {
-    mainClassName = "Main"
+    mainClass.set("Main")
 }

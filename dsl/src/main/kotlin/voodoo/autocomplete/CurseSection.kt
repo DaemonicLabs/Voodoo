@@ -1,4 +1,4 @@
-package voodoo.poet.generator
+package voodoo.autocomplete
 
 enum class CurseSection(val sectionName: String) {
     MODS("Mods"),

@@ -40,7 +40,7 @@ class SvgReport(val timelines: List<Timeline>, htmlEmbed: Boolean = false) {
 
     init {
         xScale = 1.0f
-        totalDurationMs = timelines.map { it.duration + it.relativeStart }.maxBy { it }
+        totalDurationMs = timelines.map { it.duration + it.relativeStart }.maxByOrNull { it }
             ?: throw IllegalStateException("no maximum found")
         val scaleSteps = totalDurationMs / scaleGridDistance
         svgWidth = totalDurationMs + padding * 2
@@ -230,7 +230,7 @@ private infix fun Timeline.collidesWith(other: Timeline): Boolean {
 
 private fun HashMap<Int, ArrayList<Rect>>.findParentRect(timeline: Timeline): Rect? {
     var parent = timeline.parent ?: return null
-    val n = keys.maxBy { it } ?: 0
+    val n = keys.maxByOrNull { it: Int -> it } ?: 0
     for (i in 0..n) {
         val timelines = this[i] ?: return null
         timelines.forEach {

@@ -1,9 +1,8 @@
 package voodoo.config
 
-import com.github.ricky12awesome.jss.JsonSchema
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import voodoo.poet.generator.CurseSection
+import voodoo.autocomplete.CurseSection
 
 @Serializable
 sealed class Generator {

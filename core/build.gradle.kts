@@ -11,14 +11,12 @@ dependencies {
     // voodoo format
     api(project(":format"))
 
-//    api("com.github.Ricky12Awesome:json-schema-serialization:_")
-    api("com.github.NikkyAi:json-schema-serialization:_")
+    api("com.github.Ricky12Awesome:json-schema-serialization")
 
     // curseclient
     implementation(Ktor.client.okHttp)
-//    api(Ktor.client.cio)
     implementation(Ktor.client.json)
-    implementation("io.ktor:ktor-client-serialization-jvm:_")
+    implementation("io.ktor:ktor-client-serialization:_")
 
     // jenkins provider
     implementation(project(":util:util-jenkins"))

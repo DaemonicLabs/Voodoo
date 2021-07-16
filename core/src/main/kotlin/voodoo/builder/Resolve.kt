@@ -2,6 +2,7 @@ package voodoo.builder
 
 import com.eyeem.watchadoin.Stopwatch
 import kotlinx.coroutines.*
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.slf4j.MDCContext
@@ -11,6 +12,7 @@ import voodoo.data.flat.FlatEntry
 import voodoo.data.flat.FlatModPack
 import voodoo.data.lock.LockEntry
 import voodoo.util.withPool
+import java.util.*
 
 /**
  * Created by nikky on 28/03/18.
@@ -53,7 +55,7 @@ suspend fun resolve(
 
 
     fun addEntry(entry: FlatEntry, dependency: Boolean = false) {
-        if (entry.id.isNullOrBlank()) {
+        if (entry.id.isBlank()) {
             logger.error("invalid: $entry")
             return
         }
@@ -87,12 +89,28 @@ suspend fun resolve(
         }
     }
 
+
     "resolveLoop".watch {
         do {
             val unresolvedEntries = mutableEntryMap.filterKeys { id -> !mutableLockEntryMap.containsKey(id) }
             coroutineScope {
-                val newEntriesFlow = channelFlow<FlatEntry> {
-                    val addEntries: SendChannel<FlatEntry> = channel
+                val newEntries = Collections.synchronizedList(mutableListOf<FlatEntry>())
+                suspend fun addEntry(entry: FlatEntry) {
+                    logger.debug { "new entry received: ${entry.id}" }
+
+                    if (mutableLockEntryMap.containsKey(entry.id)) {
+                        logger.info { "entry already resolved ${entry.id}" }
+                    } else {
+
+                        addEntry(entry, dependency = true)
+
+                        logger.info { "added entry ${entry.id}" }
+                        newEntries += entry
+                    }
+                }
+//                val addEntries = Channel<FlatEntry>(capacity = Channel.RENDEZVOUS)
+//                val newEntriesFlow = channelFlow<FlatEntry> {
+//                    val addEntries: SendChannel<FlatEntry> = channel
 
                     logger.info("unresolved: ${unresolvedEntries.keys}")
 
@@ -108,7 +126,7 @@ suspend fun resolve(
                                                 val provider = voodoo.provider.Providers.forEntry(entry)!!
 
                                                 entry.takeUnless { it is FlatEntry.Noop }?.let { entry ->
-                                                    val lockEntry = provider.resolve(entry, modPack, addEntries)
+                                                    val lockEntry = provider.resolve(entry, modPack, ::addEntry)
                                                     logger.debug("received locked entry: $lockEntry")
 
                                                     logger.debug("validating: $lockEntry")
@@ -122,12 +140,13 @@ suspend fun resolve(
                                                     lockEntry
                                                 }
                                             }
-                                        }.also {
+                                        }
+                                        .also {
                                             logger.info("started job resolve ${entry.id}")
                                         }
                                     }
                                 }.awaitAll()
-                                    .filterNotNull()
+                                .filterNotNull()
                             }.also {
                                 logger.trace { "unresolved-loop finished" }
                             }
@@ -147,32 +166,23 @@ suspend fun resolve(
 //                    throw IllegalStateException("actual entry did not validate")
 //                }
                     }
-                }
+//                }
 
-                val newEntries = newEntriesFlow.filter { entry ->
-                    logger.debug { "new entry received: ${entry.id}" }
-
-                    when {
-                        mutableLockEntryMap.containsKey(entry.id) -> {
-                            logger.info { "entry already resolved ${entry.id}" }
-                            return@filter false
-                        }
-//                        mutableEntryMap.containsKey(entry.id) -> {
-//                            logger.info { "entry already added ${entry.id} : ${mutableEntryMap[entry.id]}" }
-//                            return@filter false
-//                        }
-
-//                    newEntries.any { it.id == entry.id } -> {
-//                        logger.info("entry already in queue ${entry.id}")
-//                        continue
+//                val newEntries = addEntries.consumeAsFlow().filter { entry ->
+//                    logger.debug { "new entry received: ${entry.id}" }
+//
+//                    if (mutableLockEntryMap.containsKey(entry.id)) {
+//                        logger.info { "entry already resolved ${entry.id}" }
+//                        false
+//                    } else {
+//
+//                        addEntry(entry, dependency = true)
+//
+//                        logger.info { "added entry ${entry.id}" }
+//                        true
 //                    }
-                    }
-
-                    addEntry(entry, dependency = true)
-
-                    logger.info { "added entry ${entry.id}" }
-                    true
-                }.toList()
+//
+//                }.toList()
 
                 logger.info { "added last step: ${newEntries.map { it.id }}" }
 

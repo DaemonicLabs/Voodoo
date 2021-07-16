@@ -29,7 +29,7 @@ abstract class ProviderBase(
     open suspend fun resolve(
         entry: FlatEntry,
         modPack: FlatModPack,
-        addEntry: SendChannel<FlatEntry>
+        addEntry: suspend (FlatEntry) -> Unit
     ): LockEntry {
         logger.info("[$name] resolve ${entry.id}")
         throw NotImplementedError("unable to resolve")

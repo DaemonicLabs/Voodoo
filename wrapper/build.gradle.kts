@@ -4,5 +4,5 @@ plugins {
 }
 
 application {
-    mainClassName = "voodoo.Wrapper"
+    mainClass.set("voodoo.Wrapper")
 }
