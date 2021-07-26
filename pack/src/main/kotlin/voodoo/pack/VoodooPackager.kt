@@ -254,7 +254,7 @@ object VoodooPackager : AbstractPack("voodoo") {
                         installerLocation = installer.toRelativeString(output).replace('\\', '/'),
                         modpackTitle = modpack.title ?: modpack.id,
                         modpackVersion = modpack.version,
-                        versionAlias = config.versionAlias,
+//                        versionAlias = config.versionAlias,
                         gameVersion = modpack.mcVersion,
 //                        thumb = thumb, // TODO:
                         modLoader = modloader,

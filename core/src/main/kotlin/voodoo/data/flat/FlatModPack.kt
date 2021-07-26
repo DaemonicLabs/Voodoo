@@ -34,7 +34,7 @@ data class FlatModPack(
     var mcVersion: String,
     var title: String? = null,
     var version: String,
-//    @Serializable(with = FileSerializer::class)
+    //TODO: make constant
     var srcDir: String = "src",
     var icon: String = "icon.png",
     val authors: List<String> = emptyList(),

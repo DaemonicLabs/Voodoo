@@ -22,6 +22,7 @@ import voodoo.config.Configuration
 import voodoo.pack.Modpack
 
 class CompileCommand() : CliktCommand(
+    //TODO: rename to build
     name = "compile",
     help = "resolves versions of mods and their dependencies, produces lockpack"
 ) {

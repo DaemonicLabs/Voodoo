@@ -10,7 +10,6 @@ import mu.withLoggingContext
 import voodoo.config.Autocompletions
 import voodoo.config.Configuration
 import voodoo.config.generateSchema
-import voodoo.pack.MetaPack
 import voodoo.pack.Modpack
 import voodoo.util.json
 import java.io.FileNotFoundException

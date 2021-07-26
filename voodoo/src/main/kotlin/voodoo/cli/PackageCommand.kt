@@ -8,7 +8,6 @@ import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
 import com.github.ajalt.clikt.parameters.arguments.argument
 import com.github.ajalt.clikt.parameters.arguments.multiple
-import com.github.ajalt.clikt.parameters.arguments.validate
 import com.github.ajalt.clikt.parameters.options.option
 import com.github.ajalt.clikt.parameters.types.choice
 import com.github.ajalt.clikt.parameters.types.file
@@ -18,7 +17,7 @@ import mu.KotlinLogging
 import mu.withLoggingContext
 import voodoo.Pack
 import voodoo.data.lock.LockPack
-import voodoo.pack.MetaPack
+import voodoo.pack.PackConfig
 import voodoo.util.SharedFolders
 import java.io.File
 
@@ -29,16 +28,16 @@ class PackageCommand() : CliktCommand(
     private val logger = KotlinLogging.logger {}
     val cliContext by requireObject<CLIContext>()
 
-    val metaPackFile by argument(
-        "META_FILE",
-        "path to ${MetaPack.FILENAME} file",
-        completionCandidates = CompletionCandidates.Custom.fromStdout("find **/${MetaPack.FILENAME}")
-    ).file(mustExist = true, canBeFile = true, canBeDir = false)
-        .validate { file ->
-            require(file.name == MetaPack.FILENAME) {
-                "file name $file does not match ${MetaPack.FILENAME}"
-            }
-        }
+//    val metaPackFile by argument(
+//        "META_FILE",
+//        "path to ${MetaPack.FILENAME} file",
+//        completionCandidates = CompletionCandidates.Custom.fromStdout("find **/${MetaPack.FILENAME}")
+//    ).file(mustExist = true, canBeFile = true, canBeDir = false)
+//        .validate { file ->
+//            require(file.name == MetaPack.FILENAME) {
+//                "file name $file does not match ${MetaPack.FILENAME}"
+//            }
+//        }
 
     val packTargets by argument(
         "TARGET", "pack targets"
@@ -55,11 +54,11 @@ class PackageCommand() : CliktCommand(
             val rootDir = cliContext.rootDir
 //            val baseDir = rootDir.resolve(id)
 
-            val baseDir = metaPackFile.absoluteFile.parentFile
+            val baseDir = rootDir
             val id = baseDir.name
 
             stopwatch {
-                val metaPack = MetaPack.parse(metaPackFile)
+//                val metaPack = MetaPack.parse(metaPackFile)
                 val uploadDir = uploadDirOption ?: SharedFolders.UploadDir.get(id)
 
                 packTargets.toSet().forEach { packTarget ->
@@ -72,11 +71,11 @@ class PackageCommand() : CliktCommand(
                                 withLoggingContext("version" to lockpack.version) {
                                     launch(MDCContext() + CoroutineName("package-version-${lockpack.version}")) {
                                         Pack.pack(
-                                            "pack-${packTarget.id}".watch,
-                                            lockpack,
-                                            metaPack.packConfig,
-                                            uploadDir,
-                                            packTarget
+                                            stopwatch = "pack-${packTarget.id}".watch,
+                                            modpack = lockpack,
+                                            config = PackConfig(),
+                                            uploadBaseDir = uploadDir,
+                                            packer = packTarget
                                         )
                                     }
                                 }

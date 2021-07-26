@@ -106,50 +106,6 @@ object Murmur2 {
         }
     }
 
-    @JvmOverloads
-    fun hash32Uint(data: ByteArray, length: Int = data.size, seed: Int = DEFAULT_SEED): Int {
-        var h = seed xor length
-        val len_4 = length shr 2
-
-        // body
-        for (i in 0 until len_4) {
-            val i_4 = i shl 2
-            var k: Int = ((data[i_4].toInt() and 0xff)
-                    or ((data[i_4 + 1].toInt() and 0xff) shl 8)
-                    or ((data[i_4 + 2].toInt() and 0xff) shl 16)
-                    or ((data[i_4 + 3].toInt() and 0xff) shl 24))
-
-            // mix functions
-            k *= M_32
-            k = k xor (k ushr R_32)
-            k *= M_32
-            h *= M_32
-            h = h xor k
-        }
-
-        // tail
-        val len_m = len_4 shl 2
-        val left = length - len_m
-        if (left != 0) {
-            if (left >= 3) {
-                h = h xor (data[length - (left - 2)].toInt() shl 16)
-            }
-            if (left >= 2) {
-                h = h xor (data[length - (left - 1)].toInt() shl 8)
-            }
-            if (left >= 1) {
-                h = h xor data[length - left].toInt()
-            }
-            h *= M_32
-        }
-
-        // finalization
-        h = h xor (h ushr 13)
-        h *= M_32
-        h = h xor (h ushr 15)
-        return h
-    }
-
     /**
      * Murmur2 64-bit variant.
      *

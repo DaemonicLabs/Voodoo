@@ -3,10 +3,13 @@ package voodoo.data.lock
 import Modloader
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.Transient
+import kotlinx.serialization.json.JsonObject
 import mu.KotlinLogging
 import voodoo.data.DependencyType
 import voodoo.data.PackOptions
 import voodoo.data.PackReportData
+import voodoo.json.VersionMigrator
+import voodoo.json.VersionedSerializer
 import voodoo.util.*
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
@@ -29,67 +32,6 @@ data class LockPack(
     var packOptions: PackOptions = PackOptions(),
     val entries: List<LockEntry> = listOf(),
 ) {
-    companion object {
-        private val logger = KotlinLogging.logger {}
-        const val FILENAME = "lock.pack.json"
-
-        // maybe make this configurable ?
-        @Deprecated("no version subfolders anymore")
-        val outputFolder: String get() = TODO("remove this") // "lock"
-
-        private val directories = Directories.get()
-        private val cacheDir = directories.cacheHome.resolve("LOCKPACK")
-
-        val versionComparator = compareBy(comparator = VersionComparator, LockPack::version)
-
-        @Deprecated("no version subfolders anymore")
-        fun baseFolderForVersion(version: String, baseDir: File): File {
-            TODO("remove this")
-            return baseDir.resolve(outputFolder).resolve(version)
-        }
-        @Deprecated("no version subfolders anymore")
-        fun fileForVersion(version: String, baseDir: File): File {
-            TODO("remove this")
-            return baseFolderForVersion(version, baseDir).resolve(FILENAME)
-        }
-
-        @Deprecated("no version subfolders anymore")
-        fun parseAll(baseFolder: File): List<LockPack> {
-            TODO("remove this")
-        }
-
-
-        fun parse(packFile: File, baseFolder: File): LockPack {
-            if (!baseFolder.isAbsolute) {
-                throw IllegalStateException("baseFolder: '$baseFolder' is not absolute")
-            }
-            val lockpack: LockPack = json.decodeFromString(LockPack.serializer(), packFile.readText())
-            lockpack.lockBaseFolder = packFile.absoluteFile.parentFile
-
-            lockpack.sourceFolder.deleteRecursively()
-            if(lockpack.sourceZip.exists()) {
-                lockpack.sourceFolder.mkdirs()
-                UnzipUtility.unzip(
-                    lockpack.sourceZip,
-                    lockpack.sourceFolder
-                )
-            }
-
-            lockpack.localFolder.deleteRecursively()
-            if(lockpack.localZip.exists()) {
-                lockpack.localFolder.mkdirs()
-                UnzipUtility.unzip(
-                    lockpack.localZip,
-                    lockpack.localFolder
-                )
-            }
-            lockpack.entries.forEach {
-                it.parent = lockpack
-            }
-            return lockpack
-        }
-    }
-
     val entriesMap by lazy {
         entries.associateBy { it.id }
     }
@@ -97,6 +39,7 @@ data class LockPack(
     @Transient
     lateinit var lockBaseFolder: File
 
+    //TODO: resolve from working directory instead of cache
     val sourceFolder: File
         get() = cacheDir.resolve(id).resolve(version).resolve("src")
     val sourceZip: File
@@ -190,4 +133,79 @@ data class LockPack(
 
         return reports.toMap()
     }
+    companion object {
+        private val logger = KotlinLogging.logger {}
+        const val FILENAME = "lock.pack.json"
+
+        private val directories = Directories.get()
+        private val cacheDir = directories.cacheHome.resolve("LOCKPACK")
+
+        val versionComparator = compareBy(comparator = VersionComparator, LockPack::version)
+
+//        @Deprecated("no version subfolders anymore")
+//        fun baseFolderForVersion(version: String, baseDir: File): File {
+//            TODO("remove this")
+//            return baseDir.resolve(outputFolder).resolve(version)
+//        }
+//        @Deprecated("no version subfolders anymore")
+//        fun fileForVersion(version: String, baseDir: File): File {
+//            TODO("remove this")
+//            return baseFolderForVersion(version, baseDir).resolve(FILENAME)
+//        }
+
+        @Deprecated("no version subfolders anymore")
+        fun parseAll(baseFolder: File): List<LockPack> {
+            TODO("remove this")
+        }
+
+
+        fun parse(packFile: File, baseFolder: File): LockPack {
+            if (!baseFolder.isAbsolute) {
+                throw IllegalStateException("baseFolder: '$baseFolder' is not absolute")
+            }
+            val lockpack: LockPack = json.decodeFromString(versionedSerializer, packFile.readText())
+            lockpack.lockBaseFolder = packFile.absoluteFile.parentFile
+
+            lockpack.sourceFolder.deleteRecursively()
+            if(lockpack.sourceZip.exists()) {
+                lockpack.sourceFolder.mkdirs()
+                UnzipUtility.unzip(
+                    lockpack.sourceZip,
+                    lockpack.sourceFolder
+                )
+            }
+
+            lockpack.localFolder.deleteRecursively()
+            if(lockpack.localZip.exists()) {
+                lockpack.localFolder.mkdirs()
+                UnzipUtility.unzip(
+                    lockpack.localZip,
+                    lockpack.localFolder
+                )
+            }
+            lockpack.entries.forEach {
+                it.parent = lockpack
+            }
+            return lockpack
+        }
+
+        val versionedSerializer = VersionedSerializer(
+            serializer = serializer(),
+            currentVersion = 1,
+            migrations = mapOf(
+                0..1 to VersionMigrator(
+                    json,
+                    JsonObject.serializer(),
+                    serializer()
+                ) { _: JsonObject ->
+                    LockPack(
+                        id = "unknown_id",
+                        mcVersion = "1.17",
+                        version = "0.0.1"
+                    )
+                }
+            ),
+        )
+    }
+
 }

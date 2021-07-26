@@ -2,7 +2,7 @@
   "$schema": "schema/modpack.schema.json",
   "id": "fabricPack",
   "mcVersion": "1.15.2",
-  "srcDir": "src_0.0.2",
+  "srcDir": "src",
   "modloader": {
     "type": "modloader.fabric",
     "intermediateMappings": "Fabric/1.15.2"

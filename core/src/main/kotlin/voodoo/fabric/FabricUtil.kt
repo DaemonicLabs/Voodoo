@@ -1,6 +1,6 @@
 package voodoo.fabric
 
-import io.ktor.client.request.get
+import io.ktor.client.request.*
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
 import io.ktor.http.isSuccess

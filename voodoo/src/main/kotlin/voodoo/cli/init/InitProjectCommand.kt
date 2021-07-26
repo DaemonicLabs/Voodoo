@@ -153,8 +153,6 @@ class InitProjectCommand : CliktCommand(
                 """.trimIndent())
                 logger.info { "generated $gitignoreFile" }
             }
-
-
         }
     }
 }

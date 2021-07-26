@@ -13,7 +13,6 @@ import kotlinx.coroutines.slf4j.MDCContext
 import mu.KotlinLogging
 import mu.withLoggingContext
 import voodoo.cli.CLIContext
-import voodoo.pack.MetaPack
 import voodoo.pack.Modloader
 import voodoo.pack.Modpack
 import voodoo.pack.VersionPackageConfig

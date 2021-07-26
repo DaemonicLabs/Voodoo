@@ -4,8 +4,11 @@ import com.eyeem.watchadoin.Stopwatch
 import mu.KotlinLogging
 import voodoo.data.lock.LockPack
 import voodoo.util.Directories
+import voodoo.util.json
 import voodoo.util.maven.MavenUtil
+import voodoo.util.packToZip
 import java.io.File
+import kotlin.io.path.listDirectoryEntries
 
 /**
  * Created by nikky on 06/05/18.
@@ -38,7 +41,17 @@ object ServerPack : AbstractPack("server") {
 
         output.mkdirs()
 
-        modpack.lockBaseFolder.copyRecursively(output, overwrite = true)
+//        modpack.lockBaseFolder.copyRecursively(output, overwrite = true)
+        output.resolve(LockPack.FILENAME).writeText(
+            json.encodeToString(LockPack.serializer(), modpack)
+        )
+
+        //TODO: pick folder name from modpack.voodoo.json5 or hardcode ?
+        modpack.lockBaseFolder.resolve("src").takeIf { it.exists() }?.let { src ->
+            val srcZip =  output.resolve("src.zip")
+            logger.info { "zipping: $src -> $srcZip" }
+            packToZip(src, srcZip)
+        }
 
         logger.info("packaging installer jar")
         // TODO: special-case in local dev mode ?

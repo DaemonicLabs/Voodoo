@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="CLI fabricPack compile" type="JetRunConfigurationType">
+  <configuration default="false" name="CLI compile fabricPack" type="JetRunConfigurationType" folderName="fabricPack">
     <option name="MAIN_CLASS_NAME" value="Main" />
     <module name="voodoo-parent.voodoo.main" />
     <option name="PROGRAM_PARAMETERS" value="--log TRACE compile --version 0.0.1" />
