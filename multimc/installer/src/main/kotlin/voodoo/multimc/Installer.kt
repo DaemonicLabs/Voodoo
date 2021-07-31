@@ -129,6 +129,7 @@ object Installer {
         phase: Phase
     ) {
         logger.info { "installing into $instanceId" }
+        logger.info { "phase: $phase" }
         val urlFile = instanceDir.resolve("voodoo.url.txt")
         val packUrl = urlFile.readText().trim()
         logger.info { "pack url: $packUrl" }
@@ -227,7 +228,7 @@ object Installer {
                 "--mc",
                 minecraftDir.path,
                 "--phase",
-                phase.name
+                phase.toString()
             )
 
             logger.info { "Executing ${args.joinToString()}" }
