@@ -208,9 +208,8 @@ object Installer {
         if (newJar != null) {
             val java = Paths.get(System.getProperty("java.home"), "bin", "java").toFile().path
             val workingDir = File(System.getProperty("user.dir"))
-            val debugArgs: Array<String>
 
-            debugArgs = if (System.getProperty(DEBUG_PROPERTY_NAME) != null) {
+            val debugArgs: Array<String> = if (System.getProperty(DEBUG_PROPERTY_NAME) != null) {
                 arrayOf("-D$DEBUG_PROPERTY_NAME=$DEBUG_PROPERTY_VALUE_ON")
             } else {
                 arrayOf()
@@ -228,7 +227,7 @@ object Installer {
                 "--mc",
                 minecraftDir.path,
                 "--phase",
-                Phase.PRE.name
+                phase.name
             )
 
             logger.info { "Executing ${args.joinToString()}" }
