@@ -177,7 +177,8 @@ data class VersionPack(
                 multimcOptions = PackOptions.MultiMC(
                     relativeSelfupdateUrl = packageConfiguration.voodoo.relativeSelfupdateUrl,
                     instanceCfg = packageConfiguration.multimc.instanceCfg
-                )
+                ),
+                userFiles = packageConfiguration.userFiles
             ),
             entrySet = mods.flatMap { (overrideKey, modsList) ->
                 modsList.map { entry ->

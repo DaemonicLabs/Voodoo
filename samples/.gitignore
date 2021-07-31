@@ -1,7 +1,7 @@
 .completions
 .meta
 /build/
-/_upload/
+_upload/
 reports
 logs
 docs
