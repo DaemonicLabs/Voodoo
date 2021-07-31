@@ -74,7 +74,7 @@ object Installer {
                 currentJarFile.copyTo(voodooFolder.resolve("multimc-installer.jar"), overwrite = true)
                 exitProcess(0)
             }
-            Phase.PRE, Phase.REBOOT -> {
+            Phase.PRE -> {
                 // always copy current jar to post.jar
                 val postFile = voodooFolder.resolve("post.jar")
                 if(postFile.exists()) {
