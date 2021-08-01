@@ -74,7 +74,7 @@ object Installer {
                 currentJarFile.copyTo(voodooFolder.resolve("multimc-installer.jar"), overwrite = true)
                 exitProcess(0)
             }
-            Phase.PRE -> {
+            Phase.PRE, Phase.REBOOT -> {
                 // always copy current jar to post.jar
                 val postFile = voodooFolder.resolve("post.jar")
                 if(postFile.exists()) {
@@ -106,7 +106,8 @@ object Installer {
                 } else {
                     postFile.download(installerUrl, cacheHome)
                 }
-                val newFile = cacheHome.resolve("tmp.jar")
+                val newFile = cacheHome.resolve("tmp-${newSha256}.jar")
+                newFile.delete()
                 postFile.copyTo(newFile, overwrite = true)
                 return newFile
             }
@@ -228,7 +229,10 @@ object Installer {
                 "--mc",
                 minecraftDir.path,
                 "--phase",
-                phase.toString()
+                when(phase) {
+                    Phase.REBOOT -> Phase.PRE
+                    else -> phase
+                }.toString()
             )
 
             logger.info { "Executing ${args.joinToString()}" }

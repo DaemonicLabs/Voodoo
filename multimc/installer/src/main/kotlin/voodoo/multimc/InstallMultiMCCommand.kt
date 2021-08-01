@@ -44,5 +44,5 @@ class InstallMultiMCCommand: CliktCommand(
 }
 
 enum class Phase {
-    PRE, POST
+    PRE, POST, REBOOT
 }
