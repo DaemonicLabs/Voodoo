@@ -19,7 +19,8 @@ object Pack {
         MMCLocalPackVoodoo,
         MMCFatPack,
         ServerPack,
-        CursePack
+        CursePack,
+        GenericSelfupdatingPackVoodoo
     ).associateBy { it.id }
 
     suspend fun pack(

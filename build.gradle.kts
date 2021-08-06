@@ -265,12 +265,12 @@ subprojects {
 }
 
 dependencyGraphGenerator {
-    generators += com.vanniktech.dependency.graph.generator.DependencyGraphGeneratorExtension.Generator(
-        name = "projects",
+    generators.create("projects") {
+        name = "projects"
         include = { dep ->
             logger.lifecycle("include: $dep ${dep.moduleGroup} ${dep.parents}")
             dep.moduleGroup == rootProject.group || dep.parents.any { it.moduleGroup == rootProject.group }
-        },
+        }
         projectNode = { node, b ->
             node
                 .add(
@@ -278,15 +278,15 @@ dependencyGraphGenerator {
                     guru.nidi.graphviz.attribute.Color.AQUAMARINE.background().fill(),
                     guru.nidi.graphviz.attribute.Style.FILLED
                 )
-        },
+        }
         includeProject = { project ->
             logger.lifecycle("project: $project")
 //            project.buildFile.exists()
             true
-        },
+        }
         dependencyNode = { node, dep ->
             logger.lifecycle("dep node $dep ${dep::class}")
             node
         }
-    )
+    }
 }

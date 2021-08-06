@@ -163,6 +163,7 @@ data class LockPack(
             if (!baseFolder.isAbsolute) {
                 throw IllegalStateException("baseFolder: '$baseFolder' is not absolute")
             }
+            logger.info { "parsing lockpack file: $packFile" }
             val lockpack: LockPack = json.decodeFromString(versionedSerializer, packFile.readText())
             lockpack.lockBaseFolder = packFile.absoluteFile.parentFile
 

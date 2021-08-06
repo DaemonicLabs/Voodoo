@@ -230,11 +230,11 @@ object VoodooPackager : AbstractPack("voodoo") {
                 //TODO: figure out icon url, and server url
 
                 val toolsDir = output.resolve("tools").apply { mkdirs() }
-                val installer = "downloadArtifact multimc installer".watch {
+                val installer = "downloadArtifact installer".watch {
                     MavenUtil.downloadArtifact(
                         mavenUrl = GeneratedConstants.MAVEN_URL,
                         group = GeneratedConstants.MAVEN_GROUP,
-                        artifactId = "multimc-installer",
+                        artifactId = "installer",
                         version = GeneratedConstants.FULL_VERSION,
                         classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
                         outputFile = null,

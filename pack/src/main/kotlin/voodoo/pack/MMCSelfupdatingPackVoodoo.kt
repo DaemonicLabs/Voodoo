@@ -34,11 +34,11 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
         val instanceDir = zipRootDir.resolve(modpack.id)
         zipRootDir.deleteRecursively()
 
-        val installer = "downloadArtifact multimc installer".watch {
+        val installer = "downloadArtifact installer".watch {
             MavenUtil.downloadArtifact(
                 mavenUrl = GeneratedConstants.MAVEN_URL,
                 group = GeneratedConstants.MAVEN_GROUP,
-                artifactId = "multimc-installer",
+                artifactId = "installer",
                 version = GeneratedConstants.FULL_VERSION,
                 classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER,
                 outputFile = instanceDir.resolve(".voodoo").resolve("multimc-installer.jar"),
@@ -46,10 +46,12 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
             )
         }
         val installerFilename = installer.toRelativeString(instanceDir).replace('\\', '/')
-        val preLaunchCommand =
-            "\"\$INST_JAVA\" -jar \"\$INST_DIR/$installerFilename\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\" --phase PRE"
-        val postExitCommand =
-            "\"\$INST_JAVA\" -jar \"\$INST_DIR/.voodoo/post.jar\" --id \"\$INST_ID\" --inst \"\$INST_DIR\" --mc \"\$INST_MC_DIR\" --phase POST"
+        val preLaunchCommand = """
+             "${"$"}INST_JAVA" -jar "${"$"}INST_DIR/$installerFilename" updateMultimc --id "${"$"}INST_ID" --inst "${"$"}INST_DIR" --mc "${"$"}INST_MC_DIR" --phase PRE
+            """.trimIndent()
+        val postExitCommand = """
+             "${"$"}INST_JAVA" -jar "${"$"}INST_DIR/.voodoo/post.jar" updateMultimc --id "${"$"}INST_ID" --inst "${"$"}INST_DIR" --mc "${"$"}INST_MC_DIR" --phase POST
+            """.trimIndent()
         val minecraftDir = MMCUtil.installEmptyPack(
             modpack.title.blankOr,
             modpack.id,
@@ -82,8 +84,12 @@ object MMCSelfupdatingPackVoodoo : AbstractPack("mmc-voodoo") {
         )
 
         output.mkdirs()
-        val instanceZipVersioned = output.resolve("${modpack.id}-${versionAlias ?: modpack.version}.zip")
-        val instanceZip = output.resolve("${modpack.id}.zip")
+        val instanceZipVersioned = output.resolve(
+            modpack.title?.let { title ->
+                "$title ${versionAlias ?: modpack.version}.zip"
+            } ?: "${modpack.id}-${versionAlias ?: modpack.version}.zip"
+        )
+        val instanceZip = output.resolve("${modpack.title ?: modpack.id}.zip")
 
         instanceZip.delete()
         packToZip(zipRootDir, instanceZip)

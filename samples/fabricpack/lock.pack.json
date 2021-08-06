@@ -1,4 +1,5 @@
 {
+    "formatVersion": 1,
     "id": "fabricPack",
     "mcVersion": "1.15.2",
     "modloader": {
@@ -7,9 +8,11 @@
         "intermediateMappings": "1.15.2",
         "installer": "0.7.4"
     },
+    "title": "Fabric Pack",
     "version": "0.0.1",
+    "icon": "icon_fabricPack.png",
     "packOptions": {
-        "uploadUrl": "https://mydomain.com/mc/fabricPack"
+        "uploadUrl": "https://nikky.moe/.mc/experimental/fabricPack"
     },
     "entries": [
         {
@@ -87,7 +90,7 @@
                 "recommendation": "starred"
             },
             "projectID": 317514,
-            "fileID": 3372018
+            "fileID": 3398488
         },
         {
             "type": "curse",

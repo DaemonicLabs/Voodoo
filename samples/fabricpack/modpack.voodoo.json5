@@ -1,5 +1,6 @@
 {
   "$schema": "schema/modpack.schema.json",
+  title: "Fabric Pack",
   "id": "fabricPack",
   "mcVersion": "1.15.2",
   "srcDir": "src",
@@ -7,7 +8,8 @@
     "type": "modloader.fabric",
     "intermediateMappings": "Fabric/1.15.2"
   },
-  "uploadBaseUrl": "https://mydomain.com/mc/",
+  "icon": "icon_fabricPack.png",
+  "uploadBaseUrl": "https://nikky.moe/.mc/experimental/",
   "mods": {
     "": [
       {

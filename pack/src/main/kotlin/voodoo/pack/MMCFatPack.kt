@@ -33,7 +33,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
         output: File,
         uploadBaseDir: File,
         clean: Boolean,
-        versionAlias: String?
+        versionAlias: String?,
     ) = stopwatch {
         val directories = Directories.get()
 
@@ -91,7 +91,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
             mapOf<String, Boolean>()
         }
         val (optionals, reinstall) = MMCUtil.updateAndSelectFeatures(
-            modpack.optionalEntries.filter{ it.side != Side.SERVER }.map {
+            modpack.optionalEntries.filter { it.side != Side.SERVER }.map {
                 MMCSelectable(it)
             },
             previousSelection,
@@ -103,7 +103,8 @@ object MMCFatPack : AbstractPack("mmc-fat") {
         logger.debug("result: optionals: $optionals")
         if (!optionals.isEmpty()) {
             featureJson.createNewFile()
-            featureJson.writeText(json.encodeToString(MapSerializer(String.serializer(), Boolean.serializer()), optionals))
+            featureJson.writeText(json.encodeToString(MapSerializer(String.serializer(), Boolean.serializer()),
+                optionals))
         }
         if (reinstall) {
             minecraftDir.deleteRecursively()
@@ -117,7 +118,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
                     launch(context = coroutineContext + pool) {
                         val folder = minecraftDir.resolve(entry.path).absoluteFile
 
-                        val matchedOptioalsList = if(modpack.isEntryOptional(entry.id)) {
+                        val matchedOptioalsList = if (modpack.isEntryOptional(entry.id)) {
                             val selectedSelf = optionals[entry.id] ?: true
                             if (!selectedSelf) {
                                 logger.info { "${entry.displayName} is disabled, skipping download" }
@@ -144,7 +145,7 @@ object MMCFatPack : AbstractPack("mmc-fat") {
                         if (matchedOptioalsList.isNotEmpty()) {
                             val selected = matchedOptioalsList.any { optionals[it.id] ?: false }
                             if (!selected) {
-                                logger.info {"${matchedOptioalsList.map { it.displayName }} is disabled, disabling ${entry.id}" }
+                                logger.info { "${matchedOptioalsList.map { it.displayName }} is disabled, disabling ${entry.id}" }
                                 file.renameTo(file.parentFile.resolve(file.name + ".disabled"))
                             }
                         }
@@ -170,7 +171,11 @@ object MMCFatPack : AbstractPack("mmc-fat") {
         }
 
         output.mkdirs()
-        val instanceZip = output.resolve("${modpack.id}-${versionAlias ?: modpack.version}.zip")
+        val instanceZip = output.resolve(
+            modpack.title?.let { title ->
+                "$title ${versionAlias ?: modpack.version}.zip"
+            } ?: "${modpack.id}-${versionAlias ?: modpack.version}.zip"
+        )
 
         instanceZip.delete()
         packToZip(zipRootDir, instanceZip)

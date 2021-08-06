@@ -16,6 +16,8 @@ pluginManagement {
 plugins {
     id("com.gradle.enterprise") version "3.6.3"
     id("de.fayard.refreshVersions") version "0.10.1"
+
+////                            # available:"0.11.0"
 }
 
 refreshVersions {
@@ -41,10 +43,11 @@ include(":voodoo")
 include(":core")
 include(":dsl")
 include(":format", ":format:packager")
-include(":multimc", ":multimc:installer")
+include(":multimc-base")
 include(":util", ":util:download", ":util:maven", ":util:jenkins")
 include(":tome", ":pack", ":pack:tester")
 include(":server-installer")
+include(":installer")
 
 //include(":plugin")
 

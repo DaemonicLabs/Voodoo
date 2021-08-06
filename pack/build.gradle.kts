@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    api(project(":multimc"))
+    api(project(":multimc-base"))
     api(project(":core"))
     api(project(":format:format-packager"))
 

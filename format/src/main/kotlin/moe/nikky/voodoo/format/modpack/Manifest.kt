@@ -2,6 +2,7 @@ package moe.nikky.voodoo.format.modpack
 
 import Modloader
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonObject
 import moe.nikky.voodoo.format.Feature
 import moe.nikky.voodoo.format.modpack.entry.FileInstall
 

@@ -52,11 +52,12 @@ object MavenUtil {
         outputFile: File? = null,
         verifyChecksum: Boolean = true
     ): File {
+        logger.info { "download artifact $mavenUrl $group $artifactId $version" }
         val classifierSuffix = classifier?.let { "-$it"} ?: ""
 
         var version = version
 
-        if(version.endsWith("-local") && group == "moe.nikky.voodoo") {
+        if(version.endsWith("-local") && group.startsWith("moe.nikky.voodoo")) {
             val file = localMavenFile(
                 group = group,
                 artifactId = artifactId,
@@ -64,6 +65,7 @@ object MavenUtil {
                 classifier = classifier,
                 extension = extension
             )
+            logger.info { "trying to use localMaven file: $file" }
             if(file.exists()) {
                 val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
                 targetFile.absoluteFile.parentFile.mkdirs()

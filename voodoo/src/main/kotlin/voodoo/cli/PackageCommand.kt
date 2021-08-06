@@ -64,8 +64,7 @@ class PackageCommand() : CliktCommand(
                 packTargets.toSet().forEach { packTarget ->
                     withLoggingContext("pack" to packTarget.id) {
                         withContext(MDCContext()) {
-                            val lockpack =
-                                LockPack.parse(packFile = baseDir.resolve(LockPack.FILENAME), baseFolder = baseDir)
+                            val lockpack = LockPack.parse(packFile = baseDir.resolve(LockPack.FILENAME), baseFolder = baseDir)
 
                             coroutineScope {
                                 withLoggingContext("version" to lockpack.version) {

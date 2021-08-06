@@ -45,7 +45,7 @@ suspend fun FlatModPack.compile(
 
     logger.info("Writing lock file... $targetFile")
 //    targetFile.parentFile.mkdirs()
-    targetFile.writeText(lockedPack.toJson(LockPack.serializer()))
+    targetFile.writeText(lockedPack.toJson(LockPack.versionedSerializer))
 
     logger.info { "copying input files into output" }
     logger.info { "copying from ${modpack.sourceFolder}" }

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-VOODOO_COMMAND='voodoo-dev' java -jar $DIR/../voodoo/build/libs/voodoo-0.6.0-local-all.jar $@
+VOODOO_COMMAND='voodoo-dev' java -jar $DIR/../voodoo/build/libs/voodoo-0.7.0-local-all.jar $@
 
 if test -f "$DIR/wrapper/new.jar"; then
     mv $DIR/wrapper/new.jar $DIR/wrapper/wrapper.jar
