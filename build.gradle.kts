@@ -35,10 +35,13 @@ object Maven {
 val releaseVersion = (properties["version"] as String?)?.takeUnless { it == "unspecified" }
 val defaultVersion = "0.7.0"
 
+val isRelease = false
 val isCI = System.getenv("CI") != null
 
 val versionSuffix = when {
-    isCI -> System.getenv("GITHUB_RUN_NUMBER")
+    isCI -> when {
+        !isRelease -> "SNAPSHOT"
+        else -> System.getenv("GITHUB_RUN_NUMBER") }
     else -> "local"
 }
 

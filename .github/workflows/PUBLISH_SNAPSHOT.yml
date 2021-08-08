@@ -2,6 +2,7 @@ on:
   push:
     branches:
      - main
+     - dev
 
 name: Create Release Snapshot
 
