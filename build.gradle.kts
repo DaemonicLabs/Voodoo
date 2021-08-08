@@ -161,7 +161,6 @@ subprojects {
         tasks.withType<KotlinCompile> {
             dependsOn(generateConstants)
         }
-
     }
 
     idea {
@@ -200,6 +199,10 @@ subprojects {
 
             val build by tasks.getting(Task::class) {
                 dependsOn(shadowJar)
+            }
+
+            val distTar by tasks.getting(Tar::class) {
+                duplicatesStrategy = DuplicatesStrategy.INCLUDE
             }
         }
 
