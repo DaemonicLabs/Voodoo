@@ -63,21 +63,22 @@ jobs:
            installer-${{ env.VERSION }}.jar:installer/build/libs/installer-${{ env.VERSION }}-all.jar
            server-installer-${{ env.VERSION }}.jar:server-installer/build/libs/server-installer-${{ env.VERSION }}-all.jar
            empty_voodoo_project.zip:empty_voodoo_project.zip
-     - name: notify progress
-       if: always()
-       uses: appleboy/discord-action@master
-       with:
-         webhook_id: ${{ secrets.WEBHOOK_ID }}
-         webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
-         message: The deploy environment development executed ${{ job.status }}.
-#     - name: Send Webhook Notification
+         allow_override: true
+#     - name: notify progress
 #       if: always()
-#       env:
-#         JOB_STATUS: ${{ job.status }}
-#         WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
-#         HOOK_OS_NAME: ${{ runner.os }}
-#         WORKFLOW_NAME: ${{ github.workflow }}
-#       run: |
-#         git clone https://github.com/DiscordHooks/github-actions-discord-webhook.git webhook
-#         bash webhook/send.sh $JOB_STATUS $WEBHOOK_URL
-#       shell: bash
+#       uses: appleboy/discord-action@master
+#       with:
+#         webhook_id: ${{ secrets.WEBHOOK_ID }}
+#         webhook_token: ${{ secrets.WEBHOOK_TOKEN }}
+#         message: The deploy environment development executed ${{ job.status }}.
+     - name: Send Webhook Notification
+       if: always()
+       env:
+         JOB_STATUS: ${{ job.status }}
+         WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
+         HOOK_OS_NAME: ${{ runner.os }}
+         WORKFLOW_NAME: ${{ github.workflow }}
+       run: |
+         git clone https://github.com/DiscordHooks/github-actions-discord-webhook.git webhook
+         bash webhook/send.sh $JOB_STATUS $WEBHOOK_URL
+       shell: bash

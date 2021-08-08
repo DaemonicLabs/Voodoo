@@ -26,7 +26,7 @@ class InitProjectCommand : CliktCommand(
 
         runBlocking(MDCContext()) {
             // download wrapper -> wrapper/wrapper.jar
-            val wrapperFile = rootDir.resolve("wrapper/new.jar")
+            val wrapperFile = rootDir.resolve("wrapper/wrapper.jar")
             wrapperFile.absoluteFile.parentFile.mkdirs()
             wrapperFile.delete()
 

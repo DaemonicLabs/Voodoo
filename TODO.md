@@ -6,4 +6,4 @@
 - [ ] modrinth support: https://github.com/modrinth/labrinth/wiki/API-Documentation
 
 - [ ] rework multimc-installer (use bootstrapper pattern ?)
-- [ ] add generic updating script for other launchers
+- [x] add generic updating script for other launchers

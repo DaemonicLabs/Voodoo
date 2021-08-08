@@ -1,13 +1,9 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="CLI init pack" type="JetRunConfigurationType">
-    <module name="voodoo-parent.voodoo.main" />
-    <option name="VM_PARAMETERS" value="" />
-    <option name="PROGRAM_PARAMETERS" value="--log trace init pack --id newPack --mcVersion 1.16.2" />
-    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
-    <option name="ALTERNATIVE_JRE_PATH" />
-    <option name="PASS_PARENT_ENVS" value="true" />
     <option name="MAIN_CLASS_NAME" value="Main" />
-    <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$/samples" />
+    <module name="voodoo-parent.voodoo.main" />
+    <option name="PROGRAM_PARAMETERS" value="--log trace init pack --id pack --mcVersion 1.17.1" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/samples/initproject" />
     <method v="2">
       <option name="Make" enabled="true" />
     </method>
