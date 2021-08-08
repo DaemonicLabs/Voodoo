@@ -27,7 +27,7 @@ jobs:
        env:
          MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
          MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
-       run: ./gradlew build shadowJar exportVersion publishAllPublicationsToNikkyMavenRepository -Pnodryrun
+       run: ./gradlew build shadowJar exportVersion publishAllPublicationsToNikkyMavenRepository -Pnodryrun --scan
      - name: Set enviroment for github-release
        run: |
          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
