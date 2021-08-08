@@ -117,7 +117,6 @@ class UpdateCommand : CliktCommand(
                 GeneratedConstants.MAVEN_GROUP,
                 "wrapper",
                 version,
-                snapshotVersion = snapshotVersion,
                 outputFile = wrapperFile,
                 outputDir = wrapperFile.absoluteFile.parentFile,
                 classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER

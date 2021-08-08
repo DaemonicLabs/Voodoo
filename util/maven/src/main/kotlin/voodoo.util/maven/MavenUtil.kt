@@ -30,7 +30,7 @@ object MavenUtil {
         group: String,
         artifactId: String,
         version: String,
-        snapshotVersion: String = version,
+        artifactVersion: String = version,
         classifier: String? = null,
         extension: String = "jar"
     ): File {
@@ -40,7 +40,7 @@ object MavenUtil {
             .resolve(group.replace('.','/'))
             .resolve(artifactId)
             .resolve(version)
-            .resolve("$artifactId-$snapshotVersion$classifierSuffix.$extension")
+            .resolve("$artifactId-$artifactVersion$classifierSuffix.$extension")
     }
 
     suspend fun downloadArtifact(
@@ -48,7 +48,6 @@ object MavenUtil {
         group: String,
         artifactId: String,
         version: String,
-        snapshotVersion: String = version,
         classifier: String? = null,
         extension: String = "jar",
         outputDir: File,
@@ -60,11 +59,20 @@ object MavenUtil {
 
         var version = version
 
+        val artifactVersion = if(version.endsWith("-SNAPSHOT")) {
+            getSnapshotVersionFromMavenMetadata(
+                mavenUrl, group, artifactId, version, extension, classifier
+            ).first()
+        } else {
+            version
+        }
+
         if(version.endsWith("-local") && group.startsWith("moe.nikky.voodoo")) {
             val file = localMavenFile(
                 group = group,
                 artifactId = artifactId,
                 version = version,
+                artifactVersion = artifactVersion,
                 classifier = classifier,
                 extension = extension
             )
@@ -86,7 +94,7 @@ object MavenUtil {
 
         val groupPath = group.replace('.','/')
 
-        val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$snapshotVersion$classifierSuffix.$extension"
+        val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$artifactVersion$classifierSuffix.$extension"
         logger.trace { "downloading: $artifactUrl" }
         val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
         targetFile.absoluteFile.parentFile.mkdirs()
