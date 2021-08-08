@@ -60,7 +60,7 @@ jobs:
          files: >
            wrapper.jar:wrapper/build/libs/wrapper-${{ env.VERSION }}-all.jar
            voodoo-${{ env.VERSION }}.jar:voodoo/build/libs/voodoo-${{ env.VERSION }}-all.jar
-           multimc-installer-${{ env.VERSION }}.jar:multimc/installer/build/libs/multimc-installer-${{ env.VERSION }}-all.jar
+           installer-${{ env.VERSION }}.jar:installer/build/libs/installer-${{ env.VERSION }}-all.jar
            server-installer-${{ env.VERSION }}.jar:server-installer/build/libs/server-installer-${{ env.VERSION }}-all.jar
            empty_voodoo_project.zip:empty_voodoo_project.zip
      - name: Send Webhook Notification
