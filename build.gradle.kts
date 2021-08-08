@@ -204,6 +204,9 @@ subprojects {
             val distTar by tasks.getting(Tar::class) {
                 duplicatesStrategy = DuplicatesStrategy.INCLUDE
             }
+            val distZip by tasks.getting(Zip::class) {
+                duplicatesStrategy = DuplicatesStrategy.INCLUDE
+            }
         }
 
         // publishing
