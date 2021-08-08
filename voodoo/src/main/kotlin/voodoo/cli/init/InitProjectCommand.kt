@@ -65,9 +65,10 @@ class InitProjectCommand : CliktCommand(
                     return@let
                 }
 
+                val PWD = "%~dp0"
                 batFile.writeText("""
-                    java -jar wrapper\wrapper.jar %*
-                    IF EXIST wrapper\new.jar MOVE /Y wrapper\new.jar wrapper\wrapper.jar
+                    java -jar "${PWD}wrapper\wrapper.jar" %*
+                    IF EXIST ${PWD}wrapper\new.jar MOVE ${PWD}wrapper\new.jar ${PWD}wrapper\wrapper.jar
                 """.trimIndent())
                 logger.info { "generated $batFile" }
             }

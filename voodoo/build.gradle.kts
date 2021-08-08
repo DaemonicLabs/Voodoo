@@ -18,7 +18,7 @@ dependencies {
 
     implementation("blue.endless:jankson:_")
 
-//    implementation(KotlinX.coroutines.debug)
+    implementation(KotlinX.coroutines.debug)
 
     implementation(group = "ch.qos.logback", name = "logback-classic", version = "_") {
         exclude(module = "javax.mail")

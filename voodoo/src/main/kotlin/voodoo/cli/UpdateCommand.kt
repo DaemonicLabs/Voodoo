@@ -2,23 +2,23 @@ package voodoo.cli
 
 import com.github.ajalt.clikt.core.CliktCommand
 import com.github.ajalt.clikt.core.requireObject
+import com.github.ajalt.clikt.parameters.options.default
+import com.github.ajalt.clikt.parameters.options.option
+import com.github.ajalt.clikt.parameters.types.enum
 import io.ktor.client.request.*
-import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.slf4j.MDCContext
 import mu.KotlinLogging
 import mu.withLoggingContext
 import voodoo.util.Directories
 import voodoo.util.download
+import voodoo.util.maven.MavenReleaseStability
 import voodoo.util.maven.MavenUtil
 import voodoo.util.toHexString
 import voodoo.util.useClient
 import voodoo.voodoo.GeneratedConstants
 import java.io.File
-import java.io.FileInputStream
-import java.io.InputStream
 import java.io.StringWriter
-import java.lang.Exception
 import java.security.MessageDigest
 import java.util.*
 
@@ -28,6 +28,12 @@ class UpdateCommand : CliktCommand(
 ) {
     private val logger = KotlinLogging.logger {}
     val cliContext by requireObject<CLIContext>()
+
+    val stability by option(
+        "--stability",
+    )
+        .enum<MavenReleaseStability>(ignoreCase = true)
+        .default(MavenReleaseStability.RELEASE)
 
     override fun run(): Unit = withLoggingContext("command" to commandName) {
         val rootDir = cliContext.rootDir
@@ -44,14 +50,43 @@ class UpdateCommand : CliktCommand(
                 }
             }
 
-            val version = MavenUtil.getReleaseVersionFromMavenMetadata(
-                GeneratedConstants.MAVEN_URL,
-                GeneratedConstants.MAVEN_GROUP,
-                "voodoo"
-            )
+            val (version, snapshotVersion) = when (stability) {
+                MavenReleaseStability.RELEASE -> {
+                    MavenUtil.getReleaseVersionFromMavenMetadata(
+                        GeneratedConstants.MAVEN_URL,
+                        GeneratedConstants.MAVEN_GROUP,
+                        "voodoo"
+                    )
+                }
+                MavenReleaseStability.LATEST -> {
+                    MavenUtil.getLatestVersionFromMavenMetadata(
+                        GeneratedConstants.MAVEN_URL,
+                        GeneratedConstants.MAVEN_GROUP,
+                        "voodoo"
+                    )
+                }
+            }.let { version ->
+                if (version.endsWith("-SNAPSHOT")) {
+                    MavenUtil.getSnapshotVersionFromMavenMetadata(
+                        mavenUrl = GeneratedConstants.MAVEN_URL,
+                        group = GeneratedConstants.MAVEN_GROUP,
+                        artifactId = "voodoo",
+                        version = version,
+                        extension = "jar",
+                        classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER
+                    ).first().let {
+                        logger.info { "resolved to snapshot version $it" }
+                        version to it
+                    }
+                } else {
+                    version to version
+                }
+            }
+
             logger.info { "updating to $version" }
             val groupPath = GeneratedConstants.MAVEN_GROUP.replace('.', '/')
-            val distributionUrl = "${GeneratedConstants.MAVEN_URL}/$groupPath/voodoo/$version/voodoo-$version-${GeneratedConstants.MAVEN_SHADOW_CLASSIFIER}.jar"
+            val distributionUrl =
+                "${GeneratedConstants.MAVEN_URL}/$groupPath/voodoo/$version/voodoo-$snapshotVersion-${GeneratedConstants.MAVEN_SHADOW_CLASSIFIER}.jar"
 
             // validate the file exists and matches checksum
             val tmpFile = cacheHome.resolve(distributionUrl.substringAfterLast("/"))
@@ -82,6 +117,7 @@ class UpdateCommand : CliktCommand(
                 GeneratedConstants.MAVEN_GROUP,
                 "wrapper",
                 version,
+                snapshotVersion = snapshotVersion,
                 outputFile = wrapperFile,
                 outputDir = wrapperFile.absoluteFile.parentFile,
                 classifier = GeneratedConstants.MAVEN_SHADOW_CLASSIFIER
@@ -100,7 +136,7 @@ class UpdateCommand : CliktCommand(
                     complete.update(buffer, 0, numRead)
                 }
             } while (numRead != -1)
-           complete.digest()
+            complete.digest()
         }
     }
 }
