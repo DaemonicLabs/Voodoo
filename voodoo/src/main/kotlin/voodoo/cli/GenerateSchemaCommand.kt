@@ -45,7 +45,7 @@ class GenerateSchemaCommand : CliktCommand(
 
             rootDir.resolve(config.schema).apply {
                 absoluteFile.parentFile.mkdirs()
-                writeText(json.encodeToSchema(Configuration.serializer()))
+                writeText(json.encodeToSchema(serializer = Configuration.serializer()))
             }
 
         runBlocking(MDCContext()) {
