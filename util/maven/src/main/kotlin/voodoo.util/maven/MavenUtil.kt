@@ -1,20 +1,12 @@
 package voodoo.util.maven
 
-import io.ktor.client.*
-import io.ktor.client.engine.cio.*
-import io.ktor.client.features.*
-import io.ktor.client.features.cookies.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.json.serializer.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.readText
 import io.ktor.http.*
-import io.ktor.util.cio.writeChannel
-import io.ktor.utils.io.copyAndClose
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
+import org.intellij.lang.annotations.Language
 import org.w3c.dom.NodeList
 import org.xml.sax.InputSource
 import voodoo.util.Directories
@@ -38,6 +30,7 @@ object MavenUtil {
         group: String,
         artifactId: String,
         version: String,
+        snapshotVersion: String = version,
         classifier: String? = null,
         extension: String = "jar"
     ): File {
@@ -47,7 +40,7 @@ object MavenUtil {
             .resolve(group.replace('.','/'))
             .resolve(artifactId)
             .resolve(version)
-            .resolve("$artifactId-$version$classifierSuffix.$extension")
+            .resolve("$artifactId-$snapshotVersion$classifierSuffix.$extension")
     }
 
     suspend fun downloadArtifact(
@@ -55,6 +48,7 @@ object MavenUtil {
         group: String,
         artifactId: String,
         version: String,
+        snapshotVersion: String = version,
         classifier: String? = null,
         extension: String = "jar",
         outputDir: File,
@@ -90,7 +84,7 @@ object MavenUtil {
 
         val groupPath = group.replace('.','/')
 
-        val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$version$classifierSuffix.$extension"
+        val artifactUrl = "$mavenUrl/$groupPath/$artifactId/$version/$artifactId-$snapshotVersion$classifierSuffix.$extension"
         logger.trace { "downloading: $artifactUrl" }
         val targetFile = outputFile ?: File(outputDir, "$artifactId-$version$classifierSuffix.$extension")
         targetFile.absoluteFile.parentFile.mkdirs()
@@ -129,10 +123,11 @@ object MavenUtil {
     suspend fun getMavenMetadata(
         mavenUrl: String,
         group: String,
-        artifactId: String
+        artifactId: String,
+        version: String? = null
     ): String {
         val groupPath = group.split("\\.".toRegex()).joinToString("/")
-        val metadataUrl = "$mavenUrl/$groupPath/$artifactId/maven-metadata.xml"
+        val metadataUrl = listOfNotNull(mavenUrl, groupPath, artifactId, version, "maven-metadata.xml").joinToString("/")
 
         val response = try {
             useClient { client ->
@@ -196,7 +191,7 @@ object MavenUtil {
         return latest
     }
 
-    suspend fun getALlVersionFromMavenMetadata(
+    suspend fun getALlVersionsFromMavenMetadata(
         mavenUrl: String,
         group: String,
         artifactId: String
@@ -212,6 +207,42 @@ object MavenUtil {
         val xPath = xpFactory.newXPath()
 
         val xPathExpression = "metadata/versioning/versions/version/text()"
+        val nodeList: NodeList = xPath.evaluate(xPathExpression, doc, XPathConstants.NODESET) as NodeList
+        logger.info { "nodeList: $nodeList" }
+        val list = (0 until nodeList.length).mapNotNull { i ->
+//            logger.info { "item($i): ${nodeList.item(i)}" }
+            nodeList.item(i)?.textContent
+        }
+        return list
+    }
+
+    suspend fun getSnapshotVersionFromMavenMetadata(
+        mavenUrl: String,
+        group: String,
+        artifactId: String,
+        version: String,
+        extension: String = "jar",
+        classifier: String? = "all"
+    ): List<String> {
+        val metadataXml = getMavenMetadata(mavenUrl, group, artifactId, version)
+
+        val dbFactory = DocumentBuilderFactory.newInstance()
+        val dBuilder = dbFactory.newDocumentBuilder()
+        val xmlInput = metadataXml
+        val doc = dBuilder.parse(InputSource(ByteArrayInputStream(xmlInput.toByteArray(Charsets.UTF_8))))
+
+        val xpFactory = XPathFactory.newInstance()
+        val xPath = xpFactory.newXPath()
+
+        @Language("XPath") val classifierFilter = if(classifier != null)
+            """ and classifier="$classifier" """.trim()
+        else
+            ""
+
+        @Language("XPath") val xPathExpression =
+            """metadata/versioning/snapshotVersions/snapshotVersion
+                |[ extension="$extension" $classifierFilter ]
+                |/value/text()""".trimMargin()
         val nodeList: NodeList = xPath.evaluate(xPathExpression, doc, XPathConstants.NODESET) as NodeList
         logger.info { "nodeList: $nodeList" }
         val list = (0 until nodeList.length).mapNotNull { i ->
