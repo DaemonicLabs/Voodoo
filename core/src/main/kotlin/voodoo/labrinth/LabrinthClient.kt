@@ -9,6 +9,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import mu.KotlinLogging
+import voodoo.data.curse.FileID
 import voodoo.util.json
 import voodoo.util.useClient
 
@@ -104,11 +105,19 @@ data class ModResult(
 
 @JvmInline
 @Serializable
-value class VersionId(val id: String)
+value class VersionId(val id: String) {
+    companion object {
+        val INVALID = VersionId("")
+    }
+}
 
 @JvmInline
 @Serializable
-value class ModId(val id: String)
+value class ModId(val id: String) {
+    companion object {
+        val INVALID = ModId("")
+    }
+}
 
 @JvmInline
 @Serializable

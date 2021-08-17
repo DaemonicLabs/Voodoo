@@ -12,6 +12,8 @@ import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
 import voodoo.data.curse.ProjectID
 import voodoo.data.flat.FlatEntry
+import voodoo.labrinth.ModId
+import voodoo.labrinth.VersionId
 
 @Serializable
 sealed class FileEntry {
@@ -167,6 +169,26 @@ sealed class FileEntry {
                 applyOverrides = listOfNotNull(overrideKey.takeUnless { it.isBlank() }) + applyOverrides,
             )
         }
+        is Modrinth -> {
+//            if (modrinth_slug != null) {
+//                //TODO: load autocompletions here
+//                val addonid = Autocompletions.curseforge[curse_projectName]?.toIntOrNull()
+//                val newName = curse_projectName.substringAfterLast('/')
+//                require(addonid != null) { "cannot find replacement for $modrinth_slug / ${Autocompletions.curseforge[curse_projectName]}" }
+//                copy(
+//                    applyOverrides = listOfNotNull(overrideKey.takeUnless { it.isBlank() }) + applyOverrides,
+//                    modrinth_modId = ModId(addonid),
+//                    name = name ?: newName
+//                )
+//            } else {
+//                this
+//            }.copy(
+//                applyOverrides = listOfNotNull(overrideKey.takeUnless { it.isBlank() }) + applyOverrides,
+//            )
+            copy(
+                applyOverrides = listOfNotNull(overrideKey.takeUnless { it.isBlank() }) + applyOverrides,
+            )
+        }
         is Direct -> copy(
             applyOverrides = listOfNotNull(overrideKey.takeUnless { it.isBlank() }) + applyOverrides,
         )
@@ -266,6 +288,97 @@ sealed class FileEntry {
             fileID = curse_fileID,
             useOriginalUrl = curse_useOriginalUrl,
             skipFingerprintCheck = curse_skipFingerprintCheck
+        )
+
+//        override fun toString(): String {
+//            return "FileEntry.Curse(projectName=$projectName,curse=$curse,validMcVersion=${common.validMcVersions})"
+//        }
+    }
+
+    @Serializable
+    @SerialName("modrinth")
+    data class Modrinth(
+        @JsonSchema.StringEnum(["replace_with_modrinth_projects"])
+        val modrinth_slug: String? = null,
+        val modrinth_releaseTypes: Set<FileType> = setOf(
+            FileType.Release,
+            FileType.Beta
+        ),
+        val modrinth_modId: ModId = ModId.INVALID,
+        val modrinth_versionId: VersionId = VersionId.INVALID,
+        val modrinth_useOriginalUrl: Boolean = true,
+        val modrinth_skipFingerprintCheck: Boolean = false,
+
+        @JsonSchema.Definition("entry.overridesList")
+        @JsonSchema.StringEnum(["replace_with_overrides"])
+        override val applyOverrides: List<String> = listOf(),
+
+        override val id: String? = null,
+        override val name: String? = CommonComponent.DEFAULT.name,
+        override val folder: String? = CommonComponent.DEFAULT.folder,
+        override val description: String? = CommonComponent.DEFAULT.description,
+        override val optional: Optional? = null,
+        override val side: Side = CommonComponent.DEFAULT.side,
+        override val websiteUrl: String? = CommonComponent.DEFAULT.websiteUrl,
+        override val packageType: PackageType = CommonComponent.DEFAULT.packageType,
+        override val transient: Boolean = CommonComponent.DEFAULT.transient,
+        override val version: String? = CommonComponent.DEFAULT.version,
+        override val fileName: String? = CommonComponent.DEFAULT.fileName,
+        override val fileNameRegex: String = CommonComponent.DEFAULT.fileNameRegex,
+        override val validMcVersions: Set<String> = CommonComponent.DEFAULT.validMcVersions,
+        override val invalidMcVersions: Set<String> = CommonComponent.DEFAULT.invalidMcVersions,
+    ) : FileEntry() {
+        override fun id() = id.takeUnless { it.isNullOrBlank() } ?: modrinth_slug
+        override fun typeKey(): String = "modrinth"
+        override fun applyOverride(override: EntryOverride): Modrinth {
+            return when (override) {
+                is EntryOverride.Modrinth -> copy(
+                    modrinth_useOriginalUrl = override.modrinth_useOriginalUrl ?: modrinth_useOriginalUrl,
+                    modrinth_skipFingerprintCheck = override.modrinth_skipFingerprintCheck ?: modrinth_skipFingerprintCheck,
+                ).run {
+                    applyCommonOverride(override)
+                }
+                is EntryOverride.Common -> run {
+                    applyCommonOverride(override) as Modrinth
+                }
+                else -> this
+            }
+        }
+
+        override fun <E : FileEntry> assignCommonValues(commonBlob: CommonBlob): E {
+            return copy(
+                id = commonBlob.id,
+                name = commonBlob.name,
+                folder = commonBlob.folder,
+                description = commonBlob.description,
+                optional = commonBlob.optional,
+                side = commonBlob.side,
+                websiteUrl = commonBlob.websiteUrl,
+                packageType = commonBlob.packageType,
+                transient = commonBlob.transient,
+                version = commonBlob.version,
+                fileName = commonBlob.fileName,
+                fileNameRegex = commonBlob.fileNameRegex,
+                validMcVersions = commonBlob.validMcVersions,
+                invalidMcVersions = commonBlob.invalidMcVersions,
+            ) as E
+        }
+
+        override fun toEntry(overrides: Map<String, EntryOverride>): FlatEntry =
+            (foldOverrides(overrides) as Modrinth).let {
+                FlatEntry.Modrinth(
+                    common = it.toCommonComponent(it.modrinth_slug),
+                    modrinth = it.toModrinthComponent()
+                )
+            }
+
+        private fun toModrinthComponent() = ModrinthComponent(
+            releaseTypes = modrinth_releaseTypes,
+            slug = modrinth_slug ?: "", //TODO: either make nullable or find better default
+            modId = modrinth_modId,
+            versionId = modrinth_versionId,
+            useOriginalUrl = modrinth_useOriginalUrl,
+            skipFingerprintCheck = modrinth_skipFingerprintCheck
         )
 
 //        override fun toString(): String {

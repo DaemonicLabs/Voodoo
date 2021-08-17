@@ -7,7 +7,8 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
 import voodoo.data.curse.ProjectID
-import voodoo.data.provider.UpdateChannel
+import voodoo.labrinth.ModId
+import voodoo.labrinth.VersionId
 
 interface Common {
     val name: String?
@@ -108,15 +109,21 @@ interface LocalMutable: LocalImmutable {
     override var fileSrc: String
 }
 
-interface UpdateJsonImmutable {
-    val updateJson: String
-    val updateChannel: UpdateChannel
-    val template: String
-    val useUrlTxt: Boolean
+
+interface ModrinthImmutable {
+    val releaseTypes: Set<FileType>
+    val slug: String
+    val modId: ModId
+    val versionId: VersionId
+    val useOriginalUrl: Boolean
+    val skipFingerprintCheck: Boolean
 }
-interface UpdateJsonMutable: UpdateJsonImmutable {
-    override var updateJson: String
-    override var updateChannel: UpdateChannel
-    override var template: String
-    override var useUrlTxt: Boolean
+interface ModrinthMutable: ModrinthImmutable {
+    override var releaseTypes: Set<FileType>
+    override var slug: String
+    override var modId: ModId
+    override var versionId: VersionId
+    override var useOriginalUrl: Boolean
+    override var skipFingerprintCheck: Boolean
 }
+

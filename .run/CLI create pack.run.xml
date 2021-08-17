@@ -3,6 +3,7 @@
     <option name="MAIN_CLASS_NAME" value="Main" />
     <module name="voodoo-parent.voodoo.main" />
     <option name="PROGRAM_PARAMETERS" value="--log trace init pack --id pack --mcVersion 1.17.1" />
+    <shortenClasspath name="NONE" />
     <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/samples/initproject" />
     <method v="2">
       <option name="Make" enabled="true" />

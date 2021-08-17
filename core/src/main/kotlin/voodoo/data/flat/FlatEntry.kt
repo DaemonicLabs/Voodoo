@@ -29,6 +29,15 @@ sealed class FlatEntry: CommonMutable {
         }
     }
 
+    data class Modrinth(
+        private val common: CommonComponent = CommonComponent(),
+        private val modrinth: ModrinthComponent = ModrinthComponent()
+    ) : FlatEntry(), CommonMutable by common, ModrinthMutable by modrinth {
+        init {
+            optional = optionalData != null
+        }
+    }
+
     data class Direct(
         private val common: CommonComponent = CommonComponent(),
         private val direct: DirectComponent = DirectComponent()

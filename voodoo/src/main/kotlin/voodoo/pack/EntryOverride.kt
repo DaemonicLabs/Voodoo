@@ -54,8 +54,26 @@ sealed class EntryOverride(
         operator fun plus(other: Curse): Curse {
             return copy(
                 curse_releaseTypes = curse_releaseTypes ?: other.curse_releaseTypes,
-                        curse_useOriginalUrl = curse_useOriginalUrl ?: other.curse_useOriginalUrl,
-                        curse_skipFingerprintCheck = curse_skipFingerprintCheck ?: other.curse_skipFingerprintCheck,
+                curse_useOriginalUrl = curse_useOriginalUrl ?: other.curse_useOriginalUrl,
+                curse_skipFingerprintCheck = curse_skipFingerprintCheck ?: other.curse_skipFingerprintCheck,
+            ).apply {
+                plusCommon(other)
+            }
+        }
+    }
+
+    @Serializable
+    @SerialName("curse")
+    data class Modrinth(
+        val modrinth_releaseTypes: Set<FileType>? = null,
+        val modrinth_useOriginalUrl: Boolean? = null,
+        val modrinth_skipFingerprintCheck: Boolean? = null,
+    ) : EntryOverride() {
+        operator fun plus(other: Modrinth): Modrinth {
+            return copy(
+                modrinth_releaseTypes = modrinth_releaseTypes ?: other.modrinth_releaseTypes,
+                modrinth_useOriginalUrl = modrinth_useOriginalUrl ?: other.modrinth_useOriginalUrl,
+                modrinth_skipFingerprintCheck = modrinth_skipFingerprintCheck ?: other.modrinth_skipFingerprintCheck,
             ).apply {
                 plusCommon(other)
             }

@@ -21,6 +21,7 @@ object Providers {
         when(entry) {
             is FlatEntry.Common -> null
             is FlatEntry.Curse -> CurseProvider
+            is FlatEntry.Modrinth -> TODO()
             is FlatEntry.Jenkins -> JenkinsProvider
             is FlatEntry.Direct -> DirectProvider
             is FlatEntry.Local -> LocalProvider

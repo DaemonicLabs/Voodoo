@@ -8,7 +8,8 @@ import voodoo.data.curse.FileID
 import voodoo.data.curse.FileType
 import voodoo.data.curse.PackageType
 import voodoo.data.curse.ProjectID
-import voodoo.data.provider.UpdateChannel
+import voodoo.labrinth.ModId
+import voodoo.labrinth.VersionId
 
 /**
  * Created by nikky on 28/03/18.
@@ -54,9 +55,22 @@ data class CurseComponent(
 ) : CurseMutable
 
 @Serializable
+data class ModrinthComponent(
+    override var releaseTypes: Set<FileType> = setOf(
+        FileType.Release,
+        FileType.Beta
+    ),
+    override var modId: ModId = ModId.INVALID,
+    override var slug: String = "",
+    override var versionId: VersionId = VersionId.INVALID,
+    override var useOriginalUrl: Boolean = true,
+    override var skipFingerprintCheck: Boolean = false
+) : ModrinthMutable
+
+@Serializable
 data class DirectComponent(
     override var url: String = "",
-    override var useOriginalUrl: Boolean = true
+    override var useOriginalUrl: Boolean = true,
 ) : DirectMutable
 
 @Serializable
@@ -64,7 +78,7 @@ data class JenkinsComponent(
     override var jenkinsUrl: String? = null,
     override var job: String = "",
     override var buildNumber: Int? = null,
-    override var useOriginalUrl: Boolean = true
+    override var useOriginalUrl: Boolean = true,
 ) : JenkinsMutable
 
 @Serializable
