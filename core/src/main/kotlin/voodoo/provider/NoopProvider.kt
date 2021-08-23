@@ -18,9 +18,13 @@ object NoopProvider : ProviderBase("Noop Provider") {
         entry: FlatEntry,
         modPack: FlatModPack,
         addEntry: suspend (FlatEntry) -> Unit
-    ): LockEntry {
+    ): FlatEntry {
         entry as FlatEntry.Noop
         error("noop entry should not be resolved")
+    }
+
+    override fun lock(entry: FlatEntry, modPack: FlatModPack): LockEntry {
+        error("noop entry should not be locked")
     }
 
     // TODO: do not download here ?

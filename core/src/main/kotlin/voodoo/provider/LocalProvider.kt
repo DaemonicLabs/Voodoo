@@ -20,7 +20,12 @@ object LocalProvider : ProviderBase("Local Provider") {
         entry: FlatEntry,
         modPack: FlatModPack,
         addEntry: suspend (FlatEntry) -> Unit
-    ): LockEntry {
+    ): FlatEntry {
+        entry as FlatEntry.Local
+        return entry
+    }
+
+    override fun lock(entry: FlatEntry, modPack: FlatModPack): LockEntry {
         entry as FlatEntry.Local
         val common = entry.lockCommon()
         return LockEntry.Local(

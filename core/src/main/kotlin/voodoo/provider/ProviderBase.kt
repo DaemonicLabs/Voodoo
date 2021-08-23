@@ -30,10 +30,16 @@ abstract class ProviderBase(
         entry: FlatEntry,
         modPack: FlatModPack,
         addEntry: suspend (FlatEntry) -> Unit
-    ): LockEntry {
+    ): FlatEntry {
         logger.info("[$name] resolve ${entry.id}")
-        throw NotImplementedError("unable to resolve")
+        return entry
+//        throw NotImplementedError("unable to resolve")
     }
+
+    abstract fun lock(
+        entry: FlatEntry,
+        modPack: FlatModPack,
+    ): LockEntry
 
     companion object {
         private val logger = KotlinLogging.logger {}

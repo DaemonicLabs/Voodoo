@@ -9,6 +9,8 @@ import voodoo.data.OptionalData
 import voodoo.data.Side
 import voodoo.data.curse.FileID
 import voodoo.data.curse.ProjectID
+import voodoo.labrinth.ModId
+import voodoo.labrinth.VersionId
 import voodoo.provider.*
 import java.time.Instant
 
@@ -34,6 +36,30 @@ sealed class LockEntry() : CommonLockModule, Comparable<LockEntry> {
         override val dependencies: Map<String, DependencyType> = mapOf(),
         val projectID: ProjectID = ProjectID.INVALID,
         val fileID: FileID = FileID.INVALID,
+        val useOriginalUrl: Boolean = true,
+        val skipFingerprintCheck: Boolean = false
+    ) : LockEntry() {
+        override val providerType = CurseProvider.id
+        init {
+            optional = optionalData != null
+        }
+    }
+
+    @Serializable
+    @SerialName("modrinth")
+    data class Modrinth(
+        override val id: String,
+        override val path: String,
+        override val name: String? = null,
+        override val fileName: String? = null,
+        override val side: Side = Side.BOTH,
+        override val description: String? = null,
+        override val optionalData: OptionalData? = null,
+        override val dependencies: Map<String, DependencyType> = mapOf(),
+        val slug: String,
+        val modId: ModId = ModId.INVALID,
+        val versionId: VersionId = VersionId.INVALID,
+        val fileNameRegex: String = ".*(?<!-sources\\.jar)(?<!-api\\.jar)(?<!-deobf\\.jar)(?<!-lib\\.jar)(?<!-slim\\.jar)$",
         val useOriginalUrl: Boolean = true,
         val skipFingerprintCheck: Boolean = false
     ) : LockEntry() {

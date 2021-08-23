@@ -32,7 +32,7 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         entry: FlatEntry,
         modPack: FlatModPack,
         addEntry: suspend (FlatEntry) -> Unit
-    ): LockEntry {
+    ): FlatEntry {
         entry as FlatEntry.Jenkins
         require(entry.job.isNotBlank()) { "entry: '${entry.id}' does not have the jenkins job set" }
 //        if (entry.job.isBlank()) {
@@ -41,8 +41,19 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
         val jenkinsUrl = entry.jenkinsUrl ?: error("jenkins url unset on entry '${entry.id}'")
         val job = job(entry.job, jenkinsUrl)
         val buildNumber = entry.buildNumber ?: job.lastSuccessfulBuild?.number ?: throw IllegalStateException("buildnumber not set")
-        val common = entry.lockCommon()
         val artifact = artifact(entry.job, jenkinsUrl, buildNumber, entry.fileNameRegex)
+
+        entry.jenkinsUrl = jenkinsUrl
+        entry.buildNumber = buildNumber
+        entry.artifactRelativePath = artifact.relativePath
+        entry.artifactFileName = artifact.fileName
+
+        return entry
+    }
+
+    override fun lock(entry: FlatEntry, modPack: FlatModPack): LockEntry {
+        entry as FlatEntry.Jenkins
+        val common = entry.lockCommon()
         return LockEntry.Jenkins(
             id = common.id,
             path = common.path,
@@ -52,12 +63,12 @@ object JenkinsProvider : ProviderBase("Jenkins Provider") {
             description = common.description,
             optionalData = common.optionalData,
             dependencies = common.dependencies,
-            jenkinsUrl = jenkinsUrl,
+            jenkinsUrl = entry.jenkinsUrl ?: error("jenkins url missing"),
             job = entry.job,
-            buildNumber = buildNumber,
+            buildNumber = entry.buildNumber ?: error("buildnumber missing"),
             fileNameRegex = entry.fileNameRegex,
-            artifactRelativePath = artifact.relativePath,
-            artifactFileName = artifact.fileName,
+            artifactRelativePath = entry.artifactRelativePath,
+            artifactFileName = entry.artifactRelativePath,
             useOriginalUrl = entry.useOriginalUrl
         )
     }

@@ -10,7 +10,6 @@ import voodoo.data.lock.CommonLockComponent
  * @author Nikky
  */
 
-
 sealed class FlatEntry: CommonMutable {
     data class Common(
         val common: CommonComponent = CommonComponent()
@@ -49,7 +48,9 @@ sealed class FlatEntry: CommonMutable {
 
     data class Jenkins(
         private val common: CommonComponent = CommonComponent(),
-        private val jenkins: JenkinsComponent = JenkinsComponent()
+        private val jenkins: JenkinsComponent = JenkinsComponent(),
+        var artifactRelativePath: String = "",
+        var artifactFileName: String = "",
     ) : FlatEntry(), CommonMutable by common, JenkinsMutable by jenkins {
         init {
             optional = optionalData != null

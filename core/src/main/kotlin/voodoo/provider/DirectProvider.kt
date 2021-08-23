@@ -20,10 +20,16 @@ object DirectProvider : ProviderBase("Direct Provider") {
         entry: FlatEntry,
         modPack: FlatModPack,
         addEntry: suspend (FlatEntry) -> Unit
-    ): LockEntry {
+    ): FlatEntry {
         entry as FlatEntry.Direct
         entry.id = entry.id.replace("[^\\w-]".toRegex(), "_")
+        return entry
+    }
+
+    override fun lock(entry: FlatEntry, modPack: FlatModPack): LockEntry {
+        entry as FlatEntry.Direct
         val common = entry.lockCommon()
+
         return LockEntry.Direct(
             id = common.id,
             path = common.path,

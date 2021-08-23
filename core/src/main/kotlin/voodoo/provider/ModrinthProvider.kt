@@ -1,17 +1,12 @@
 package voodoo.provider
 
+import Modloader
 import com.eyeem.watchadoin.Stopwatch
-import kotlinx.coroutines.channels.SendChannel
 import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import voodoo.curse.CurseClient
-import voodoo.curse.CurseClient.findFile
-import voodoo.curse.CurseClient.getAddon
-import voodoo.curse.CurseClient.getAddonFile
-import voodoo.curse.hash.Murmur2
-import voodoo.curse.hash.Murmur2Lib
-import voodoo.curse.hash.computeNormalizedArray
 import voodoo.data.EntryReportData
+import voodoo.data.ModloaderPattern
 import voodoo.data.curse.AddOnFileDependency
 import voodoo.data.curse.CurseDependencyType
 import voodoo.data.curse.FileID
@@ -19,22 +14,20 @@ import voodoo.data.curse.ProjectID
 import voodoo.data.flat.FlatEntry
 import voodoo.data.flat.FlatModPack
 import voodoo.data.lock.LockEntry
+import voodoo.labrinth.LabrinthClient
+import voodoo.labrinth.ModId
+import voodoo.labrinth.VersionFile
+import voodoo.labrinth.VersionId
 import voodoo.memoize
 import voodoo.util.browserUserAgent
 import voodoo.util.download
 import java.io.File
 import java.time.Instant
 import java.time.ZoneOffset
-import java.util.*
 import kotlin.system.exitProcess
 
-/**
- * Created by nikky on 30/12/17.
- * @author Nikky
- */
-object CurseProvider : ProviderBase("Curse Provider") {
+object ModrinthProvider : ProviderBase("Modrinth Provider") {
     private val logger = KotlinLogging.logger {}
-//    private val resolved = Collections.synchronizedList(mutableListOf<String>())
 
     override fun reset() {
 //        resolved.clear()
@@ -45,61 +38,55 @@ object CurseProvider : ProviderBase("Curse Provider") {
         modPack: FlatModPack,
         addEntry: suspend (FlatEntry) -> Unit
     ): FlatEntry {
-        entry as FlatEntry.Curse
-        val (projectID, fileID, path) = findFile(entry, modPack.mcVersion, modPack.modloader)
+        entry as FlatEntry.Modrinth
 
-//        synchronized(resolved) {
-//            logger.info("resolved: ${resolved.count()} unique entries")
-//            resolved += entry.id
-//        }
-        // TODO: move into appropriate place or remove
-        //  this is currently just used to validate that there is no entries getting resolved multiple times
+        //TODO: pick default version (latest),
+        //   mark as replacable for merging code
+        val (modId, versionId, path) = resolveVersion(entry, modPack.mcVersion, modPack.modloader)
 
-        //FIXME: figure out how to detect duplicate work without globals
-//        synchronized(resolved) {
-//            val count = resolved.count { entry.id == it }
-//            if (count > 1) {
-//                throw IllegalStateException("duplicate effort '${entry.id}' entry counted: $count")
-//            }
-//        }
+        resolveDependencies(modId, versionId, entry, addEntry)
 
-        resolveDependencies(projectID, fileID, entry, addEntry)
+        entry.optional = isOptional(entry)
+        logger.debug("entry.optiona = ${entry.optional}")
 
-//        entry.optional = isOptional(entry)
-//        logger.debug("entry.optiona = ${entry.optional}")
-
-        if (!projectID.valid) {
-            logger.error("invalid project id for $entry")
-            throw IllegalStateException("invalid project id for $entry")
+        if (!modId.valid) {
+            logger.error("invalid mod id for $entry")
+            throw IllegalStateException("invalid mod id for $entry")
         }
-        if (!fileID.valid) {
-            logger.error("invalid file id for $entry")
-            throw IllegalStateException("invalid file id for $entry")
+        if (!versionId.valid) {
+            logger.error("invalid version id for $entry")
+            throw IllegalStateException("invalid version id for $entry")
         }
 
         entry.folder = entry.folder ?: path
-        entry.projectID = projectID
-        entry.fileID = fileID
 
 //        val resolved = entry.copy(
 //            common = entry.common.copy(
-//                folder = entry.folder ?: path
+//
 //            ),
-//            curse = entry.curse.copy(
-//                projectID = projectID,
-//                fileID = fileID,
-//            ),
+//            modrinth = entry.modrinth.copy(
+//
+//            )
 //        )
-
-        logger.debug("returning locked entry: $entry")
+//
+//        logger.debug("returning locked entry: $resolved")
         return entry
     }
 
-    override fun lock(entry: FlatEntry, modPack: FlatModPack): LockEntry {
-        entry as FlatEntry.Curse
+    private suspend fun resolveVersion(entry: FlatEntry.Modrinth, mcVersion: String, modloader: ModloaderPattern?): Triple<ModId, VersionId, String> {
 
+    }
+
+    private suspend fun getVersionFile(entry: LockEntry.Modrinth): VersionFile {
+        val version = LabrinthClient.version(entry.versionId)
+        val regex = entry.fileNameRegex.toRegex()
+        return version.files.firstOrNull { it.filename.matches(regex) } ?: error("")
+    }
+
+    override fun lock(entry: FlatEntry, modPack: FlatModPack): LockEntry {
+        entry as FlatEntry.Modrinth
         val common = entry.lockCommon()
-        val lock = LockEntry.Curse(
+        return LockEntry.Modrinth(
             id = common.id,
             path = common.path,
             name = common.name,
@@ -108,52 +95,52 @@ object CurseProvider : ProviderBase("Curse Provider") {
             description = common.description,
             optionalData = common.optionalData,
             dependencies = common.dependencies,
-            projectID = entry.projectID,
-            fileID = entry.fileID,
+            slug = entry.slug,
+            modId = entry.modId,
+            versionId = entry.versionId,
+            fileNameRegex = entry.fileNameRegex,
             useOriginalUrl = entry.useOriginalUrl,
             skipFingerprintCheck = entry.skipFingerprintCheck
         )
-
-        logger.debug("returning locked entry: $lock")
-        return lock
     }
 
     override suspend fun generateName(entry: LockEntry): String {
-        entry as LockEntry.Curse
-        val addon = CurseClient.getAddon(entry.projectID)
-        return addon?.name ?: entry.id
+        entry as LockEntry.Modrinth
+        return LabrinthClient.getMod(entry.slug).title
     }
 
     override suspend fun getAuthors(entry: LockEntry): List<String> {
-        entry as LockEntry.Curse
-        return CurseClient.getAuthors(entry.projectID)
+        entry as LockEntry.Modrinth
+        // TODO: fix
+        return listOf(
+            LabrinthClient.getMod(entry.slug).team
+        )
     }
 
     override suspend fun getProjectPage(entry: LockEntry): String {
-        entry as LockEntry.Curse
-        return CurseClient.getProjectPage(entry.projectID)
+        entry as LockEntry.Modrinth
+        return "https://modrinth.com/mod/${entry.slug}"
     }
 
     override suspend fun getVersion(entry: LockEntry): String {
-        entry as LockEntry.Curse
-        val addonFile = getAddonFile(entry.projectID, entry.fileID)
-        return addonFile?.fileName ?: ""
+        entry as LockEntry.Modrinth
+        val file = getVersionFile(entry)
+        return file.filename
     }
 
     override suspend fun getLicense(entry: LockEntry): String {
-        return getProjectPage(entry) + "/license"
+        entry as LockEntry.Modrinth
+        return LabrinthClient.getMod(entry.slug).license.name
     }
 
     override suspend fun getThumbnail(entry: LockEntry): String {
-        entry as LockEntry.Curse
-        val addon = CurseClient.getAddon(entry.projectID)
-        return addon?.attachments?.firstOrNull { it.isDefault }?.thumbnailUrl ?: ""
+        entry as LockEntry.Modrinth
+        return LabrinthClient.getMod(entry.slug).icon_url ?: ""
     }
 
     override suspend fun getThumbnail(entry: FlatEntry): String {
-        entry as FlatEntry.Curse
-        val addon = CurseClient.getAddon(entry.projectID)
-        return addon?.attachments?.firstOrNull { it.isDefault }?.thumbnailUrl ?: ""
+        entry as FlatEntry.Modrinth
+        return LabrinthClient.getMod(entry.slug).icon_url ?: ""
     }
 
     private suspend fun resolveDependencies(
@@ -246,7 +233,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
         return entry.transient || entry.optional
     }
 
-    val isOptional = CurseProvider::isOptionalCall.memoize()
+    val isOptional = ModrinthProvider::isOptionalCall.memoize()
 
     override suspend fun download(
         stopwatch: Stopwatch,
@@ -254,7 +241,7 @@ object CurseProvider : ProviderBase("Curse Provider") {
         targetFolder: File,
         cacheDir: File
     ): Pair<String?, File>? = stopwatch {
-        entry as LockEntry.Curse
+        entry as LockEntry.Modrinth
         val addonFile = getAddonFile(entry.projectID, entry.fileID)
         if (addonFile == null) {
             logger.error("cannot download ${entry.id} ${entry.projectID}:${entry.fileID}")
@@ -370,5 +357,124 @@ object CurseProvider : ProviderBase("Curse Provider") {
             return false
         }
         return true
+    }
+
+    suspend fun findFile(
+        entry: FlatEntry.Curse,
+        mcVersion: String,
+        modloader: ModloaderPattern?
+    ): Triple<ProjectID, FileID, String> {
+        val mcVersions = listOf(mcVersion) + entry.validMcVersions
+        val slug = entry.id // TODO: maybe make into separate property
+        val version = entry.version
+        val releaseTypes = entry.releaseTypes
+        var addonId = entry.projectID
+        val fileNameRegex = entry.fileNameRegex
+
+        if(modloader is ModloaderPattern.Forge) {
+            entry.invalidMcVersions += "Fabric"
+        }
+        if(modloader is ModloaderPattern.Fabric) {
+            entry.invalidMcVersions += "Forge"
+        }
+
+        val addon = if (!addonId.valid) {
+//            slug.takeUnless { it.isBlank() }
+//                ?.let { getAddonBySlug(it) }
+            CurseClient.logger.error { "addon id $addonId is invalid" }
+            throw java.lang.IllegalStateException("$addonId is invalid")
+        } else {
+            CurseClient.getAddon(addonId)
+        }
+
+        if (addon == null) {
+            CurseClient.logger.error("no addon matching the parameters found for '$entry'")
+            kotlin.system.exitProcess(-1)
+//            return Triple(ProjectID.INVALID, FileID.INVALID, "")
+        }
+
+        addonId = addon.id
+
+        if (entry.fileID.valid) {
+            val file = CurseClient.getAddonFile(addonId, entry.fileID)!!
+            return Triple(addonId, file.id, addon.categorySection.path)
+        }
+
+        val re = Regex(fileNameRegex)
+
+        var files = CurseClient.getAllFilesForAddon(addonId).sortedWith(compareByDescending { it.fileDate })
+
+        var oldFiles = files
+
+        if (version != null && version.isNotBlank()) {
+            files = files.filter { f ->
+                (f.fileName.contains(version.toRegex()) || f.fileName == version)
+            }
+            if (files.isEmpty()) {
+                CurseClient.logger.error("filtered files did not match version $version $oldFiles")
+            }
+            oldFiles = files
+        }
+
+        if (files.isNotEmpty()) {
+            files = files.filter { f ->
+                mcVersions.any { v -> f.gameVersion.contains(v) }
+            }
+
+            if (files.isEmpty()) {
+                CurseClient.logger.error("validMcVersions: $mcVersion + ${entry.validMcVersions}")
+                CurseClient.logger.error("filtered files did not match mcVersions: $mcVersions + ${entry.validMcVersions} $oldFiles")
+            }
+            oldFiles = files
+        }
+
+        if (files.isNotEmpty()) {
+            files = files.filterNot { f ->
+                entry.invalidMcVersions.any { v -> f.gameVersion.contains(v) }
+            }
+
+            if (files.isEmpty()) {
+                CurseClient.logger.error("invalidMcVersions: ${entry.invalidMcVersions}")
+                CurseClient.logger.error("filtered files did match invalidMcVersions: ${entry.invalidMcVersions} $oldFiles")
+            }
+            oldFiles = files
+        }
+
+        if (files.isNotEmpty()) {
+            files = files.filter { f ->
+                releaseTypes.contains(f.releaseType)
+            }
+
+            if (files.isEmpty()) {
+                CurseClient.logger.error("filtered files did not match releaseType $releaseTypes $oldFiles")
+            }
+            oldFiles = files
+        }
+
+        if (files.isNotEmpty()) {
+            files = files.filter { f ->
+                re.matches(f.fileName)
+            }
+            if (files.isEmpty()) {
+                CurseClient.logger.error("filtered files did not match regex {}", oldFiles)
+            }
+        }
+
+        val file = files.asSequence().sortedWith(compareByDescending { it.fileDate }).firstOrNull()
+        if (file == null) {
+            val filesUrl = "${CurseClient.ADDON_API}/addon/$addonId/files"
+            CurseClient.logger.error(
+                "no matching version found for ${addon.name} addon_url: ${addon.websiteUrl} " +
+                        "files: $filesUrl mc version: $mcVersions version: $version"
+            )
+            CurseClient.logger.error("no file matching the parameters found for ${addon.name}")
+            CurseClient.logger.error("filtered by")
+            CurseClient.logger.error("mcVersions: $mcVersions")
+            CurseClient.logger.error("releaseTypes: $releaseTypes")
+            CurseClient.logger.error("filename: $re")
+            kotlin.system.exitProcess(-1)
+//            return Triple(addonId, FileID.INVALID, "")
+        }
+        return Triple(addonId, file.id, addon.categorySection.path)
     }
 }

@@ -9,7 +9,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import mu.KotlinLogging
-import voodoo.data.curse.FileID
 import voodoo.util.json
 import voodoo.util.useClient
 
@@ -106,6 +105,7 @@ data class ModResult(
 @JvmInline
 @Serializable
 value class VersionId(val id: String) {
+    val valid: Boolean get() = id.isNotBlank()
     companion object {
         val INVALID = VersionId("")
     }
@@ -114,6 +114,7 @@ value class VersionId(val id: String) {
 @JvmInline
 @Serializable
 value class ModId(val id: String) {
+    val valid: Boolean get() = id.isNotBlank()
     companion object {
         val INVALID = ModId("")
     }
@@ -206,7 +207,7 @@ object LabrinthClient {
         }
     }
 
-    suspend fun get(slug: String): ModResult {
+    suspend fun getMod(slug: String): ModResult {
 
         return withContext(MDCContext() + Dispatchers.IO) {
             val url = "${PREFIX}/api/v1/mod/$slug"
@@ -271,18 +272,22 @@ object LabrinthClient {
             hits.forEach {
 //                logger.info { it }
 
-                val mod = get(it.slug)
+                val mod = getMod(it.slug)
                 logger.info { mod.slug }
 //                logger.info { mod.versions }
 
                 mod.versions.forEach { versionId ->
                     val version = version(versionId)
                     logger.info { "${mod.title}: '${version.name}' '${version.version_number}'" }
-                    version.dependencies.forEach { versionDependency ->
-                        val dep = version(versionDependency.version_id)
-                        val depMod = getModsByIds(listOf(dep.mod_id)).first()
-                        logger.info { "  ${versionDependency.dependency_type}: '${depMod.title}' '${dep.name}' '${dep.version_number}'" }
+
+                    version.files.forEach {
+                        logger.info { "    ${it.primary} ${it.filename}" }
                     }
+//                    version.dependencies.forEach { versionDependency ->
+//                        val dep = version(versionDependency.version_id)
+//                        val depMod = getModsByIds(listOf(dep.mod_id)).first()
+//                        logger.info { "  ${versionDependency.dependency_type}: '${depMod.title}' '${dep.name}' '${dep.version_number}'" }
+//                    }
                 }
             }
         }
