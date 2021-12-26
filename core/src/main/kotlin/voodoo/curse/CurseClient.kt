@@ -84,7 +84,7 @@ object CurseClient {
         section: String? = null,
         slug: String? = null
     ): List<SlugIdPair> = withContext(MDCContext() + Dispatchers.IO) {
-        val url = "https://curse.nikky.moe/graphql"
+        val url = System.getenv("VOODOO_CURSEPROXY_URL") ?: "https://curse.nikky.moe/graphql"
         val filters = mutableListOf("gameId: 432")
         gameVersions?.takeIf { it.isNotEmpty() }?.let {
             filters += it.joinToString("\", \"", "gameVersionList: [\"", "\"]")
